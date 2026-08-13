@@ -39,7 +39,7 @@ const __sl1 = cptr.lit("\x19\x93\r\n\x1a\n");
 
 /** C ref: ldump.c:29 — typedef DumpState (type alias only, no runtime output) */
 
-/** C ref: ldump.c:41 — @param {CPtr} D @param {CPtr} b @param {CLongLong} size */
+/** C ref: ldump.c:41 — @param {CPtr<DumpState>} D @param {CPtr<void>} b @param {CLongLong} size */
 function* dumpBlock(D, b, size) {
     if (cptr.ldI32o(D, $DumpState_status) == 0 && size > 0n) {
         (void 0);
@@ -48,13 +48,13 @@ function* dumpBlock(D, b, size) {
     }
 }
 
-/** C ref: ldump.c:53 — @param {CPtr} D @param {CInt} y */
+/** C ref: ldump.c:53 — @param {CPtr<DumpState>} D @param {CInt} y */
 function* dumpByte(D, y) {
     let x = cptr.box(uchar(y));
     (yield* dumpBlock(D, x, 1n));
 }
 
-/** C ref: ldump.c:65 — @param {CPtr} D @param {CLongLong} x */
+/** C ref: ldump.c:65 — @param {CPtr<DumpState>} D @param {CLongLong} x */
 function* dumpSize(D, x) {
     let buff = new Uint8Array(10);
     let n = 0;
@@ -66,24 +66,24 @@ function* dumpSize(D, x) {
     (yield* dumpBlock(D, cptr.add(cptr.add(cptr.decay(buff), 10n), -(n)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n)));
 }
 
-/** C ref: ldump.c:77 — @param {CPtr} D @param {CInt} x */
+/** C ref: ldump.c:77 — @param {CPtr<DumpState>} D @param {CInt} x */
 function* dumpInt(D, x) {
     (yield* dumpSize(D, BigInt.asUintN(64, BigInt(x))));
 }
 
-/** C ref: ldump.c:82 — @param {CPtr} D @param {CDouble} x */
+/** C ref: ldump.c:82 — @param {CPtr<DumpState>} D @param {CDouble} x */
 function* dumpNumber(D, x) {
     x = cptr.box(x);
     (yield* dumpBlock(D, x, 8n));
 }
 
-/** C ref: ldump.c:87 — @param {CPtr} D @param {CLongLong} x */
+/** C ref: ldump.c:87 — @param {CPtr<DumpState>} D @param {CLongLong} x */
 function* dumpInteger(D, x) {
     x = cptr.box(x);
     (yield* dumpBlock(D, x, 8n));
 }
 
-/** C ref: ldump.c:92 — @param {CPtr} D @param {CPtr} s */
+/** C ref: ldump.c:92 — @param {CPtr<DumpState>} D @param {CPtr<TString>} s */
 function* dumpString(D, s) {
     if (cptr.eq(s, (null)))
         (yield* dumpSize(D, 0n));
@@ -95,13 +95,13 @@ function* dumpString(D, s) {
     }
 }
 
-/** C ref: ldump.c:104 — @param {CPtr} D @param {CPtr} f */
+/** C ref: ldump.c:104 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f */
 function* dumpCode(D, f) {
     (yield* dumpInt(D, cptr.ldI32o(f, $Proto_sizecode)));
     (yield* dumpBlock(D, cptr.ldPtro(f, $Proto_code), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(f, $Proto_sizecode)))) * 4n)));
 }
 
-/** C ref: ldump.c:112 — @param {CPtr} D @param {CPtr} f */
+/** C ref: ldump.c:112 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f */
 function* dumpConstants(D, f) {
     let i;
     let n = cptr.ldI32o(f, $Proto_sizek);
@@ -127,7 +127,7 @@ function* dumpConstants(D, f) {
     }
 }
 
-/** C ref: ldump.c:138 — @param {CPtr} D @param {CPtr} f */
+/** C ref: ldump.c:138 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f */
 function* dumpProtos(D, f) {
     let i;
     let n = cptr.ldI32o(f, $Proto_sizep);
@@ -136,7 +136,7 @@ function* dumpProtos(D, f) {
         (yield* dumpFunction(D, cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8), cptr.ldPtro(f, $Proto_source)));
 }
 
-/** C ref: ldump.c:147 — @param {CPtr} D @param {CPtr} f */
+/** C ref: ldump.c:147 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f */
 function* dumpUpvalues(D, f) {
     let i;
     let n = cptr.ldI32o(f, $Proto_sizeupvalues);
@@ -148,7 +148,7 @@ function* dumpUpvalues(D, f) {
     }
 }
 
-/** C ref: ldump.c:158 — @param {CPtr} D @param {CPtr} f */
+/** C ref: ldump.c:158 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f */
 function* dumpDebug(D, f) {
     let i;
     let n;
@@ -174,7 +174,7 @@ function* dumpDebug(D, f) {
         (yield* dumpString(D, cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, 16)));
 }
 
-/** C ref: ldump.c:183 — @param {CPtr} D @param {CPtr} f @param {CPtr} psource */
+/** C ref: ldump.c:183 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f @param {CPtr<TString>} psource */
 function* dumpFunction(D, f, psource) {
     if (cptr.ldI32o(D, $DumpState_strip) || cptr.eq(cptr.ldPtro(f, $Proto_source), psource))
         (yield* dumpString(D, null));
@@ -192,7 +192,7 @@ function* dumpFunction(D, f, psource) {
     (yield* dumpDebug(D, f));
 }
 
-/** C ref: ldump.c:201 — @param {CPtr} D */
+/** C ref: ldump.c:201 — @param {CPtr<DumpState>} D */
 function* dumpHeader(D) {
     (yield* dumpBlock(D, __sl0, 4n));
     (yield* dumpByte(D, 84));
@@ -205,7 +205,7 @@ function* dumpHeader(D) {
     (yield* dumpNumber(D, (((370.5)))));
 }
 
-/** C ref: ldump.c:217 — @param {CPtr} L @param {CPtr} f @param {CPtr} w @param {CPtr} data @param {CInt} strip @returns {CInt} */
+/** C ref: ldump.c:217 — @param {CPtr<lua_State>} L @param {CPtr<Proto>} f @param {CPtr} w @param {CPtr<void>} data @param {CInt} strip @returns {CInt} */
 export function* luaU_dump(L, f, w, data, strip) {
     let D = cptr.alloc(32);
     cptr.stPtr(D, L);

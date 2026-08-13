@@ -82,19 +82,19 @@ const __sl55 = cptr.lit("setcstacklimit");
 /** C ref: ldblib.c:27 — char * */
 let HOOKKEY = __sl0;
 
-/** C ref: ldblib.c:35 — @param {CPtr} L @param {CPtr} L1 @param {CInt} n */
+/** C ref: ldblib.c:35 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} L1 @param {CInt} n */
 function checkstack(L, L1, n) {
     if ((__builtin_expect(BigInt(((!cptr.eq(L, L1) && !lua_checkstack(L1, n) ? 1 : 0) != 0)), 0n)))
         luaL_error(L, __sl1);
 }
 
-/** C ref: ldblib.c:41 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:41 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_getregistry(L) {
     lua_pushvalue(L, -1001000);
     return 1;
 }
 
-/** C ref: ldblib.c:47 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:47 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_getmetatable(L) {
     luaL_checkany(L, 1);
     if (!lua_getmetatable(L, 1)) {
@@ -103,7 +103,7 @@ function db_getmetatable(L) {
     return 1;
 }
 
-/** C ref: ldblib.c:56 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:56 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_setmetatable(L) {
     let t = lua_type(L, 2);
     (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, 2, (__sl2)) ? 1 : 0));
@@ -112,7 +112,7 @@ function db_setmetatable(L) {
     return 1;
 }
 
-/** C ref: ldblib.c:65 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:65 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_getuservalue(L) {
     let n = Number(BigInt.asIntN(32, luaL_optinteger(L, 2, 1n)));
     if (lua_type(L, 1) != 7)
@@ -124,7 +124,7 @@ function db_getuservalue(L) {
     return 1;
 }
 
-/** C ref: ldblib.c:77 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:77 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_setuservalue(L) {
     let n = Number(BigInt.asIntN(32, luaL_optinteger(L, 3, 1n)));
     luaL_checktype(L, 1, 7);
@@ -135,7 +135,7 @@ function db_setuservalue(L) {
     return 1;
 }
 
-/** C ref: ldblib.c:94 — @param {CPtr} L @param {CPtr} arg @returns {CPtr} */
+/** C ref: ldblib.c:94 — @param {CPtr<lua_State>} L @param {CPtr<int>} arg @returns {CPtr<lua_State>} */
 function getthread(L, arg) {
     if ((lua_type(L, 1) == 8)) {
         cptr.stI32(arg, 1);
@@ -146,25 +146,25 @@ function getthread(L, arg) {
     }
 }
 
-/** C ref: ldblib.c:111 — @param {CPtr} L @param {CPtr} k @param {CPtr} v */
+/** C ref: ldblib.c:111 — @param {CPtr<lua_State>} L @param {CPtr<char>} k @param {CPtr<char>} v */
 function settabss(L, k, v) {
     lua_pushstring(L, v);
     lua_setfield(L, -2, k);
 }
 
-/** C ref: ldblib.c:116 — @param {CPtr} L @param {CPtr} k @param {CInt} v */
+/** C ref: ldblib.c:116 — @param {CPtr<lua_State>} L @param {CPtr<char>} k @param {CInt} v */
 function settabsi(L, k, v) {
     lua_pushinteger(L, BigInt(v));
     lua_setfield(L, -2, k);
 }
 
-/** C ref: ldblib.c:121 — @param {CPtr} L @param {CPtr} k @param {CInt} v */
+/** C ref: ldblib.c:121 — @param {CPtr<lua_State>} L @param {CPtr<char>} k @param {CInt} v */
 function settabsb(L, k, v) {
     lua_pushboolean(L, v);
     lua_setfield(L, -2, k);
 }
 
-/** C ref: ldblib.c:134 — @param {CPtr} L @param {CPtr} L1 @param {CPtr} fname */
+/** C ref: ldblib.c:134 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} L1 @param {CPtr<char>} fname */
 function treatstackoption(L, L1, fname) {
     if (cptr.eq(L, L1))
         lua_rotate(L, -2, 1);
@@ -173,7 +173,7 @@ function treatstackoption(L, L1, fname) {
     lua_setfield(L, -2, fname);
 }
 
-/** C ref: ldblib.c:149 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:149 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_getinfo(L) {
     let ar = cptr.alloc(136);
     let arg = cptr.box(0);
@@ -226,7 +226,7 @@ function db_getinfo(L) {
     return 1;
 }
 
-/** C ref: ldblib.c:203 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:203 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_getlocal(L) {
     let arg = cptr.box(0);
     let L1 = getthread(L, arg);
@@ -255,7 +255,7 @@ function db_getlocal(L) {
     }
 }
 
-/** C ref: ldblib.c:234 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:234 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_setlocal(L) {
     let arg = cptr.box(0);
     let name;
@@ -276,7 +276,7 @@ function db_setlocal(L) {
     return 1;
 }
 
-/** C ref: ldblib.c:258 — @param {CPtr} L @param {CInt} get @returns {CInt} */
+/** C ref: ldblib.c:258 — @param {CPtr<lua_State>} L @param {CInt} get @returns {CInt} */
 function auxupvalue(L, get) {
     let name;
     let n = Number(BigInt.asIntN(32, luaL_checkinteger(L, 2)));
@@ -289,18 +289,18 @@ function auxupvalue(L, get) {
     return (get + 1) | 0;
 }
 
-/** C ref: ldblib.c:270 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:270 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_getupvalue(L) {
     return auxupvalue(L, 1);
 }
 
-/** C ref: ldblib.c:275 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:275 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_setupvalue(L) {
     luaL_checkany(L, 3);
     return auxupvalue(L, 0);
 }
 
-/** C ref: ldblib.c:285 — @param {CPtr} L @param {CInt} argf @param {CInt} argnup @param {CPtr} pnup @returns {CPtr} */
+/** C ref: ldblib.c:285 — @param {CPtr<lua_State>} L @param {CInt} argf @param {CInt} argnup @param {CPtr<int>} pnup @returns {CPtr<void>} */
 function checkupval(L, argf, argnup, pnup) {
     let id;
     let nup = Number(BigInt.asIntN(32, luaL_checkinteger(L, argnup)));
@@ -313,7 +313,7 @@ function checkupval(L, argf, argnup, pnup) {
     return id;
 }
 
-/** C ref: ldblib.c:298 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:298 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_upvalueid(L) {
     let id = checkupval(L, 1, 2, null);
     if (!cptr.eq(id, (null)))
@@ -323,7 +323,7 @@ function db_upvalueid(L) {
     return 1;
 }
 
-/** C ref: ldblib.c:308 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:308 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_upvaluejoin(L) {
     let n1 = cptr.box(0);
     let n2 = cptr.box(0);
@@ -342,7 +342,7 @@ cptr.stPtro(__static_hookf_hooknames, 16, __sl28);
 cptr.stPtro(__static_hookf_hooknames, 24, __sl29);
 cptr.stPtro(__static_hookf_hooknames, 32, __sl30); /** C ref: ldblib.c:324 — char *[5] (function-static) */
 
-/** C ref: ldblib.c:323 — @param {CPtr} L @param {CPtr} ar */
+/** C ref: ldblib.c:323 — @param {CPtr<lua_State>} L @param {CPtr<lua_Debug>} ar */
 function hookf(L, ar) {
     lua_getfield(L, -1001000, HOOKKEY);
     lua_pushthread(L);
@@ -357,7 +357,7 @@ function hookf(L, ar) {
     }
 }
 
-/** C ref: ldblib.c:342 — @param {CPtr} smask @param {CInt} count @returns {CInt} */
+/** C ref: ldblib.c:342 — @param {CPtr<char>} smask @param {CInt} count @returns {CInt} */
 function makemask(smask, count) {
     let mask = 0;
     if (cptr.strchr(smask, 99))
@@ -371,7 +371,7 @@ function makemask(smask, count) {
     return mask;
 }
 
-/** C ref: ldblib.c:355 — @param {CInt} mask @param {CPtr} smask @returns {CPtr} */
+/** C ref: ldblib.c:355 — @param {CInt} mask @param {CPtr<char>} smask @returns {CPtr<char>} */
 function unmakemask(mask, smask) {
     let i = 0;
     if (mask & 1)
@@ -384,7 +384,7 @@ function unmakemask(mask, smask) {
     return smask;
 }
 
-/** C ref: ldblib.c:365 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:365 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_sethook(L) {
     let arg = cptr.box(0);
     let mask;
@@ -418,7 +418,7 @@ function db_sethook(L) {
     return 0;
 }
 
-/** C ref: ldblib.c:395 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:395 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_gethook(L) {
     let arg = cptr.box(0);
     let L1 = getthread(L, arg);
@@ -443,7 +443,7 @@ function db_gethook(L) {
     return 3;
 }
 
-/** C ref: ldblib.c:420 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:420 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_debug(L) {
     for (; ; ) {
         let buffer = new Uint8Array(250);
@@ -456,7 +456,7 @@ function db_debug(L) {
     }
 }
 
-/** C ref: ldblib.c:435 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:435 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_traceback(L) {
     let arg = cptr.box(0);
     let L1 = getthread(L, arg);
@@ -470,7 +470,7 @@ function db_traceback(L) {
     return 1;
 }
 
-/** C ref: ldblib.c:449 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:449 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_setcstacklimit(L) {
     let limit = Number(BigInt.asIntN(32, luaL_checkinteger(L, 1)));
     let res = lua_setcstacklimit(L, limit >>> 0);
@@ -517,7 +517,7 @@ cptr.stPtro(dblib, 256 + $luaL_Reg_func, db_setcstacklimit);
 cptr.stPtro(dblib, 272, null);
 cptr.stPtro(dblib, 272 + $luaL_Reg_func, null);
 
-/** C ref: ldblib.c:479 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldblib.c:479 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_debug(L) {
     (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 288n / 16n - 1n)))), luaL_setfuncs(L, dblib, 0));
     return 1;

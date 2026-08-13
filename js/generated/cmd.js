@@ -909,7 +909,7 @@ export function reset_occupations() {
     reset_trapset();
 }
 
-/** C ref: cmd.c:206 — @param {CPtr} fn @param {CPtr} txt @param {CLongLong} xtime */
+/** C ref: cmd.c:206 — @param {CPtr} fn @param {CPtr<char>} txt @param {CLongLong} xtime */
 export function set_occupation(fn, txt, xtime) {
     if (xtime) {
         cptr.stPtro(go, $instance_globals_o_occupation, timed_occupation);
@@ -1012,7 +1012,7 @@ export function cmdq_shift(q) {
     }
 }
 
-/** C ref: cmd.c:373 — @param {CPtr} head @returns {CPtr} */
+/** C ref: cmd.c:373 — @param {CPtr<struct _cmd_queue>} head @returns {CPtr<struct _cmd_queue>} */
 export function cmdq_reverse(head) {
     let prev = null;
     let curr = head;
@@ -1026,7 +1026,7 @@ export function cmdq_reverse(head) {
     return prev;
 }
 
-/** C ref: cmd.c:387 — @param {CInt} q @returns {CPtr} */
+/** C ref: cmd.c:387 — @param {CInt} q @returns {CPtr<struct _cmd_queue>} */
 export function cmdq_copy(q) {
     let tmp = null;
     let cq = cptr.ldPtro(gc, q, 8);
@@ -1041,7 +1041,7 @@ export function cmdq_copy(q) {
     return tmp;
 }
 
-/** C ref: cmd.c:410 @returns {CPtr} */
+/** C ref: cmd.c:410 @returns {CPtr<struct _cmd_queue>} */
 export function cmdq_pop() {
     let q = (cptr.ldI32(gi)) ? NHC.CQ_REPEAT : NHC.CQ_CANNED;
     let tmp = cptr.ldPtro(gc, q, 8);
@@ -1052,7 +1052,7 @@ export function cmdq_pop() {
     return tmp;
 }
 
-/** C ref: cmd.c:424 — @param {CInt} q @returns {CPtr} */
+/** C ref: cmd.c:424 — @param {CInt} q @returns {CPtr<struct _cmd_queue>} */
 export function cmdq_peek(q) {
     return cptr.ldPtro(gc, q, 8);
 }
@@ -1083,7 +1083,7 @@ export function extcmd_initiator() {
     return cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_extcmd_char);
 }
 
-/** C ref: cmd.c:463 — @param {CPtr} extcmd @returns {CInt} */
+/** C ref: cmd.c:463 — @param {CPtr<struct ext_func_tab>} extcmd @returns {CInt} */
 function can_do_extcmd(extcmd) {
     let ecflags = cptr.ldI32o(extcmd, $ext_func_tab_flags) | 0;
     if (cptr.ldPtro(gl, $instance_globals_l_luacore) && cptr.ldI32o(nhcb_counts, NHC.NHCB_CMD_BEFORE, 4)) {
@@ -1133,7 +1133,7 @@ export function doextcmd() {
 
 const __static_doc_extcmd_flagstr_Abuf = new Uint8Array(10); /** C ref: cmd.c:528 — char[10] (function-static) */
 
-/** C ref: cmd.c:524 — @param {CInt} menuwin @param {CPtr} efp @returns {CPtr} */
+/** C ref: cmd.c:524 — @param {CInt} menuwin @param {CPtr<struct ext_func_tab>} efp @returns {CPtr<char>} */
 function doc_extcmd_flagstr(menuwin, efp) {
     if (!efp) {
         let qbuf = new Uint8Array(128);
@@ -1590,7 +1590,7 @@ cptr.stPtro(levltyp, 288, __sl86);
 cptr.stPtro(levltyp, 296, __sl87);
 cptr.stPtro(levltyp, 304, __sl0);
 
-/** C ref: cmd.c:1089 — @param {CInt} typ @returns {CPtr} */
+/** C ref: cmd.c:1089 — @param {CInt} typ @returns {CPtr<char>} */
 export function levltyp_to_name(typ) {
     if (typ >= 0 && typ < NHC.MAX_TYPE)
         return cptr.ldPtro(levltyp, typ, 8);
@@ -1658,7 +1658,7 @@ function doterrain() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: cmd.c:1195 — @param {CPtr} sel @returns {CInt} */
+/** C ref: cmd.c:1195 — @param {CPtr<struct selectionvar>} sel @returns {CInt} */
 function u_have_seen_whole_selection(sel) {
     let x;
     let y;
@@ -1671,7 +1671,7 @@ function u_have_seen_whole_selection(sel) {
     return 1;
 }
 
-/** C ref: cmd.c:1213 — @param {CPtr} sel @returns {CInt} */
+/** C ref: cmd.c:1213 — @param {CPtr<struct selectionvar>} sel @returns {CInt} */
 function u_have_seen_bounds_selection(sel) {
     let x;
     let y;
@@ -1696,7 +1696,7 @@ function u_have_seen_bounds_selection(sel) {
     return 1;
 }
 
-/** C ref: cmd.c:1246 — @param {CPtr} sel @returns {CInt} */
+/** C ref: cmd.c:1246 — @param {CPtr<struct selectionvar>} sel @returns {CInt} */
 function u_can_see_whole_selection(sel) {
     let x;
     let y;
@@ -3099,14 +3099,14 @@ cptr.st1o(misc_keys, 64, 0);
 /** C ref: cmd.c:2097 — int */
 let extcmdlist_length = (171 - 1) | 0;
 
-/** C ref: cmd.c:2101 — @param {CInt} i @returns {CPtr} */
+/** C ref: cmd.c:2101 — @param {CInt} i @returns {CPtr<struct ext_func_tab>} */
 export function extcmds_getentry(i) {
     if (i < 0 || i > extcmdlist_length)
         return null;
     return cptr.add(extcmdlist, i, 48);
 }
 
-/** C ref: cmd.c:2110 — @param {CUInt} key @returns {CPtr} */
+/** C ref: cmd.c:2110 — @param {CUInt} key @returns {CPtr<struct Cmd_bind>} */
 function cmdbind_get(key) {
     let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     if (!key)
@@ -3119,7 +3119,7 @@ function cmdbind_get(key) {
     return bind;
 }
 
-/** C ref: cmd.c:2126 — @param {CUInt} key @param {CPtr} extcmd @param {CInt} user */
+/** C ref: cmd.c:2126 — @param {CUInt} key @param {CPtr<struct ext_func_tab>} extcmd @param {CInt} user */
 function cmdbind_add(key, extcmd, user) {
     let bind = cmdbind_get(key);
     if (!key)
@@ -3209,7 +3209,7 @@ export function count_bind_keys() {
     return nbinds;
 }
 
-/** C ref: cmd.c:2235 — @param {CPtr} sbuf */
+/** C ref: cmd.c:2235 — @param {CPtr<strbuf_t>} sbuf */
 export function get_changed_key_binds(sbuf) {
     let win = -1;
     let i;
@@ -3436,7 +3436,7 @@ export function handler_change_autocompletions() {
 const __static_extcmds_match_retmatchlist = cptr.alloc(171 * 4);
 cptr.stI32o(__static_extcmds_match_retmatchlist, 0, 0); /** C ref: cmd.c:2525 — int[171] (function-static) */
 
-/** C ref: cmd.c:2523 — @param {CPtr} findstr @param {CInt} ecmflags @param {CPtr} matchlist @returns {CInt} */
+/** C ref: cmd.c:2523 — @param {CPtr<char>} findstr @param {CInt} ecmflags @param {CPtr<int *>} matchlist @returns {CInt} */
 export function extcmds_match(findstr, ecmflags, matchlist) {
     let i;
     let mi = 0;
@@ -3472,7 +3472,7 @@ export function extcmds_match(findstr, ecmflags, matchlist) {
 
 const __static_key2extcmddesc_key2cmdbuf = new Uint8Array(128); /** C ref: cmd.c:2563 — char[128] (function-static) */
 
-/** C ref: cmd.c:2561 — @param {CUInt} key @returns {CPtr} */
+/** C ref: cmd.c:2561 — @param {CUInt} key @returns {CPtr<char>} */
 export function key2extcmddesc(key) {
     let txt;
     let k;
@@ -3515,7 +3515,7 @@ export function key2extcmddesc(key) {
     return null;
 }
 
-/** C ref: cmd.c:2624 — @param {CInt} btn @param {CPtr} command @returns {CInt} */
+/** C ref: cmd.c:2624 — @param {CInt} btn @param {CPtr<char>} command @returns {CInt} */
 export function bind_mousebtn(btn, command) {
     let extcmd;
     if (btn < 1 || btn > NHM.NUM_MOUSE_BUTTONS) {
@@ -3538,7 +3538,7 @@ export function bind_mousebtn(btn, command) {
     return 0;
 }
 
-/** C ref: cmd.c:2662 — @param {CUInt} key @param {CPtr} command @param {CInt} user @returns {CInt} */
+/** C ref: cmd.c:2662 — @param {CUInt} key @param {CPtr<char>} command @param {CInt} user @returns {CInt} */
 export function bind_key(key, command, user) {
     let extcmd;
     let len;
@@ -3624,7 +3624,7 @@ function commands_init() {
     void bind_key(206, __sl200, 0);
 }
 
-/** C ref: cmd.c:2785 — @param {CPtr} extcmd @param {CPtr} skip_keys_used @returns {CInt} */
+/** C ref: cmd.c:2785 — @param {CPtr<struct ext_func_tab>} extcmd @param {CPtr<boolean>} skip_keys_used @returns {CInt} */
 function keylist_func_has_key(extcmd, skip_keys_used) {
     let i;
     let bind;
@@ -3637,7 +3637,7 @@ function keylist_func_has_key(extcmd, skip_keys_used) {
     return 0;
 }
 
-/** C ref: cmd.c:2802 — @param {CInt} datawin @param {CInt} docount @param {CInt} incl_flags @param {CInt} excl_flags @param {CPtr} keys_used @returns {CInt} */
+/** C ref: cmd.c:2802 — @param {CInt} datawin @param {CInt} docount @param {CInt} incl_flags @param {CInt} excl_flags @param {CPtr<boolean>} keys_used @returns {CInt} */
 function keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
     let extcmd;
     let i;
@@ -3791,7 +3791,7 @@ export function dokeylist() {
     destroy_nhwindow()(datawin);
 }
 
-/** C ref: cmd.c:3016 — @param {CPtr} fn @returns {CPtr} */
+/** C ref: cmd.c:3016 — @param {CPtr} fn @returns {CPtr<struct ext_func_tab>} */
 export function ext_func_tab_from_func(fn) {
     let extcmd;
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
@@ -3831,7 +3831,7 @@ export function cmd_from_func(fn) {
 
 const __static_cmd_from_ecname_cmdnamebuf = new Uint8Array(128); /** C ref: cmd.c:3073 — char[128] (function-static) */
 
-/** C ref: cmd.c:3071 — @param {CPtr} ecname @returns {CPtr} */
+/** C ref: cmd.c:3071 — @param {CPtr<char>} ecname @returns {CPtr<char>} */
 export function cmd_from_ecname(ecname) {
     let extcmd;
     for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
@@ -3847,7 +3847,7 @@ export function cmd_from_ecname(ecname) {
     return cptr.decay(__static_cmd_from_ecname_cmdnamebuf);
 }
 
-/** C ref: cmd.c:3092 — @param {CPtr} fn @returns {CPtr} */
+/** C ref: cmd.c:3092 — @param {CPtr} fn @returns {CPtr<char>} */
 export function ecname_from_fn(fn) {
     let extcmd;
     let cmdptr = null;
@@ -3859,7 +3859,7 @@ export function ecname_from_fn(fn) {
     return null;
 }
 
-/** C ref: cmd.c:3106 — @param {CPtr} fn @param {CPtr} outbuf @param {CInt} fullname @returns {CPtr} */
+/** C ref: cmd.c:3106 — @param {CPtr} fn @param {CPtr<char>} outbuf @param {CInt} fullname @returns {CPtr<char>} */
 export function cmdname_from_func(fn, outbuf, fullname) {
     let extcmd;
     let cmdptr = null;
@@ -3997,7 +3997,7 @@ cptr.stI32o(spkeys_binds, 448, NHC.NHKF_GETPOS_MENU);
 cptr.st1o(spkeys_binds, 452, 33);
 cptr.stPtro(spkeys_binds, 456, __sl540);
 
-/** C ref: cmd.c:3194 — @param {CUInt} key @param {CPtr} command @returns {CInt} */
+/** C ref: cmd.c:3194 — @param {CUInt} key @param {CPtr<char>} command @returns {CInt} */
 export function bind_specialkey(key, command) {
     let i;
     for (i = 0; i < 29; i++) {
@@ -4009,7 +4009,7 @@ export function bind_specialkey(key, command) {
     return 0;
 }
 
-/** C ref: cmd.c:3208 — @param {CInt} nhkf @returns {CPtr} */
+/** C ref: cmd.c:3208 — @param {CInt} nhkf @returns {CPtr<char>} */
 function spkey_name(nhkf) {
     let name = null;
     let i;
@@ -4022,7 +4022,7 @@ function spkey_name(nhkf) {
     return name;
 }
 
-/** C ref: cmd.c:3225 — @param {CUInt} c @param {CPtr} txt @returns {CPtr} */
+/** C ref: cmd.c:3225 — @param {CUInt} c @param {CPtr<char>} txt @returns {CPtr<char>} */
 export function key2txt(c, txt) {
     if (c == 32)
         void cptr.sprintf(txt, __sl542);
@@ -4037,7 +4037,7 @@ export function key2txt(c, txt) {
     return txt;
 }
 
-/** C ref: cmd.c:3244 — @param {CPtr} autocomplete @param {CInt} condition */
+/** C ref: cmd.c:3244 — @param {CPtr<char>} autocomplete @param {CInt} condition */
 export function parseautocomplete(autocomplete, condition) {
     let efp;
     let autoc;
@@ -4072,7 +4072,7 @@ export function parseautocomplete(autocomplete, condition) {
     wait_synch()();
 }
 
-/** C ref: cmd.c:3296 — @param {CPtr} sbuf */
+/** C ref: cmd.c:3296 — @param {CPtr<strbuf_t>} sbuf */
 export function all_options_autocomplete(sbuf) {
     let efp;
     let buf = new Uint8Array(256);
@@ -4242,7 +4242,7 @@ export function update_rest_on_space() {
     cmdbind_add(32, cptr.ld1so(flags, $flag_rest_on_space) ? __static_update_rest_on_space_restonspace : __static_update_rest_on_space_unrestonspace, 0);
 }
 
-/** C ref: cmd.c:3509 — @param {CPtr} ec @returns {CInt} */
+/** C ref: cmd.c:3509 — @param {CPtr<struct ext_func_tab>} ec @returns {CInt} */
 function accept_menu_prefix(ec) {
     return schar((ec && (((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.CMD_M_PREFIX) >>> 0) != 0) ? 1 : 0));
 }
@@ -4304,7 +4304,7 @@ export function randomkey() {
     return c;
 }
 
-/** C ref: cmd.c:3581 — @param {CPtr} buf @param {CInt} sz */
+/** C ref: cmd.c:3581 — @param {CPtr<char>} buf @param {CInt} sz */
 export function random_response(buf, sz) {
     let c;
     let count = 0;
@@ -4570,7 +4570,7 @@ export function xytodir(x, y) {
     return NHC.DIR_ERR;
 }
 
-/** C ref: cmd.c:3859 — @param {CPtr} cc @param {CInt} dd */
+/** C ref: cmd.c:3859 — @param {CPtr<coord>} cc @param {CInt} dd */
 export function dirtocoord(cc, dd) {
     if (dd > NHC.DIR_ERR && dd < NHC.N_DIRS_Z) {
         cptr.stI16(cc, i16(cptr.ld1so(cptr.decay(xdir), dd, 1)));
@@ -4618,7 +4618,7 @@ export function redraw_cmd(c) {
     return schar((bind && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doredraw ? 1 : 0));
 }
 
-/** C ref: cmd.c:3931 — @param {CPtr} prompt @param {CPtr} emsg @param {CInt} x @param {CInt} y @param {CPtr} cc @returns {CInt} */
+/** C ref: cmd.c:3931 — @param {CPtr<char>} prompt @param {CPtr<char>} emsg @param {CInt} x @param {CInt} y @param {CPtr<coord>} cc @returns {CInt} */
 export function get_adjacent_loc(prompt, emsg, x, y, cc) {
     let new_x;
     let new_y;
@@ -4639,7 +4639,7 @@ export function get_adjacent_loc(prompt, emsg, x, y, cc) {
     return 1;
 }
 
-/** C ref: cmd.c:3958 — @param {CPtr} s @returns {CInt} */
+/** C ref: cmd.c:3958 — @param {CPtr<char>} s @returns {CInt} */
 export function getdir(s) {
     let dirsym, is_mov, cmdq, qbuf, cc, pos, mod, did_help, help_requested;
     let __pc = 0;
@@ -4845,7 +4845,7 @@ function show_direction_keys(win, centerchar, nodiag) {
 
 const __static_help_dir_wiz_only_list = cptr.bytes("EFGIVW"); /** C ref: cmd.c:4176 — char[7] (function-static) */
 
-/** C ref: cmd.c:4171 — @param {CInt} sym @param {CUInt} spkey @param {CPtr} msg @returns {CInt} */
+/** C ref: cmd.c:4171 — @param {CInt} sym @param {CUInt} spkey @param {CPtr<char>} msg @returns {CInt} */
 function help_dir(sym, spkey, msg) {
     let ctrl;
     let win;
@@ -4929,7 +4929,7 @@ cptr.stPtro(__static_directionname_dirnames, 56, __sl594);
 cptr.stPtro(__static_directionname_dirnames, 64, __sl142);
 cptr.stPtro(__static_directionname_dirnames, 72, __sl315); /** C ref: cmd.c:4315 — char *[10] (function-static) */
 
-/** C ref: cmd.c:4313 — @param {CInt} dir @returns {CPtr} */
+/** C ref: cmd.c:4313 — @param {CInt} dir @returns {CPtr<char>} */
 export function directionname(dir) {
     if (dir < 0 || dir >= NHC.N_DIRS_Z)
         return __sl586;
@@ -5015,7 +5015,7 @@ export const MCMD_CAST_SPELL = 34;
 export const MCMD_THROW_OBJ = 35;
 export const MCMD_TRAVEL = 36;
 
-/** C ref: cmd.c:4421 — @param {CInt} win @param {CInt} act @param {CPtr} txt */
+/** C ref: cmd.c:4421 — @param {CInt} win @param {CInt} act @param {CPtr<char>} txt */
 function mcmd_addmenu(win, act, txt) {
     let any = cptr.alloc(8);
     let clr = NHM.NO_COLOR;
@@ -5024,7 +5024,7 @@ function mcmd_addmenu(win, act, txt) {
     add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, txt, NHM.MENU_ITEMFLAGS_NONE);
 }
 
-/** C ref: cmd.c:4435 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CPtr} act @returns {CInt} */
+/** C ref: cmd.c:4435 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CPtr<int>} act @returns {CInt} */
 function there_cmd_menu_self(win, x, y, act) {
     let K = 0;
     let buf = new Uint8Array(256);
@@ -5086,7 +5086,7 @@ function there_cmd_menu_self(win, x, y, act) {
     return K;
 }
 
-/** C ref: cmd.c:4524 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr} act @returns {CInt} */
+/** C ref: cmd.c:4524 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr<int>} act @returns {CInt} */
 function there_cmd_menu_next2u(win, x, y, mod, act) {
     let K = 0;
     let buf = new Uint8Array(256);
@@ -5167,7 +5167,7 @@ function there_cmd_menu_far(win, x, y, mod) {
     return K;
 }
 
-/** C ref: cmd.c:4639 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr} act @returns {CInt} */
+/** C ref: cmd.c:4639 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr<int>} act @returns {CInt} */
 function there_cmd_menu_common(win, x, y, mod, act) {
     let K = 0;
     if (mod == NHM.CLICK_1 || mod == NHM.CLICK_2) {
@@ -5488,7 +5488,7 @@ function domouseaction() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: cmd.c:5010 — @param {CPtr} allowchars @param {CInt} inkey @param {CLongLong} maxcount @param {CPtr} count @param {CUInt} gc_flags @returns {CInt} */
+/** C ref: cmd.c:5010 — @param {CPtr<char>} allowchars @param {CInt} inkey @param {CLongLong} maxcount @param {CPtr<cmdcount_nht>} count @param {CUInt} gc_flags @returns {CInt} */
 export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
     let qbuf = new Uint8Array(128);
     let key;
@@ -5609,7 +5609,7 @@ export function end_of_input() {
     return;
 }
 
-/** C ref: cmd.c:5213 — @param {CPtr} x @param {CPtr} y @param {CPtr} mod @returns {CInt} */
+/** C ref: cmd.c:5213 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
 function readchar_core(x, y, mod) {
     let sym;
     __lbl_readchar_done: {
@@ -5658,7 +5658,7 @@ export function readchar() {
     return ch;
 }
 
-/** C ref: cmd.c:5288 — @param {CPtr} x @param {CPtr} y @param {CPtr} mod @returns {CInt} */
+/** C ref: cmd.c:5288 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
 export function readchar_poskey(x, y, mod) {
     let ch;
     cptr.stI32o(program_state, $sinfo_input_state, NHC.getposInp);
@@ -5730,12 +5730,12 @@ function doclicklook() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: cmd.c:5394 — @param {CPtr} resp @returns {CInt} */
+/** C ref: cmd.c:5394 — @param {CPtr<char>} resp @returns {CInt} */
 function yn_menuable_resp(resp) {
     return schar((cptr.ld1so(iflags, $instance_flags_query_menu) && cptr.ld1so(iflags, $instance_flags_window_inited) && (cptr.eq(resp, cptr.decay(ynchars)) || cptr.eq(resp, cptr.decay(ynqchars)) || cptr.eq(resp, cptr.decay(ynaqchars)) || cptr.eq(resp, cptr.decay(rightleftchars)) || cptr.eq(resp, cptr.decay(hidespinchars))) ? 1 : 0));
 }
 
-/** C ref: cmd.c:5402 — @param {CInt} win @param {CInt} key @param {CPtr} text @param {CInt} def */
+/** C ref: cmd.c:5402 — @param {CInt} win @param {CInt} key @param {CPtr<char>} text @param {CInt} def */
 function yn_func_menu_opt(win, key, text, def) {
     let any = cptr.alloc(8);
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -5743,7 +5743,7 @@ function yn_func_menu_opt(win, key, text, def) {
     add_menu(win, nul_glyphinfo.v, any, key, 0, NHM.ATR_NONE, NHM.NO_COLOR, text, (def == key) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE);
 }
 
-/** C ref: cmd.c:5419 — @param {CPtr} query @param {CPtr} resp @param {CInt} def @param {CPtr} res @returns {CInt} */
+/** C ref: cmd.c:5419 — @param {CPtr<char>} query @param {CPtr<char>} resp @param {CInt} def @param {CPtr<char>} res @returns {CInt} */
 function yn_function_menu(query, resp, def, res) {
     if (yn_menuable_resp(resp)) {
         let win = create_nhwindow()(NHM.NHW_MENU);
@@ -5783,7 +5783,7 @@ function yn_function_menu(query, resp, def, res) {
     return 0;
 }
 
-/** C ref: cmd.c:5471 — @param {CPtr} query @param {CPtr} resp @param {CInt} def @param {CInt} addcmdq @returns {CInt} */
+/** C ref: cmd.c:5471 — @param {CPtr<char>} query @param {CPtr<char>} resp @param {CInt} def @param {CInt} addcmdq @returns {CInt} */
 export function yn_function(query, resp, def, addcmdq) {
     let res = cptr.box(27);
     let qbuf = new Uint8Array(128);
@@ -5852,7 +5852,7 @@ export function yn_function(query, resp, def, addcmdq) {
     return res.v;
 }
 
-/** C ref: cmd.c:5588 — @param {CInt} be_paranoid @param {CPtr} prompt @param {CInt} accept_q @returns {CInt} */
+/** C ref: cmd.c:5588 — @param {CInt} be_paranoid @param {CPtr<char>} prompt @param {CInt} accept_q @returns {CInt} */
 export function paranoid_ynq(be_paranoid, prompt, accept_q) {
     let c = 110;
     if (be_paranoid) {
@@ -5893,7 +5893,7 @@ export function paranoid_ynq(be_paranoid, prompt, accept_q) {
     return c;
 }
 
-/** C ref: cmd.c:5655 — @param {CInt} be_paranoid @param {CPtr} prompt @returns {CInt} */
+/** C ref: cmd.c:5655 — @param {CInt} be_paranoid @param {CPtr<char>} prompt @returns {CInt} */
 export function paranoid_query(be_paranoid, prompt) {
     return schar((paranoid_ynq(be_paranoid, prompt, 0) == 121));
 }

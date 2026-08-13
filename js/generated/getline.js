@@ -45,13 +45,13 @@ let suppress_history = 0;
 
 /** C ref: getline.c:21 — typedef getlin_hook_proc (type alias only, no runtime output) */
 
-/** C ref: getline.c:36 — @param {CPtr} query @param {CPtr} bufp */
+/** C ref: getline.c:36 — @param {CPtr<char>} query @param {CPtr<char>} bufp */
 export function tty_getlin(query, bufp) {
     suppress_history = 0;
     hooked_tty_getlin(query, bufp, null);
 }
 
-/** C ref: getline.c:43 — @param {CPtr} query @param {CPtr} bufp @param {CPtr} hook */
+/** C ref: getline.c:43 — @param {CPtr<char>} query @param {CPtr<char>} bufp @param {CPtr} hook */
 function hooked_tty_getlin(query, bufp, hook) {
     let obufp = bufp;
     let c;
@@ -171,7 +171,7 @@ function hooked_tty_getlin(query, bufp, hook) {
     }
 }
 
-/** C ref: getline.c:230 — @param {CPtr} s */
+/** C ref: getline.c:230 — @param {CPtr<char>} s */
 export function xwaitforspace(s) {
     let c;
     let x = ttyDisplay ? cptr.ld1so(ttyDisplay, $DisplayDesc_dismiss_more) : 10;
@@ -195,7 +195,7 @@ export function xwaitforspace(s) {
     }
 }
 
-/** C ref: getline.c:272 — @param {CPtr} base @returns {CInt} */
+/** C ref: getline.c:272 — @param {CPtr<char>} base @returns {CInt} */
 function ext_cmd_getlin_hook(base) {
     let ecmatches = cptr.box(0);
     let nmatches = extcmds_match(base, NHM.ECM_NOFLAGS, ecmatches);

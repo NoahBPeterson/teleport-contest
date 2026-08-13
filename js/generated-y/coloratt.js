@@ -1406,7 +1406,7 @@ cptr.stI64o(colortable, 7392 + $nethack_color_r, 255n);
 cptr.stI64o(colortable, 7392 + $nethack_color_g, 255n);
 cptr.stI64o(colortable, 7392 + $nethack_color_b, 255n);
 
-/** C ref: coloratt.c:237 — @param {CPtr} cte @returns {*} */
+/** C ref: coloratt.c:237 — @param {CPtr<struct nethack_color>} cte @returns {*} */
 export function colortable_to_int32(cte) {
     let clr = 16777224;
     if (cptr.ldI32(cte) == NHC.rgb_color)
@@ -1418,13 +1418,13 @@ export function colortable_to_int32(cte) {
 
 const __static_color_attr_to_str_buf = new Uint8Array(256); /** C ref: coloratt.c:251 — char[256] (function-static) */
 
-/** C ref: coloratt.c:249 — @param {CPtr} ca @returns {CPtr} */
+/** C ref: coloratt.c:249 — @param {CPtr<color_attr>} ca @returns {CPtr<char>} */
 export function color_attr_to_str(ca) {
     void cptr.sprintf(cptr.decay(__static_color_attr_to_str_buf), __sl167, clr2colorname(cptr.ldI32(ca)), attr2attrname(cptr.ldI32o(ca, $color_attr_attr)));
     return cptr.decay(__static_color_attr_to_str_buf);
 }
 
-/** C ref: coloratt.c:261 — @param {CPtr} ca @param {CPtr} str @returns {CInt} */
+/** C ref: coloratt.c:261 — @param {CPtr<color_attr>} ca @param {CPtr<char>} str @returns {CInt} */
 export function* color_attr_parse_str(ca, str) {
     let buf = new Uint8Array(256);
     let amp = null;
@@ -1461,7 +1461,7 @@ export function* color_attr_parse_str(ca, str) {
     return 1;
 }
 
-/** C ref: coloratt.c:304 — @param {CPtr} ca @param {CPtr} prompt @returns {CInt} */
+/** C ref: coloratt.c:304 — @param {CPtr<color_attr>} ca @param {CPtr<char>} prompt @returns {CInt} */
 export function* query_color_attr(ca, prompt) {
     let c;
     let a;
@@ -1476,7 +1476,7 @@ export function* query_color_attr(ca, prompt) {
     return 1;
 }
 
-/** C ref: coloratt.c:320 — @param {CInt} attr @returns {CPtr} */
+/** C ref: coloratt.c:320 — @param {CInt} attr @returns {CPtr<char>} */
 export function attr2attrname(attr) {
     let i;
     for (i = 0; i < 11; i++)
@@ -1485,7 +1485,7 @@ export function attr2attrname(attr) {
     return null;
 }
 
-/** C ref: coloratt.c:338 — @param {CInt} clr @returns {CPtr} */
+/** C ref: coloratt.c:338 — @param {CInt} clr @returns {CPtr<char>} */
 export function clr2colorname(clr) {
     let i;
     for (i = 0; i < 27; i++)
@@ -1494,7 +1494,7 @@ export function clr2colorname(clr) {
     return null;
 }
 
-/** C ref: coloratt.c:349 — @param {CPtr} str @param {CInt} suppress_msg @returns {CInt} */
+/** C ref: coloratt.c:349 — @param {CPtr<char>} str @param {CInt} suppress_msg @returns {CInt} */
 export function* match_str2clr(str, suppress_msg) {
     let i;
     let c = NHM.CLR_MAX;
@@ -1513,7 +1513,7 @@ export function* match_str2clr(str, suppress_msg) {
     return c;
 }
 
-/** C ref: coloratt.c:374 — @param {CPtr} str @param {CInt} complain @returns {CInt} */
+/** C ref: coloratt.c:374 — @param {CPtr<char>} str @param {CInt} complain @returns {CInt} */
 export function* match_str2attr(str, complain) {
     let i;
     let a = -1;
@@ -1527,7 +1527,7 @@ export function* match_str2attr(str, complain) {
     return a;
 }
 
-/** C ref: coloratt.c:396 — @param {CPtr} prompt @param {CInt} dflt_attr @returns {CInt} */
+/** C ref: coloratt.c:396 — @param {CPtr<char>} prompt @param {CInt} dflt_attr @returns {CInt} */
 export function* query_attr(prompt, dflt_attr) {
     let tmpwin;
     let any = cptr.alloc(8);
@@ -1594,7 +1594,7 @@ export function* query_attr(prompt, dflt_attr) {
     return -1;
 }
 
-/** C ref: coloratt.c:475 — @param {CPtr} prompt @param {CInt} dflt_color @returns {CInt} */
+/** C ref: coloratt.c:475 — @param {CPtr<char>} prompt @param {CInt} dflt_color @returns {CInt} */
 export function* query_color(prompt, dflt_color) {
     let tmpwin;
     let any = cptr.alloc(8);
@@ -1661,7 +1661,7 @@ export function* basic_menu_colors(load_colors) {
 
 const __static_add_menu_coloring_parsed_re_error = cptr.bytes("Menucolor regex error"); /** C ref: coloratt.c:587 — char[22] (function-static) */
 
-/** C ref: coloratt.c:585 — @param {CPtr} str @param {CInt} c @param {CInt} a @returns {CInt} */
+/** C ref: coloratt.c:585 — @param {CPtr<char>} str @param {CInt} c @param {CInt} a @returns {CInt} */
 export function* add_menu_coloring_parsed(str, c, a) {
     let tmp;
     if (!str)
@@ -1685,7 +1685,7 @@ export function* add_menu_coloring_parsed(str, c, a) {
     return 1;
 }
 
-/** C ref: coloratt.c:617 — @param {CPtr} tmpstr @returns {CInt} */
+/** C ref: coloratt.c:617 — @param {CPtr<char>} tmpstr @returns {CInt} */
 export function* add_menu_coloring(tmpstr) {
     let c = NHM.NO_COLOR;
     let a = NHM.ATR_NONE;
@@ -1773,7 +1773,7 @@ export function count_menucolors() {
     return count;
 }
 
-/** C ref: coloratt.c:723 — @param {CPtr} buf @returns {*} */
+/** C ref: coloratt.c:723 — @param {CPtr<char>} buf @returns {*} */
 export function* check_enhanced_colors(buf) {
     let xtra = cptr.box(0);
     let r = cptr.box(0);
@@ -1807,7 +1807,7 @@ export function* check_enhanced_colors(buf) {
 
 const __static_wc_color_name_hexcolor = new Uint8Array(8); /** C ref: coloratt.c:766 — char[8] (function-static) */
 
-/** C ref: coloratt.c:764 — @param {CInt} colorindx @returns {CPtr} */
+/** C ref: coloratt.c:764 — @param {CInt} colorindx @returns {CPtr<char>} */
 export function wc_color_name(colorindx) {
     let result = __sl180;
     if (colorindx >= 0) {
@@ -1832,7 +1832,7 @@ export function wc_color_name(colorindx) {
     return result;
 }
 
-/** C ref: coloratt.c:801 — @param {CPtr} buf @returns {CInt} */
+/** C ref: coloratt.c:801 — @param {CPtr<char>} buf @returns {CInt} */
 export function onlyhexdigits(buf) {
     let dp = buf;
     for (dp = buf; cptr.ld1s(dp); dp = cptr.add(dp, 1)) {
@@ -1842,7 +1842,7 @@ export function onlyhexdigits(buf) {
     return 1;
 }
 
-/** C ref: coloratt.c:813 — @param {CPtr} rgbstr @returns {*} */
+/** C ref: coloratt.c:813 — @param {CPtr<char>} rgbstr @returns {*} */
 export function* rgbstr_to_int32(rgbstr) {
     let r;
     let g;
@@ -1893,7 +1893,7 @@ export function* rgbstr_to_int32(rgbstr) {
     return -1;
 }
 
-/** C ref: coloratt.c:868 — @param {CPtr} gmap @param {CUInt} nhcolor @returns {CInt} */
+/** C ref: coloratt.c:868 — @param {CPtr<glyph_map>} gmap @param {CUInt} nhcolor @returns {CInt} */
 export function set_map_customcolor(gmap, nhcolor) {
     let tmpgm = gmap;
     let closecolor = cptr.box(0);
@@ -2408,7 +2408,7 @@ export function color_distance(rgb1, rgb2) {
     return ((((((Math.imul(Math.imul(((512 + rmean) | 0), r), r)) >> 8) + Math.imul(Math.imul(4, g), g)) | 0) + ((Math.imul(Math.imul(((767 - rmean) | 0), b), b)) >> 8)) | 0);
 }
 
-/** C ref: coloratt.c:997 — @param {CUInt} lcolor @param {CPtr} closecolor @param {CPtr} clridx @returns {CInt} */
+/** C ref: coloratt.c:997 — @param {CUInt} lcolor @param {CPtr<uint32>} closecolor @param {CPtr<uint16>} clridx @returns {CInt} */
 export function closest_color(lcolor, closecolor, clridx) {
     let i;
     let color_index = -1;

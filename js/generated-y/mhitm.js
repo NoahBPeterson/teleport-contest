@@ -215,7 +215,7 @@ const __sl112 = cptr.lit("%s seems lethargic.");
 /** C ref: mhitm.c:9 — char[48] */
 const brief_feeling = cptr.bytes("have a %s feeling for a moment, then it passes.");
 
-/** C ref: mhitm.c:27 — @param {CPtr} magr @param {CPtr} mattk */
+/** C ref: mhitm.c:27 — @param {CPtr<struct monst>} magr @param {CPtr<struct attack>} mattk */
 function* noises(magr, mattk) {
     let farq = schar((dist2((cptr.ldI16o((magr), $monst_mx)), (cptr.ldI16o((magr), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 15));
     if (!Deaf() && (farq != cptr.ld1so(gf, $instance_globals_f_far_noise) || BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(gn, $instance_globals_n_noisetime)) > 10n)) {
@@ -225,7 +225,7 @@ function* noises(magr, mattk) {
     }
 }
 
-/** C ref: mhitm.c:41 — @param {CPtr} magr @param {CPtr} mdef */
+/** C ref: mhitm.c:41 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef */
 function* pre_mm_attack(magr, mdef) {
     let showit = 0;
     if ((cptr.ld1uo((mdef), $monst_m_ap_type) & NHM.M_AP_TYPMASK)) {
@@ -254,7 +254,7 @@ function* pre_mm_attack(magr, mdef) {
     }
 }
 
-/** C ref: mhitm.c:76 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk */
+/** C ref: mhitm.c:76 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk */
 function* missmm(magr, mdef, mattk) {
     (yield* pre_mm_attack(magr, mdef));
     if (cptr.ld1so(gv, $instance_globals_v_vis)) {
@@ -264,7 +264,7 @@ function* missmm(magr, mdef, mattk) {
     }
 }
 
-/** C ref: mhitm.c:106 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mhitm.c:106 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function* fightm(mtmp) {
     let mon;
     let nmon;
@@ -313,7 +313,7 @@ export function* fightm(mtmp) {
     return 0;
 }
 
-/** C ref: mhitm.c:179 — @param {CPtr} magr @param {CPtr} mdef @param {CInt} quietly @returns {CInt} */
+/** C ref: mhitm.c:179 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} quietly @returns {CInt} */
 export function* mdisplacem(magr, mdef, quietly) {
     let pa;
     let pd;
@@ -379,7 +379,7 @@ export function* mdisplacem(magr, mdef, quietly) {
     return NHM.M_ATTK_HIT;
 }
 
-/** C ref: mhitm.c:293 — @param {CPtr} magr @param {CPtr} mdef @returns {CInt} */
+/** C ref: mhitm.c:293 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @returns {CInt} */
 export function* mattackm(magr, mdef) {
     let i;
     let tmp;
@@ -588,7 +588,7 @@ export function* mattackm(magr, mdef) {
     return (struck ? NHM.M_ATTK_HIT : NHM.M_ATTK_MISS);
 }
 
-/** C ref: mhitm.c:597 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitm.c:597 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function* failed_grab(magr, mdef, mattk) {
     if ((((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 1048576n) != 0n) || cptr.ld1so(gn, $instance_globals_n_notonhead)) && (cptr.ld1u(mattk) == NHM.AT_HUGS || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_WRAP || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_STCK || cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_DGST)) {
         if ((cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(mdef)) || cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)) || cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) {
@@ -609,7 +609,7 @@ export function* failed_grab(magr, mdef, mattk) {
     return 0;
 }
 
-/** C ref: mhitm.c:644 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk @param {CPtr} mwep @param {CInt} dieroll @returns {CInt} */
+/** C ref: mhitm.c:644 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @param {CPtr<struct obj>} mwep @param {CInt} dieroll @returns {CInt} */
 function* hitmm(magr, mdef, mattk, mwep, dieroll) {
     let compat;
     let weaponhit = schar((cptr.ld1u(mattk) == NHM.AT_WEAP || (cptr.ld1u(mattk) == NHM.AT_CLAW && mwep) ? 1 : 0));
@@ -678,7 +678,7 @@ function* hitmm(magr, mdef, mattk, mwep, dieroll) {
     return (yield* mdamagem(magr, mdef, mattk, mwep, dieroll));
 }
 
-/** C ref: mhitm.c:736 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitm.c:736 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 function* gazemm(magr, mdef, mattk) {
     let buf = new Uint8Array(256);
     let archon = schar((cptr.eq(cptr.ldPtro(magr, $monst_data), cptr.add(mons, NHC.PM_ARCHON, 96)) && cptr.ld1uo(mattk, $attack_adtyp) == NHM.AD_BLND ? 1 : 0));
@@ -725,7 +725,7 @@ function* gazemm(magr, mdef, mattk) {
     return (yield* mdamagem(magr, mdef, mattk, null, 0));
 }
 
-/** C ref: mhitm.c:807 — @param {CPtr} magr @param {CPtr} mdef @returns {CInt} */
+/** C ref: mhitm.c:807 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @returns {CInt} */
 export function engulf_target(magr, mdef) {
     let lev;
     let ax;
@@ -751,7 +751,7 @@ export function engulf_target(magr, mdef) {
     return 1;
 }
 
-/** C ref: mhitm.c:849 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitm.c:849 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 function* gulpmm(magr, mdef, mattk) {
     let ax;
     let ay;
@@ -821,7 +821,7 @@ function* gulpmm(magr, mdef, mattk) {
     return status;
 }
 
-/** C ref: mhitm.c:970 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitm.c:970 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 function* explmm(magr, mdef, mattk) {
     let result;
     if ((cptr.ldI32o(magr, $monst_mcan) & 1))
@@ -850,7 +850,7 @@ function* explmm(magr, mdef, mattk) {
     return result;
 }
 
-/** C ref: mhitm.c:1016 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk @param {CPtr} mwep @param {CInt} dieroll @returns {CInt} */
+/** C ref: mhitm.c:1016 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @param {CPtr<struct obj>} mwep @param {CInt} dieroll @returns {CInt} */
 function* mdamagem(magr, mdef, mattk, mwep, dieroll) {
     let pa = cptr.ldPtro(magr, $monst_data);
     let pd = cptr.ldPtro(mdef, $monst_data);
@@ -926,7 +926,7 @@ function* mdamagem(magr, mdef, mattk, mwep, dieroll) {
 
 const __static_mon_poly_freaky = cptr.bytes(" undergoes a freakish metamorphosis"); /** C ref: mhitm.c:1124 — char[36] (function-static) */
 
-/** C ref: mhitm.c:1122 — @param {CPtr} magr @param {CPtr} mdef @param {CInt} dmg @returns {CInt} */
+/** C ref: mhitm.c:1122 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} dmg @returns {CInt} */
 export function* mon_poly(magr, mdef, dmg) {
     let oldform = cptr.ldPtro(mdef, $monst_data);
     if (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) {
@@ -993,7 +993,7 @@ export function* mon_poly(magr, mdef, dmg) {
     return dmg;
 }
 
-/** C ref: mhitm.c:1210 — @param {CPtr} mon @param {CInt} amt */
+/** C ref: mhitm.c:1210 — @param {CPtr<struct monst>} mon @param {CInt} amt */
 export function paralyze_monst(mon, amt) {
     if (amt > 127)
         amt = 127;
@@ -1003,7 +1003,7 @@ export function paralyze_monst(mon, amt) {
     cptr.stU64o(mon, $monst_mstrategy, cptr.ldU64o(mon, $monst_mstrategy) & 18446744073172680703n);
 }
 
-/** C ref: mhitm.c:1223 — @param {CPtr} mon @param {CInt} amt @param {CInt} how @returns {CInt} */
+/** C ref: mhitm.c:1223 — @param {CPtr<struct monst>} mon @param {CInt} amt @param {CInt} how @returns {CInt} */
 export function* sleep_monst(mon, amt, how) {
     if (how >= 0 && !(cptr.ldI32o(mon, $monst_msleeping) & 1) && !(cptr.ldI32o(mon, $monst_mfrozen) & 127) && cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_MIMIC && ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT))
         (yield* seemimic(mon));
@@ -1023,7 +1023,7 @@ export function* sleep_monst(mon, amt, how) {
     return 0;
 }
 
-/** C ref: mhitm.c:1250 — @param {CPtr} mon */
+/** C ref: mhitm.c:1250 — @param {CPtr<struct monst>} mon */
 export function* slept_monst(mon) {
     if (helpless(mon) && cptr.eq(mon, cptr.ldPtro(u, $you_ustuck)) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         (yield* pline_mon(mon, __sl91, (yield* s_suffix((yield* Monnam(mon))))));
@@ -1031,7 +1031,7 @@ export function* slept_monst(mon) {
     }
 }
 
-/** C ref: mhitm.c:1260 — @param {CPtr} mdef @param {CPtr} obj */
+/** C ref: mhitm.c:1260 — @param {CPtr<struct monst>} mdef @param {CPtr<struct obj>} obj */
 export function* rustm(mdef, obj) {
     let dmgtyp = -1;
     let chance = 1;
@@ -1049,7 +1049,7 @@ export function* rustm(mdef, obj) {
         void (yield* erode_obj(obj, null, dmgtyp, 5));
 }
 
-/** C ref: mhitm.c:1283 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} otemp */
+/** C ref: mhitm.c:1283 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct obj>} otemp */
 function* mswingsm(magr, mdef, otemp) {
     if (cptr.ld1so(flags, $flag_verbose) && !Blind() && mon_visible(magr)) {
         let bash = schar((is_pole(otemp) && !is_art(otemp, NHC.ART_SNICKERSNEE) && (dist2(cptr.ldI16o(magr, $monst_mx), cptr.ldI16o(magr, $monst_my), cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my)) <= 2) ? 1 : 0));
@@ -1057,7 +1057,7 @@ function* mswingsm(magr, mdef, otemp) {
     }
 }
 
-/** C ref: mhitm.c:1304 — @param {CPtr} magr @param {CPtr} mdef @param {CInt} mhitb @param {CInt} mdead @param {CPtr} mwep @returns {CInt} */
+/** C ref: mhitm.c:1304 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} mhitb @param {CInt} mdead @param {CPtr<struct obj>} mwep @returns {CInt} */
 function* passivemm(magr, mdef, mhitb, mdead, mwep) {
     let mddat = cptr.ldPtro(mdef, $monst_data);
     let madat = cptr.ldPtro(magr, $monst_data);
@@ -1195,7 +1195,7 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
     return (mdead | mhit);
 }
 
-/** C ref: mhitm.c:1461 — @param {CPtr} mon @param {CInt} givemsg */
+/** C ref: mhitm.c:1461 — @param {CPtr<struct monst>} mon @param {CInt} givemsg */
 export function* xdrainenergym(mon, givemsg) {
     if (cptr.ldI32o(mon, $monst_mspec_used) < 20 && (attacktype(cptr.ldPtro(mon, $monst_data), NHM.AT_MAGC) || attacktype(cptr.ldPtro(mon, $monst_data), NHM.AT_BREA))) {
         cptr.stI32o(mon, $monst_mspec_used, (cptr.ldI32o(mon, $monst_mspec_used) + (rng_log_enabled() ? (rng_log_set_caller(__sl8, 1466, __sl111), d(2, 2)) : d(2, 2))) | 0);

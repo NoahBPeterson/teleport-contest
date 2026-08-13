@@ -282,14 +282,14 @@ const __sl137 = cptr.lit("%s resists your magic!");
 const __sl138 = cptr.lit("are no longer inside %s!");
 const __sl139 = cptr.lit("u_teleport_mon");
 
-/** C ref: teleport.c:21 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: teleport.c:21 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function m_blocks_teleporting(mtmp) {
     if (is_dlord(cptr.ldPtro(mtmp, $monst_data)) || is_dprince(cptr.ldPtro(mtmp, $monst_data)))
         return 1;
     return 0;
 }
 
-/** C ref: teleport.c:30 — @param {CPtr} mon @returns {CInt} */
+/** C ref: teleport.c:30 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function noteleport_level(mon) {
     if (In_hell(cptr.add(u, $you_uz)) && !(is_dlord(cptr.ldPtro(mon, $monst_data)) || is_dprince(cptr.ldPtro(mon, $monst_data))))
         if (get_iter_mons(m_blocks_teleporting))
@@ -301,7 +301,7 @@ export function noteleport_level(mon) {
     return 0;
 }
 
-/** C ref: teleport.c:53 — @param {CInt} x @param {CInt} y @param {CPtr} mptr @returns {CInt} */
+/** C ref: teleport.c:53 — @param {CInt} x @param {CInt} y @param {CPtr<struct permonst>} mptr @returns {CInt} */
 function goodpos_onscary(x, y, mptr) {
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_HUMAN || cptr.ld1so(mptr, $permonst_mlet) == NHC.S_ANGEL || is_rider(mptr) || ((cptr.ldU16o((mptr), $permonst_geno) & NHM.G_UNIQ) != 0))
         return 0;
@@ -316,7 +316,7 @@ function goodpos_onscary(x, y, mptr) {
     return schar((sengr_at(__sl0, x, y, 1) ? 1 : 0));
 }
 
-/** C ref: teleport.c:86 — @param {CInt} x @param {CInt} y @param {CPtr} mtmp @param {CUInt} gpflags @returns {CInt} */
+/** C ref: teleport.c:86 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} mtmp @param {CUInt} gpflags @returns {CInt} */
 export function goodpos(x, y, mtmp, gpflags) {
     let mdat = null;
     let ignorewater = schar(((BigInt(gpflags >>> 0) & 8n) != 0n));
@@ -370,17 +370,17 @@ export function goodpos(x, y, mtmp, gpflags) {
     return 1;
 }
 
-/** C ref: teleport.c:196 — @param {CPtr} cc @param {CInt} xx @param {CInt} yy @param {CPtr} mdat @returns {CInt} */
+/** C ref: teleport.c:196 — @param {CPtr<coord>} cc @param {CInt} xx @param {CInt} yy @param {CPtr<struct permonst>} mdat @returns {CInt} */
 export function enexto(cc, xx, yy, mdat) {
     return schar((enexto_core(cc, xx, yy, mdat, NHM.GP_CHECKSCARY) || enexto_core(cc, xx, yy, mdat, NHM.NO_MM_FLAGS) ? 1 : 0));
 }
 
-/** C ref: teleport.c:206 — @param {CPtr} cc @param {CInt} xx @param {CInt} yy @param {CPtr} mdat @param {CUInt} entflags @returns {CInt} */
+/** C ref: teleport.c:206 — @param {CPtr<coord>} cc @param {CInt} xx @param {CInt} yy @param {CPtr<struct permonst>} mdat @param {CUInt} entflags @returns {CInt} */
 export function enexto_gpflags(cc, xx, yy, mdat, entflags) {
     return schar((enexto_core(cc, xx, yy, mdat, Number(BigInt.asUintN(32, (8388608n | BigInt(entflags >>> 0))))) || enexto_core(cc, xx, yy, mdat, entflags) ? 1 : 0));
 }
 
-/** C ref: teleport.c:219 — @param {CPtr} cc @param {CInt} xx @param {CInt} yy @param {CPtr} mdat @param {CUInt} entflags @returns {CInt} */
+/** C ref: teleport.c:219 — @param {CPtr<coord>} cc @param {CInt} xx @param {CInt} yy @param {CPtr<struct permonst>} mdat @param {CUInt} entflags @returns {CInt} */
 export function enexto_core(cc, xx, yy, mdat, entflags) {
     let candy = cptr.alloc(1659 * 4);
     let i;
@@ -553,7 +553,7 @@ export function teleds(nux, nuy, teleds_flags) {
     return;
 }
 
-/** C ref: teleport.c:578 — @param {CPtr} ccc @param {CInt} cx @param {CInt} cy @param {CInt} maxradius @param {CUInt} cc_flags @param {CPtr} filter @returns {CInt} */
+/** C ref: teleport.c:578 — @param {CPtr<coord>} ccc @param {CInt} cx @param {CInt} cy @param {CInt} maxradius @param {CUInt} cc_flags @param {CPtr} filter @returns {CInt} */
 export function collect_coords(ccc, cx, cy, maxradius, cc_flags, filter) {
     let x;
     let y;
@@ -686,7 +686,7 @@ function vault_tele() {
     tele();
 }
 
-/** C ref: teleport.c:786 — @param {CPtr} mtmp @param {CInt} force_it @returns {CInt} */
+/** C ref: teleport.c:786 — @param {CPtr<struct monst>} mtmp @param {CInt} force_it @returns {CInt} */
 export function teleport_pet(mtmp, force_it) {
     let otmp;
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
@@ -740,7 +740,7 @@ export function tele() {
     scrolltele(null);
 }
 
-/** C ref: teleport.c:849 — @param {CPtr} scroll */
+/** C ref: teleport.c:849 — @param {CPtr<struct obj>} scroll */
 export function scrolltele(scroll) {
     let cc = cptr.alloc(4);
     if (noteleport_level(cptr.add(gy, $instance_globals_y_youmonst)) && !wizard()) {
@@ -1225,7 +1225,7 @@ export function level_tele() {
     }
 }
 
-/** C ref: teleport.c:1444 — @param {CPtr} ttmp */
+/** C ref: teleport.c:1444 — @param {CPtr<struct trap>} ttmp */
 export function domagicportal(ttmp) {
     let target_level = cptr.alloc(4);
     let totype;
@@ -1257,7 +1257,7 @@ export function domagicportal(ttmp) {
 
 let __static_tele_trap_in_tele_trap = 0; /** C ref: teleport.c:1497 — signed char (function-static) */
 
-/** C ref: teleport.c:1492 — @param {CPtr} trap */
+/** C ref: teleport.c:1492 — @param {CPtr<struct trap>} trap */
 export function tele_trap(trap) {
     if (__static_tele_trap_in_tele_trap)
         return;
@@ -1292,7 +1292,7 @@ export function tele_trap(trap) {
     __static_tele_trap_in_tele_trap = 0;
 }
 
-/** C ref: teleport.c:1538 — @param {CPtr} trap @param {CUInt} trflags */
+/** C ref: teleport.c:1538 — @param {CPtr<struct trap>} trap @param {CUInt} trflags */
 export function level_tele_trap(trap, trflags) {
     let verbbuf = new Uint8Array(256);
     let intentional = 0;
@@ -1320,7 +1320,7 @@ export function level_tele_trap(trap, trflags) {
         make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + 3n), 0);
 }
 
-/** C ref: teleport.c:1575 — @param {CInt} x @param {CInt} y @param {CPtr} mtmp @returns {CInt} */
+/** C ref: teleport.c:1575 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function rloc_pos_ok(x, y, mtmp) {
     let xx;
     let yy;
@@ -1349,7 +1349,7 @@ function rloc_pos_ok(x, y, mtmp) {
     return 1;
 }
 
-/** C ref: teleport.c:1645 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @param {CUInt} rlocflags */
+/** C ref: teleport.c:1645 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CUInt} rlocflags */
 function rloc_to_core(mtmp, x, y, rlocflags) {
     let oldx = cptr.ldI16o(mtmp, $monst_mx);
     let oldy = cptr.ldI16o(mtmp, $monst_my);
@@ -1430,17 +1430,17 @@ function rloc_to_core(mtmp, x, y, rlocflags) {
         void mintrap(mtmp, NHM.NO_TRAP_FLAGS);
 }
 
-/** C ref: teleport.c:1771 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y */
+/** C ref: teleport.c:1771 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y */
 export function rloc_to(mtmp, x, y) {
     rloc_to_core(mtmp, x, y, NHM.RLOC_NOMSG);
 }
 
-/** C ref: teleport.c:1777 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @param {CUInt} rlocflags */
+/** C ref: teleport.c:1777 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CUInt} rlocflags */
 export function rloc_to_flag(mtmp, x, y, rlocflags) {
     rloc_to_core(mtmp, x, y, rlocflags);
 }
 
-/** C ref: teleport.c:1786 — @param {CInt} isladder @param {CInt} up @returns {CPtr} */
+/** C ref: teleport.c:1786 — @param {CInt} isladder @param {CInt} up @returns {CPtr<stairway>} */
 function stairway_find_forwiz(isladder, up) {
     let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (stway && !(cptr.ld1so(stway, $stairway_isladder) == isladder && cptr.ld1so(stway, $stairway_up) == up && cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz)))
@@ -1448,7 +1448,7 @@ function stairway_find_forwiz(isladder, up) {
     return stway;
 }
 
-/** C ref: teleport.c:1799 — @param {CPtr} mtmp @param {CUInt} rlocflags @returns {CInt} */
+/** C ref: teleport.c:1799 — @param {CPtr<struct monst>} mtmp @param {CUInt} rlocflags @returns {CInt} */
 export function rloc(mtmp, rlocflags) {
     let cc = cptr.alloc(4);
     let backupcc = cptr.alloc(4);
@@ -1520,7 +1520,7 @@ export function rloc(mtmp, rlocflags) {
     return 1;
 }
 
-/** C ref: teleport.c:1899 — @param {CPtr} mon @param {CPtr} cc_p @param {CUInt} rlocflags @param {CInt} via_rloc @returns {CInt} */
+/** C ref: teleport.c:1899 — @param {CPtr<struct monst>} mon @param {CPtr<coord>} cc_p @param {CUInt} rlocflags @param {CInt} via_rloc @returns {CInt} */
 export function control_mon_tele(mon, cc_p, rlocflags, via_rloc) {
     let tcbuf = new Uint8Array(256);
     if (!isok(cptr.ldI16(cc_p), cptr.ldI16o(cc_p, $coord_y))) {
@@ -1545,7 +1545,7 @@ export function control_mon_tele(mon, cc_p, rlocflags, via_rloc) {
     return 0;
 }
 
-/** C ref: teleport.c:1937 — @param {CPtr} mtmp */
+/** C ref: teleport.c:1937 — @param {CPtr<struct monst>} mtmp */
 function mvault_tele(mtmp) {
     let croom = search_special(NHC.VAULT);
     let c = cptr.alloc(4);
@@ -1556,7 +1556,7 @@ function mvault_tele(mtmp) {
     void rloc(mtmp, NHM.RLOC_NONE);
 }
 
-/** C ref: teleport.c:1950 — @param {CPtr} mon @returns {CInt} */
+/** C ref: teleport.c:1950 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function tele_restrict(mon) {
     if (noteleport_level(mon)) {
         if (canseemon(mon))
@@ -1566,7 +1566,7 @@ export function tele_restrict(mon) {
     return 0;
 }
 
-/** C ref: teleport.c:1962 — @param {CPtr} mtmp @param {CPtr} trap @param {CInt} in_sight */
+/** C ref: teleport.c:1962 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CInt} in_sight */
 export function mtele_trap(mtmp, trap, in_sight) {
     let monname;
     if (noteleport_level(mtmp))
@@ -1591,7 +1591,7 @@ export function mtele_trap(mtmp, trap, in_sight) {
     }
 }
 
-/** C ref: teleport.c:2006 — @param {CPtr} mtmp @param {CPtr} trap @param {CInt} force_it @param {CInt} in_sight @returns {CInt} */
+/** C ref: teleport.c:2006 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CInt} force_it @param {CInt} in_sight @returns {CInt} */
 export function mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
     let tt = (trap ? (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0 : NHC.NO_TRAP);
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
@@ -1656,7 +1656,7 @@ export function mlevel_tele_trap(mtmp, trap, force_it, in_sight) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: teleport.c:2102 — @param {CPtr} obj @returns {CInt} */
+/** C ref: teleport.c:2102 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function rloco(obj) {
     let tx;
     let ty;
@@ -1749,7 +1749,7 @@ export function random_teleport_level() {
     return nlev;
 }
 
-/** C ref: teleport.c:2263 — @param {CPtr} mtmp @param {CInt} give_feedback @returns {CInt} */
+/** C ref: teleport.c:2263 — @param {CPtr<struct monst>} mtmp @param {CInt} give_feedback @returns {CInt} */
 export function u_teleport_mon(mtmp, give_feedback) {
     let cc = cptr.alloc(4);
     if (cptr.ldI64o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until) >= cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {

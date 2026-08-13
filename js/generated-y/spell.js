@@ -324,7 +324,7 @@ function spell_let_to_idx(ilet) {
     return -1;
 }
 
-/** C ref: spell.c:130 — @param {CPtr} bp @returns {CInt} */
+/** C ref: spell.c:130 — @param {CPtr<struct obj>} bp @returns {CInt} */
 function* cursed_book(bp) {
     let was_in_use;
     let lev = cptr.ld1so2(objects, cptr.ldI16o(bp, $obj_otyp), 120, $objclass_oc_oc2);
@@ -376,7 +376,7 @@ function* cursed_book(bp) {
     return 0;
 }
 
-/** C ref: spell.c:189 — @param {CPtr} spellbook @returns {CInt} */
+/** C ref: spell.c:189 — @param {CPtr<struct obj>} spellbook @returns {CInt} */
 function* confused_book(spellbook) {
     let gone = 0;
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 193, __sl11), rn2(3)) : rn2(3)) && cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
@@ -393,7 +393,7 @@ function* confused_book(spellbook) {
     return gone;
 }
 
-/** C ref: spell.c:211 — @param {CPtr} mtmp */
+/** C ref: spell.c:211 — @param {CPtr<struct monst>} mtmp */
 function* deadbook_pacify_undead(mtmp) {
     if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
         cptr.stI32o(mtmp, $monst_mpeaceful, 1);
@@ -408,7 +408,7 @@ function* deadbook_pacify_undead(mtmp) {
     }
 }
 
-/** C ref: spell.c:231 — @param {CPtr} book2 */
+/** C ref: spell.c:231 — @param {CPtr<struct obj>} book2 */
 function* deadbook(book2) {
     let mtmp, mm, otmp, arti1_primed, arti2_primed, arti_cursed, soon;
     let __pc = 0;
@@ -537,7 +537,7 @@ function* deadbook(book2) {
     }
 }
 
-/** C ref: spell.c:343 — @param {CPtr} book */
+/** C ref: spell.c:343 — @param {CPtr<struct obj>} book */
 export function* book_cursed(book) {
     if ((cptr.ldI32o(book, $obj_cursed) & 1) | 0 && cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n && cptr.ldPtro(go, $instance_globals_o_occupation) === learn && cptr.eq(cptr.ldPtro(svc, $context_info_spbook), book)) {
         (yield* pline(__sl32, (yield* Tobjnam(book, __sl33))));
@@ -631,7 +631,7 @@ function* learn() {
     return 0;
 }
 
-/** C ref: spell.c:468 — @param {CPtr} spellbook @returns {CInt} */
+/** C ref: spell.c:468 — @param {CPtr<struct obj>} spellbook @returns {CInt} */
 export function* study_book(spellbook) {
     let booktype = cptr.ldI16o(spellbook, $obj_otyp);
     let i;
@@ -758,7 +758,7 @@ export function* study_book(spellbook) {
     return 1;
 }
 
-/** C ref: spell.c:646 — @param {CPtr} obj */
+/** C ref: spell.c:646 — @param {CPtr<struct obj>} obj */
 export function book_disappears(obj) {
     if (cptr.eq(obj, cptr.ldPtro(svc, $context_info_spbook))) {
         cptr.stPtro(svc, $context_info_spbook, null);
@@ -766,7 +766,7 @@ export function book_disappears(obj) {
     }
 }
 
-/** C ref: spell.c:658 — @param {CPtr} old_obj @param {CPtr} new_obj */
+/** C ref: spell.c:658 — @param {CPtr<struct obj>} old_obj @param {CPtr<struct obj>} new_obj */
 export function book_substitution(old_obj, new_obj) {
     if (cptr.eq(old_obj, cptr.ldPtro(svc, $context_info_spbook))) {
         cptr.stPtro(svc, $context_info_spbook, new_obj);
@@ -799,7 +799,7 @@ function* rejectcasting() {
     return 0;
 }
 
-/** C ref: spell.c:715 — @param {CPtr} spell_no @returns {CInt} */
+/** C ref: spell.c:715 — @param {CPtr<int>} spell_no @returns {CInt} */
 function* getspell(spell_no) {
     let nspells;
     let idx;
@@ -901,7 +901,7 @@ export function* docast() {
     return NHM.ECMD_FAIL;
 }
 
-/** C ref: spell.c:832 — @param {CInt} skill @returns {CPtr} */
+/** C ref: spell.c:832 — @param {CInt} skill @returns {CPtr<char>} */
 function* spelltypemnemonic(skill) {
     switch (skill) {
         case NHC.P_ATTACK_SPELL:
@@ -966,7 +966,7 @@ export function* skill_based_spellbook_id() {
 
 /** C ref: spell.c:938 — struct chain_lightning_queue { q, head, tail, displayed_beam } (memory model v0.5) */
 
-/** C ref: spell.c:952 — @param {CPtr} clq @param {*} zap */
+/** C ref: spell.c:952 — @param {CPtr<struct chain_lightning_queue>} clq @param {*} zap */
 function* propagate_chain_lightning(clq, zap) {
     zap = cptr.dup(zap, 8); // by-value struct param
     let mon;
@@ -1119,7 +1119,7 @@ function* spell_backfire(spell) {
     return;
 }
 
-/** C ref: spell.c:1220 — @param {CInt} spell @param {CPtr} res @param {CPtr} energy @returns {CInt} */
+/** C ref: spell.c:1220 — @param {CInt} spell @param {CPtr<int>} res @param {CPtr<int>} energy @returns {CInt} */
 function* spelleffects_check(spell, res, energy) {
     let chance;
     let confused = schar((HConfusion() != 0n));
@@ -1553,7 +1553,7 @@ cptr.stPtro(spl_sortchoices, 48, __sl144);
 cptr.stPtro(spl_sortchoices, 56, __sl145);
 cptr.stPtro(spl_sortchoices, 64, __sl146);
 
-/** C ref: spell.c:1870 — @param {CPtr} vptr1 @param {CPtr} vptr2 @returns {CInt} */
+/** C ref: spell.c:1870 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function* spell_cmp(vptr1, vptr2) {
     let indx1 = cptr.ldI32(vptr1);
     let indx2 = cptr.ldI32(vptr2);
@@ -1709,7 +1709,7 @@ export function* show_spells() {
     }
 }
 
-/** C ref: spell.c:2075 — @param {CPtr} prompt @param {CInt} splaction @param {CPtr} spell_no @returns {CInt} */
+/** C ref: spell.c:2075 — @param {CPtr<char>} prompt @param {CInt} splaction @param {CPtr<int>} spell_no @returns {CInt} */
 function* dospellmenu(prompt, splaction, spell_no) {
     let tmpwin;
     let i;
@@ -1837,7 +1837,7 @@ function* percent_success(spell) {
     return chance;
 }
 
-/** C ref: spell.c:2295 — @param {CInt} idx @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: spell.c:2295 — @param {CInt} idx @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function spellretention(idx, outbuf) {
     let turnsleft;
     let percent;
@@ -1860,7 +1860,7 @@ function spellretention(idx, outbuf) {
     return outbuf;
 }
 
-/** C ref: spell.c:2340 — @param {CPtr} obj */
+/** C ref: spell.c:2340 — @param {CPtr<struct obj>} obj */
 export function* initialspell(obj) {
     let i;
     let otyp = cptr.ldI16o(obj, $obj_otyp);

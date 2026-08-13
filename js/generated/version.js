@@ -160,13 +160,13 @@ const __sl106 = cptr.lit("IL32LLP64");
 const __sl107 = cptr.lit("ILP32LL64");
 const __sl108 = cptr.lit("I32LP64");
 
-/** C ref: version.c:22 — @param {CPtr} buf @param {CLongLong} bufsz @returns {CPtr} */
+/** C ref: version.c:22 — @param {CPtr<char>} buf @param {CLongLong} bufsz @returns {CPtr<char>} */
 export function version_string(buf, bufsz) {
     nh_snprintf(__sl0, 29, buf, bufsz, __sl1, ((cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) : mdlib_version_string(buf, __sl2)));
     return buf;
 }
 
-/** C ref: version.c:35 — @param {CPtr} buf @param {CLongLong} bufsz @returns {CPtr} */
+/** C ref: version.c:35 — @param {CPtr<char>} buf @param {CLongLong} bufsz @returns {CPtr<char>} */
 export function getversionstring(buf, bufsz) {
     void cptr.strcpy(buf, cptr.ldPtro(nomakedefs, $nomakedefs_s_version_id));
     {
@@ -190,7 +190,7 @@ export function getversionstring(buf, bufsz) {
     return buf;
 }
 
-/** C ref: version.c:89 — @param {CPtr} buf @param {CLongLong} bufsz @param {CInt} indent @returns {CPtr} */
+/** C ref: version.c:89 — @param {CPtr<char>} buf @param {CLongLong} bufsz @param {CInt} indent @returns {CPtr<char>} */
 export function status_version(buf, bufsz, indent) {
     let name = null;
     let altname = null;
@@ -345,7 +345,7 @@ cptr.stPtro(rt_opts, 16 + $rt_opt_value, cptr.add(gl, $instance_globals_l_lua_ve
 cptr.stPtro(rt_opts, 32, __sl20);
 cptr.stPtro(rt_opts, 32 + $rt_opt_value, cptr.add(gl, $instance_globals_l_lua_copyright));
 
-/** C ref: version.c:339 — @param {CPtr} buf */
+/** C ref: version.c:339 — @param {CPtr<char>} buf */
 function insert_rtoption(buf) {
     let i;
     if (!cptr.ld1so2(gl, 0, 1, $instance_globals_l_lua_ver))
@@ -357,7 +357,7 @@ function insert_rtoption(buf) {
     }
 }
 
-/** C ref: version.c:374 — @param {CPtr} version_data @param {CPtr} filename @param {CInt} complain @param {CLongLong} utdflags @returns {CInt} */
+/** C ref: version.c:374 — @param {CPtr<struct version_info>} version_data @param {CPtr<char>} filename @param {CInt} complain @param {CLongLong} utdflags @returns {CInt} */
 export function check_version(version_data, filename, complain, utdflags) {
     if (!filename) {
         complain = 0;
@@ -383,7 +383,7 @@ export function check_version(version_data, filename, complain, utdflags) {
     return 1;
 }
 
-/** C ref: version.c:431 — @param {CPtr} str @returns {CLongLong} */
+/** C ref: version.c:431 — @param {CPtr<char>} str @returns {CLongLong} */
 export function get_feature_notice_ver(str) {
     let buf = new Uint8Array(256);
     let ver_maj;
@@ -420,7 +420,7 @@ export function get_current_feature_ver() {
     return 83886080n;
 }
 
-/** C ref: version.c:471 — @param {CInt} indx @returns {CPtr} */
+/** C ref: version.c:471 — @param {CInt} indx @returns {CPtr<char>} */
 export function copyright_banner_line(indx) {
     if (indx == 1)
         return __sl24;
@@ -446,7 +446,7 @@ export function dump_version_info() {
     return;
 }
 
-/** C ref: version.c:512 — @param {CPtr} nhfp */
+/** C ref: version.c:512 — @param {CPtr<NHFILE>} nhfp */
 export function store_version(nhfp) {
     let version_data = cptr.alloc(24); cptr.stU64(version_data, 0n); cptr.stU64o(version_data, $version_info_feature_set, 0n); cptr.stU64o(version_data, $version_info_entity_count, 0n);
     cptr.stU64(version_data, cptr.ldU64o(nomakedefs, $nomakedefs_s_version_number));
@@ -634,7 +634,7 @@ export function get_critical_size_count() {
     return 80;
 }
 
-/** C ref: version.c:676 — @param {CPtr} nhfp */
+/** C ref: version.c:676 — @param {CPtr<NHFILE>} nhfp */
 export function store_critical_bytes(nhfp) {
     let i;
     let cnt;
@@ -651,7 +651,7 @@ export function store_critical_bytes(nhfp) {
     }
 }
 
-/** C ref: version.c:713 — @param {CPtr} nhfp @param {CPtr} name @param {CLongLong} utdflags @returns {CInt} */
+/** C ref: version.c:713 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} name @param {CLongLong} utdflags @returns {CInt} */
 export function uptodate(nhfp, name, utdflags) {
     let vers_info = cptr.alloc(24);
     let indicator = cptr.box(0);
@@ -678,7 +678,7 @@ export function uptodate(nhfp, name, utdflags) {
     return sfstatus;
 }
 
-/** C ref: version.c:763 — @param {CPtr} nhfp @param {CPtr} idx_1st_mismatch @param {CLongLong} utdflags @returns {CInt} */
+/** C ref: version.c:763 — @param {CPtr<NHFILE>} nhfp @param {CPtr<int>} idx_1st_mismatch @param {CLongLong} utdflags @returns {CInt} */
 export function compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
     let active_csc_count = 80;
     let file_csc_count = cptr.box(0);
@@ -721,7 +721,7 @@ export function compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
     return NHM.SF_UPTODATE;
 }
 
-/** C ref: version.c:840 — @param {CPtr} nhfp @param {CPtr} name @param {CInt} without_waitsynch_perfile @returns {CInt} */
+/** C ref: version.c:840 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} name @param {CInt} without_waitsynch_perfile @returns {CInt} */
 export function validate(nhfp, name, without_waitsynch_perfile) {
     let utdflags = 0n;
     let validsf = 0;

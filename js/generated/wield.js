@@ -194,7 +194,7 @@ const are_no_longer_twoweap = cptr.bytes("are no longer using two weapons at onc
 /** C ref: wield.c:82 — char[40] */
 const can_no_longer_twoweap = cptr.bytes("can no longer wield two weapons at once");
 
-/** C ref: wield.c:100 — @param {CPtr} obj */
+/** C ref: wield.c:100 — @param {CPtr<struct obj>} obj */
 export function setuwep(obj) {
     let olduwep = uwep.v;
     if (cptr.eq(obj, uwep.v))
@@ -215,7 +215,7 @@ export function setuwep(obj) {
         cptr.st1o(gu, $instance_globals_u_unweapon, 1);
 }
 
-/** C ref: wield.c:138 — @param {CPtr} obj @returns {CInt} */
+/** C ref: wield.c:138 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function cant_wield_corpse(obj) {
     let kbuf = new Uint8Array(256);
     if (uarmg.v || cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE || !touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)) || Stone_resistance())
@@ -226,12 +226,12 @@ function cant_wield_corpse(obj) {
     return 1;
 }
 
-/** C ref: wield.c:158 @returns {CPtr} */
+/** C ref: wield.c:158 @returns {CPtr<char>} */
 export function empty_handed() {
     return uarmg.v ? __sl4 : (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __sl5 : __sl6);
 }
 
-/** C ref: wield.c:169 — @param {CPtr} wep @returns {CInt} */
+/** C ref: wield.c:169 — @param {CPtr<struct obj>} wep @returns {CInt} */
 function ready_weapon(wep) {
     wep = cptr.box(wep);
     let res = NHM.ECMD_OK;
@@ -295,19 +295,19 @@ function ready_weapon(wep) {
     return res;
 }
 
-/** C ref: wield.c:276 — @param {CPtr} obj */
+/** C ref: wield.c:276 — @param {CPtr<struct obj>} obj */
 export function setuqwep(obj) {
     setworn(obj, 512n);
     return;
 }
 
-/** C ref: wield.c:285 — @param {CPtr} obj */
+/** C ref: wield.c:285 — @param {CPtr<struct obj>} obj */
 export function setuswapwep(obj) {
     setworn(obj, 1024n);
     return;
 }
 
-/** C ref: wield.c:294 — @param {CPtr} obj @returns {CInt} */
+/** C ref: wield.c:294 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function ready_ok(obj) {
     if (!obj)
         return uquiver.v ? NHC.GETOBJ_SUGGEST : NHC.GETOBJ_DOWNPLAY;
@@ -324,7 +324,7 @@ function ready_ok(obj) {
     return NHC.GETOBJ_DOWNPLAY;
 }
 
-/** C ref: wield.c:331 — @param {CPtr} obj @returns {CInt} */
+/** C ref: wield.c:331 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function wield_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_SUGGEST;
@@ -335,7 +335,7 @@ function wield_ok(obj) {
     return NHC.GETOBJ_DOWNPLAY;
 }
 
-/** C ref: wield.c:346 — @param {CPtr} obj */
+/** C ref: wield.c:346 — @param {CPtr<struct obj>} obj */
 function finish_splitting(obj) {
     freeinv(obj);
     addinv_nomerge(obj);
@@ -459,7 +459,7 @@ export function dowieldquiver() {
     return doquiver_core(__sl40);
 }
 
-/** C ref: wield.c:512 — @param {CPtr} verb @returns {CInt} */
+/** C ref: wield.c:512 — @param {CPtr<char>} verb @returns {CInt} */
 export function doquiver_core(verb) {
     let qbuf = new Uint8Array(128);
     let newquiver;
@@ -580,7 +580,7 @@ export function doquiver_core(verb) {
     return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
 
-/** C ref: wield.c:683 — @param {CPtr} obj @param {CPtr} verb @returns {CInt} */
+/** C ref: wield.c:683 — @param {CPtr<struct obj>} obj @param {CPtr<char>} verb @returns {CInt} */
 export function wield_tool(obj, verb) {
     let what;
     let more_than_1;
@@ -755,7 +755,7 @@ export function untwoweapon() {
     return;
 }
 
-/** C ref: wield.c:918 — @param {CPtr} otmp @param {CInt} amount @returns {CInt} */
+/** C ref: wield.c:918 — @param {CPtr<struct obj>} otmp @param {CInt} amount @returns {CInt} */
 export function chwepon(otmp, amount) {
     let color = hcolor((amount < 0) ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_blue));
     let xtime;
@@ -854,7 +854,7 @@ export function chwepon(otmp, amount) {
     return 1;
 }
 
-/** C ref: wield.c:1051 — @param {CPtr} obj @returns {CInt} */
+/** C ref: wield.c:1051 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function welded(obj) {
     if (obj && cptr.eq(obj, uwep.v) && ((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 && ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL || cptr.ldI16o((obj), $obj_otyp) == NHC.IRON_CHAIN) || cptr.ldI16o((obj), $obj_otyp) == NHC.TIN_OPENER))) {
         set_bknown(obj, 1);
@@ -863,7 +863,7 @@ export function welded(obj) {
     return 0;
 }
 
-/** C ref: wield.c:1061 — @param {CPtr} obj */
+/** C ref: wield.c:1061 — @param {CPtr<struct obj>} obj */
 export function weldmsg(obj) {
     let savewornmask;
     let hand = body_part(NHC.HAND);
@@ -875,7 +875,7 @@ export function weldmsg(obj) {
     cptr.stI64o(obj, $obj_owornmask, savewornmask);
 }
 
-/** C ref: wield.c:1078 — @param {CPtr} obj @returns {CInt} */
+/** C ref: wield.c:1078 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function mwelded(obj) {
     if (obj && (cptr.ldI64o(obj, $obj_owornmask) & 256n) && ((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 && ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL || cptr.ldI16o((obj), $obj_otyp) == NHC.IRON_CHAIN) || cptr.ldI16o((obj), $obj_otyp) == NHC.TIN_OPENER)))
         return 1;

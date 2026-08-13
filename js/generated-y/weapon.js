@@ -273,7 +273,7 @@ function* give_may_advance_msg(skill) {
     void (yield* handle_tip(NHC.TIP_ENHANCE));
 }
 
-/** C ref: weapon.c:90 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: weapon.c:90 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function* weapon_descr(obj) {
     let skill = weapon_type(obj);
     let descr = ((cptr.ldI16o(skill_names_indices, skill, 2) > 0) ? (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(skill_names_indices, skill, 2), 120))), 16)) : ((skill == NHC.P_BARE_HANDED_COMBAT) ? cptr.ldPtro(barehands_or_martial, ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) ? 1 : 0), 8) : cptr.ldPtro(odd_skill_names, -cptr.ldI16o(skill_names_indices, skill, 2), 8)));
@@ -307,7 +307,7 @@ export function* weapon_descr(obj) {
     return (yield* makesingular(descr));
 }
 
-/** C ref: weapon.c:149 — @param {CPtr} otmp @param {CPtr} mon @returns {CInt} */
+/** C ref: weapon.c:149 — @param {CPtr<struct obj>} otmp @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* hitval(otmp, mon) {
     let tmp = 0;
     let ptr = cptr.ldPtro(mon, $monst_data);
@@ -332,7 +332,7 @@ export function* hitval(otmp, mon) {
     return tmp;
 }
 
-/** C ref: weapon.c:216 — @param {CPtr} otmp @param {CPtr} mon @returns {CInt} */
+/** C ref: weapon.c:216 — @param {CPtr<struct obj>} otmp @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* dmgval(otmp, mon) {
     let tmp = 0;
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
@@ -446,7 +446,7 @@ export function* dmgval(otmp, mon) {
     return tmp;
 }
 
-/** C ref: weapon.c:361 — @param {CPtr} magr @param {CPtr} mdef @param {CLongLong} armask @param {CPtr} silverhit_p @returns {CInt} */
+/** C ref: weapon.c:361 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CLongLong} armask @param {CPtr<long>} silverhit_p @returns {CInt} */
 export function* special_dmgval(magr, mdef, armask, silverhit_p) {
     let obj;
     let left_ring = schar(((armask & 131072n) ? 1 : 0));
@@ -495,7 +495,7 @@ export function* special_dmgval(magr, mdef, armask, silverhit_p) {
     return bonus;
 }
 
-/** C ref: weapon.c:436 — @param {CPtr} magr @param {CPtr} mdef @param {CLongLong} silverhit */
+/** C ref: weapon.c:436 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CLongLong} silverhit */
 export function* silver_sears(magr, mdef, silverhit) {
     let rings = new Uint8Array(20);
     let ltyp = ((uleft.v && (silverhit & 131072n) != 0n) ? cptr.ldI16o(uleft.v, $obj_otyp) : NHC.STRANGE_OBJECT);
@@ -512,7 +512,7 @@ export function* silver_sears(magr, mdef, silverhit) {
     }
 }
 
-/** C ref: weapon.c:476 — @param {CPtr} mtmp @param {CInt} type @returns {CPtr} */
+/** C ref: weapon.c:476 — @param {CPtr<struct monst>} mtmp @param {CInt} type @returns {CPtr<struct obj>} */
 function* oselect(mtmp, type) {
     let otmp;
     for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
@@ -576,7 +576,7 @@ cptr.stI16o(arwep, 0, NHC.AKLYS);
 cptr.stI32o(arwep, 0 + $throw_and_return_weapon_range, 16);
 cptr.stI32o(arwep, 0 + $throw_and_return_weapon_tethered, 1);
 
-/** C ref: weapon.c:520 — @param {CPtr} otmp @returns {CPtr} */
+/** C ref: weapon.c:520 — @param {CPtr<struct obj>} otmp @returns {CPtr<struct throw_and_return_weapon>} */
 export function autoreturn_weapon(otmp) {
     let i;
     for (i = 0; i < 1; i++) {
@@ -586,7 +586,7 @@ export function autoreturn_weapon(otmp) {
     return null;
 }
 
-/** C ref: weapon.c:533 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: weapon.c:533 — @param {CPtr<struct monst>} mtmp @returns {CPtr<struct obj>} */
 export function* select_rwep(mtmp) {
     let otmp;
     let mwep;
@@ -680,7 +680,7 @@ export function* select_rwep(mtmp) {
     return null;
 }
 
-/** C ref: weapon.c:680 — @param {CPtr} obj @returns {CInt} */
+/** C ref: weapon.c:680 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function monmightthrowwep(obj) {
     let idx;
     for (idx = 0; idx < 24; ++idx)
@@ -737,7 +737,7 @@ cptr.stI16o(hwep, 84, NHC.SCALPEL);
 cptr.stI16o(hwep, 86, NHC.KNIFE);
 cptr.stI16o(hwep, 88, NHC.WORM_TOOTH);
 
-/** C ref: weapon.c:705 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: weapon.c:705 — @param {CPtr<struct monst>} mtmp @returns {CPtr<struct obj>} */
 export function* select_hwep(mtmp) {
     let otmp;
     let i;
@@ -769,7 +769,7 @@ export function* select_hwep(mtmp) {
     return null;
 }
 
-/** C ref: weapon.c:747 — @param {CPtr} mon @param {CInt} polyspot */
+/** C ref: weapon.c:747 — @param {CPtr<struct monst>} mon @param {CInt} polyspot */
 export function* possibly_unwield(mon, polyspot) {
     let obj;
     let mw_tmp;
@@ -804,7 +804,7 @@ export function* possibly_unwield(mon, polyspot) {
     return;
 }
 
-/** C ref: weapon.c:801 — @param {CPtr} mon @returns {CInt} */
+/** C ref: weapon.c:801 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* mon_wield_item(mon) {
     let obj;
     let exclaim = 1;
@@ -904,7 +904,7 @@ export function* mon_wield_item(mon) {
     return 0;
 }
 
-/** C ref: weapon.c:938 — @param {CPtr} mon */
+/** C ref: weapon.c:938 — @param {CPtr<struct monst>} mon */
 export function* mwepgone(mon) {
     let mwep = (cptr.ldPtro((mon), $monst_mw));
     if (mwep) {
@@ -968,7 +968,7 @@ export function dbon() {
         return 6;
 }
 
-/** C ref: weapon.c:1020 — @param {CPtr} obj @param {CInt} newspe */
+/** C ref: weapon.c:1020 — @param {CPtr<struct obj>} obj @param {CInt} newspe */
 function* finish_towel_change(obj, newspe) {
     newspe = ((newspe) < 7 ? (newspe) : 7);
     cptr.st1o(obj, $obj_spe, schar(((newspe) > 0 ? (newspe) : 0)));
@@ -978,7 +978,7 @@ function* finish_towel_change(obj, newspe) {
         (yield* update_inventory());
 }
 
-/** C ref: weapon.c:1038 — @param {CPtr} obj @param {CInt} amt @param {CInt} verbose */
+/** C ref: weapon.c:1038 — @param {CPtr<struct obj>} obj @param {CInt} amt @param {CInt} verbose */
 export function* wet_a_towel(obj, amt, verbose) {
     let newspe = (amt <= 0) ? (cptr.ld1so(obj, $obj_spe) - amt) | 0 : amt;
     if (newspe > cptr.ld1so(obj, $obj_spe)) {
@@ -994,7 +994,7 @@ export function* wet_a_towel(obj, amt, verbose) {
         (yield* finish_towel_change(obj, newspe));
 }
 
-/** C ref: weapon.c:1067 — @param {CPtr} obj @param {CInt} amt @param {CInt} verbose */
+/** C ref: weapon.c:1067 — @param {CPtr<struct obj>} obj @param {CInt} amt @param {CInt} verbose */
 export function* dry_a_towel(obj, amt, verbose) {
     let newspe = (amt < 0) ? (cptr.ld1so(obj, $obj_spe) + amt) | 0 : amt;
     if (newspe < cptr.ld1so(obj, $obj_spe)) {
@@ -1009,7 +1009,7 @@ export function* dry_a_towel(obj, amt, verbose) {
         (yield* finish_towel_change(obj, newspe));
 }
 
-/** C ref: weapon.c:1092 — @param {CInt} skill @param {CPtr} buf @returns {CPtr} */
+/** C ref: weapon.c:1092 — @param {CInt} skill @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function skill_level_name(skill, buf) {
     let ptr;
     switch ((cptr.ldI16o2(u, skill, 6, $you_weapon_skills))) {
@@ -1039,7 +1039,7 @@ export function skill_level_name(skill, buf) {
     return buf;
 }
 
-/** C ref: weapon.c:1125 — @param {CInt} skill @returns {CPtr} */
+/** C ref: weapon.c:1125 — @param {CInt} skill @returns {CPtr<char>} */
 export function skill_name(skill) {
     return ((cptr.ldI16o(skill_names_indices, skill, 2) > 0) ? (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(skill_names_indices, skill, 2), 120))), 16)) : ((skill == NHC.P_BARE_HANDED_COMBAT) ? cptr.ldPtro(barehands_or_martial, ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) ? 1 : 0), 8) : cptr.ldPtro(odd_skill_names, -cptr.ldI16o(skill_names_indices, skill, 2), 8)));
 }
@@ -1311,7 +1311,7 @@ export function* drain_weapon_skill(n) {
         }
 }
 
-/** C ref: weapon.c:1517 — @param {CPtr} obj @returns {CInt} */
+/** C ref: weapon.c:1517 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function weapon_type(obj) {
     let type;
     if (!obj)
@@ -1331,7 +1331,7 @@ export function uwep_skill_type() {
 
 const __static_weapon_hit_bonus_bad_skill = cptr.bytes("weapon_hit_bonus: bad skill %d"); /** C ref: weapon.c:1548 — char[31] (function-static) */
 
-/** C ref: weapon.c:1545 — @param {CPtr} weapon @returns {CInt} */
+/** C ref: weapon.c:1545 — @param {CPtr<struct obj>} weapon @returns {CInt} */
 export function* weapon_hit_bonus(weapon) {
     let type;
     let wep_type;
@@ -1409,7 +1409,7 @@ export function* weapon_hit_bonus(weapon) {
     return bonus;
 }
 
-/** C ref: weapon.c:1644 — @param {CPtr} weapon @returns {CInt} */
+/** C ref: weapon.c:1644 — @param {CPtr<struct obj>} weapon @returns {CInt} */
 export function* weapon_dam_bonus(weapon) {
     let type;
     let wep_type;
@@ -1482,7 +1482,7 @@ export function* weapon_dam_bonus(weapon) {
     return bonus;
 }
 
-/** C ref: weapon.c:1738 — @param {CPtr} class_skill */
+/** C ref: weapon.c:1738 — @param {CPtr<struct def_skill>} class_skill */
 export function* skill_init(class_skill) {
     let obj;
     let skmax;
@@ -1532,7 +1532,7 @@ export function* skill_init(class_skill) {
         (yield* skill_based_spellbook_id());
 }
 
-/** C ref: weapon.c:1814 — @param {CPtr} mon @param {CPtr} obj */
+/** C ref: weapon.c:1814 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj */
 export function* setmnotwielded(mon, obj) {
     if (!obj)
         return;

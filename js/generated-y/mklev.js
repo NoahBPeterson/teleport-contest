@@ -224,7 +224,7 @@ const __sl71 = cptr.lit("br != NULL");
 const __sl72 = cptr.lit("The Quest");
 const __sl73 = cptr.lit("Made knox portal.");
 
-/** C ref: mklev.c:60 — @param {CPtr} vx @param {CPtr} vy @returns {CInt} */
+/** C ref: mklev.c:60 — @param {CPtr<void>} vx @param {CPtr<void>} vy @returns {CInt} */
 function mkroom_cmp(vx, vy) {
     let x;
     let y;
@@ -235,7 +235,7 @@ function mkroom_cmp(vx, vy) {
     return (cptr.ldI16(x) > cptr.ldI16(y));
 }
 
-/** C ref: mklev.c:73 — @param {CInt} x @param {CInt} y @param {CInt} dir @param {CPtr} room @returns {CInt} */
+/** C ref: mklev.c:73 — @param {CInt} x @param {CInt} y @param {CInt} dir @param {CPtr<struct mkroom>} room @returns {CInt} */
 function good_rm_wall_doorpos(x, y, dir, room) {
     let tx;
     let ty;
@@ -256,7 +256,7 @@ function good_rm_wall_doorpos(x, y, dir, room) {
     return 1;
 }
 
-/** C ref: mklev.c:106 — @param {CPtr} x @param {CPtr} y @param {CInt} dir @param {CPtr} aroom @returns {CInt} */
+/** C ref: mklev.c:106 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CInt} dir @param {CPtr<struct mkroom>} aroom @returns {CInt} */
 function finddpos_shift(x, y, dir, aroom) {
     let dx;
     let dy;
@@ -286,7 +286,7 @@ function finddpos_shift(x, y, dir, aroom) {
     return 0;
 }
 
-/** C ref: mklev.c:147 — @param {CPtr} cc @param {CInt} dir @param {CPtr} aroom @returns {CInt} */
+/** C ref: mklev.c:147 — @param {CPtr<coord>} cc @param {CInt} dir @param {CPtr<struct mkroom>} aroom @returns {CInt} */
 function* finddpos(cc, dir, aroom) {
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -362,7 +362,7 @@ export function* sort_rooms() {
         }
 }
 
-/** C ref: mklev.c:231 — @param {CPtr} croom @param {CInt} lowx @param {CInt} lowy @param {CInt} hix @param {CInt} hiy @param {CInt} lit @param {CInt} rtype @param {CInt} special @param {CInt} is_room */
+/** C ref: mklev.c:231 — @param {CPtr<struct mkroom>} croom @param {CInt} lowx @param {CInt} lowy @param {CInt} hix @param {CInt} hiy @param {CInt} lit @param {CInt} rtype @param {CInt} special @param {CInt} is_room */
 function* do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, is_room) {
     let x;
     let y;
@@ -435,7 +435,7 @@ export function* add_room(lowx, lowy, hix, hiy, lit, rtype, special) {
     (cptr.stI32o(svn, $instance_globals_saved_n_nroom, cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + 1)) - (1);
 }
 
-/** C ref: mklev.c:322 — @param {CPtr} proom @param {CInt} lowx @param {CInt} lowy @param {CInt} hix @param {CInt} hiy @param {CInt} lit @param {CInt} rtype @param {CInt} special */
+/** C ref: mklev.c:322 — @param {CPtr<struct mkroom>} proom @param {CInt} lowx @param {CInt} lowy @param {CInt} hix @param {CInt} hiy @param {CInt} lit @param {CInt} rtype @param {CInt} special */
 export function* add_subroom(proom, lowx, lowy, hix, hiy, lit, rtype, special) {
     let croom;
     if (cptr.ldI32o(gn, $instance_globals_n_nsubroom) >= NHM.MAXNROFROOMS)
@@ -646,7 +646,7 @@ function* alloc_doors() {
     }
 }
 
-/** C ref: mklev.c:574 — @param {CInt} x @param {CInt} y @param {CPtr} aroom */
+/** C ref: mklev.c:574 — @param {CInt} x @param {CInt} y @param {CPtr<struct mkroom>} aroom */
 export function* add_door(x, y, aroom) {
     let broom;
     let tmp;
@@ -679,7 +679,7 @@ export function* add_door(x, y, aroom) {
     cptr.stI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(aroom, $mkroom_fdoor), 4, $nhcoord_y, y);
 }
 
-/** C ref: mklev.c:615 — @param {CInt} x @param {CInt} y @param {CPtr} aroom @param {CInt} type */
+/** C ref: mklev.c:615 — @param {CInt} x @param {CInt} y @param {CPtr<struct mkroom>} aroom @param {CInt} type */
 function* dosdoor(x, y, aroom, type) {
     let shdoor = schar((cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE))) ? 1 : 0));
     if (!((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL))
@@ -720,7 +720,7 @@ function* dosdoor(x, y, aroom, type) {
     (yield* add_door(x, y, aroom));
 }
 
-/** C ref: mklev.c:681 — @param {CPtr} aroom @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: mklev.c:681 — @param {CPtr<struct mkroom>} aroom @param {CInt} x @param {CInt} y @returns {CInt} */
 function cardinal_nextto_room(aroom, x, y) {
     let rmno = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(aroom, svr) / 224n) + 3n))));
     if (isok(i16(((x - 1) | 0)), y) && !(cptr.ldI32o3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (x - 1) | 0, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
@@ -734,7 +734,7 @@ function cardinal_nextto_room(aroom, x, y) {
     return 0;
 }
 
-/** C ref: mklev.c:701 — @param {CPtr} aroom @param {CPtr} dy @param {CPtr} xx @param {CPtr} yy @returns {CInt} */
+/** C ref: mklev.c:701 — @param {CPtr<struct mkroom>} aroom @param {CPtr<int>} dy @param {CPtr<coordxy>} xx @param {CPtr<coordxy>} yy @returns {CInt} */
 function* place_niche(aroom, dy, xx, yy) {
     let dd = cptr.alloc(4);
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl1, 708, __sl15), rn2(2)) : rn2(2))) {
@@ -977,7 +977,7 @@ cptr.stI32o(__static_fill_ordinary_room_extra_classes, 28, ((0 - NHC.SPBOOK_CLAS
 cptr.stI32o(__static_fill_ordinary_room_extra_classes, 32, ((0 - NHC.SPBOOK_CLASS) | 0));
 cptr.stI32o(__static_fill_ordinary_room_extra_classes, 36, ((0 - NHC.SPBOOK_CLASS) | 0)); /** C ref: mklev.c:1087 — int[10] (function-static) */
 
-/** C ref: mklev.c:939 — @param {CPtr} croom @param {CInt} bonus_items */
+/** C ref: mklev.c:939 — @param {CPtr<struct mkroom>} croom @param {CInt} bonus_items */
 function* fill_ordinary_room(croom, bonus_items) {
     let trycnt = 0;
     let pos = cptr.alloc(4);
@@ -1411,7 +1411,7 @@ export function* mklev() {
     reseed_random(rn2_on_display_rng);
 }
 
-/** C ref: mklev.c:1599 — @param {CPtr} croom */
+/** C ref: mklev.c:1599 — @param {CPtr<struct mkroom>} croom */
 export function topologize(croom) {
     let x;
     let y;
@@ -1449,7 +1449,7 @@ export function topologize(croom) {
         topologize(cptr.ldPtro2(croom, subindex, 8, $mkroom_sbrooms));
 }
 
-/** C ref: mklev.c:1660 — @param {CPtr} mp @returns {CPtr} */
+/** C ref: mklev.c:1660 — @param {CPtr<coord>} mp @returns {CPtr<struct mkroom>} */
 function* find_branch_room(mp) {
     let croom = null;
     if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) == 0) {
@@ -1463,7 +1463,7 @@ function* find_branch_room(mp) {
     return croom;
 }
 
-/** C ref: mklev.c:1677 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: mklev.c:1677 — @param {CInt} x @param {CInt} y @returns {CPtr<struct mkroom>} */
 function pos_to_room(x, y) {
     let i;
     let curr;
@@ -1474,7 +1474,7 @@ function pos_to_room(x, y) {
     return null;
 }
 
-/** C ref: mklev.c:1691 — @param {CPtr} br @param {CInt} x @param {CInt} y */
+/** C ref: mklev.c:1691 — @param {CPtr<branch>} br @param {CInt} x @param {CInt} y */
 export function* place_branch(br, x, y) {
     let m = cptr.alloc(4); cptr.stI16(m, 0);
     let dest;
@@ -1546,7 +1546,7 @@ export function maybe_sdoor(chance) {
     return schar(((depth(cptr.add(u, $you_uz)) > 2) && !(rng_log_enabled() ? (rng_log_set_caller(__sl1, 1795, __sl43), rn2((2 > (chance) ? 2 : (chance)))) : rn2((2 > (chance) ? 2 : (chance)))) ? 1 : 0));
 }
 
-/** C ref: mklev.c:1800 — @param {CInt} x @param {CInt} y @param {CPtr} aroom */
+/** C ref: mklev.c:1800 — @param {CInt} x @param {CInt} y @param {CPtr<struct mkroom>} aroom */
 export function* dodoor(x, y, aroom) {
     (yield* dosdoor(x, y, aroom, maybe_sdoor(8) ? NHC.SDOOR : NHC.DOOR));
 }
@@ -1556,7 +1556,7 @@ export function occupied(x, y) {
     return schar((t_at(x, y) || ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.STAIRS && (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.ALTAR) || is_lava(x, y) || is_pool(x, y) || invocation_pos(x, y) ? 1 : 0));
 }
 
-/** C ref: mklev.c:1815 — @param {CPtr} ttmp */
+/** C ref: mklev.c:1815 — @param {CPtr<struct trap>} ttmp */
 function* mktrap_victim(ttmp) {
     let otmp = null;
     let victim_mnum;
@@ -1732,7 +1732,7 @@ function traptype_roguelvl() {
 
 let __static_mktrap_mktrap_err = 0; /** C ref: mklev.c:2042 — int (function-static) */
 
-/** C ref: mklev.c:2036 — @param {CInt} num @param {CUInt} mktrapflags @param {CPtr} croom @param {CPtr} tm */
+/** C ref: mklev.c:2036 — @param {CInt} num @param {CUInt} mktrapflags @param {CPtr<struct mkroom>} croom @param {CPtr<coord>} tm */
 export function* mktrap(num, mktrapflags, croom, tm) {
     let t;
     let m = cptr.alloc(4);
@@ -1795,7 +1795,7 @@ export function* mktrap(num, mktrapflags, croom, tm) {
     return;
 }
 
-/** C ref: mklev.c:2159 — @param {CInt} x @param {CInt} y @param {CInt} up @param {CPtr} croom @param {CInt} force */
+/** C ref: mklev.c:2159 — @param {CInt} x @param {CInt} y @param {CInt} up @param {CPtr<struct mkroom>} croom @param {CInt} force */
 export function* mkstairs(x, y, up, croom, force) {
     let ltyp;
     let dest = cptr.alloc(4);
@@ -1820,12 +1820,12 @@ export function* mkstairs(x, y, up, croom, force) {
     cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, (up ? NHM.LA_UP : NHM.LA_DOWN) >>> 0);
 }
 
-/** C ref: mklev.c:2201 — @param {CPtr} croom @param {CInt} phase @returns {CInt} */
+/** C ref: mklev.c:2201 — @param {CPtr<struct mkroom>} croom @param {CInt} phase @returns {CInt} */
 function generate_stairs_room_good(croom, phase) {
     return schar((croom && (cptr.ld1so(croom, $mkroom_needjoining) || (phase < 0)) && ((!has_dnstairs(croom) && !has_upstairs(croom)) || phase < 1) && (cptr.ld1so(croom, $mkroom_rtype) == NHC.OROOM || ((phase < 2) && cptr.ld1so(croom, $mkroom_rtype) == NHC.THEMEROOM)) ? 1 : 0));
 }
 
-/** C ref: mklev.c:2219 @returns {CPtr} */
+/** C ref: mklev.c:2219 @returns {CPtr<struct mkroom>} */
 function* generate_stairs_find_room() {
     let croom;
     let i;
@@ -1877,7 +1877,7 @@ function* generate_stairs() {
     }
 }
 
-/** C ref: mklev.c:2285 — @param {CPtr} croom */
+/** C ref: mklev.c:2285 — @param {CPtr<struct mkroom>} croom */
 function* mkfount(croom) {
     let m = cptr.alloc(4);
     if (!find_okay_roompos(croom, m))
@@ -1889,7 +1889,7 @@ function* mkfount(croom) {
     cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags));
 }
 
-/** C ref: mklev.c:2303 — @param {CPtr} croom @param {CPtr} crd @returns {CInt} */
+/** C ref: mklev.c:2303 — @param {CPtr<struct mkroom>} croom @param {CPtr<coord>} crd @returns {CInt} */
 function find_okay_roompos(croom, crd) {
     let tryct = 0;
     do {
@@ -1901,7 +1901,7 @@ function find_okay_roompos(croom, crd) {
     return 1;
 }
 
-/** C ref: mklev.c:2317 — @param {CPtr} croom */
+/** C ref: mklev.c:2317 — @param {CPtr<struct mkroom>} croom */
 function* mksink(croom) {
     let m = cptr.alloc(4);
     if (!find_okay_roompos(croom, m))
@@ -1911,7 +1911,7 @@ function* mksink(croom) {
     cptr.postinc1(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nsinks));
 }
 
-/** C ref: mklev.c:2332 — @param {CPtr} croom */
+/** C ref: mklev.c:2332 — @param {CPtr<struct mkroom>} croom */
 function* mkaltar(croom) {
     let m = cptr.alloc(4);
     let al;
@@ -1925,7 +1925,7 @@ function* mkaltar(croom) {
     cptr.stI32o3(svl, cptr.ldI16(m), 756, cptr.ldI16o(m, $nhcoord_y), 36, $instance_globals_saved_l_level + $rm_flags, Align2amask(al));
 }
 
-/** C ref: mklev.c:2353 — @param {CPtr} croom */
+/** C ref: mklev.c:2353 — @param {CPtr<struct mkroom>} croom */
 function* mkgrave(croom) {
     let m = cptr.alloc(4);
     let tryct = 0;

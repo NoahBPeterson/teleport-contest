@@ -988,7 +988,7 @@ cptr.stPtro(achieve_msg, 496 + $ll_achieve_msg_msg, __sl23);
 cptr.stI64o(achieve_msg, 512, 0n);
 cptr.stPtro(achieve_msg, 512 + $ll_achieve_msg_msg, __sl0);
 
-/** C ref: insight.c:118 — @param {CPtr} buf */
+/** C ref: insight.c:118 — @param {CPtr<char>} buf */
 function enlght_out(buf) {
     if (cptr.ld1so(ge, $instance_globals_e_en_via_menu)) {
         add_menu_str(cptr.ldI32(ge), buf);
@@ -1010,7 +1010,7 @@ cptr.stPtro(__static_enlght_line_contra, 64 + $contrctn_contrctn, __sl35);
 cptr.stPtro(__static_enlght_line_contra, 80, __sl36);
 cptr.stPtro(__static_enlght_line_contra, 80 + $contrctn_contrctn, __sl37); /** C ref: insight.c:136 — struct contrctn[6] (function-static) */
 
-/** C ref: insight.c:127 — @param {CPtr} start @param {CPtr} middle @param {CPtr} end @param {CPtr} ps */
+/** C ref: insight.c:127 — @param {CPtr<char>} start @param {CPtr<char>} middle @param {CPtr<char>} end @param {CPtr<char>} ps */
 function enlght_line(start, middle, end, ps) {
     let i;
     let buf = new Uint8Array(256);
@@ -1022,7 +1022,7 @@ function enlght_line(start, middle, end, ps) {
     enlght_out(cptr.decay(buf));
 }
 
-/** C ref: insight.c:160 — @param {CPtr} inctyp @param {CInt} incamt @param {CInt} final @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: insight.c:160 — @param {CPtr<char>} inctyp @param {CInt} incamt @param {CInt} final @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function enlght_combatinc(inctyp, incamt, final, outbuf) {
     let modif;
     let bonus;
@@ -1074,7 +1074,7 @@ function walking_on_water() {
     return schar((((cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, 24, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0));
 }
 
-/** C ref: insight.c:233 — @param {CPtr} outbuf @param {CInt} final @param {CInt} wizxtra @returns {CPtr} */
+/** C ref: insight.c:233 — @param {CPtr<char>} outbuf @param {CInt} final @param {CInt} wizxtra @returns {CPtr<char>} */
 export function trap_predicament(outbuf, final, wizxtra) {
     let t;
     cptr.st1(outbuf, 0);
@@ -1113,7 +1113,7 @@ function cause_known(propindx) {
     return 0;
 }
 
-/** C ref: insight.c:287 — @param {CInt} attrindx @param {CInt} attrvalue @param {CPtr} resultbuf @returns {CPtr} */
+/** C ref: insight.c:287 — @param {CInt} attrindx @param {CInt} attrvalue @param {CPtr<char>} resultbuf @returns {CPtr<char>} */
 function attrval(attrindx, attrvalue, resultbuf) {
     if (attrindx != NHC.A_STR || attrvalue <= 18)
         void cptr.sprintf(resultbuf, __sl65, attrvalue);
@@ -1124,7 +1124,7 @@ function attrval(attrindx, attrvalue, resultbuf) {
     return resultbuf;
 }
 
-/** C ref: insight.c:314 — @param {CPtr} outbuf @param {CInt} final @returns {CPtr} */
+/** C ref: insight.c:314 — @param {CPtr<char>} outbuf @param {CInt} final @returns {CPtr<char>} */
 function fmt_elapsed_time(outbuf, final) {
     let fieldcnt;
     let edays;
@@ -1162,7 +1162,7 @@ function fmt_elapsed_time(outbuf, final) {
     return outbuf;
 }
 
-/** C ref: insight.c:362 — @param {CLongLong} n @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: insight.c:362 — @param {CLongLong} n @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function N_times(n, outbuf) {
     switch (n) {
         case 0n:
@@ -1889,7 +1889,7 @@ function weapon_insight(final) {
     }
 }
 
-/** C ref: insight.c:1468 — @param {CInt} adtyp @param {CPtr} prot_message @param {CInt} final */
+/** C ref: insight.c:1468 — @param {CInt} adtyp @param {CPtr<char>} prot_message @param {CInt} final */
 function item_resistance_message(adtyp, prot_message, final) {
     let protection = u_adtyp_resistance_obj(adtyp);
     if (protection) {
@@ -2688,7 +2688,7 @@ cptr.stPtro(cptr.decay(vanqorders[7]), 16, __sl622);
 
 const __static_vanqsort_cmp_punctclasses = [NHC.S_LIZARD, NHC.S_EEL, NHC.S_GOLEM, NHC.S_GHOST, NHC.S_DEMON, NHC.S_HUMAN, 0]; /** C ref: insight.c:2674 — char[7] (function-static) */
 
-/** C ref: insight.c:2621 — @param {CPtr} vptr1 @param {CPtr} vptr2 @returns {CInt} */
+/** C ref: insight.c:2621 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function vanqsort_cmp(vptr1, vptr2) {
     let indx1 = cptr.ldI16(vptr1);
     let indx2 = cptr.ldI16(vptr2);
@@ -2957,7 +2957,7 @@ function num_extinct() {
     return n;
 }
 
-/** C ref: insight.c:2985 — @param {CInt} mvflags @param {CPtr} mindx @returns {CInt} */
+/** C ref: insight.c:2985 — @param {CInt} mvflags @param {CPtr<int>} mindx @returns {CInt} */
 function num_gone(mvflags, mindx) {
     let mflg = uchar(mvflags);
     let i;
@@ -3085,7 +3085,7 @@ export function doborn() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: insight.c:3187 — @param {CInt} alignment @returns {CPtr} */
+/** C ref: insight.c:3187 — @param {CInt} alignment @returns {CPtr<char>} */
 export function align_str(alignment) {
     switch (alignment) {
         case -1:
@@ -3102,7 +3102,7 @@ export function align_str(alignment) {
 
 const __static_size_str_outbuf = new Uint8Array(40); /** C ref: insight.c:3205 — char[40] (function-static) */
 
-/** C ref: insight.c:3203 — @param {CInt} msize @returns {CPtr} */
+/** C ref: insight.c:3203 — @param {CInt} msize @returns {CPtr<char>} */
 function size_str(msize) {
     switch (msize) {
         case NHM.MZ_TINY:
@@ -3132,7 +3132,7 @@ function size_str(msize) {
 
 const __static_piousness_buf = new Uint8Array(32); /** C ref: insight.c:3237 — char[32] (function-static) */
 
-/** C ref: insight.c:3235 — @param {CInt} showneg @param {CPtr} suffix @returns {CPtr} */
+/** C ref: insight.c:3235 — @param {CInt} showneg @param {CPtr<char>} suffix @returns {CPtr<char>} */
 export function piousness(showneg, suffix) {
     let pio;
     if (cptr.ldI32o(u, $you_ualign + $align_record) >= 20)
@@ -3166,7 +3166,7 @@ export function piousness(showneg, suffix) {
     return cptr.decay(__static_piousness_buf);
 }
 
-/** C ref: insight.c:3275 — @param {CPtr} mtmp */
+/** C ref: insight.c:3275 — @param {CPtr<struct monst>} mtmp */
 export function mstatusline(mtmp) {
     let alignment = mon_aligntyp(mtmp);
     let info = new Uint8Array(256);

@@ -440,7 +440,7 @@ function is_swallow_sym(c) {
 
 const __static_append_str_sep = cptr.bytes(" or "); /** C ref: pager.c:84 — char[5] (function-static) */
 
-/** C ref: pager.c:82 — @param {CPtr} buf @param {CPtr} new_str @returns {CInt} */
+/** C ref: pager.c:82 — @param {CPtr<char>} buf @param {CPtr<char>} new_str @returns {CInt} */
 function append_str(buf, new_str) {
     let oldlen;
     let space_left;
@@ -459,7 +459,7 @@ function append_str(buf, new_str) {
     return 1;
 }
 
-/** C ref: pager.c:108 — @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: pager.c:108 — @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 export function self_lookat(outbuf) {
     let race = new Uint8Array(128);
     let trapbuf = new Uint8Array(128);
@@ -478,7 +478,7 @@ export function self_lookat(outbuf) {
     return outbuf;
 }
 
-/** C ref: pager.c:138 — @param {CPtr} mon @param {CInt} addspace @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: pager.c:138 — @param {CPtr<struct monst>} mon @param {CInt} addspace @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 export function monhealthdescr(mon, addspace, outbuf) {
     (void (mon));
     (void (addspace));
@@ -486,7 +486,7 @@ export function monhealthdescr(mon, addspace, outbuf) {
     return outbuf;
 }
 
-/** C ref: pager.c:167 — @param {CPtr} outbuf @param {CInt} tnum @param {CInt} x @param {CInt} y */
+/** C ref: pager.c:167 — @param {CPtr<char>} outbuf @param {CInt} tnum @param {CInt} x @param {CInt} y */
 function trap_description(outbuf, tnum, x, y) {
     if (trapped_chest_at(tnum, x, y))
         void cptr.strcpy(outbuf, __sl9);
@@ -497,7 +497,7 @@ function trap_description(outbuf, tnum, x, y) {
     return;
 }
 
-/** C ref: pager.c:186 — @param {CPtr} mon @param {CUInt} mhid_flags @param {CPtr} outbuf */
+/** C ref: pager.c:186 — @param {CPtr<struct monst>} mon @param {CUInt} mhid_flags @param {CPtr<char>} outbuf */
 export function mhidden_description(mon, mhid_flags, outbuf) {
     let otmp = cptr.box(0), what, reg, buflen, incl_article, force_region, fakeobj, x, y, glyph;
     let __go_objfrommap = false;
@@ -570,7 +570,7 @@ export function mhidden_description(mon, mhid_flags, outbuf) {
     }
 }
 
-/** C ref: pager.c:284 — @param {CInt} glyph @param {CInt} x @param {CInt} y @param {CPtr} obj_p @returns {CInt} */
+/** C ref: pager.c:284 — @param {CInt} glyph @param {CInt} x @param {CInt} y @param {CPtr<struct obj *>} obj_p @returns {CInt} */
 export function object_from_map(glyph, x, y, obj_p) {
     let fakeobj = 0;
     let mimic_obj = 0;
@@ -627,7 +627,7 @@ export function object_from_map(glyph, x, y, obj_p) {
     return fakeobj;
 }
 
-/** C ref: pager.c:380 — @param {CPtr} buf @param {CInt} x @param {CInt} y @param {CInt} glyph */
+/** C ref: pager.c:380 — @param {CPtr<char>} buf @param {CInt} x @param {CInt} y @param {CInt} glyph */
 function look_at_object(buf, x, y, glyph) {
     let otmp = cptr.box(null);
     let fakeobj = object_from_map(glyph, x, y, otmp);
@@ -657,7 +657,7 @@ function look_at_object(buf, x, y, glyph) {
     return;
 }
 
-/** C ref: pager.c:422 — @param {CPtr} buf @param {CPtr} monbuf @param {CPtr} mtmp @param {CInt} x @param {CInt} y */
+/** C ref: pager.c:422 — @param {CPtr<char>} buf @param {CPtr<char>} monbuf @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y */
 function look_at_monster(buf, monbuf, mtmp, x, y) {
     let name;
     let monnambuf = new Uint8Array(256);
@@ -752,7 +752,7 @@ function look_at_monster(buf, monbuf, mtmp, x, y) {
 
 const __static_waterbody_name_pooltype = new Uint8Array(40); /** C ref: pager.c:563 — char[40] (function-static) */
 
-/** C ref: pager.c:561 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: pager.c:561 — @param {CInt} x @param {CInt} y @returns {CPtr<char>} */
 export function waterbody_name(x, y) {
     let ltyp;
     let hallucinate = schar((Hallucination() && !cptr.ldI32(program_state) ? 1 : 0));
@@ -803,7 +803,7 @@ cptr.stPtro(__static_ice_descr_icetyp, 24, __sl81);
 cptr.stPtro(__static_ice_descr_icetyp, 32, __sl82);
 cptr.stPtro(__static_ice_descr_icetyp, 40, __sl83); /** C ref: pager.c:616 — char *[6] (function-static) */
 
-/** C ref: pager.c:614 — @param {CInt} x @param {CInt} y @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: pager.c:614 — @param {CInt} x @param {CInt} y @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 export function ice_descr(x, y, outbuf) {
     let r = (cptr.ldI32o(u, $you_xray_range) > 2) ? cptr.ldI32o(u, $you_xray_range) : 2;
     let neardist = (Math.imul((Math.imul(r, r)), 2) - r) | 0;
@@ -820,7 +820,7 @@ export function ice_descr(x, y, outbuf) {
     return outbuf;
 }
 
-/** C ref: pager.c:657 — @param {CInt} x @param {CInt} y @param {CPtr} buf @param {CPtr} monbuf @returns {CPtr} */
+/** C ref: pager.c:657 — @param {CInt} x @param {CInt} y @param {CPtr<char>} buf @param {CPtr<char>} monbuf @returns {CPtr<struct permonst>} */
 function lookat(x, y, buf, monbuf) {
     let mtmp = null;
     let pm = null;
@@ -925,14 +925,14 @@ function lookat(x, y, buf, monbuf) {
     return (pm && !Hallucination()) ? pm : null;
 }
 
-/** C ref: pager.c:807 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: pager.c:807 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function ia_checkfile(otmp) {
     let itemnam = new Uint8Array(256);
     void cptr.strcpy(cptr.decay(itemnam), singular(otmp, xname));
     return checkfile(cptr.decay(itemnam), null, ((NHC.chkfilIaCheck | NHC.chkfilDontAsk) >>> 0), null);
 }
 
-/** C ref: pager.c:830 — @param {CPtr} inp @param {CPtr} pm @param {CUInt} chkflags @param {CPtr} supplemental_name @returns {CInt} */
+/** C ref: pager.c:830 — @param {CPtr<char>} inp @param {CPtr<struct permonst>} pm @param {CUInt} chkflags @param {CPtr<char>} supplemental_name @returns {CInt} */
 function checkfile(inp, pm, chkflags, supplemental_name) {
     let fp;
     let buf = new Uint8Array(256);
@@ -1158,7 +1158,7 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
     return res;
 }
 
-/** C ref: pager.c:1133 — @param {CInt} found @param {CInt} idx @param {CInt} glyph @param {CInt} article @param {*} cc @param {CPtr} x_str @param {CPtr} prefix @param {CPtr} hit_trap @param {CPtr} firstmatch @param {CPtr} out_str @returns {CInt} */
+/** C ref: pager.c:1133 — @param {CInt} found @param {CInt} idx @param {CInt} glyph @param {CInt} article @param {*} cc @param {CPtr<char>} x_str @param {CPtr<char>} prefix @param {CPtr<boolean>} hit_trap @param {CPtr<char *>} firstmatch @param {CPtr<char>} out_str @returns {CInt} */
 function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap, firstmatch, out_str) {
     cc = cptr.dup(cc, 4); // by-value struct param
     let mbuf = null;
@@ -1215,7 +1215,7 @@ const __static_do_screen_description_mon_interior = cptr.bytes("the interior of 
 const __static_do_screen_description_unreconnoitered = cptr.bytes("unreconnoitered"); /** C ref: pager.c:1254 — char[16] (function-static) */
 const __static_do_screen_description_look_buf = new Uint8Array(256); /** C ref: pager.c:1255 — char[256] (function-static) */
 
-/** C ref: pager.c:1247 — @param {*} cc @param {CInt} looked @param {CInt} sym @param {CPtr} out_str @param {CPtr} firstmatch @param {CPtr} for_supplement @returns {CInt} */
+/** C ref: pager.c:1247 — @param {*} cc @param {CInt} looked @param {CInt} sym @param {CPtr<char>} out_str @param {CPtr<char *>} firstmatch @param {CPtr<struct permonst *>} for_supplement @returns {CInt} */
 export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_supplement) {
     cc = cptr.dup(cc, 4); // by-value struct param
     let prefix = new Uint8Array(256);
@@ -1471,7 +1471,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
     }
 }
 
-/** C ref: pager.c:1631 — @param {CInt} x @param {CInt} y @param {CPtr} buf @param {CInt} force @returns {CInt} */
+/** C ref: pager.c:1631 — @param {CInt} x @param {CInt} y @param {CPtr<char>} buf @param {CInt} force @returns {CInt} */
 function add_quoted_engraving(x, y, buf, force) {
     let temp_buf = new Uint8Array(256);
     let ep = engr_at(x, y);
@@ -1492,7 +1492,7 @@ function add_quoted_engraving(x, y, buf, force) {
 /** C ref: pager.c:1670 — char[30] */
 export const what_is_a_location = cptr.bytes("a monster, object or location");
 
-/** C ref: pager.c:1673 — @param {CInt} mode @param {CPtr} click_cc @returns {CInt} */
+/** C ref: pager.c:1673 — @param {CInt} mode @param {CPtr<coord>} click_cc @returns {CInt} */
 export function do_look(mode, click_cc) {
     let quick, clicklook, out_str, cq, cmdq, firstmatch = cptr.box(0), pm, supplemental_pm = cptr.box(0), i, ans, sym, found, cc, save_verbose, from_screen, clr, pick_list = cptr.box(0), win, any, invlet, invobj, dmpbuf, temp_buf, supplemental_name;
     let __pc = 0;
@@ -1698,7 +1698,7 @@ export function do_look(mode, click_cc) {
     }
 }
 
-/** C ref: pager.c:1966 — @param {CPtr} lo_x @param {CPtr} lo_y @param {CPtr} hi_x @param {CPtr} hi_y @param {CInt} nearby */
+/** C ref: pager.c:1966 — @param {CPtr<coordxy>} lo_x @param {CPtr<coordxy>} lo_y @param {CPtr<coordxy>} hi_x @param {CPtr<coordxy>} hi_y @param {CInt} nearby */
 function look_region_nearby(lo_x, lo_y, hi_x, hi_y, nearby) {
     cptr.stI16(lo_y, i16((nearby ? (((cptr.ldI16o(u, $you_uy) - NHM.BOLT_LIM) | 0) > 0 ? ((cptr.ldI16o(u, $you_uy) - NHM.BOLT_LIM) | 0) : 0) : 0)));
     cptr.stI16(lo_x, i16((nearby ? (((cptr.ldI16(u) - NHM.BOLT_LIM) | 0) > 1 ? ((cptr.ldI16(u) - NHM.BOLT_LIM) | 0) : 1) : 1)));
@@ -1927,7 +1927,7 @@ cptr.stPtro(suptext2, 32, __sl229);
 cptr.stPtro(suptext2, 40, __sl230);
 cptr.stPtro(suptext2, 48, null);
 
-/** C ref: pager.c:2253 — @param {CPtr} name @param {CPtr} pm @param {CInt} without_asking */
+/** C ref: pager.c:2253 — @param {CPtr<char>} name @param {CPtr<struct permonst>} pm @param {CInt} without_asking */
 function do_supplemental_info(name, pm, without_asking) {
     let textp;
     let datawin = -1;
@@ -2051,7 +2051,7 @@ function whatdoes_help() {
     destroy_nhwindow()(tmpwin);
 }
 
-/** C ref: pager.c:2577 — @param {CInt} q @param {CPtr} cbuf @returns {CPtr} */
+/** C ref: pager.c:2577 — @param {CInt} q @param {CPtr<char>} cbuf @returns {CPtr<char>} */
 export function dowhatdoes_core(q, cbuf) {
     let buf = new Uint8Array(256);
     let ec_desc;
@@ -2271,7 +2271,7 @@ export function dohelp() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: pager.c:2908 — @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: pager.c:2908 — @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function setopt_cmd(outbuf) {
     let cmdbuf = new Uint8Array(128);
     let cmdnm;

@@ -25,12 +25,12 @@ export const regex_id = cptr.bytes("posixregex");
 
 /** C ref: posixregex.c:54 — struct nhregex { re, err } (memory model v0.5) */
 
-/** C ref: posixregex.c:60 @returns {CPtr} */
+/** C ref: posixregex.c:60 @returns {CPtr<struct nhregex>} */
 export function* regex_init() {
     return (yield* alloc(40));
 }
 
-/** C ref: posixregex.c:66 — @param {CPtr} s @param {CPtr} re @returns {CInt} */
+/** C ref: posixregex.c:66 — @param {CPtr<char>} s @param {CPtr<struct nhregex>} re @returns {CInt} */
 export function regex_compile(s, re) {
     if (!re)
         return 0;
@@ -39,7 +39,7 @@ export function regex_compile(s, re) {
     return 1;
 }
 
-/** C ref: posixregex.c:76 — @param {CPtr} re @param {CPtr} errbuf @returns {CPtr} */
+/** C ref: posixregex.c:76 — @param {CPtr<struct nhregex>} re @param {CPtr<char>} errbuf @returns {CPtr<char>} */
 export function regex_error_desc(re, errbuf) {
     if (!re) {
         void cptr.strcpy(errbuf, __sl0);
@@ -54,7 +54,7 @@ export function regex_error_desc(re, errbuf) {
     return errbuf;
 }
 
-/** C ref: posixregex.c:92 — @param {CPtr} s @param {CPtr} re @returns {CInt} */
+/** C ref: posixregex.c:92 — @param {CPtr<char>} s @param {CPtr<struct nhregex>} re @returns {CInt} */
 export function regex_match(s, re) {
     let result;
     if (!re || !s)
@@ -67,7 +67,7 @@ export function regex_match(s, re) {
     return 1;
 }
 
-/** C ref: posixregex.c:108 — @param {CPtr} re */
+/** C ref: posixregex.c:108 — @param {CPtr<struct nhregex>} re */
 export function regex_free(re) {
     regfree(re);
     cptr.free(re);

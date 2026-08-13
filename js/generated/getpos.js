@@ -230,7 +230,7 @@ export function mapxy_valid(x, y) {
     return 0;
 }
 
-/** C ref: getpos.c:102 — @param {CPtr} sel @param {CPtr} validf */
+/** C ref: getpos.c:102 — @param {CPtr<struct selectionvar>} sel @param {CPtr} validf */
 function getpos_getvalids_selection(sel, validf) {
     let x;
     let y;
@@ -275,7 +275,7 @@ cptr.stPtro(gloc_filtertxt, 0, __sl21);
 cptr.stPtro(gloc_filtertxt, 8, __sl22);
 cptr.stPtro(gloc_filtertxt, 16, __sl23);
 
-/** C ref: getpos.c:137 — @param {CInt} tmpwin @param {CPtr} k1 @param {CPtr} k2 @param {CInt} gloc */
+/** C ref: getpos.c:137 — @param {CInt} tmpwin @param {CPtr<char>} k1 @param {CPtr<char>} k2 @param {CInt} gloc */
 function getpos_help_keyxhelp(tmpwin, k1, k2, gloc) {
     let sbuf = new Uint8Array(256);
     let fbuf = new Uint8Array(128);
@@ -294,7 +294,7 @@ const __static_getpos_help_fastmovemode = cptr.alloc(2 * 8);
 cptr.stPtro(__static_getpos_help_fastmovemode, 0, __sl54);
 cptr.stPtro(__static_getpos_help_fastmovemode, 8, __sl55); /** C ref: getpos.c:169 — char *[2] (function-static) */
 
-/** C ref: getpos.c:167 — @param {CInt} force @param {CPtr} goal */
+/** C ref: getpos.c:167 — @param {CInt} force @param {CPtr<char>} goal */
 function getpos_help(force, goal) {
     let sbuf, doing_what_is, tmpwin, kbuf;
     let __pc = 0;
@@ -395,7 +395,7 @@ function getpos_help(force, goal) {
     }
 }
 
-/** C ref: getpos.c:312 — @param {CPtr} a @param {CPtr} b @returns {CInt} */
+/** C ref: getpos.c:312 — @param {CPtr<void>} a @param {CPtr<void>} b @returns {CInt} */
 function cmp_coord_distu(a, b) {
     let c1 = a;
     let c2 = b;
@@ -517,7 +517,7 @@ export function gather_locs_interesting(x, y, gloc) {
     return 0;
 }
 
-/** C ref: getpos.c:513 — @param {CPtr} arr_p @param {CPtr} cnt_p @param {CInt} gloc */
+/** C ref: getpos.c:513 — @param {CPtr<coord *>} arr_p @param {CPtr<int>} cnt_p @param {CInt} gloc */
 function gather_locs(arr_p, cnt_p, gloc) {
     let pass;
     let idx;
@@ -557,7 +557,7 @@ cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[2]), 8, __sl66);
 cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 0, __sl67);
 cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 8, __sl68); /** C ref: getpos.c:568 — char *[4][2] (function-static) */
 
-/** C ref: getpos.c:557 — @param {CInt} dx @param {CInt} dy @param {CInt} fulldir @returns {CPtr} */
+/** C ref: getpos.c:557 — @param {CInt} dx @param {CInt} dy @param {CInt} fulldir @returns {CPtr<char>} */
 export function dxdy_to_dist_descr(dx, dy, fulldir) {
     let dst;
     if (!dx && !dy) {
@@ -582,7 +582,7 @@ export function dxdy_to_dist_descr(dx, dy, fulldir) {
 
 const __static_coord_desc_screen_fmt = new Uint8Array(16); /** C ref: getpos.c:597 — char[16] (function-static) */
 
-/** C ref: getpos.c:595 — @param {CInt} x @param {CInt} y @param {CPtr} outbuf @param {CInt} cmode @returns {CPtr} */
+/** C ref: getpos.c:595 — @param {CInt} x @param {CInt} y @param {CPtr<char>} outbuf @param {CInt} cmode @returns {CPtr<char>} */
 export function coord_desc(x, y, outbuf, cmode) {
     let dx;
     let dy;
@@ -624,7 +624,7 @@ export function auto_describe(cx, cy) {
     }
 }
 
-/** C ref: getpos.c:665 — @param {CPtr} ccp @param {CInt} gloc @returns {CInt} */
+/** C ref: getpos.c:665 — @param {CPtr<coord>} ccp @param {CInt} gloc @returns {CInt} */
 export function getpos_menu(ccp, gloc) {
     let garr = cptr.box([null]);
     let gcount = cptr.box(0);
@@ -671,7 +671,7 @@ export function getpos_menu(ccp, gloc) {
     return schar((pick_cnt > 0));
 }
 
-/** C ref: getpos.c:729 — @param {CPtr} cx @param {CPtr} cy @param {CInt} dx @param {CInt} dy */
+/** C ref: getpos.c:729 — @param {CPtr<coordxy>} cx @param {CPtr<coordxy>} cy @param {CInt} dx @param {CInt} dy */
 function truncate_to_map(cx, cy, dx, dy) {
     if (((cptr.ldI16(cx) + dx) | 0) < 1) {
         dy = schar(dy - Math.imul(sgn(dy), ((1 - ((cptr.ldI16(cx) + dx) | 0)) | 0)));
@@ -730,7 +730,7 @@ cptr.stPtro(__static_getpos_view_filters, 0, __sl106);
 cptr.stPtro(__static_getpos_view_filters, 8, __sl107);
 cptr.stPtro(__static_getpos_view_filters, 16, __sl108); /** C ref: getpos.c:972 — char *[3] (function-static) */
 
-/** C ref: getpos.c:771 — @param {CPtr} ccp @param {CInt} force @param {CPtr} goal @returns {CInt} */
+/** C ref: getpos.c:771 — @param {CPtr<coord>} ccp @param {CInt} force @param {CPtr<char>} goal @returns {CInt} */
 export function getpos(ccp, force, goal) {
     let cq, cmdq, cp, pick_chars, mMoOdDxX, result, i, c, sidx = cptr.box(0), cx = cptr.box(0), cy = cptr.box(0), tx = cptr.box(0), ty = cptr.box(0), msg_given, show_goal_msg, garr, gcount, gidx, udx, udy, udz, dx, dy, rushrun, glyph, gtmp, gloc, tmpcrd, matching, pass, k, lo_x, lo_y, hi_x, hi_y, note;
     let __pc = 0;

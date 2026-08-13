@@ -441,13 +441,13 @@ const __sl342 = cptr.lit("Thud");
 const __static_nextmbuf_bufs = (function () { const flat = new Uint8Array(5 * (256 * 1)); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * (256 * 1), (r + 1) * (256 * 1))); a.buf = flat; return a; })(); /** C ref: do_name.c:22 — char[5][256] (function-static) */
 let __static_nextmbuf_bufidx = 0; /** C ref: do_name.c:23 — int (function-static) */
 
-/** C ref: do_name.c:20 @returns {CPtr} */
+/** C ref: do_name.c:20 @returns {CPtr<char>} */
 function nextmbuf() {
     __static_nextmbuf_bufidx = ((__static_nextmbuf_bufidx + 1) | 0) % 5;
     return cptr.decay(__static_nextmbuf_bufs[__static_nextmbuf_bufidx]);
 }
 
-/** C ref: do_name.c:31 — @param {CPtr} mon @param {CInt} lth */
+/** C ref: do_name.c:31 — @param {CPtr<struct monst>} mon @param {CInt} lth */
 export function* new_mgivenname(mon, lth) {
     if (lth) {
         if (!cptr.ldPtro(mon, $monst_mextra))
@@ -461,7 +461,7 @@ export function* new_mgivenname(mon, lth) {
     }
 }
 
-/** C ref: do_name.c:51 — @param {CPtr} mon */
+/** C ref: do_name.c:51 — @param {CPtr<struct monst>} mon */
 export function free_mgivenname(mon) {
     if (has_mgivenname(mon)) {
         cptr.free((cptr.ldPtr(cptr.ldPtro((mon), $monst_mextra))));
@@ -469,7 +469,7 @@ export function free_mgivenname(mon) {
     }
 }
 
-/** C ref: do_name.c:61 — @param {CPtr} obj @param {CInt} lth */
+/** C ref: do_name.c:61 — @param {CPtr<struct obj>} obj @param {CInt} lth */
 export function* new_oname(obj, lth) {
     if (lth) {
         if (!cptr.ldPtro(obj, $obj_oextra))
@@ -483,7 +483,7 @@ export function* new_oname(obj, lth) {
     }
 }
 
-/** C ref: do_name.c:81 — @param {CPtr} obj */
+/** C ref: do_name.c:81 — @param {CPtr<struct obj>} obj */
 export function free_oname(obj) {
     if (has_oname(obj)) {
         cptr.free((cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))));
@@ -491,14 +491,14 @@ export function free_oname(obj) {
     }
 }
 
-/** C ref: do_name.c:95 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: do_name.c:95 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function safe_oname(obj) {
     if (has_oname(obj))
         return (cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)));
     return __sl0;
 }
 
-/** C ref: do_name.c:105 — @param {CPtr} outbuf @param {CPtr} prompt @param {CPtr} defres @returns {CPtr} */
+/** C ref: do_name.c:105 — @param {CPtr<char>} outbuf @param {CPtr<char>} prompt @param {CPtr<char>} defres @returns {CPtr<char>} */
 function* name_from_player(outbuf, prompt, defres) {
     cptr.st1o(outbuf, 0, 0);
     (void (defres));
@@ -511,7 +511,7 @@ function* name_from_player(outbuf, prompt, defres) {
     return outbuf;
 }
 
-/** C ref: do_name.c:133 — @param {CPtr} mtmp @param {CPtr} name @returns {CPtr} */
+/** C ref: do_name.c:133 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} name @returns {CPtr<struct monst>} */
 export function* christen_monst(mtmp, name) {
     let lth;
     let buf = new Uint8Array(63);
@@ -529,7 +529,7 @@ export function* christen_monst(mtmp, name) {
     return mtmp;
 }
 
-/** C ref: do_name.c:158 — @param {CPtr} mtmp @param {CPtr} monnambuf @param {CPtr} usrbuf @returns {CInt} */
+/** C ref: do_name.c:158 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} monnambuf @param {CPtr<char>} usrbuf @returns {CInt} */
 function* alreadynamed(mtmp, monnambuf, usrbuf) {
     let pronounbuf = new Uint8Array(10);
     let p;
@@ -609,7 +609,7 @@ function* do_mgivenname() {
     }
 }
 
-/** C ref: do_name.c:290 — @param {CPtr} obj */
+/** C ref: do_name.c:290 — @param {CPtr<struct obj>} obj */
 function* do_oname(obj) {
     let bufp;
     let buf = new Uint8Array(256);
@@ -648,7 +648,7 @@ function* do_oname(obj) {
     (void (obj));
 }
 
-/** C ref: do_name.c:372 — @param {CPtr} obj @param {CPtr} name @param {CUInt} oflgs @returns {CPtr} */
+/** C ref: do_name.c:372 — @param {CPtr<struct obj>} obj @param {CPtr<char>} name @param {CUInt} oflgs @returns {CPtr<struct obj>} */
 export function* oname(obj, name, oflgs) {
     let lth;
     let buf = new Uint8Array(63);
@@ -714,7 +714,7 @@ export function objtyp_is_callable(i) {
     return 0;
 }
 
-/** C ref: do_name.c:467 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_name.c:467 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function name_ok(obj) {
     if (!obj || cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return NHC.GETOBJ_EXCLUDE;
@@ -723,7 +723,7 @@ export function name_ok(obj) {
     return NHC.GETOBJ_SUGGEST;
 }
 
-/** C ref: do_name.c:480 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_name.c:480 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function call_ok(obj) {
     if (!obj || !objtyp_is_callable(cptr.ldI16o(obj, $obj_otyp)))
         return NHC.GETOBJ_EXCLUDE;
@@ -814,7 +814,7 @@ export function* docallcmd() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: do_name.c:605 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: do_name.c:605 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function* docall_xname(obj) {
     let otemp = cptr.alloc(216);
     cptr.memcpy(otemp, obj, 216);
@@ -838,7 +838,7 @@ function* docall_xname(obj) {
     return (yield* an((yield* xname(otemp))));
 }
 
-/** C ref: do_name.c:636 — @param {CPtr} obj */
+/** C ref: do_name.c:636 — @param {CPtr<struct obj>} obj */
 export function* docall(obj) {
     let buf = new Uint8Array(256);
     let qbuf = new Uint8Array(128);
@@ -955,12 +955,12 @@ cptr.stPtro(ghostnames, 248, __sl99);
 cptr.stPtro(ghostnames, 256, __sl100);
 cptr.stPtro(ghostnames, 264, __sl101);
 
-/** C ref: do_name.c:772 @returns {CPtr} */
+/** C ref: do_name.c:772 @returns {CPtr<char>} */
 export function rndghostname() {
     return (rng_log_enabled() ? (rng_log_set_caller(__sl33, 774, __sl102), rn2(7)) : rn2(7)) ? cptr.ldPtro(ghostnames, (rng_log_enabled() ? (rng_log_set_caller(__sl33, 774, __sl102), rn2(34)) : rn2(34)), 8) : svp;
 }
 
-/** C ref: do_name.c:827 — @param {CPtr} mtmp @param {CInt} article @param {CPtr} adjective @param {CInt} suppress @param {CInt} called @returns {CPtr} */
+/** C ref: do_name.c:827 — @param {CPtr<struct monst>} mtmp @param {CInt} article @param {CPtr<char>} adjective @param {CInt} suppress @param {CInt} called @returns {CPtr<char>} */
 export function* x_monnam(mtmp, article, adjective, suppress, called) {
     let buf = nextmbuf();
     let mdat = cptr.ldPtro(mtmp, $monst_data);
@@ -1114,58 +1114,58 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     return buf;
 }
 
-/** C ref: do_name.c:1035 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1035 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* l_monnam(mtmp) {
     return (yield* x_monnam(mtmp, NHM.ARTICLE_NONE, null, (has_mgivenname(mtmp)) ? NHM.SUPPRESS_SADDLE : 0, 1));
 }
 
-/** C ref: do_name.c:1042 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1042 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* mon_nam(mtmp) {
     return (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, (has_mgivenname(mtmp)) ? NHM.SUPPRESS_SADDLE : 0, 0));
 }
 
-/** C ref: do_name.c:1054 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1054 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* noit_mon_nam(mtmp) {
     return (yield* x_monnam(mtmp, NHM.ARTICLE_YOUR, null, (has_mgivenname(mtmp) ? 9 : NHM.SUPPRESS_IT), 0));
 }
 
-/** C ref: do_name.c:1065 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1065 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* some_mon_nam(mtmp) {
     return (yield* x_monnam(mtmp, NHM.ARTICLE_THE, null, (has_mgivenname(mtmp) ? 72 : NHM.AUGMENT_IT), 0));
 }
 
-/** C ref: do_name.c:1074 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1074 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* Monnam(mtmp) {
     let bp = (yield* mon_nam(mtmp));
     cptr.st1(bp, highc(cptr.ld1s(bp)));
     return bp;
 }
 
-/** C ref: do_name.c:1083 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1083 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* noit_Monnam(mtmp) {
     let bp = (yield* noit_mon_nam(mtmp));
     cptr.st1(bp, highc(cptr.ld1s(bp)));
     return bp;
 }
 
-/** C ref: do_name.c:1092 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1092 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* Some_Monnam(mtmp) {
     let bp = (yield* some_mon_nam(mtmp));
     cptr.st1(bp, highc(cptr.ld1s(bp)));
     return bp;
 }
 
-/** C ref: do_name.c:1102 — @param {CPtr} mtmp @param {CInt} article @returns {CPtr} */
+/** C ref: do_name.c:1102 — @param {CPtr<struct monst>} mtmp @param {CInt} article @returns {CPtr<char>} */
 export function* noname_monnam(mtmp, article) {
     return (yield* x_monnam(mtmp, article, null, NHM.SUPPRESS_NAME, 0));
 }
 
-/** C ref: do_name.c:1110 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1110 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* m_monnam(mtmp) {
     return (yield* x_monnam(mtmp, NHM.ARTICLE_NONE, null, NHM.EXACT_NAME, 0));
 }
 
-/** C ref: do_name.c:1117 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1117 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* y_monnam(mtmp) {
     let prefix;
     let suppression_flag;
@@ -1174,33 +1174,33 @@ export function* y_monnam(mtmp) {
     return (yield* x_monnam(mtmp, prefix, null, suppression_flag, 0));
 }
 
-/** C ref: do_name.c:1133 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1133 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* YMonnam(mtmp) {
     let bp = (yield* y_monnam(mtmp));
     cptr.st1(bp, highc(cptr.ld1s(bp)));
     return bp;
 }
 
-/** C ref: do_name.c:1142 — @param {CPtr} mtmp @param {CPtr} adj @returns {CPtr} */
+/** C ref: do_name.c:1142 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} adj @returns {CPtr<char>} */
 export function* Adjmonnam(mtmp, adj) {
     let bp = (yield* x_monnam(mtmp, NHM.ARTICLE_THE, adj, has_mgivenname(mtmp) ? NHM.SUPPRESS_SADDLE : 0, 0));
     cptr.st1(bp, highc(cptr.ld1s(bp)));
     return bp;
 }
 
-/** C ref: do_name.c:1152 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1152 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* a_monnam(mtmp) {
     return (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, has_mgivenname(mtmp) ? NHM.SUPPRESS_SADDLE : 0, 0));
 }
 
-/** C ref: do_name.c:1159 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: do_name.c:1159 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* Amonnam(mtmp) {
     let bp = (yield* a_monnam(mtmp));
     cptr.st1(bp, highc(cptr.ld1s(bp)));
     return bp;
 }
 
-/** C ref: do_name.c:1170 — @param {CPtr} mon @param {CInt} article @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: do_name.c:1170 — @param {CPtr<struct monst>} mon @param {CInt} article @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 export function* distant_monnam(mon, article, outbuf) {
     if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_HIGH_CLERIC, 96)) && !Hallucination() && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !m_next2u(mon)) {
         void cptr.strcpy(outbuf, article == NHM.ARTICLE_THE ? __sl6 : __sl0);
@@ -1211,7 +1211,7 @@ export function* distant_monnam(mon, article, outbuf) {
     return outbuf;
 }
 
-/** C ref: do_name.c:1191 — @param {CPtr} mon @param {CPtr} other_mon @returns {CPtr} */
+/** C ref: do_name.c:1191 — @param {CPtr<struct monst>} mon @param {CPtr<struct monst>} other_mon @returns {CPtr<char>} */
 export function* mon_nam_too(mon, other_mon) {
     let outbuf;
     if (!cptr.eq(mon, other_mon)) {
@@ -1237,7 +1237,7 @@ export function* mon_nam_too(mon, other_mon) {
     return outbuf;
 }
 
-/** C ref: do_name.c:1221 — @param {CPtr} mon @param {CPtr} monnamtext @param {CPtr} verb @param {CPtr} othertext @returns {CPtr} */
+/** C ref: do_name.c:1221 — @param {CPtr<struct monst>} mon @param {CPtr<char>} monnamtext @param {CPtr<char>} verb @param {CPtr<char>} othertext @returns {CPtr<char>} */
 export function* monverbself(mon, monnamtext, verb, othertext) {
     let verbs;
     let selfbuf = new Uint8Array(40);
@@ -1259,7 +1259,7 @@ export function* monverbself(mon, monnamtext, verb, othertext) {
     return monnamtext;
 }
 
-/** C ref: do_name.c:1254 — @param {CPtr} mon @param {CInt} ckloc @returns {CPtr} */
+/** C ref: do_name.c:1254 — @param {CPtr<struct monst>} mon @param {CInt} ckloc @returns {CPtr<char>} */
 export function minimal_monnam(mon, ckloc) {
     let ptr;
     let outbuf = nextmbuf();
@@ -1281,7 +1281,7 @@ export function minimal_monnam(mon, ckloc) {
     return outbuf;
 }
 
-/** C ref: do_name.c:1289 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: do_name.c:1289 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function Mgender(mtmp) {
     let mgender = NHC.MALE;
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
@@ -1293,19 +1293,19 @@ export function Mgender(mtmp) {
     return mgender;
 }
 
-/** C ref: do_name.c:1303 — @param {CPtr} pm @param {CInt} mgender @returns {CPtr} */
+/** C ref: do_name.c:1303 — @param {CPtr<struct permonst>} pm @param {CInt} mgender @returns {CPtr<char>} */
 export function pmname(pm, mgender) {
     if (mgender < NHC.MALE || mgender >= NHC.NUM_MGENDERS || !cptr.ldPtro(pm, mgender, 8))
         mgender = NHC.NEUTRAL;
     return cptr.ldPtro(pm, mgender, 8);
 }
 
-/** C ref: do_name.c:1313 — @param {CPtr} mon @returns {CPtr} */
+/** C ref: do_name.c:1313 — @param {CPtr<struct monst>} mon @returns {CPtr<char>} */
 export function mon_pmname(mon) {
     return pmname(cptr.ldPtro(mon, $monst_data), Mgender(mon));
 }
 
-/** C ref: do_name.c:1321 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: do_name.c:1321 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function* obj_pmname(obj) {
     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE || cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) && ismnum(cptr.ldI32o(obj, $obj_corpsenm))) {
         let cgend = (cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_GENDER);
@@ -1322,7 +1322,7 @@ export function* obj_pmname(obj) {
 /** C ref: do_name.c:1365 — char[6] */
 export const bogon_codes = cptr.bytes("-_+|=");
 
-/** C ref: do_name.c:1369 — @param {CPtr} buf @param {CPtr} code @returns {CPtr} */
+/** C ref: do_name.c:1369 — @param {CPtr<char>} buf @param {CPtr<char>} code @returns {CPtr<char>} */
 export function* bogusmon(buf, code) {
     let mnam = buf;
     if (code)
@@ -1340,7 +1340,7 @@ export function* bogusmon(buf, code) {
 
 const __static_rndmonnam_buf = new Uint8Array(256); /** C ref: do_name.c:1391 — char[256] (function-static) */
 
-/** C ref: do_name.c:1389 — @param {CPtr} code @returns {CPtr} */
+/** C ref: do_name.c:1389 — @param {CPtr<char>} code @returns {CPtr<char>} */
 export function* rndmonnam(code) {
     let mnam;
     let name;
@@ -1364,7 +1364,7 @@ export function bogon_is_pname(code) {
     return schar((cptr.strchr(__sl132, code) ? 1 : 0));
 }
 
-/** C ref: do_name.c:1424 @returns {CPtr} */
+/** C ref: do_name.c:1424 @returns {CPtr<char>} */
 export function roguename() {
     let i;
     let opts;
@@ -1457,12 +1457,12 @@ cptr.stPtro(hcolors, 568, __sl210);
 cptr.stPtro(hcolors, 576, __sl211);
 cptr.stPtro(hcolors, 584, __sl212);
 
-/** C ref: do_name.c:1461 — @param {CPtr} colorpref @returns {CPtr} */
+/** C ref: do_name.c:1461 — @param {CPtr<char>} colorpref @returns {CPtr<char>} */
 export function hcolor(colorpref) {
     return (Hallucination() || !colorpref) ? cptr.ldPtro(hcolors, rn2_on_display_rng(74), 8) : colorpref;
 }
 
-/** C ref: do_name.c:1470 @returns {CPtr} */
+/** C ref: do_name.c:1470 @returns {CPtr<char>} */
 export function rndcolor() {
     let k = (rng_log_enabled() ? (rng_log_set_caller(__sl33, 1472, __sl213), rn2(NHM.CLR_MAX)) : rn2(NHM.CLR_MAX));
     return Hallucination() ? hcolor(null) : ((k == NHM.NO_COLOR) ? __sl188 : cptr.ldPtro(c_obj_colors, k, 8));
@@ -1511,7 +1511,7 @@ cptr.stPtro(hliquids, 296, __sl251);
 cptr.stPtro(hliquids, 304, __sl252);
 cptr.stPtro(hliquids, 312, __sl253);
 
-/** C ref: do_name.c:1493 — @param {CPtr} liquidpref @returns {CPtr} */
+/** C ref: do_name.c:1493 — @param {CPtr<char>} liquidpref @returns {CPtr<char>} */
 export function hliquid(liquidpref) {
     let hallucinate = schar((Hallucination() && !cptr.ldI32(program_state) ? 1 : 0));
     if (hallucinate || !liquidpref || !cptr.ld1s(liquidpref)) {
@@ -1551,7 +1551,7 @@ cptr.stPtro(coynames, 152, __sl273);
 cptr.stPtro(coynames, 160, __sl274);
 cptr.stPtro(coynames, 168, __sl275);
 
-/** C ref: do_name.c:1526 — @param {CPtr} mtmp @param {CPtr} buf @returns {CPtr} */
+/** C ref: do_name.c:1526 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function* coyotename(mtmp, buf) {
     if (mtmp && buf) {
         void cptr.sprintf(buf, __sl276, (yield* x_monnam(mtmp, NHM.ARTICLE_NONE, null, 0, 1)), (cptr.ldI32o(mtmp, $monst_mcan) & 1) | 0 ? cptr.ldPtro(coynames, (22 - 1) | 0, 8) : cptr.ldPtro(coynames, u32mod(cptr.ldI32o(mtmp, $monst_m_id), ((22 - 1) | 0) >>> 0), 8));
@@ -1577,7 +1577,7 @@ cptr.stPtro(__static_rndorcname_snd, 64, __sl292);
 cptr.stPtro(__static_rndorcname_snd, 72, __sl293);
 cptr.stPtro(__static_rndorcname_snd, 80, __sl294); /** C ref: do_name.c:1541 — char *[11] (function-static) */
 
-/** C ref: do_name.c:1538 — @param {CPtr} s @returns {CPtr} */
+/** C ref: do_name.c:1538 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function rndorcname(s) {
     let i;
     let iend = (((rng_log_enabled() ? (rng_log_set_caller(__sl33, 1543, __sl277), rn2(2)) : rn2(2)) + 3) | 0);
@@ -1592,7 +1592,7 @@ export function rndorcname(s) {
     return s;
 }
 
-/** C ref: do_name.c:1557 — @param {CPtr} mtmp @param {CPtr} gang @param {CPtr} other @returns {CPtr} */
+/** C ref: do_name.c:1557 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} gang @param {CPtr<char>} other @returns {CPtr<struct monst>} */
 export function* christen_orc(mtmp, gang, other) {
     let sz = 0;
     let buf = new Uint8Array(256);
@@ -1664,7 +1664,7 @@ cptr.stPtro(sir_Terry_novels, 304, __sl334);
 cptr.stPtro(sir_Terry_novels, 312, __sl335);
 cptr.stPtro(sir_Terry_novels, 320, __sl336);
 
-/** C ref: do_name.c:1611 — @param {CPtr} novidx @returns {CPtr} */
+/** C ref: do_name.c:1611 — @param {CPtr<int>} novidx @returns {CPtr<char>} */
 export function noveltitle(novidx) {
     let j;
     let k = 41;
@@ -1678,7 +1678,7 @@ export function noveltitle(novidx) {
     return cptr.ldPtro(sir_Terry_novels, j, 8);
 }
 
-/** C ref: do_name.c:1627 — @param {CPtr} lookname @param {CPtr} idx @returns {CPtr} */
+/** C ref: do_name.c:1627 — @param {CPtr<char>} lookname @param {CPtr<int>} idx @returns {CPtr<char>} */
 export function* lookup_novel(lookname, idx) {
     let k;
     if (!(yield* strncmpi(((yield* The(lookname))), (__sl338), -1)))

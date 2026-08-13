@@ -363,7 +363,7 @@ let calling_from_update_inventory = 0;
 /** C ref: wintty.c:287 — char[12] */
 const default_menu_cmds = [94, 124, 62, 60, 46, 45, 64, 44, 92, 126, 58, 0];
 
-/** C ref: wintty.c:344 — @param {CPtr} mesg */
+/** C ref: wintty.c:344 — @param {CPtr<char>} mesg */
 function bail(mesg) {
     clearlocks();
     tty_exit_nhwindows(mesg);
@@ -468,7 +468,7 @@ function new_status_window() {
     status_initialize(1);
 }
 
-/** C ref: wintty.c:511 — @param {CPtr} argcp @param {CPtr} argv */
+/** C ref: wintty.c:511 — @param {CPtr<int>} argcp @param {CPtr<char *>} argv */
 export function tty_init_nhwindows(argcp, argv) {
     let wid = cptr.box(0);
     let hgt = cptr.box(0);
@@ -506,7 +506,7 @@ export function tty_init_nhwindows(argcp, argv) {
         set_wc2_option_mod_status(1024n, NHC.set_in_game);
 }
 
-/** C ref: wintty.c:596 — @param {CPtr} pref */
+/** C ref: wintty.c:596 — @param {CPtr<char>} pref */
 export function tty_preference_update(pref) {
     let newstatuslines = schar((!strcmp(pref, __sl3) && cptr.ld1so(iflags, $instance_flags_window_inited) ? 1 : 0));
     if (newstatuslines) {
@@ -615,7 +615,7 @@ function getret() {
     cptr.stI32o(iflags, $instance_flags_raw_printed, 0);
 }
 
-/** C ref: wintty.c:808 — @param {CPtr} str */
+/** C ref: wintty.c:808 — @param {CPtr<char>} str */
 export function tty_suspend_nhwindows(str) {
     term_curs_set(1);
     settty(str);
@@ -631,7 +631,7 @@ export function tty_resume_nhwindows() {
     docrt();
 }
 
-/** C ref: wintty.c:834 — @param {CPtr} str */
+/** C ref: wintty.c:834 — @param {CPtr<char>} str */
 export function tty_exit_nhwindows(str) {
     let i;
     tty_suspend_nhwindows(str);
@@ -748,7 +748,7 @@ export function tty_create_nhwindow(type) {
     return newid;
 }
 
-/** C ref: wintty.c:990 — @param {CInt} window @param {CPtr} cw @param {CInt} clear */
+/** C ref: wintty.c:990 — @param {CInt} window @param {CPtr<struct WinDesc>} cw @param {CInt} clear */
 function erase_menu_or_text(window, cw, clear) {
     if (cptr.ldI16o(cw, $WinDesc_offx) == 0) {
         if (cptr.ldI16o(cw, $WinDesc_offy)) {
@@ -765,7 +765,7 @@ function erase_menu_or_text(window, cw, clear) {
     }
 }
 
-/** C ref: wintty.c:1011 — @param {CPtr} cw @param {CInt} free_data */
+/** C ref: wintty.c:1011 — @param {CPtr<struct WinDesc>} cw @param {CInt} free_data */
 function free_window_info(cw, free_data) {
     let i;
     if (cptr.ldPtro(cw, $WinDesc_data)) {
@@ -873,7 +873,7 @@ export function tty_clear_nhwindow(window) {
     cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
 }
 
-/** C ref: wintty.c:1138 — @param {CInt} window @param {CPtr} curr @param {CInt} lineno @param {CInt} in_view @param {CInt} counting @param {CLongLong} count @returns {CInt} */
+/** C ref: wintty.c:1138 — @param {CInt} window @param {CPtr<tty_menu_item>} curr @param {CInt} lineno @param {CInt} in_view @param {CInt} counting @param {CLongLong} count @returns {CInt} */
 function toggle_menu_curr(window, curr, lineno, in_view, counting, count) {
     if (cptr.ld1so(curr, $tty_menu_item_selected)) {
         if (counting && count > 0n) {
@@ -905,7 +905,7 @@ function toggle_menu_curr(window, curr, lineno, in_view, counting, count) {
     return 0;
 }
 
-/** C ref: wintty.c:1178 — @param {CPtr} cw @param {CPtr} s */
+/** C ref: wintty.c:1178 — @param {CPtr<struct WinDesc>} cw @param {CPtr<char>} s */
 function dmore(cw, s) {
     let prompt = cptr.ldPtro(cw, $WinDesc_morestr) ? cptr.ldPtro(cw, $WinDesc_morestr) : cptr.decay(defmorestr);
     let offset = (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT) ? 1 : 2;
@@ -934,7 +934,7 @@ function dmore(cw, s) {
     xwaitforspace(s);
 }
 
-/** C ref: wintty.c:1204 — @param {CInt} window @param {CInt} lineno @param {CPtr} item */
+/** C ref: wintty.c:1204 — @param {CInt} window @param {CInt} lineno @param {CPtr<tty_menu_item>} item */
 function set_item_state(window, lineno, item) {
     let ch = schar((cptr.ld1so(item, $tty_menu_item_selected) ? (cptr.ldI64o(item, $tty_menu_item_count) == -1n ? 43 : 35) : 45));
     {
@@ -955,7 +955,7 @@ function set_item_state(window, lineno, item) {
     term_end_attr(cptr.ldI32o(item, $tty_menu_item_attr));
 }
 
-/** C ref: wintty.c:1228 — @param {CInt} window @param {CPtr} page_start @param {CPtr} page_end */
+/** C ref: wintty.c:1228 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end */
 function set_all_on_page(window, page_start, page_end) {
     let curr;
     let n;
@@ -967,7 +967,7 @@ function set_all_on_page(window, page_start, page_end) {
     }
 }
 
-/** C ref: wintty.c:1248 — @param {CInt} window @param {CPtr} page_start @param {CPtr} page_end */
+/** C ref: wintty.c:1248 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end */
 function unset_all_on_page(window, page_start, page_end) {
     let curr;
     let n;
@@ -980,7 +980,7 @@ function unset_all_on_page(window, page_start, page_end) {
     }
 }
 
-/** C ref: wintty.c:1269 — @param {CInt} window @param {CPtr} page_start @param {CPtr} page_end @param {CInt} acc @param {CLongLong} count */
+/** C ref: wintty.c:1269 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end @param {CInt} acc @param {CLongLong} count */
 function invert_all_on_page(window, page_start, page_end, acc, count) {
     let curr;
     let n;
@@ -999,7 +999,7 @@ function invert_all_on_page(window, page_start, page_end, acc, count) {
     }
 }
 
-/** C ref: wintty.c:1300 — @param {CInt} window @param {CPtr} page_start @param {CPtr} page_end @param {CInt} acc @param {CLongLong} count */
+/** C ref: wintty.c:1300 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end @param {CInt} acc @param {CLongLong} count */
 function invert_all(window, page_start, page_end, acc, count) {
     let curr;
     let on_curr_page;
@@ -1036,7 +1036,7 @@ function toggle_menu_attr(on, color, attr) {
     }
 }
 
-/** C ref: wintty.c:1359 — @param {CInt} window @param {CPtr} cw */
+/** C ref: wintty.c:1359 — @param {CInt} window @param {CPtr<struct WinDesc>} cw */
 function process_menu_window(window, cw) {
     let page_start;
     let page_end;
@@ -1383,7 +1383,7 @@ function process_menu_window(window, cw) {
     cptr.free(morestr);
 }
 
-/** C ref: wintty.c:1810 — @param {CInt} window @param {CPtr} cw */
+/** C ref: wintty.c:1810 — @param {CInt} window @param {CPtr<struct WinDesc>} cw */
 function process_text_window(window, cw) {
     let i;
     let n;
@@ -1707,7 +1707,7 @@ export function tty_curs(window, x, y) {
 
 const __static_compress_str_cbuf = new Uint8Array(256); /** C ref: wintty.c:2249 — char[256] (function-static) */
 
-/** C ref: wintty.c:2247 — @param {CPtr} str @returns {CPtr} */
+/** C ref: wintty.c:2247 — @param {CPtr<char>} str @returns {CPtr<char>} */
 function compress_str(str) {
     if (Number(BigInt.asIntN(32, cptr.strlen(str))) >= CO() || cptr.strchr(str, 10)) {
         let in_str = str;
@@ -1731,7 +1731,7 @@ function compress_str(str) {
     return str;
 }
 
-/** C ref: wintty.c:2277 — @param {CInt} window @param {CInt} attr @param {CPtr} str */
+/** C ref: wintty.c:2277 — @param {CInt} window @param {CInt} attr @param {CPtr<char>} str */
 export function tty_putstr(window, attr, str) {
     let cw = null;
     let ob;
@@ -1853,7 +1853,7 @@ export function tty_putstr(window, attr, str) {
     return;
 }
 
-/** C ref: wintty.c:2482 — @param {CPtr} fname @param {CInt} complain */
+/** C ref: wintty.c:2482 — @param {CPtr<char>} fname @param {CInt} complain */
 export function tty_display_file(fname, complain) {
     {
         let f;
@@ -1909,7 +1909,7 @@ export function tty_start_menu(window, mbehavior) {
     return;
 }
 
-/** C ref: wintty.c:2616 — @param {CInt} window @param {CPtr} glyphinfo @param {CPtr} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr} str @param {CUInt} itemflags */
+/** C ref: wintty.c:2616 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr<char>} str @param {CUInt} itemflags */
 export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     let preselected = schar((((itemflags & NHM.MENU_ITEMFLAGS_SELECTED) >>> 0) != 0));
     let cw = null;
@@ -1954,7 +1954,7 @@ export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, 
     cptr.stPtro(cw, $WinDesc_mlist, item);
 }
 
-/** C ref: wintty.c:2684 — @param {CPtr} curr @returns {CPtr} */
+/** C ref: wintty.c:2684 — @param {CPtr<tty_menu_item>} curr @returns {CPtr<tty_menu_item>} */
 function reverse(curr) {
     let next;
     let head = null;
@@ -1972,7 +1972,7 @@ let tty_menu_promptstyle = cptr.alloc(8);
 cptr.stI32(tty_menu_promptstyle, NHM.NO_COLOR);
 cptr.stI32o(tty_menu_promptstyle, $color_and_attr_attr, NHM.ATR_NONE);
 
-/** C ref: wintty.c:2706 — @param {CInt} window @param {CPtr} prompt */
+/** C ref: wintty.c:2706 — @param {CInt} window @param {CPtr<char>} prompt */
 export function tty_end_menu(window, prompt) {
     let cw = null;
     let curr;
@@ -2045,7 +2045,7 @@ export function tty_end_menu(window, prompt) {
         cptr.stI64o(cw, $WinDesc_maxrow, cptr.stI64o(cw, $WinDesc_rows, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_nitems) + 1n)));
 }
 
-/** C ref: wintty.c:2832 — @param {CInt} window @param {CInt} how @param {CPtr} menu_list @returns {CInt} */
+/** C ref: wintty.c:2832 — @param {CInt} window @param {CInt} how @param {CPtr<menu_item *>} menu_list @returns {CInt} */
 export function tty_select_menu(window, how, menu_list) {
     let cw = null;
     let curr;
@@ -2082,7 +2082,7 @@ export function tty_select_menu(window, how, menu_list) {
     return n;
 }
 
-/** C ref: wintty.c:2876 — @param {CInt} let @param {CInt} how @param {CPtr} mesg @returns {CInt} */
+/** C ref: wintty.c:2876 — @param {CInt} let @param {CInt} how @param {CPtr<char>} mesg @returns {CInt} */
 export function tty_message_menu(let$, how, mesg) {
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup))
@@ -2106,7 +2106,7 @@ export function tty_message_menu(let$, how, mesg) {
     return schar((((how == NHM.PICK_ONE && morc.v == let$) || morc.v == 27) ? morc.v : 0));
 }
 
-/** C ref: wintty.c:2907 — @param {CInt} window @param {CInt} request @param {CPtr} wri @returns {CPtr} */
+/** C ref: wintty.c:2907 — @param {CInt} window @param {CInt} request @param {CPtr<win_request_info>} wri @returns {CPtr<win_request_info>} */
 export function tty_ctrl_nhwindow(window, request, wri) {
     if (!wri)
         return null;
@@ -2244,7 +2244,7 @@ export function g_putch(in_ch) {
     return;
 }
 
-/** C ref: wintty.c:3856 — @param {CPtr} utf8str */
+/** C ref: wintty.c:3856 — @param {CPtr<uint8>} utf8str */
 export function g_pututf8(utf8str) {
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
@@ -2298,7 +2298,7 @@ export function tty_cliparound(x, y) {
     }
 }
 
-/** C ref: wintty.c:3916 — @param {CInt} window @param {CInt} x @param {CInt} y @param {CPtr} glyphinfo @param {CPtr} bkglyphinfo */
+/** C ref: wintty.c:3916 — @param {CInt} window @param {CInt} x @param {CInt} y @param {CPtr<glyph_info>} glyphinfo @param {CPtr<glyph_info>} bkglyphinfo */
 export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     let inverse_on = 0;
     let colordone = 0;
@@ -2381,7 +2381,7 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
 }
 
-/** C ref: wintty.c:4065 — @param {CPtr} str */
+/** C ref: wintty.c:4065 — @param {CPtr<char>} str */
 export function tty_raw_print(str) {
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
@@ -2399,7 +2399,7 @@ export function tty_raw_print(str) {
     nomux_raw_emit(str, 0);
 }
 
-/** C ref: wintty.c:4085 — @param {CPtr} str */
+/** C ref: wintty.c:4085 — @param {CPtr<char>} str */
 export function tty_raw_print_bold(str) {
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
@@ -2460,7 +2460,7 @@ export function tty_nhgetch() {
     return i;
 }
 
-/** C ref: wintty.c:4194 — @param {CPtr} x @param {CPtr} y @param {CPtr} mod @returns {CInt} */
+/** C ref: wintty.c:4194 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
 export function tty_nh_poskey(x, y, mod) {
     let i;
     {
@@ -2478,7 +2478,7 @@ export function win_tty_init(dir) {
     return;
 }
 
-/** C ref: wintty.c:4243 — @param {CInt} window @param {CInt} attr @param {CPtr} str */
+/** C ref: wintty.c:4243 — @param {CInt} window @param {CInt} attr @param {CPtr<char>} str */
 export function tty_putmixed(window, attr, str) {
     let cw;
     let buf = new Uint8Array(256);
@@ -2701,12 +2701,12 @@ export function tty_status_init() {
     genl_status_init();
 }
 
-/** C ref: wintty.c:4437 — @param {CInt} fieldidx @param {CPtr} nm @param {CPtr} fmt @param {CInt} enable */
+/** C ref: wintty.c:4437 — @param {CInt} fieldidx @param {CPtr<char>} nm @param {CPtr<char>} fmt @param {CInt} enable */
 export function tty_status_enablefield(fieldidx, nm, fmt, enable) {
     genl_status_enablefield(fieldidx, nm, fmt, enable);
 }
 
-/** C ref: wintty.c:4527 — @param {CInt} fldidx @param {CPtr} ptr @param {CInt} chg @param {CInt} percent @param {CInt} color @param {CPtr} colormasks */
+/** C ref: wintty.c:4527 — @param {CInt} fldidx @param {CPtr} ptr @param {CInt} chg @param {CInt} percent @param {CInt} color @param {CPtr<unsigned long>} colormasks */
 export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) {
     let attrmask;
     let condptr = ptr;
@@ -2854,7 +2854,7 @@ function make_things_fit(force_update) {
     return fitting;
 }
 
-/** C ref: wintty.c:4720 — @param {CInt} forcefields @param {CPtr} sz @returns {CInt} */
+/** C ref: wintty.c:4720 — @param {CInt} forcefields @param {CPtr<int>} sz @returns {CInt} */
 function check_fields(forcefields, sz) {
     let c;
     let i;
@@ -2918,7 +2918,7 @@ function check_fields(forcefields, sz) {
     return valid;
 }
 
-/** C ref: wintty.c:4876 — @param {CPtr} text @param {CInt} x @param {CInt} y */
+/** C ref: wintty.c:4876 — @param {CPtr<char>} text @param {CInt} x @param {CInt} y */
 function tty_putstatusfield(text, x, y) {
     let i;
     let n;
@@ -2998,7 +2998,7 @@ function check_windowdata() {
     return 1;
 }
 
-/** C ref: wintty.c:4984 — @param {CLongLong} bm @param {CPtr} bmarray @returns {CInt} */
+/** C ref: wintty.c:4984 — @param {CLongLong} bm @param {CPtr<unsigned long>} bmarray @returns {CInt} */
 function condcolor(bm, bmarray) {
     let i;
     if (bm && bmarray)
@@ -3009,7 +3009,7 @@ function condcolor(bm, bmarray) {
     return NHM.NO_COLOR;
 }
 
-/** C ref: wintty.c:4997 — @param {CLongLong} bm @param {CPtr} bmarray @returns {CInt} */
+/** C ref: wintty.c:4997 — @param {CLongLong} bm @param {CPtr<unsigned long>} bmarray @returns {CInt} */
 function condattr(bm, bmarray) {
     let attr = 0;
     let i;

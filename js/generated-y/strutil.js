@@ -21,20 +21,20 @@ const $strbuf_t_buf = FLD.strbuf_t_buf, $strbuf_t_str = FLD.strbuf_t_str;
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("%s:%d string too long");
 
-/** C ref: strutil.c:9 — @param {CPtr} strbuf */
+/** C ref: strutil.c:9 — @param {CPtr<strbuf_t>} strbuf */
 export function strbuf_init(strbuf) {
     cptr.stPtro(strbuf, $strbuf_t_str, null);
     cptr.stI32(strbuf, 0);
 }
 
-/** C ref: strutil.c:17 — @param {CPtr} strbuf @param {CPtr} str */
+/** C ref: strutil.c:17 — @param {CPtr<strbuf_t>} strbuf @param {CPtr<char>} str */
 export function* strbuf_append(strbuf, str) {
     let len = (Number(BigInt.asIntN(32, cptr.strlen(str))) + 1) | 0;
     (yield* strbuf_reserve(strbuf, (len + (cptr.ldPtro(strbuf, $strbuf_t_str) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, $strbuf_t_str)))) : 0)) | 0));
     void cptr.strcat(cptr.ldPtro(strbuf, $strbuf_t_str), str);
 }
 
-/** C ref: strutil.c:28 — @param {CPtr} strbuf @param {CInt} len */
+/** C ref: strutil.c:28 — @param {CPtr<strbuf_t>} strbuf @param {CInt} len */
 export function* strbuf_reserve(strbuf, len) {
     if (cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null))) {
         cptr.stPtro(strbuf, $strbuf_t_str, cptr.add(strbuf, $strbuf_t_buf));
@@ -51,14 +51,14 @@ export function* strbuf_reserve(strbuf, len) {
     }
 }
 
-/** C ref: strutil.c:49 — @param {CPtr} strbuf */
+/** C ref: strutil.c:49 — @param {CPtr<strbuf_t>} strbuf */
 export function strbuf_empty(strbuf) {
     if (!cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null)) && !cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), cptr.add(strbuf, $strbuf_t_buf)))
         cptr.free(cptr.ldPtro(strbuf, $strbuf_t_str));
     strbuf_init(strbuf);
 }
 
-/** C ref: strutil.c:58 — @param {CPtr} strbuf */
+/** C ref: strutil.c:58 — @param {CPtr<strbuf_t>} strbuf */
 export function* strbuf_nl_to_crlf(strbuf) {
     if (cptr.ldPtro(strbuf, $strbuf_t_str)) {
         let len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, $strbuf_t_str))));
@@ -78,7 +78,7 @@ export function* strbuf_nl_to_crlf(strbuf) {
     }
 }
 
-/** C ref: strutil.c:82 — @param {CPtr} str @param {CPtr} file @param {CInt} line @returns {CUInt} */
+/** C ref: strutil.c:82 — @param {CPtr<char>} str @param {CPtr<char>} file @param {CInt} line @returns {CUInt} */
 export function* Strlen_(str, file, line) {
     let p;
     let len;
@@ -90,7 +90,7 @@ export function* Strlen_(str, file, line) {
     return Number(BigInt.asUintN(32, len));
 }
 
-/** C ref: strutil.c:105 — @param {CPtr} patrn @param {CPtr} strng @param {CInt} ci @param {CPtr} sk @returns {CInt} */
+/** C ref: strutil.c:105 — @param {CPtr<char>} patrn @param {CPtr<char>} strng @param {CInt} ci @param {CPtr<char>} sk @returns {CInt} */
 function* pmatch_internal(patrn, strng, ci, sk) {
     let s;
     let p;
@@ -118,12 +118,12 @@ function* pmatch_internal(patrn, strng, ci, sk) {
     }
 }
 
-/** C ref: strutil.c:145 — @param {CPtr} patrn @param {CPtr} strng @returns {CInt} */
+/** C ref: strutil.c:145 — @param {CPtr<char>} patrn @param {CPtr<char>} strng @returns {CInt} */
 export function* pmatch(patrn, strng) {
     return (yield* pmatch_internal(patrn, strng, 0, null));
 }
 
-/** C ref: strutil.c:152 — @param {CPtr} patrn @param {CPtr} strng @returns {CInt} */
+/** C ref: strutil.c:152 — @param {CPtr<char>} patrn @param {CPtr<char>} strng @returns {CInt} */
 export function* pmatchi(patrn, strng) {
     return (yield* pmatch_internal(patrn, strng, 1, null));
 }

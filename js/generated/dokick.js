@@ -322,7 +322,7 @@ const __sl191 = cptr.lit("through the hole");
 /** C ref: dokick.c:30 — char[31] */
 const kick_passes_thru = cptr.bytes("kick passes harmlessly through");
 
-/** C ref: dokick.c:34 — @param {CPtr} mon @param {CInt} clumsy */
+/** C ref: dokick.c:34 — @param {CPtr<struct monst>} mon @param {CInt} clumsy */
 function kickdmg(mon, clumsy) {
     let mdx;
     let mdy;
@@ -391,7 +391,7 @@ function kickdmg(mon, clumsy) {
         use_skill(kick_skill, 1);
 }
 
-/** C ref: dokick.c:126 — @param {CPtr} mon @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: dokick.c:126 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y @returns {CInt} */
 function maybe_kick_monster(mon, x, y) {
     if (mon) {
         let save_forcefight = cptr.ld1so(svc, $context_info_forcefight);
@@ -406,7 +406,7 @@ function maybe_kick_monster(mon, x, y) {
     return schar((mon !== null));
 }
 
-/** C ref: dokick.c:146 — @param {CPtr} mon @param {CInt} x @param {CInt} y */
+/** C ref: dokick.c:146 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y */
 function kick_monster(mon, x, y) {
     let clumsy = 0;
     let i;
@@ -501,7 +501,7 @@ function kick_monster(mon, x, y) {
     kickdmg(mon, clumsy);
 }
 
-/** C ref: dokick.c:295 — @param {CPtr} mtmp @param {CPtr} gold @returns {CInt} */
+/** C ref: dokick.c:295 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} gold @returns {CInt} */
 export function ghitm(mtmp, gold) {
     let msg_given = 0;
     if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 268435456n) != 0n) && !(cptr.ldI32o(mtmp, $monst_isshk) & 1) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1) && !(cptr.ldI32o(mtmp, $monst_isgd) & 1) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 512n) != 0n)) {
@@ -589,7 +589,7 @@ export function ghitm(mtmp, gold) {
     return 0;
 }
 
-/** C ref: dokick.c:412 — @param {CPtr} obj @param {CInt} x @param {CInt} y */
+/** C ref: dokick.c:412 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function container_impact_dmg(obj, x, y) {
     let shkp;
     let otmp;
@@ -650,7 +650,7 @@ export function container_impact_dmg(obj, x, y) {
     }
 }
 
-/** C ref: dokick.c:489 — @param {CInt} x @param {CInt} y @param {CPtr} kickobjnam @returns {CInt} */
+/** C ref: dokick.c:489 — @param {CInt} x @param {CInt} y @param {CPtr<char>} kickobjnam @returns {CInt} */
 function kick_object(x, y, kickobjnam) {
     let res = 0;
     cptr.st1(kickobjnam, 0);
@@ -854,7 +854,7 @@ function really_kick_object(x, y) {
     return 1;
 }
 
-/** C ref: dokick.c:794 — @param {CPtr} buf @param {CPtr} kickobjnam @returns {CPtr} */
+/** C ref: dokick.c:794 — @param {CPtr<char>} buf @param {CPtr<char>} kickobjnam @returns {CPtr<char>} */
 function kickstr(buf, kickobjnam) {
     let what;
     if (cptr.ld1s(kickobjnam))
@@ -892,7 +892,7 @@ function kickstr(buf, kickobjnam) {
     return cptr.strcat(cptr.strcpy(buf, __sl91), what);
 }
 
-/** C ref: dokick.c:834 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: dokick.c:834 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function watchman_thief_arrest(mtmp) {
     if (is_watch(cptr.ldPtro(mtmp, $monst_data)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
         mon_yells(mtmp, __sl92);
@@ -902,7 +902,7 @@ function watchman_thief_arrest(mtmp) {
     return 0;
 }
 
-/** C ref: dokick.c:846 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: dokick.c:846 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
 function watchman_door_damage(mtmp, x, y) {
     if (is_watch(cptr.ldPtro(mtmp, $monst_data)) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0)) {
         if (((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_WARNED) {
@@ -933,7 +933,7 @@ function kick_dumb(x, y) {
         hurtle(-cptr.ldI32o(u, $you_dx), -cptr.ldI32o(u, $you_dy), 1, 1);
 }
 
-/** C ref: dokick.c:881 — @param {CInt} x @param {CInt} y @param {CPtr} kickobjnam */
+/** C ref: dokick.c:881 — @param {CInt} x @param {CInt} y @param {CPtr<char>} kickobjnam */
 function kick_ouch(x, y, kickobjnam) {
     x = cptr.box(x);
     y = cptr.box(y);
@@ -1414,7 +1414,7 @@ export function dokick() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: dokick.c:1473 — @param {CPtr} cc @param {CInt} loc @param {CInt} x @param {CInt} y */
+/** C ref: dokick.c:1473 — @param {CPtr<coord>} cc @param {CInt} loc @param {CInt} x @param {CInt} y */
 function drop_to(cc, loc, x, y) {
     let stway = stairway_at(x, y);
     switch (loc) {
@@ -1447,7 +1447,7 @@ function drop_to(cc, loc, x, y) {
     }
 }
 
-/** C ref: dokick.c:1511 — @param {CPtr} missile @param {CInt} x @param {CInt} y @param {CInt} dlev */
+/** C ref: dokick.c:1511 — @param {CPtr<struct obj>} missile @param {CInt} x @param {CInt} y @param {CInt} dlev */
 export function impact_drop(missile, x, y, dlev) {
     let toloc;
     let obj;
@@ -1540,7 +1540,7 @@ export function impact_drop(missile, x, y, dlev) {
     }
 }
 
-/** C ref: dokick.c:1639 — @param {CPtr} otmp @param {CInt} x @param {CInt} y @param {CInt} shop_floor_obj @returns {CInt} */
+/** C ref: dokick.c:1639 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y @param {CInt} shop_floor_obj @returns {CInt} */
 export function ship_object(otmp, x, y, shop_floor_obj) {
     let toloc;
     let ox;
@@ -1713,7 +1713,7 @@ export function obj_delivery(near_hero) {
     }
 }
 
-/** C ref: dokick.c:1854 — @param {CPtr} mtmp @param {CInt} cnt @param {CLongLong} deliverflags */
+/** C ref: dokick.c:1854 — @param {CPtr<struct monst>} mtmp @param {CInt} cnt @param {CLongLong} deliverflags */
 export function deliver_obj_to_mon(mtmp, cnt, deliverflags) {
     let otmp;
     let otmp2;
@@ -1754,7 +1754,7 @@ export function deliver_obj_to_mon(mtmp, cnt, deliverflags) {
     }
 }
 
-/** C ref: dokick.c:1909 — @param {CPtr} otmp @param {CInt} nodrop @param {CInt} chainthere @param {CLongLong} num */
+/** C ref: dokick.c:1909 — @param {CPtr<struct obj>} otmp @param {CInt} nodrop @param {CInt} chainthere @param {CLongLong} num */
 function otransit_msg(otmp, nodrop, chainthere, num) {
     let optr = null;
     let obuf = new Uint8Array(256);

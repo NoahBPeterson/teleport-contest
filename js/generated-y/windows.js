@@ -176,7 +176,7 @@ export function genl_can_suspend_yes() {
     return 1;
 }
 
-/** C ref: windows.c:206 — @param {CPtr} s */
+/** C ref: windows.c:206 — @param {CPtr<char>} s */
 function def_raw_print(s) {
     puts(s);
     if (cptr.ld1s(s))
@@ -204,7 +204,7 @@ export function* check_tty_wincap2(wincap2) {
     return 0;
 }
 
-/** C ref: windows.c:253 — @param {CPtr} s @returns {CPtr} */
+/** C ref: windows.c:253 — @param {CPtr<char>} s @returns {CPtr<struct win_choices>} */
 function* win_choices_find(s) {
     let i;
     for (i = 0; cptr.ldPtro(winchoices, i, 16); i++) {
@@ -215,7 +215,7 @@ function* win_choices_find(s) {
     return null;
 }
 
-/** C ref: windows.c:267 — @param {CPtr} s */
+/** C ref: windows.c:267 — @param {CPtr<char>} s */
 export function* choose_windows(s) {
     let i;
     let tmps = null;
@@ -270,23 +270,23 @@ export function* choose_windows(s) {
         (yield* nh_terminate(0));
 }
 
-/** C ref: windows.c:451 — @param {CInt} let @param {CInt} how @param {CPtr} mesg @returns {CInt} */
+/** C ref: windows.c:451 — @param {CInt} let @param {CInt} how @param {CPtr<char>} mesg @returns {CInt} */
 export function* genl_message_menu(let$, how, mesg) {
     (yield* pline(__sl7, mesg));
     return 0;
 }
 
-/** C ref: windows.c:461 — @param {CPtr} pref */
+/** C ref: windows.c:461 — @param {CPtr<char>} pref */
 export function genl_preference_update(pref) {
     return;
 }
 
-/** C ref: windows.c:472 — @param {CInt} init @returns {CPtr} */
+/** C ref: windows.c:472 — @param {CInt} init @returns {CPtr<char>} */
 export function genl_getmsghistory(init) {
     return null;
 }
 
-/** C ref: windows.c:489 — @param {CPtr} msg @param {CInt} is_restoring */
+/** C ref: windows.c:489 — @param {CPtr<char>} msg @param {CInt} is_restoring */
 export function* genl_putmsghistory(msg, is_restoring) {
     if (!is_restoring)
         (yield* pline(__sl7, msg));
@@ -378,7 +378,7 @@ export function nhwindows_hangup() {
         cptr.stPtro(windowprocs, $window_procs_win_getmsghistory, previnterface_getmsghistory);
 }
 
-/** C ref: windows.c:643 — @param {CPtr} lastgasp */
+/** C ref: windows.c:643 — @param {CPtr<char>} lastgasp */
 function* hup_exit_nhwindows(lastgasp) {
     if (previnterface_exit_nhwindows) {
         lastgasp = null;
@@ -393,24 +393,24 @@ function hup_nhgetch() {
     return 27;
 }
 
-/** C ref: windows.c:664 — @param {CPtr} prompt @param {CPtr} resp @param {CInt} deflt @returns {CInt} */
+/** C ref: windows.c:664 — @param {CPtr<char>} prompt @param {CPtr<char>} resp @param {CInt} deflt @returns {CInt} */
 function hup_yn_function(prompt, resp, deflt) {
     if (!deflt)
         deflt = 27;
     return deflt;
 }
 
-/** C ref: windows.c:676 — @param {CPtr} x @param {CPtr} y @param {CPtr} mod @returns {CInt} */
+/** C ref: windows.c:676 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
 function hup_nh_poskey(x, y, mod) {
     return 27;
 }
 
-/** C ref: windows.c:683 — @param {CPtr} prompt @param {CPtr} outbuf */
+/** C ref: windows.c:683 — @param {CPtr<char>} prompt @param {CPtr<char>} outbuf */
 function hup_getlin(prompt, outbuf) {
     void cptr.strcpy(outbuf, __sl9);
 }
 
-/** C ref: windows.c:690 — @param {CPtr} argc_p @param {CPtr} argv */
+/** C ref: windows.c:690 — @param {CPtr<int>} argc_p @param {CPtr<char *>} argv */
 function hup_init_nhwindows(argc_p, argv) {
     cptr.st1o(iflags, $instance_flags_window_inited, 1);
 }
@@ -420,27 +420,27 @@ function hup_create_nhwindow(type) {
     return -1;
 }
 
-/** C ref: windows.c:704 — @param {CInt} window @param {CInt} how @param {CPtr} menu_list @returns {CInt} */
+/** C ref: windows.c:704 — @param {CInt} window @param {CInt} how @param {CPtr<struct mi *>} menu_list @returns {CInt} */
 function hup_select_menu(window, how, menu_list) {
     return -1;
 }
 
-/** C ref: windows.c:714 — @param {CInt} window @param {CPtr} glyphinfo @param {CPtr} identifier @param {CInt} sel @param {CInt} grpsel @param {CInt} attr @param {CInt} clr @param {CPtr} txt @param {CUInt} itemflags */
+/** C ref: windows.c:714 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} sel @param {CInt} grpsel @param {CInt} attr @param {CInt} clr @param {CPtr<char>} txt @param {CUInt} itemflags */
 function hup_add_menu(window, glyphinfo, identifier, sel, grpsel, attr, clr, txt, itemflags) {
     return;
 }
 
-/** C ref: windows.c:730 — @param {CInt} window @param {CPtr} prompt */
+/** C ref: windows.c:730 — @param {CInt} window @param {CPtr<char>} prompt */
 function hup_end_menu(window, prompt) {
     return;
 }
 
-/** C ref: windows.c:737 — @param {CInt} window @param {CInt} attr @param {CPtr} text */
+/** C ref: windows.c:737 — @param {CInt} window @param {CInt} attr @param {CPtr<char>} text */
 function hup_putstr(window, attr, text) {
     return;
 }
 
-/** C ref: windows.c:744 — @param {CInt} window @param {CInt} x @param {CInt} y @param {CPtr} glyphinfo @param {CPtr} bkglyphinfo */
+/** C ref: windows.c:744 — @param {CInt} window @param {CInt} x @param {CInt} y @param {CPtr<glyph_info>} glyphinfo @param {CPtr<glyph_info>} bkglyphinfo */
 function hup_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     return;
 }
@@ -460,7 +460,7 @@ function hup_display_nhwindow(window, blocking) {
     return;
 }
 
-/** C ref: windows.c:776 — @param {CPtr} fname @param {CInt} complain */
+/** C ref: windows.c:776 — @param {CPtr<char>} fname @param {CInt} complain */
 function hup_display_file(fname, complain) {
     return;
 }
@@ -470,7 +470,7 @@ function hup_cliparound(x, y) {
     return;
 }
 
-/** C ref: windows.c:816 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} pc @param {CInt} color @param {CPtr} colormasks */
+/** C ref: windows.c:816 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} pc @param {CInt} color @param {CPtr<unsigned long>} colormasks */
 function hup_status_update(idx, ptr, chg, pc, color, colormasks) {
     return;
 }
@@ -500,12 +500,12 @@ function hup_void_fdecl_winid_ulong(window, mbehavior) {
     return;
 }
 
-/** C ref: windows.c:865 — @param {CPtr} string */
+/** C ref: windows.c:865 — @param {CPtr<char>} string */
 function hup_void_fdecl_constchar_p(string) {
     return;
 }
 
-/** C ref: windows.c:872 — @param {CInt} window @param {CInt} request @param {CPtr} wri @returns {CPtr} */
+/** C ref: windows.c:872 — @param {CInt} window @param {CInt} request @param {CPtr<win_request_info>} wri @returns {CPtr<win_request_info>} */
 export function hup_ctrl_nhwindow(window, request, wri) {
     return null;
 }
@@ -544,7 +544,7 @@ export function genl_status_finish() {
     }
 }
 
-/** C ref: windows.c:922 — @param {CInt} fieldidx @param {CPtr} nm @param {CPtr} fmt @param {CInt} enable */
+/** C ref: windows.c:922 — @param {CInt} fieldidx @param {CPtr<char>} nm @param {CPtr<char>} fmt @param {CInt} enable */
 export function genl_status_enablefield(fieldidx, nm, fmt, enable) {
     cptr.stPtro(status_fieldfmt, fieldidx, fmt, 8);
     cptr.stPtro(status_fieldnm, fieldidx, nm, 8);
@@ -628,7 +628,7 @@ cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 48, NHC.BL_HD
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 52, NHC.BL_TIME);
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 56, NHC.BL_FLUSH); /** C ref: windows.c:950 — enum statusfields[5][15] (function-static) */
 
-/** C ref: windows.c:937 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} percent @param {CInt} color @param {CPtr} colormasks */
+/** C ref: windows.c:937 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} percent @param {CInt} color @param {CPtr<unsigned long>} colormasks */
 export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
     let newbot1 = new Uint8Array(200);
     let newbot2 = new Uint8Array(200);
@@ -758,7 +758,7 @@ export function dump_close_log() {
     }
 }
 
-/** C ref: windows.c:1276 — @param {CInt} win @param {CInt} attr @param {CPtr} str @param {CInt} no_forward */
+/** C ref: windows.c:1276 — @param {CInt} win @param {CInt} attr @param {CPtr<char>} str @param {CInt} no_forward */
 export function* dump_forward_putstr(win, attr, str, no_forward) {
     if (dumplog_file)
         fprintf(dumplog_file, __sl25, str);
@@ -766,7 +766,7 @@ export function* dump_forward_putstr(win, attr, str, no_forward) {
         (yield* Y.icall(putstr()(win, attr, str)));
 }
 
-/** C ref: windows.c:1286 — @param {CInt} win @param {CInt} attr @param {CPtr} str */
+/** C ref: windows.c:1286 — @param {CInt} win @param {CInt} attr @param {CPtr<char>} str */
 function dump_putstr(win, attr, str) {
     if (dumplog_file)
         fprintf(dumplog_file, __sl25, str);
@@ -797,7 +797,7 @@ function dump_start_menu(win, mbehavior) {
     return;
 }
 
-/** C ref: windows.c:1328 — @param {CInt} win @param {CPtr} glyphinfo @param {CPtr} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr} str @param {CUInt} itemflags */
+/** C ref: windows.c:1328 — @param {CInt} win @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr<char>} str @param {CUInt} itemflags */
 function dump_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     if (dumplog_file) {
         if (cptr.ldI32(glyphinfo) == NHC.MAX_GLYPH)
@@ -807,7 +807,7 @@ function dump_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, item
     }
 }
 
-/** C ref: windows.c:1348 — @param {CInt} win @param {CPtr} str */
+/** C ref: windows.c:1348 — @param {CInt} win @param {CPtr<char>} str */
 function dump_end_menu(win, str) {
     if (dumplog_file) {
         if (str)
@@ -817,7 +817,7 @@ function dump_end_menu(win, str) {
     }
 }
 
-/** C ref: windows.c:1359 — @param {CInt} win @param {CInt} how @param {CPtr} item @returns {CInt} */
+/** C ref: windows.c:1359 — @param {CInt} win @param {CInt} how @param {CPtr<menu_item *>} item @returns {CInt} */
 function dump_select_menu(win, how, item) {
     cptr.stPtr(item, null);
     return 0;
@@ -866,13 +866,13 @@ export function glyph2symidx(glyph) {
 
 const __static_encglyph_encbuf = new Uint8Array(20); /** C ref: windows.c:1430 — char[20] (function-static) */
 
-/** C ref: windows.c:1428 — @param {CInt} glyph @returns {CPtr} */
+/** C ref: windows.c:1428 — @param {CInt} glyph @returns {CPtr<char>} */
 export function encglyph(glyph) {
     void cptr.sprintf(cptr.decay(__static_encglyph_encbuf), __sl29, cptr.ldI32o(svc, $context_info_rndencode), glyph);
     return cptr.decay(__static_encglyph_encbuf);
 }
 
-/** C ref: windows.c:1439 — @param {CPtr} str @param {CPtr} glyph_ptr @returns {CInt} */
+/** C ref: windows.c:1439 — @param {CPtr<char>} str @param {CPtr<int>} glyph_ptr @returns {CInt} */
 export function decode_glyph(str, glyph_ptr) {
     let rndchk = 0;
     let dcount = 0;
@@ -899,7 +899,7 @@ export function decode_glyph(str, glyph_ptr) {
     return 0;
 }
 
-/** C ref: windows.c:1466 — @param {CPtr} buf @param {CPtr} str @returns {CPtr} */
+/** C ref: windows.c:1466 — @param {CPtr<char>} buf @param {CPtr<char>} str @returns {CPtr<char>} */
 export function* decode_mixed(buf, str) {
     let put = buf;
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, 48);
@@ -937,13 +937,13 @@ export function* decode_mixed(buf, str) {
     return buf;
 }
 
-/** C ref: windows.c:1528 — @param {CInt} window @param {CInt} attr @param {CPtr} str */
+/** C ref: windows.c:1528 — @param {CInt} window @param {CInt} attr @param {CPtr<char>} str */
 export function* genl_putmixed(window, attr, str) {
     let buf = new Uint8Array(256);
     (yield* Y.icall(putstr()(window, attr, (yield* decode_mixed(cptr.decay(buf), str)))));
 }
 
-/** C ref: windows.c:1539 — @param {CPtr} fname @param {CInt} complain */
+/** C ref: windows.c:1539 — @param {CPtr<char>} fname @param {CInt} complain */
 export function genl_display_file(fname, complain) {
     let buf = new Uint8Array(256);
     let f = fopen(fname, __sl30);
@@ -972,7 +972,7 @@ export function menuitem_invert_test(mode, itemflags, is_selected) {
     return 1;
 }
 
-/** C ref: windows.c:1600 — @param {CPtr} str @param {CPtr} gip @returns {CPtr} */
+/** C ref: windows.c:1600 — @param {CPtr<char>} str @param {CPtr<glyph_info>} gip @returns {CPtr<char>} */
 export function mixed_to_glyphinfo(str, gip) {
     let dcount;
     let ggv = cptr.box(0);
@@ -988,7 +988,7 @@ export function mixed_to_glyphinfo(str, gip) {
     return str;
 }
 
-/** C ref: windows.c:1644 — @param {CPtr} prompt @param {CInt} category @param {CInt} way @param {CPtr} class_list @param {CPtr} class_select @returns {CInt} */
+/** C ref: windows.c:1644 — @param {CPtr<char>} prompt @param {CInt} category @param {CInt} way @param {CPtr<char>} class_list @param {CPtr<char>} class_select @returns {CInt} */
 export function* choose_classes_menu(prompt, category, way, class_list, class_select) {
     let pick_list = cptr.box(null);
     let win;
@@ -1101,7 +1101,7 @@ cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_invmode, 0);
 cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_menu_promptstyle, NHM.NO_COLOR);
 cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr, NHM.ATR_NONE);
 
-/** C ref: windows.c:1769 — @param {CInt} window @param {CPtr} style */
+/** C ref: windows.c:1769 — @param {CInt} window @param {CPtr<color_attr>} style */
 export function* adjust_menu_promptstyle(window, style) {
     let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, 48);
     cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle, cptr.ldI32(style));
@@ -1110,7 +1110,7 @@ export function* adjust_menu_promptstyle(window, style) {
     cptr.st1o(go, $instance_globals_o_opt_need_promptstyle, 0);
 }
 
-/** C ref: windows.c:1785 — @param {CInt} window @param {CPtr} glyphinfo @param {CPtr} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} color @param {CPtr} str @param {CUInt} itemflags */
+/** C ref: windows.c:1785 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} color @param {CPtr<char>} str @param {CUInt} itemflags */
 export function* add_menu(window, glyphinfo, identifier, ch, gch, attr, color, str, itemflags) {
     attr = cptr.box(attr);
     color = cptr.box(color);
@@ -1132,7 +1132,7 @@ export function* add_menu(window, glyphinfo, identifier, ch, gch, attr, color, s
     (yield* Y.icall((cptr.ldPtro(windowprocs, $window_procs_win_add_menu))(window, glyphinfo, identifier, ch, gch, attr.v, color.v, str, itemflags)));
 }
 
-/** C ref: windows.c:1816 — @param {CInt} tmpwin @param {CPtr} buf */
+/** C ref: windows.c:1816 — @param {CInt} tmpwin @param {CPtr<char>} buf */
 export function* add_menu_heading(tmpwin, buf) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     let attr = cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr);
@@ -1142,13 +1142,13 @@ export function* add_menu_heading(tmpwin, buf) {
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, attr, color, buf, NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS));
 }
 
-/** C ref: windows.c:1832 — @param {CInt} tmpwin @param {CPtr} buf */
+/** C ref: windows.c:1832 — @param {CInt} tmpwin @param {CPtr<char>} buf */
 export function* add_menu_str(tmpwin, buf) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, buf, NHM.MENU_ITEMFLAGS_NONE));
 }
 
-/** C ref: windows.c:1841 — @param {CPtr} str @param {CPtr} color @param {CPtr} attr @returns {CInt} */
+/** C ref: windows.c:1841 — @param {CPtr<char>} str @param {CPtr<int>} color @param {CPtr<int>} attr @returns {CInt} */
 function get_menu_coloring(str, color, attr) {
     let tmpmc;
     if (cptr.ld1so(iflags, $instance_flags_use_menu_color))
@@ -1161,7 +1161,7 @@ function get_menu_coloring(str, color, attr) {
     return 0;
 }
 
-/** C ref: windows.c:1856 — @param {CInt} window @param {CInt} how @param {CPtr} menu_list @returns {CInt} */
+/** C ref: windows.c:1856 — @param {CInt} window @param {CInt} how @param {CPtr<menu_item *>} menu_list @returns {CInt} */
 export function* select_menu(window, how, menu_list) {
     let reslt;
     let old_bot_disabled = cptr.ld1so(gb, $instance_globals_b_bot_disabled);
@@ -1171,7 +1171,7 @@ export function* select_menu(window, how, menu_list) {
     return reslt;
 }
 
-/** C ref: windows.c:1868 — @param {CPtr} query @param {CPtr} bufp */
+/** C ref: windows.c:1868 — @param {CPtr<char>} query @param {CPtr<char>} bufp */
 export function* getlin(query, bufp) {
     let old_bot_disabled = cptr.ld1so(gb, $instance_globals_b_bot_disabled);
     let obufp = bufp;

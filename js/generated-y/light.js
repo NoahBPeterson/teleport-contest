@@ -110,12 +110,12 @@ const __sl49 = cptr.lit("<m>");
 const __sl50 = cptr.lit("???");
 const __sl51 = cptr.lit("<none>");
 
-/** C ref: light.c:62 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr} id */
+/** C ref: light.c:62 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr<anything>} id */
 export function* new_light_source(x, y, range, type, id) {
     void (yield* new_light_core(x, y, range, type, id));
 }
 
-/** C ref: light.c:69 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr} id @returns {CPtr} */
+/** C ref: light.c:69 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr<anything>} id @returns {CPtr<light_source>} */
 function* new_light_core(x, y, range, type, id) {
     let ls;
     if (range > NHM.MAX_RADIUS || range < 0 || (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null))) {
@@ -136,7 +136,7 @@ function* new_light_core(x, y, range, type, id) {
     return ls;
 }
 
-/** C ref: light.c:99 — @param {CInt} type @param {CPtr} id */
+/** C ref: light.c:99 — @param {CInt} type @param {CPtr<anything>} id */
 export function* del_light_source(type, id) {
     let curr;
     let tmp_id = cptr.alloc(8);
@@ -169,7 +169,7 @@ export function* del_light_source(type, id) {
     }
 }
 
-/** C ref: light.c:142 — @param {CPtr} ls */
+/** C ref: light.c:142 — @param {CPtr<light_source>} ls */
 function* delete_ls(ls) {
     let curr;
     let prev;
@@ -193,7 +193,7 @@ function* delete_ls(ls) {
     return;
 }
 
-/** C ref: light.c:169 — @param {CPtr} cs_rows */
+/** C ref: light.c:169 — @param {CPtr<seenV *>} cs_rows */
 export function do_light_sources(cs_rows) {
     let x;
     let y;
@@ -247,7 +247,7 @@ export function do_light_sources(cs_rows) {
     }
 }
 
-/** C ref: light.c:257 — @param {CPtr} obj @param {CInt} x @param {CInt} y */
+/** C ref: light.c:257 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function* show_transient_light(obj, x, y) {
     let ls = null;
     let cameraflash = cptr.alloc(8);
@@ -326,7 +326,7 @@ function* discard_flashes() {
     }
 }
 
-/** C ref: light.c:376 — @param {CUInt} nid @param {CUInt} fmflags @returns {CPtr} */
+/** C ref: light.c:376 — @param {CUInt} nid @param {CUInt} fmflags @returns {CPtr<struct monst>} */
 export function find_mid(nid, fmflags) {
     let mtmp;
     if (((fmflags & NHM.FM_YOU) >>> 0) && nid == 1)
@@ -346,7 +346,7 @@ export function find_mid(nid, fmflags) {
     return null;
 }
 
-/** C ref: light.c:398 — @param {CPtr} mon @param {CUInt} fmflags @returns {CUInt} */
+/** C ref: light.c:398 — @param {CPtr<struct monst>} mon @param {CUInt} fmflags @returns {CUInt} */
 function whereis_mon(mon, fmflags) {
     let mtmp;
     if (((fmflags & NHM.FM_YOU) >>> 0) && cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)))
@@ -366,7 +366,7 @@ function whereis_mon(mon, fmflags) {
     return 0;
 }
 
-/** C ref: light.c:421 — @param {CPtr} nhfp @param {CInt} range */
+/** C ref: light.c:421 — @param {CPtr<NHFILE>} nhfp @param {CInt} range */
 export function* save_light_sources(nhfp, range) {
     let count = cptr.box(0);
     let actual;
@@ -411,7 +411,7 @@ export function* save_light_sources(nhfp, range) {
     }
 }
 
-/** C ref: light.c:479 — @param {CPtr} nhfp */
+/** C ref: light.c:479 — @param {CPtr<NHFILE>} nhfp */
 export function* restore_light_sources(nhfp) {
     let count = cptr.box(0);
     let ls;
@@ -425,7 +425,7 @@ export function* restore_light_sources(nhfp) {
     }
 }
 
-/** C ref: light.c:501 — @param {CPtr} hdrfmt @param {CPtr} hdrbuf @param {CPtr} count @param {CPtr} size */
+/** C ref: light.c:501 — @param {CPtr<char>} hdrfmt @param {CPtr<char>} hdrbuf @param {CPtr<long>} count @param {CPtr<long>} size */
 export function light_stats(hdrfmt, hdrbuf, count, size) {
     let ls;
     void cptr.sprintf(hdrbuf, hdrfmt, 32n);
@@ -465,7 +465,7 @@ export function* relink_light_sources(ghostly) {
     }
 }
 
-/** C ref: light.c:571 — @param {CPtr} nhfp @param {CInt} range @param {CInt} write_it @returns {CInt} */
+/** C ref: light.c:571 — @param {CPtr<NHFILE>} nhfp @param {CInt} range @param {CInt} write_it @returns {CInt} */
 function* maybe_write_ls(nhfp, range, write_it) {
     let count = 0;
     let is_global;
@@ -521,7 +521,7 @@ export function* light_sources_sanity_check() {
     }
 }
 
-/** C ref: light.c:634 — @param {CPtr} nhfp @param {CPtr} ls */
+/** C ref: light.c:634 — @param {CPtr<NHFILE>} nhfp @param {CPtr<light_source>} ls */
 function* write_ls(nhfp, ls) {
     let arg_save = cptr.alloc(8);
     let otmp;
@@ -567,7 +567,7 @@ function* write_ls(nhfp, ls) {
     }
 }
 
-/** C ref: light.c:706 — @param {CPtr} src @param {CPtr} dest */
+/** C ref: light.c:706 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function obj_move_light_source(src, dest) {
     let ls;
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
@@ -598,17 +598,17 @@ export function* snuff_light_source(x, y) {
         }
 }
 
-/** C ref: light.c:763 — @param {CPtr} obj @returns {CInt} */
+/** C ref: light.c:763 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_sheds_light(obj) {
     return obj_is_burning(obj);
 }
 
-/** C ref: light.c:771 — @param {CPtr} obj @returns {CInt} */
+/** C ref: light.c:771 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_is_burning(obj) {
     return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && (ignitable(obj) || artifact_light(obj)) ? 1 : 0));
 }
 
-/** C ref: light.c:779 — @param {CPtr} src @param {CPtr} dest */
+/** C ref: light.c:779 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function* obj_split_light_source(src, dest) {
     let ls;
     let new_ls;
@@ -628,7 +628,7 @@ export function* obj_split_light_source(src, dest) {
         }
 }
 
-/** C ref: light.c:808 — @param {CPtr} src @param {CPtr} dest */
+/** C ref: light.c:808 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function* obj_merge_light_sources(src, dest) {
     let ls;
     if (!cptr.eq(src, dest))
@@ -641,7 +641,7 @@ export function* obj_merge_light_sources(src, dest) {
         }
 }
 
-/** C ref: light.c:826 — @param {CPtr} obj @param {CInt} new_radius */
+/** C ref: light.c:826 — @param {CPtr<struct obj>} obj @param {CInt} new_radius */
 export function* obj_adjust_light_radius(obj, new_radius) {
     let ls;
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
@@ -654,7 +654,7 @@ export function* obj_adjust_light_radius(obj, new_radius) {
     (yield* impossible(__sl36, (yield* xname(obj))));
 }
 
-/** C ref: light.c:843 — @param {CPtr} obj @returns {CInt} */
+/** C ref: light.c:843 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function candle_light_range(obj) {
     let radius;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
@@ -671,7 +671,7 @@ export function candle_light_range(obj) {
     return radius;
 }
 
-/** C ref: light.c:881 — @param {CPtr} obj @returns {CInt} */
+/** C ref: light.c:881 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function arti_light_radius(obj) {
     let res;
     if (!(cptr.ldI32o(obj, $obj_lamplit) & 1) || !artifact_light(obj))
@@ -684,7 +684,7 @@ export function arti_light_radius(obj) {
     return res;
 }
 
-/** C ref: light.c:916 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: light.c:916 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function arti_light_description(obj) {
     switch (arti_light_radius(obj)) {
         case 4:

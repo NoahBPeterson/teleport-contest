@@ -208,7 +208,7 @@ const __sl133 = cptr.lit("smoke");
 const __sl134 = cptr.lit("resist_conflict");
 const __sl135 = cptr.lit("get_atkdam_type");
 
-/** C ref: mondata.c:13 — @param {CPtr} mon @param {CPtr} ptr */
+/** C ref: mondata.c:13 — @param {CPtr<struct monst>} mon @param {CPtr<struct permonst>} ptr */
 export function set_mon_data(mon, ptr) {
     let new_speed;
     let old_speed = cptr.ldPtro(mon, $monst_data) ? cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove) : 0;
@@ -226,7 +226,7 @@ export function set_mon_data(mon, ptr) {
     return;
 }
 
-/** C ref: mondata.c:42 — @param {CPtr} ptr @param {CInt} atyp @param {CInt} dtyp @returns {CPtr} */
+/** C ref: mondata.c:42 — @param {CPtr<struct permonst>} ptr @param {CInt} atyp @param {CInt} dtyp @returns {CPtr<struct attack>} */
 export function attacktype_fordmg(ptr, atyp, dtyp) {
     let a;
     for (a = cptr.add(cptr.add(ptr, $permonst_mattk), 0, 4); cptr.cmp(a, cptr.add(cptr.add(ptr, $permonst_mattk), NHM.NATTK, 4)) < 0; a = cptr.add(a, 1, 4))
@@ -235,12 +235,12 @@ export function attacktype_fordmg(ptr, atyp, dtyp) {
     return null;
 }
 
-/** C ref: mondata.c:54 — @param {CPtr} ptr @param {CInt} atyp @returns {CInt} */
+/** C ref: mondata.c:54 — @param {CPtr<struct permonst>} ptr @param {CInt} atyp @returns {CInt} */
 export function attacktype(ptr, atyp) {
     return schar((attacktype_fordmg(ptr, atyp, -1) ? 1 : 0));
 }
 
-/** C ref: mondata.c:61 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:61 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function noattacks(ptr) {
     let i;
     let mattk = cptr.add(ptr, $permonst_mattk);
@@ -253,12 +253,12 @@ export function noattacks(ptr) {
     return 1;
 }
 
-/** C ref: mondata.c:80 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:80 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function poly_when_stoned(ptr) {
     return schar(((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_STONE_GOLEM, 96)) && !(cptr.ld1uo2(svm, NHC.PM_STONE_GOLEM, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
 }
 
-/** C ref: mondata.c:91 — @param {CPtr} mon @param {CInt} adtyp @returns {CInt} */
+/** C ref: mondata.c:91 — @param {CPtr<struct monst>} mon @param {CInt} adtyp @returns {CInt} */
 export function* defended(mon, adtyp) {
     let o;
     let otemp = cptr.alloc(216);
@@ -281,7 +281,7 @@ export function* defended(mon, adtyp) {
     return 0;
 }
 
-/** C ref: mondata.c:129 — @param {CPtr} mon @param {CInt} propindx @returns {CInt} */
+/** C ref: mondata.c:129 — @param {CPtr<struct monst>} mon @param {CInt} propindx @returns {CInt} */
 export function* Resists_Elem(mon, propindx) {
     let o;
     let slotmask;
@@ -329,7 +329,7 @@ export function* Resists_Elem(mon, propindx) {
     return 0;
 }
 
-/** C ref: mondata.c:201 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mondata.c:201 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* resists_drli(mon) {
     let ptr = cptr.ldPtro(mon, $monst_data);
     if (((cptr.ldU64o((ptr), $permonst_mflags2) & 2n) != 0n) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 4n) != 0n) || (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)) && cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM) || cptr.eq(ptr, cptr.add(mons, NHC.PM_DEATH, 96)) || is_vampshifter(mon))
@@ -337,7 +337,7 @@ export function* resists_drli(mon) {
     return (yield* defended(mon, NHM.AD_DRLI));
 }
 
-/** C ref: mondata.c:215 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mondata.c:215 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function resists_magm(mon) {
     let ptr = cptr.ldPtro(mon, $monst_data);
     let is_you = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
@@ -360,7 +360,7 @@ export function resists_magm(mon) {
     return 0;
 }
 
-/** C ref: mondata.c:248 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mondata.c:248 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* resists_blnd(mon) {
     let ptr = cptr.ldPtro(mon, $monst_data);
     let is_you = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
@@ -377,7 +377,7 @@ export function* resists_blnd(mon) {
     return 0;
 }
 
-/** C ref: mondata.c:278 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mondata.c:278 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function resists_blnd_by_arti(mon) {
     let o;
     let is_you = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
@@ -391,7 +391,7 @@ export function resists_blnd_by_arti(mon) {
     return 0;
 }
 
-/** C ref: mondata.c:305 — @param {CPtr} magr @param {CPtr} mdef @param {CUInt} aatyp @param {CPtr} obj @returns {CInt} */
+/** C ref: mondata.c:305 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CUInt} aatyp @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* can_blnd(magr, mdef, aatyp, obj) {
     let is_you = schar((cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))));
     let check_visor = 0;
@@ -458,7 +458,7 @@ export function* can_blnd(magr, mdef, aatyp, obj) {
     return 1;
 }
 
-/** C ref: mondata.c:402 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:402 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function ranged_attk(ptr) {
     let i;
     for (i = 0; i < NHM.NATTK; i++)
@@ -467,7 +467,7 @@ export function ranged_attk(ptr) {
     return 0;
 }
 
-/** C ref: mondata.c:428 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:428 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function mstrength(ptr) {
     let i;
     let tmp2;
@@ -513,7 +513,7 @@ export function mstrength(ptr) {
     return (tmp >= 0) ? tmp : 0;
 }
 
-/** C ref: mondata.c:501 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:501 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 function mstrength_ranged_attk(ptr) {
     let i;
     let j;
@@ -525,37 +525,37 @@ function mstrength_ranged_attk(ptr) {
     return 0;
 }
 
-/** C ref: mondata.c:517 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mondata.c:517 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function mon_hates_silver(mon) {
     return schar((is_vampshifter(mon) || hates_silver(cptr.ldPtro(mon, $monst_data)) ? 1 : 0));
 }
 
-/** C ref: mondata.c:524 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:524 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function hates_silver(ptr) {
     return schar((((cptr.ldU64o((ptr), $permonst_mflags2) & 4n) != 0n) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_VAMPIRE || ((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n) || cptr.eq(ptr, cptr.add(mons, NHC.PM_SHADE, 96)) || (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_IMP && !cptr.eq(ptr, cptr.add(mons, NHC.PM_TENGU, 96))) ? 1 : 0));
 }
 
-/** C ref: mondata.c:533 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mondata.c:533 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function mon_hates_blessings(mon) {
     return schar((is_vampshifter(mon) || hates_blessings(cptr.ldPtro(mon, $monst_data)) ? 1 : 0));
 }
 
-/** C ref: mondata.c:540 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:540 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function hates_blessings(ptr) {
     return schar((((cptr.ldU64o((ptr), $permonst_mflags2) & 2n) != 0n) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 256n) != 0n) ? 1 : 0));
 }
 
-/** C ref: mondata.c:547 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mondata.c:547 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function mon_hates_light(mon) {
     return schar((cptr.eq((cptr.ldPtro(mon, $monst_data)), cptr.add(mons, NHC.PM_GREMLIN, 96))));
 }
 
-/** C ref: mondata.c:554 — @param {CPtr} mptr @returns {CInt} */
+/** C ref: mondata.c:554 — @param {CPtr<struct permonst>} mptr @returns {CInt} */
 export function passes_bars(mptr) {
     return schar((((cptr.ldU64o((mptr), $permonst_mflags1) & 8n) != 0n) || ((cptr.ldU64o((mptr), $permonst_mflags1) & 4n) != 0n) || ((cptr.ldU64o((mptr), $permonst_mflags1) & 1048576n) != 0n) || is_whirly(mptr) || (cptr.ld1uo((mptr), $permonst_msize) < NHM.MZ_SMALL) || dmgtype(mptr, NHM.AD_RUST) || dmgtype(mptr, NHM.AD_CORR) || ((cptr.ldU64o((mptr), $permonst_mflags1) & 2147483648n) != 0n) || (((cptr.ldU64o((mptr), $permonst_mflags1) & 524288n) != 0n) && !(cptr.ld1uo((mptr), $permonst_msize) >= NHM.MZ_LARGE)) ? 1 : 0));
 }
 
-/** C ref: mondata.c:567 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mondata.c:567 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function can_blow(mtmp) {
     if (((cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) == NHC.MS_SILENT) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_BUZZ) && (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1024n) != 0n) || (cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 32768n) == 0n) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_EEL))
         return 0;
@@ -564,14 +564,14 @@ export function can_blow(mtmp) {
     return 1;
 }
 
-/** C ref: mondata.c:580 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mondata.c:580 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function can_chant(mtmp) {
     if ((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) && Strangled()) || (cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) == NHC.MS_SILENT) || !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 32768n) == 0n) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_BUZZ || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_BURBLE)
         return 0;
     return 1;
 }
 
-/** C ref: mondata.c:591 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mondata.c:591 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* can_be_strangled(mon) {
     let mamul;
     let nonbreathing;
@@ -588,31 +588,31 @@ export function* can_be_strangled(mon) {
     return schar((!nobrainer || !nonbreathing ? 1 : 0));
 }
 
-/** C ref: mondata.c:623 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:623 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function can_track(ptr) {
     if (is_art(uwep.v, NHC.ART_EXCALIBUR))
         return 1;
     return schar(((cptr.ldU64o((ptr), $permonst_mflags1) & 4096n) == 0n));
 }
 
-/** C ref: mondata.c:632 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:632 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function sliparm(ptr) {
     return schar((is_whirly(ptr) || cptr.ld1uo(ptr, $permonst_msize) <= NHM.MZ_SMALL || (cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GHOST) ? 1 : 0));
 }
 
-/** C ref: mondata.c:640 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:640 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function breakarm(ptr) {
     if (sliparm(ptr))
         return 0;
     return schar(((cptr.ld1uo((ptr), $permonst_msize) >= NHM.MZ_LARGE) || (cptr.ld1uo(ptr, $permonst_msize) > NHM.MZ_SMALL && !((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_MARILITH, 96)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_WINGED_GARGOYLE, 96)) ? 1 : 0));
 }
 
-/** C ref: mondata.c:654 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:654 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function sticks(ptr) {
     return schar((dmgtype(ptr, NHM.AD_STCK) || (dmgtype(ptr, NHM.AD_WRAP) && !attacktype(ptr, NHM.AT_ENGL)) || attacktype(ptr, NHM.AT_HUGS) ? 1 : 0));
 }
 
-/** C ref: mondata.c:663 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:663 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function cantvomit(ptr) {
     if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_RODENT && !cptr.eq(ptr, cptr.add(mons, NHC.PM_ROCK_MOLE, 96)) && !cptr.eq(ptr, cptr.add(mons, NHC.PM_WOODCHUCK, 96)))
         return 1;
@@ -621,7 +621,7 @@ export function cantvomit(ptr) {
     return 0;
 }
 
-/** C ref: mondata.c:678 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: mondata.c:678 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function num_horns(ptr) {
     switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
         case NHC.PM_HORNED_DEVIL:
@@ -640,7 +640,7 @@ export function num_horns(ptr) {
     return 0;
 }
 
-/** C ref: mondata.c:700 — @param {CPtr} ptr @param {CInt} dtyp @param {CInt} atyp @returns {CPtr} */
+/** C ref: mondata.c:700 — @param {CPtr<struct permonst>} ptr @param {CInt} dtyp @param {CInt} atyp @returns {CPtr<struct attack>} */
 export function dmgtype_fromattack(ptr, dtyp, atyp) {
     let a;
     for (a = cptr.add(cptr.add(ptr, $permonst_mattk), 0, 4); cptr.cmp(a, cptr.add(cptr.add(ptr, $permonst_mattk), NHM.NATTK, 4)) < 0; a = cptr.add(a, 1, 4))
@@ -649,12 +649,12 @@ export function dmgtype_fromattack(ptr, dtyp, atyp) {
     return null;
 }
 
-/** C ref: mondata.c:712 — @param {CPtr} ptr @param {CInt} dtyp @returns {CInt} */
+/** C ref: mondata.c:712 — @param {CPtr<struct permonst>} ptr @param {CInt} dtyp @returns {CInt} */
 export function dmgtype(ptr, dtyp) {
     return schar((dmgtype_fromattack(ptr, dtyp, -1) ? 1 : 0));
 }
 
-/** C ref: mondata.c:720 — @param {CPtr} mdef @param {CPtr} magr @returns {CInt} */
+/** C ref: mondata.c:720 — @param {CPtr<struct monst>} mdef @param {CPtr<struct monst>} magr @returns {CInt} */
 export function* max_passive_dmg(mdef, magr) {
     let i;
     let dmg;
@@ -695,7 +695,7 @@ export function* max_passive_dmg(mdef, magr) {
     return dmg;
 }
 
-/** C ref: mondata.c:771 — @param {CPtr} pm1 @param {CPtr} pm2 @returns {CInt} */
+/** C ref: mondata.c:771 — @param {CPtr<struct permonst>} pm1 @param {CPtr<struct permonst>} pm2 @returns {CInt} */
 export function same_race(pm1, pm2) {
     let let1 = cptr.ld1so(pm1, $permonst_mlet);
     let let2 = cptr.ld1so(pm2, $permonst_mlet);
@@ -781,7 +781,7 @@ export function same_race(pm1, pm2) {
 
 /** C ref: mondata.c:874 — struct alt_spl { name, pm_val, genderhint } (memory model v0.5) */
 
-/** C ref: mondata.c:883 — @param {CPtr} in_str @param {CPtr} gender_name_var @returns {CInt} */
+/** C ref: mondata.c:883 — @param {CPtr<char>} in_str @param {CPtr<int>} gender_name_var @returns {CInt} */
 export function* name_to_mon(in_str, gender_name_var) {
     return (yield* name_to_monplus(in_str, null, gender_name_var));
 }
@@ -956,7 +956,7 @@ cptr.stPtro(__static_name_to_monplus_names, 880, null);
 cptr.stI16o(__static_name_to_monplus_names, 880 + $alt_spl_pm_val, NHC.NON_PM);
 cptr.stI32o(__static_name_to_monplus_names, 880 + $alt_spl_genderhint, NHC.NEUTRAL); /** C ref: mondata.c:946 — struct alt_spl[56] (function-static) */
 
-/** C ref: mondata.c:893 — @param {CPtr} in_str @param {CPtr} remainder_p @param {CPtr} gender_name_var @returns {CInt} */
+/** C ref: mondata.c:893 — @param {CPtr<char>} in_str @param {CPtr<char *>} remainder_p @param {CPtr<int>} gender_name_var @returns {CInt} */
 export function* name_to_monplus(in_str, remainder_p, gender_name_var) {
     let i;
     let mntmp = NHC.NON_PM;
@@ -1061,7 +1061,7 @@ cptr.stPtro(__static_name_to_monclass_truematch, 80, null);
 cptr.stI16o(__static_name_to_monclass_truematch, 80 + $alt_spl_pm_val, NHC.NON_PM);
 cptr.stI32o(__static_name_to_monclass_truematch, 80 + $alt_spl_genderhint, NHC.NEUTRAL); /** C ref: mondata.c:1105 — struct alt_spl[6] (function-static) */
 
-/** C ref: mondata.c:1090 — @param {CPtr} in_str @param {CPtr} mndx_p @returns {CInt} */
+/** C ref: mondata.c:1090 — @param {CPtr<char>} in_str @param {CPtr<int>} mndx_p @returns {CInt} */
 export function* name_to_monclass(in_str, mndx_p) {
     let p;
     let x;
@@ -1114,14 +1114,14 @@ export function* name_to_monclass(in_str, mndx_p) {
     return 0;
 }
 
-/** C ref: mondata.c:1180 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mondata.c:1180 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function gender(mtmp) {
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
         return 2;
     return (cptr.ldI32o(mtmp, $monst_female) & 1) | 0;
 }
 
-/** C ref: mondata.c:1191 — @param {CPtr} mtmp @param {CUInt} pg_flags @returns {CInt} */
+/** C ref: mondata.c:1191 — @param {CPtr<struct monst>} mtmp @param {CUInt} pg_flags @returns {CInt} */
 export function pronoun_gender(mtmp, pg_flags) {
     let override_vis = schar((((pg_flags & NHM.PRONOUN_NO_IT) >>> 0) ? 1 : 0));
     let hallu_rand = schar((((pg_flags & NHM.PRONOUN_HALLU) >>> 0) ? 1 : 0));
@@ -1134,7 +1134,7 @@ export function pronoun_gender(mtmp, pg_flags) {
     return (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 131072n) != 0n) || (cptr.ldU16o(cptr.ldPtro(mtmp, $monst_data), $permonst_geno) & NHM.G_UNIQ) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 524288n) != 0n)) ? (cptr.ldI32o(mtmp, $monst_female) & 1) | 0 : 2;
 }
 
-/** C ref: mondata.c:1211 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mondata.c:1211 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function levl_follower(mtmp) {
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         return 1;
@@ -1323,7 +1323,7 @@ export function big_little_match(montyp1, montyp2) {
     return 0;
 }
 
-/** C ref: mondata.c:1359 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: mondata.c:1359 — @param {CPtr<struct monst>} mtmp @returns {CPtr<struct permonst>} */
 export function raceptr(mtmp) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) && !Upolyd())
         return cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), 96);
@@ -1381,19 +1381,19 @@ cptr.stPtro(crawl, 8, __sl116);
 cptr.stPtro(crawl, 16, __sl105);
 cptr.stPtro(crawl, 24, __sl106);
 
-/** C ref: mondata.c:1380 — @param {CPtr} ptr @param {CPtr} def @returns {CPtr} */
+/** C ref: mondata.c:1380 — @param {CPtr<struct permonst>} ptr @param {CPtr<char>} def @returns {CPtr<char>} */
 export function locomotion(ptr, def) {
     let locoindx = (cptr.ld1s(def) != highc(cptr.ld1s(def))) ? 0 : 1;
     return (is_floater(ptr) ? cptr.ldPtro(levitate, locoindx, 8) : ((((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n) && cptr.ld1uo(ptr, $permonst_msize) <= NHM.MZ_SMALL) ? cptr.ldPtro(flys, locoindx, 8) : ((((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n) && cptr.ld1uo(ptr, $permonst_msize) > NHM.MZ_SMALL) ? cptr.ldPtro(flyl, locoindx, 8) : (((cptr.ldU64o((ptr), $permonst_mflags1) & 524288n) != 0n) ? cptr.ldPtro(slither, locoindx, 8) : (((cptr.ldU64o((ptr), $permonst_mflags1) & 4n) != 0n) ? cptr.ldPtro(ooze, locoindx, 8) : (!cptr.ld1so(ptr, $permonst_mmove) ? cptr.ldPtro(immobile, locoindx, 8) : (((cptr.ldU64o((ptr), $permonst_mflags1) & 24576n) == 24576n) ? cptr.ldPtro(crawl, locoindx, 8) : def)))))));
 }
 
-/** C ref: mondata.c:1395 — @param {CPtr} ptr @param {CPtr} def @returns {CPtr} */
+/** C ref: mondata.c:1395 — @param {CPtr<struct permonst>} ptr @param {CPtr<char>} def @returns {CPtr<char>} */
 export function stagger(ptr, def) {
     let locoindx = (cptr.ld1s(def) != highc(cptr.ld1s(def))) ? 2 : 3;
     return (is_floater(ptr) ? cptr.ldPtro(levitate, locoindx, 8) : ((((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n) && cptr.ld1uo(ptr, $permonst_msize) <= NHM.MZ_SMALL) ? cptr.ldPtro(flys, locoindx, 8) : ((((cptr.ldU64o((ptr), $permonst_mflags1) & 1n) != 0n) && cptr.ld1uo(ptr, $permonst_msize) > NHM.MZ_SMALL) ? cptr.ldPtro(flyl, locoindx, 8) : (((cptr.ldU64o((ptr), $permonst_mflags1) & 524288n) != 0n) ? cptr.ldPtro(slither, locoindx, 8) : (((cptr.ldU64o((ptr), $permonst_mflags1) & 4n) != 0n) ? cptr.ldPtro(ooze, locoindx, 8) : (!cptr.ld1so(ptr, $permonst_mmove) ? cptr.ldPtro(immobile, locoindx, 8) : (((cptr.ldU64o((ptr), $permonst_mflags1) & 24576n) == 24576n) ? cptr.ldPtro(crawl, locoindx, 8) : def)))))));
 }
 
-/** C ref: mondata.c:1411 — @param {CPtr} mptr @param {CPtr} mattk @returns {CPtr} */
+/** C ref: mondata.c:1411 — @param {CPtr<struct permonst>} mptr @param {CPtr<struct attack>} mattk @returns {CPtr<char>} */
 export function on_fire(mptr, mattk) {
     let what;
     switch ((cptr.ldI32o((mptr), $permonst_pmidx))) {
@@ -1428,7 +1428,7 @@ export function on_fire(mptr, mattk) {
     return what;
 }
 
-/** C ref: mondata.c:1449 — @param {CPtr} mptr @param {CPtr} cloud @returns {CPtr} */
+/** C ref: mondata.c:1449 — @param {CPtr<struct permonst>} mptr @param {CPtr<char *>} cloud @returns {CPtr<char>} */
 export function msummon_environ(mptr, cloud) {
     let what;
     let mndx = ((cptr.ld1so(mptr, $permonst_mlet) == NHC.S_ANGEL) ? NHC.PM_ANGEL : ((cptr.ld1so(mptr, $permonst_mlet) == NHC.S_LIGHT) ? NHC.PM_YELLOW_LIGHT : (cptr.ldI32o((mptr), $permonst_pmidx))));
@@ -1472,7 +1472,7 @@ export function msummon_environ(mptr, cloud) {
     return what;
 }
 
-/** C ref: mondata.c:1507 — @param {CPtr} mdat @returns {CInt} */
+/** C ref: mondata.c:1507 — @param {CPtr<struct permonst>} mdat @returns {CInt} */
 export function olfaction(mdat) {
     if ((cptr.ld1so((mdat), $permonst_mlet) == NHC.S_GOLEM) || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_EYE || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_JELLY || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_PUDDING || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_BLOB || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_VORTEX || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_ELEMENTAL || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_FUNGUS || cptr.ld1so(mdat, $permonst_mlet) == NHC.S_LIGHT)
         return 0;
@@ -1549,7 +1549,7 @@ export function monstunseesu(seenres) {
             (cptr.stU64o((mtmp), $monst_seen_resistance, cptr.ldU64o((mtmp), $monst_seen_resistance) & BigInt.asUintN(64, ~(seenres))));
 }
 
-/** C ref: mondata.c:1586 — @param {CPtr} mtmp */
+/** C ref: mondata.c:1586 — @param {CPtr<struct monst>} mtmp */
 export function give_u_to_m_resistances(mtmp) {
     let intr;
     for (intr = NHC.FIRE_RES; intr <= NHC.STONE_RES; intr++) {
@@ -1559,13 +1559,13 @@ export function give_u_to_m_resistances(mtmp) {
     }
 }
 
-/** C ref: mondata.c:1607 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mondata.c:1607 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function resist_conflict(mtmp) {
     let resist_chance = (19 < ((((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) + cptr.ldI32o(u, $you_ulevel)) | 0)) ? 19 : ((((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) + cptr.ldI32o(u, $you_ulevel)) | 0)));
     return schar(((rng_log_enabled() ? (rng_log_set_caller(__sl91, 1612, __sl134), rnd(20)) : rnd(20)) > resist_chance));
 }
 
-/** C ref: mondata.c:1617 — @param {CPtr} mtmp @param {CInt} ttyp @returns {CInt} */
+/** C ref: mondata.c:1617 — @param {CPtr<struct monst>} mtmp @param {CInt} ttyp @returns {CInt} */
 export function mon_knows_traps(mtmp, ttyp) {
     if (ttyp == NHC.ALL_TRAPS)
         return Number(BigInt.asIntN(8, (cptr.ldI64o(mtmp, $monst_mtrapseen))));
@@ -1575,7 +1575,7 @@ export function mon_knows_traps(mtmp, ttyp) {
         return schar(((cptr.ldI64o(mtmp, $monst_mtrapseen) & (1n << BigInt(((ttyp - 1) | 0)))) != 0n));
 }
 
-/** C ref: mondata.c:1629 — @param {CPtr} mtmp @param {CInt} ttyp */
+/** C ref: mondata.c:1629 — @param {CPtr<struct monst>} mtmp @param {CInt} ttyp */
 export function mon_learns_traps(mtmp, ttyp) {
     if (ttyp == NHC.ALL_TRAPS)
         cptr.stI64o(mtmp, $monst_mtrapseen, -1n);
@@ -1585,7 +1585,7 @@ export function mon_learns_traps(mtmp, ttyp) {
         cptr.stI64o(mtmp, $monst_mtrapseen, cptr.ldI64o(mtmp, $monst_mtrapseen) | (1n << BigInt(((ttyp - 1) | 0))));
 }
 
-/** C ref: mondata.c:1641 — @param {CPtr} ttmp */
+/** C ref: mondata.c:1641 — @param {CPtr<struct trap>} ttmp */
 export function mons_see_trap(ttmp) {
     let mtmp;
     let tx = cptr.ldI16o(ttmp, $trap_tx);

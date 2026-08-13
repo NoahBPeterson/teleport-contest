@@ -72,7 +72,7 @@ const __sl49 = cptr.lit("_G");
 const __sl50 = cptr.lit("_VERSION");
 const __sl51 = cptr.lit("Lua 5.4");
 
-/** C ref: lbaselib.c:24 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:24 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_print(L) {
     let n = lua_gettop(L);
     let i;
@@ -88,7 +88,7 @@ function* luaB_print(L) {
     return 0;
 }
 
-/** C ref: lbaselib.c:45 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:45 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_warn(L) {
     let n = lua_gettop(L);
     let i;
@@ -101,7 +101,7 @@ function* luaB_warn(L) {
     return 0;
 }
 
-/** C ref: lbaselib.c:60 — @param {CPtr} s @param {CInt} base @param {CPtr} pn @returns {CPtr} */
+/** C ref: lbaselib.c:60 — @param {CPtr<char>} s @param {CInt} base @param {CPtr<lua_Integer>} pn @returns {CPtr<char>} */
 function b_str2int(s, base, pn) {
     let n = 0n;
     let neg = 0;
@@ -125,7 +125,7 @@ function b_str2int(s, base, pn) {
     return s;
 }
 
-/** C ref: lbaselib.c:81 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:81 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_tonumber(L) {
     if ((lua_type(L, 2) <= 0)) {
         if (lua_type(L, 1) == 3) {
@@ -155,7 +155,7 @@ function* luaB_tonumber(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:114 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:114 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_error(L) {
     let level = Number(BigInt.asIntN(32, (yield* luaL_optinteger(L, 2, 1n))));
     (yield* lua_settop(L, 1));
@@ -167,7 +167,7 @@ function* luaB_error(L) {
     return (yield* lua_error(L));
 }
 
-/** C ref: lbaselib.c:126 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:126 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_getmetatable(L) {
     (yield* luaL_checkany(L, 1));
     if (!(yield* lua_getmetatable(L, 1))) {
@@ -178,7 +178,7 @@ function* luaB_getmetatable(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:137 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:137 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_setmetatable(L) {
     let t = lua_type(L, 2);
     (yield* luaL_checktype(L, 1, 5));
@@ -190,7 +190,7 @@ function* luaB_setmetatable(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:149 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:149 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_rawequal(L) {
     (yield* luaL_checkany(L, 1));
     (yield* luaL_checkany(L, 2));
@@ -198,7 +198,7 @@ function* luaB_rawequal(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:157 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:157 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_rawlen(L) {
     let t = lua_type(L, 1);
     (void ((__builtin_expect(BigInt(((t == 5 || t == 4 ? 1 : 0) != 0)), 1n)) || (yield* luaL_typeerror(L, 1, (__sl7))) ? 1 : 0));
@@ -206,7 +206,7 @@ function* luaB_rawlen(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:166 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:166 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_rawget(L) {
     (yield* luaL_checktype(L, 1, 5));
     (yield* luaL_checkany(L, 2));
@@ -215,7 +215,7 @@ function* luaB_rawget(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:174 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:174 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_rawset(L) {
     (yield* luaL_checktype(L, 1, 5));
     (yield* luaL_checkany(L, 2));
@@ -225,7 +225,7 @@ function* luaB_rawset(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:184 — @param {CPtr} L @param {CInt} oldmode @returns {CInt} */
+/** C ref: lbaselib.c:184 — @param {CPtr<lua_State>} L @param {CInt} oldmode @returns {CInt} */
 function* pushmode(L, oldmode) {
     if (oldmode == -1)
         (yield* lua_pushnil(L));
@@ -258,7 +258,7 @@ cptr.stI32o(__static_luaB_collectgarbage_optsnum, 28, 9);
 cptr.stI32o(__static_luaB_collectgarbage_optsnum, 32, 10);
 cptr.stI32o(__static_luaB_collectgarbage_optsnum, 36, 11); /** C ref: lbaselib.c:203 — int[10] (function-static) */
 
-/** C ref: lbaselib.c:199 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:199 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_collectgarbage(L) {
     let o = cptr.ldI32o(__static_luaB_collectgarbage_optsnum, (yield* luaL_checkoption(L, 1, __sl10, __static_luaB_collectgarbage_opts)), 4);
     switch (o) {
@@ -339,7 +339,7 @@ function* luaB_collectgarbage(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:259 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:259 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_type(L) {
     let t = lua_type(L, 1);
     (void ((__builtin_expect(BigInt(((t != -1) != 0)), 1n)) || (yield* luaL_argerror(L, 1, (__sl18))) ? 1 : 0));
@@ -347,7 +347,7 @@ function* luaB_type(L) {
     return 1;
 }
 
-/** C ref: lbaselib.c:267 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:267 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_next(L) {
     (yield* luaL_checktype(L, 1, 5));
     (yield* lua_settop(L, 2));
@@ -359,7 +359,7 @@ function* luaB_next(L) {
     }
 }
 
-/** C ref: lbaselib.c:279 — @param {CPtr} L @param {CInt} status @param {CLongLong} k @returns {CInt} */
+/** C ref: lbaselib.c:279 — @param {CPtr<lua_State>} L @param {CInt} status @param {CLongLong} k @returns {CInt} */
 function pairscont(L, status, k) {
     void L;
     void status;
@@ -367,7 +367,7 @@ function pairscont(L, status, k) {
     return 3;
 }
 
-/** C ref: lbaselib.c:284 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:284 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_pairs(L) {
     (yield* luaL_checkany(L, 1));
     if ((yield* luaL_getmetafield(L, 1, __sl19)) == 0) {
@@ -381,7 +381,7 @@ function* luaB_pairs(L) {
     return 3;
 }
 
-/** C ref: lbaselib.c:302 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:302 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* ipairsaux(L) {
     let i = (yield* luaL_checkinteger(L, 2));
     i = (BigInt.asIntN(64, (BigInt.asUintN(64, BigInt.asUintN(64, (i)) + 1n))));
@@ -389,7 +389,7 @@ function* ipairsaux(L) {
     return ((yield* lua_geti(L, 1, i)) == 0) ? 1 : 2;
 }
 
-/** C ref: lbaselib.c:314 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:314 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_ipairs(L) {
     (yield* luaL_checkany(L, 1));
     (yield* lua_pushcclosure(L, (ipairsaux), 0));
@@ -398,7 +398,7 @@ function* luaB_ipairs(L) {
     return 3;
 }
 
-/** C ref: lbaselib.c:323 — @param {CPtr} L @param {CInt} status @param {CInt} envidx @returns {CInt} */
+/** C ref: lbaselib.c:323 — @param {CPtr<lua_State>} L @param {CInt} status @param {CInt} envidx @returns {CInt} */
 function* load_aux(L, status, envidx) {
     if ((__builtin_expect(BigInt(((status == 0) != 0)), 1n))) {
         if (envidx != 0) {
@@ -414,7 +414,7 @@ function* load_aux(L, status, envidx) {
     }
 }
 
-/** C ref: lbaselib.c:340 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:340 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_loadfile(L) {
     let fname = ((yield* luaL_optlstring(L, 1, null, null)));
     let mode = ((yield* luaL_optlstring(L, 2, null, null)));
@@ -423,7 +423,7 @@ function* luaB_loadfile(L) {
     return (yield* load_aux(L, status, env));
 }
 
-/** C ref: lbaselib.c:370 — @param {CPtr} L @param {CPtr} ud @param {CPtr} size @returns {CPtr} */
+/** C ref: lbaselib.c:370 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud @param {CPtr<size_t>} size @returns {CPtr<char>} */
 function* generic_reader(L, ud, size) {
     void (ud);
     (yield* luaL_checkstack(L, 2, __sl20));
@@ -439,7 +439,7 @@ function* generic_reader(L, ud, size) {
     return (yield* lua_tolstring(L, 5, size));
 }
 
-/** C ref: lbaselib.c:387 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:387 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_load(L) {
     let status;
     let l = cptr.box(0n);
@@ -458,14 +458,14 @@ function* luaB_load(L) {
     return (yield* load_aux(L, status, env));
 }
 
-/** C ref: lbaselib.c:409 — @param {CPtr} L @param {CInt} d1 @param {CLongLong} d2 @returns {CInt} */
+/** C ref: lbaselib.c:409 — @param {CPtr<lua_State>} L @param {CInt} d1 @param {CLongLong} d2 @returns {CInt} */
 function dofilecont(L, d1, d2) {
     void d1;
     void d2;
     return (lua_gettop(L) - 1) | 0;
 }
 
-/** C ref: lbaselib.c:415 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:415 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_dofile(L) {
     let fname = ((yield* luaL_optlstring(L, 1, null, null)));
     (yield* lua_settop(L, 1));
@@ -475,7 +475,7 @@ function* luaB_dofile(L) {
     return dofilecont(L, 0, 0n);
 }
 
-/** C ref: lbaselib.c:425 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:425 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_assert(L) {
     if ((__builtin_expect(BigInt(((lua_toboolean(L, 1)) != 0)), 1n)))
         return lua_gettop(L);
@@ -488,7 +488,7 @@ function* luaB_assert(L) {
     }
 }
 
-/** C ref: lbaselib.c:438 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:438 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_select(L) {
     let n = lua_gettop(L);
     if (lua_type(L, 1) == 4 && cptr.ld1s((yield* lua_tolstring(L, 1, null))) == 35) {
@@ -505,7 +505,7 @@ function* luaB_select(L) {
     }
 }
 
-/** C ref: lbaselib.c:461 — @param {CPtr} L @param {CInt} status @param {CLongLong} extra @returns {CInt} */
+/** C ref: lbaselib.c:461 — @param {CPtr<lua_State>} L @param {CInt} status @param {CLongLong} extra @returns {CInt} */
 function* finishpcall(L, status, extra) {
     if ((__builtin_expect(BigInt(((status != 0 && status != 1 ? 1 : 0) != 0)), 0n))) {
         (yield* lua_pushboolean(L, 0));
@@ -515,7 +515,7 @@ function* finishpcall(L, status, extra) {
         return (lua_gettop(L) - Number(BigInt.asIntN(32, extra))) | 0;
 }
 
-/** C ref: lbaselib.c:472 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:472 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_pcall(L) {
     let status;
     (yield* luaL_checkany(L, 1));
@@ -525,7 +525,7 @@ function* luaB_pcall(L) {
     return (yield* finishpcall(L, status, 0n));
 }
 
-/** C ref: lbaselib.c:487 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:487 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_xpcall(L) {
     let status;
     let n = lua_gettop(L);
@@ -537,7 +537,7 @@ function* luaB_xpcall(L) {
     return (yield* finishpcall(L, status, 2n));
 }
 
-/** C ref: lbaselib.c:499 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:499 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* luaB_tostring(L) {
     (yield* luaL_checkany(L, 1));
     (yield* luaL_tolstring(L, 1, null));
@@ -599,7 +599,7 @@ cptr.stPtro(base_funcs, 384 + $luaL_Reg_func, null);
 cptr.stPtro(base_funcs, 400, null);
 cptr.stPtro(base_funcs, 400 + $luaL_Reg_func, null);
 
-/** C ref: lbaselib.c:537 — @param {CPtr} L @returns {CInt} */
+/** C ref: lbaselib.c:537 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* luaopen_base(L) {
     (void (yield* lua_rawgeti(L, -1001000, 2n)));
     (yield* luaL_setfuncs(L, base_funcs, 0));

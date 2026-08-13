@@ -779,6 +779,19 @@ export const FIELD_PREFIX = '$';
 const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
 const FIELD_STATS = { named: 0, unnamed: 0 };
 
+// ------------------------------------------------ recovered pointer types ----
+//
+// `@param {CPtr} mtmp` is true and says nothing.  The AST knows the parameter
+// is a `struct monst *`, and has known it all along — `jsdocType` simply
+// collapsed every pointer to one word.  `@param {CPtr<struct monst>} mtmp`
+// gives the reader the C declaration back.  See ptrDocType() for the shapes
+// that decline the bracket and why.
+//
+// C2JS_PTRDOC=0 restores the bare `CPtr` (the A/B baseline).
+const DOC_PTR_TYPES = process.env.C2JS_PTRDOC !== '0';
+const DOC_PTR_MAX = 40;
+const DOC_STATS = { ptrNamed: 0, ptrBare: 0 };
+
 // -------------------------------------------- named macro-body helpers ----
 //
 // `Hallucination` is one word in C and 240 characters of inlined loads here,
@@ -915,6 +928,7 @@ if (process.env.C2JS_READ_STATS) {
   process.on('exit', () => process.stderr.write(
     `bool ctx:      ${BOOL_STATS.elided} logical results emitted bare, ${BOOL_STATS.kept} kept the \`? 1 : 0\`\n`
     + `field offsets: ${FIELD_STATS.named} named, ${FIELD_STATS.unnamed} left numeric (anon record, shadowed, or ambiguous name)\n`
+    + `pointer jsdoc: ${DOC_STATS.ptrNamed} pointers carry their C pointee, ${DOC_STATS.ptrBare} stayed bare CPtr (fn pointer, anon record, decayed array, or over ${DOC_PTR_MAX} chars)\n`
     + `macro helpers: ${MACRO_FN_STATS.named} call sites over ${MACRO_HELPERS.size} helpers; refused `
     + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch, `
     + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`
@@ -959,7 +973,12 @@ export const MACRO_HEADER_RE = /^\.\.\/include\/([A-Za-z0-9_]+\.h)$/;
 //    so a partially skipped emit would mix two vocabularies. The incremental
 //    path keys on emit.mjs's mtime alone, which build.mjs changes do not
 //    move; the version is what invalidates them.
-export const EMIT_VERSION = 11;
+// 12. The vocabulary tier (roadmap 1.13): recovered pointer types in the
+//    JSDoc, string-literal names, named element sizes/strides, the RNG-log
+//    helper, and the C's own comments and blank lines. Several of those read
+//    tables build.mjs computes, so a partially skipped emit would mix two
+//    vocabularies exactly as 1.11's did.
+export const EMIT_VERSION = 12;
 
 export class Emitter {
   constructor({ decls, lineOf, source, fileName, extraRecords, compileCwd, externBoxed, enumValues, constNames, macroDefs, fieldOffsets, macroExprDefs, macroFnDefs, pureFns, recordGlobals, recordArrays, bitfieldWidths }) {
@@ -4899,8 +4918,47 @@ export class Emitter {
     if (t.cls === 'int') return t.bits === 64 ? 'CLongLong' : t.signed ? 'CInt' : 'CUInt';
     if (t.cls === 'f64') return 'CDouble';
     if (t.cls === 'void') return 'void';
-    if (t.cls === 'ptr') return 'CPtr';
+    if (t.cls === 'ptr') return this.ptrDocType(qualType, desugared);
     return '*';
+  }
+
+  /**
+   * `CPtr<struct monst>` for a pointer whose pointee the AST spells, `CPtr`
+   * for one it does not.
+   *
+   * The AST has always known this — every pointer parameter read `{CPtr}` only
+   * because `jsdocType` threw the pointee away.  What goes inside the brackets
+   * is the C spelling as the *declaration* wrote it (`qualType`, not the
+   * desugared form), because the point is to hand the reader back the
+   * vocabulary of the C, not the emitter's normalization of it: a parameter
+   * declared `genericptr_t` says `CPtr<genericptr_t>` and a `coordxy *` says
+   * `CPtr<coordxy>`.  cv-qualifiers are dropped, because the port's memory
+   * model has no notion of them and a `{CPtr<const char>}` would be claiming
+   * something the code does not enforce.
+   *
+   * Three shapes decline the bracket and stay bare `CPtr`, all for the same
+   * reason — the spelling would be a claim the emitter cannot back:
+   *
+   *   - a pointer whose pointee spelling carries parentheses: a function
+   *     pointer (`int (*)(int)`), and clang's anonymous-record spelling
+   *     (`struct (unnamed struct at <file>:12:5)`).  The second is also what
+   *     keeps this out of the `__FILE__` hygiene problem by construction —
+   *     no path can reach the comment because no parenthesized spelling does.
+   *   - an array or function *designator*, which `parseType` calls a pointer
+   *     because it decays to one.  There is no pointee: `pointeeOf` says null.
+   *   - anything longer than DOC_PTR_MAX after whitespace collapsing, which
+   *     is a spelling nobody reads at the head of a line.
+   *
+   * Comments only: nothing here reaches a value.
+   */
+  ptrDocType(qualType, desugared) {
+    if (!DOC_PTR_TYPES) return 'CPtr';
+    const p = pointeeOf(qualType || desugared || '');
+    if (!p) { DOC_STATS.ptrBare++; return 'CPtr'; }
+    const spelled = this.typeNote(p).replace(/\s+/g, ' ').trim();
+    if (!spelled || /[()]/.test(spelled) || spelled.length > DOC_PTR_MAX) { DOC_STATS.ptrBare++; return 'CPtr'; }
+    DOC_STATS.ptrNamed++;
+    return `CPtr<${spelled}>`;
   }
 
   /** find static locals in a function body (they hoist to module scope) */

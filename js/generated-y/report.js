@@ -68,7 +68,7 @@ const bid = new Uint8Array(40);
 let __static_crashreport_init_once = 0; /** C ref: report.c:115 — int (function-static) */
 const __static_crashreport_init_hexdigits = cptr.bytes("0123456789abcdef"); /** C ref: report.c:148 — char[17] (function-static) */
 
-/** C ref: report.c:113 — @param {CInt} argc @param {CPtr} argv */
+/** C ref: report.c:113 — @param {CInt} argc @param {CPtr<char *>} argv */
 export function* crashreport_init(argc, argv) {
     __lbl_skip: {
         if (__static_crashreport_init_once++)
@@ -131,7 +131,7 @@ export function* crashreport_bidshow() {
     }
 }
 
-/** C ref: report.c:237 — @param {CPtr} in @param {CPtr} out @param {CPtr} remaining @param {CPtr} markp @returns {CInt} */
+/** C ref: report.c:237 — @param {CPtr<char>} in @param {CPtr<char *>} out @param {CPtr<int>} remaining @param {CPtr<char>} markp @returns {CInt} */
 export function* swr_add_uricoded(in$, out, remaining, markp) {
     while (cptr.ld1s(in$)) {
         if (isalnum(cptr.ld1s(in$)) || cptr.strchr(__sl1, cptr.ld1s(in$))) {
@@ -187,7 +187,7 @@ let utmp = 0;
 /** C ref: report.c:287 — char * */
 let mark = null;
 
-/** C ref: report.c:290 — @param {CInt} cos @param {CPtr} msg @param {CPtr} why @returns {CInt} */
+/** C ref: report.c:290 — @param {CInt} cos @param {CPtr<char>} msg @param {CPtr<char>} why @returns {CInt} */
 export function* submit_web_report(cos, msg, why) {
     __lbl_full: {
         urem.v = (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) < 0 || cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) > 8192) ? 8192 : (8192 < (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)) ? 8192 : (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)));
@@ -424,7 +424,7 @@ export function* NH_panictrace_gdb() {
     }
 }
 
-/** C ref: report.c:571 — @param {CInt} lineno @returns {CPtr} */
+/** C ref: report.c:571 — @param {CInt} lineno @returns {CPtr<char>} */
 export function get_saved_pline(lineno) {
     let p;
     let limit = NHM.DUMPLOG_MSG_COUNT;

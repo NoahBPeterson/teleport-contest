@@ -200,7 +200,7 @@ const __sl109 = cptr.lit("%d tumbler%s click.");
 const __sl110 = cptr.lit("%d gear%s turn.");
 const __sl111 = cptr.lit("%s");
 
-/** C ref: music.c:45 — @param {CPtr} mtmp @param {CInt} scary */
+/** C ref: music.c:45 — @param {CPtr<struct monst>} mtmp @param {CInt} scary */
 function* awaken_scare(mtmp, scary) {
     cptr.stI32o(mtmp, $monst_msleeping, 0);
     cptr.stI32o(mtmp, $monst_mcanmove, 1);
@@ -279,7 +279,7 @@ function* calm_nymphs(distance) {
     }
 }
 
-/** C ref: music.c:162 — @param {CPtr} bugler */
+/** C ref: music.c:162 — @param {CPtr<struct monst>} bugler */
 export function* awaken_soldiers(bugler) {
     let mtmp;
     let distance;
@@ -516,7 +516,7 @@ function* do_earthquake(force) {
         }
 }
 
-/** C ref: music.c:478 @returns {CPtr} */
+/** C ref: music.c:478 @returns {CPtr<char>} */
 function generic_lvl_desc() {
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
         return __sl40;
@@ -546,7 +546,7 @@ cptr.stPtro(beats, 56, __sl53);
 const __static_do_improvisation_my_goto_song = [67, 0]; /** C ref: music.c:508 — char[2] (function-static) */
 let __static_do_improvisation_improvisation = cptr.decay(__static_do_improvisation_my_goto_song); /** C ref: music.c:509 — char * (function-static) */
 
-/** C ref: music.c:503 — @param {CPtr} instr @returns {CInt} */
+/** C ref: music.c:503 — @param {CPtr<struct obj>} instr @returns {CInt} */
 function* do_improvisation(instr) {
     let damage;
     let mode;
@@ -720,7 +720,7 @@ function* do_improvisation(instr) {
 
 const __static_improvised_notes_notes = [65, 66, 67, 68, 69, 70, 71]; /** C ref: music.c:735 — char[7] (function-static) */
 
-/** C ref: music.c:733 — @param {CPtr} same_as_last_time @returns {CPtr} */
+/** C ref: music.c:733 — @param {CPtr<boolean>} same_as_last_time @returns {CPtr<char>} */
 function improvised_notes(same_as_last_time) {
     if (!(Unchanging() && cptr.ld1so2(svc, 0, 1, $context_info_jingle) != 0)) {
         let i;
@@ -736,7 +736,7 @@ function improvised_notes(same_as_last_time) {
     return cptr.add(svc, $context_info_jingle);
 }
 
-/** C ref: music.c:759 — @param {CPtr} instr @returns {CInt} */
+/** C ref: music.c:759 — @param {CPtr<struct obj>} instr @returns {CInt} */
 export function* do_play_instrument(instr) {
     let buf = [0];
     let c = 121;
@@ -850,7 +850,7 @@ export function* do_play_instrument(instr) {
     return NHM.ECMD_OK;
 }
 
-/** C ref: music.c:902 — @param {CPtr} obj @returns {*} */
+/** C ref: music.c:902 — @param {CPtr<struct obj>} obj @returns {*} */
 export function obj_to_instr(obj) {
     let ret_instr = NHC.ins_no_instrument;
     return ret_instr;

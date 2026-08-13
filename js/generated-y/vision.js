@@ -285,7 +285,7 @@ export function vision_init() {
     view_init();
 }
 
-/** C ref: vision.c:153 — @param {CInt} x @param {CInt} y @param {CPtr} lev @returns {CInt} */
+/** C ref: vision.c:153 — @param {CInt} x @param {CInt} y @param {CPtr<struct rm>} lev @returns {CInt} */
 export function* does_block(x, y, lev) {
     let obj;
     let mon;
@@ -360,7 +360,7 @@ export function* vision_reset() {
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
 }
 
-/** C ref: vision.c:274 — @param {CPtr} rows @param {CPtr} rmin @param {CPtr} rmax */
+/** C ref: vision.c:274 — @param {CPtr<seenV **>} rows @param {CPtr<coordxy *>} rmin @param {CPtr<coordxy *>} rmax */
 function* get_unused_cs(rows, rmin, rmax) {
     let row;
     let nrmin;
@@ -383,7 +383,7 @@ function* get_unused_cs(rows, rmin, rmax) {
     }
 }
 
-/** C ref: vision.c:314 — @param {CPtr} next @param {CPtr} rmin @param {CPtr} rmax */
+/** C ref: vision.c:314 — @param {CPtr<seenV *>} next @param {CPtr<coordxy>} rmin @param {CPtr<coordxy>} rmax */
 function* rogue_vision(next, rmin, rmax) {
     let rnum = (((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) - NHM.ROOMOFFSET) | 0;
     let start;
@@ -986,7 +986,7 @@ export function clear_path(col1, row1, col2, row2) {
 function view_init() {
 }
 
-/** C ref: vision.c:1666 — @param {CInt} row @param {CInt} left @param {CInt} right_mark @param {CPtr} limits */
+/** C ref: vision.c:1666 — @param {CInt} row @param {CInt} left @param {CInt} right_mark @param {CPtr<coordxy>} limits */
 function* right_side(row, left, right_mark, limits) {
     let right;
     let right_edge;
@@ -1299,7 +1299,7 @@ function* right_side(row, left, right_mark, limits) {
     }
 }
 
-/** C ref: vision.c:1858 — @param {CInt} row @param {CInt} left_mark @param {CInt} right @param {CPtr} limits */
+/** C ref: vision.c:1858 — @param {CInt} row @param {CInt} left_mark @param {CInt} right @param {CPtr<coordxy>} limits */
 function* left_side(row, left_mark, right, limits) {
     let left;
     let left_edge;
@@ -1612,7 +1612,7 @@ function* left_side(row, left_mark, right, limits) {
     }
 }
 
-/** C ref: vision.c:2002 — @param {CInt} srow @param {CInt} scol @param {CPtr} loc_cs_rows @param {CPtr} left_most @param {CPtr} right_most @param {CInt} range @param {CPtr} func @param {CPtr} arg */
+/** C ref: vision.c:2002 — @param {CInt} srow @param {CInt} scol @param {CPtr<seenV *>} loc_cs_rows @param {CPtr<coordxy>} left_most @param {CPtr<coordxy>} right_most @param {CInt} range @param {CPtr} func @param {CPtr} arg */
 function* view_from(srow, scol, loc_cs_rows, left_most, right_most, range, func, arg) {
     let i;
     let rowp;
@@ -1709,7 +1709,7 @@ export function* do_clear_area(scol, srow, range, func, arg) {
     }
 }
 
-/** C ref: vision.c:2152 — @param {CPtr} mon @returns {CUInt} */
+/** C ref: vision.c:2152 — @param {CPtr<struct monst>} mon @returns {CUInt} */
 export function howmonseen(mon) {
     let useemon = schar(canseemon(mon));
     let xraydist = (cptr.ldI32o(u, $you_xray_range) < 0) ? -1 : (Math.imul(cptr.ldI32o(u, $you_xray_range), cptr.ldI32o(u, $you_xray_range)));

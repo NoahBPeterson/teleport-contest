@@ -227,12 +227,12 @@ let default_configfile = __sl0;
 /** C ref: cfgfiles.c:140 — char[256] */
 const configfile = new Uint8Array(256);
 
-/** C ref: cfgfiles.c:143 @returns {CPtr} */
+/** C ref: cfgfiles.c:143 @returns {CPtr<char>} */
 export function get_configfile() {
     return cptr.decay(configfile);
 }
 
-/** C ref: cfgfiles.c:149 @returns {CPtr} */
+/** C ref: cfgfiles.c:149 @returns {CPtr<char>} */
 export function get_default_configfile() {
     return default_configfile;
 }
@@ -273,13 +273,13 @@ export function do_write_config_file() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: cfgfiles.c:216 — @param {CPtr} fname */
+/** C ref: cfgfiles.c:216 — @param {CPtr<char>} fname */
 export function set_configfile_name(fname) {
     void __builtin___strncpy_chk(cptr.decay(configfile), fname, 255n, __builtin_object_size(cptr.decay(configfile), 1));
     cptr.st1o(cptr.decay(configfile), 255n, 0, 1);
 }
 
-/** C ref: cfgfiles.c:223 — @param {CPtr} filename @param {CInt} src @returns {CPtr} */
+/** C ref: cfgfiles.c:223 — @param {CPtr<char>} filename @param {CInt} src @returns {CPtr<FILE>} */
 function fopen_config_file(filename, src) {
     let fp;
     let tmp_config = new Uint8Array(256);
@@ -340,7 +340,7 @@ function fopen_config_file(filename, src) {
     return null;
 }
 
-/** C ref: cfgfiles.c:381 — @param {CPtr} bufp @param {CPtr} list @param {CInt} modlist @param {CInt} size @param {CPtr} name @returns {CInt} */
+/** C ref: cfgfiles.c:381 — @param {CPtr<char>} bufp @param {CPtr<uchar>} list @param {CInt} modlist @param {CInt} size @param {CPtr<char>} name @returns {CInt} */
 function get_uchars(bufp, list, modlist, size, name) {
     let num = 0;
     let count = 0;
@@ -390,7 +390,7 @@ function get_uchars(bufp, list, modlist, size, name) {
     }
 }
 
-/** C ref: cfgfiles.c:464 — @param {CPtr} str @param {CInt} sep @returns {CPtr} */
+/** C ref: cfgfiles.c:464 — @param {CPtr<char>} str @param {CInt} sep @returns {CPtr<char>} */
 function choose_random_part(str, sep) {
     let nsep = 1;
     let csep;
@@ -437,7 +437,7 @@ function free_config_sections() {
     }
 }
 
-/** C ref: cfgfiles.c:523 — @param {CPtr} str @returns {CPtr} */
+/** C ref: cfgfiles.c:523 — @param {CPtr<char>} str @returns {CPtr<char>} */
 function is_config_section(str) {
     let a;
     let c;
@@ -456,7 +456,7 @@ function is_config_section(str) {
     return trimspaces(a);
 }
 
-/** C ref: cfgfiles.c:552 — @param {CPtr} buf @returns {CInt} */
+/** C ref: cfgfiles.c:552 — @param {CPtr<char>} buf @returns {CInt} */
 function handle_config_section(buf) {
     let sect = is_config_section(buf);
     if (sect) {
@@ -496,7 +496,7 @@ function handle_config_section(buf) {
     return 0;
 }
 
-/** C ref: cfgfiles.c:588 — @param {CPtr} buf @returns {CPtr} */
+/** C ref: cfgfiles.c:588 — @param {CPtr<char>} buf @returns {CPtr<char>} */
 function find_optparam(buf) {
     let bufp;
     let altp;
@@ -507,96 +507,96 @@ function find_optparam(buf) {
     return bufp;
 }
 
-/** C ref: cfgfiles.c:603 — @param {CPtr} origbuf @returns {CInt} */
+/** C ref: cfgfiles.c:603 — @param {CPtr<char>} origbuf @returns {CInt} */
 function cnf_line_OPTIONS(origbuf) {
     let bufp = find_optparam(origbuf);
     bufp = cptr.add(bufp, 1);
     return parseoptions(bufp, 1, 1);
 }
 
-/** C ref: cfgfiles.c:612 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:612 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_AUTOPICKUP_EXCEPTION(bufp) {
     add_autopickup_exception(bufp);
     return 1;
 }
 
-/** C ref: cfgfiles.c:619 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:619 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_BINDINGS(bufp) {
     return parsebindings(bufp);
 }
 
-/** C ref: cfgfiles.c:625 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:625 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_AUTOCOMPLETE(bufp) {
     parseautocomplete(bufp, 1);
     return 1;
 }
 
-/** C ref: cfgfiles.c:632 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:632 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_MSGTYPE(bufp) {
     return msgtype_parse_add(bufp);
 }
 
-/** C ref: cfgfiles.c:638 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:638 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_HACKDIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:653 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:653 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_LEVELDIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:673 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:673 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_SAVEDIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:695 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:695 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_BONESDIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:706 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:706 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_DATADIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:717 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:717 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_SCOREDIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:728 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:728 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_LOCKDIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:739 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:739 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_CONFIGDIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:750 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:750 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_TROUBLEDIR(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:761 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:761 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_NAME(bufp) {
     void __builtin___strncpy_chk(svp, bufp, 31n, __builtin_object_size(svp, 1));
     return 1;
 }
 
-/** C ref: cfgfiles.c:768 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:768 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_ROLE(bufp) {
     let len;
     if ((len = str2role(bufp)) >= 0)
@@ -604,19 +604,19 @@ function cnf_line_ROLE(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:778 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:778 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_dogname(bufp) {
     void __builtin___strncpy_chk(cptr.add(gd, $instance_globals_d_dogname), bufp, 62n, __builtin_object_size(cptr.add(gd, $instance_globals_d_dogname), 1));
     return 1;
 }
 
-/** C ref: cfgfiles.c:785 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:785 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_catname(bufp) {
     void __builtin___strncpy_chk(cptr.add(gc, $instance_globals_c_catname), bufp, 62n, __builtin_object_size(cptr.add(gc, $instance_globals_c_catname), 1));
     return 1;
 }
 
-/** C ref: cfgfiles.c:795 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:795 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_WIZARDS(bufp) {
     if (cptr.ldPtro(sysopt, $sysopt_s_wizards))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_wizards));
@@ -629,7 +629,7 @@ function cnf_line_WIZARDS(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:812 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:812 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_SHELLERS(bufp) {
     if (cptr.ldPtro(sysopt, $sysopt_s_shellers))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_shellers));
@@ -637,7 +637,7 @@ function cnf_line_SHELLERS(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:821 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:821 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_MSGHANDLER(bufp) {
     if (cptr.ldPtro(sysopt, $sysopt_s_msghandler))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_msghandler));
@@ -645,7 +645,7 @@ function cnf_line_MSGHANDLER(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:830 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:830 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_EXPLORERS(bufp) {
     if (cptr.ldPtro(sysopt, $sysopt_s_explorers))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_explorers));
@@ -653,7 +653,7 @@ function cnf_line_EXPLORERS(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:839 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:839 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_DEBUGFILES(bufp) {
     if (!cptr.ldI32o(sysopt, $sysopt_s_env_dbgfl)) {
         if (cptr.ldPtro(sysopt, $sysopt_s_debugfiles))
@@ -663,13 +663,13 @@ function cnf_line_DEBUGFILES(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:852 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:852 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_DUMPLOGFILE(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:865 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:865 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_GENERICUSERS(bufp) {
     if (cptr.ldPtro(sysopt, $sysopt_s_genericusers))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_genericusers));
@@ -677,14 +677,14 @@ function cnf_line_GENERICUSERS(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:874 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:874 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_BONES_POOLS(bufp) {
     let n = atoi(bufp);
     cptr.stI32o(sysopt, $sysopt_s_bones_pools, (n <= 0) ? 0 : ((n) < 10 ? (n) : 10));
     return 1;
 }
 
-/** C ref: cfgfiles.c:888 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:888 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_SUPPORT(bufp) {
     if (cptr.ldPtr(sysopt))
         cptr.free(cptr.ldPtr(sysopt));
@@ -692,7 +692,7 @@ function cnf_line_SUPPORT(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:897 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:897 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_RECOVER(bufp) {
     if (cptr.ldPtro(sysopt, $sysopt_s_recover))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_recover));
@@ -700,21 +700,21 @@ function cnf_line_RECOVER(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:906 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:906 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_CHECK_SAVE_UID(bufp) {
     let n = atoi(bufp);
     cptr.stI32o(sysopt, $sysopt_s_check_save_uid, n);
     return 1;
 }
 
-/** C ref: cfgfiles.c:915 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:915 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_CHECK_PLNAME(bufp) {
     let n = atoi(bufp);
     cptr.stI32o(sysopt, $sysopt_s_check_plname, n);
     return 1;
 }
 
-/** C ref: cfgfiles.c:924 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:924 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_SEDUCE(bufp) {
     let n = !!atoi(bufp);
     let src = cptr.ldI32o(iflags, $instance_flags_parse_config_file_src);
@@ -728,14 +728,14 @@ function cnf_line_SEDUCE(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:946 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:946 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_HIDEUSAGE(bufp) {
     let n = !!atoi(bufp);
     cptr.stI32o(sysopt, $sysopt_s_hideusage, n);
     return 1;
 }
 
-/** C ref: cfgfiles.c:955 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:955 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_MAXPLAYERS(bufp) {
     let n = atoi(bufp);
     if (n < 0 || n > 25) {
@@ -746,7 +746,7 @@ function cnf_line_MAXPLAYERS(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:969 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:969 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_PERSMAX(bufp) {
     let n = atoi(bufp);
     if (n < 1) {
@@ -757,7 +757,7 @@ function cnf_line_PERSMAX(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:982 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:982 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_PERS_IS_UID(bufp) {
     let n = atoi(bufp);
     if (n != 0 && n != 1) {
@@ -768,7 +768,7 @@ function cnf_line_PERS_IS_UID(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:995 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:995 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_ENTRYMAX(bufp) {
     let n = atoi(bufp);
     if (n < 10) {
@@ -779,7 +779,7 @@ function cnf_line_ENTRYMAX(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1008 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1008 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_POINTSMIN(bufp) {
     let n = atoi(bufp);
     if (n < 1) {
@@ -790,7 +790,7 @@ function cnf_line_POINTSMIN(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1021 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1021 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_MAX_STATUENAME_RANK(bufp) {
     let n = atoi(bufp);
     if (n < 1) {
@@ -801,7 +801,7 @@ function cnf_line_MAX_STATUENAME_RANK(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1035 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1035 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_LIVELOG(bufp) {
     let L = strtol(bufp, null, 0);
     if (L < 0n || L > 65535n) {
@@ -812,7 +812,7 @@ function cnf_line_LIVELOG(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1052 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1052 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_PANICTRACE_LIBC(bufp) {
     let n = atoi(bufp);
     if (n < 0 || n > 2) {
@@ -823,7 +823,7 @@ function cnf_line_PANICTRACE_LIBC(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1067 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1067 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_PANICTRACE_GDB(bufp) {
     let n = atoi(bufp);
     if (n < 0 || n > 2) {
@@ -834,7 +834,7 @@ function cnf_line_PANICTRACE_GDB(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1082 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1082 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_GDBPATH(bufp) {
     if (!file_exists(bufp)) {
         config_error_add(__sl36);
@@ -846,7 +846,7 @@ function cnf_line_GDBPATH(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1097 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1097 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_GREPPATH(bufp) {
     if (!file_exists(bufp)) {
         config_error_add(__sl37);
@@ -858,7 +858,7 @@ function cnf_line_GREPPATH(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1112 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1112 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_CRASHREPORTURL(bufp) {
     if (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl));
@@ -866,7 +866,7 @@ function cnf_line_CRASHREPORTURL(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1121 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1121 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_ACCESSIBILITY(bufp) {
     let n = atoi(bufp);
     if (n < 0 || n > 1) {
@@ -877,30 +877,30 @@ function cnf_line_ACCESSIBILITY(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1134 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1134 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_PORTABLE_DEVICE_PATHS(bufp) {
     (void (bufp));
     config_error_add(__sl39);
     return 1;
 }
 
-/** C ref: cfgfiles.c:1156 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1156 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_BOULDER(bufp) {
     void get_uchars(bufp, cptr.add(cptr.add(go, $instance_globals_o_ov_primary_syms), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), 1, 1, __sl40);
     return 1;
 }
 
-/** C ref: cfgfiles.c:1164 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1164 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_MENUCOLOR(bufp) {
     return add_menu_coloring(bufp);
 }
 
-/** C ref: cfgfiles.c:1170 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1170 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_HILITE_STATUS(bufp) {
     return parse_status_hl1(bufp, 1);
 }
 
-/** C ref: cfgfiles.c:1181 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1181 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_WARNINGS(bufp) {
     let translate = new Uint8Array(105);
     void get_uchars(bufp, cptr.decay(translate), 0, NHM.WARNCOUNT, __sl41);
@@ -908,7 +908,7 @@ function cnf_line_WARNINGS(bufp) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1191 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1191 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_ROGUESYMBOLS(bufp) {
     if (parsesymbols(bufp, NHC.ROGUESET)) {
         switch_symbols(1);
@@ -918,7 +918,7 @@ function cnf_line_ROGUESYMBOLS(bufp) {
     return 0;
 }
 
-/** C ref: cfgfiles.c:1202 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1202 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_SYMBOLS(bufp) {
     if (parsesymbols(bufp, NHC.PRIMARYSET)) {
         switch_symbols(1);
@@ -929,31 +929,31 @@ function cnf_line_SYMBOLS(bufp) {
     return 0;
 }
 
-/** C ref: cfgfiles.c:1214 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1214 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_WIZKIT(bufp) {
     void __builtin___strncpy_chk(cptr.add(gw, $instance_globals_w_wizkit), bufp, 127n, __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1));
     return 1;
 }
 
-/** C ref: cfgfiles.c:1239 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1239 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_QT_TILEWIDTH(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:1253 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1253 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_QT_TILEHEIGHT(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:1267 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1267 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_QT_FONTSIZE(bufp) {
     (void (bufp));
     return 1;
 }
 
-/** C ref: cfgfiles.c:1281 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: cfgfiles.c:1281 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_QT_COMPACT(bufp) {
     (void (bufp));
     return 1;
@@ -1264,7 +1264,7 @@ cptr.stPtro(config_line_stmt, 1392 + $match_config_line_stmt_fn, cnf_line_QT_COM
 /** C ref: cfgfiles.c:1386 — boolean[59] */
 const disregarded_config_lines = new Uint8Array(59);
 
-/** C ref: cfgfiles.c:1389 — @param {CPtr} origbuf @returns {CInt} */
+/** C ref: cfgfiles.c:1389 — @param {CPtr<char>} origbuf @returns {CInt} */
 export function parse_config_line(origbuf) {
     let src = cptr.ldI32o(iflags, $instance_flags_parse_config_file_src);
     let in_sysconf = schar((src == NHC.set_in_sysconf));
@@ -1309,7 +1309,7 @@ let config_error_data = null;
 /** C ref: cfgfiles.c:1467 — struct _config_error_errmsg * */
 let config_error_msg = null;
 
-/** C ref: cfgfiles.c:1470 — @param {CInt} from_file @param {CPtr} sourcename @param {CInt} secure */
+/** C ref: cfgfiles.c:1470 — @param {CInt} from_file @param {CPtr<char>} sourcename @param {CInt} secure */
 export function config_error_init(from_file, sourcename, secure) {
     let tmp = alloc(1304);
     cptr.stI32(tmp, 0);
@@ -1328,7 +1328,7 @@ export function config_error_init(from_file, sourcename, secure) {
     cptr.stI32o(program_state, $sinfo_config_error_ready, 1);
 }
 
-/** C ref: cfgfiles.c:1493 — @param {CPtr} line @returns {CInt} */
+/** C ref: cfgfiles.c:1493 — @param {CPtr<char>} line @returns {CInt} */
 function config_error_nextline(line) {
     let ced = config_error_data;
     if (!ced)
@@ -1345,7 +1345,7 @@ function config_error_nextline(line) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1516 — @param {CPtr} L @returns {CInt} */
+/** C ref: cfgfiles.c:1516 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function l_get_config_errors(L) {
     let dat = config_error_msg;
     let tmp;
@@ -1367,7 +1367,7 @@ export function l_get_config_errors(L) {
     return 1;
 }
 
-/** C ref: cfgfiles.c:1544 — @param {CPtr} buf */
+/** C ref: cfgfiles.c:1544 — @param {CPtr<char>} buf */
 export function config_erradd(buf) {
     let lineno = new Uint8Array(128);
     let punct;
@@ -1422,7 +1422,7 @@ export function config_error_done() {
     return n;
 }
 
-/** C ref: cfgfiles.c:1624 — @param {CPtr} filename @param {CInt} src @returns {CInt} */
+/** C ref: cfgfiles.c:1624 — @param {CPtr<char>} filename @param {CInt} src @returns {CInt} */
 export function read_config_file(filename, src) {
     let fp;
     let rv = 1;
@@ -1440,7 +1440,7 @@ export function read_config_file(filename, src) {
 
 /** C ref: cfgfiles.c:1649 — struct _cnf_parser_state { inbuf, inbufsz, rv, ep, buf, skip, morelines, cont, pbreak } (memory model v0.5) */
 
-/** C ref: cfgfiles.c:1662 — @param {CPtr} parser */
+/** C ref: cfgfiles.c:1662 — @param {CPtr<struct _cnf_parser_state>} parser */
 function cnf_parser_init(parser) {
     cptr.stI32o(parser, $_cnf_parser_state_rv, 1);
     cptr.stPtro(parser, $_cnf_parser_state_ep, cptr.stPtro(parser, $_cnf_parser_state_buf, null));
@@ -1453,7 +1453,7 @@ function cnf_parser_init(parser) {
     __builtin___memset_chk(cptr.ldPtr(parser), 0, BigInt(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0), __builtin_object_size(cptr.ldPtr(parser), 0));
 }
 
-/** C ref: cfgfiles.c:1677 — @param {CPtr} parser */
+/** C ref: cfgfiles.c:1677 — @param {CPtr<struct _cnf_parser_state>} parser */
 function cnf_parser_done(parser) {
     cptr.stPtro(parser, $_cnf_parser_state_ep, null);
     if (cptr.ldPtr(parser))
@@ -1462,7 +1462,7 @@ function cnf_parser_done(parser) {
         cptr.free(cptr.ldPtro(parser, $_cnf_parser_state_buf)), cptr.stPtro(parser, $_cnf_parser_state_buf, null);
 }
 
-/** C ref: cfgfiles.c:1693 — @param {CPtr} p @param {CPtr} proc */
+/** C ref: cfgfiles.c:1693 — @param {CPtr<struct _cnf_parser_state>} p @param {CPtr} proc */
 function parse_conf_buf(p, proc) {
     cptr.st1o(p, $_cnf_parser_state_cont, 0);
     cptr.st1o(p, $_cnf_parser_state_pbreak, 0);
@@ -1554,7 +1554,7 @@ function parse_conf_buf(p, proc) {
     }
 }
 
-/** C ref: cfgfiles.c:1810 — @param {CPtr} str @param {CPtr} proc @returns {CInt} */
+/** C ref: cfgfiles.c:1810 — @param {CPtr<char>} str @param {CPtr} proc @returns {CInt} */
 export function parse_conf_str(str, proc) {
     let len;
     let parser = cptr.alloc(40);
@@ -1581,7 +1581,7 @@ export function parse_conf_str(str, proc) {
     return schar(cptr.ldI32o(parser, $_cnf_parser_state_rv));
 }
 
-/** C ref: cfgfiles.c:1844 — @param {CPtr} fp @param {CPtr} proc @returns {CInt} */
+/** C ref: cfgfiles.c:1844 — @param {CPtr<FILE>} fp @param {CPtr} proc @returns {CInt} */
 export function parse_conf_file(fp, proc) {
     let parser = cptr.alloc(40);
     cnf_parser_init(parser);
@@ -1596,7 +1596,7 @@ export function parse_conf_file(fp, proc) {
     return schar(cptr.ldI32o(parser, $_cnf_parser_state_rv));
 }
 
-/** C ref: cfgfiles.c:1865 — @param {CPtr} str */
+/** C ref: cfgfiles.c:1865 — @param {CPtr<char>} str */
 export function config_error_add(str, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
@@ -1604,7 +1604,7 @@ export function config_error_add(str, ...__va) {
     the_args = null;
 }
 
-/** C ref: cfgfiles.c:1875 — @param {CPtr} str @param {CPtr} the_args */
+/** C ref: cfgfiles.c:1875 — @param {CPtr<char>} str @param {CPtr} the_args */
 function vconfig_error_add(str, the_args) {
     let vlen = 0;
     let buf = new Uint8Array(1280);

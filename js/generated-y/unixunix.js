@@ -221,7 +221,7 @@ export function* ask_about_panic_save() {
     return;
 }
 
-/** C ref: unixunix.c:297 — @param {CPtr} s */
+/** C ref: unixunix.c:297 — @param {CPtr<char>} s */
 export function regularize(s) {
     let lp;
     while ((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null || (lp = cptr.strchr(s, 32)) !== null)
@@ -274,7 +274,7 @@ export function* child(wt) {
     return 0;
 }
 
-/** C ref: unixunix.c:466 — @param {CPtr} path @returns {CInt} */
+/** C ref: unixunix.c:466 — @param {CPtr<char>} path @returns {CInt} */
 export function file_exists(path) {
     let sb = cptr.alloc(144);
     if (stat(path, sb)) {

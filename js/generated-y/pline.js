@@ -100,7 +100,7 @@ const __sl30 = cptr.lit("Exec to message handler %s failed.\n");
 const __sl31 = cptr.lit("Fork to message handler failed.");
 const __sl32 = cptr.lit("nhassert(%s) failed in file '%s' at line %d");
 
-/** C ref: pline.c:22 — @param {CPtr} line */
+/** C ref: pline.c:22 — @param {CPtr<char>} line */
 export function* dumplogmsg(line) {
     let indx = cptr.ldI32o(gs, $instance_globals_s_saved_pline_index);
     let oldest = cptr.ldPtro2(gs, indx, 8, $instance_globals_s_saved_plines);
@@ -125,7 +125,7 @@ export function dumplogfreemessages() {
     cptr.stI32o(gs, $instance_globals_s_saved_pline_index, 0);
 }
 
-/** C ref: pline.c:65 — @param {CPtr} line */
+/** C ref: pline.c:65 — @param {CPtr<char>} line */
 function* putmesg(line) {
     let attr = NHM.ATR_NONE;
     if (cptr.ld1so(iflags, $instance_flags_debug_prevent_pline))
@@ -151,7 +151,7 @@ export function set_msg_xy(x, y) {
     cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, y);
 }
 
-/** C ref: pline.c:104 — @param {CPtr} line */
+/** C ref: pline.c:104 — @param {CPtr<char>} line */
 export function* pline(line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
@@ -159,7 +159,7 @@ export function* pline(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:114 — @param {CInt} dir @param {CPtr} line */
+/** C ref: pline.c:114 — @param {CInt} dir @param {CPtr<char>} line */
 export function* pline_dir(dir, line, ...__va) {
     let the_args;
     set_msg_dir(dir);
@@ -168,7 +168,7 @@ export function* pline_dir(dir, line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:126 — @param {CInt} x @param {CInt} y @param {CPtr} line */
+/** C ref: pline.c:126 — @param {CInt} x @param {CInt} y @param {CPtr<char>} line */
 export function* pline_xy(x, y, line, ...__va) {
     let the_args;
     set_msg_xy(x, y);
@@ -177,7 +177,7 @@ export function* pline_xy(x, y, line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:138 — @param {CPtr} mtmp @param {CPtr} line */
+/** C ref: pline.c:138 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} line */
 export function* pline_mon(mtmp, line, ...__va) {
     let the_args;
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
@@ -191,7 +191,7 @@ export function* pline_mon(mtmp, line, ...__va) {
 
 let __static_vpline_in_pline = 0; /** C ref: pline.c:155 — int (function-static) */
 
-/** C ref: pline.c:153 — @param {CPtr} line @param {CPtr} the_args */
+/** C ref: pline.c:153 — @param {CPtr<char>} line @param {CPtr} the_args */
 function* vpline(line, the_args) {
     let pbuf = new Uint8Array(1280);
     let ln;
@@ -273,7 +273,7 @@ function* vpline(line, the_args) {
     --__static_vpline_in_pline;
 }
 
-/** C ref: pline.c:299 — @param {CUInt} pflags @param {CPtr} line */
+/** C ref: pline.c:299 — @param {CUInt} pflags @param {CPtr<char>} line */
 export function* custompline(pflags, line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
@@ -283,7 +283,7 @@ export function* custompline(pflags, line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:315 — @param {CPtr} line */
+/** C ref: pline.c:315 — @param {CPtr<char>} line */
 export function* urgent_pline(line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
@@ -293,7 +293,7 @@ export function* urgent_pline(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:327 — @param {CPtr} line */
+/** C ref: pline.c:327 — @param {CPtr<char>} line */
 export function* Norep(line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
@@ -303,7 +303,7 @@ export function* Norep(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:339 — @param {CInt} siz @returns {CPtr} */
+/** C ref: pline.c:339 — @param {CInt} siz @returns {CPtr<char>} */
 function* You_buf(siz) {
     if (siz > cptr.ldI32o(gy, $instance_globals_y_you_buf_siz)) {
         if (cptr.ldPtro(gy, $instance_globals_y_you_buf))
@@ -321,7 +321,7 @@ export function free_youbuf() {
     cptr.stI32o(gy, $instance_globals_y_you_buf_siz, 0);
 }
 
-/** C ref: pline.c:366 — @param {CPtr} line */
+/** C ref: pline.c:366 — @param {CPtr<char>} line */
 export function* You(line, ...__va) {
     let the_args;
     let tmp;
@@ -330,7 +330,7 @@ export function* You(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:377 — @param {CPtr} line */
+/** C ref: pline.c:377 — @param {CPtr<char>} line */
 export function* Your(line, ...__va) {
     let the_args;
     let tmp;
@@ -339,7 +339,7 @@ export function* Your(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:388 — @param {CPtr} line */
+/** C ref: pline.c:388 — @param {CPtr<char>} line */
 export function* You_feel(line, ...__va) {
     let the_args;
     let tmp;
@@ -352,7 +352,7 @@ export function* You_feel(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:403 — @param {CPtr} line */
+/** C ref: pline.c:403 — @param {CPtr<char>} line */
 export function* You_cant(line, ...__va) {
     let the_args;
     let tmp;
@@ -361,7 +361,7 @@ export function* You_cant(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:414 — @param {CPtr} line */
+/** C ref: pline.c:414 — @param {CPtr<char>} line */
 export function* pline_The(line, ...__va) {
     let the_args;
     let tmp;
@@ -370,7 +370,7 @@ export function* pline_The(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:425 — @param {CPtr} line */
+/** C ref: pline.c:425 — @param {CPtr<char>} line */
 export function* There(line, ...__va) {
     let the_args;
     let tmp;
@@ -379,7 +379,7 @@ export function* There(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:436 — @param {CPtr} line */
+/** C ref: pline.c:436 — @param {CPtr<char>} line */
 export function* You_hear(line, ...__va) {
     let the_args;
     let tmp;
@@ -396,7 +396,7 @@ export function* You_hear(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:455 — @param {CPtr} line */
+/** C ref: pline.c:455 — @param {CPtr<char>} line */
 export function* You_see(line, ...__va) {
     let the_args;
     let tmp;
@@ -411,7 +411,7 @@ export function* You_see(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:476 — @param {CPtr} line */
+/** C ref: pline.c:476 — @param {CPtr<char>} line */
 export function* verbalize(line, ...__va) {
     let the_args;
     let tmp;
@@ -426,7 +426,7 @@ export function* verbalize(line, ...__va) {
     the_args = null;
 }
 
-/** C ref: pline.c:495 — @param {CLongLong} glflags @param {CLongLong} gltime @param {CPtr} str */
+/** C ref: pline.c:495 — @param {CLongLong} glflags @param {CLongLong} gltime @param {CPtr<char>} str */
 export function* gamelog_add(glflags, gltime, str) {
     let tmp;
     let lst = cptr.ldPtro(gg, $instance_globals_g_gamelog);
@@ -443,7 +443,7 @@ export function* gamelog_add(glflags, gltime, str) {
         cptr.stPtro(lst, $gamelog_line_next, tmp);
 }
 
-/** C ref: pline.c:514 — @param {CLongLong} ll_type @param {CPtr} line */
+/** C ref: pline.c:514 — @param {CLongLong} ll_type @param {CPtr<char>} line */
 export function* livelog_printf(ll_type, line, ...__va) {
     let gamelogbuf = new Uint8Array(512);
     let the_args;
@@ -455,7 +455,7 @@ export function* livelog_printf(ll_type, line, ...__va) {
     (yield* livelog_add(ll_type, cptr.decay(gamelogbuf)));
 }
 
-/** C ref: pline.c:549 — @param {CPtr} line */
+/** C ref: pline.c:549 — @param {CPtr<char>} line */
 export function* raw_printf(line, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);
@@ -465,7 +465,7 @@ export function* raw_printf(line, ...__va) {
         (cptr.stI32o(ge, $instance_globals_e_early_raw_messages, cptr.ldI32o(ge, $instance_globals_e_early_raw_messages) + 1)) - (1);
 }
 
-/** C ref: pline.c:563 — @param {CPtr} line @param {CPtr} the_args */
+/** C ref: pline.c:563 — @param {CPtr<char>} line @param {CPtr} the_args */
 function* vraw_printf(line, the_args) {
     let pbuf = new Uint8Array(1280);
     if (cptr.strchr(line, 37)) {
@@ -483,7 +483,7 @@ function* vraw_printf(line, the_args) {
         (cptr.stI32o(ge, $instance_globals_e_early_raw_messages, cptr.ldI32o(ge, $instance_globals_e_early_raw_messages) + 1)) - (1);
 }
 
-/** C ref: pline.c:584 — @param {CPtr} s */
+/** C ref: pline.c:584 — @param {CPtr<char>} s */
 export function* impossible(s, ...__va) {
     let the_args;
     let pbuf = new Uint8Array(1280);
@@ -526,7 +526,7 @@ export function* impossible(s, ...__va) {
 /** C ref: pline.c:638 — signed char */
 let use_pline_handler = 1;
 
-/** C ref: pline.c:641 — @param {CPtr} line */
+/** C ref: pline.c:641 — @param {CPtr<char>} line */
 function* execplinehandler(line) {
     let f;
     let args = cptr.alloc(3 * 8);
@@ -553,7 +553,7 @@ function* execplinehandler(line) {
     }
 }
 
-/** C ref: pline.c:690 — @param {CPtr} expression @param {CPtr} filepath @param {CInt} line */
+/** C ref: pline.c:690 — @param {CPtr<char>} expression @param {CPtr<char>} filepath @param {CInt} line */
 export function* nhassert_failed(expression, filepath, line) {
     let filename;
     let p;

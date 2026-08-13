@@ -89,13 +89,13 @@ const strlocal = cptr.bytes("local");
 /** C ref: ldebug.c:41 — char[8] */
 const strupval = cptr.bytes("upvalue");
 
-/** C ref: ldebug.c:44 — @param {CPtr} ci @returns {CInt} */
+/** C ref: ldebug.c:44 — @param {CPtr<CallInfo>} ci @returns {CInt} */
 function currentpc(ci) {
     (void 0);
     return (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, $CallInfo_u)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p)), $Proto_code)) / 4n))))) - 1) | 0);
 }
 
-/** C ref: ldebug.c:63 — @param {CPtr} f @param {CInt} pc @param {CPtr} basepc @returns {CInt} */
+/** C ref: ldebug.c:63 — @param {CPtr<Proto>} f @param {CInt} pc @param {CPtr<int>} basepc @returns {CInt} */
 function getbaseline(f, pc, basepc) {
     if (cptr.ldI32o(f, $Proto_sizeabslineinfo) == 0 || pc < cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), 0, 8)) {
         cptr.stI32(basepc, -1);
@@ -110,7 +110,7 @@ function getbaseline(f, pc, basepc) {
     }
 }
 
-/** C ref: ldebug.c:86 — @param {CPtr} f @param {CInt} pc @returns {CInt} */
+/** C ref: ldebug.c:86 — @param {CPtr<Proto>} f @param {CInt} pc @returns {CInt} */
 export function luaG_getfuncline(f, pc) {
     if (cptr.eq(cptr.ldPtro(f, $Proto_lineinfo), (null)))
         return -1;
@@ -125,19 +125,19 @@ export function luaG_getfuncline(f, pc) {
     }
 }
 
-/** C ref: ldebug.c:101 — @param {CPtr} ci @returns {CInt} */
+/** C ref: ldebug.c:101 — @param {CPtr<CallInfo>} ci @returns {CInt} */
 function getcurrentline(ci) {
     return luaG_getfuncline(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), currentpc(ci));
 }
 
-/** C ref: ldebug.c:117 — @param {CPtr} ci */
+/** C ref: ldebug.c:117 — @param {CPtr<CallInfo>} ci */
 function settraps(ci) {
     for (; !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, $CallInfo_previous))
         if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
             cptr.stI32o(ci, $CallInfo_u + 8, 1);
 }
 
-/** C ref: ldebug.c:134 — @param {CPtr} L @param {CPtr} func @param {CInt} mask @param {CInt} count */
+/** C ref: ldebug.c:134 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} mask @param {CInt} count */
 export function lua_sethook(L, func, mask, count) {
     if (func === (null) || mask == 0) {
         mask = 0;
@@ -151,22 +151,22 @@ export function lua_sethook(L, func, mask, count) {
         settraps(cptr.ldPtro(L, $lua_State_ci));
 }
 
-/** C ref: ldebug.c:148 — @param {CPtr} L @returns {*} */
+/** C ref: ldebug.c:148 — @param {CPtr<lua_State>} L @returns {*} */
 export function lua_gethook(L) {
     return cptr.ldPtro(L, $lua_State_hook);
 }
 
-/** C ref: ldebug.c:153 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldebug.c:153 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_gethookmask(L) {
     return cptr.ldI32o(L, $lua_State_hookmask);
 }
 
-/** C ref: ldebug.c:158 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldebug.c:158 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_gethookcount(L) {
     return cptr.ldI32o(L, $lua_State_basehookcount);
 }
 
-/** C ref: ldebug.c:163 — @param {CPtr} L @param {CInt} level @param {CPtr} ar @returns {CInt} */
+/** C ref: ldebug.c:163 — @param {CPtr<lua_State>} L @param {CInt} level @param {CPtr<lua_Debug>} ar @returns {CInt} */
 export function lua_getstack(L, level, ar) {
     let status;
     let ci;
@@ -184,7 +184,7 @@ export function lua_getstack(L, level, ar) {
     return status;
 }
 
-/** C ref: ldebug.c:180 — @param {CPtr} p @param {CInt} uv @returns {CPtr} */
+/** C ref: ldebug.c:180 — @param {CPtr<Proto>} p @param {CInt} uv @returns {CPtr<char>} */
 function upvalname(p, uv) {
     let s = (cptr.ldPtro(cptr.ldPtro(p, $Proto_upvalues), uv, 16));
     if (cptr.eq(s, (null)))
@@ -193,7 +193,7 @@ function upvalname(p, uv) {
         return (cptr.add((s), $TString_contents));
 }
 
-/** C ref: ldebug.c:187 — @param {CPtr} ci @param {CInt} n @param {CPtr} pos @returns {CPtr} */
+/** C ref: ldebug.c:187 — @param {CPtr<CallInfo>} ci @param {CInt} n @param {CPtr<StkId>} pos @returns {CPtr<char>} */
 function findvararg(ci, n, pos) {
     if (cptr.ld1uo(cptr.ldPtro(((((((cptr.ldPtr(((((cptr.ldPtr(ci)))))))))))), $LClosure_p), $Proto_is_vararg)) {
         let nextra = cptr.ldI32o(ci, $CallInfo_u + 12);
@@ -205,7 +205,7 @@ function findvararg(ci, n, pos) {
     return null;
 }
 
-/** C ref: ldebug.c:199 — @param {CPtr} L @param {CPtr} ci @param {CInt} n @param {CPtr} pos @returns {CPtr} */
+/** C ref: ldebug.c:199 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CInt} n @param {CPtr<StkId>} pos @returns {CPtr<char>} */
 export function luaG_findlocal(L, ci, n, pos) {
     let base = cptr.add(cptr.ldPtr(ci), 1, 16);
     let name = null;
@@ -227,7 +227,7 @@ export function luaG_findlocal(L, ci, n, pos) {
     return name;
 }
 
-/** C ref: ldebug.c:223 — @param {CPtr} L @param {CPtr} ar @param {CInt} n @returns {CPtr} */
+/** C ref: ldebug.c:223 — @param {CPtr<lua_State>} L @param {CPtr<lua_Debug>} ar @param {CInt} n @returns {CPtr<char>} */
 export function* lua_getlocal(L, ar, n) {
     let name;
     (void 0);
@@ -260,7 +260,7 @@ export function* lua_getlocal(L, ar, n) {
     return name;
 }
 
-/** C ref: ldebug.c:245 — @param {CPtr} L @param {CPtr} ar @param {CInt} n @returns {CPtr} */
+/** C ref: ldebug.c:245 — @param {CPtr<lua_State>} L @param {CPtr<lua_Debug>} ar @param {CInt} n @returns {CPtr<char>} */
 export function* lua_setlocal(L, ar, n) {
     let pos = cptr.box(null);
     let name;
@@ -282,7 +282,7 @@ export function* lua_setlocal(L, ar, n) {
     return name;
 }
 
-/** C ref: ldebug.c:259 — @param {CPtr} ar @param {CPtr} cl */
+/** C ref: ldebug.c:259 — @param {CPtr<lua_Debug>} ar @param {CPtr<Closure>} cl */
 function funcinfo(ar, cl) {
     if (!(!cptr.eq((cl), (null)) && cptr.ld1uo((cl), $CClosure_tt) == 6)) {
         cptr.stPtro(ar, $lua_Debug_source, __sl4);
@@ -306,7 +306,7 @@ function funcinfo(ar, cl) {
     luaO_chunkid(cptr.add(ar, $lua_Debug_short_src), cptr.ldPtro(ar, $lua_Debug_source), cptr.ldU64o(ar, $lua_Debug_srclen));
 }
 
-/** C ref: ldebug.c:285 — @param {CPtr} p @param {CInt} currentline @param {CInt} pc @returns {CInt} */
+/** C ref: ldebug.c:285 — @param {CPtr<Proto>} p @param {CInt} currentline @param {CInt} pc @returns {CInt} */
 function nextline(p, currentline, pc) {
     if (cptr.ld1uo(cptr.ldPtro(p, $Proto_lineinfo), pc) != -128)
         return (currentline + cptr.ld1uo(cptr.ldPtro(p, $Proto_lineinfo), pc)) | 0;
@@ -314,7 +314,7 @@ function nextline(p, currentline, pc) {
         return luaG_getfuncline(p, pc);
 }
 
-/** C ref: ldebug.c:293 — @param {CPtr} L @param {CPtr} f */
+/** C ref: ldebug.c:293 — @param {CPtr<lua_State>} L @param {CPtr<Closure>} f */
 function* collectvalidlines(L, f) {
     if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), $CClosure_tt) == 6)) {
         (cptr.st1o((((cptr.ldPtro(L, $lua_State_top)))), $TValue_tt_, 0));
@@ -359,7 +359,7 @@ function* collectvalidlines(L, f) {
     }
 }
 
-/** C ref: ldebug.c:324 — @param {CPtr} L @param {CPtr} ci @param {CPtr} name @returns {CPtr} */
+/** C ref: ldebug.c:324 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr<char *>} name @returns {CPtr<char>} */
 function getfuncname(L, ci, name) {
     if (!cptr.eq(ci, (null)) && !(cptr.ldU16o(ci, $CallInfo_callstatus) & 32))
         return funcnamefromcall(L, cptr.ldPtro(ci, $CallInfo_previous), name);
@@ -367,7 +367,7 @@ function getfuncname(L, ci, name) {
         return null;
 }
 
-/** C ref: ldebug.c:332 — @param {CPtr} L @param {CPtr} what @param {CPtr} ar @param {CPtr} f @param {CPtr} ci @returns {CInt} */
+/** C ref: ldebug.c:332 — @param {CPtr<lua_State>} L @param {CPtr<char>} what @param {CPtr<lua_Debug>} ar @param {CPtr<Closure>} f @param {CPtr<CallInfo>} ci @returns {CInt} */
 function auxgetinfo(L, what, ar, f, ci) {
     let status = 1;
     for (; cptr.ld1s(what); what = cptr.add(what, 1)) {
@@ -428,7 +428,7 @@ function auxgetinfo(L, what, ar, f, ci) {
     return status;
 }
 
-/** C ref: ldebug.c:388 — @param {CPtr} L @param {CPtr} what @param {CPtr} ar @returns {CInt} */
+/** C ref: ldebug.c:388 — @param {CPtr<lua_State>} L @param {CPtr<char>} what @param {CPtr<lua_Debug>} ar @returns {CInt} */
 export function* lua_getinfo(L, what, ar) {
     let status;
     let cl;
@@ -478,7 +478,7 @@ function filterpc(pc, jmptarget) {
         return pc;
 }
 
-/** C ref: ldebug.c:436 — @param {CPtr} p @param {CInt} lastpc @param {CInt} reg @returns {CInt} */
+/** C ref: ldebug.c:436 — @param {CPtr<Proto>} p @param {CInt} lastpc @param {CInt} reg @returns {CInt} */
 function findsetreg(p, lastpc, reg) {
     let pc;
     let setreg = -1;
@@ -527,7 +527,7 @@ function findsetreg(p, lastpc, reg) {
     return setreg;
 }
 
-/** C ref: ldebug.c:485 — @param {CPtr} p @param {CInt} index @param {CPtr} name @returns {CPtr} */
+/** C ref: ldebug.c:485 — @param {CPtr<Proto>} p @param {CInt} index @param {CPtr<char *>} name @returns {CPtr<char>} */
 function kname(p, index, name) {
     let kvalue = cptr.add(cptr.ldPtro(p, $Proto_k), index, 16);
     if ((((((cptr.ld1uo(((kvalue)), $TValue_tt_))) & 15)) == 4)) {
@@ -539,7 +539,7 @@ function kname(p, index, name) {
     }
 }
 
-/** C ref: ldebug.c:498 — @param {CPtr} p @param {CPtr} ppc @param {CInt} reg @param {CPtr} name @returns {CPtr} */
+/** C ref: ldebug.c:498 — @param {CPtr<Proto>} p @param {CPtr<int>} ppc @param {CInt} reg @param {CPtr<char *>} name @returns {CPtr<char>} */
 function basicgetobjname(p, ppc, reg, name) {
     let pc = cptr.ldI32(ppc);
     cptr.stPtr(name, luaF_getlocalname(p, (reg + 1) | 0, pc));
@@ -573,7 +573,7 @@ function basicgetobjname(p, ppc, reg, name) {
     return null;
 }
 
-/** C ref: ldebug.c:532 — @param {CPtr} p @param {CInt} pc @param {CInt} c @param {CPtr} name */
+/** C ref: ldebug.c:532 — @param {CPtr<Proto>} p @param {CInt} pc @param {CInt} c @param {CPtr<char *>} name */
 function rname(p, pc, c, name) {
     pc = cptr.box(pc);
     let what = basicgetobjname(p, pc, c, name);
@@ -581,7 +581,7 @@ function rname(p, pc, c, name) {
         cptr.stPtr(name, __sl0);
 }
 
-/** C ref: ldebug.c:542 — @param {CPtr} p @param {CInt} pc @param {CUInt} i @param {CPtr} name */
+/** C ref: ldebug.c:542 — @param {CPtr<Proto>} p @param {CInt} pc @param {CUInt} i @param {CPtr<char *>} name */
 function rkname(p, pc, i, name) {
     let c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
     if (((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
@@ -590,7 +590,7 @@ function rkname(p, pc, i, name) {
         rname(p, pc, c, name);
 }
 
-/** C ref: ldebug.c:558 — @param {CPtr} p @param {CInt} pc @param {CUInt} i @param {CInt} isup @returns {CPtr} */
+/** C ref: ldebug.c:558 — @param {CPtr<Proto>} p @param {CInt} pc @param {CUInt} i @param {CInt} isup @returns {CPtr<char>} */
 function isEnv(p, pc, i, isup) {
     pc = cptr.box(pc);
     let t = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));
@@ -605,7 +605,7 @@ function isEnv(p, pc, i, isup) {
     return (name.v && strcmp(name.v, __sl11) == 0) ? __sl12 : __sl13;
 }
 
-/** C ref: ldebug.c:575 — @param {CPtr} p @param {CInt} lastpc @param {CInt} reg @param {CPtr} name @returns {CPtr} */
+/** C ref: ldebug.c:575 — @param {CPtr<Proto>} p @param {CInt} lastpc @param {CInt} reg @param {CPtr<char *>} name @returns {CPtr<char>} */
 function getobjname(p, lastpc, reg, name) {
     lastpc = cptr.box(lastpc);
     let kind = basicgetobjname(p, lastpc, reg, name);
@@ -650,7 +650,7 @@ function getobjname(p, lastpc, reg, name) {
     return null;
 }
 
-/** C ref: ldebug.c:620 — @param {CPtr} L @param {CPtr} p @param {CInt} pc @param {CPtr} name @returns {CPtr} */
+/** C ref: ldebug.c:620 — @param {CPtr<lua_State>} L @param {CPtr<Proto>} p @param {CInt} pc @param {CPtr<char *>} name @returns {CPtr<char>} */
 function funcnamefromcode(L, p, pc, name) {
     let tm = 0;
     let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);
@@ -719,7 +719,7 @@ function funcnamefromcode(L, p, pc, name) {
     return __sl17;
 }
 
-/** C ref: ldebug.c:664 — @param {CPtr} L @param {CPtr} ci @param {CPtr} name @returns {CPtr} */
+/** C ref: ldebug.c:664 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr<char *>} name @returns {CPtr<char>} */
 function funcnamefromcall(L, ci, name) {
     if (cptr.ldU16o(ci, $CallInfo_callstatus) & 8) {
         cptr.stPtr(name, __sl0);
@@ -733,7 +733,7 @@ function funcnamefromcall(L, ci, name) {
         return null;
 }
 
-/** C ref: ldebug.c:690 — @param {CPtr} ci @param {CPtr} o @returns {CInt} */
+/** C ref: ldebug.c:690 — @param {CPtr<CallInfo>} ci @param {CPtr<TValue>} o @returns {CInt} */
 function instack(ci, o) {
     let pos;
     let base = cptr.add(cptr.ldPtr(ci), 1, 16);
@@ -744,7 +744,7 @@ function instack(ci, o) {
     return -1;
 }
 
-/** C ref: ldebug.c:706 — @param {CPtr} ci @param {CPtr} o @param {CPtr} name @returns {CPtr} */
+/** C ref: ldebug.c:706 — @param {CPtr<CallInfo>} ci @param {CPtr<TValue>} o @param {CPtr<char *>} name @returns {CPtr<char>} */
 function getupvalname(ci, o, name) {
     let c = (((((((cptr.ldPtr(((((cptr.ldPtr((ci))))))))))))));
     let i;
@@ -757,7 +757,7 @@ function getupvalname(ci, o, name) {
     return null;
 }
 
-/** C ref: ldebug.c:720 — @param {CPtr} L @param {CPtr} kind @param {CPtr} name @returns {CPtr} */
+/** C ref: ldebug.c:720 — @param {CPtr<lua_State>} L @param {CPtr<char>} kind @param {CPtr<char>} name @returns {CPtr<char>} */
 function* formatvarinfo(L, kind, name) {
     if (cptr.eq(kind, (null)))
         return __sl9;
@@ -765,7 +765,7 @@ function* formatvarinfo(L, kind, name) {
         return (yield* luaO_pushfstring(L, __sl20, kind, name));
 }
 
-/** C ref: ldebug.c:732 — @param {CPtr} L @param {CPtr} o @returns {CPtr} */
+/** C ref: ldebug.c:732 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @returns {CPtr<char>} */
 function* varinfo(L, o) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let name = cptr.box(null);
@@ -781,18 +781,18 @@ function* varinfo(L, o) {
     return (yield* formatvarinfo(L, kind, name.v));
 }
 
-/** C ref: ldebug.c:751 — @param {CPtr} L @param {CPtr} o @param {CPtr} op @param {CPtr} extra */
+/** C ref: ldebug.c:751 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {CPtr<char>} op @param {CPtr<char>} extra */
 function* typeerror(L, o, op, extra) {
     let t = (yield* luaT_objtypename(L, o));
     (yield* luaG_runerror(L, __sl21, op, t, extra));
 }
 
-/** C ref: ldebug.c:762 — @param {CPtr} L @param {CPtr} o @param {CPtr} op */
+/** C ref: ldebug.c:762 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {CPtr<char>} op */
 export function* luaG_typeerror(L, o, op) {
     (yield* typeerror(L, o, op, (yield* varinfo(L, o))));
 }
 
-/** C ref: ldebug.c:772 — @param {CPtr} L @param {CPtr} o */
+/** C ref: ldebug.c:772 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o */
 export function* luaG_callerror(L, o) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let name = cptr.box(null);
@@ -801,26 +801,26 @@ export function* luaG_callerror(L, o) {
     (yield* typeerror(L, o, __sl22, extra));
 }
 
-/** C ref: ldebug.c:781 — @param {CPtr} L @param {CPtr} o @param {CPtr} what */
+/** C ref: ldebug.c:781 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {CPtr<char>} what */
 export function* luaG_forerror(L, o, what) {
     (yield* luaG_runerror(L, __sl23, what, (yield* luaT_objtypename(L, o))));
 }
 
-/** C ref: ldebug.c:787 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 */
+/** C ref: ldebug.c:787 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 */
 export function* luaG_concaterror(L, p1, p2) {
     if ((((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 4) || (((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 3))
         p1 = p2;
     (yield* luaG_typeerror(L, p1, __sl24));
 }
 
-/** C ref: ldebug.c:793 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} msg */
+/** C ref: ldebug.c:793 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr<char>} msg */
 export function* luaG_opinterror(L, p1, p2, msg) {
     if (!(((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 3))
         p2 = p1;
     (yield* luaG_typeerror(L, p2, msg));
 }
 
-/** C ref: ldebug.c:804 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 */
+/** C ref: ldebug.c:804 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 */
 export function* luaG_tointerror(L, p1, p2) {
     let temp = cptr.box(0n);
     if (!luaV_tointegerns(p1, temp, NHC.F2Ieq))
@@ -828,7 +828,7 @@ export function* luaG_tointerror(L, p1, p2) {
     (yield* luaG_runerror(L, __sl25, (yield* varinfo(L, p2))));
 }
 
-/** C ref: ldebug.c:812 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 */
+/** C ref: ldebug.c:812 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 */
 export function* luaG_ordererror(L, p1, p2) {
     let t1 = (yield* luaT_objtypename(L, p1));
     let t2 = (yield* luaT_objtypename(L, p2));
@@ -838,7 +838,7 @@ export function* luaG_ordererror(L, p1, p2) {
         (yield* luaG_runerror(L, __sl27, t1, t2));
 }
 
-/** C ref: ldebug.c:823 — @param {CPtr} L @param {CPtr} msg @param {CPtr} src @param {CInt} line @returns {CPtr} */
+/** C ref: ldebug.c:823 — @param {CPtr<lua_State>} L @param {CPtr<char>} msg @param {CPtr<TString>} src @param {CInt} line @returns {CPtr<char>} */
 export function* luaG_addinfo(L, msg, src, line) {
     let buff = new Uint8Array(60);
     if (src)
@@ -850,7 +850,7 @@ export function* luaG_addinfo(L, msg, src, line) {
     return (yield* luaO_pushfstring(L, __sl28, cptr.decay(buff), line, msg));
 }
 
-/** C ref: ldebug.c:835 — @param {CPtr} L */
+/** C ref: ldebug.c:835 — @param {CPtr<lua_State>} L */
 export function* luaG_errormsg(L) {
     if (cptr.ldI64o(L, $lua_State_errfunc) != 0n) {
         let errfunc = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(L, $lua_State_errfunc)))));
@@ -879,7 +879,7 @@ export function* luaG_errormsg(L) {
     (yield* luaD_throw(L, 2));
 }
 
-/** C ref: ldebug.c:848 — @param {CPtr} L @param {CPtr} fmt */
+/** C ref: ldebug.c:848 — @param {CPtr<lua_State>} L @param {CPtr<char>} fmt */
 export function* luaG_runerror(L, fmt, ...__va) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let msg;
@@ -913,7 +913,7 @@ export function* luaG_runerror(L, fmt, ...__va) {
     (yield* luaG_errormsg(L));
 }
 
-/** C ref: ldebug.c:873 — @param {CPtr} p @param {CInt} oldpc @param {CInt} newpc @returns {CInt} */
+/** C ref: ldebug.c:873 — @param {CPtr<Proto>} p @param {CInt} oldpc @param {CInt} newpc @returns {CInt} */
 function changedline(p, oldpc, newpc) {
     if (cptr.eq(cptr.ldPtro(p, $Proto_lineinfo), (null)))
         return 0;
@@ -932,7 +932,7 @@ function changedline(p, oldpc, newpc) {
     return (luaG_getfuncline(p, oldpc) != luaG_getfuncline(p, newpc));
 }
 
-/** C ref: ldebug.c:902 — @param {CPtr} L @returns {CInt} */
+/** C ref: ldebug.c:902 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* luaG_tracecall(L) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p);
@@ -946,7 +946,7 @@ export function* luaG_tracecall(L) {
     return 1;
 }
 
-/** C ref: ldebug.c:928 — @param {CPtr} L @param {CPtr} pc @returns {CInt} */
+/** C ref: ldebug.c:928 — @param {CPtr<lua_State>} L @param {CPtr<Instruction>} pc @returns {CInt} */
 export function* luaG_traceexec(L, pc) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let mask = uchar(cptr.ldI32o(L, $lua_State_hookmask));

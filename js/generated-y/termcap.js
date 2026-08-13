@@ -219,7 +219,7 @@ const tty_standout_on = new Uint8Array(16);
 /** C ref: termcap.c:79 — char[16] */
 const tty_standout_off = new Uint8Array(16);
 
-/** C ref: termcap.c:82 — @param {CPtr} wid @param {CPtr} hgt */
+/** C ref: termcap.c:82 — @param {CPtr<int>} wid @param {CPtr<int>} hgt */
 export function* term_startup(wid, hgt) {
     let term;
     let tptr;
@@ -478,7 +478,7 @@ let nomux_seq = 0;
 /** C ref: termcap.c:676 — int */
 export let nomux_anim_id = 0;
 
-/** C ref: termcap.c:681 — @param {CPtr} kind */
+/** C ref: termcap.c:681 — @param {CPtr<char>} kind */
 function* nomux_emit_marker(kind) {
     if (!nomux_markers_enabled())
         return;
@@ -608,7 +608,7 @@ function nomux_sgr_fg(fg) {
 /** C ref: termcap.c:803 — char[6144] */
 const nomux_out = new Uint8Array(6144);
 
-/** C ref: termcap.c:804 @returns {CPtr} */
+/** C ref: termcap.c:804 @returns {CPtr<char>} */
 export function* nomux_capture_screen() {
     let p = cptr.decay(nomux_out);
     let row;
@@ -715,7 +715,7 @@ function nomux_raw_putch(ch) {
     nomux_raw_col++;
 }
 
-/** C ref: termcap.c:924 — @param {CPtr} s @param {CInt} bold */
+/** C ref: termcap.c:924 — @param {CPtr<char>} s @param {CInt} bold */
 export function nomux_raw_emit(s, bold) {
     if (!nomux_raw_active) {
         if (ttyDisplay && (!cptr.ld1s(s) || !nomux_markers_enabled()))
@@ -737,7 +737,7 @@ export function nomux_raw_emit_eol() {
         nomux_raw_putch(10);
 }
 
-/** C ref: termcap.c:960 — @param {CPtr} cx @param {CPtr} cy */
+/** C ref: termcap.c:960 — @param {CPtr<int>} cx @param {CPtr<int>} cy */
 export function nomux_get_cursor(cx, cy) {
     if (nomux_raw_active) {
         cptr.stI32(cx, nomux_raw_col);
@@ -748,7 +748,7 @@ export function nomux_get_cursor(cx, cy) {
     cptr.stI32(cy, ttyDisplay ? cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) : 0);
 }
 
-/** C ref: termcap.c:972 — @param {CPtr} s */
+/** C ref: termcap.c:972 — @param {CPtr<char>} s */
 export function xputs(s) {
     tputs(s, 1, xputc);
 }
@@ -1046,7 +1046,7 @@ function kill_hilite() {
 /** C ref: termcap.c:1709 — char[1] */
 const nulstr = cptr.bytes("");
 
-/** C ref: termcap.c:1711 — @param {CInt} n @returns {CPtr} */
+/** C ref: termcap.c:1711 — @param {CInt} n @returns {CPtr<char>} */
 function s_atr2str(n) {
     switch (n) {
         case NHM.ATR_ITALIC:
@@ -1083,7 +1083,7 @@ function s_atr2str(n) {
     return cptr.decay(nulstr);
 }
 
-/** C ref: termcap.c:1750 — @param {CInt} n @returns {CPtr} */
+/** C ref: termcap.c:1750 — @param {CInt} n @returns {CPtr<char>} */
 function e_atr2str(n) {
     switch (n) {
         case NHM.ATR_ITALIC:

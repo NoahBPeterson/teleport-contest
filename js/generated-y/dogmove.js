@@ -160,7 +160,7 @@ const __sl35 = cptr.lit("sense that %s feels rather %s-ish.");
 
 let __static_droppables_dummy = cptr.alloc(216); /** C ref: dogmove.c:41 — struct obj (function-static) */
 
-/** C ref: dogmove.c:28 — @param {CPtr} mon @returns {CPtr} */
+/** C ref: dogmove.c:28 — @param {CPtr<struct monst>} mon @returns {CPtr<struct obj>} */
 export function* droppables(mon) {
     let obj;
     let wep;
@@ -252,7 +252,7 @@ export function cursed_object_at(x, y) {
     return 0;
 }
 
-/** C ref: dogmove.c:156 — @param {CPtr} mtmp @param {CPtr} obj @returns {CInt} */
+/** C ref: dogmove.c:156 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* dog_nutrition(mtmp, obj) {
     let nutrit;
     if (cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS) {
@@ -302,7 +302,7 @@ export function* dog_nutrition(mtmp, obj) {
     return nutrit;
 }
 
-/** C ref: dogmove.c:218 — @param {CPtr} mtmp @param {CPtr} obj @param {CInt} x @param {CInt} y @param {CInt} devour @returns {CInt} */
+/** C ref: dogmove.c:218 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CInt} devour @returns {CInt} */
 export function* dog_eat(mtmp, obj, x, y, devour) {
     let edog = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog));
     let nutrit;
@@ -387,7 +387,7 @@ export function* dog_eat(mtmp, obj, x, y, devour) {
     return ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) ? 2 : 1;
 }
 
-/** C ref: dogmove.c:348 — @param {CPtr} mtmp */
+/** C ref: dogmove.c:348 — @param {CPtr<struct monst>} mtmp */
 function* dog_starve(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1) | 0 && !cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
         (yield* Your(__sl8));
@@ -398,7 +398,7 @@ function* dog_starve(mtmp) {
     (yield* mondied(mtmp));
 }
 
-/** C ref: dogmove.c:362 — @param {CPtr} mtmp @param {CPtr} edog @returns {CInt} */
+/** C ref: dogmove.c:362 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct edog>} edog @returns {CInt} */
 function* dog_hunger(mtmp, edog) {
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > BigInt.asIntN(64, cptr.ldI64o(edog, $edog_hungrytime) + 500n)) {
         if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1073741824n) != 0n)) {
@@ -429,7 +429,7 @@ function* dog_hunger(mtmp, edog) {
     return 0;
 }
 
-/** C ref: dogmove.c:400 — @param {CPtr} mtmp @param {CPtr} edog @param {CInt} udist @returns {CInt} */
+/** C ref: dogmove.c:400 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct edog>} edog @param {CInt} udist @returns {CInt} */
 function* dog_invent(mtmp, edog, udist) {
     let omx;
     let omy;
@@ -483,7 +483,7 @@ function* dog_invent(mtmp, edog, udist) {
     return 0;
 }
 
-/** C ref: dogmove.c:483 — @param {CPtr} mtmp @param {CPtr} edog @param {CInt} after @param {CInt} udist @param {CInt} whappr @returns {CInt} */
+/** C ref: dogmove.c:483 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct edog>} edog @param {CInt} after @param {CInt} udist @param {CInt} whappr @returns {CInt} */
 function* dog_goal(mtmp, edog, after, udist, whappr) {
     let omx;
     let omy;
@@ -610,7 +610,7 @@ function* dog_goal(mtmp, edog, after, udist, whappr) {
     return appr;
 }
 
-/** C ref: dogmove.c:650 — @param {CPtr} mtmp @param {CInt} dx @param {CInt} dy @param {CInt} maxdist @returns {CPtr} */
+/** C ref: dogmove.c:650 — @param {CPtr<struct monst>} mtmp @param {CInt} dx @param {CInt} dy @param {CInt} maxdist @returns {CPtr<struct monst>} */
 function find_targ(mtmp, dx, dy, maxdist) {
     let targ = null;
     let curx = cptr.ldI16o(mtmp, $monst_mx);
@@ -634,7 +634,7 @@ function find_targ(mtmp, dx, dy, maxdist) {
     return targ;
 }
 
-/** C ref: dogmove.c:694 — @param {CPtr} mtmp @param {CPtr} mtarg @param {CInt} maxdist @returns {CInt} */
+/** C ref: dogmove.c:694 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct monst>} mtarg @param {CInt} maxdist @returns {CInt} */
 function find_friends(mtmp, mtarg, maxdist) {
     let pal;
     let dx = sgn((cptr.ldI16o(mtarg, $monst_mx) - cptr.ldI16o(mtmp, $monst_mx)) | 0);
@@ -665,7 +665,7 @@ function find_friends(mtmp, mtarg, maxdist) {
     return 0;
 }
 
-/** C ref: dogmove.c:738 — @param {CPtr} mtmp @param {CPtr} mtarg @returns {CLongLong} */
+/** C ref: dogmove.c:738 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct monst>} mtarg @returns {CLongLong} */
 function score_targ(mtmp, mtarg) {
     let score = 0n;
     if (!(cptr.ldI32o(mtmp, $monst_mconf) & 1) || !(rng_log_enabled() ? (rng_log_set_caller(__sl16, 748, __sl20), rn2(3)) : rn2(3)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))) {
@@ -727,7 +727,7 @@ function score_targ(mtmp, mtarg) {
     return score;
 }
 
-/** C ref: dogmove.c:838 — @param {CPtr} mtmp @param {CInt} forced @returns {CPtr} */
+/** C ref: dogmove.c:838 — @param {CPtr<struct monst>} mtmp @param {CInt} forced @returns {CPtr<struct monst>} */
 function best_target(mtmp, forced) {
     let dx;
     let dy;
@@ -758,7 +758,7 @@ function best_target(mtmp, forced) {
     return best_targ;
 }
 
-/** C ref: dogmove.c:889 — @param {CPtr} mtmp @param {CInt} forced @returns {CInt} */
+/** C ref: dogmove.c:889 — @param {CPtr<struct monst>} mtmp @param {CInt} forced @returns {CInt} */
 export function* pet_ranged_attk(mtmp, forced) {
     let mtarg;
     let hungry = 0;
@@ -797,7 +797,7 @@ export function* pet_ranged_attk(mtmp, forced) {
     return NHM.MMOVE_NOTHING;
 }
 
-/** C ref: dogmove.c:977 — @param {CPtr} mtmp @param {CInt} after @returns {CInt} */
+/** C ref: dogmove.c:977 — @param {CPtr<struct monst>} mtmp @param {CInt} after @returns {CInt} */
 export function* dog_move(mtmp, after) {
     let omx;
     let omy;
@@ -1045,14 +1045,14 @@ export function* dog_move(mtmp, after) {
     return NHM.MMOVE_MOVED;
 }
 
-/** C ref: dogmove.c:1362 — @param {CPtr} mon @param {CInt} nx @param {CInt} ny @returns {CInt} */
+/** C ref: dogmove.c:1362 — @param {CPtr<struct monst>} mon @param {CInt} nx @param {CInt} ny @returns {CInt} */
 export function could_reach_item(mon, nx, ny) {
     if ((!is_pool(nx, ny) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 2n) != 0n)) && (!is_lava(nx, ny) || likes_lava(cptr.ldPtro(mon, $monst_data))) && (!sobj_at(NHC.BOULDER, nx, ny) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 134217728n) != 0n)))
         return 1;
     return 0;
 }
 
-/** C ref: dogmove.c:1379 — @param {CPtr} mon @param {CInt} mx @param {CInt} my @param {CInt} fx @param {CInt} fy @returns {CInt} */
+/** C ref: dogmove.c:1379 — @param {CPtr<struct monst>} mon @param {CInt} mx @param {CInt} my @param {CInt} fx @param {CInt} fy @returns {CInt} */
 function can_reach_location(mon, mx, my, fx, fy) {
     let i;
     let j;
@@ -1133,7 +1133,7 @@ cptr.st1o(qm, 128 + $qmchoices_mlet, 0);
 cptr.stI32o(qm, 128 + $qmchoices_mappearance, NHC.TRIPE_RATION);
 cptr.st1o(qm, 128 + $qmchoices_m_ap_type, NHC.M_AP_OBJECT);
 
-/** C ref: dogmove.c:1448 — @param {CPtr} mtmp */
+/** C ref: dogmove.c:1448 — @param {CPtr<struct monst>} mtmp */
 export function* finish_meating(mtmp) {
     cptr.stI32o(mtmp, $monst_meating, 0);
     if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_MIMIC) {
@@ -1148,7 +1148,7 @@ function mnum_leashable(mnum) {
     return schar((((mnum >= NHC.LOW_PM && mnum <= NHC.HIGH_PM) && mnum != NHC.PM_LONG_WORM && !((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags1) & 1048576n) != 0n) && (!((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags1) & 24576n) == 24576n) || ((cptr.ldU64o((cptr.add(mons, mnum, 96)), $permonst_mflags1) & 32768n) == 0n))) ? 1 : 0));
 }
 
-/** C ref: dogmove.c:1472 — @param {CPtr} mtmp */
+/** C ref: dogmove.c:1472 — @param {CPtr<struct monst>} mtmp */
 export function* quickmimic(mtmp) {
     let idx = 0;
     let trycnt = 5;

@@ -377,7 +377,7 @@ export function* wiz_identify() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: wizcmds.c:73 — @param {CPtr} mtmp @param {CInt} migratory */
+/** C ref: wizcmds.c:73 — @param {CPtr<struct monst>} mtmp @param {CInt} migratory */
 function* makemap_unmakemon(mtmp, migratory) {
     let ndx = (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx));
     if (cptr.ldU16o(cptr.ldPtro(mtmp, $monst_data), $permonst_geno) & NHM.G_UNIQ)
@@ -1190,7 +1190,7 @@ const stats_hdr = cptr.bytes("                             count  bytes");
 /** C ref: wizcmds.c:1114 — char[43] */
 const stats_sep = cptr.bytes("---------------------------  ----- -------");
 
-/** C ref: wizcmds.c:1117 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: wizcmds.c:1117 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function size_obj(otmp) {
     let sz = 216;
     if (cptr.ldPtro(otmp, $obj_oextra)) {
@@ -1205,7 +1205,7 @@ function size_obj(otmp) {
     return sz;
 }
 
-/** C ref: wizcmds.c:1135 — @param {CPtr} chain @param {CPtr} total_count @param {CPtr} total_size @param {CInt} top @param {CInt} recurse */
+/** C ref: wizcmds.c:1135 — @param {CPtr<struct obj>} chain @param {CPtr<long>} total_count @param {CPtr<long>} total_size @param {CInt} top @param {CInt} recurse */
 function count_obj(chain, total_count, total_size, top, recurse) {
     let count;
     let size;
@@ -1222,7 +1222,7 @@ function count_obj(chain, total_count, total_size, top, recurse) {
     cptr.stI64(total_size, cptr.ldI64(total_size) + size);
 }
 
-/** C ref: wizcmds.c:1156 — @param {CInt} win @param {CPtr} src @param {CPtr} chain @param {CInt} force @param {CPtr} total_count @param {CPtr} total_size */
+/** C ref: wizcmds.c:1156 — @param {CInt} win @param {CPtr<char>} src @param {CPtr<struct obj>} chain @param {CInt} force @param {CPtr<long>} total_count @param {CPtr<long>} total_size */
 function* obj_chain(win, src, chain, force, total_count, total_size) {
     let buf = new Uint8Array(256);
     let count = cptr.box(0n);
@@ -1236,7 +1236,7 @@ function* obj_chain(win, src, chain, force, total_count, total_size) {
     }
 }
 
-/** C ref: wizcmds.c:1177 — @param {CInt} win @param {CPtr} src @param {CPtr} chain @param {CPtr} total_count @param {CPtr} total_size */
+/** C ref: wizcmds.c:1177 — @param {CInt} win @param {CPtr<char>} src @param {CPtr<struct monst>} chain @param {CPtr<long>} total_count @param {CPtr<long>} total_size */
 function* mon_invent_chain(win, src, chain, total_count, total_size) {
     let buf = new Uint8Array(256);
     let count = cptr.box(0n);
@@ -1252,7 +1252,7 @@ function* mon_invent_chain(win, src, chain, total_count, total_size) {
     }
 }
 
-/** C ref: wizcmds.c:1199 — @param {CInt} win @param {CPtr} src @param {CPtr} total_count @param {CPtr} total_size */
+/** C ref: wizcmds.c:1199 — @param {CInt} win @param {CPtr<char>} src @param {CPtr<long>} total_count @param {CPtr<long>} total_size */
 function* contained_stats(win, src, total_count, total_size) {
     let buf = new Uint8Array(256);
     let count = cptr.box(0n);
@@ -1274,7 +1274,7 @@ function* contained_stats(win, src, total_count, total_size) {
     }
 }
 
-/** C ref: wizcmds.c:1228 — @param {CPtr} mtmp @param {CInt} incl_wsegs @returns {CInt} */
+/** C ref: wizcmds.c:1228 — @param {CPtr<struct monst>} mtmp @param {CInt} incl_wsegs @returns {CInt} */
 function size_monst(mtmp, incl_wsegs) {
     let sz = 320;
     if ((cptr.ldI32o(mtmp, $monst_wormno) & 31) | 0 && incl_wsegs)
@@ -1299,7 +1299,7 @@ function size_monst(mtmp, incl_wsegs) {
     return sz;
 }
 
-/** C ref: wizcmds.c:1257 — @param {CInt} win @param {CPtr} src @param {CPtr} chain @param {CInt} force @param {CPtr} total_count @param {CPtr} total_size */
+/** C ref: wizcmds.c:1257 — @param {CInt} win @param {CPtr<char>} src @param {CPtr<struct monst>} chain @param {CInt} force @param {CPtr<long>} total_count @param {CPtr<long>} total_size */
 function* mon_chain(win, src, chain, force, total_count, total_size) {
     let buf = new Uint8Array(256);
     let count;
@@ -1319,7 +1319,7 @@ function* mon_chain(win, src, chain, force, total_count, total_size) {
     }
 }
 
-/** C ref: wizcmds.c:1284 — @param {CInt} win @param {CPtr} total_count @param {CPtr} total_size */
+/** C ref: wizcmds.c:1284 — @param {CInt} win @param {CPtr<long>} total_count @param {CPtr<long>} total_size */
 function* misc_stats(win, total_count, total_size) {
     let buf = new Uint8Array(256);
     let hdrbuf = new Uint8Array(128);
@@ -1484,7 +1484,7 @@ export function* sanity_check() {
     (cptr.stI32o(program_state, $sinfo_in_sanity_check, cptr.ldI32o(program_state, $sinfo_in_sanity_check) + -1)) - (-1);
 }
 
-/** C ref: wizcmds.c:1485 — @param {CPtr} vptr1 @param {CPtr} vptr2 @returns {CInt} */
+/** C ref: wizcmds.c:1485 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function migrsort_cmp(vptr1, vptr2) {
     let m1 = cptr.ldPtr(vptr1);
     let m2 = cptr.ldPtr(vptr2);
@@ -1499,7 +1499,7 @@ function migrsort_cmp(vptr1, vptr2) {
     return (cptr.ldI32o(m1, $monst_m_id) < cptr.ldI32o(m2, $monst_m_id)) ? -1 : (cptr.ldI32o(m1, $monst_m_id) > cptr.ldI32o(m2, $monst_m_id));
 }
 
-/** C ref: wizcmds.c:1506 — @param {CPtr} nextlevl */
+/** C ref: wizcmds.c:1506 — @param {CPtr<d_level>} nextlevl */
 function* list_migrating_mons(nextlevl) {
     let win = -1;
     let showit = 0;
@@ -1867,7 +1867,7 @@ export function* wiz_custom() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: wizcmds.c:1987 — @param {CInt} win @param {CInt} glyphnum @param {CPtr} id */
+/** C ref: wizcmds.c:1987 — @param {CInt} win @param {CInt} glyphnum @param {CPtr<char>} id */
 export function* wizcustom_callback(win, glyphnum, id) {
     let cgm;
     let clr = NHM.NO_COLOR;

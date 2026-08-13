@@ -36,13 +36,13 @@ const __sl17 = cptr.lit("remove");
 const __sl18 = cptr.lit("move");
 const __sl19 = cptr.lit("sort");
 
-/** C ref: ltablib.c:36 — @param {CPtr} L @param {CPtr} key @param {CInt} n @returns {CInt} */
+/** C ref: ltablib.c:36 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @param {CInt} n @returns {CInt} */
 function checkfield(L, key, n) {
     lua_pushstring(L, key);
     return (lua_rawget(L, -n) != 0);
 }
 
-/** C ref: ltablib.c:46 — @param {CPtr} L @param {CInt} arg @param {CInt} what */
+/** C ref: ltablib.c:46 — @param {CPtr<lua_State>} L @param {CInt} arg @param {CInt} what */
 function checktab(L, arg, what) {
     if (lua_type(L, arg) != 5) {
         let n = 1;
@@ -53,7 +53,7 @@ function checktab(L, arg, what) {
     }
 }
 
-/** C ref: ltablib.c:61 — @param {CPtr} L @returns {CInt} */
+/** C ref: ltablib.c:61 — @param {CPtr<lua_State>} L @returns {CInt} */
 function tinsert(L) {
     let pos;
     let e = (checktab(L, 1, 7), luaL_len(L, 1));
@@ -84,7 +84,7 @@ function tinsert(L) {
     return 0;
 }
 
-/** C ref: ltablib.c:91 — @param {CPtr} L @returns {CInt} */
+/** C ref: ltablib.c:91 — @param {CPtr<lua_State>} L @returns {CInt} */
 function tremove(L) {
     let size = (checktab(L, 1, 7), luaL_len(L, 1));
     let pos = luaL_optinteger(L, 2, size);
@@ -100,7 +100,7 @@ function tremove(L) {
     return 1;
 }
 
-/** C ref: ltablib.c:115 — @param {CPtr} L @returns {CInt} */
+/** C ref: ltablib.c:115 — @param {CPtr<lua_State>} L @returns {CInt} */
 function tmove(L) {
     let f = luaL_checkinteger(L, 2);
     let e = luaL_checkinteger(L, 3);
@@ -130,7 +130,7 @@ function tmove(L) {
     return 1;
 }
 
-/** C ref: ltablib.c:147 — @param {CPtr} L @param {CPtr} b @param {CLongLong} i */
+/** C ref: ltablib.c:147 — @param {CPtr<lua_State>} L @param {CPtr<luaL_Buffer>} b @param {CLongLong} i */
 function addfield(L, b, i) {
     lua_geti(L, 1, i);
     if ((__builtin_expect(BigInt(((!lua_isstring(L, -1)) != 0)), 0n)))
@@ -138,7 +138,7 @@ function addfield(L, b, i) {
     luaL_addvalue(b);
 }
 
-/** C ref: ltablib.c:156 — @param {CPtr} L @returns {CInt} */
+/** C ref: ltablib.c:156 — @param {CPtr<lua_State>} L @returns {CInt} */
 function tconcat(L) {
     let b = cptr.alloc(1056);
     let last = (checktab(L, 1, 5), luaL_len(L, 1));
@@ -157,7 +157,7 @@ function tconcat(L) {
     return 1;
 }
 
-/** C ref: ltablib.c:181 — @param {CPtr} L @returns {CInt} */
+/** C ref: ltablib.c:181 — @param {CPtr<lua_State>} L @returns {CInt} */
 function tpack(L) {
     let i;
     let n = lua_gettop(L);
@@ -170,7 +170,7 @@ function tpack(L) {
     return 1;
 }
 
-/** C ref: ltablib.c:194 — @param {CPtr} L @returns {CInt} */
+/** C ref: ltablib.c:194 — @param {CPtr<lua_State>} L @returns {CInt} */
 function tunpack(L) {
     let n;
     let i = luaL_optinteger(L, 2, 1n);
@@ -203,13 +203,13 @@ function l_randomizePivot() {
     return rnd;
 }
 
-/** C ref: ltablib.c:265 — @param {CPtr} L @param {CUInt} i @param {CUInt} j */
+/** C ref: ltablib.c:265 — @param {CPtr<lua_State>} L @param {CUInt} i @param {CUInt} j */
 function set2(L, i, j) {
     lua_seti(L, 1, BigInt(i >>> 0));
     lua_seti(L, 1, BigInt(j >>> 0));
 }
 
-/** C ref: ltablib.c:275 — @param {CPtr} L @param {CInt} a @param {CInt} b @returns {CInt} */
+/** C ref: ltablib.c:275 — @param {CPtr<lua_State>} L @param {CInt} a @param {CInt} b @returns {CInt} */
 function sort_comp(L, a, b) {
     if ((lua_type(L, 2) == 0))
         return lua_compare(L, a, b, 1);
@@ -225,7 +225,7 @@ function sort_comp(L, a, b) {
     }
 }
 
-/** C ref: ltablib.c:298 — @param {CPtr} L @param {CUInt} lo @param {CUInt} up @returns {*} */
+/** C ref: ltablib.c:298 — @param {CPtr<lua_State>} L @param {CUInt} lo @param {CUInt} up @returns {*} */
 function partition(L, lo, up) {
     let i = lo;
     let j = (up - 1) >>> 0;
@@ -257,7 +257,7 @@ function choosePivot(lo, up, rnd) {
     return p;
 }
 
-/** C ref: ltablib.c:345 — @param {CPtr} L @param {CUInt} lo @param {CUInt} up @param {CUInt} rnd */
+/** C ref: ltablib.c:345 — @param {CPtr<lua_State>} L @param {CUInt} lo @param {CUInt} up @param {CUInt} rnd */
 function auxsort(L, lo, up, rnd) {
     while (lo < up) {
         let p;
@@ -307,7 +307,7 @@ function auxsort(L, lo, up, rnd) {
     }
 }
 
-/** C ref: ltablib.c:399 — @param {CPtr} L @returns {CInt} */
+/** C ref: ltablib.c:399 — @param {CPtr<lua_State>} L @returns {CInt} */
 function sort(L) {
     let n = (checktab(L, 1, 7), luaL_len(L, 1));
     if (n > 1n) {
@@ -339,7 +339,7 @@ cptr.stPtro(tab_funcs, 96 + $luaL_Reg_func, sort);
 cptr.stPtro(tab_funcs, 112, null);
 cptr.stPtro(tab_funcs, 112 + $luaL_Reg_func, null);
 
-/** C ref: ltablib.c:426 — @param {CPtr} L @returns {CInt} */
+/** C ref: ltablib.c:426 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_table(L) {
     (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 128n / 16n - 1n)))), luaL_setfuncs(L, tab_funcs, 0));
     return 1;

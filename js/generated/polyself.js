@@ -714,7 +714,7 @@ function check_strangling(on) {
     }
 }
 
-/** C ref: polyself.c:200 — @param {CPtr} fmt @param {CPtr} arg */
+/** C ref: polyself.c:200 — @param {CPtr<char>} fmt @param {CPtr<char>} arg */
 function polyman(fmt, arg) {
     let sticking = schar((sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.ldPtro(u, $you_ustuck) && !(cptr.ldI32o(u, $you_uswallow) & 1) ? 1 : 0));
     let was_mimicking = schar((U_AP_TYPE() != NHC.M_AP_NOTHING));
@@ -1492,7 +1492,7 @@ export function uasmon_maxStr() {
     return schar(newMaxStr);
 }
 
-/** C ref: polyself.c:1123 — @param {CPtr} obj */
+/** C ref: polyself.c:1123 — @param {CPtr<struct obj>} obj */
 function dropp(obj) {
     let otmp;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
@@ -2396,7 +2396,7 @@ cptr.stPtro(__static_mbodypart_fish_parts, 136, __sl350);
 cptr.stPtro(__static_mbodypart_fish_parts, 144, __sl230); /** C ref: polyself.c:2043 — char *[19] (function-static) */
 const __static_mbodypart_not_claws = [NHC.S_HUMAN, NHC.S_MUMMY, NHC.S_ZOMBIE, NHC.S_ANGEL, NHC.S_NYMPH, NHC.S_LEPRECHAUN, NHC.S_QUANTMECH, NHC.S_VAMPIRE, NHC.S_ORC, NHC.S_GIANT, 0]; /** C ref: polyself.c:2050 — char[11] (function-static) */
 
-/** C ref: polyself.c:1972 — @param {CPtr} mon @param {CInt} part @returns {CPtr} */
+/** C ref: polyself.c:1972 — @param {CPtr<struct monst>} mon @param {CInt} part @returns {CPtr<char>} */
 export function mbodypart(mon, part) {
     let mptr = cptr.ldPtro(mon, $monst_data);
     if (part <= NHC.NO_PART) {
@@ -2469,7 +2469,7 @@ export function mbodypart(mon, part) {
     return cptr.ldPtro(__static_mbodypart_animal_parts, part, 8);
 }
 
-/** C ref: polyself.c:2143 — @param {CInt} part @returns {CPtr} */
+/** C ref: polyself.c:2143 — @param {CInt} part @returns {CPtr<char>} */
 export function body_part(part) {
     return mbodypart(cptr.add(gy, $instance_globals_y_youmonst), part);
 }
@@ -2574,7 +2574,7 @@ export function ugenocided() {
     return schar(((cptr.ld1uo2(svm, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) || (cptr.ld1uo2(svm, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum), 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
 }
 
-/** C ref: polyself.c:2273 @returns {CPtr} */
+/** C ref: polyself.c:2273 @returns {CPtr<char>} */
 export function udeadinside() {
     return !nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl352 : (!weirdnonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __sl353 : __sl354);
 }

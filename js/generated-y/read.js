@@ -614,13 +614,13 @@ function* learnscrolltyp(scrolltyp) {
         return 0;
 }
 
-/** C ref: read.c:70 — @param {CPtr} sobj */
+/** C ref: read.c:70 — @param {CPtr<struct obj>} sobj */
 export function* learnscroll(sobj) {
     if (cptr.ld1so(sobj, $obj_oclass) != NHC.SPBOOK_CLASS)
         void (yield* learnscrolltyp(cptr.ldI16o(sobj, $obj_otyp)));
 }
 
-/** C ref: read.c:80 — @param {CPtr} obj */
+/** C ref: read.c:80 — @param {CPtr<struct obj>} obj */
 function cap_spe(obj) {
     if (obj) {
         if (Math.abs(cptr.ld1so(obj, $obj_spe)) > NHM.SPE_LIM)
@@ -628,7 +628,7 @@ function cap_spe(obj) {
     }
 }
 
-/** C ref: read.c:89 — @param {CPtr} otmp @param {CPtr} buf @returns {CPtr} */
+/** C ref: read.c:89 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} buf @returns {CPtr<char>} */
 function erode_obj_text(otmp, buf) {
     let erosion = greatest_erosion(otmp);
     if (erosion)
@@ -708,7 +708,7 @@ cptr.stPtro(__static_tshirt_text_shirt_msgs, 536, __sl67);
 cptr.stPtro(__static_tshirt_text_shirt_msgs, 544, __sl68);
 cptr.stPtro(__static_tshirt_text_shirt_msgs, 552, __sl69); /** C ref: read.c:102 — char *[70] (function-static) */
 
-/** C ref: read.c:100 — @param {CPtr} tshirt @param {CPtr} buf @returns {CPtr} */
+/** C ref: read.c:100 — @param {CPtr<struct obj>} tshirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function tshirt_text(tshirt, buf) {
     void cptr.strcpy(buf, cptr.ldPtro(__static_tshirt_text_shirt_msgs, u32mod(cptr.ldI32o(tshirt, $obj_o_id), 70 >>> 0), 8));
     return erode_obj_text(tshirt, buf);
@@ -732,7 +732,7 @@ cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 104, __sl83);
 cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 112, __sl84);
 cptr.stPtro(__static_hawaiian_motif_hawaiian_motifs, 120, __sl85); /** C ref: read.c:192 — char *[16] (function-static) */
 
-/** C ref: read.c:190 — @param {CPtr} shirt @param {CPtr} buf @returns {CPtr} */
+/** C ref: read.c:190 — @param {CPtr<struct obj>} shirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function hawaiian_motif(shirt, buf) {
     let motif = (cptr.ldI32o(shirt, $obj_o_id) ^ Number(BigInt.asUintN(32, ubirthday.v))) >>> 0;
     void cptr.strcpy(buf, cptr.ldPtro(__static_hawaiian_motif_hawaiian_motifs, u32mod(motif, 16 >>> 0), 8));
@@ -752,7 +752,7 @@ cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 64, __sl95);
 cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 72, __sl96);
 cptr.stPtro(__static_hawaiian_design_hawaiian_bgs, 80, __sl97); /** C ref: read.c:226 — char *[11] (function-static) */
 
-/** C ref: read.c:224 — @param {CPtr} shirt @param {CPtr} buf @returns {CPtr} */
+/** C ref: read.c:224 — @param {CPtr<struct obj>} shirt @param {CPtr<char>} buf @returns {CPtr<char>} */
 function* hawaiian_design(shirt, buf) {
     let bg = (cptr.ldI32o(shirt, $obj_o_id) ^ Number(BigInt.asUintN(32, BigInt.asIntN(64, ~ubirthday.v)))) >>> 0;
     void cptr.sprintf(buf, __sl86, (yield* makeplural(hawaiian_motif(shirt, buf))), (yield* an(cptr.ldPtro(__static_hawaiian_design_hawaiian_bgs, u32mod(bg, 11 >>> 0), 8))));
@@ -771,7 +771,7 @@ cptr.stPtro(__static_apron_text_apron_msgs, 56, __sl105);
 cptr.stPtro(__static_apron_text_apron_msgs, 64, __sl106);
 cptr.stPtro(__static_apron_text_apron_msgs, 72, __sl107); /** C ref: read.c:256 — char *[10] (function-static) */
 
-/** C ref: read.c:254 — @param {CPtr} apron @param {CPtr} buf @returns {CPtr} */
+/** C ref: read.c:254 — @param {CPtr<struct obj>} apron @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function apron_text(apron, buf) {
     void cptr.strcpy(buf, cptr.ldPtro(__static_apron_text_apron_msgs, u32mod(cptr.ldI32o(apron, $obj_o_id), 10 >>> 0), 8));
     return erode_obj_text(apron, buf);
@@ -793,12 +793,12 @@ cptr.stPtro(candy_wrappers, 80, __sl118);
 cptr.stPtro(candy_wrappers, 88, __sl119);
 cptr.stPtro(candy_wrappers, 96, __sl120);
 
-/** C ref: read.c:296 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: read.c:296 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function candy_wrapper_text(obj) {
     return cptr.ldPtro(candy_wrappers, cptr.ld1so(obj, $obj_spe) % 13, 8);
 }
 
-/** C ref: read.c:304 — @param {CPtr} obj */
+/** C ref: read.c:304 — @param {CPtr<struct obj>} obj */
 export function assign_candy_wrapper(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CANDY_BAR) {
         cptr.st1o(obj, $obj_spe, schar(((1 + (rng_log_enabled() ? (rng_log_set_caller(__sl121, 308, __sl122), rn2((13 - 1) | 0)) : rn2((13 - 1) | 0))) | 0)));
@@ -806,7 +806,7 @@ export function assign_candy_wrapper(obj) {
     return;
 }
 
-/** C ref: read.c:315 — @param {CPtr} obj @returns {CInt} */
+/** C ref: read.c:315 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function read_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -1029,7 +1029,7 @@ export function* doread() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: read.c:652 — @param {CPtr} obj */
+/** C ref: read.c:652 — @param {CPtr<struct obj>} obj */
 function* stripspe(obj) {
     if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 || cptr.ld1so(obj, $obj_spe) <= 0) {
         (yield* pline(__sl152, cptr.ldPtr(c_common_strings)));
@@ -1042,22 +1042,22 @@ function* stripspe(obj) {
     }
 }
 
-/** C ref: read.c:667 — @param {CPtr} otmp */
+/** C ref: read.c:667 — @param {CPtr<struct obj>} otmp */
 function* p_glow1(otmp) {
     (yield* pline(__sl197, (yield* Yobjnam2(otmp, Blind() ? __sl198 : __sl199))));
 }
 
-/** C ref: read.c:673 — @param {CPtr} otmp @param {CPtr} color */
+/** C ref: read.c:673 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} color */
 function* p_glow2(otmp, color) {
     (yield* pline(__sl200, (yield* Yobjnam2(otmp, Blind() ? __sl198 : __sl199)), Blind() ? __sl108 : __sl201, Blind() ? __sl108 : hcolor(color)));
 }
 
-/** C ref: read.c:680 — @param {CPtr} otmp @param {CPtr} color */
+/** C ref: read.c:680 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} color */
 function* p_glow3(otmp, color) {
     (yield* pline(__sl202, (yield* Yobjnam2(otmp, Blind() ? __sl198 : __sl199)), Blind() ? __sl108 : __sl201, Blind() ? __sl108 : hcolor(color)));
 }
 
-/** C ref: read.c:689 — @param {CPtr} obj @returns {CInt} */
+/** C ref: read.c:689 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function charge_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -1079,7 +1079,7 @@ export function charge_ok(obj) {
     return NHC.GETOBJ_EXCLUDE_SELECTABLE;
 }
 
-/** C ref: read.c:729 — @param {CPtr} obj @param {CInt} curse_bless */
+/** C ref: read.c:729 — @param {CPtr<struct obj>} obj @param {CInt} curse_bless */
 export function* recharge(obj, curse_bless) {
     let __go_not_chargable = false;
     __skip_not_chargable: {
@@ -1319,7 +1319,7 @@ function* forget(howmuch) {
         cptr.stI32o(mtmp, $monst_meverseen, 0);
 }
 
-/** C ref: read.c:1044 — @param {CPtr} mtmp @param {CPtr} sobj @returns {CInt} */
+/** C ref: read.c:1044 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} sobj @returns {CInt} */
 function* maybe_tame(mtmp, sobj) {
     let was_tame = cptr.ld1so(mtmp, $monst_mtame);
     let was_peaceful = (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1);
@@ -1373,7 +1373,7 @@ function* display_stinking_cloud_positions(on_off) {
     }
 }
 
-/** C ref: read.c:1115 — @param {CPtr} sobjp */
+/** C ref: read.c:1115 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_enchant_armor(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let s;
@@ -1522,7 +1522,7 @@ function* disintegrate_cursed_armor() {
     return 0;
 }
 
-/** C ref: read.c:1324 — @param {CPtr} sobjp */
+/** C ref: read.c:1324 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_destroy_armor(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otmp = (yield* some_armor(cptr.add(gy, $instance_globals_y_youmonst)));
@@ -1589,7 +1589,7 @@ function* seffect_destroy_armor(sobjp) {
     }
 }
 
-/** C ref: read.c:1399 — @param {CPtr} sobjp */
+/** C ref: read.c:1399 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_confuse_monster(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
@@ -1632,7 +1632,7 @@ function* seffect_confuse_monster(sobjp) {
     }
 }
 
-/** C ref: read.c:1454 — @param {CPtr} sobjp */
+/** C ref: read.c:1454 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_scare_monster(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
@@ -1663,7 +1663,7 @@ function* seffect_scare_monster(sobjp) {
     }
 }
 
-/** C ref: read.c:1489 — @param {CPtr} sobjp */
+/** C ref: read.c:1489 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_remove_curse(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
@@ -1740,7 +1740,7 @@ function* seffect_remove_curse(sobjp) {
     (yield* update_inventory());
 }
 
-/** C ref: read.c:1608 — @param {CPtr} sobjp */
+/** C ref: read.c:1608 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_create_monster(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
@@ -1750,7 +1750,7 @@ function* seffect_create_monster(sobjp) {
         cptr.st1o(gk, $instance_globals_k_known, 1);
 }
 
-/** C ref: read.c:1627 — @param {CPtr} sobjp */
+/** C ref: read.c:1627 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_enchant_weapon(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
@@ -1788,7 +1788,7 @@ function* seffect_enchant_weapon(sobjp) {
         cap_spe(uwep.v);
 }
 
-/** C ref: read.c:1679 — @param {CPtr} sobjp */
+/** C ref: read.c:1679 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_taming(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let confused = schar((HConfusion() != 0n));
@@ -1827,7 +1827,7 @@ function* seffect_taming(sobjp) {
     }
 }
 
-/** C ref: read.c:1722 — @param {CPtr} sobjp */
+/** C ref: read.c:1722 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_genocide(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
@@ -1843,7 +1843,7 @@ function* seffect_genocide(sobjp) {
         (yield* do_genocide((!scursed) | (Math.imul(2, !!HConfusion()))));
 }
 
-/** C ref: read.c:1741 — @param {CPtr} sobjp */
+/** C ref: read.c:1741 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_light(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
@@ -1885,7 +1885,7 @@ function* seffect_light(sobjp) {
     }
 }
 
-/** C ref: read.c:1788 — @param {CPtr} sobjp */
+/** C ref: read.c:1788 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_charging(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
@@ -1920,7 +1920,7 @@ function* seffect_charging(sobjp) {
         (yield* recharge(otmp, scursed ? -1 : (sblessed ? 1 : 0)));
 }
 
-/** C ref: read.c:1830 — @param {CPtr} sobjp */
+/** C ref: read.c:1830 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_amnesia(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
@@ -1937,7 +1937,7 @@ function* seffect_amnesia(sobjp) {
     (yield* exercise(NHC.A_WIS, 0));
 }
 
-/** C ref: read.c:1850 — @param {CPtr} sobjp */
+/** C ref: read.c:1850 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_fire(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
@@ -1996,7 +1996,7 @@ function* seffect_fire(sobjp) {
     (yield* explode(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 11, dam, NHC.SCROLL_CLASS, NHC.EXPL_FIERY));
 }
 
-/** C ref: read.c:1919 — @param {CPtr} sobjp */
+/** C ref: read.c:1919 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_earth(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
@@ -2035,7 +2035,7 @@ function* seffect_earth(sobjp) {
     }
 }
 
-/** C ref: read.c:1976 — @param {CPtr} sobjp */
+/** C ref: read.c:1976 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_punishment(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let sblessed = schar((cptr.ldI32o(sobj, $obj_blessed) & 1));
@@ -2048,7 +2048,7 @@ function* seffect_punishment(sobjp) {
     (yield* punish(sobj));
 }
 
-/** C ref: read.c:1991 — @param {CPtr} sobjp */
+/** C ref: read.c:1991 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_stinking_cloud(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
@@ -2059,7 +2059,7 @@ function* seffect_stinking_cloud(sobjp) {
     (yield* do_stinking_cloud(sobj, already_known));
 }
 
-/** C ref: read.c:2005 — @param {CPtr} sobjp */
+/** C ref: read.c:2005 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_blank_paper(sobjp) {
     if (Blind())
         (yield* You(__sl322));
@@ -2068,7 +2068,7 @@ function* seffect_blank_paper(sobjp) {
     cptr.st1o(gk, $instance_globals_k_known, 1);
 }
 
-/** C ref: read.c:2015 — @param {CPtr} sobjp */
+/** C ref: read.c:2015 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_teleportation(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
@@ -2081,7 +2081,7 @@ function* seffect_teleportation(sobjp) {
     }
 }
 
-/** C ref: read.c:2035 — @param {CPtr} sobjp */
+/** C ref: read.c:2035 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_gold_detection(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let scursed = schar((cptr.ldI32o(sobj, $obj_cursed) & 1));
@@ -2090,14 +2090,14 @@ function* seffect_gold_detection(sobjp) {
         cptr.stPtr(sobjp, null);
 }
 
-/** C ref: read.c:2046 — @param {CPtr} sobjp */
+/** C ref: read.c:2046 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_food_detection(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     if ((yield* food_detect(sobj)))
         cptr.stPtr(sobjp, null);
 }
 
-/** C ref: read.c:2055 — @param {CPtr} sobjp */
+/** C ref: read.c:2055 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_identify(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let otyp = cptr.ldI16o(sobj, $obj_otyp);
@@ -2131,7 +2131,7 @@ function* seffect_identify(sobjp) {
     }
 }
 
-/** C ref: read.c:2102 — @param {CPtr} sobjp */
+/** C ref: read.c:2102 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_magic_mapping(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let is_scroll = schar((cptr.ld1so(sobj, $obj_oclass) == NHC.SCROLL_CLASS));
@@ -2187,7 +2187,7 @@ function* seffect_magic_mapping(sobjp) {
     }
 }
 
-/** C ref: read.c:2157 — @param {CPtr} sobjp */
+/** C ref: read.c:2157 — @param {CPtr<struct obj *>} sobjp */
 function* seffect_mail(sobjp) {
     let sobj = cptr.ldPtr(sobjp);
     let odd = schar(((u32mod(cptr.ldI32o(sobj, $obj_o_id), 2)) == 1));
@@ -2205,7 +2205,7 @@ function* seffect_mail(sobjp) {
     }
 }
 
-/** C ref: read.c:2194 — @param {CPtr} sobj @returns {CInt} */
+/** C ref: read.c:2194 — @param {CPtr<struct obj>} sobj @returns {CInt} */
 export function* seffects(sobj) {
     sobj = cptr.box(sobj);
     let otyp = cptr.ldI16o(sobj.v, $obj_otyp);
@@ -2392,7 +2392,7 @@ export function* drop_boulder_on_monster(x, y, confused, byu) {
     return 1;
 }
 
-/** C ref: read.c:2414 — @param {CPtr} obj @param {CInt} chg */
+/** C ref: read.c:2414 — @param {CPtr<struct obj>} obj @param {CInt} chg */
 export function* wand_explode(obj, chg) {
     let expl = !chg ? __sl357 : __sl358;
     let dmg;
@@ -2457,7 +2457,7 @@ function* set_lit(x, y, val) {
     }
 }
 
-/** C ref: read.c:2491 — @param {CInt} on @param {CPtr} obj */
+/** C ref: read.c:2491 — @param {CInt} on @param {CPtr<struct obj>} obj */
 export function* litroom(on, obj) {
     let otmp;
     let nextobj;
@@ -2818,7 +2818,7 @@ export function* do_genocide(how) {
     }
 }
 
-/** C ref: read.c:3019 — @param {CPtr} sobj */
+/** C ref: read.c:3019 — @param {CPtr<struct obj>} sobj */
 export function* punish(sobj) {
     let reuse_ball = (sobj && cptr.ldI16o(sobj, $obj_otyp) == NHC.HEAVY_IRON_BALL) ? sobj : null;
     let cursed_levy = (sobj && (cptr.ldI32o(sobj, $obj_cursed) & 1) | 0) ? 1 : 0;
@@ -2859,7 +2859,7 @@ export function* unpunish() {
     (yield* setworn(null, 2097152n));
 }
 
-/** C ref: read.c:3082 — @param {CPtr} sobj @param {CInt} mention_stinking */
+/** C ref: read.c:3082 — @param {CPtr<struct obj>} sobj @param {CInt} mention_stinking */
 function* do_stinking_cloud(sobj, mention_stinking) {
     let cc = cptr.alloc(4);
     (yield* pline(__sl422, mention_stinking ? __sl423 : __sl108));
@@ -2879,7 +2879,7 @@ function* do_stinking_cloud(sobj, mention_stinking) {
     void (yield* create_gas_cloud(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), (15 + Math.imul(10, bcsign(sobj))) | 0, (8 + Math.imul(4, bcsign(sobj))) | 0));
 }
 
-/** C ref: read.c:3112 — @param {CPtr} mtype @param {CInt} revival @param {CPtr} from_obj @returns {CInt} */
+/** C ref: read.c:3112 — @param {CPtr<int>} mtype @param {CInt} revival @param {CPtr<struct obj>} from_obj @returns {CInt} */
 export function cant_revive(mtype, revival, from_obj) {
     if (cptr.ldI32(mtype) == NHC.PM_GUARD || (cptr.ldI32(mtype) == NHC.PM_SHOPKEEPER && !revival) || cptr.ldI32(mtype) == NHC.PM_HIGH_CLERIC || cptr.ldI32(mtype) == NHC.PM_ALIGNED_CLERIC || cptr.ldI32(mtype) == NHC.PM_ANGEL) {
         cptr.stI32(mtype, NHC.PM_HUMAN_ZOMBIE);
@@ -2894,7 +2894,7 @@ export function cant_revive(mtype, revival, from_obj) {
     return 0;
 }
 
-/** C ref: read.c:3137 — @param {CPtr} str @param {CPtr} d @returns {CInt} */
+/** C ref: read.c:3137 — @param {CPtr<char>} str @param {CPtr<struct _create_particular_data>} d @returns {CInt} */
 function* create_particular_parse(str, d) {
     let gender_name_var = cptr.box(NHC.NEUTRAL);
     let bufp = str;
@@ -2984,7 +2984,7 @@ function* create_particular_parse(str, d) {
     return 0;
 }
 
-/** C ref: read.c:3252 — @param {CPtr} d @returns {CInt} */
+/** C ref: read.c:3252 — @param {CPtr<struct _create_particular_data>} d @returns {CInt} */
 function* create_particular_creation(d) {
     let whichpm = null;
     let i;

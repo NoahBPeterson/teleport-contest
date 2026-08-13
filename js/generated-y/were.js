@@ -67,7 +67,7 @@ const __sl12 = cptr.lit("purified.");
 const __sl13 = cptr.lit("Remain in beast form?");
 const __sl14 = cptr.lit("you_unwere");
 
-/** C ref: were.c:9 — @param {CPtr} mon */
+/** C ref: were.c:9 — @param {CPtr<struct monst>} mon */
 export function* were_change(mon) {
     if (!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 4n) != 0n))
         return;
@@ -146,7 +146,7 @@ export function were_beastie(pm) {
     return NHC.NON_PM;
 }
 
-/** C ref: were.c:96 — @param {CPtr} mon */
+/** C ref: were.c:96 — @param {CPtr<struct monst>} mon */
 export function* new_were(mon) {
     let pm;
     if (Protection_from_shape_changers() && ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 8n) != 0n))
@@ -172,7 +172,7 @@ export function* new_were(mon) {
         (yield* monflee(mon, (((rng_log_enabled() ? (rng_log_set_caller(__sl0, 137, __sl8), rn2(9)) : rn2(9)) + 2) | 0), 1, 1));
 }
 
-/** C ref: were.c:142 — @param {CPtr} ptr @param {CInt} yours @param {CPtr} visible @param {CPtr} genbuf @returns {CInt} */
+/** C ref: were.c:142 — @param {CPtr<struct permonst>} ptr @param {CInt} yours @param {CPtr<int>} visible @param {CPtr<char>} genbuf @returns {CInt} */
 export function* were_summon(ptr, yours, visible, genbuf) {
     let i;
     let typ;

@@ -430,22 +430,22 @@ export function switch_symbols(nondefault) {
     }
 }
 
-/** C ref: symbols.c:295 — @param {CPtr} symp @param {CInt} val */
+/** C ref: symbols.c:295 — @param {CPtr<struct symparse>} symp @param {CInt} val */
 export function update_ov_primary_symset(symp, val) {
     cptr.st1o2(go, cptr.ldI32o(symp, $symparse_idx), 1, $instance_globals_o_ov_primary_syms, uchar(val));
 }
 
-/** C ref: symbols.c:301 — @param {CPtr} symp @param {CInt} val */
+/** C ref: symbols.c:301 — @param {CPtr<struct symparse>} symp @param {CInt} val */
 export function update_ov_rogue_symset(symp, val) {
     cptr.st1o2(go, cptr.ldI32o(symp, $symparse_idx), 1, $instance_globals_o_ov_rogue_syms, uchar(val));
 }
 
-/** C ref: symbols.c:307 — @param {CPtr} symp @param {CInt} val */
+/** C ref: symbols.c:307 — @param {CPtr<struct symparse>} symp @param {CInt} val */
 export function update_primary_symset(symp, val) {
     cptr.st1o2(gp, cptr.ldI32o(symp, $symparse_idx), 1, $instance_globals_p_primary_syms, uchar(val));
 }
 
-/** C ref: symbols.c:313 — @param {CPtr} symp @param {CInt} val */
+/** C ref: symbols.c:313 — @param {CPtr<struct symparse>} symp @param {CInt} val */
 export function update_rogue_symset(symp, val) {
     cptr.st1o(gr, cptr.ldI32o(symp, $symparse_idx), uchar(val), 1);
 }
@@ -1089,12 +1089,12 @@ cptr.stI32o(loadsyms, 3136, NHC.SYM_INVALID);
 cptr.stI32o(loadsyms, 3136 + $symparse_idx, 0);
 cptr.stPtro(loadsyms, 3136 + $symparse_name, null);
 
-/** C ref: symbols.c:431 — @param {CPtr} buf @returns {CInt} */
+/** C ref: symbols.c:431 — @param {CPtr<char>} buf @returns {CInt} */
 export function proc_symset_line(buf) {
     return schar((!(schar(parse_sym_line(buf, cptr.ldI32o(gs, $instance_globals_s_symset_which_set))))));
 }
 
-/** C ref: symbols.c:438 — @param {CPtr} buf @param {CInt} which_set @returns {CInt} */
+/** C ref: symbols.c:438 — @param {CPtr<char>} buf @param {CInt} which_set @returns {CInt} */
 export function parse_sym_line(buf, which_set) {
     let val;
     let i;
@@ -1272,7 +1272,7 @@ export function parse_sym_line(buf, which_set) {
     return 1;
 }
 
-/** C ref: symbols.c:657 — @param {CPtr} handling @param {CInt} which_set */
+/** C ref: symbols.c:657 — @param {CPtr<char>} handling @param {CInt} which_set */
 export function set_symhandling(handling, which_set) {
     let i = 0;
     cptr.stI32o2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_handling, NHC.H_UNK);
@@ -1285,7 +1285,7 @@ export function set_symhandling(handling, which_set) {
     }
 }
 
-/** C ref: symbols.c:673 — @param {CPtr} s @param {CInt} which_set @returns {CInt} */
+/** C ref: symbols.c:673 — @param {CPtr<char>} s @param {CInt} which_set @returns {CInt} */
 export function load_symset(s, which_set) {
     clear_symsetentry(which_set, 1);
     if (cptr.ldPtro2(gs, which_set, 48, $instance_globals_s_symset + $symsetentry_name))
@@ -1325,7 +1325,7 @@ export function savedsym_free() {
     }
 }
 
-/** C ref: symbols.c:726 — @param {CPtr} name @param {CInt} which_set @returns {CPtr} */
+/** C ref: symbols.c:726 — @param {CPtr<char>} name @param {CInt} which_set @returns {CPtr<struct _savedsym>} */
 function savedsym_find(name, which_set) {
     let tmp = saved_symbols;
     while (tmp) {
@@ -1336,7 +1336,7 @@ function savedsym_find(name, which_set) {
     return null;
 }
 
-/** C ref: symbols.c:739 — @param {CPtr} name @param {CPtr} val @param {CInt} which_set */
+/** C ref: symbols.c:739 — @param {CPtr<char>} name @param {CPtr<char>} val @param {CInt} which_set */
 function savedsym_add(name, val, which_set) {
     let tmp = null;
     if ((tmp = savedsym_find(name, which_set)) !== null) {
@@ -1352,7 +1352,7 @@ function savedsym_add(name, val, which_set) {
     }
 }
 
-/** C ref: symbols.c:757 — @param {CPtr} sbuf */
+/** C ref: symbols.c:757 — @param {CPtr<strbuf_t>} sbuf */
 export function savedsym_strbuf(sbuf) {
     let tmp = saved_symbols;
     let buf = new Uint8Array(256);
@@ -1363,7 +1363,7 @@ export function savedsym_strbuf(sbuf) {
     }
 }
 
-/** C ref: symbols.c:773 — @param {CPtr} opts @param {CInt} which_set @returns {CInt} */
+/** C ref: symbols.c:773 — @param {CPtr<char>} opts @param {CInt} which_set @returns {CInt} */
 export function parsesymbols(opts, which_set) {
     let val;
     let symname;
@@ -1457,7 +1457,7 @@ cptr.stPtro(__static_match_sym_alternates, 128 + $alternate_parse_nm, __sl119);
 cptr.stPtro(__static_match_sym_alternates, 144, __sl225);
 cptr.stPtro(__static_match_sym_alternates, 144 + $alternate_parse_nm, __sl120); /** C ref: symbols.c:857 — struct alternate_parse[10] (function-static) */
 
-/** C ref: symbols.c:852 — @param {CPtr} buf @returns {CPtr} */
+/** C ref: symbols.c:852 — @param {CPtr<char>} buf @returns {CPtr<struct symparse>} */
 export function match_sym(buf) {
     let i;
     let len = cptr.strlen(buf);

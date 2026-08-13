@@ -669,7 +669,7 @@ export function match_maptyps(typ, levltyp) {
     return 1;
 }
 
-/** C ref: sp_lev.c:227 — @param {CPtr} str @returns {CPtr} */
+/** C ref: sp_lev.c:227 — @param {CPtr<char>} str @returns {CPtr<struct mapfragment>} */
 export function mapfrag_fromstr(str) {
     let mf = alloc(16);
     let tmps;
@@ -693,7 +693,7 @@ export function mapfrag_fromstr(str) {
     return mf;
 }
 
-/** C ref: sp_lev.c:256 — @param {CPtr} mf */
+/** C ref: sp_lev.c:256 — @param {CPtr<struct mapfragment *>} mf */
 export function mapfrag_free(mf) {
     if (mf && cptr.ldPtr(mf)) {
         cptr.free(cptr.ldPtro((cptr.ldPtr(mf)), $mapfragment_data));
@@ -702,19 +702,19 @@ export function mapfrag_free(mf) {
     }
 }
 
-/** C ref: sp_lev.c:266 — @param {CPtr} mf @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: sp_lev.c:266 — @param {CPtr<struct mapfragment>} mf @param {CInt} x @param {CInt} y @returns {CInt} */
 export function mapfrag_get(mf, x, y) {
     if (y < 0 || x < 0 || y > ((cptr.ldI32o(mf, $mapfragment_hei) - 1) | 0) || x > ((cptr.ldI32(mf) - 1) | 0))
         panic(__sl0, cptr.ldI32(mf), cptr.ldI32o(mf, $mapfragment_hei), x, y);
     return splev_chr2typ(cptr.ld1so(cptr.ldPtro(mf, $mapfragment_data), (Math.imul(y, ((cptr.ldI32(mf) + 1) | 0)) + x) | 0));
 }
 
-/** C ref: sp_lev.c:275 — @param {CPtr} mf @returns {CInt} */
+/** C ref: sp_lev.c:275 — @param {CPtr<struct mapfragment>} mf @returns {CInt} */
 export function mapfrag_canmatch(mf) {
     return schar(((cptr.ldI32(mf) % 2) && (cptr.ldI32o(mf, $mapfragment_hei) % 2) ? 1 : 0));
 }
 
-/** C ref: sp_lev.c:281 — @param {CPtr} mf @returns {CPtr} */
+/** C ref: sp_lev.c:281 — @param {CPtr<struct mapfragment>} mf @returns {CPtr<char>} */
 export function mapfrag_error(mf) {
     mf = cptr.box(mf);
     let res = null;
@@ -730,7 +730,7 @@ export function mapfrag_error(mf) {
     return res;
 }
 
-/** C ref: sp_lev.c:298 — @param {CPtr} mf @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: sp_lev.c:298 — @param {CPtr<struct mapfragment>} mf @param {CInt} x @param {CInt} y @returns {CInt} */
 export function mapfrag_match(mf, x, y) {
     let rx;
     let ry;
@@ -838,7 +838,7 @@ function lvlfill_swamp(fg, bg, lit) {
         }
 }
 
-/** C ref: sp_lev.c:428 — @param {CPtr} lev */
+/** C ref: sp_lev.c:428 — @param {CPtr<struct rm>} lev */
 function flip_dbridge_horizontal(lev) {
     if (IS_DRAWBRIDGE(cptr.ld1so(lev, $rm_typ))) {
         if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_WEST) {
@@ -851,7 +851,7 @@ function flip_dbridge_horizontal(lev) {
     }
 }
 
-/** C ref: sp_lev.c:442 — @param {CPtr} lev */
+/** C ref: sp_lev.c:442 — @param {CPtr<struct rm>} lev */
 function flip_dbridge_vertical(lev) {
     if (IS_DRAWBRIDGE(cptr.ld1so(lev, $rm_typ))) {
         if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.DB_DIR) == NHM.DB_NORTH) {
@@ -1306,7 +1306,7 @@ export function flip_level(flp, extras) {
     vision_reset();
 }
 
-/** C ref: sp_lev.c:926 — @param {CInt} flp @param {CPtr} grd @param {CInt} minx @param {CInt} miny @param {CInt} maxx @param {CInt} maxy */
+/** C ref: sp_lev.c:926 — @param {CInt} flp @param {CPtr<struct monst>} grd @param {CInt} minx @param {CInt} miny @param {CInt} maxx @param {CInt} maxy */
 function flip_vault_guard(flp, grd, minx, miny, maxx, maxy) {
     let i;
     let egd = (cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd));
@@ -1406,7 +1406,7 @@ function set_door_orientation(x, y) {
     cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_horizontal, (((wleft || wright) && !(wup && wdown)) ? 1 : 0) >>> 0);
 }
 
-/** C ref: sp_lev.c:1089 — @param {CInt} x @param {CInt} y @param {CPtr} droom @returns {CInt} */
+/** C ref: sp_lev.c:1089 — @param {CInt} x @param {CInt} y @param {CPtr<struct mkroom>} droom @returns {CInt} */
 function shared_with_room(x, y, droom) {
     let rmno = Number(BigInt.asIntN(32, BigInt.asIntN(64, (cptr.diff(droom, svr) / 224n) + 3n)));
     if (!isok(i16(x), i16(y)))
@@ -1424,7 +1424,7 @@ function shared_with_room(x, y, droom) {
     return 0;
 }
 
-/** C ref: sp_lev.c:1110 — @param {CInt} x @param {CInt} y @param {CPtr} droom */
+/** C ref: sp_lev.c:1110 — @param {CInt} x @param {CInt} y @param {CPtr<struct mkroom>} droom */
 function maybe_add_door(x, y, droom) {
     if (cptr.ldI16o(droom, $mkroom_hx) >= 0 && ((!cptr.ld1so(droom, $mkroom_irregular) && inside_room(droom, i16(x), i16(y))) || BigInt(((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0)) == BigInt.asIntN(64, (cptr.diff(droom, svr) / 224n) + 3n) || shared_with_room(x, y, droom))) {
         add_door(i16(x), i16(y), droom);
@@ -1492,7 +1492,7 @@ function rndtrap() {
     return rtrap;
 }
 
-/** C ref: sp_lev.c:1202 — @param {CPtr} x @param {CPtr} y @param {CUInt} humidity @param {CPtr} croom */
+/** C ref: sp_lev.c:1202 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CUInt} humidity @param {CPtr<struct mkroom>} croom */
 function get_location(x, y, humidity, croom) {
     let cpt = 0;
     let mx;
@@ -1588,7 +1588,7 @@ function is_ok_location(x, y, humidity) {
     return 0;
 }
 
-/** C ref: sp_lev.c:1311 — @param {CInt} x @param {CInt} y @param {CPtr} pm @returns {CInt} */
+/** C ref: sp_lev.c:1311 — @param {CInt} x @param {CInt} y @param {CPtr<struct permonst>} pm @returns {CInt} */
 export function pm_good_location(x, y, pm) {
     return is_ok_location(x, y, pm_to_humidity(pm) >>> 0);
 }
@@ -1612,7 +1612,7 @@ function get_unpacked_coord(loc, defhumidity) {
     return __static_get_unpacked_coord_c;
 }
 
-/** C ref: sp_lev.c:1337 — @param {CPtr} x @param {CPtr} y @param {CInt} humidity @param {CPtr} croom @param {CLongLong} crd */
+/** C ref: sp_lev.c:1337 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CInt} humidity @param {CPtr<struct mkroom>} croom @param {CLongLong} crd */
 export function get_location_coord(x, y, humidity, croom, crd) {
     let c = cptr.alloc(16);
     cptr.memcpy(c, get_unpacked_coord(crd, humidity), 16);
@@ -1623,7 +1623,7 @@ export function get_location_coord(x, y, humidity, croom, crd) {
         get_location(x, y, humidity >>> 0, croom);
 }
 
-/** C ref: sp_lev.c:1360 — @param {CPtr} x @param {CPtr} y @param {CPtr} croom */
+/** C ref: sp_lev.c:1360 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<struct mkroom>} croom */
 function get_room_loc(x, y, croom) {
     let c = cptr.alloc(4);
     if (cptr.ldI16(x) < 0 && cptr.ldI16(y) < 0) {
@@ -1642,7 +1642,7 @@ function get_room_loc(x, y, croom) {
     }
 }
 
-/** C ref: sp_lev.c:1385 — @param {CPtr} x @param {CPtr} y @param {CPtr} croom @param {CLongLong} pos */
+/** C ref: sp_lev.c:1385 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<struct mkroom>} croom @param {CLongLong} pos */
 function get_free_room_loc(x, y, croom, pos) {
     let try_x = cptr.box(0);
     let try_y = cptr.box(0);
@@ -1659,7 +1659,7 @@ function get_free_room_loc(x, y, croom, pos) {
     cptr.stI16(x, try_x.v), cptr.stI16(y, try_y.v);
 }
 
-/** C ref: sp_lev.c:1407 — @param {CPtr} lowx @param {CPtr} ddx @param {CPtr} lowy @param {CPtr} ddy @param {CInt} vault @returns {CInt} */
+/** C ref: sp_lev.c:1407 — @param {CPtr<coordxy>} lowx @param {CPtr<coordxy>} ddx @param {CPtr<coordxy>} lowy @param {CPtr<coordxy>} ddy @param {CInt} vault @returns {CInt} */
 export function check_room(lowx, ddx, lowy, ddy, vault) {
     let x;
     let y;
@@ -1896,7 +1896,7 @@ export function create_room(x, y, w, h, xal, yal, rtype, rlit) {
     return 1;
 }
 
-/** C ref: sp_lev.c:1668 — @param {CPtr} proom @param {CInt} x @param {CInt} y @param {CInt} w @param {CInt} h @param {CInt} rtype @param {CInt} rlit @returns {CInt} */
+/** C ref: sp_lev.c:1668 — @param {CPtr<struct mkroom>} proom @param {CInt} x @param {CInt} y @param {CInt} w @param {CInt} h @param {CInt} rtype @param {CInt} rlit @returns {CInt} */
 function create_subroom(proom, x, y, w, h, rtype, rlit) {
     let width;
     let height;
@@ -1927,7 +1927,7 @@ function create_subroom(proom, x, y, w, h, rtype, rlit) {
     return 1;
 }
 
-/** C ref: sp_lev.c:1714 — @param {CPtr} dd @param {CPtr} broom */
+/** C ref: sp_lev.c:1714 — @param {CPtr<room_door>} dd @param {CPtr<struct mkroom>} broom */
 function create_door(dd, broom) {
     let x = 0;
     let y = 0;
@@ -2009,7 +2009,7 @@ function create_door(dd, broom) {
     cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI16o(dd, $room_door_mask));
 }
 
-/** C ref: sp_lev.c:1812 — @param {CPtr} t @param {CPtr} croom */
+/** C ref: sp_lev.c:1812 — @param {CPtr<spltrap>} t @param {CPtr<struct mkroom>} croom */
 function create_trap(t, croom) {
     let x = cptr.box(-1);
     let y = cptr.box(-1);
@@ -2062,7 +2062,7 @@ function m_bad_boulder_spot(x, y) {
     return 0;
 }
 
-/** C ref: sp_lev.c:1884 — @param {CPtr} pm @returns {CInt} */
+/** C ref: sp_lev.c:1884 — @param {CPtr<struct permonst>} pm @returns {CInt} */
 function pm_to_humidity(pm) {
     let loc = NHM.DRY;
     if (!pm)
@@ -2092,7 +2092,7 @@ function sp_amask_to_amask(sp_amask) {
     return amask;
 }
 
-/** C ref: sp_lev.c:1925 — @param {CPtr} m @param {CPtr} croom */
+/** C ref: sp_lev.c:1925 — @param {CPtr<monster>} m @param {CPtr<struct mkroom>} croom */
 function create_monster(m, croom) {
     let mtmp;
     let x = cptr.box(0);
@@ -2290,7 +2290,7 @@ function create_monster(m, croom) {
 
 const __static_create_object_prize_warning = cptr.bytes("multiple prizes on %s level"); /** C ref: sp_lev.c:2392 — char[28] (function-static) */
 
-/** C ref: sp_lev.c:2193 — @param {CPtr} o @param {CPtr} croom @returns {CPtr} */
+/** C ref: sp_lev.c:2193 — @param {CPtr<object>} o @param {CPtr<struct mkroom>} croom @returns {CPtr<struct obj>} */
 function create_object(o, croom) {
     let otmp;
     let x = cptr.box(0);
@@ -2483,7 +2483,7 @@ function create_object(o, croom) {
     return otmp;
 }
 
-/** C ref: sp_lev.c:2446 — @param {CPtr} a @param {CPtr} croom */
+/** C ref: sp_lev.c:2446 — @param {CPtr<altar>} a @param {CPtr<struct mkroom>} croom */
 function create_altar(a, croom) {
     let sproom;
     let x = cptr.box(-1);
@@ -2518,7 +2518,7 @@ function create_altar(a, croom) {
     }
 }
 
-/** C ref: sp_lev.c:2492 — @param {CPtr} croom @param {CPtr} x @param {CPtr} y @param {CInt} wall @param {CInt} cnt @returns {CInt} */
+/** C ref: sp_lev.c:2492 — @param {CPtr<struct mkroom>} croom @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CInt} wall @param {CInt} cnt @returns {CInt} */
 function search_door(croom, x, y, wall, cnt) {
     let dx;
     let dy;
@@ -2565,7 +2565,7 @@ function search_door(croom, x, y, wall, cnt) {
     return 0;
 }
 
-/** C ref: sp_lev.c:2549 — @param {CPtr} org @param {CPtr} dest @param {CPtr} npoints @param {CInt} nxcor @param {CInt} ftyp @param {CInt} btyp @returns {CInt} */
+/** C ref: sp_lev.c:2549 — @param {CPtr<coord>} org @param {CPtr<coord>} dest @param {CPtr<int>} npoints @param {CInt} nxcor @param {CInt} ftyp @param {CInt} btyp @returns {CInt} */
 export function dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
     let dx = 0;
     let dy = 0;
@@ -2670,7 +2670,7 @@ export function dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
     return 1;
 }
 
-/** C ref: sp_lev.c:2671 — @param {CPtr} c */
+/** C ref: sp_lev.c:2671 — @param {CPtr<corridor>} c */
 function create_corridor(c) {
     let org = cptr.alloc(4);
     let dest = cptr.alloc(4);
@@ -2719,7 +2719,7 @@ function create_corridor(c) {
     }
 }
 
-/** C ref: sp_lev.c:2731 — @param {CPtr} croom */
+/** C ref: sp_lev.c:2731 — @param {CPtr<struct mkroom>} croom */
 export function fill_special_room(croom) {
     let i;
     if (!croom)
@@ -2783,7 +2783,7 @@ export function fill_special_room(croom) {
     }
 }
 
-/** C ref: sp_lev.c:2807 — @param {CPtr} r @param {CPtr} mkr @returns {CPtr} */
+/** C ref: sp_lev.c:2807 — @param {CPtr<room>} r @param {CPtr<struct mkroom>} mkr @returns {CPtr<struct mkroom>} */
 function build_room(r, mkr) {
     let okroom;
     let aroom;
@@ -2804,7 +2804,7 @@ function build_room(r, mkr) {
     return null;
 }
 
-/** C ref: sp_lev.c:2839 — @param {CPtr} tmpregion */
+/** C ref: sp_lev.c:2839 — @param {CPtr<region>} tmpregion */
 function light_region(tmpregion) {
     let litstate = schar((cptr.ldI16o(tmpregion, $region_rlit) ? 1 : 0));
     let hiy = cptr.ldI16o(tmpregion, $region_y2);
@@ -2862,7 +2862,7 @@ export function wallify_map(x1, y1, x2, y2) {
     }
 }
 
-/** C ref: sp_lev.c:2900 — @param {CPtr} m @param {CInt} humidity */
+/** C ref: sp_lev.c:2900 — @param {CPtr<coord>} m @param {CInt} humidity */
 function maze1xy(m, humidity) {
     let x;
     let y;
@@ -2927,7 +2927,7 @@ function fill_empty_maze() {
     }
 }
 
-/** C ref: sp_lev.c:2982 — @param {CPtr} linit */
+/** C ref: sp_lev.c:2982 — @param {CPtr<lev_init>} linit */
 function splev_initlev(linit) {
     switch (cptr.ldI16(linit)) {
         default:
@@ -2980,14 +2980,14 @@ function spo_pop_container() {
     }
 }
 
-/** C ref: sp_lev.c:3050 — @param {CPtr} L @param {CInt} wid @param {CInt} hei */
+/** C ref: sp_lev.c:3050 — @param {CPtr<lua_State>} L @param {CInt} wid @param {CInt} hei */
 function l_push_wid_hei_table(L, wid, hei) {
     lua_createtable(L, 0, 0);
     nhl_add_table_entry_int(L, __sl50, BigInt(wid));
     nhl_add_table_entry_int(L, __sl51, BigInt(hei));
 }
 
-/** C ref: sp_lev.c:3059 — @param {CPtr} L @param {CPtr} tmpr */
+/** C ref: sp_lev.c:3059 — @param {CPtr<lua_State>} L @param {CPtr<struct mkroom>} tmpr */
 function l_push_mkroom_table(L, tmpr) {
     lua_createtable(L, 0, 0);
     nhl_add_table_entry_int(L, __sl50, BigInt(((1 + ((cptr.ldI16o(tmpr, $mkroom_hx) - cptr.ldI16(tmpr)) | 0)) | 0)));
@@ -2999,7 +2999,7 @@ function l_push_mkroom_table(L, tmpr) {
     nhl_add_table_entry_str(L, __sl56, get_mkroom_name(cptr.ld1so(tmpr, $mkroom_rtype)));
 }
 
-/** C ref: sp_lev.c:3076 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3076 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_message(L) {
     let levmsg;
     let old_n;
@@ -3048,13 +3048,13 @@ cptr.stI32o(__static_get_table_align_aligns2i, 20, NHM.AM_SPLEV_NONCO);
 cptr.stI32o(__static_get_table_align_aligns2i, 24, NHM.AM_SPLEV_RANDOM);
 cptr.stI32o(__static_get_table_align_aligns2i, 28, 0); /** C ref: sp_lev.c:3120 — int[8] (function-static) */
 
-/** C ref: sp_lev.c:3114 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3114 — @param {CPtr<lua_State>} L @returns {CInt} */
 function get_table_align(L) {
     let a = cptr.ldI32o(__static_get_table_align_aligns2i, get_table_option(L, __sl59, __sl27, __static_get_table_align_gtaligns), 4);
     return a;
 }
 
-/** C ref: sp_lev.c:3131 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3131 — @param {CPtr<lua_State>} L @returns {CInt} */
 function get_table_monclass(L) {
     let s = get_table_str_opt(L, __sl66, null);
     let ret = -1;
@@ -3067,7 +3067,7 @@ function get_table_monclass(L) {
     return ret;
 }
 
-/** C ref: sp_lev.c:3143 — @param {CPtr} L @param {CPtr} s @param {CPtr} mgender @returns {CInt} */
+/** C ref: sp_lev.c:3143 — @param {CPtr<lua_State>} L @param {CPtr<char>} s @param {CPtr<int>} mgender @returns {CInt} */
 function find_montype(L, s, mgender) {
     let i;
     let mgend = cptr.box(NHC.NEUTRAL);
@@ -3086,7 +3086,7 @@ function find_montype(L, s, mgender) {
     return NHC.NON_PM;
 }
 
-/** C ref: sp_lev.c:3167 — @param {CPtr} L @param {CPtr} mgender @returns {CInt} */
+/** C ref: sp_lev.c:3167 — @param {CPtr<lua_State>} L @param {CPtr<int>} mgender @returns {CInt} */
 function get_table_montype(L, mgender) {
     let s = get_table_str_opt(L, __sl68, null);
     let ret = NHC.NON_PM;
@@ -3102,7 +3102,7 @@ function get_table_montype(L, mgender) {
     return ret;
 }
 
-/** C ref: sp_lev.c:3188 — @param {CPtr} L @param {CPtr} x @param {CPtr} y */
+/** C ref: sp_lev.c:3188 — @param {CPtr<lua_State>} L @param {CPtr<lua_Integer>} x @param {CPtr<lua_Integer>} y */
 function get_table_xy_or_coord(L, x, y) {
     let mx = cptr.box(BigInt(get_table_int_opt(L, __sl70, -1)));
     let my = cptr.box(BigInt(get_table_int_opt(L, __sl71, -1)));
@@ -3115,7 +3115,7 @@ function get_table_xy_or_coord(L, x, y) {
     cptr.stI64(y, my.v);
 }
 
-/** C ref: sp_lev.c:3214 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3214 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_monster(L) {
     let argc = lua_gettop(L);
     let tmpmons = cptr.alloc(88);
@@ -3269,7 +3269,7 @@ export function lspo_monster(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:3407 — @param {CPtr} L @param {CPtr} name @param {CInt} rndval @returns {*} */
+/** C ref: sp_lev.c:3407 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} rndval @returns {*} */
 function get_table_int_or_random(L, name, rndval) {
     let ret;
     let buf = new Uint8Array(256);
@@ -3317,13 +3317,13 @@ cptr.stI32o(__static_get_table_buc_bucs2i, 20, 5);
 cptr.stI32o(__static_get_table_buc_bucs2i, 24, 6);
 cptr.stI32o(__static_get_table_buc_bucs2i, 28, 0); /** C ref: sp_lev.c:3448 — int[8] (function-static) */
 
-/** C ref: sp_lev.c:3442 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3442 — @param {CPtr<lua_State>} L @returns {CInt} */
 function get_table_buc(L) {
     let curse_state = cptr.ldI32o(__static_get_table_buc_bucs2i, get_table_option(L, __sl104, __sl27, __static_get_table_buc_bucs), 4);
     return curse_state;
 }
 
-/** C ref: sp_lev.c:3455 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3455 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function get_table_objclass(L) {
     let s = get_table_str_opt(L, __sl66, null);
     let ret = -1;
@@ -3350,7 +3350,7 @@ cptr.st1o(__static_find_objtype_class_prefixes, 64 + $objclasspfx_class, NHC.WAN
 cptr.stPtro(__static_find_objtype_class_prefixes, 80, null);
 cptr.st1o(__static_find_objtype_class_prefixes, 80 + $objclasspfx_class, 0); /** C ref: sp_lev.c:3482 — struct objclasspfx[6] (function-static) */
 
-/** C ref: sp_lev.c:3468 — @param {CPtr} L @param {CPtr} s @param {CInt} oclass @returns {CInt} */
+/** C ref: sp_lev.c:3468 — @param {CPtr<lua_State>} L @param {CPtr<char>} s @param {CInt} oclass @returns {CInt} */
 function find_objtype(L, s, oclass) {
     if (s && cptr.ld1s(s)) {
         let i;
@@ -3383,7 +3383,7 @@ function find_objtype(L, s, oclass) {
     return NHC.STRANGE_OBJECT;
 }
 
-/** C ref: sp_lev.c:3539 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3539 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function get_table_objtype(L) {
     let s = get_table_str_opt(L, __sl68, null);
     let oclass = schar(get_table_objclass(L));
@@ -3419,7 +3419,7 @@ cptr.stI16o(__static_lspo_object_zeroobject, $object_greased, 0);
 cptr.stI16o(__static_lspo_object_zeroobject, $object_broken, 0);
 cptr.stI16o(__static_lspo_object_zeroobject, $object_achievement, 0);
 
-/** C ref: sp_lev.c:3557 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3557 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_object(L) {
     let quancnt;
     let tmpobj = cptr.alloc(64);
@@ -3565,7 +3565,7 @@ export function lspo_object(L) {
     return 1;
 }
 
-/** C ref: sp_lev.c:3759 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3759 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_level_flags(L) {
     let argc = lua_gettop(L);
     let i;
@@ -3650,7 +3650,7 @@ cptr.stI32o(__static_lspo_level_init_initstyles2i, 16, NHC.LVLINIT_MINES);
 cptr.stI32o(__static_lspo_level_init_initstyles2i, 20, NHC.LVLINIT_SWAMP);
 cptr.stI32o(__static_lspo_level_init_initstyles2i, 24, 0); /** C ref: sp_lev.c:3842 — int[7] (function-static) */
 
-/** C ref: sp_lev.c:3837 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3837 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_level_init(L) {
     let init_lev = cptr.alloc(48);
     create_des_coder();
@@ -3689,7 +3689,7 @@ cptr.stI32o(__static_lspo_engraving_engrtypes2i, 12, NHM.MARK);
 cptr.stI32o(__static_lspo_engraving_engrtypes2i, 16, NHM.ENGR_BLOOD);
 cptr.stI32o(__static_lspo_engraving_engrtypes2i, 20, 0); /** C ref: sp_lev.c:3886 — int[6] (function-static) */
 
-/** C ref: sp_lev.c:3881 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3881 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_engraving(L) {
     let etyp = NHM.DUST;
     let txt = null;
@@ -3741,7 +3741,7 @@ export function lspo_engraving(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:3939 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:3939 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_mineralize(L) {
     let gem_prob;
     let gold_prob;
@@ -3816,7 +3816,7 @@ cptr.stI32o(room_types, 408, NHC.CANDLESHOP);
 cptr.stPtro(room_types, 416, null);
 cptr.stI32o(room_types, 424, 0);
 
-/** C ref: sp_lev.c:3991 — @param {CInt} rtype @returns {CPtr} */
+/** C ref: sp_lev.c:3991 — @param {CInt} rtype @returns {CPtr<char>} */
 function get_mkroom_name(rtype) {
     let i;
     for (i = 0; cptr.ldPtro(room_types, i, 16); i++)
@@ -3826,7 +3826,7 @@ function get_mkroom_name(rtype) {
     return __sl219;
 }
 
-/** C ref: sp_lev.c:4004 — @param {CPtr} L @param {CPtr} name @param {CInt} defval @returns {CInt} */
+/** C ref: sp_lev.c:4004 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} defval @returns {CInt} */
 function get_table_roomtype_opt(L, name, defval) {
     let roomstr = get_table_str_opt(L, name, cptr.decay(emptystr));
     let i;
@@ -3880,7 +3880,7 @@ cptr.stI32o(__static_lspo_room_t_or_b2i, 12, -1);
 cptr.stI32o(__static_lspo_room_t_or_b2i, 16, -1);
 cptr.stI32o(__static_lspo_room_t_or_b2i, 20, -1); /** C ref: sp_lev.c:4051 — int[6] (function-static) */
 
-/** C ref: sp_lev.c:4028 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4028 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_room(L) {
     create_des_coder();
     if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms) && cptr.ld1so(gt, $instance_globals_t_themeroom_failed))
@@ -3943,7 +3943,7 @@ export function lspo_room(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:4119 — @param {CPtr} coder */
+/** C ref: sp_lev.c:4119 — @param {CPtr<struct sp_coder>} coder */
 function spo_endroom(coder) {
     if (cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom) > 1) {
         (cptr.stI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom, cptr.ldI32o(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_n_subroom) + -1)) - (-1);
@@ -3970,7 +3970,7 @@ const __static_l_create_stairway_stairdirs2i = cptr.alloc(2 * 4);
 cptr.stI32o(__static_l_create_stairway_stairdirs2i, 0, 0);
 cptr.stI32o(__static_l_create_stairway_stairdirs2i, 4, 1); /** C ref: sp_lev.c:4150 — int[2] (function-static) */
 
-/** C ref: sp_lev.c:4147 — @param {CPtr} L @param {CInt} using_ladder @returns {CInt} */
+/** C ref: sp_lev.c:4147 — @param {CPtr<lua_State>} L @param {CInt} using_ladder @returns {CInt} */
 function l_create_stairway(L, using_ladder) {
     let argc = lua_gettop(L);
     let x = cptr.box(-1);
@@ -4030,17 +4030,17 @@ function l_create_stairway(L, using_ladder) {
     return 0;
 }
 
-/** C ref: sp_lev.c:4223 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4223 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_stair(L) {
     return l_create_stairway(L, 0);
 }
 
-/** C ref: sp_lev.c:4232 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4232 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_ladder(L) {
     return l_create_stairway(L, 1);
 }
 
-/** C ref: sp_lev.c:4243 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4243 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_grave(L) {
     let argc = lua_gettop(L);
     let x = cptr.box(0);
@@ -4087,7 +4087,7 @@ cptr.stI32o(__static_lspo_altar_shrines2i, 4, 1);
 cptr.stI32o(__static_lspo_altar_shrines2i, 8, 2);
 cptr.stI32o(__static_lspo_altar_shrines2i, 12, 0); /** C ref: sp_lev.c:4288 — int[4] (function-static) */
 
-/** C ref: sp_lev.c:4283 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4283 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_altar(L) {
     let tmpaltar = cptr.alloc(24);
     let x = cptr.box(0n);
@@ -4166,7 +4166,7 @@ cptr.stI32o(trap_types, 376, -1);
 cptr.stPtro(trap_types, 384, null);
 cptr.stI32o(trap_types, 392, NHC.NO_TRAP);
 
-/** C ref: sp_lev.c:4350 — @param {CPtr} L @param {CPtr} name @param {CInt} defval @returns {CInt} */
+/** C ref: sp_lev.c:4350 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} defval @returns {CInt} */
 function get_table_traptype_opt(L, name, defval) {
     let trapstr = get_table_str_opt(L, name, cptr.decay(emptystr));
     let i;
@@ -4185,7 +4185,7 @@ function get_table_traptype_opt(L, name, defval) {
     return res;
 }
 
-/** C ref: sp_lev.c:4367 — @param {CInt} ttyp @returns {CPtr} */
+/** C ref: sp_lev.c:4367 — @param {CInt} ttyp @returns {CPtr<char>} */
 export function get_trapname_bytype(ttyp) {
     let i;
     for (i = 0; cptr.ldPtro(trap_types, i, 16); i++)
@@ -4194,7 +4194,7 @@ export function get_trapname_bytype(ttyp) {
     return null;
 }
 
-/** C ref: sp_lev.c:4379 — @param {CPtr} trapname @returns {CInt} */
+/** C ref: sp_lev.c:4379 — @param {CPtr<char>} trapname @returns {CInt} */
 function get_traptype_byname(trapname) {
     let i;
     for (i = 0; cptr.ldPtro(trap_types, i, 16); i++)
@@ -4203,7 +4203,7 @@ function get_traptype_byname(trapname) {
     return NHC.NO_TRAP;
 }
 
-/** C ref: sp_lev.c:4397 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4397 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_trap(L) {
     let tmptrap = cptr.alloc(24);
     let x = cptr.box(0n);
@@ -4265,7 +4265,7 @@ export function lspo_trap(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:4480 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4480 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_gold(L) {
     let argc = lua_gettop(L);
     let x = cptr.box(0);
@@ -4321,7 +4321,7 @@ cptr.stI32o(__static_lspo_corridor_walldirs2i, 16, NHM.W_EAST);
 cptr.stI32o(__static_lspo_corridor_walldirs2i, 20, NHM.W_SOUTH);
 cptr.stI32o(__static_lspo_corridor_walldirs2i, 24, 0); /** C ref: sp_lev.c:4534 — int[7] (function-static) */
 
-/** C ref: sp_lev.c:4529 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4529 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_corridor(L) {
     let tc = cptr.alloc(12);
     create_des_coder();
@@ -4336,7 +4336,7 @@ export function lspo_corridor(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:4558 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4558 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_random_corridors(L) {
     let tc = cptr.alloc(12);
     create_des_coder();
@@ -4461,7 +4461,7 @@ cptr.stI32o(__static_lspo_door_walldirs2i, 16, NHM.W_EAST);
 cptr.stI32o(__static_lspo_door_walldirs2i, 20, NHM.W_SOUTH);
 cptr.stI32o(__static_lspo_door_walldirs2i, 24, 0); /** C ref: sp_lev.c:4710 — int[7] (function-static) */
 
-/** C ref: sp_lev.c:4671 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4671 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_door(L) {
     let msk;
     let x = cptr.box(0);
@@ -4500,7 +4500,7 @@ export function lspo_door(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:4739 — @param {CPtr} L @param {CInt} x @param {CInt} y @param {CPtr} name @param {CInt} flag */
+/** C ref: sp_lev.c:4739 — @param {CPtr<lua_State>} L @param {CInt} x @param {CInt} y @param {CPtr<char>} name @param {CInt} flag */
 function l_table_getset_feature_flag(L, x, y, name, flag) {
     let val = get_table_boolean_opt(L, name, -2);
     if (val != -2) {
@@ -4513,7 +4513,7 @@ function l_table_getset_feature_flag(L, x, y, name, flag) {
     }
 }
 
-/** C ref: sp_lev.c:4772 — @param {CPtr} x @param {CPtr} y */
+/** C ref: sp_lev.c:4772 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y */
 export function cvt_to_abscoord(x, y) {
     if (cptr.ldPtro(gc, $instance_globals_c_coder) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) {
         cptr.stI16(x, cptr.ldI16(x) + cptr.ldI16(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
@@ -4524,7 +4524,7 @@ export function cvt_to_abscoord(x, y) {
     }
 }
 
-/** C ref: sp_lev.c:4793 — @param {CPtr} x @param {CPtr} y */
+/** C ref: sp_lev.c:4793 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y */
 export function cvt_to_relcoord(x, y) {
     if (cptr.ldPtro(gc, $instance_globals_c_coder) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) {
         cptr.stI16(x, cptr.ldI16(x) - cptr.ldI16(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
@@ -4535,7 +4535,7 @@ export function cvt_to_relcoord(x, y) {
     }
 }
 
-/** C ref: sp_lev.c:4811 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4811 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function nhl_abs_coord(L) {
     let argc = lua_gettop(L);
     let x = cptr.box(-1);
@@ -4576,7 +4576,7 @@ cptr.stI32o(__static_lspo_feature_features2i, 12, NHC.THRONE);
 cptr.stI32o(__static_lspo_feature_features2i, 16, NHC.TREE);
 cptr.stI32o(__static_lspo_feature_features2i, 20, NHC.STONE); /** C ref: sp_lev.c:4848 — int[6] (function-static) */
 
-/** C ref: sp_lev.c:4844 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4844 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_feature(L) {
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -4646,7 +4646,7 @@ export function lspo_feature(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:4929 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4929 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_gas_cloud(L) {
     let x = 0;
     let y = 0;
@@ -4681,7 +4681,7 @@ export function lspo_gas_cloud(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:4978 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:4978 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_terrain(L) {
     let tmpterrain = cptr.alloc(4);
     let x = cptr.box(0);
@@ -4737,7 +4737,7 @@ export function lspo_terrain(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:5051 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5051 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_replace_terrain(L) {
     let totyp;
     let fromtyp;
@@ -4827,7 +4827,7 @@ cptr.stI32o(__static_generate_way_out_method_escapeitems, 12, NHC.WAN_TELEPORTAT
 cptr.stI32o(__static_generate_way_out_method_escapeitems, 16, NHC.SCR_TELEPORTATION);
 cptr.stI32o(__static_generate_way_out_method_escapeitems, 20, NHC.RIN_TELEPORTATION); /** C ref: sp_lev.c:5150 — int[6] (function-static) */
 
-/** C ref: sp_lev.c:5146 — @param {CInt} nx @param {CInt} ny @param {CPtr} ov @returns {CInt} */
+/** C ref: sp_lev.c:5146 — @param {CInt} nx @param {CInt} ny @param {CPtr<struct selectionvar>} ov @returns {CInt} */
 function generate_way_out_method(nx, ny, ov) {
     let ov2 = selection_new();
     let ov3;
@@ -4910,7 +4910,7 @@ function ensure_way_out() {
     selection_free(ov, 1);
 }
 
-/** C ref: sp_lev.c:5260 — @param {CPtr} L @param {CInt} tableidx @param {CInt} entrynum @returns {*} */
+/** C ref: sp_lev.c:5260 — @param {CPtr<lua_State>} L @param {CInt} tableidx @param {CInt} entrynum @returns {*} */
 function get_table_intarray_entry(L, tableidx, entrynum) {
     let ret = 0n;
     if (tableidx < 0)
@@ -4928,7 +4928,7 @@ function get_table_intarray_entry(L, tableidx, entrynum) {
     return ret;
 }
 
-/** C ref: sp_lev.c:5282 — @param {CPtr} L @param {CPtr} name @param {CPtr} x1 @param {CPtr} y1 @param {CPtr} x2 @param {CPtr} y2 @param {CInt} optional @returns {CInt} */
+/** C ref: sp_lev.c:5282 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CPtr<lua_Integer>} x1 @param {CPtr<lua_Integer>} y1 @param {CPtr<lua_Integer>} x2 @param {CPtr<lua_Integer>} y2 @param {CInt} optional @returns {CInt} */
 function get_table_region(L, name, x1, y1, x2, y2, optional) {
     let arrlen;
     lua_getfield(L, 1, name);
@@ -4953,7 +4953,7 @@ function get_table_region(L, name, x1, y1, x2, y2, optional) {
     return 1;
 }
 
-/** C ref: sp_lev.c:5319 — @param {CPtr} L @param {CInt} i @param {CPtr} x @param {CPtr} y @returns {CInt} */
+/** C ref: sp_lev.c:5319 — @param {CPtr<lua_State>} L @param {CInt} i @param {CPtr<lua_Integer>} x @param {CPtr<lua_Integer>} y @returns {CInt} */
 export function get_coord(L, i, x, y) {
     let ret = 0;
     let ltyp = lua_type(L, i);
@@ -4994,7 +4994,7 @@ export function get_coord(L, i, x, y) {
     return ret;
 }
 
-/** C ref: sp_lev.c:5371 — @param {CPtr} lregion */
+/** C ref: sp_lev.c:5371 — @param {CPtr<lev_region>} lregion */
 function levregion_add(lregion) {
     if (!cptr.ld1so(lregion, $lev_region_in_islev)) {
         get_location(lregion, cptr.add(lregion, 2), NHM.ANY_LOC, null);
@@ -5020,7 +5020,7 @@ function levregion_add(lregion) {
     void cptr.memcpy(cptr.add(cptr.ldPtro(gl, $instance_globals_l_lregions), (cptr.ldI32o(gn, $instance_globals_n_num_lregions) - 1) | 0, 32), lregion, 32n);
 }
 
-/** C ref: sp_lev.c:5410 — @param {CPtr} L @param {CPtr} tmplregion */
+/** C ref: sp_lev.c:5410 — @param {CPtr<lua_State>} L @param {CPtr<lev_region>} tmplregion */
 function l_get_lregion(L, tmplregion) {
     let x1 = cptr.box(0n);
     let y1 = cptr.box(0n);
@@ -5054,7 +5054,7 @@ cptr.stI32o(__static_lspo_teleport_region_teledirs2i, 4, NHC.LR_DOWNTELE);
 cptr.stI32o(__static_lspo_teleport_region_teledirs2i, 8, NHC.LR_UPTELE);
 cptr.stI32o(__static_lspo_teleport_region_teledirs2i, 12, -1); /** C ref: sp_lev.c:5446 — int[4] (function-static) */
 
-/** C ref: sp_lev.c:5443 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5443 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_teleport_region(L) {
     let tmplregion = cptr.alloc(32);
     create_des_coder();
@@ -5086,7 +5086,7 @@ cptr.stI32o(__static_lspo_levregion_regiontypes2i, 20, NHC.LR_UPTELE);
 cptr.stI32o(__static_lspo_levregion_regiontypes2i, 24, NHC.LR_DOWNTELE);
 cptr.stI32o(__static_lspo_levregion_regiontypes2i, 28, 0); /** C ref: sp_lev.c:5478 — int[8] (function-static) */
 
-/** C ref: sp_lev.c:5472 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5472 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_levregion(L) {
     let tmplregion = cptr.alloc(32);
     create_des_coder();
@@ -5112,7 +5112,7 @@ cptr.stI32o(__static_lspo_exclusion_ez_types2i, 8, NHC.LR_DOWNTELE);
 cptr.stI32o(__static_lspo_exclusion_ez_types2i, 12, NHC.LR_MONGEN);
 cptr.stI32o(__static_lspo_exclusion_ez_types2i, 16, 0); /** C ref: sp_lev.c:5503 — int[5] (function-static) */
 
-/** C ref: sp_lev.c:5498 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5498 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_exclusion(L) {
     let ez = alloc(24);
     let x1 = cptr.box(0n);
@@ -5146,7 +5146,7 @@ function sel_set_lit(x, y, arg) {
     cptr.stI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_lit, ((((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.LAVAPOOL || (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.LAVAWALL) || lit) ? 1 : 0) >>> 0);
 }
 
-/** C ref: sp_lev.c:5544 — @param {CPtr} croom */
+/** C ref: sp_lev.c:5544 — @param {CPtr<struct mkroom>} croom */
 function add_doors_to_room(croom) {
     let x;
     let y;
@@ -5159,7 +5159,7 @@ function add_doors_to_room(croom) {
         add_doors_to_room(cptr.ldPtro2(croom, i, 8, $mkroom_sbrooms));
 }
 
-/** C ref: sp_lev.c:5561 — @param {CPtr} L @param {CPtr} dx1 @param {CPtr} dy1 @param {CPtr} dx2 @param {CPtr} dy2 */
+/** C ref: sp_lev.c:5561 — @param {CPtr<lua_State>} L @param {CPtr<coordxy>} dx1 @param {CPtr<coordxy>} dy1 @param {CPtr<coordxy>} dx2 @param {CPtr<coordxy>} dy2 */
 function get_table_coords_or_region(L, dx1, dy1, dx2, dy2) {
     cptr.stI16(dx1, i16(get_table_int_opt(L, __sl319, -1)));
     cptr.stI16(dy1, i16(get_table_int_opt(L, __sl320, -1)));
@@ -5183,7 +5183,7 @@ cptr.stPtro(__static_lspo_region_lits, 0, __sl346);
 cptr.stPtro(__static_lspo_region_lits, 8, __sl53);
 cptr.stPtro(__static_lspo_region_lits, 16, null); /** C ref: sp_lev.c:5615 — char *[3] (function-static) */
 
-/** C ref: sp_lev.c:5584 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5584 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_region(L) {
     let dx1 = cptr.box(0);
     let dy1 = cptr.box(0);
@@ -5303,7 +5303,7 @@ cptr.stI32o(__static_lspo_drawbridge_dbopens2i, 4, 0);
 cptr.stI32o(__static_lspo_drawbridge_dbopens2i, 8, -1);
 cptr.stI32o(__static_lspo_drawbridge_dbopens2i, 12, -2); /** C ref: sp_lev.c:5731 — int[4] (function-static) */
 
-/** C ref: sp_lev.c:5720 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5720 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_drawbridge(L) {
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -5348,7 +5348,7 @@ cptr.stI32o(__static_lspo_mazewalk_mwdirs2i, 12, NHM.W_WEST);
 cptr.stI32o(__static_lspo_mazewalk_mwdirs2i, 16, -1);
 cptr.stI32o(__static_lspo_mazewalk_mwdirs2i, 20, -2); /** C ref: sp_lev.c:5774 — int[6] (function-static) */
 
-/** C ref: sp_lev.c:5769 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5769 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_mazewalk(L) {
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -5433,7 +5433,7 @@ cptr.stI32o(__static_lspo_wall_property_wprop2i, 0, NHM.W_NONDIGGABLE);
 cptr.stI32o(__static_lspo_wall_property_wprop2i, 4, NHM.W_NONPASSWALL);
 cptr.stI32o(__static_lspo_wall_property_wprop2i, 8, -1); /** C ref: sp_lev.c:5881 — int[3] (function-static) */
 
-/** C ref: sp_lev.c:5876 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5876 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_wall_property(L) {
     let dx1 = cptr.box(-1);
     let dy1 = cptr.box(-1);
@@ -5458,7 +5458,7 @@ export function lspo_wall_property(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:5911 — @param {CPtr} L @param {CInt} prop */
+/** C ref: sp_lev.c:5911 — @param {CPtr<lua_State>} L @param {CInt} prop */
 function set_wallprop_in_selection(L, prop) {
     prop = cptr.box(prop);
     let argc = lua_gettop(L);
@@ -5479,19 +5479,19 @@ function set_wallprop_in_selection(L, prop) {
     }
 }
 
-/** C ref: sp_lev.c:5937 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5937 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_non_diggable(L) {
     set_wallprop_in_selection(L, NHM.W_NONDIGGABLE);
     return 0;
 }
 
-/** C ref: sp_lev.c:5946 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5946 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_non_passwall(L) {
     set_wallprop_in_selection(L, NHM.W_NONPASSWALL);
     return 0;
 }
 
-/** C ref: sp_lev.c:5965 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5965 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_wallify(L) {
     let dx1 = -1;
     let dy1 = -1;
@@ -5508,7 +5508,7 @@ export function lspo_wallify(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:5993 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:5993 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_reset_level(L) {
     let wtower = In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz));
     cptr.st1o(iflags, $instance_flags_lua_testing, 1);
@@ -5529,7 +5529,7 @@ export function lspo_reset_level(L) {
     return 0;
 }
 
-/** C ref: sp_lev.c:6014 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:6014 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_finalize_level(L) {
     let wtower = In_W_tower(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(u, $you_uz));
     let i;
@@ -5588,7 +5588,7 @@ cptr.stI32o(__static_lspo_map_t_or_b2i, 8, 5);
 cptr.stI32o(__static_lspo_map_t_or_b2i, 12, -1);
 cptr.stI32o(__static_lspo_map_t_or_b2i, 16, -1); /** C ref: sp_lev.c:6093 — int[5] (function-static) */
 
-/** C ref: sp_lev.c:6075 — @param {CPtr} L @returns {CInt} */
+/** C ref: sp_lev.c:6075 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lspo_map(L) {
     let lr;
     let tb;
@@ -5818,7 +5818,7 @@ export function update_croom() {
         cptr.stPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom, null);
 }
 
-/** C ref: sp_lev.c:6336 @returns {CPtr} */
+/** C ref: sp_lev.c:6336 @returns {CPtr<struct sp_coder>} */
 function sp_level_coder_init() {
     let tmpi;
     let coder = alloc(96);
@@ -5923,7 +5923,7 @@ cptr.stPtro(nhl_functions, 528 + $luaL_Reg_func, lspo_gas_cloud);
 cptr.stPtro(nhl_functions, 544, null);
 cptr.stPtro(nhl_functions, 544 + $luaL_Reg_func, null);
 
-/** C ref: sp_lev.c:6435 — @param {CPtr} L */
+/** C ref: sp_lev.c:6435 — @param {CPtr<lua_State>} L */
 export function l_register_des(L) {
     lua_createtable(L, 0, 0);
     luaL_setfuncs(L, nhl_functions, 0);
@@ -5936,7 +5936,7 @@ export function create_des_coder() {
         cptr.stPtro(gc, $instance_globals_c_coder, sp_level_coder_init());
 }
 
-/** C ref: sp_lev.c:6454 — @param {CPtr} name @returns {CInt} */
+/** C ref: sp_lev.c:6454 — @param {CPtr<char>} name @returns {CInt} */
 export function load_special(name) {
     let result = 0;
     let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);

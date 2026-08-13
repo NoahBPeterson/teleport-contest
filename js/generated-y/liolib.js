@@ -77,14 +77,14 @@ const __sl52 = cptr.lit("stdin");
 const __sl53 = cptr.lit("stdout");
 const __sl54 = cptr.lit("stderr");
 
-/** C ref: liolib.c:40 — @param {CPtr} mode @returns {CInt} */
+/** C ref: liolib.c:40 — @param {CPtr<char>} mode @returns {CInt} */
 function* l_checkmode(mode) {
     return (cptr.ld1s(mode) != 0 && !cptr.eq(cptr.strchr(__sl0, cptr.ld1s((cptr.postinc(() => mode, (v) => { mode = v; })))), (null)) && (cptr.ld1s(mode) != 43 || (void (cptr.preinc(() => mode, (v) => { mode = v; })), 1)) && (strspn(mode, __sl1) == cptr.strlen(mode)) ? 1 : 0);
 }
 
 /** C ref: liolib.c:155 — typedef LStream (type alias only, no runtime output) */
 
-/** C ref: liolib.c:163 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:163 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_type(L) {
     let p;
     (yield* luaL_checkany(L, 1));
@@ -98,7 +98,7 @@ function* io_type(L) {
     return 1;
 }
 
-/** C ref: liolib.c:177 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:177 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_tostring(L) {
     let p = ((yield* luaL_checkudata(L, 1, __sl2)));
     if ((cptr.ldPtro((p), $LStream_closef) === (null)))
@@ -108,7 +108,7 @@ function* f_tostring(L) {
     return 1;
 }
 
-/** C ref: liolib.c:187 — @param {CPtr} L @returns {CPtr} */
+/** C ref: liolib.c:187 — @param {CPtr<lua_State>} L @returns {CPtr<FILE>} */
 function* tofile(L) {
     let p = ((yield* luaL_checkudata(L, 1, __sl2)));
     if ((__builtin_expect(BigInt((((cptr.ldPtro((p), $LStream_closef) === (null))) != 0)), 0n)))
@@ -117,7 +117,7 @@ function* tofile(L) {
     return cptr.ldPtr(p);
 }
 
-/** C ref: liolib.c:201 — @param {CPtr} L @returns {CPtr} */
+/** C ref: liolib.c:201 — @param {CPtr<lua_State>} L @returns {CPtr<LStream>} */
 function* newprefile(L) {
     let p = (yield* lua_newuserdatauv(L, 16n, 0));
     cptr.stPtro(p, $LStream_closef, null);
@@ -125,7 +125,7 @@ function* newprefile(L) {
     return p;
 }
 
-/** C ref: liolib.c:214 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:214 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* aux_close(L) {
     let p = ((yield* luaL_checkudata(L, 1, __sl2)));
     let cf = cptr.ldPtro(p, $LStream_closef);
@@ -133,20 +133,20 @@ function* aux_close(L) {
     return (yield* Y.icall((cf)(L)));
 }
 
-/** C ref: liolib.c:222 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:222 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_close(L) {
     (yield* tofile(L));
     return (yield* aux_close(L));
 }
 
-/** C ref: liolib.c:228 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:228 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_close(L) {
     if ((lua_type(L, 1) == -1))
         (yield* lua_getfield(L, -1001000, (__sl8)));
     return (yield* f_close(L));
 }
 
-/** C ref: liolib.c:235 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:235 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_gc(L) {
     let p = ((yield* luaL_checkudata(L, 1, __sl2)));
     if (!(cptr.ldPtro((p), $LStream_closef) === (null)) && !cptr.eq(cptr.ldPtr(p), (null)))
@@ -154,14 +154,14 @@ function* f_gc(L) {
     return 0;
 }
 
-/** C ref: liolib.c:246 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:246 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_fclose(L) {
     let p = ((yield* luaL_checkudata(L, 1, __sl2)));
     cptr.stI32(__error(), 0);
     return (yield* luaL_fileresult(L, (fclose(cptr.ldPtr(p)) == 0), null));
 }
 
-/** C ref: liolib.c:253 — @param {CPtr} L @returns {CPtr} */
+/** C ref: liolib.c:253 — @param {CPtr<lua_State>} L @returns {CPtr<LStream>} */
 function* newfile(L) {
     let p = (yield* newprefile(L));
     cptr.stPtr(p, null);
@@ -169,7 +169,7 @@ function* newfile(L) {
     return p;
 }
 
-/** C ref: liolib.c:261 — @param {CPtr} L @param {CPtr} fname @param {CPtr} mode */
+/** C ref: liolib.c:261 — @param {CPtr<lua_State>} L @param {CPtr<char>} fname @param {CPtr<char>} mode */
 function* opencheck(L, fname, mode) {
     let p = (yield* newfile(L));
     cptr.stPtr(p, fopen(fname, mode));
@@ -177,7 +177,7 @@ function* opencheck(L, fname, mode) {
         (yield* luaL_error(L, __sl9, fname, strerror((cptr.ldI32(__error())))));
 }
 
-/** C ref: liolib.c:269 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:269 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_open(L) {
     let filename = ((yield* luaL_checklstring(L, 1, null)));
     let mode = ((yield* luaL_optlstring(L, 2, (__sl10), null)));
@@ -189,14 +189,14 @@ function* io_open(L) {
     return (cptr.eq(cptr.ldPtr(p), (null))) ? (yield* luaL_fileresult(L, 0, filename)) : 1;
 }
 
-/** C ref: liolib.c:284 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:284 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_pclose(L) {
     let p = ((yield* luaL_checkudata(L, 1, __sl2)));
     cptr.stI32(__error(), 0);
     return (yield* luaL_execresult(L, (pclose(cptr.ldPtr(p)))));
 }
 
-/** C ref: liolib.c:291 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:291 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_popen(L) {
     let filename = ((yield* luaL_checklstring(L, 1, null)));
     let mode = ((yield* luaL_optlstring(L, 2, (__sl10), null)));
@@ -208,7 +208,7 @@ function* io_popen(L) {
     return (cptr.eq(cptr.ldPtr(p), (null))) ? (yield* luaL_fileresult(L, 0, filename)) : 1;
 }
 
-/** C ref: liolib.c:303 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:303 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_tmpfile(L) {
     let p = (yield* newfile(L));
     cptr.stI32(__error(), 0);
@@ -216,7 +216,7 @@ function* io_tmpfile(L) {
     return (cptr.eq(cptr.ldPtr(p), (null))) ? (yield* luaL_fileresult(L, 0, null)) : 1;
 }
 
-/** C ref: liolib.c:311 — @param {CPtr} L @param {CPtr} findex @returns {CPtr} */
+/** C ref: liolib.c:311 — @param {CPtr<lua_State>} L @param {CPtr<char>} findex @returns {CPtr<FILE>} */
 function* getiofile(L, findex) {
     let p;
     (yield* lua_getfield(L, -1001000, findex));
@@ -226,7 +226,7 @@ function* getiofile(L, findex) {
     return cptr.ldPtr(p);
 }
 
-/** C ref: liolib.c:321 — @param {CPtr} L @param {CPtr} f @param {CPtr} mode @returns {CInt} */
+/** C ref: liolib.c:321 — @param {CPtr<lua_State>} L @param {CPtr<char>} f @param {CPtr<char>} mode @returns {CInt} */
 function* g_iofile(L, f, mode) {
     if (!(lua_type(L, 1) <= 0)) {
         let filename = (yield* lua_tolstring(L, 1, null));
@@ -242,17 +242,17 @@ function* g_iofile(L, f, mode) {
     return 1;
 }
 
-/** C ref: liolib.c:338 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:338 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_input(L) {
     return (yield* g_iofile(L, (__sl13), __sl10));
 }
 
-/** C ref: liolib.c:343 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:343 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_output(L) {
     return (yield* g_iofile(L, (__sl8), __sl14));
 }
 
-/** C ref: liolib.c:366 — @param {CPtr} L @param {CInt} toclose */
+/** C ref: liolib.c:366 — @param {CPtr<lua_State>} L @param {CInt} toclose */
 function* aux_lines(L, toclose) {
     let n = (lua_gettop(L) - 1) | 0;
     (void ((__builtin_expect(BigInt(((n <= 250) != 0)), 1n)) || (yield* luaL_argerror(L, 252, (__sl15))) ? 1 : 0));
@@ -263,14 +263,14 @@ function* aux_lines(L, toclose) {
     (yield* lua_pushcclosure(L, io_readline, (3 + n) | 0));
 }
 
-/** C ref: liolib.c:377 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:377 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_lines(L) {
     (yield* tofile(L));
     (yield* aux_lines(L, 0));
     return 1;
 }
 
-/** C ref: liolib.c:389 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:389 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_lines(L) {
     let toclose;
     if ((lua_type(L, 1) == -1))
@@ -300,7 +300,7 @@ function* io_lines(L) {
 
 /** C ref: liolib.c:435 — typedef RN (type alias only, no runtime output) */
 
-/** C ref: liolib.c:441 — @param {CPtr} rn @returns {CInt} */
+/** C ref: liolib.c:441 — @param {CPtr<RN>} rn @returns {CInt} */
 function* nextc(rn) {
     if ((__builtin_expect(BigInt(((cptr.ldI32o(rn, $RN_n) >= 200) != 0)), 0n))) {
         cptr.st1o2(rn, 0, 1, $RN_buff, 0);
@@ -312,7 +312,7 @@ function* nextc(rn) {
     }
 }
 
-/** C ref: liolib.c:457 — @param {CPtr} rn @param {CPtr} set @returns {CInt} */
+/** C ref: liolib.c:457 — @param {CPtr<RN>} rn @param {CPtr<char>} set @returns {CInt} */
 function* test2(rn, set) {
     if (cptr.ldI32o(rn, $RN_c) == cptr.ld1so(set, 0) || cptr.ldI32o(rn, $RN_c) == cptr.ld1so(set, 1))
         return (yield* nextc(rn));
@@ -320,7 +320,7 @@ function* test2(rn, set) {
         return 0;
 }
 
-/** C ref: liolib.c:467 — @param {CPtr} rn @param {CInt} hex @returns {CInt} */
+/** C ref: liolib.c:467 — @param {CPtr<RN>} rn @param {CInt} hex @returns {CInt} */
 function* readdigits(rn, hex) {
     let count = 0;
     while ((hex ? isxdigit(cptr.ldI32o(rn, $RN_c)) : isdigit(cptr.ldI32o(rn, $RN_c))) && (yield* nextc(rn)))
@@ -328,7 +328,7 @@ function* readdigits(rn, hex) {
     return count;
 }
 
-/** C ref: liolib.c:480 — @param {CPtr} L @param {CPtr} f @returns {CInt} */
+/** C ref: liolib.c:480 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @returns {CInt} */
 function* read_number(L, f) {
     let rn = cptr.alloc(224);
     let count = 0;
@@ -367,7 +367,7 @@ function* read_number(L, f) {
     }
 }
 
-/** C ref: liolib.c:514 — @param {CPtr} L @param {CPtr} f @returns {CInt} */
+/** C ref: liolib.c:514 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @returns {CInt} */
 function* test_eof(L, f) {
     let c = getc(f);
     ungetc(c, f);
@@ -375,7 +375,7 @@ function* test_eof(L, f) {
     return (c != -1);
 }
 
-/** C ref: liolib.c:522 — @param {CPtr} L @param {CPtr} f @param {CInt} chop @returns {CInt} */
+/** C ref: liolib.c:522 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CInt} chop @returns {CInt} */
 function* read_line(L, f, chop) {
     let b = cptr.alloc(1056);
     let c;
@@ -395,7 +395,7 @@ function* read_line(L, f, chop) {
     return (c == 10 || lua_rawlen(L, -1) > 0n ? 1 : 0);
 }
 
-/** C ref: liolib.c:543 — @param {CPtr} L @param {CPtr} f */
+/** C ref: liolib.c:543 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f */
 function* read_all(L, f) {
     let nr;
     let b = cptr.alloc(1056);
@@ -408,7 +408,7 @@ function* read_all(L, f) {
     (yield* luaL_pushresult(b));
 }
 
-/** C ref: liolib.c:556 — @param {CPtr} L @param {CPtr} f @param {CLongLong} n @returns {CInt} */
+/** C ref: liolib.c:556 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CLongLong} n @returns {CInt} */
 function* read_chars(L, f, n) {
     let nr;
     let p;
@@ -421,7 +421,7 @@ function* read_chars(L, f, n) {
     return (nr > 0n);
 }
 
-/** C ref: liolib.c:569 — @param {CPtr} L @param {CPtr} f @param {CInt} first @returns {CInt} */
+/** C ref: liolib.c:569 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CInt} first @returns {CInt} */
 function* g_read(L, f, first) {
     let nargs = (lua_gettop(L) - 1) | 0;
     let n;
@@ -471,17 +471,17 @@ function* g_read(L, f, first) {
     return (n - first) | 0;
 }
 
-/** C ref: liolib.c:620 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:620 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_read(L) {
     return (yield* g_read(L, (yield* getiofile(L, (__sl13))), 1));
 }
 
-/** C ref: liolib.c:625 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:625 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_read(L) {
     return (yield* g_read(L, (yield* tofile(L)), 2));
 }
 
-/** C ref: liolib.c:633 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:633 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_readline(L) {
     let p = lua_touserdata(L, -1001001);
     let i;
@@ -509,7 +509,7 @@ function* io_readline(L) {
     }
 }
 
-/** C ref: liolib.c:664 — @param {CPtr} L @param {CPtr} f @param {CInt} arg @returns {CInt} */
+/** C ref: liolib.c:664 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CInt} arg @returns {CInt} */
 function* g_write(L, f, arg) {
     let nargs = (lua_gettop(L) - arg) | 0;
     let status = 1;
@@ -530,12 +530,12 @@ function* g_write(L, f, arg) {
         return (yield* luaL_fileresult(L, status, null));
 }
 
-/** C ref: liolib.c:691 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:691 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_write(L) {
     return (yield* g_write(L, (yield* getiofile(L, (__sl8))), 1));
 }
 
-/** C ref: liolib.c:696 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:696 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_write(L) {
     let f = (yield* tofile(L));
     (yield* lua_pushvalue(L, 1));
@@ -552,7 +552,7 @@ cptr.stPtro(__static_f_seek_modenames, 8, __sl27);
 cptr.stPtro(__static_f_seek_modenames, 16, __sl30);
 cptr.stPtro(__static_f_seek_modenames, 24, null); /** C ref: liolib.c:705 — char *[4] (function-static) */
 
-/** C ref: liolib.c:703 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:703 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_seek(L) {
     let f = (yield* tofile(L));
     let op = (yield* luaL_checkoption(L, 2, __sl27, __static_f_seek_modenames));
@@ -579,7 +579,7 @@ cptr.stPtro(__static_f_setvbuf_modenames, 8, __sl32);
 cptr.stPtro(__static_f_setvbuf_modenames, 16, __sl33);
 cptr.stPtro(__static_f_setvbuf_modenames, 24, null); /** C ref: liolib.c:725 — char *[4] (function-static) */
 
-/** C ref: liolib.c:723 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:723 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_setvbuf(L) {
     let f = (yield* tofile(L));
     let op = (yield* luaL_checkoption(L, 2, null, __static_f_setvbuf_modenames));
@@ -590,14 +590,14 @@ function* f_setvbuf(L) {
     return (yield* luaL_fileresult(L, res == 0, null));
 }
 
-/** C ref: liolib.c:737 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:737 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_flush(L) {
     let f = (yield* getiofile(L, (__sl8)));
     cptr.stI32(__error(), 0);
     return (yield* luaL_fileresult(L, fflush(f) == 0, null));
 }
 
-/** C ref: liolib.c:744 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:744 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* f_flush(L) {
     let f = (yield* tofile(L));
     cptr.stI32(__error(), 0);
@@ -663,7 +663,7 @@ cptr.stPtro(metameth, 48 + $luaL_Reg_func, f_tostring);
 cptr.stPtro(metameth, 64, null);
 cptr.stPtro(metameth, 64 + $luaL_Reg_func, null);
 
-/** C ref: liolib.c:797 — @param {CPtr} L */
+/** C ref: liolib.c:797 — @param {CPtr<lua_State>} L */
 function* createmeta(L) {
     (yield* luaL_newmetatable(L, __sl2));
     (yield* luaL_setfuncs(L, metameth, 0));
@@ -673,7 +673,7 @@ function* createmeta(L) {
     (yield* lua_settop(L, -2));
 }
 
-/** C ref: liolib.c:810 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:810 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* io_noclose(L) {
     let p = ((yield* luaL_checkudata(L, 1, __sl2)));
     cptr.stPtro(p, $LStream_closef, io_noclose);
@@ -682,7 +682,7 @@ function* io_noclose(L) {
     return 2;
 }
 
-/** C ref: liolib.c:819 — @param {CPtr} L @param {CPtr} f @param {CPtr} k @param {CPtr} fname */
+/** C ref: liolib.c:819 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CPtr<char>} k @param {CPtr<char>} fname */
 function* createstdfile(L, f, k, fname) {
     let p = (yield* newprefile(L));
     cptr.stPtr(p, f);
@@ -694,7 +694,7 @@ function* createstdfile(L, f, k, fname) {
     (yield* lua_setfield(L, -2, fname));
 }
 
-/** C ref: liolib.c:832 — @param {CPtr} L @returns {CInt} */
+/** C ref: liolib.c:832 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* luaopen_io(L) {
     ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n))))), (yield* luaL_setfuncs(L, iolib, 0)));
     (yield* createmeta(L));

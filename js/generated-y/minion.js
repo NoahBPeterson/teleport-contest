@@ -128,7 +128,7 @@ cptr.stI32o(elementals, 4, NHC.PM_FIRE_ELEMENTAL);
 cptr.stI32o(elementals, 8, NHC.PM_EARTH_ELEMENTAL);
 cptr.stI32o(elementals, 12, NHC.PM_WATER_ELEMENTAL);
 
-/** C ref: minion.c:17 — @param {CPtr} mtmp */
+/** C ref: minion.c:17 — @param {CPtr<struct monst>} mtmp */
 export function* newemin(mtmp) {
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, (yield* newmextra()));
@@ -139,7 +139,7 @@ export function* newemin(mtmp) {
     }
 }
 
-/** C ref: minion.c:29 — @param {CPtr} mtmp */
+/** C ref: minion.c:29 — @param {CPtr<struct monst>} mtmp */
 export function free_emin(mtmp) {
     if (cptr.ldPtro(mtmp, $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin))) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)));
@@ -164,7 +164,7 @@ export function monster_census(spotted) {
     return count;
 }
 
-/** C ref: minion.c:59 — @param {CPtr} mon @returns {CInt} */
+/** C ref: minion.c:59 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* msummon(mon) {
     let ptr;
     let dtype = NHC.NON_PM;
@@ -312,7 +312,7 @@ export function* summon_minion(alignment, talk) {
     }
 }
 
-/** C ref: minion.c:263 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: minion.c:263 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function* demon_talk(mtmp) {
     let cash;
     let demand;
@@ -384,7 +384,7 @@ export function* demon_talk(mtmp) {
     return 1;
 }
 
-/** C ref: minion.c:361 — @param {CPtr} mtmp @param {CPtr} prompt @returns {CLongLong} */
+/** C ref: minion.c:361 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} prompt @returns {CLongLong} */
 export function* bribe(mtmp, prompt) {
     let buf = [0];
     let offer = cptr.box(0n);
@@ -459,7 +459,7 @@ export function* ndemon(atyp) {
     return (ptr && is_ndemon(ptr)) ? (cptr.ldI32o((ptr), $permonst_pmidx)) : NHC.NON_PM;
 }
 
-/** C ref: minion.c:468 — @param {CPtr} mon */
+/** C ref: minion.c:468 — @param {CPtr<struct monst>} mon */
 export function* lose_guardian_angel(mon) {
     let mm = cptr.alloc(4);
     let i;

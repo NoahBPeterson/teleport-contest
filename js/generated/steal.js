@@ -179,7 +179,7 @@ export function somegold(lmoney) {
     return BigInt(igold);
 }
 
-/** C ref: steal.c:45 — @param {CPtr} argchain @returns {CPtr} */
+/** C ref: steal.c:45 — @param {CPtr<struct obj>} argchain @returns {CPtr<struct obj>} */
 export function findgold(argchain) {
     let chain = argchain;
     while (chain && cptr.ldI16o(chain, $obj_otyp) != NHC.GOLD_PIECE)
@@ -187,7 +187,7 @@ export function findgold(argchain) {
     return chain;
 }
 
-/** C ref: steal.c:58 — @param {CPtr} mtmp */
+/** C ref: steal.c:58 — @param {CPtr<struct monst>} mtmp */
 export function stealgold(mtmp) {
     let fgold = g_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     let ygold;
@@ -306,7 +306,7 @@ function stealarm() {
     return 0;
 }
 
-/** C ref: steal.c:213 — @param {CPtr} obj @param {CInt} unchain_ball */
+/** C ref: steal.c:213 — @param {CPtr<struct obj>} obj @param {CInt} unchain_ball */
 export function remove_worn_item(obj, unchain_ball) {
     let oldinuse;
     if (donning(obj))
@@ -367,7 +367,7 @@ export function remove_worn_item(obj, unchain_ball) {
     cptr.stI32o(obj, $obj_in_use, oldinuse);
 }
 
-/** C ref: steal.c:294 — @param {CPtr} mon @param {CPtr} obj */
+/** C ref: steal.c:294 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj */
 function worn_item_removal(mon, obj) {
     let objbuf = new Uint8Array(256);
     let article = new Uint8Array(20);
@@ -396,7 +396,7 @@ cptr.stPtro(__static_steal_how, 8, __sl56);
 cptr.stPtro(__static_steal_how, 16, __sl57);
 cptr.stPtro(__static_steal_how, 24, __sl58); /** C ref: steal.c:476 — char *[4] (function-static) */
 
-/** C ref: steal.c:343 — @param {CPtr} mtmp @param {CPtr} objnambuf @returns {CInt} */
+/** C ref: steal.c:343 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} objnambuf @returns {CInt} */
 export function steal(mtmp, objnambuf) {
     let otmp, Monnambuf, tmp, could_petrify, armordelay, olddelay, icnt, named, retrycnt, monkey_business, seen, was_doffing, was_punished, dummy = cptr.box(0), ostuck, curssv, slowly, item;
     let __pc = 0;
@@ -696,7 +696,7 @@ export function steal(mtmp, objnambuf) {
     }
 }
 
-/** C ref: steal.c:618 — @param {CPtr} mtmp @param {CPtr} otmp @returns {CInt} */
+/** C ref: steal.c:618 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function mpickobj(mtmp, otmp) {
     let freed_otmp;
     let snuff_otmp = 0;
@@ -735,7 +735,7 @@ export function mpickobj(mtmp, otmp) {
     return freed_otmp;
 }
 
-/** C ref: steal.c:689 — @param {CPtr} mtmp */
+/** C ref: steal.c:689 — @param {CPtr<struct monst>} mtmp */
 export function stealamulet(mtmp) {
     let buf = new Uint8Array(256);
     let otmp = null;
@@ -801,7 +801,7 @@ export function stealamulet(mtmp) {
     }
 }
 
-/** C ref: steal.c:772 — @param {CPtr} mon @param {CPtr} obj @param {CInt} ochance @param {CInt} achance */
+/** C ref: steal.c:772 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} ochance @param {CInt} achance */
 export function maybe_absorb_item(mon, obj, ochance, achance) {
     if (cptr.eq(obj, uball.v) || cptr.eq(obj, uchain.v) || cptr.ld1so(obj, $obj_oclass) == NHC.ROCK_CLASS || obj_resists(obj, (100 - ochance) | 0, (100 - achance) | 0) || !touch_artifact(obj, mon))
         return;
@@ -827,7 +827,7 @@ export function maybe_absorb_item(mon, obj, ochance, achance) {
     void mpickobj(mon, obj);
 }
 
-/** C ref: steal.c:814 — @param {CPtr} mon @param {CPtr} obj @param {CInt} verbosely */
+/** C ref: steal.c:814 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} verbosely */
 export function mdrop_obj(mon, obj, verbosely) {
     let omx = cptr.ldI16o(mon, $monst_mx);
     let omy = cptr.ldI16o(mon, $monst_my);
@@ -847,7 +847,7 @@ export function mdrop_obj(mon, obj, verbosely) {
         update_mon_extrinsics(mon, obj, 0, 1);
 }
 
-/** C ref: steal.c:852 — @param {CPtr} mon */
+/** C ref: steal.c:852 — @param {CPtr<struct monst>} mon */
 export function mdrop_special_objs(mon) {
     let obj;
     let otmp;
@@ -864,7 +864,7 @@ export function mdrop_special_objs(mon) {
     }
 }
 
-/** C ref: steal.c:875 — @param {CPtr} mtmp @param {CInt} show @param {CInt} is_pet */
+/** C ref: steal.c:875 — @param {CPtr<struct monst>} mtmp @param {CInt} show @param {CInt} is_pet */
 export function relobj(mtmp, show, is_pet) {
     let otmp;
     let omx = cptr.ldI16o(mtmp, $monst_mx);

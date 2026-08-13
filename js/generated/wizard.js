@@ -251,7 +251,7 @@ export function amulet() {
     }
 }
 
-/** C ref: wizard.c:106 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: wizard.c:106 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mon_has_amulet(mtmp) {
     let otmp;
     for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
@@ -260,7 +260,7 @@ export function mon_has_amulet(mtmp) {
     return 0;
 }
 
-/** C ref: wizard.c:117 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: wizard.c:117 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mon_has_special(mtmp) {
     let otmp;
     for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
@@ -286,7 +286,7 @@ function which_arti(mask) {
     return 0;
 }
 
-/** C ref: wizard.c:165 — @param {CPtr} mtmp @param {CInt} otyp @returns {CInt} */
+/** C ref: wizard.c:165 — @param {CPtr<struct monst>} mtmp @param {CInt} otyp @returns {CInt} */
 function mon_has_arti(mtmp, otyp) {
     let otmp;
     for (otmp = cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp)) {
@@ -299,7 +299,7 @@ function mon_has_arti(mtmp, otyp) {
     return 0;
 }
 
-/** C ref: wizard.c:184 — @param {CPtr} mtmp @param {CInt} otyp @returns {CPtr} */
+/** C ref: wizard.c:184 — @param {CPtr<struct monst>} mtmp @param {CInt} otyp @returns {CPtr<struct monst>} */
 function other_mon_has_arti(mtmp, otyp) {
     let mtmp2;
     for (mtmp2 = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp2; mtmp2 = cptr.ldPtr(mtmp2))
@@ -309,7 +309,7 @@ function other_mon_has_arti(mtmp, otyp) {
     return null;
 }
 
-/** C ref: wizard.c:202 — @param {CInt} otyp @returns {CPtr} */
+/** C ref: wizard.c:202 — @param {CInt} otyp @returns {CPtr<struct obj>} */
 function on_ground(otyp) {
     let otmp;
     for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); otmp; otmp = cptr.ldPtr(otmp))
@@ -340,7 +340,7 @@ function you_have(mask) {
     return 0;
 }
 
-/** C ref: wizard.c:236 — @param {CInt} mask @param {CPtr} mtmp @returns {CLongLong} */
+/** C ref: wizard.c:236 — @param {CInt} mask @param {CPtr<struct monst>} mtmp @returns {CLongLong} */
 function target_on(mask, mtmp) {
     let otyp;
     let otmp;
@@ -367,7 +367,7 @@ function target_on(mask, mtmp) {
     return 0n;
 }
 
-/** C ref: wizard.c:270 — @param {CPtr} mtmp @returns {CLongLong} */
+/** C ref: wizard.c:270 — @param {CPtr<struct monst>} mtmp @returns {CLongLong} */
 function strategy(mtmp) {
     let strat;
     let dstrat;
@@ -414,7 +414,7 @@ function strategy(mtmp) {
     return dstrat;
 }
 
-/** C ref: wizard.c:332 — @param {CPtr} sx @param {CPtr} sy @param {CInt} dir */
+/** C ref: wizard.c:332 — @param {CPtr<coordxy>} sx @param {CPtr<coordxy>} sy @param {CInt} dir */
 export function choose_stairs(sx, sy, dir) {
     let stway;
     let stdir = schar((builds_up(cptr.add(u, $you_uz)) ? dir : !dir));
@@ -436,7 +436,7 @@ export function choose_stairs(sx, sy, dir) {
         cptr.stI16(sx, cptr.ldI16(stway)), cptr.stI16(sy, cptr.ldI16o(stway, $stairway_sy));
 }
 
-/** C ref: wizard.c:369 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: wizard.c:369 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function tactics(mtmp) {
     let strat = strategy(mtmp);
     let sx = cptr.box(0);
@@ -517,7 +517,7 @@ export function tactics(mtmp) {
     return 0;
 }
 
-/** C ref: wizard.c:474 — @param {CPtr} mon @returns {CInt} */
+/** C ref: wizard.c:474 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function has_aggravatables(mon) {
     let mtmp;
     let in_w_tower = In_W_tower(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), cptr.add(u, $you_uz));
@@ -586,7 +586,7 @@ export function pick_nasty(difcap) {
     return res;
 }
 
-/** C ref: wizard.c:591 — @param {CPtr} summoner @returns {CInt} */
+/** C ref: wizard.c:591 — @param {CPtr<struct monst>} summoner @returns {CInt} */
 export function nasty(summoner) {
     let mtmp;
     let bypos = cptr.alloc(4);
@@ -781,7 +781,7 @@ cptr.stPtro(random_malediction, 64, __sl62);
 cptr.stPtro(random_malediction, 72, __sl63);
 cptr.stPtro(random_malediction, 80, __sl64);
 
-/** C ref: wizard.c:846 — @param {CPtr} mtmp */
+/** C ref: wizard.c:846 — @param {CPtr<struct monst>} mtmp */
 export function cuss(mtmp) {
     if (Deaf())
         return;

@@ -446,12 +446,12 @@ cptr.st1o(hellprobs, 72 + $icp_iclass, NHC.AMULET_CLASS);
 let zerooextra = cptr.alloc(32);
 cptr.stPtr(zerooextra, null);
 
-/** C ref: mkobj.c:80 — @param {CPtr} oex */
+/** C ref: mkobj.c:80 — @param {CPtr<struct oextra>} oex */
 function init_oextra(oex) {
     cptr.memcpy(oex, zerooextra, 32);
 }
 
-/** C ref: mkobj.c:86 @returns {CPtr} */
+/** C ref: mkobj.c:86 @returns {CPtr<struct oextra>} */
 export function newoextra() {
     let oextra;
     oextra = alloc(32);
@@ -459,7 +459,7 @@ export function newoextra() {
     return oextra;
 }
 
-/** C ref: mkobj.c:96 — @param {CPtr} o */
+/** C ref: mkobj.c:96 — @param {CPtr<struct obj>} o */
 export function dealloc_oextra(o) {
     let x = cptr.ldPtro(o, $obj_oextra);
     if (x) {
@@ -474,7 +474,7 @@ export function dealloc_oextra(o) {
     }
 }
 
-/** C ref: mkobj.c:114 — @param {CPtr} otmp */
+/** C ref: mkobj.c:114 — @param {CPtr<struct obj>} otmp */
 export function newomonst(otmp) {
     if (!cptr.ldPtro(otmp, $obj_oextra))
         cptr.stPtro(otmp, $obj_oextra, newoextra());
@@ -485,7 +485,7 @@ export function newomonst(otmp) {
     }
 }
 
-/** C ref: mkobj.c:128 — @param {CPtr} otmp */
+/** C ref: mkobj.c:128 — @param {CPtr<struct obj>} otmp */
 export function free_omonst(otmp) {
     if (cptr.ldPtro(otmp, $obj_oextra)) {
         let m = (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst));
@@ -498,19 +498,19 @@ export function free_omonst(otmp) {
     }
 }
 
-/** C ref: mkobj.c:143 — @param {CPtr} otmp */
+/** C ref: mkobj.c:143 — @param {CPtr<struct obj>} otmp */
 export function newomid(otmp) {
     if (!cptr.ldPtro(otmp, $obj_oextra))
         cptr.stPtro(otmp, $obj_oextra, newoextra());
     cptr.stI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid, 0);
 }
 
-/** C ref: mkobj.c:151 — @param {CPtr} otmp */
+/** C ref: mkobj.c:151 — @param {CPtr<struct obj>} otmp */
 export function free_omid(otmp) {
     cptr.stI32o(cptr.ldPtro((otmp), $obj_oextra), $oextra_omid, 0);
 }
 
-/** C ref: mkobj.c:157 — @param {CPtr} otmp @param {CPtr} response_cmd */
+/** C ref: mkobj.c:157 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} response_cmd */
 export function new_omailcmd(otmp, response_cmd) {
     if (!cptr.ldPtro(otmp, $obj_oextra))
         cptr.stPtro(otmp, $obj_oextra, newoextra());
@@ -519,7 +519,7 @@ export function new_omailcmd(otmp, response_cmd) {
     cptr.stPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd, dupstr(response_cmd));
 }
 
-/** C ref: mkobj.c:167 — @param {CPtr} otmp */
+/** C ref: mkobj.c:167 — @param {CPtr<struct obj>} otmp */
 export function free_omailcmd(otmp) {
     if (cptr.ldPtro(otmp, $obj_oextra) && (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd))) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)));
@@ -527,7 +527,7 @@ export function free_omailcmd(otmp) {
     }
 }
 
-/** C ref: mkobj.c:177 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: mkobj.c:177 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function may_generate_eroded(otmp) {
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n && !cptr.ld1so(gi, $instance_globals_i_in_mklev))
         return 0;
@@ -540,7 +540,7 @@ function may_generate_eroded(otmp) {
     return 1;
 }
 
-/** C ref: mkobj.c:196 — @param {CPtr} otmp */
+/** C ref: mkobj.c:196 — @param {CPtr<struct obj>} otmp */
 function mkobj_erosions(otmp) {
     if (may_generate_eroded(otmp)) {
         if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 202, __sl1), rn2(100)) : rn2(100))) {
@@ -562,7 +562,7 @@ function mkobj_erosions(otmp) {
     }
 }
 
-/** C ref: mkobj.c:227 — @param {CInt} let @param {CInt} x @param {CInt} y @param {CInt} artif @returns {CPtr} */
+/** C ref: mkobj.c:227 — @param {CInt} let @param {CInt} x @param {CInt} y @param {CInt} artif @returns {CPtr<struct obj>} */
 export function mkobj_at(let$, x, y, artif) {
     let otmp;
     otmp = mkobj(let$, artif);
@@ -570,7 +570,7 @@ export function mkobj_at(let$, x, y, artif) {
     return otmp;
 }
 
-/** C ref: mkobj.c:238 — @param {CInt} otyp @param {CInt} x @param {CInt} y @param {CInt} init @param {CInt} artif @returns {CPtr} */
+/** C ref: mkobj.c:238 — @param {CInt} otyp @param {CInt} x @param {CInt} y @param {CInt} init @param {CInt} artif @returns {CPtr<struct obj>} */
 export function mksobj_at(otyp, x, y, init, artif) {
     let otmp;
     otmp = mksobj(otyp, init, artif);
@@ -578,7 +578,7 @@ export function mksobj_at(otyp, x, y, init, artif) {
     return otmp;
 }
 
-/** C ref: mkobj.c:253 — @param {CInt} otyp @param {CUInt} mflags2 @param {CInt} init @param {CInt} artif @returns {CPtr} */
+/** C ref: mkobj.c:253 — @param {CInt} otyp @param {CUInt} mflags2 @param {CInt} init @param {CInt} artif @returns {CPtr<struct obj>} */
 export function mksobj_migr_to_species(otyp, mflags2, init, artif) {
     let otmp;
     otmp = mksobj(otyp, init, artif);
@@ -588,7 +588,7 @@ export function mksobj_migr_to_species(otyp, mflags2, init, artif) {
     return otmp;
 }
 
-/** C ref: mkobj.c:270 — @param {CInt} oclass @param {CInt} artif @returns {CPtr} */
+/** C ref: mkobj.c:270 — @param {CInt} oclass @param {CInt} artif @returns {CPtr<struct obj>} */
 export function mkobj(oclass, artif) {
     let tprob;
     let i;
@@ -615,7 +615,7 @@ export function mkobj(oclass, artif) {
     return mksobj(i, 1, artif);
 }
 
-/** C ref: mkobj.c:304 — @param {CPtr} box */
+/** C ref: mkobj.c:304 — @param {CPtr<struct obj>} box */
 function mkbox_cnts(box) {
     let n;
     let otmp;
@@ -706,7 +706,7 @@ export function rndmonnum_adj(minadj, maxadj) {
     return i;
 }
 
-/** C ref: mkobj.c:417 — @param {CPtr} obj2 @param {CPtr} obj1 */
+/** C ref: mkobj.c:417 — @param {CPtr<struct obj>} obj2 @param {CPtr<struct obj>} obj1 */
 export function copy_oextra(obj2, obj1) {
     if (!obj2 || !obj1 || !cptr.ldPtro(obj1, $obj_oextra))
         return;
@@ -734,7 +734,7 @@ export function copy_oextra(obj2, obj1) {
     }
 }
 
-/** C ref: mkobj.c:457 — @param {CPtr} obj @param {CLongLong} num @returns {CPtr} */
+/** C ref: mkobj.c:457 — @param {CPtr<struct obj>} obj @param {CLongLong} num @returns {CPtr<struct obj>} */
 export function splitobj(obj, num) {
     let otmp;
     if (cptr.ldPtro(obj, $obj_cobj) || num <= 0n || cptr.ldI64o(obj, $obj_quan) <= num)
@@ -780,7 +780,7 @@ export function next_ident() {
     return res;
 }
 
-/** C ref: mkobj.c:536 — @param {CPtr} oldobj @param {CPtr} newobj @returns {CUInt} */
+/** C ref: mkobj.c:536 — @param {CPtr<struct obj>} oldobj @param {CPtr<struct obj>} newobj @returns {CUInt} */
 function nextoid(oldobj, newobj) {
     let olddif;
     let newdif;
@@ -798,7 +798,7 @@ function nextoid(oldobj, newobj) {
     return oid;
 }
 
-/** C ref: mkobj.c:556 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: mkobj.c:556 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function unsplitobj(obj) {
     let target_oid = 0;
     let oparent = cptr.box(null);
@@ -854,7 +854,7 @@ export function clear_splitobjs() {
     cptr.stI32o(svc, $context_info_objsplit, cptr.stI32o(svc, $context_info_objsplit + $obj_split_child_oid, 0));
 }
 
-/** C ref: mkobj.c:641 — @param {CPtr} obj @param {CPtr} otmp */
+/** C ref: mkobj.c:641 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} otmp */
 export function replace_object(obj, otmp) {
     cptr.st1o(otmp, $obj_where, cptr.ld1so(obj, $obj_where));
     switch (cptr.ld1so(obj, $obj_where)) {
@@ -893,7 +893,7 @@ export function replace_object(obj, otmp) {
     }
 }
 
-/** C ref: mkobj.c:684 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: mkobj.c:684 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function unknwn_contnr_contents(obj) {
     let result = null;
     let parent;
@@ -906,7 +906,7 @@ export function unknwn_contnr_contents(obj) {
     return result;
 }
 
-/** C ref: mkobj.c:712 — @param {CPtr} otmp */
+/** C ref: mkobj.c:712 — @param {CPtr<struct obj>} otmp */
 export function bill_dummy_object(otmp) {
     let dummy;
     let cost = 0n;
@@ -957,7 +957,7 @@ cptr.stPtro(alteration_verbs, 136, __sl30);
 cptr.stPtro(alteration_verbs, 144, __sl31);
 cptr.stPtro(alteration_verbs, 152, __sl32);
 
-/** C ref: mkobj.c:752 — @param {CPtr} obj @param {CInt} alter_type */
+/** C ref: mkobj.c:752 — @param {CPtr<struct obj>} obj @param {CInt} alter_type */
 export function costly_alteration(obj, alter_type) {
     let ox = cptr.box(0);
     let oy = cptr.box(0);
@@ -1019,7 +1019,7 @@ export function costly_alteration(obj, alter_type) {
 /** C ref: mkobj.c:828 — char[10] */
 const dknowns = [NHC.WAND_CLASS, NHC.RING_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLASS, NHC.GEM_CLASS, NHC.SPBOOK_CLASS, NHC.WEAPON_CLASS, NHC.TOOL_CLASS, NHC.VENOM_CLASS, 0];
 
-/** C ref: mkobj.c:835 — @param {CPtr} obj */
+/** C ref: mkobj.c:835 — @param {CPtr<struct obj>} obj */
 export function clear_dknown(obj) {
     cptr.stI32o(obj, $obj_dknown, (cptr.strchr(cptr.decay(dknowns), cptr.ld1so(obj, $obj_oclass)) ? 0 : 1) >>> 0);
     if ((cptr.ldI16o(obj, $obj_otyp) >= NHC.ELVEN_SHIELD && cptr.ldI16o(obj, $obj_otyp) <= NHC.ORCISH_SHIELD) || cptr.ldI16o(obj, $obj_otyp) == NHC.SHIELD_OF_REFLECTION || (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_merge) & 1) | 0)
@@ -1028,7 +1028,7 @@ export function clear_dknown(obj) {
         cptr.stI32o(obj, $obj_dknown, 1);
 }
 
-/** C ref: mkobj.c:854 — @param {CPtr} obj */
+/** C ref: mkobj.c:854 — @param {CPtr<struct obj>} obj */
 export function unknow_object(obj) {
     clear_dknown(obj);
     cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 0));
@@ -1037,7 +1037,7 @@ export function unknow_object(obj) {
     cptr.stI32o(obj, $obj_known, ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uses_known) & 1) | 0 ? 0 : 1) >>> 0);
 }
 
-/** C ref: mkobj.c:869 — @param {CPtr} obj @param {CInt} artif */
+/** C ref: mkobj.c:869 — @param {CPtr<struct obj *>} obj @param {CInt} artif */
 function mksobj_init(obj, artif) {
     let mndx;
     let tryct;
@@ -1289,7 +1289,7 @@ function mksobj_init(obj, artif) {
         cptr.stI32o(otmp, $obj_otrapped, 1);
 }
 
-/** C ref: mkobj.c:1179 — @param {CInt} otyp @param {CInt} init @param {CInt} artif @returns {CPtr} */
+/** C ref: mkobj.c:1179 — @param {CInt} otyp @param {CInt} init @param {CInt} artif @returns {CPtr<struct obj>} */
 export function mksobj(otyp, init, artif) {
     let otmp = cptr.box(0);
     let let$ = cptr.ld1so2(objects, otyp, 120, $objclass_oc_class);
@@ -1380,7 +1380,7 @@ export function stone_furniture_type(mappearance) {
     return 0;
 }
 
-/** C ref: mkobj.c:1318 — @param {CPtr} obj @param {CInt} id */
+/** C ref: mkobj.c:1318 — @param {CPtr<struct obj>} obj @param {CInt} id */
 export function set_corpsenm(obj, id) {
     let old_id = cptr.ldI32o(obj, $obj_corpsenm);
     let when = 0n;
@@ -1416,7 +1416,7 @@ export function set_corpsenm(obj, id) {
     }
 }
 
-/** C ref: mkobj.c:1371 — @param {CPtr} body @param {CInt} retry @returns {CLongLong} */
+/** C ref: mkobj.c:1371 — @param {CPtr<struct obj>} body @param {CInt} retry @returns {CLongLong} */
 export function rider_revival_time(body, retry) {
     let when;
     let minturn = retry ? 3n : ((cptr.ldI32o(body, $obj_corpsenm) == NHC.PM_DEATH) ? 6n : 12n);
@@ -1426,7 +1426,7 @@ export function rider_revival_time(body, retry) {
     return when;
 }
 
-/** C ref: mkobj.c:1389 — @param {CPtr} body */
+/** C ref: mkobj.c:1389 — @param {CPtr<struct obj>} body */
 export function start_corpse_timeout(body) {
     let when;
     let age;
@@ -1464,7 +1464,7 @@ export const NOT_ON_ICE = 0;
 export const SET_ON_ICE = 1;
 export const BURIED_UNDER_ICE = 2;
 
-/** C ref: mkobj.c:1443 — @param {CPtr} item @returns {CInt} */
+/** C ref: mkobj.c:1443 — @param {CPtr<struct obj>} item @returns {CInt} */
 function item_on_ice(item) {
     let otmp;
     let ox = cptr.box(0);
@@ -1489,7 +1489,7 @@ function item_on_ice(item) {
     return NHC.NOT_ON_ICE;
 }
 
-/** C ref: mkobj.c:1473 — @param {CPtr} obj @param {CLongLong} when */
+/** C ref: mkobj.c:1473 — @param {CPtr<struct obj>} obj @param {CLongLong} when */
 export function start_glob_timeout(obj, when) {
     if (!(cptr.ldI32o(obj, $obj_globby) & 1)) {
         impossible(__sl45, cptr.ldI16o(obj, $obj_otyp), simpleonames(obj));
@@ -1502,7 +1502,7 @@ export function start_glob_timeout(obj, when) {
     void start_timer(when, NHC.TIMER_OBJECT, NHC.SHRINK_GLOB, obj_to_any(obj));
 }
 
-/** C ref: mkobj.c:1500 — @param {CPtr} arg @param {CLongLong} expire_time */
+/** C ref: mkobj.c:1500 — @param {CPtr<anything>} arg @param {CLongLong} expire_time */
 export function shrink_glob(arg, expire_time) {
     let globnambuf = new Uint8Array(256);
     let obj = cptr.ldPtr(arg);
@@ -1587,7 +1587,7 @@ export function shrink_glob(arg, expire_time) {
     }
 }
 
-/** C ref: mkobj.c:1673 — @param {CPtr} obj */
+/** C ref: mkobj.c:1673 — @param {CPtr<struct obj>} obj */
 function shrinking_glob_gone(obj) {
     let owhere = i16(cptr.ld1so(obj, $obj_where));
     if (owhere == NHM.OBJ_INVENT) {
@@ -1610,7 +1610,7 @@ function shrinking_glob_gone(obj) {
     }
 }
 
-/** C ref: mkobj.c:1704 — @param {CPtr} obj @param {CInt} old_range */
+/** C ref: mkobj.c:1704 — @param {CPtr<struct obj>} obj @param {CInt} old_range */
 export function maybe_adjust_light(obj, old_range) {
     let buf = new Uint8Array(256);
     let ox = cptr.box(0);
@@ -1632,7 +1632,7 @@ export function maybe_adjust_light(obj, old_range) {
     }
 }
 
-/** C ref: mkobj.c:1745 — @param {CPtr} otmp */
+/** C ref: mkobj.c:1745 — @param {CPtr<struct obj>} otmp */
 export function bless(otmp) {
     let old_light = 0;
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
@@ -1652,7 +1652,7 @@ export function bless(otmp) {
     return;
 }
 
-/** C ref: mkobj.c:1767 — @param {CPtr} otmp */
+/** C ref: mkobj.c:1767 — @param {CPtr<struct obj>} otmp */
 export function unbless(otmp) {
     let old_light = 0;
     if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
@@ -1666,7 +1666,7 @@ export function unbless(otmp) {
         maybe_adjust_light(otmp, old_light);
 }
 
-/** C ref: mkobj.c:1783 — @param {CPtr} otmp */
+/** C ref: mkobj.c:1783 — @param {CPtr<struct obj>} otmp */
 export function curse(otmp) {
     let already_cursed;
     let old_light = 0;
@@ -1697,7 +1697,7 @@ export function curse(otmp) {
     return;
 }
 
-/** C ref: mkobj.c:1822 — @param {CPtr} otmp */
+/** C ref: mkobj.c:1822 — @param {CPtr<struct obj>} otmp */
 export function uncurse(otmp) {
     let old_light = 0;
     if ((cptr.ldI32o(otmp, $obj_lamplit) & 1))
@@ -1714,7 +1714,7 @@ export function uncurse(otmp) {
     return;
 }
 
-/** C ref: mkobj.c:1841 — @param {CPtr} otmp @param {CInt} chance */
+/** C ref: mkobj.c:1841 — @param {CPtr<struct obj>} otmp @param {CInt} chance */
 export function blessorcurse(otmp, chance) {
     if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
         return;
@@ -1728,12 +1728,12 @@ export function blessorcurse(otmp, chance) {
     return;
 }
 
-/** C ref: mkobj.c:1857 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: mkobj.c:1857 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function bcsign(otmp) {
     return ((!!(cptr.ldI32o(otmp, $obj_blessed) & 1) - !!(cptr.ldI32o(otmp, $obj_cursed) & 1)) | 0);
 }
 
-/** C ref: mkobj.c:1864 — @param {CPtr} obj @param {CUInt} onoff */
+/** C ref: mkobj.c:1864 — @param {CPtr<struct obj>} obj @param {CUInt} onoff */
 export function set_bknown(obj, onoff) {
     if ((cptr.ldI32o(obj, $obj_bknown) & 1) != onoff) {
         cptr.stI32o(obj, $obj_bknown, onoff);
@@ -1742,7 +1742,7 @@ export function set_bknown(obj, onoff) {
     }
 }
 
-/** C ref: mkobj.c:1888 — @param {CPtr} obj @returns {CInt} */
+/** C ref: mkobj.c:1888 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function weight(obj) {
     let wt = cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_weight) | 0;
     if (cptr.ldI64o(obj, $obj_quan) < 1n) {
@@ -1797,12 +1797,12 @@ cptr.stI32o(treefruits, 8, NHC.PEAR);
 cptr.stI32o(treefruits, 12, NHC.BANANA);
 cptr.stI32o(treefruits, 16, NHC.EUCALYPTUS_LEAF);
 
-/** C ref: mkobj.c:1984 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: mkobj.c:1984 — @param {CInt} x @param {CInt} y @returns {CPtr<struct obj>} */
 export function rnd_treefruit_at(x, y) {
     return mksobj_at(cptr.ldI32o(treefruits, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1986, __sl69), rn2(5)) : rn2(5)), 4), x, y, 1, 0);
 }
 
-/** C ref: mkobj.c:1991 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: mkobj.c:1991 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function is_treefruit(otmp) {
     let fruitidx;
     for (fruitidx = 0; fruitidx < 5; ++fruitidx)
@@ -1811,7 +1811,7 @@ export function is_treefruit(otmp) {
     return 0;
 }
 
-/** C ref: mkobj.c:2003 — @param {CLongLong} amount @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: mkobj.c:2003 — @param {CLongLong} amount @param {CInt} x @param {CInt} y @returns {CPtr<struct obj>} */
 export function mkgold(amount, x, y) {
     let gold = g_at(x, y);
     if (amount <= 0n) {
@@ -1828,7 +1828,7 @@ export function mkgold(amount, x, y) {
     return gold;
 }
 
-/** C ref: mkobj.c:2025 — @param {CPtr} potion @param {CPtr} source */
+/** C ref: mkobj.c:2025 — @param {CPtr<struct obj>} potion @param {CPtr<struct obj>} source */
 export function fixup_oil(potion, source) {
     if (cptr.ldI16o(potion, $obj_otyp) == NHC.POT_OIL) {
         if (source && cptr.ldI16o(source, $obj_otyp) == NHC.POT_OIL) {
@@ -1844,7 +1844,7 @@ export function fixup_oil(potion, source) {
     }
 }
 
-/** C ref: mkobj.c:2067 — @param {CInt} objtype @param {CPtr} mtmp @param {CPtr} ptr @param {CInt} x @param {CInt} y @param {CUInt} corpstatflags @returns {CPtr} */
+/** C ref: mkobj.c:2067 — @param {CInt} objtype @param {CPtr<struct monst>} mtmp @param {CPtr<struct permonst>} ptr @param {CInt} x @param {CInt} y @param {CUInt} corpstatflags @returns {CPtr<struct obj>} */
 export function mkcorpstat(objtype, mtmp, ptr, x, y, corpstatflags) {
     let otmp;
     let init = schar((((corpstatflags & NHM.CORPSTAT_INIT) >>> 0) != 0));
@@ -1877,7 +1877,7 @@ export function mkcorpstat(objtype, mtmp, ptr, x, y, corpstatflags) {
     return otmp;
 }
 
-/** C ref: mkobj.c:2129 — @param {CPtr} obj @returns {CInt} */
+/** C ref: mkobj.c:2129 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function corpse_revive_type(obj) {
     let revivetype = cptr.ldI32o(obj, $obj_corpsenm);
     let mtmp;
@@ -1887,7 +1887,7 @@ export function corpse_revive_type(obj) {
     return revivetype;
 }
 
-/** C ref: mkobj.c:2147 — @param {CPtr} obj @param {CUInt} mid @returns {CPtr} */
+/** C ref: mkobj.c:2147 — @param {CPtr<struct obj>} obj @param {CUInt} mid @returns {CPtr<struct obj>} */
 export function obj_attach_mid(obj, mid) {
     if (!mid || !obj)
         return null;
@@ -1896,7 +1896,7 @@ export function obj_attach_mid(obj, mid) {
     return obj;
 }
 
-/** C ref: mkobj.c:2157 — @param {CPtr} obj @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: mkobj.c:2157 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mtmp @returns {CPtr<struct obj>} */
 function save_mtraits(obj, mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
         forget_temple_entry(mtmp);
@@ -1926,7 +1926,7 @@ function save_mtraits(obj, mtmp) {
     return obj;
 }
 
-/** C ref: mkobj.c:2201 — @param {CPtr} obj @param {CInt} copyof @returns {CPtr} */
+/** C ref: mkobj.c:2201 — @param {CPtr<struct obj>} obj @param {CInt} copyof @returns {CPtr<struct monst>} */
 export function get_mtraits(obj, copyof) {
     let mtmp = null;
     let mnew = null;
@@ -1947,7 +1947,7 @@ export function get_mtraits(obj, copyof) {
     return mnew;
 }
 
-/** C ref: mkobj.c:2227 — @param {CInt} objtype @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: mkobj.c:2227 — @param {CInt} objtype @param {CInt} x @param {CInt} y @returns {CPtr<struct obj>} */
 export function mk_tt_object(objtype, x, y) {
     let otmp;
     let initialize_it;
@@ -1960,7 +1960,7 @@ export function mk_tt_object(objtype, x, y) {
     return otmp;
 }
 
-/** C ref: mkobj.c:2253 — @param {CInt} objtype @param {CPtr} ptr @param {CInt} x @param {CInt} y @param {CPtr} nm @returns {CPtr} */
+/** C ref: mkobj.c:2253 — @param {CInt} objtype @param {CPtr<struct permonst>} ptr @param {CInt} x @param {CInt} y @param {CPtr<char>} nm @returns {CPtr<struct obj>} */
 export function mk_named_object(objtype, ptr, x, y, nm) {
     let otmp;
     let corpstatflags = ((objtype != NHC.STATUE) ? NHM.CORPSTAT_INIT : NHM.CORPSTAT_NONE) >>> 0;
@@ -1970,7 +1970,7 @@ export function mk_named_object(objtype, ptr, x, y, nm) {
     return otmp;
 }
 
-/** C ref: mkobj.c:2270 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: mkobj.c:2270 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function is_flammable(otmp) {
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
     let omat = (cptr.ldI32o2(objects, otyp, 120, $objclass_oc_material) & 31) | 0;
@@ -1981,13 +1981,13 @@ export function is_flammable(otmp) {
     return schar(((omat <= NHC.WOOD && omat != NHC.LIQUID) || omat == NHC.PLASTIC ? 1 : 0));
 }
 
-/** C ref: mkobj.c:2289 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: mkobj.c:2289 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function is_rottable(otmp) {
     let otyp = cptr.ldI16o(otmp, $obj_otyp);
     return schar(((((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_material) & 31) | 0) <= NHC.WOOD && ((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_material) & 31) | 0) != NHC.LIQUID) || ((cptr.ldI32o2(objects, otyp, 120, $objclass_oc_material) & 31) | 0) == NHC.DRAGON_HIDE ? 1 : 0));
 }
 
-/** C ref: mkobj.c:2305 — @param {CPtr} otmp @param {CInt} x @param {CInt} y */
+/** C ref: mkobj.c:2305 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y */
 export function place_object(otmp, x, y) {
     let otmp2;
     if (!isok(x, y)) {
@@ -2059,7 +2059,7 @@ export function obj_ice_effects(x, y, do_buried) {
     }
 }
 
-/** C ref: mkobj.c:2423 — @param {CPtr} otmp @returns {CLongLong} */
+/** C ref: mkobj.c:2423 — @param {CPtr<struct obj>} otmp @returns {CLongLong} */
 export function peek_at_iced_corpse_age(otmp) {
     let age;
     let retval = cptr.ldI64o(otmp, $obj_age);
@@ -2084,7 +2084,7 @@ export function peek_at_iced_corpse_age(otmp) {
     return retval;
 }
 
-/** C ref: mkobj.c:2440 — @param {CPtr} otmp @param {CInt} x @param {CInt} y @param {CInt} force */
+/** C ref: mkobj.c:2440 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y @param {CInt} force */
 function obj_timer_checks(otmp, x, y, force) {
     let tleft = 0n;
     let action = NHC.ROT_CORPSE;
@@ -2138,7 +2138,7 @@ function obj_timer_checks(otmp, x, y, force) {
         void start_timer(tleft, NHC.TIMER_OBJECT, action, obj_to_any(otmp));
 }
 
-/** C ref: mkobj.c:2508 — @param {CPtr} otmp */
+/** C ref: mkobj.c:2508 — @param {CPtr<struct obj>} otmp */
 export function remove_object(otmp) {
     let x = cptr.ldI16o(otmp, $obj_ox);
     let y = cptr.ldI16o(otmp, $obj_oy);
@@ -2152,7 +2152,7 @@ export function remove_object(otmp) {
         obj_timer_checks(otmp, x, y, 0);
 }
 
-/** C ref: mkobj.c:2525 — @param {CPtr} mtmp @param {CInt} uncreate_artifacts */
+/** C ref: mkobj.c:2525 — @param {CPtr<struct monst>} mtmp @param {CInt} uncreate_artifacts */
 export function discard_minvent(mtmp, uncreate_artifacts) {
     let otmp;
     while ((otmp = cptr.ldPtro(mtmp, $monst_minvent)) !== null) {
@@ -2163,7 +2163,7 @@ export function discard_minvent(mtmp, uncreate_artifacts) {
     }
 }
 
-/** C ref: mkobj.c:2557 — @param {CPtr} obj */
+/** C ref: mkobj.c:2557 — @param {CPtr<struct obj>} obj */
 export function obj_extract_self(obj) {
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_FREE:
@@ -2200,7 +2200,7 @@ export function obj_extract_self(obj) {
     }
 }
 
-/** C ref: mkobj.c:2596 — @param {CPtr} obj @param {CPtr} head_ptr */
+/** C ref: mkobj.c:2596 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj *>} head_ptr */
 export function extract_nobj(obj, head_ptr) {
     let curr;
     let prev;
@@ -2220,7 +2220,7 @@ export function extract_nobj(obj, head_ptr) {
     cptr.stPtr(obj, null);
 }
 
-/** C ref: mkobj.c:2623 — @param {CPtr} obj @param {CPtr} head_ptr */
+/** C ref: mkobj.c:2623 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj *>} head_ptr */
 export function extract_nexthere(obj, head_ptr) {
     let curr;
     let prev;
@@ -2239,7 +2239,7 @@ export function extract_nexthere(obj, head_ptr) {
     cptr.stPtro(obj, $obj_v, null);
 }
 
-/** C ref: mkobj.c:2648 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: mkobj.c:2648 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function add_to_minv(mon, obj) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
@@ -2255,7 +2255,7 @@ export function add_to_minv(mon, obj) {
     return 0;
 }
 
-/** C ref: mkobj.c:2676 — @param {CPtr} container @param {CPtr} obj @returns {CPtr} */
+/** C ref: mkobj.c:2676 — @param {CPtr<struct obj>} container @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function add_to_container(container, obj) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
@@ -2273,7 +2273,7 @@ export function add_to_container(container, obj) {
     return obj.v;
 }
 
-/** C ref: mkobj.c:2698 — @param {CPtr} obj */
+/** C ref: mkobj.c:2698 — @param {CPtr<struct obj>} obj */
 export function add_to_migration(obj) {
     if (cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE)
         panic(__sl87, cptr.ld1so(obj, $obj_where));
@@ -2289,7 +2289,7 @@ export function add_to_migration(obj) {
     cptr.stPtro(gm, $instance_globals_m_migrating_objs, obj);
 }
 
-/** C ref: mkobj.c:2720 — @param {CPtr} obj */
+/** C ref: mkobj.c:2720 — @param {CPtr<struct obj>} obj */
 export function add_to_buried(obj) {
     if (cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE)
         panic(__sl89, cptr.ld1so(obj, $obj_where));
@@ -2298,14 +2298,14 @@ export function add_to_buried(obj) {
     cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist, obj);
 }
 
-/** C ref: mkobj.c:2733 — @param {CPtr} object */
+/** C ref: mkobj.c:2733 — @param {CPtr<struct obj>} object */
 export function container_weight(object) {
     cptr.stI32o(object, $obj_owt, weight(object) >>> 0);
     if (cptr.ld1so(object, $obj_where) == NHM.OBJ_CONTAINED)
         container_weight(cptr.ldPtro(object, $obj_v));
 }
 
-/** C ref: mkobj.c:2745 — @param {CPtr} obj */
+/** C ref: mkobj.c:2745 — @param {CPtr<struct obj>} obj */
 export function dealloc_obj(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.BOULDER)
         cptr.stI32o(obj, $obj_corpsenm, 0);
@@ -2352,7 +2352,7 @@ export function dealloc_obj(obj) {
     }
 }
 
-/** C ref: mkobj.c:2815 — @param {CPtr} obj */
+/** C ref: mkobj.c:2815 — @param {CPtr<struct obj>} obj */
 function dealloc_obj_real(obj) {
     if (cptr.ldPtro(obj, $obj_oextra))
         dealloc_oextra(obj);
@@ -2373,7 +2373,7 @@ export function dobjsfree() {
     }
 }
 
-/** C ref: mkobj.c:2847 — @param {CPtr} horn @param {CInt} tipping @param {CPtr} targetbox @returns {CInt} */
+/** C ref: mkobj.c:2847 — @param {CPtr<struct obj>} horn @param {CInt} tipping @param {CPtr<struct obj>} targetbox @returns {CInt} */
 export function hornoplenty(horn, tipping, targetbox) {
     let objcount = 0;
     if (!horn || cptr.ldI16o(horn, $obj_otyp) != NHC.HORN_OF_PLENTY) {
@@ -2502,7 +2502,7 @@ export function obj_sanity_check() {
         insane_object(cptr.ldPtro(gc, $instance_globals_c_current_wand), cptr.decay(ofmt3), __sl130, null);
 }
 
-/** C ref: mkobj.c:3032 — @param {CPtr} objlist @param {CInt} wheretype @param {CPtr} mesg */
+/** C ref: mkobj.c:3032 — @param {CPtr<struct obj>} objlist @param {CInt} wheretype @param {CPtr<char>} mesg */
 function objlist_sanity(objlist, wheretype, mesg) {
     let obj;
     for (obj = objlist; obj; obj = cptr.ldPtr(obj)) {
@@ -2572,7 +2572,7 @@ function objlist_sanity(objlist, wheretype, mesg) {
     }
 }
 
-/** C ref: mkobj.c:3134 — @param {CPtr} obj @param {CPtr} mesg */
+/** C ref: mkobj.c:3134 — @param {CPtr<struct obj>} obj @param {CPtr<char>} mesg */
 function shop_obj_sanity(obj, mesg) {
     let otop;
     let shkp;
@@ -2617,7 +2617,7 @@ function shop_obj_sanity(obj, mesg) {
     return;
 }
 
-/** C ref: mkobj.c:3204 — @param {CPtr} monlist @param {CPtr} mesg */
+/** C ref: mkobj.c:3204 — @param {CPtr<struct monst>} monlist @param {CPtr<char>} mesg */
 function mon_obj_sanity(monlist, mesg) {
     let mon;
     let obj;
@@ -2653,7 +2653,7 @@ function mon_obj_sanity(monlist, mesg) {
     }
 }
 
-/** C ref: mkobj.c:3249 — @param {CPtr} obj @param {CPtr} mon */
+/** C ref: mkobj.c:3249 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mon */
 function insane_obj_bits(obj, mon) {
     let o_in_use;
     let o_bypass;
@@ -2672,7 +2672,7 @@ function insane_obj_bits(obj, mon) {
     }
 }
 
-/** C ref: mkobj.c:3278 — @param {CPtr} obj @returns {CInt} */
+/** C ref: mkobj.c:3278 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function nomerge_exception(obj) {
     if ((cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo)) || (cptr.ldI32o((obj), $obj_o_id) == cptr.ldI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid)))
         return 1;
@@ -2694,7 +2694,7 @@ cptr.stPtro(obj_state_names, 72, __sl162);
 
 const __static_where_name_unknown = new Uint8Array(32); /** C ref: mkobj.c:3298 — char[32] (function-static) */
 
-/** C ref: mkobj.c:3296 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: mkobj.c:3296 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function where_name(obj) {
     let where;
     if (!obj)
@@ -2707,7 +2707,7 @@ function where_name(obj) {
     return cptr.ldPtro(obj_state_names, where, 8);
 }
 
-/** C ref: mkobj.c:3314 — @param {CPtr} obj @param {CPtr} fmt @param {CPtr} mesg @param {CPtr} mon */
+/** C ref: mkobj.c:3314 — @param {CPtr<struct obj>} obj @param {CPtr<char>} fmt @param {CPtr<char>} mesg @param {CPtr<struct monst>} mon */
 function insane_object(obj, fmt, mesg, mon) {
     let objnm;
     let monnm;
@@ -2728,7 +2728,7 @@ function insane_object(obj, fmt, mesg, mon) {
     }
 }
 
-/** C ref: mkobj.c:3347 — @param {CPtr} obj @param {CInt} otyp @param {CLongLong} oquan @returns {CPtr} */
+/** C ref: mkobj.c:3347 — @param {CPtr<struct obj>} obj @param {CInt} otyp @param {CLongLong} oquan @returns {CPtr<struct obj>} */
 export function init_dummyobj(obj, otyp, oquan) {
     if (obj) {
         cptr.memcpy(obj, cg, 216);
@@ -2747,7 +2747,7 @@ export function init_dummyobj(obj, otyp, oquan) {
     return obj;
 }
 
-/** C ref: mkobj.c:3374 — @param {CPtr} container @param {CPtr} mesg */
+/** C ref: mkobj.c:3374 — @param {CPtr<struct obj>} container @param {CPtr<char>} mesg */
 function check_contained(container, mesg) {
     let obj;
     let mesgbuf = new Uint8Array(40);
@@ -2775,7 +2775,7 @@ function check_contained(container, mesg) {
     }
 }
 
-/** C ref: mkobj.c:3420 — @param {CPtr} obj @param {CPtr} mesg */
+/** C ref: mkobj.c:3420 — @param {CPtr<struct obj>} obj @param {CPtr<char>} mesg */
 function check_glob(obj, mesg) {
     if (cptr.ldI64o(obj, $obj_quan) != 1n || cptr.ldI32o(obj, $obj_owt) == 0 || cptr.ldI16o(obj, $obj_otyp) < NHC.GLOB_OF_GRAY_OOZE || cptr.ldI16o(obj, $obj_otyp) > NHC.GLOB_OF_BLACK_PUDDING) {
         let mesgbuf = new Uint8Array(256);
@@ -2806,7 +2806,7 @@ cptr.stU64o(__static_sanity_check_worn_wearbits, 120, 2097152n);
 cptr.stU64o(__static_sanity_check_worn_wearbits, 128, 4194304n);
 cptr.stU64o(__static_sanity_check_worn_wearbits, 136, 0n); /** C ref: mkobj.c:3450 — unsigned long[18] (function-static) */
 
-/** C ref: mkobj.c:3447 — @param {CPtr} obj */
+/** C ref: mkobj.c:3447 — @param {CPtr<struct obj>} obj */
 function sanity_check_worn(obj) {
     let maskbuf = new Uint8Array(60);
     let what;
@@ -2956,7 +2956,7 @@ function sanity_check_worn(obj) {
     }
 }
 
-/** C ref: mkobj.c:3643 — @param {CPtr} otmp @returns {CPtr} */
+/** C ref: mkobj.c:3643 — @param {CPtr<struct obj>} otmp @returns {CPtr<struct obj>} */
 export function obj_nexto(otmp) {
     if (!otmp) {
         impossible(__sl205);
@@ -2965,7 +2965,7 @@ export function obj_nexto(otmp) {
     return obj_nexto_xy(otmp, cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy), 1);
 }
 
-/** C ref: mkobj.c:3661 — @param {CPtr} obj @param {CInt} x @param {CInt} y @param {CInt} recurs @returns {CPtr} */
+/** C ref: mkobj.c:3661 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CInt} recurs @returns {CPtr<struct obj>} */
 export function obj_nexto_xy(obj, x, y, recurs) {
     let otmp;
     let fx;
@@ -2998,7 +2998,7 @@ export function obj_nexto_xy(obj, x, y, recurs) {
     return null;
 }
 
-/** C ref: mkobj.c:3702 — @param {CPtr} obj1 @param {CPtr} obj2 @returns {CPtr} */
+/** C ref: mkobj.c:3702 — @param {CPtr<struct obj *>} obj1 @param {CPtr<struct obj *>} obj2 @returns {CPtr<struct obj>} */
 export function obj_absorb(obj1, obj2) {
     let otmp1;
     let otmp2;
@@ -3042,7 +3042,7 @@ export function obj_absorb(obj1, obj2) {
     return null;
 }
 
-/** C ref: mkobj.c:3768 — @param {CPtr} obj1 @param {CPtr} obj2 @returns {CPtr} */
+/** C ref: mkobj.c:3768 — @param {CPtr<struct obj *>} obj1 @param {CPtr<struct obj *>} obj2 @returns {CPtr<struct obj>} */
 export function obj_meld(obj1, obj2) {
     let otmp1;
     let otmp2;
@@ -3075,7 +3075,7 @@ export function obj_meld(obj1, obj2) {
     return result;
 }
 
-/** C ref: mkobj.c:3818 — @param {CPtr} otmp @param {CPtr} otmp2 */
+/** C ref: mkobj.c:3818 — @param {CPtr<struct obj>} otmp @param {CPtr<struct obj>} otmp2 */
 export function pudding_merge_message(otmp, otmp2) {
     let visible = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(otmp, $obj_oy), 8), cptr.ldI16o(otmp, $obj_ox)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(otmp2, $obj_oy), 8), cptr.ldI16o(otmp2, $obj_ox)) & NHM.IN_SIGHT) != 0) ? 1 : 0));
     let onfloor = schar((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR || cptr.ld1so(otmp2, $obj_where) == NHM.OBJ_FLOOR ? 1 : 0));

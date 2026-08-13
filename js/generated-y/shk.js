@@ -634,7 +634,7 @@ cptr.stPtro(angrytexts, 0, __sl0);
 cptr.stPtro(angrytexts, 8, __sl1);
 cptr.stPtro(angrytexts, 16, __sl2);
 
-/** C ref: shk.c:157 — @param {CPtr} mon @param {CLongLong} amount @returns {CLongLong} */
+/** C ref: shk.c:157 — @param {CPtr<struct monst>} mon @param {CLongLong} amount @returns {CLongLong} */
 export function* money2mon(mon, amount) {
     let ygold = findgold(cptr.ldPtro(gi, $instance_globals_i_invent));
     if (amount <= 0n) {
@@ -655,7 +655,7 @@ export function* money2mon(mon, amount) {
     return amount;
 }
 
-/** C ref: shk.c:186 — @param {CPtr} mon @param {CLongLong} amount */
+/** C ref: shk.c:186 — @param {CPtr<struct monst>} mon @param {CLongLong} amount */
 export function* money2u(mon, amount) {
     let mongold = findgold(cptr.ldPtro(mon, $monst_minvent));
     if (amount <= 0n) {
@@ -678,7 +678,7 @@ export function* money2u(mon, amount) {
     }
 }
 
-/** C ref: shk.c:215 — @param {CPtr} shkp @param {CInt} withbill @returns {CPtr} */
+/** C ref: shk.c:215 — @param {CPtr<struct monst>} shkp @param {CInt} withbill @returns {CPtr<struct monst>} */
 function next_shkp(shkp, withbill) {
     for (; shkp; shkp = cptr.ldPtr(shkp)) {
         if ((cptr.ldI32o((shkp), $monst_mhp) < 1))
@@ -695,7 +695,7 @@ function next_shkp(shkp, withbill) {
     return shkp;
 }
 
-/** C ref: shk.c:235 — @param {CPtr} mtmp */
+/** C ref: shk.c:235 — @param {CPtr<struct monst>} mtmp */
 export function* shkgone(mtmp) {
     let eshk = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk));
     let sroom = cptr.add(svr, (cptr.ld1so(eshk, $eshk_shoproom) - NHM.ROOMOFFSET) | 0, 224);
@@ -722,13 +722,13 @@ export function* shkgone(mtmp) {
     }
 }
 
-/** C ref: shk.c:272 — @param {CPtr} shkp @param {CInt} zero_out */
+/** C ref: shk.c:272 — @param {CPtr<struct monst>} shkp @param {CInt} zero_out */
 export function set_residency(shkp, zero_out) {
     if (on_level(cptr.add((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoplevel), cptr.add(u, $you_uz)))
         cptr.stPtro2(svr, (cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoproom) - NHM.ROOMOFFSET) | 0, 224, $mkroom_resident, (zero_out) ? null : shkp);
 }
 
-/** C ref: shk.c:280 — @param {CPtr} mtmp @param {CPtr} mtmp2 */
+/** C ref: shk.c:280 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct monst>} mtmp2 */
 export function* replshk(mtmp, mtmp2) {
     cptr.stPtro2(svr, (cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp2), $monst_mextra), $mextra_eshk)), $eshk_shoproom) - NHM.ROOMOFFSET) | 0, 224, $mkroom_resident, mtmp2);
     if ((yield* inhishop(mtmp)) && cptr.ld1so(u, $you_ushops) == cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shoproom)) {
@@ -736,7 +736,7 @@ export function* replshk(mtmp, mtmp2) {
     }
 }
 
-/** C ref: shk.c:290 — @param {CPtr} shkp @param {CInt} ghostly */
+/** C ref: shk.c:290 — @param {CPtr<struct monst>} shkp @param {CInt} ghostly */
 export function* restshk(shkp, ghostly) {
     if (cptr.ldI16o(u, $you_uz + $d_level_dlevel)) {
         let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
@@ -750,7 +750,7 @@ export function* restshk(shkp, ghostly) {
     }
 }
 
-/** C ref: shk.c:309 — @param {CPtr} shkp @param {CPtr} otmp */
+/** C ref: shk.c:309 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} otmp */
 function* clear_unpaid_obj(shkp, otmp) {
     if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
         (yield* clear_unpaid(shkp, cptr.ldPtro(otmp, $obj_cobj)));
@@ -758,7 +758,7 @@ function* clear_unpaid_obj(shkp, otmp) {
         cptr.stI32o(otmp, $obj_unpaid, 0);
 }
 
-/** C ref: shk.c:319 — @param {CPtr} shkp @param {CPtr} list */
+/** C ref: shk.c:319 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} list */
 function* clear_unpaid(shkp, list) {
     while (list) {
         (yield* clear_unpaid_obj(shkp, list));
@@ -766,7 +766,7 @@ function* clear_unpaid(shkp, list) {
     }
 }
 
-/** C ref: shk.c:329 — @param {CPtr} shkp @param {CPtr} otmp */
+/** C ref: shk.c:329 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} otmp */
 function clear_no_charge_obj(shkp, otmp) {
     if ((cptr.ldPtro((otmp), $obj_cobj) !== null))
         clear_no_charge(shkp, cptr.ldPtro(otmp, $obj_cobj));
@@ -780,7 +780,7 @@ function clear_no_charge_obj(shkp, otmp) {
     }
 }
 
-/** C ref: shk.c:377 — @param {CPtr} shkp @param {CPtr} list */
+/** C ref: shk.c:377 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} list */
 function clear_no_charge(shkp, list) {
     while (list) {
         clear_no_charge_obj(shkp, list);
@@ -788,7 +788,7 @@ function clear_no_charge(shkp, list) {
     }
 }
 
-/** C ref: shk.c:389 — @param {CPtr} shkp */
+/** C ref: shk.c:389 — @param {CPtr<struct monst>} shkp */
 function clear_no_charge_pets(shkp) {
     let mtmp;
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
@@ -796,7 +796,7 @@ function clear_no_charge_pets(shkp) {
             clear_no_charge(shkp, cptr.ldPtro(mtmp, $monst_minvent));
 }
 
-/** C ref: shk.c:400 — @param {CPtr} shkp */
+/** C ref: shk.c:400 — @param {CPtr<struct monst>} shkp */
 export function* setpaid(shkp) {
     let obj;
     let mtmp;
@@ -844,7 +844,7 @@ export function record_price_quote(otyp, price, buyprice) {
     }
 }
 
-/** C ref: shk.c:454 — @param {CPtr} buf @param {CPtr} eos @param {CInt} otyp */
+/** C ref: shk.c:454 — @param {CPtr<char>} buf @param {CPtr<char *>} eos @param {CInt} otyp */
 export function append_price_quote(buf, eos, otyp) {
     let buf2 = new Uint8Array(256);
     let eos2 = cptr.decay(buf2);
@@ -874,7 +874,7 @@ export function append_price_quote(buf, eos, otyp) {
     }
 }
 
-/** C ref: shk.c:496 — @param {CPtr} shkp @returns {CLongLong} */
+/** C ref: shk.c:496 — @param {CPtr<struct monst>} shkp @returns {CLongLong} */
 function addupbill(shkp) {
     let ct = cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_billct);
     let bp = cptr.ldPtro((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_bill_p);
@@ -886,7 +886,7 @@ function addupbill(shkp) {
     return total;
 }
 
-/** C ref: shk.c:510 — @param {CPtr} shkp @param {CInt} nearshop */
+/** C ref: shk.c:510 — @param {CPtr<struct monst>} shkp @param {CInt} nearshop */
 function* call_kops(shkp, nearshop) {
     let nokops;
     if (!shkp)
@@ -937,7 +937,7 @@ export function inside_shop(x, y) {
     return rno;
 }
 
-/** C ref: shk.c:579 — @param {CPtr} leavestring @param {CInt} newlev */
+/** C ref: shk.c:579 — @param {CPtr<char>} leavestring @param {CInt} newlev */
 export function* u_left_shop(leavestring, newlev) {
     let shkp;
     let eshkp;
@@ -972,7 +972,7 @@ cptr.stI64o(cptr.decay(__static_credit_report_credit_snap[1]), 0, 0n);
 cptr.stI64o(cptr.decay(__static_credit_report_credit_snap[1]), 8, 0n);
 cptr.stI64o(cptr.decay(__static_credit_report_credit_snap[1]), 16, 0n); /** C ref: shk.c:631 — long[2][3] (function-static) */
 
-/** C ref: shk.c:628 — @param {CPtr} shkp @param {CInt} idx @param {CInt} silent */
+/** C ref: shk.c:628 — @param {CPtr<struct monst>} shkp @param {CInt} idx @param {CInt} silent */
 export function* credit_report(shkp, idx, silent) {
     let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     if (!idx) {
@@ -1016,7 +1016,7 @@ export function* remote_burglary(x, y) {
     }
 }
 
-/** C ref: shk.c:687 — @param {CPtr} shkp @returns {CInt} */
+/** C ref: shk.c:687 — @param {CPtr<struct monst>} shkp @returns {CInt} */
 function* rob_shop(shkp) {
     let eshkp;
     let total;
@@ -1042,7 +1042,7 @@ function* rob_shop(shkp) {
     return 1;
 }
 
-/** C ref: shk.c:723 — @param {CPtr} enterstring */
+/** C ref: shk.c:723 — @param {CPtr<char>} enterstring */
 function* deserted_shop(enterstring) {
     let mtmp;
     let r = cptr.add(svr, (cptr.ld1s(enterstring) - NHM.ROOMOFFSET) | 0, 224);
@@ -1067,7 +1067,7 @@ function* deserted_shop(enterstring) {
 
 const __static_u_entered_shop_empty_shops = new Uint8Array(5); /** C ref: shk.c:753 — char[5] (function-static) */
 
-/** C ref: shk.c:751 — @param {CPtr} enterstring */
+/** C ref: shk.c:751 — @param {CPtr<char>} enterstring */
 export function* u_entered_shop(enterstring) {
     let shkp;
     let eshkp;
@@ -1192,7 +1192,7 @@ export function* u_entered_shop(enterstring) {
 
 let __static_pick_pick_pickmovetime = 0n; /** C ref: shk.c:929 — long (function-static) */
 
-/** C ref: shk.c:921 — @param {CPtr} obj */
+/** C ref: shk.c:921 — @param {CPtr<struct obj>} obj */
 export function* pick_pick(obj) {
     let shkp;
     if ((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 || !is_pick(obj))
@@ -1211,7 +1211,7 @@ export function* pick_pick(obj) {
     }
 }
 
-/** C ref: shk.c:955 — @param {CPtr} obj1 @param {CPtr} obj2 @returns {CInt} */
+/** C ref: shk.c:955 — @param {CPtr<struct obj>} obj1 @param {CPtr<struct obj>} obj2 @returns {CInt} */
 export function* same_price(obj1, obj2) {
     let shkp1;
     let shkp2;
@@ -1235,7 +1235,7 @@ export function* same_price(obj1, obj2) {
     return are_mergable;
 }
 
-/** C ref: shk.c:990 — @param {CPtr} eshkp @returns {CLongLong} */
+/** C ref: shk.c:990 — @param {CPtr<struct eshk>} eshkp @returns {CLongLong} */
 function shop_debt(eshkp) {
     let bp;
     let ct;
@@ -1273,7 +1273,7 @@ export function* shopper_financial_report() {
         }
 }
 
-/** C ref: shk.c:1039 — @param {CPtr} shkp @returns {CInt} */
+/** C ref: shk.c:1039 — @param {CPtr<struct monst>} shkp @returns {CInt} */
 export function* inhishop(shkp) {
     let shkrooms;
     let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
@@ -1283,7 +1283,7 @@ export function* inhishop(shkp) {
     return (cptr.strchr(shkrooms, cptr.ld1so(eshkp, $eshk_shoproom)) !== null);
 }
 
-/** C ref: shk.c:1052 — @param {CInt} rmno @returns {CPtr} */
+/** C ref: shk.c:1052 — @param {CInt} rmno @returns {CPtr<struct monst>} */
 export function* shop_keeper(rmno) {
     let shkp;
     shkp = (rmno >= NHM.ROOMOFFSET) ? cptr.ldPtro2(svr, (rmno - NHM.ROOMOFFSET) | 0, 224, $mkroom_resident) : null;
@@ -1301,7 +1301,7 @@ export function* shop_keeper(rmno) {
     return shkp;
 }
 
-/** C ref: shk.c:1084 — @param {CPtr} obj @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: shk.c:1084 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @returns {CPtr<struct monst>} */
 export function* find_objowner(obj, x, y) {
     let shkp;
     let deflt_shkp = null;
@@ -1323,13 +1323,13 @@ export function* find_objowner(obj, x, y) {
     return deflt_shkp;
 }
 
-/** C ref: shk.c:1118 — @param {CPtr} sroom @returns {CInt} */
+/** C ref: shk.c:1118 — @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 export function* tended_shop(sroom) {
     let mtmp = cptr.ldPtro(sroom, $mkroom_resident);
     return schar((!mtmp ? 0 : schar((yield* inhishop(mtmp)))));
 }
 
-/** C ref: shk.c:1126 — @param {CPtr} sroom */
+/** C ref: shk.c:1126 — @param {CPtr<struct mkroom>} sroom */
 export function* noisy_shop(sroom) {
     let mtmp = cptr.ldPtro(sroom, $mkroom_resident);
     if (mtmp && (yield* inhishop(mtmp))) {
@@ -1337,7 +1337,7 @@ export function* noisy_shop(sroom) {
     }
 }
 
-/** C ref: shk.c:1136 — @param {CPtr} obj @param {CPtr} shkp @param {CInt} silent @returns {CPtr} */
+/** C ref: shk.c:1136 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp @param {CInt} silent @returns {CPtr<struct bill_x>} */
 function* onbill(obj, shkp, silent) {
     if (shkp) {
         let bp;
@@ -1355,17 +1355,17 @@ function* onbill(obj, shkp, silent) {
     return null;
 }
 
-/** C ref: shk.c:1160 — @param {CPtr} obj @param {CPtr} shkp @param {CInt} silent @returns {CInt} */
+/** C ref: shk.c:1160 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp @param {CInt} silent @returns {CInt} */
 export function* onshopbill(obj, shkp, silent) {
     return schar(((yield* onbill(obj, shkp, silent)) ? 1 : 0));
 }
 
-/** C ref: shk.c:1167 — @param {CPtr} obj @returns {CInt} */
+/** C ref: shk.c:1167 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function is_unpaid(obj) {
     return schar(((cptr.ldI32o(obj, $obj_unpaid) & 1) | 0 || ((cptr.ldPtro((obj), $obj_cobj) !== null) && count_unpaid(cptr.ldPtro(obj, $obj_cobj))) ? 1 : 0));
 }
 
-/** C ref: shk.c:1175 — @param {CPtr} obj */
+/** C ref: shk.c:1175 — @param {CPtr<struct obj>} obj */
 export function* delete_contents(obj) {
     let curr;
     while ((curr = cptr.ldPtro(obj, $obj_cobj)) !== null) {
@@ -1374,7 +1374,7 @@ export function* delete_contents(obj) {
     }
 }
 
-/** C ref: shk.c:1187 — @param {CPtr} obj @param {CPtr} merge */
+/** C ref: shk.c:1187 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} merge */
 export function* obfree(obj, merge) {
     let bp;
     let bpm;
@@ -1429,7 +1429,7 @@ export function* obfree(obj, merge) {
     (yield* dealloc_obj(obj));
 }
 
-/** C ref: shk.c:1278 — @param {CLongLong} tmp @param {CPtr} shkp @returns {CLongLong} */
+/** C ref: shk.c:1278 — @param {CLongLong} tmp @param {CPtr<struct monst>} shkp @returns {CLongLong} */
 function* check_credit(tmp, shkp) {
     let credit = cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_credit);
     if (credit == 0n) {
@@ -1446,7 +1446,7 @@ function* check_credit(tmp, shkp) {
     return tmp;
 }
 
-/** C ref: shk.c:1297 — @param {CLongLong} tmp @param {CPtr} shkp */
+/** C ref: shk.c:1297 — @param {CLongLong} tmp @param {CPtr<struct monst>} shkp */
 function* pay(tmp, shkp) {
     let robbed = cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_robbed);
     let balance = ((tmp <= 0n) ? tmp : (yield* check_credit(tmp, shkp)));
@@ -1463,7 +1463,7 @@ function* pay(tmp, shkp) {
     }
 }
 
-/** C ref: shk.c:1317 — @param {CPtr} shkp @param {CInt} killkops */
+/** C ref: shk.c:1317 — @param {CPtr<struct monst>} shkp @param {CInt} killkops */
 function* home_shk(shkp, killkops) {
     let x = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk);
     let y = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shk + $nhcoord_y);
@@ -1485,7 +1485,7 @@ function angry_shk_exists() {
     return 0;
 }
 
-/** C ref: shk.c:1344 — @param {CPtr} shkp @param {CInt} clear_surcharge */
+/** C ref: shk.c:1344 — @param {CPtr<struct monst>} shkp @param {CInt} clear_surcharge */
 function pacify_shk(shkp, clear_surcharge) {
     cptr.stI32o((shkp), $monst_mpeaceful, 1);
     if (clear_surcharge && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_surcharge)) {
@@ -1500,7 +1500,7 @@ function pacify_shk(shkp, clear_surcharge) {
     }
 }
 
-/** C ref: shk.c:1362 — @param {CPtr} shkp */
+/** C ref: shk.c:1362 — @param {CPtr<struct monst>} shkp */
 function rile_shk(shkp) {
     cptr.stI32o((shkp), $monst_mpeaceful, 0);
     if (!cptr.ld1so((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_surcharge)) {
@@ -1516,7 +1516,7 @@ function rile_shk(shkp) {
     }
 }
 
-/** C ref: shk.c:1381 — @param {CPtr} shkp @param {CInt} verbosely */
+/** C ref: shk.c:1381 — @param {CPtr<struct monst>} shkp @param {CInt} verbosely */
 function* rouse_shk(shkp, verbosely) {
     if (helpless(shkp)) {
         if (verbosely && canspotmon(shkp))
@@ -1527,7 +1527,7 @@ function* rouse_shk(shkp, verbosely) {
     }
 }
 
-/** C ref: shk.c:1395 — @param {CPtr} shkp @param {CInt} silentkops */
+/** C ref: shk.c:1395 — @param {CPtr<struct monst>} shkp @param {CInt} silentkops */
 export function* make_happy_shk(shkp, silentkops) {
     let wasmad = schar((!((cptr.ldI32o((shkp), $monst_mpeaceful) & 1))));
     let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
@@ -1568,7 +1568,7 @@ export function* make_happy_shoppers(silentkops) {
     }
 }
 
-/** C ref: shk.c:1449 — @param {CPtr} shkp */
+/** C ref: shk.c:1449 — @param {CPtr<struct monst>} shkp */
 export function hot_pursuit(shkp) {
     if (!(cptr.ldI32o(shkp, $monst_isshk) & 1))
         return;
@@ -1579,7 +1579,7 @@ export function hot_pursuit(shkp) {
     clear_no_charge_pets(shkp);
 }
 
-/** C ref: shk.c:1470 — @param {CPtr} shkp @param {CInt} ox @param {CInt} oy */
+/** C ref: shk.c:1470 — @param {CPtr<struct monst>} shkp @param {CInt} ox @param {CInt} oy */
 export function* make_angry_shk(shkp, ox, oy) {
     let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     if (cptr.ldI32o(eshkp, $eshk_billct) || cptr.ldI64o(eshkp, $eshk_debit) || cptr.ldI64o(eshkp, $eshk_loan) || cptr.ldI64o(eshkp, $eshk_credit)) {
@@ -1599,7 +1599,7 @@ const no_money = cptr.bytes("Moreover, you%s have no gold.");
 /** C ref: shk.c:1493 — char[47] */
 const not_enough_money = cptr.bytes("Besides, you don't have enough to interest %s.");
 
-/** C ref: shk.c:1499 — @param {CPtr} vptr1 @param {CPtr} vptr2 @returns {CInt} */
+/** C ref: shk.c:1499 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function sortbill_cmp(vptr1, vptr2) {
     let sbi1 = vptr1;
     let sbi2 = vptr2;
@@ -1616,7 +1616,7 @@ function sortbill_cmp(vptr1, vptr2) {
     return ((bidx1 - bidx2) | 0);
 }
 
-/** C ref: shk.c:1522 — @param {CInt} ibillct @param {CPtr} ibill @returns {CLongLong} */
+/** C ref: shk.c:1522 — @param {CInt} ibillct @param {CPtr<Bill>} ibill @returns {CLongLong} */
 function cheapest_item(ibillct, ibill) {
     let i;
     let gmin = cptr.ldI64o2(ibill, 0, 32, $sortbill_item_cost);
@@ -1628,7 +1628,7 @@ function cheapest_item(ibillct, ibill) {
 
 let __static_make_itemized_bill_zerosbi = cptr.alloc(32); /** C ref: shk.c:1549 — struct sortbill_item (function-static) */
 
-/** C ref: shk.c:1545 — @param {CPtr} shkp @param {CPtr} ibill_p @returns {CInt} */
+/** C ref: shk.c:1545 — @param {CPtr<struct monst>} shkp @param {CPtr<Bill *>} ibill_p @returns {CInt} */
 function* make_itemized_bill(shkp, ibill_p) {
     let ibill;
     let bp;
@@ -1709,7 +1709,7 @@ function* make_itemized_bill(shkp, ibill_p) {
     return n;
 }
 
-/** C ref: shk.c:1668 — @param {CInt} ibillct @param {CPtr} ibill @returns {CInt} */
+/** C ref: shk.c:1668 — @param {CInt} ibillct @param {CPtr<Bill>} ibill @returns {CInt} */
 function* menu_pick_pay_items(ibillct, ibill) {
     let otmp;
     let win;
@@ -2012,7 +2012,7 @@ export function* dopay() {
     return paid.v ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
 
-/** C ref: shk.c:2045 — @param {CPtr} shkp @param {CInt} ibillct @param {CPtr} ibill @param {CInt} stashed_gold @param {CPtr} paid_p @returns {CInt} */
+/** C ref: shk.c:2045 — @param {CPtr<struct monst>} shkp @param {CInt} ibillct @param {CPtr<Bill>} ibill @param {CInt} stashed_gold @param {CPtr<boolean>} paid_p @returns {CInt} */
 function* pay_billed_items(shkp, ibillct, ibill, stashed_gold, paid_p) {
     let bp;
     let otmp;
@@ -2102,7 +2102,7 @@ function* pay_billed_items(shkp, ibillct, ibill, stashed_gold, paid_p) {
     return 1;
 }
 
-/** C ref: shk.c:2171 — @param {CInt} indx @param {CInt} ibillct @param {CPtr} ibill @param {CPtr} eshkp @param {CPtr} bp @param {CPtr} paiditem */
+/** C ref: shk.c:2171 — @param {CInt} indx @param {CInt} ibillct @param {CPtr<Bill>} ibill @param {CPtr<struct eshk>} eshkp @param {CPtr<struct bill_x>} bp @param {CPtr<struct obj>} paiditem */
 function* update_bill(indx, ibillct, ibill, eshkp, bp, paiditem) {
     let j;
     let newebillct;
@@ -2129,7 +2129,7 @@ function* update_bill(indx, ibillct, ibill, eshkp, bp, paiditem) {
     return;
 }
 
-/** C ref: shk.c:2220 — @param {CPtr} shkp @param {CPtr} bp @param {CPtr} obj @param {CInt} which @param {CInt} itemize @param {CInt} unseen @returns {CInt} */
+/** C ref: shk.c:2220 — @param {CPtr<struct monst>} shkp @param {CPtr<struct bill_x>} bp @param {CPtr<struct obj>} obj @param {CInt} which @param {CInt} itemize @param {CInt} unseen @returns {CInt} */
 function* dopayobj(shkp, bp, obj, which, itemize, unseen) {
     let ltmp;
     let quan;
@@ -2181,7 +2181,7 @@ function* dopayobj(shkp, bp, obj, which, itemize, unseen) {
     return buy;
 }
 
-/** C ref: shk.c:2309 — @param {CPtr} shkp @param {CInt} indx @param {CInt} ibillct @param {CPtr} ibill @returns {CInt} */
+/** C ref: shk.c:2309 — @param {CPtr<struct monst>} shkp @param {CInt} indx @param {CInt} ibillct @param {CPtr<Bill>} ibill @returns {CInt} */
 function* buy_container(shkp, indx, ibillct, ibill) {
     let boid;
     let boids = cptr.alloc(200 * 4);
@@ -2251,7 +2251,7 @@ function* buy_container(shkp, indx, ibillct, ibill) {
     return buycount ? 0 : 2;
 }
 
-/** C ref: shk.c:2419 — @param {CPtr} shkp @param {CPtr} obj @param {CLongLong} billed_quan */
+/** C ref: shk.c:2419 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} obj @param {CLongLong} billed_quan */
 function* reject_purchase(shkp, obj, billed_quan) {
     let intact_quan = cptr.ldI64o(obj, $obj_quan);
     (__builtin_expect(BigInt((!(intact_quan < billed_quan))), 0n) ? __assert_rtn(__sl178, __sl47, 2426, __sl179) : void 0);
@@ -2270,7 +2270,7 @@ function* reject_purchase(shkp, obj, billed_quan) {
     cptr.stI64o(obj, $obj_quan, intact_quan);
 }
 
-/** C ref: shk.c:2455 — @param {CPtr} shkp @param {CPtr} item @param {CLongLong} cost @returns {CInt} */
+/** C ref: shk.c:2455 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} item @param {CLongLong} cost @returns {CInt} */
 function* insufficient_funds(shkp, item, cost) {
     let stashed_gold;
     let umoney = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent));
@@ -2343,7 +2343,7 @@ export function* paybill(croaked, silently) {
     return taken;
 }
 
-/** C ref: shk.c:2577 — @param {CPtr} shkp @param {CInt} numsk @param {CInt} croaked @param {CInt} silently @returns {CInt} */
+/** C ref: shk.c:2577 — @param {CPtr<struct monst>} shkp @param {CInt} numsk @param {CInt} croaked @param {CInt} silently @returns {CInt} */
 function* inherits(shkp, numsk, croaked, silently) {
     let taken;
     let __go_skip = false;
@@ -2428,7 +2428,7 @@ function* inherits(shkp, numsk, croaked, silently) {
     return taken;
 }
 
-/** C ref: shk.c:2682 — @param {CPtr} shkp */
+/** C ref: shk.c:2682 — @param {CPtr<struct monst>} shkp */
 function* set_repo_loc(shkp) {
     let ox;
     let oy;
@@ -2470,7 +2470,7 @@ export function* finish_paybill() {
     (yield* drop_upon_death(null, null, i16(ox), i16(oy)));
 }
 
-/** C ref: shk.c:2759 — @param {CPtr} bp @returns {CPtr} */
+/** C ref: shk.c:2759 — @param {CPtr<struct bill_x>} bp @returns {CPtr<struct obj>} */
 function bp_to_obj(bp) {
     let obj;
     let id = cptr.ldI32(bp);
@@ -2481,7 +2481,7 @@ function bp_to_obj(bp) {
     return obj;
 }
 
-/** C ref: shk.c:2777 — @param {CUInt} id @returns {CPtr} */
+/** C ref: shk.c:2777 — @param {CUInt} id @returns {CPtr<struct obj>} */
 export function find_oid(id) {
     let obj;
     let mon;
@@ -2505,7 +2505,7 @@ export function find_oid(id) {
     return null;
 }
 
-/** C ref: shk.c:2809 — @param {CPtr} obj @param {CPtr} nochrg @returns {CLongLong} */
+/** C ref: shk.c:2809 — @param {CPtr<struct obj>} obj @param {CPtr<int>} nochrg @returns {CLongLong} */
 export function* get_cost_of_shop_item(obj, nochrg) {
     let shkp;
     let top;
@@ -2529,7 +2529,7 @@ export function* get_cost_of_shop_item(obj, nochrg) {
     return cost;
 }
 
-/** C ref: shk.c:2846 — @param {CPtr} obj @returns {CLongLong} */
+/** C ref: shk.c:2846 — @param {CPtr<struct obj>} obj @returns {CLongLong} */
 function* get_pricing_units(obj) {
     let units = cptr.ldI64o(obj, $obj_quan);
     if ((cptr.ldI32o(obj, $obj_globby) & 1)) {
@@ -2541,7 +2541,7 @@ function* get_pricing_units(obj) {
     return units;
 }
 
-/** C ref: shk.c:2864 — @param {CPtr} obj @param {CUInt} oid @returns {CInt} */
+/** C ref: shk.c:2864 — @param {CPtr<struct obj>} obj @param {CUInt} oid @returns {CInt} */
 export function oid_price_adjustment(obj, oid) {
     let res = 0;
     let otyp = cptr.ldI16o(obj, $obj_otyp);
@@ -2551,7 +2551,7 @@ export function oid_price_adjustment(obj, oid) {
     return res;
 }
 
-/** C ref: shk.c:2877 — @param {CPtr} obj @param {CPtr} shkp @returns {CLongLong} */
+/** C ref: shk.c:2877 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp @returns {CLongLong} */
 function* get_cost(obj, shkp) {
     let tmp = (yield* getprice(obj, 0));
     let multiplier = 1n;
@@ -2633,7 +2633,7 @@ function* get_cost(obj, shkp) {
     return tmp;
 }
 
-/** C ref: shk.c:2995 — @param {CPtr} obj @param {CPtr} shkp @param {CLongLong} price @param {CInt} usell @param {CInt} unpaid_only @returns {CLongLong} */
+/** C ref: shk.c:2995 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp @param {CLongLong} price @param {CInt} usell @param {CInt} unpaid_only @returns {CLongLong} */
 export function* contained_cost(obj, shkp, price, usell, unpaid_only) {
     let otmp;
     let top;
@@ -2663,7 +2663,7 @@ export function* contained_cost(obj, shkp, price, usell, unpaid_only) {
     return price;
 }
 
-/** C ref: shk.c:3046 — @param {CPtr} obj @param {CInt} even_if_unknown @returns {CLongLong} */
+/** C ref: shk.c:3046 — @param {CPtr<struct obj>} obj @param {CInt} even_if_unknown @returns {CLongLong} */
 export function contained_gold(obj, even_if_unknown) {
     let otmp;
     let value = 0n;
@@ -2675,7 +2675,7 @@ export function contained_gold(obj, even_if_unknown) {
     return value;
 }
 
-/** C ref: shk.c:3064 — @param {CPtr} obj @param {CPtr} shkp @param {CInt} sale */
+/** C ref: shk.c:3064 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp @param {CInt} sale */
 function dropped_container(obj, shkp, sale) {
     let otmp;
     for (otmp = cptr.ldPtro(obj, $obj_cobj); otmp; otmp = cptr.ldPtr(otmp)) {
@@ -2688,7 +2688,7 @@ function dropped_container(obj, shkp, sale) {
     }
 }
 
-/** C ref: shk.c:3085 — @param {CPtr} obj */
+/** C ref: shk.c:3085 — @param {CPtr<struct obj>} obj */
 export function picked_container(obj) {
     let otmp;
     for (otmp = cptr.ldPtro(obj, $obj_cobj); otmp; otmp = cptr.ldPtr(otmp)) {
@@ -2701,7 +2701,7 @@ export function picked_container(obj) {
     }
 }
 
-/** C ref: shk.c:3103 — @param {CPtr} obj @param {CPtr} shkp @param {CInt} quietly @returns {CInt} */
+/** C ref: shk.c:3103 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp @param {CInt} quietly @returns {CInt} */
 function* special_stock(obj, shkp, quietly) {
     if (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoptype) == NHC.CANDLESHOP && cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
         if (!quietly) {
@@ -2730,7 +2730,7 @@ function* special_stock(obj, shkp, quietly) {
     return 0;
 }
 
-/** C ref: shk.c:3148 — @param {CPtr} obj @param {CPtr} shkp @returns {CLongLong} */
+/** C ref: shk.c:3148 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp @returns {CLongLong} */
 function* set_cost(obj, shkp) {
     let tmp;
     let unit_price = (yield* getprice(obj, 1));
@@ -2787,7 +2787,7 @@ export function* gem_learned(oindx) {
     }
 }
 
-/** C ref: shk.c:3237 — @param {CPtr} obj @param {CLongLong} amt */
+/** C ref: shk.c:3237 — @param {CPtr<struct obj>} obj @param {CLongLong} amt */
 export function* alter_cost(obj, amt) {
     let bp = null;
     let shkp;
@@ -2804,7 +2804,7 @@ export function* alter_cost(obj, amt) {
     return;
 }
 
-/** C ref: shk.c:3260 — @param {CPtr} unp_obj @param {CUInt} cost_type @returns {CLongLong} */
+/** C ref: shk.c:3260 — @param {CPtr<struct obj>} unp_obj @param {CUInt} cost_type @returns {CLongLong} */
 export function* unpaid_cost(unp_obj, cost_type) {
     let bp = null;
     let shkp = null;
@@ -2829,7 +2829,7 @@ export function* unpaid_cost(unp_obj, cost_type) {
     return amt;
 }
 
-/** C ref: shk.c:3309 — @param {CPtr} obj @param {CInt} dummy @param {CPtr} shkp */
+/** C ref: shk.c:3309 — @param {CPtr<struct obj>} obj @param {CInt} dummy @param {CPtr<struct monst>} shkp */
 function* add_one_tobill(obj, dummy, shkp) {
     shkp = cptr.box(shkp);
     let eshkp;
@@ -2870,7 +2870,7 @@ function* add_one_tobill(obj, dummy, shkp) {
     record_price_quote(cptr.ldI16o(obj, $obj_otyp), BigInt.asUintN(64, cptr.ldI64o(bp, $bill_x_price)), 1);
 }
 
-/** C ref: shk.c:3366 — @param {CPtr} obj */
+/** C ref: shk.c:3366 — @param {CPtr<struct obj>} obj */
 function* add_to_billobjs(obj) {
     if (cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE)
         (yield* panic(__sl216));
@@ -2883,7 +2883,7 @@ function* add_to_billobjs(obj) {
     cptr.stI32o(obj, $obj_bypass, 0);
 }
 
-/** C ref: shk.c:3387 — @param {CPtr} obj @param {CInt} ininv @param {CInt} dummy @param {CPtr} shkp */
+/** C ref: shk.c:3387 — @param {CPtr<struct obj>} obj @param {CInt} ininv @param {CInt} dummy @param {CPtr<struct monst>} shkp */
 function* bill_box_content(obj, ininv, dummy, shkp) {
     let otmp;
     if (SchroedingersBox(obj))
@@ -2898,7 +2898,7 @@ function* bill_box_content(obj, ininv, dummy, shkp) {
     }
 }
 
-/** C ref: shk.c:3413 — @param {CPtr} shkp @param {CPtr} obj @param {CPtr} fmt @param {CLongLong} amt @param {CPtr} arg */
+/** C ref: shk.c:3413 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} obj @param {CPtr<char>} fmt @param {CLongLong} amt @param {CPtr<char>} arg */
 function* shk_names_obj(shkp, obj, fmt, amt, arg) {
     let obj_name;
     let fmtbuf = new Uint8Array(256);
@@ -2918,7 +2918,7 @@ function* shk_names_obj(shkp, obj, fmt, amt, arg) {
     }
 }
 
-/** C ref: shk.c:3451 — @param {CPtr} shkpp @param {CPtr} obj @param {CInt} roomno @param {CInt} reset_nocharge @returns {CInt} */
+/** C ref: shk.c:3451 — @param {CPtr<struct monst *>} shkpp @param {CPtr<struct obj>} obj @param {CInt} roomno @param {CInt} reset_nocharge @returns {CInt} */
 export function* billable(shkpp, obj, roomno, reset_nocharge) {
     let shkp = cptr.ldPtr(shkpp);
     if (!shkp) {
@@ -2943,7 +2943,7 @@ export function* billable(shkpp, obj, roomno, reset_nocharge) {
     return schar((shkp ? 1 : 0));
 }
 
-/** C ref: shk.c:3490 — @param {CPtr} obj @param {CInt} ininv @param {CInt} dummy @param {CInt} silent */
+/** C ref: shk.c:3490 — @param {CPtr<struct obj>} obj @param {CInt} ininv @param {CInt} dummy @param {CInt} silent */
 export function* addtobill(obj, ininv, dummy, silent) {
     let shkp = cptr.box(null);
     let ltmp;
@@ -3033,7 +3033,7 @@ cptr.stPtro(__static_append_honorific_honored, 16, __sl242);
 cptr.stPtro(__static_append_honorific_honored, 24, __sl243);
 cptr.stPtro(__static_append_honorific_honored, 32, __sl244); /** C ref: shk.c:3606 — char *[5] (function-static) */
 
-/** C ref: shk.c:3602 — @param {CPtr} buf */
+/** C ref: shk.c:3602 — @param {CPtr<char>} buf */
 function append_honorific(buf) {
     void cptr.strcat(buf, cptr.ldPtro(__static_append_honorific_honored, ((rng_log_enabled() ? (rng_log_set_caller(__sl47, 3611, __sl232), rn2((5 - 1) | 0)) : rn2((5 - 1) | 0)) + ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0)) | 0, 8));
     if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_VAMPIRE))
@@ -3044,7 +3044,7 @@ function append_honorific(buf) {
         void cptr.strcat(buf, !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 8n) != 0n) ? __sl237 : ((cptr.ld1so(flags, $flag_female)) ? __sl238 : __sl239));
 }
 
-/** C ref: shk.c:3623 — @param {CPtr} obj @param {CPtr} otmp */
+/** C ref: shk.c:3623 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} otmp */
 export function* splitbill(obj, otmp) {
     let bp;
     let tmp;
@@ -3078,7 +3078,7 @@ export function* splitbill(obj, otmp) {
     }
 }
 
-/** C ref: shk.c:3661 — @param {CPtr} obj @param {CPtr} shkp */
+/** C ref: shk.c:3661 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp */
 function* sub_one_frombill(obj, shkp) {
     let bp;
     let eshkp;
@@ -3107,7 +3107,7 @@ function* sub_one_frombill(obj, shkp) {
     }
 }
 
-/** C ref: shk.c:3694 — @param {CPtr} obj @param {CPtr} shkp */
+/** C ref: shk.c:3694 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp */
 export function* subfrombill(obj, shkp) {
     let otmp;
     (yield* sub_one_frombill(obj, shkp));
@@ -3122,7 +3122,7 @@ export function* subfrombill(obj, shkp) {
         }
 }
 
-/** C ref: shk.c:3713 — @param {CPtr} obj @param {CPtr} shkp @param {CLongLong} price @param {CInt} ininv @returns {CLongLong} */
+/** C ref: shk.c:3713 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} shkp @param {CLongLong} price @param {CInt} ininv @returns {CLongLong} */
 function* stolen_container(obj, shkp, price, ininv) {
     shkp = cptr.box(shkp);
     let otmp;
@@ -3149,7 +3149,7 @@ function* stolen_container(obj, shkp, price, ininv) {
     return price;
 }
 
-/** C ref: shk.c:3754 — @param {CPtr} obj @param {CInt} x @param {CInt} y @param {CInt} peaceful @param {CInt} silent @returns {CLongLong} */
+/** C ref: shk.c:3754 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CInt} peaceful @param {CInt} silent @returns {CLongLong} */
 export function* stolen_value(obj, x, y, peaceful, silent) {
     let value = 0n;
     let gvalue = 0n;
@@ -3239,7 +3239,7 @@ export function* stolen_value(obj, x, y, peaceful, silent) {
     return value;
 }
 
-/** C ref: shk.c:3877 — @param {CLongLong} gltmp @param {CPtr} shkp @param {CInt} selling */
+/** C ref: shk.c:3877 — @param {CLongLong} gltmp @param {CPtr<struct monst>} shkp @param {CInt} selling */
 export function* donate_gold(gltmp, shkp, selling) {
     let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     if (cptr.ldI64o(eshkp, $eshk_debit) >= gltmp) {
@@ -3273,7 +3273,7 @@ export function sellobj_state(deliberate) {
     cptr.st1o(ga, $instance_globals_a_auto_credit, 0);
 }
 
-/** C ref: shk.c:3927 — @param {CPtr} obj @param {CInt} x @param {CInt} y */
+/** C ref: shk.c:3927 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function* sellobj(obj, x, y) {
     let shkp;
     let eshkp;
@@ -3520,7 +3520,7 @@ export function* doinvbill(mode) {
     return 0;
 }
 
-/** C ref: shk.c:4275 — @param {CPtr} obj @returns {CLongLong} */
+/** C ref: shk.c:4275 — @param {CPtr<struct obj>} obj @returns {CLongLong} */
 function* corpsenm_price_adj(obj) {
     let val = 0n;
     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.TIN || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG || cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE) && ismnum(cptr.ldI32o(obj, $obj_corpsenm))) {
@@ -3541,7 +3541,7 @@ function* corpsenm_price_adj(obj) {
     return val;
 }
 
-/** C ref: shk.c:4319 — @param {CPtr} obj @param {CInt} shk_buying @returns {CLongLong} */
+/** C ref: shk.c:4319 — @param {CPtr<struct obj>} obj @param {CInt} shk_buying @returns {CLongLong} */
 function* getprice(obj, shk_buying) {
     let tmp = BigInt(cptr.ldI16o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_cost));
     if (cptr.ld1so(obj, $obj_oartifact)) {
@@ -3578,7 +3578,7 @@ function* getprice(obj, shk_buying) {
     return tmp;
 }
 
-/** C ref: shk.c:4362 — @param {CPtr} obj @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: shk.c:4362 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @returns {CPtr<struct monst>} */
 export function* shkcatch(obj, x, y) {
     let shkp;
     shkp = (yield* shop_keeper(inside_shop(x, y)));
@@ -3635,7 +3635,7 @@ export function* add_damage(x, y, cost) {
         cptr.st1o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_seenv, 255);
 }
 
-/** C ref: shk.c:4441 — @param {CPtr} shkp @returns {CInt} */
+/** C ref: shk.c:4441 — @param {CPtr<struct monst>} shkp @returns {CInt} */
 function* shk_impaired(shkp) {
     if (!shkp || !(cptr.ldI32o(shkp, $monst_isshk) & 1) || !(yield* inhishop(shkp)))
         return 1;
@@ -3644,7 +3644,7 @@ function* shk_impaired(shkp) {
     return 0;
 }
 
-/** C ref: shk.c:4452 — @param {CPtr} dam @param {CPtr} shkp @returns {CInt} */
+/** C ref: shk.c:4452 — @param {CPtr<struct damage>} dam @param {CPtr<struct monst>} shkp @returns {CInt} */
 function* repairable_damage(dam, shkp) {
     let x;
     let y;
@@ -3672,7 +3672,7 @@ function* repairable_damage(dam, shkp) {
     return 1;
 }
 
-/** C ref: shk.c:4491 — @param {CPtr} shkp @returns {CPtr} */
+/** C ref: shk.c:4491 — @param {CPtr<struct monst>} shkp @returns {CPtr<struct damage>} */
 function* find_damage(shkp) {
     let dam = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist);
     if ((yield* shk_impaired(shkp)))
@@ -3685,7 +3685,7 @@ function* find_damage(shkp) {
     return null;
 }
 
-/** C ref: shk.c:4509 — @param {CPtr} dam */
+/** C ref: shk.c:4509 — @param {CPtr<struct damage>} dam */
 function discard_damage_struct(dam) {
     if (!dam)
         return;
@@ -3702,7 +3702,7 @@ function discard_damage_struct(dam) {
     cptr.free(dam);
 }
 
-/** C ref: shk.c:4530 — @param {CPtr} shkp */
+/** C ref: shk.c:4530 — @param {CPtr<struct monst>} shkp */
 function* discard_damage_owned_by(shkp) {
     let dam = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist);
     let dam2;
@@ -3726,7 +3726,7 @@ function* discard_damage_owned_by(shkp) {
     }
 }
 
-/** C ref: shk.c:4556 — @param {CPtr} shkp */
+/** C ref: shk.c:4556 — @param {CPtr<struct monst>} shkp */
 function* shk_fixes_damage(shkp) {
     let dam = (yield* find_damage(shkp));
     let shk_closeby;
@@ -3743,7 +3743,7 @@ function* shk_fixes_damage(shkp) {
     discard_damage_struct(dam);
 }
 
-/** C ref: shk.c:4591 — @param {CPtr} litter @param {CInt} x @param {CInt} y @param {CPtr} shkp @returns {*} */
+/** C ref: shk.c:4591 — @param {CPtr<uint8>} litter @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} shkp @returns {*} */
 function litter_getpos(litter, x, y, shkp) {
     let i;
     let ix;
@@ -3766,7 +3766,7 @@ function litter_getpos(litter, x, y, shkp) {
     return k;
 }
 
-/** C ref: shk.c:4622 — @param {CPtr} litter @param {CInt} x @param {CInt} y @param {CPtr} shkp */
+/** C ref: shk.c:4622 — @param {CPtr<uint8>} litter @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} shkp */
 function* litter_scatter(litter, x, y, shkp) {
     let otmp;
     {
@@ -3814,7 +3814,7 @@ function* litter_scatter(litter, x, y, shkp) {
     }
 }
 
-/** C ref: shk.c:4712 — @param {CPtr} litter @param {CInt} x @param {CInt} y */
+/** C ref: shk.c:4712 — @param {CPtr<uint8>} litter @param {CInt} x @param {CInt} y */
 function* litter_newsyms(litter, x, y) {
     let i;
     for (i = 0; i < 9; i++)
@@ -3822,7 +3822,7 @@ function* litter_newsyms(litter, x, y) {
             (yield* newsym(i16(((x + (((i % 3) - 1) | 0)) | 0)), i16(((y + ((((i / 3) | 0) - 1) | 0)) | 0))));
 }
 
-/** C ref: shk.c:4732 — @param {CPtr} shkp @param {CPtr} tmp_dam @param {CInt} catchup @returns {CInt} */
+/** C ref: shk.c:4732 — @param {CPtr<struct monst>} shkp @param {CPtr<struct damage>} tmp_dam @param {CInt} catchup @returns {CInt} */
 function* repair_damage(shkp, tmp_dam, catchup) {
     let x;
     let y;
@@ -3928,7 +3928,7 @@ export function* fix_shop_damage() {
     }
 }
 
-/** C ref: shk.c:4880 — @param {CPtr} shkp @returns {CInt} */
+/** C ref: shk.c:4880 — @param {CPtr<struct monst>} shkp @returns {CInt} */
 export function* shk_move(shkp) {
     let gtx;
     let gty;
@@ -4022,7 +4022,7 @@ export function* shk_move(shkp) {
     return z;
 }
 
-/** C ref: shk.c:4997 — @param {CPtr} shkp */
+/** C ref: shk.c:4997 — @param {CPtr<struct monst>} shkp */
 export function* after_shk_move(shkp) {
     let eshkp = (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk));
     if (cptr.eq(cptr.ldPtro(eshkp, $eshk_bill_p), -1000) && (yield* inhishop(shkp))) {
@@ -4032,7 +4032,7 @@ export function* after_shk_move(shkp) {
     }
 }
 
-/** C ref: shk.c:5012 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: shk.c:5012 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function is_fshk(mtmp) {
     return schar(((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_following) ? 1 : 0));
 }
@@ -4112,7 +4112,7 @@ cptr.stI16o(__static_makekops_k_mndx, 2, NHC.PM_KOP_SERGEANT);
 cptr.stI16o(__static_makekops_k_mndx, 4, NHC.PM_KOP_LIEUTENANT);
 cptr.stI16o(__static_makekops_k_mndx, 6, NHC.PM_KOP_KAPTAIN); /** C ref: shk.c:5115 — short[4] (function-static) */
 
-/** C ref: shk.c:5113 — @param {CPtr} mm */
+/** C ref: shk.c:5113 — @param {CPtr<coord>} mm */
 function* makekops(mm) {
     let k_cnt = cptr.alloc(4 * 4);
     let cnt;
@@ -4134,7 +4134,7 @@ function* makekops(mm) {
     }
 }
 
-/** C ref: shk.c:5138 — @param {CPtr} shkp @param {CPtr} dmgstr @param {CInt} x @param {CInt} y @param {CInt} uinshp @param {CInt} animal @param {CInt} pursue */
+/** C ref: shk.c:5138 — @param {CPtr<struct monst>} shkp @param {CPtr<char>} dmgstr @param {CInt} x @param {CInt} y @param {CInt} uinshp @param {CInt} animal @param {CInt} pursue */
 function* getcad(shkp, dmgstr, x, y, uinshp, animal, pursue) {
     let dugwall = schar((!strcmp(dmgstr, __sl336) || !strcmp(dmgstr, __sl337) ? 1 : 0));
     if ((helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) {
@@ -4159,7 +4159,7 @@ function* getcad(shkp, dmgstr, x, y, uinshp, animal, pursue) {
     hot_pursuit(shkp);
 }
 
-/** C ref: shk.c:5174 — @param {CPtr} dmgstr @param {CInt} cant_mollify */
+/** C ref: shk.c:5174 — @param {CPtr<char>} dmgstr @param {CInt} cant_mollify */
 export function* pay_for_damage(dmgstr, cant_mollify) {
     let shkp = null;
     let shops_affected = new Uint8Array(5);
@@ -4309,7 +4309,7 @@ export function* costly_spot(x, y) {
     return schar((inside_shop(x, y) && !(x == cptr.ldI16o(eshkp, $eshk_shk) && y == cptr.ldI16o(eshkp, $eshk_shk + $nhcoord_y)) ? 1 : 0));
 }
 
-/** C ref: shk.c:5369 — @param {CPtr} shkp @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: shk.c:5369 — @param {CPtr<struct monst>} shkp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* costly_adjacent(shkp, x, y) {
     let eshkp;
     if (!shkp || !(yield* inhishop(shkp)) || !isok(x, y))
@@ -4318,7 +4318,7 @@ export function* costly_adjacent(shkp, x, y) {
     return schar(((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_edge) & 1) | 0 || (x == cptr.ldI16o(eshkp, $eshk_shk) && y == cptr.ldI16o(eshkp, $eshk_shk + $nhcoord_y)) ? 1 : 0));
 }
 
-/** C ref: shk.c:5386 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: shk.c:5386 — @param {CInt} x @param {CInt} y @returns {CPtr<struct obj>} */
 export function* shop_object(x, y) {
     let otmp;
     let shkp;
@@ -4331,7 +4331,7 @@ export function* shop_object(x, y) {
     return (otmp && (yield* costly_spot(x, y)) && ((cptr.ldI32o((shkp), $monst_mpeaceful) & 1)) | 0 && !(helpless(shkp) || cptr.ld1uo(cptr.ldPtro((shkp), $monst_data), $permonst_msound) <= NHC.MS_ANIMAL)) ? otmp : null;
 }
 
-/** C ref: shk.c:5406 — @param {CPtr} first_obj */
+/** C ref: shk.c:5406 — @param {CPtr<struct obj>} first_obj */
 export function* price_quote(first_obj) {
     let otmp;
     let buf = new Uint8Array(256);
@@ -4380,7 +4380,7 @@ export function* price_quote(first_obj) {
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
 }
 
-/** C ref: shk.c:5468 — @param {CPtr} itm @param {CLongLong} cost @returns {CPtr} */
+/** C ref: shk.c:5468 — @param {CPtr<struct obj>} itm @param {CLongLong} cost @returns {CPtr<char>} */
 function shk_embellish(itm, cost) {
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl47, 5470, __sl363), rn2(3)) : rn2(3))) {
         let o;
@@ -4425,7 +4425,7 @@ cptr.stPtro(Izchak_speaks, 48, __sl377);
 cptr.stPtro(Izchak_speaks, 56, __sl378);
 cptr.stPtro(Izchak_speaks, 64, __sl379);
 
-/** C ref: shk.c:5521 — @param {CPtr} shkp */
+/** C ref: shk.c:5521 — @param {CPtr<struct monst>} shkp */
 export function* shk_chat(shkp) {
     let eshk;
     let shkmoney;
@@ -4494,7 +4494,7 @@ function* kops_gone(silent) {
         (yield* pline_The(__sl403, (((cnt) == 1) ? __sl8 : __sl61), (cnt == 1) ? __sl404 : __sl8));
 }
 
-/** C ref: shk.c:5627 — @param {CPtr} shkp @param {CPtr} otmp @param {CInt} altusage @returns {CLongLong} */
+/** C ref: shk.c:5627 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} otmp @param {CInt} altusage @returns {CLongLong} */
 function* cost_per_charge(shkp, otmp, altusage) {
     let tmp = 0n;
     if (!shkp || !(yield* inhishop(shkp)))
@@ -4523,7 +4523,7 @@ function* cost_per_charge(shkp, otmp, altusage) {
     return tmp;
 }
 
-/** C ref: shk.c:5688 — @param {CPtr} otmp @param {CInt} altusage */
+/** C ref: shk.c:5688 — @param {CPtr<struct obj>} otmp @param {CInt} altusage */
 export function* check_unpaid_usage(otmp, altusage) {
     let shkp;
     let fmt;
@@ -4567,7 +4567,7 @@ export function* check_unpaid_usage(otmp, altusage) {
     cptr.stI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit, cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_debit) + tmp);
 }
 
-/** C ref: shk.c:5739 — @param {CPtr} otmp */
+/** C ref: shk.c:5739 — @param {CPtr<struct obj>} otmp */
 export function* check_unpaid(otmp) {
     (yield* check_unpaid_usage(otmp, 0));
 }
@@ -4652,7 +4652,7 @@ export function* block_entry(x, y) {
     return 0;
 }
 
-/** C ref: shk.c:5862 — @param {CPtr} buf @param {CPtr} obj @returns {CPtr} */
+/** C ref: shk.c:5862 — @param {CPtr<char>} buf @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function* shk_your(buf, obj) {
     let chk_pm = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && ismnum(cptr.ldI32o(obj, $obj_corpsenm)) ? 1 : 0));
     cptr.st1o(buf, 0, 0);
@@ -4665,14 +4665,14 @@ export function* shk_your(buf, obj) {
     return cptr.strcat(buf, __sl14);
 }
 
-/** C ref: shk.c:5877 — @param {CPtr} buf @param {CPtr} obj @returns {CPtr} */
+/** C ref: shk.c:5877 — @param {CPtr<char>} buf @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function* Shk_Your(buf, obj) {
     void (yield* shk_your(buf, obj));
     cptr.st1(buf, highc(cptr.ld1s(buf)));
     return buf;
 }
 
-/** C ref: shk.c:5885 — @param {CPtr} buf @param {CPtr} obj @returns {CPtr} */
+/** C ref: shk.c:5885 — @param {CPtr<char>} buf @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function* shk_owns(buf, obj) {
     let shkp;
     let x = cptr.box(0);
@@ -4684,14 +4684,14 @@ function* shk_owns(buf, obj) {
     return null;
 }
 
-/** C ref: shk.c:5900 — @param {CPtr} buf @param {CPtr} obj @returns {CPtr} */
+/** C ref: shk.c:5900 — @param {CPtr<char>} buf @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function* mon_owns(buf, obj) {
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_MINVENT)
         return cptr.strcpy(buf, (yield* s_suffix((yield* y_monnam(cptr.ldPtro(obj, $obj_v))))));
     return null;
 }
 
-/** C ref: shk.c:5908 — @param {CInt} altusage @returns {CPtr} */
+/** C ref: shk.c:5908 — @param {CInt} altusage @returns {CPtr<char>} */
 function* cad(altusage) {
     let res = null;
     switch (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n) ? 3 : poly_gender()) {
@@ -4721,7 +4721,7 @@ function* cad(altusage) {
     return res;
 }
 
-/** C ref: shk.c:5976 — @param {CPtr} obj_absorber @param {CPtr} obj_absorbed */
+/** C ref: shk.c:5976 — @param {CPtr<struct obj>} obj_absorber @param {CPtr<struct obj>} obj_absorbed */
 export function* globby_bill_fixup(obj_absorber, obj_absorbed) {
     let x = 0;
     let y = 0;
@@ -4807,7 +4807,7 @@ export function* globby_bill_fixup(obj_absorber, obj_absorbed) {
     return;
 }
 
-/** C ref: shk.c:6101 — @param {CPtr} otmp @param {CInt} x @param {CInt} y */
+/** C ref: shk.c:6101 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y */
 export function* use_unpaid_trapobj(otmp, x, y) {
     if ((cptr.ldI32o(otmp, $obj_unpaid) & 1)) {
         if (!Deaf()) {

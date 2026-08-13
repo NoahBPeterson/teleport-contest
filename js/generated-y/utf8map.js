@@ -37,7 +37,7 @@ const $classic_representation_symidx = FLD.classic_representation_symidx, $custo
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("");
 
-/** C ref: utf8map.c:18 — @param {CPtr} cp @returns {CInt} */
+/** C ref: utf8map.c:18 — @param {CPtr<char>} cp @returns {CInt} */
 export function* unicode_val(cp) {
     let dp;
     let cval = 0;
@@ -54,7 +54,7 @@ export function* unicode_val(cp) {
     return cval;
 }
 
-/** C ref: utf8map.c:37 — @param {CPtr} gmap @param {CUInt} utf32ch @param {CPtr} utf8str @returns {CInt} */
+/** C ref: utf8map.c:37 — @param {CPtr<glyph_map>} gmap @param {CUInt} utf32ch @param {CPtr<uint8>} utf8str @returns {CInt} */
 export function* set_map_u(gmap, utf32ch, utf8str) {
     let tmpgm = gmap;
     if (!tmpgm || !utf32ch)
@@ -94,7 +94,7 @@ export function free_all_glyphmap_u() {
     }
 }
 
-/** C ref: utf8map.c:86 — @param {CPtr} buf @param {CLongLong} bufsz @param {CPtr} str @param {CPtr} retflags @returns {CPtr} */
+/** C ref: utf8map.c:86 — @param {CPtr<char>} buf @param {CLongLong} bufsz @param {CPtr<char>} str @param {CPtr<int>} retflags @returns {CPtr<char>} */
 export function* mixed_to_utf8(buf, bufsz, str, retflags) {
     let put = buf;
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, 48);
@@ -143,7 +143,7 @@ export function* mixed_to_utf8(buf, bufsz, str, retflags) {
     return buf;
 }
 
-/** C ref: utf8map.c:148 — @param {CPtr} customization_name @param {CInt} glyphidx @param {CUInt} utf32ch @param {CPtr} utf8str @param {*} which_set @returns {CInt} */
+/** C ref: utf8map.c:148 — @param {CPtr<char>} customization_name @param {CInt} glyphidx @param {CUInt} utf32ch @param {CPtr<uint8>} utf8str @param {*} which_set @returns {CInt} */
 export function* add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf8str, which_set) {
     let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, 128), NHC.custom_ureps, 32);
     let details;

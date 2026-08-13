@@ -414,7 +414,7 @@ function done_hangup(sig) {
     return;
 }
 
-/** C ref: end.c:186 — @param {CPtr} mtmp @param {CInt} how */
+/** C ref: end.c:186 — @param {CPtr<struct monst>} mtmp @param {CInt} how */
 export function* done_in_by(mtmp, how) {
     let buf = new Uint8Array(256);
     let mptr = cptr.ldPtro(mtmp, $monst_data);
@@ -533,7 +533,7 @@ function fixup_death(how) {
     }
 }
 
-/** C ref: end.c:395 — @param {CPtr} str */
+/** C ref: end.c:395 — @param {CPtr<char>} str */
 export function* panic(str, ...__va) {
     let the_args;
     {
@@ -578,7 +578,7 @@ export function* panic(str, ...__va) {
     (yield* really_done(NHC.PANICKED));
 }
 
-/** C ref: end.c:477 — @param {CInt} category @param {CPtr} defquery @returns {CInt} */
+/** C ref: end.c:477 — @param {CInt} category @param {CPtr<char>} defquery @returns {CInt} */
 function* should_query_disclose_option(category, defquery) {
     let idx;
     let disclose;
@@ -723,7 +723,7 @@ function* savelife(how) {
     }
 }
 
-/** C ref: end.c:764 — @param {CPtr} list */
+/** C ref: end.c:764 — @param {CPtr<struct obj>} list */
 function get_valuables(list) {
     let obj;
     let i;
@@ -750,7 +750,7 @@ function get_valuables(list) {
     return;
 }
 
-/** C ref: end.c:799 — @param {CPtr} list @param {CInt} size */
+/** C ref: end.c:799 — @param {CPtr<struct valuable_data>} list @param {CInt} size */
 function sort_valuables(list, size) {
     let i;
     let j;
@@ -795,7 +795,7 @@ export function* done_object_cleanup() {
     return;
 }
 
-/** C ref: end.c:908 — @param {CPtr} list @param {CInt} counting @param {CInt} endwin */
+/** C ref: end.c:908 — @param {CPtr<struct obj>} list @param {CInt} counting @param {CInt} endwin */
 function* artifact_score(list, counting, endwin) {
     let pbuf = new Uint8Array(256);
     let otmp;
@@ -1211,7 +1211,7 @@ function* really_done(how) {
     (yield* nh_terminate(0));
 }
 
-/** C ref: end.c:1596 — @param {CPtr} list @param {CInt} identified @param {CInt} all_containers @param {CInt} reportempty */
+/** C ref: end.c:1596 — @param {CPtr<struct obj>} list @param {CInt} identified @param {CInt} all_containers @param {CInt} reportempty */
 export function* container_contents(list, identified, all_containers, reportempty) {
     let box;
     let obj;
@@ -1288,7 +1288,7 @@ export function* nh_terminate(status) {
     exit(status);
 }
 
-/** C ref: end.c:1721 — @param {CInt} id @param {CInt} format @param {CPtr} killername */
+/** C ref: end.c:1721 — @param {CInt} id @param {CInt} format @param {CPtr<char>} killername */
 export function* delayed_killer(id, format, killername) {
     let k = find_delayed_killer(id);
     if (!k) {
@@ -1303,7 +1303,7 @@ export function* delayed_killer(id, format, killername) {
     cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
 }
 
-/** C ref: end.c:1740 — @param {CInt} id @returns {CPtr} */
+/** C ref: end.c:1740 — @param {CInt} id @returns {CPtr<struct kinfo>} */
 export function find_delayed_killer(id) {
     let k;
     for (k = cptr.ldPtr(svk); k !== null; k = cptr.ldPtr(k)) {
@@ -1313,7 +1313,7 @@ export function find_delayed_killer(id) {
     return k;
 }
 
-/** C ref: end.c:1752 — @param {CPtr} kptr */
+/** C ref: end.c:1752 — @param {CPtr<struct kinfo>} kptr */
 export function* dealloc_killer(kptr) {
     let prev = svk;
     let k;
@@ -1339,7 +1339,7 @@ export function* dealloc_killer(kptr) {
     }
 }
 
-/** C ref: end.c:1774 — @param {CPtr} nhfp */
+/** C ref: end.c:1774 — @param {CPtr<NHFILE>} nhfp */
 export function* save_killers(nhfp) {
     let kptr;
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
@@ -1356,7 +1356,7 @@ export function* save_killers(nhfp) {
     }
 }
 
-/** C ref: end.c:1794 — @param {CPtr} nhfp */
+/** C ref: end.c:1794 — @param {CPtr<NHFILE>} nhfp */
 export function* restore_killers(nhfp) {
     let kptr;
     for (kptr = svk; kptr !== null; kptr = cptr.ldPtr(kptr)) {
@@ -1367,7 +1367,7 @@ export function* restore_killers(nhfp) {
     }
 }
 
-/** C ref: end.c:1807 — @param {CPtr} p @returns {CInt} */
+/** C ref: end.c:1807 — @param {CPtr<char>} p @returns {CInt} */
 function wordcount(p) {
     let words = 0;
     while (cptr.ld1s(p)) {
@@ -1381,7 +1381,7 @@ function wordcount(p) {
     return words;
 }
 
-/** C ref: end.c:1823 — @param {CPtr} inp @param {CPtr} out */
+/** C ref: end.c:1823 — @param {CPtr<char *>} inp @param {CPtr<char>} out */
 function* bel_copy1(inp, out) {
     let in$ = cptr.ldPtr(inp);
     out = cptr.add(out, cptr.strlen(out));
@@ -1393,7 +1393,7 @@ function* bel_copy1(inp, out) {
     cptr.stPtr(inp, in$);
 }
 
-/** C ref: end.c:1837 — @param {CPtr} in @returns {CPtr} */
+/** C ref: end.c:1837 — @param {CPtr<char>} in @returns {CPtr<char>} */
 export function* build_english_list(in$) {
     let out;
     let p = cptr.box(in$);
@@ -1429,7 +1429,7 @@ export function* build_english_list(in$) {
 
 let __static_NH_abort_aborting = 0; /** C ref: end.c:1916 — signed char (function-static) */
 
-/** C ref: end.c:1910 — @param {CPtr} why */
+/** C ref: end.c:1910 — @param {CPtr<char>} why */
 export function* NH_abort(why) {
     let gdb_prio = cptr.ldI32o(sysopt, $sysopt_s_panictrace_gdb);
     let libc_prio = cptr.ldI32o(sysopt, $sysopt_s_panictrace_libc);

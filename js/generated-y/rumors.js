@@ -137,7 +137,7 @@ let CapMonSiz = 0;
 /** C ref: rumors.c:58 — char ** */
 let CapMons = null;
 
-/** C ref: rumors.c:67 — @param {CPtr} line */
+/** C ref: rumors.c:67 — @param {CPtr<char>} line */
 function unpadline(line) {
     let p = eos(line);
     if (cptr.cmp(p, line) > 0 && cptr.ld1so(p, -1) == 10)
@@ -149,7 +149,7 @@ function unpadline(line) {
 
 const __static_init_rumors_rumors_header = cptr.bytes("%d,%ld,%lx;%d,%ld,%lx;0,0,%lx\n"); /** C ref: rumors.c:87 — char[31] (function-static) */
 
-/** C ref: rumors.c:85 — @param {CPtr} fp */
+/** C ref: rumors.c:85 — @param {CPtr<FILE>} fp */
 function init_rumors(fp) {
     let true_count = cptr.box(0);
     let false_count = cptr.box(0);
@@ -168,7 +168,7 @@ function init_rumors(fp) {
 
 let __static_getrumor_cookie_marker = __sl8; /** C ref: rumors.c:125 — char * (function-static) */
 
-/** C ref: rumors.c:117 — @param {CInt} truth @param {CPtr} rumor_buf @param {CInt} exclude_cookie @returns {CPtr} */
+/** C ref: rumors.c:117 — @param {CInt} truth @param {CPtr<char>} rumor_buf @param {CInt} exclude_cookie @returns {CPtr<char>} */
 export function* getrumor(truth, rumor_buf, exclude_cookie) {
     let rumors;
     let beginning;
@@ -306,7 +306,7 @@ export function* rumor_check() {
 
 const __static_others_check_errfmt = cptr.bytes("others_check(\"%s\"): %s"); /** C ref: rumors.c:313 — char[23] (function-static) */
 
-/** C ref: rumors.c:308 — @param {CPtr} ftype @param {CPtr} fname @param {CPtr} winptr */
+/** C ref: rumors.c:308 — @param {CPtr<char>} ftype @param {CPtr<char>} fname @param {CPtr<winid>} winptr */
 function* others_check(ftype, fname, winptr) {
     let fh;
     let line = new Uint8Array(256);
@@ -381,7 +381,7 @@ function* others_check(ftype, fname, winptr) {
     }
 }
 
-/** C ref: rumors.c:420 — @param {CPtr} fh @param {CPtr} buf @param {CUInt} bufsiz @param {CPtr} rng @param {CLongLong} startpos @param {CLongLong} endpos @param {CUInt} padlength @returns {CPtr} */
+/** C ref: rumors.c:420 — @param {CPtr<FILE>} fh @param {CPtr<char>} buf @param {CUInt} bufsiz @param {CPtr} rng @param {CLongLong} startpos @param {CLongLong} endpos @param {CUInt} padlength @returns {CPtr<char>} */
 function* get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
     let newl;
     let xbufp;
@@ -420,7 +420,7 @@ function* get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
     return buf;
 }
 
-/** C ref: rumors.c:499 — @param {CPtr} fname @param {CPtr} buf @param {CPtr} rng @param {CUInt} padlength @returns {CPtr} */
+/** C ref: rumors.c:499 — @param {CPtr<char>} fname @param {CPtr<char>} buf @param {CPtr} rng @param {CUInt} padlength @returns {CPtr<char>} */
 export function* get_rnd_text(fname, buf, rng, padlength) {
     let fh = fopen(fname, __sl1);
     cptr.st1o(buf, 0, 0);
@@ -475,7 +475,7 @@ export function* outrumor(truth, mechanism) {
     (yield* pline(__sl40, line));
 }
 
-/** C ref: rumors.c:577 — @param {CPtr} fp */
+/** C ref: rumors.c:577 — @param {CPtr<FILE>} fp */
 function* init_oracles(fp) {
     let i;
     let line = new Uint8Array(256);
@@ -493,7 +493,7 @@ function* init_oracles(fp) {
     return;
 }
 
-/** C ref: rumors.c:598 — @param {CPtr} nhfp */
+/** C ref: rumors.c:598 — @param {CPtr<NHFILE>} nhfp */
 export function* save_oracles(nhfp) {
     let i;
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
@@ -516,7 +516,7 @@ export function* save_oracles(nhfp) {
     }
 }
 
-/** C ref: rumors.c:623 — @param {CPtr} nhfp */
+/** C ref: rumors.c:623 — @param {CPtr<NHFILE>} nhfp */
 export function* restore_oracles(nhfp) {
     let i;
     (yield* sfi_unsigned(nhfp, svo, __sl44));
@@ -577,7 +577,7 @@ export function* outoracle(special, delphi) {
     }
 }
 
-/** C ref: rumors.c:696 — @param {CPtr} oracl @returns {CInt} */
+/** C ref: rumors.c:696 — @param {CPtr<struct monst>} oracl @returns {CInt} */
 export function* doconsult(oracl) {
     let umoney;
     let u_pay;
@@ -643,7 +643,7 @@ export function* doconsult(oracl) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: rumors.c:770 — @param {CPtr} filename */
+/** C ref: rumors.c:770 — @param {CPtr<char>} filename */
 function* couldnt_open_file(filename) {
     let save_something = cptr.ldI32o(program_state, $sinfo_something_worth_saving);
     if (!cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
@@ -652,7 +652,7 @@ function* couldnt_open_file(filename) {
     cptr.stI32o(program_state, $sinfo_something_worth_saving, save_something);
 }
 
-/** C ref: rumors.c:791 — @param {CPtr} word @returns {CInt} */
+/** C ref: rumors.c:791 — @param {CPtr<char>} word @returns {CInt} */
 export function* CapitalMon(word) {
     let nam;
     let i;

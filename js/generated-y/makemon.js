@@ -203,7 +203,7 @@ const __sl57 = cptr.lit("%s");
 const __sl58 = cptr.lit("It's empty.");
 const __sl59 = cptr.lit("bagotricks");
 
-/** C ref: makemon.c:33 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: makemon.c:33 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function is_home_elemental(ptr) {
     if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_ELEMENTAL) {
         switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
@@ -222,7 +222,7 @@ export function is_home_elemental(ptr) {
     return 0;
 }
 
-/** C ref: makemon.c:56 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: makemon.c:56 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 function wrong_elem_type(ptr) {
     if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_ELEMENTAL) {
         return schar((!is_home_elemental(ptr)));
@@ -240,7 +240,7 @@ function wrong_elem_type(ptr) {
     return 0;
 }
 
-/** C ref: makemon.c:79 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @param {CInt} n @param {CUInt} mmflags */
+/** C ref: makemon.c:79 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CInt} n @param {CUInt} mmflags */
 function* m_initgrp(mtmp, x, y, n, mmflags) {
     let mm = cptr.alloc(4);
     let cnt = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 85, __sl1), rnd(n)) : rnd(n));
@@ -264,7 +264,7 @@ function* m_initgrp(mtmp, x, y, n, mmflags) {
     }
 }
 
-/** C ref: makemon.c:148 — @param {CPtr} mtmp @param {CInt} otyp @param {CInt} oquan */
+/** C ref: makemon.c:148 — @param {CPtr<struct monst>} mtmp @param {CInt} otyp @param {CInt} oquan */
 function* m_initthrow(mtmp, otyp, oquan) {
     let otmp;
     otmp = (yield* mksobj(otyp, 1, 0));
@@ -275,7 +275,7 @@ function* m_initthrow(mtmp, otyp, oquan) {
     void (yield* mpickobj(mtmp, otmp));
 }
 
-/** C ref: makemon.c:161 — @param {CPtr} mtmp */
+/** C ref: makemon.c:161 — @param {CPtr<struct monst>} mtmp */
 function* m_initweap(mtmp) {
     let ptr = cptr.ldPtro(mtmp, $monst_data);
     let mm = (cptr.ldI32o((ptr), $permonst_pmidx));
@@ -641,7 +641,7 @@ function* m_initweap(mtmp) {
         void (yield* mongets(mtmp, (yield* rnd_offensive_item(mtmp))));
 }
 
-/** C ref: makemon.c:576 — @param {CPtr} mtmp @param {CLongLong} amount */
+/** C ref: makemon.c:576 — @param {CPtr<struct monst>} mtmp @param {CLongLong} amount */
 export function* mkmonmoney(mtmp, amount) {
     if (amount > 0n) {
         let gold = (yield* mksobj(NHC.GOLD_PIECE, 0, 0));
@@ -651,7 +651,7 @@ export function* mkmonmoney(mtmp, amount) {
     }
 }
 
-/** C ref: makemon.c:589 — @param {CPtr} mtmp */
+/** C ref: makemon.c:589 — @param {CPtr<struct monst>} mtmp */
 function* m_initinv(mtmp) {
     let cnt;
     let otmp;
@@ -871,7 +871,7 @@ function* m_initinv(mtmp) {
         (yield* mkmonmoney(mtmp, BigInt((rng_log_enabled() ? (rng_log_set_caller(__sl0, 832, __sl7), d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10))) : d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10))))));
 }
 
-/** C ref: makemon.c:837 — @param {CPtr} mon @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: makemon.c:837 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y @returns {CPtr<struct monst>} */
 export function* clone_mon(mon, x, y) {
     let mm = cptr.alloc(4);
     let m2;
@@ -971,7 +971,7 @@ export function* propagate(mndx, tally, ghostly) {
     return result;
 }
 
-/** C ref: makemon.c:986 — @param {CPtr} mon @returns {CInt} */
+/** C ref: makemon.c:986 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function monhp_per_lvl(mon) {
     let ptr = cptr.ldPtro(mon, $monst_data);
     let hp = (rng_log_enabled() ? (rng_log_set_caller(__sl0, 989, __sl13), rnd(8)) : rnd(8));
@@ -987,7 +987,7 @@ export function monhp_per_lvl(mon) {
     return hp;
 }
 
-/** C ref: makemon.c:1012 — @param {CPtr} mon @param {CInt} mndx */
+/** C ref: makemon.c:1012 — @param {CPtr<struct monst>} mon @param {CInt} mndx */
 export function* newmonhp(mon, mndx) {
     let ptr = cptr.add(mons, mndx, 96);
     let basehp = 0;
@@ -1022,13 +1022,13 @@ export function* newmonhp(mon, mndx) {
 let zeromextra = cptr.alloc(64);
 cptr.stPtr(zeromextra, null);
 
-/** C ref: makemon.c:1059 — @param {CPtr} mex */
+/** C ref: makemon.c:1059 — @param {CPtr<struct mextra>} mex */
 function init_mextra(mex) {
     cptr.memcpy(mex, zeromextra, 64);
     cptr.stI32o(mex, $mextra_mcorpsenm, NHC.NON_PM);
 }
 
-/** C ref: makemon.c:1066 @returns {CPtr} */
+/** C ref: makemon.c:1066 @returns {CPtr<struct mextra>} */
 export function* newmextra() {
     let mextra;
     mextra = (yield* alloc(64));
@@ -1036,7 +1036,7 @@ export function* newmextra() {
     return mextra;
 }
 
-/** C ref: makemon.c:1076 — @param {CPtr} mon @param {CUInt} gpflags @param {CPtr} cc @returns {CInt} */
+/** C ref: makemon.c:1076 — @param {CPtr<struct monst>} mon @param {CUInt} gpflags @param {CPtr<coord>} cc @returns {CInt} */
 function* makemon_rnd_goodpos(mon, gpflags, cc) {
     let tryct = 0;
     let nx;
@@ -1096,7 +1096,7 @@ function* makemon_rnd_goodpos(mon, gpflags, cc) {
     return 0;
 }
 
-/** C ref: makemon.c:1147 — @param {CPtr} ptr @param {CInt} x @param {CInt} y @param {CUInt} mmflags @returns {CPtr} */
+/** C ref: makemon.c:1147 — @param {CPtr<struct permonst>} ptr @param {CInt} x @param {CInt} y @param {CUInt} mmflags @returns {CPtr<struct monst>} */
 export function* makemon(ptr, x, y, mmflags) {
     let mtmp;
     let fakemon = cptr.alloc(320);
@@ -1382,7 +1382,7 @@ export function* makemon(ptr, x, y, mmflags) {
     return mtmp;
 }
 
-/** C ref: makemon.c:1514 — @param {CPtr} mon @param {CUInt} mmflags @returns {CPtr} */
+/** C ref: makemon.c:1514 — @param {CPtr<struct monst>} mon @param {CUInt} mmflags @returns {CPtr<struct monst>} */
 export function* unmakemon(mon, mmflags) {
     let countbirth = schar(((BigInt(mmflags >>> 0) & 4n) == 0n));
     let mndx = (cptr.ldI32o((cptr.ldPtro(mon, $monst_data)), $permonst_pmidx));
@@ -1401,7 +1401,7 @@ export function mbirth_limit(mndx) {
     return (mndx == NHC.PM_NAZGUL ? 9 : (mndx == NHC.PM_ERINYS ? 3 : NHM.MAXMONNO));
 }
 
-/** C ref: makemon.c:1556 — @param {CInt} cnt @param {CPtr} mptr @param {CInt} neverask @returns {CInt} */
+/** C ref: makemon.c:1556 — @param {CInt} cnt @param {CPtr<struct permonst>} mptr @param {CInt} neverask @returns {CInt} */
 export function* create_critters(cnt, mptr, neverask) {
     let c = cptr.alloc(4);
     let x;
@@ -1443,7 +1443,7 @@ function uncommon(mndx) {
 let __static_align_shift_oldmoves = 0n; /** C ref: makemon.c:1613 — long (function-static) */
 let __static_align_shift_lev = null; /** C ref: makemon.c:1614 — s_level * (function-static) */
 
-/** C ref: makemon.c:1611 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: makemon.c:1611 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 function align_shift(ptr) {
     let alshift;
     if (__static_align_shift_oldmoves != cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
@@ -1468,19 +1468,19 @@ function align_shift(ptr) {
     return alshift;
 }
 
-/** C ref: makemon.c:1641 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: makemon.c:1641 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 function temperature_shift(ptr) {
     if (cptr.ld1so(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_temperature) && ((cptr.ld1uo((ptr), $permonst_mresists) & ((cptr.ld1so(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_temperature) > 0) ? NHM.MR_FIRE : NHM.MR_COLD)) != 0))
         return 3;
     return 0;
 }
 
-/** C ref: makemon.c:1652 @returns {CPtr} */
+/** C ref: makemon.c:1652 @returns {CPtr<struct permonst>} */
 export function* rndmonst() {
     return (yield* rndmonst_adj(0, 0));
 }
 
-/** C ref: makemon.c:1659 — @param {CInt} minadj @param {CInt} maxadj @returns {CPtr} */
+/** C ref: makemon.c:1659 — @param {CInt} minadj @param {CInt} maxadj @returns {CPtr<struct permonst>} */
 export function* rndmonst_adj(minadj, maxadj) {
     let ptr;
     let mndx;
@@ -1562,7 +1562,7 @@ const mclass_maxf = new Uint8Array(61);
 /** C ref: makemon.c:1757 — signed char */
 let mongen_order_init = 0;
 
-/** C ref: makemon.c:1760 — @param {CPtr} p1 @param {CPtr} p2 @returns {CInt} */
+/** C ref: makemon.c:1760 — @param {CPtr<void>} p1 @param {CPtr<void>} p2 @returns {CInt} */
 function cmp_init_mongen_order(p1, p2) {
     let i1 = cptr.ldI32((p1));
     let i2 = cptr.ldI32((p2));
@@ -1614,12 +1614,12 @@ export function* dump_mongen() {
     (yield* freedynamicdata());
 }
 
-/** C ref: makemon.c:1873 — @param {CInt} class @param {CInt} spc @returns {CPtr} */
+/** C ref: makemon.c:1873 — @param {CInt} class @param {CInt} spc @returns {CPtr<struct permonst>} */
 export function* mkclass(class$, spc) {
     return (yield* mkclass_aligned(class$, spc, -128));
 }
 
-/** C ref: makemon.c:1880 — @param {CInt} class @param {CInt} spc @param {CInt} atyp @returns {CPtr} */
+/** C ref: makemon.c:1880 — @param {CInt} class @param {CInt} spc @param {CInt} atyp @returns {CPtr<struct permonst>} */
 export function* mkclass_aligned(class$, spc, atyp) {
     let first;
     let last;
@@ -1701,7 +1701,7 @@ export function mkclass_poly(class$) {
     return first;
 }
 
-/** C ref: makemon.c:2016 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: makemon.c:2016 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function* adj_lev(ptr) {
     let tmp;
     let tmp2;
@@ -1727,7 +1727,7 @@ export function* adj_lev(ptr) {
     return ((tmp > tmp2) ? tmp2 : (tmp > 0 ? tmp : 0));
 }
 
-/** C ref: makemon.c:2051 — @param {CPtr} mtmp @param {CPtr} victim @returns {CPtr} */
+/** C ref: makemon.c:2051 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct monst>} victim @returns {CPtr<struct permonst>} */
 export function* grow_up(mtmp, victim) {
     let oldtype;
     let newtype;
@@ -1806,7 +1806,7 @@ export function* grow_up(mtmp, victim) {
     return ptr;
 }
 
-/** C ref: makemon.c:2181 — @param {CPtr} mtmp @param {CInt} otyp @returns {CPtr} */
+/** C ref: makemon.c:2181 — @param {CPtr<struct monst>} mtmp @param {CInt} otyp @returns {CPtr<struct obj>} */
 export function* mongets(mtmp, otyp) {
     let otmp;
     if (!otyp)
@@ -1879,7 +1879,7 @@ export function golemhp(type) {
     }
 }
 
-/** C ref: makemon.c:2268 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: makemon.c:2268 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function peace_minded(ptr) {
     let mal = cptr.ld1so(ptr, $permonst_maligntyp);
     let ual = cptr.ld1so(u, $you_ualign);
@@ -1906,7 +1906,7 @@ export function peace_minded(ptr) {
     return schar((!!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2306, __sl54), rn2((16 + (cptr.ldI32o(u, $you_ualign + $align_record) < -15 ? -15 : cptr.ldI32o(u, $you_ualign + $align_record))) | 0)) : rn2((16 + (cptr.ldI32o(u, $you_ualign + $align_record) < -15 ? -15 : cptr.ldI32o(u, $you_ualign + $align_record))) | 0)) && !!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 2307, __sl54), rn2((2 + Math.abs(mal)) | 0)) : rn2((2 + Math.abs(mal)) | 0)) ? 1 : 0));
 }
 
-/** C ref: makemon.c:2321 — @param {CPtr} mtmp */
+/** C ref: makemon.c:2321 — @param {CPtr<struct monst>} mtmp */
 export function set_malign(mtmp) {
     let mal = cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp);
     let coaligned;
@@ -1948,14 +1948,14 @@ export function set_malign(mtmp) {
         cptr.st1o(mtmp, $monst_malign, schar(Math.abs(mal)));
 }
 
-/** C ref: makemon.c:2370 — @param {CPtr} mtmp */
+/** C ref: makemon.c:2370 — @param {CPtr<struct monst>} mtmp */
 export function* newmcorpsenm(mtmp) {
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, (yield* newmextra()));
     cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);
 }
 
-/** C ref: makemon.c:2379 — @param {CPtr} mtmp */
+/** C ref: makemon.c:2379 — @param {CPtr<struct monst>} mtmp */
 export function freemcorpsenm(mtmp) {
     if (has_mcorpsenm(mtmp))
         cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);
@@ -1974,7 +1974,7 @@ cptr.stI32o(__static_set_mimic_sym_furnsyms, 20, NHC.S_grave);
 cptr.stI32o(__static_set_mimic_sym_furnsyms, 24, NHC.S_throne);
 cptr.stI32o(__static_set_mimic_sym_furnsyms, 28, NHC.S_sink); /** C ref: makemon.c:2491 — int[8] (function-static) */
 
-/** C ref: makemon.c:2393 — @param {CPtr} mtmp */
+/** C ref: makemon.c:2393 — @param {CPtr<struct monst>} mtmp */
 export function* set_mimic_sym(mtmp) {
     let appear, ap_type, s_sym, otmp, mx, my;
     let __go_assign_sym = false;
@@ -2086,7 +2086,7 @@ export function* set_mimic_sym(mtmp) {
         (yield* block_point(mx, my));
 }
 
-/** C ref: makemon.c:2554 — @param {CPtr} bag @param {CInt} tipping @param {CPtr} seencount @returns {CInt} */
+/** C ref: makemon.c:2554 — @param {CPtr<struct obj>} bag @param {CInt} tipping @param {CPtr<int>} seencount @returns {CInt} */
 export function* bagotricks(bag, tipping, seencount) {
     let moncount = 0;
     if (!bag || cptr.ldI16o(bag, $obj_otyp) != NHC.BAG_OF_TRICKS) {

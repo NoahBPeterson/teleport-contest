@@ -142,7 +142,7 @@ const __sl20 = cptr.lit("make adjustments to %s to suit your %s hand.");
 const __sl21 = cptr.lit("right");
 const __sl22 = cptr.lit("left");
 
-/** C ref: bones.c:18 — @param {CPtr} lev @returns {CInt} */
+/** C ref: bones.c:18 — @param {CPtr<d_level>} lev @returns {CInt} */
 function no_bones_level(lev) {
     let sptr;
     if (ledger_no(cptr.add(gs, $instance_globals_s_save_dlevel)))
@@ -157,7 +157,7 @@ function goodfruit(id) {
         cptr.stI32o(f, $fruit_fid, id);
 }
 
-/** C ref: bones.c:51 — @param {CPtr} ochain @param {CInt} restore */
+/** C ref: bones.c:51 — @param {CPtr<struct obj>} ochain @param {CInt} restore */
 function resetobjs(ochain, restore) {
     let otmp;
     let nobj;
@@ -248,7 +248,7 @@ function resetobjs(ochain, restore) {
     }
 }
 
-/** C ref: bones.c:198 — @param {CPtr} namebuf */
+/** C ref: bones.c:198 — @param {CPtr<char>} namebuf */
 export function sanitize_name(namebuf) {
     let c;
     let strip_8th_bit = schar(((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) && !cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 1 : 0));
@@ -264,7 +264,7 @@ export function sanitize_name(namebuf) {
     }
 }
 
-/** C ref: bones.c:226 — @param {CPtr} otmp @param {CInt} x @param {CInt} y */
+/** C ref: bones.c:226 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y */
 function give_to_nearby_mon(otmp, x, y) {
     let mtmp;
     let selected = null;
@@ -292,7 +292,7 @@ function give_to_nearby_mon(otmp, x, y) {
         place_object(otmp, x, y);
 }
 
-/** C ref: bones.c:259 — @param {CPtr} mtmp @param {CPtr} cont @param {CInt} x @param {CInt} y */
+/** C ref: bones.c:259 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} cont @param {CInt} x @param {CInt} y */
 export function drop_upon_death(mtmp, cont, x, y) {
     let otmp;
     cptr.st1o(u, $you_twoweap, 0);
@@ -320,7 +320,7 @@ export function drop_upon_death(mtmp, cont, x, y) {
         cptr.stI32o(cont, $obj_owt, weight(cont) >>> 0);
 }
 
-/** C ref: bones.c:308 — @param {CPtr} oracle @returns {CInt} */
+/** C ref: bones.c:308 — @param {CPtr<struct monst>} oracle @returns {CInt} */
 function fixuporacle(oracle) {
     let cc = cptr.alloc(4);
     let ridx;
@@ -371,14 +371,14 @@ export function can_make_bones() {
     return 1;
 }
 
-/** C ref: bones.c:390 — @param {CPtr} mtmp */
+/** C ref: bones.c:390 — @param {CPtr<struct monst>} mtmp */
 function remove_mon_from_bones(mtmp) {
     let mptr = cptr.ldPtro(mtmp, $monst_data);
     if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 || cptr.eq(mptr, cptr.add(mons, NHC.PM_MEDUSA, 96)) || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_NEMESIS || cptr.ld1uo(mptr, $permonst_msound) == NHC.MS_LEADER || is_Vlad(mtmp) || (cptr.eq(mptr, cptr.add(mons, NHC.PM_ORACLE, 96)) && !fixuporacle(mtmp)))
         mongone(mtmp);
 }
 
-/** C ref: bones.c:403 — @param {CInt} how @param {CLongLong} when @param {CPtr} corpse */
+/** C ref: bones.c:403 — @param {CInt} how @param {CLongLong} when @param {CPtr<struct obj>} corpse */
 export function savebones(how, when, corpse) {
     let x;
     let y;
@@ -648,7 +648,7 @@ export function getbones() {
     return ok;
 }
 
-/** C ref: bones.c:762 — @param {CPtr} name @returns {CInt} */
+/** C ref: bones.c:762 — @param {CPtr<char>} name @returns {CInt} */
 export function bones_include_name(name) {
     let bp;
     let len;
@@ -663,7 +663,7 @@ export function bones_include_name(name) {
     return 0;
 }
 
-/** C ref: bones.c:784 — @param {CPtr} objchain */
+/** C ref: bones.c:784 — @param {CPtr<struct obj>} objchain */
 function set_ghostly_objlist(objchain) {
     while (objchain) {
         cptr.stI32o(objchain, $obj_ghostly, 1);
@@ -671,7 +671,7 @@ function set_ghostly_objlist(objchain) {
     }
 }
 
-/** C ref: bones.c:796 — @param {CPtr} obj */
+/** C ref: bones.c:796 — @param {CPtr<struct obj>} obj */
 export function fix_ghostly_obj(obj) {
     if (!(cptr.ldI32o(obj, $obj_ghostly) & 1))
         return;
@@ -689,7 +689,7 @@ export function fix_ghostly_obj(obj) {
     cptr.stI32o(obj, $obj_ghostly, 0);
 }
 
-/** C ref: bones.c:818 — @param {CPtr} mtmp */
+/** C ref: bones.c:818 — @param {CPtr<struct monst>} mtmp */
 export function newebones(mtmp) {
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, newmextra());
@@ -700,7 +700,7 @@ export function newebones(mtmp) {
     }
 }
 
-/** C ref: bones.c:833 — @param {CPtr} mtmp */
+/** C ref: bones.c:833 — @param {CPtr<struct monst>} mtmp */
 export function free_ebones(mtmp) {
     if (cptr.ldPtro(mtmp, $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones))) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)));

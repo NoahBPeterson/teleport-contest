@@ -232,7 +232,7 @@ const __static_item_naming_classification_Rename = cptr.bytes("Rename or un-name
 const __static_item_naming_classification_Call = cptr.bytes("Call"); /** C ref: iactions.c:54 — char[5] (function-static) */
 const __static_item_naming_classification_Recall = cptr.bytes("Re-call or un-call"); /** C ref: iactions.c:57 — char[19] (function-static) */
 
-/** C ref: iactions.c:46 — @param {CPtr} obj @param {CPtr} onamebuf @param {CPtr} ocallbuf @returns {CInt} */
+/** C ref: iactions.c:46 — @param {CPtr<struct obj>} obj @param {CPtr<char>} onamebuf @param {CPtr<char>} ocallbuf @returns {CInt} */
 function item_naming_classification(obj, onamebuf, ocallbuf) {
     cptr.st1o(onamebuf, 0, cptr.st1o(ocallbuf, 0, 0));
     if (name_ok(obj) == NHC.GETOBJ_SUGGEST) {
@@ -249,7 +249,7 @@ function item_naming_classification(obj, onamebuf, ocallbuf) {
     return schar(((cptr.ld1s(onamebuf) || cptr.ld1s(ocallbuf)) ? 1 : 0));
 }
 
-/** C ref: iactions.c:86 — @param {CPtr} obj @param {CPtr} outbuf @returns {CInt} */
+/** C ref: iactions.c:86 — @param {CPtr<struct obj>} obj @param {CPtr<char>} outbuf @returns {CInt} */
 function item_reading_classification(obj, outbuf) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let res = NHC.IA_READ_OBJ;
@@ -276,7 +276,7 @@ function item_reading_classification(obj, outbuf) {
     return res;
 }
 
-/** C ref: iactions.c:127 — @param {CInt} win @param {CInt} act @param {CInt} let @param {CPtr} txt */
+/** C ref: iactions.c:127 — @param {CInt} win @param {CInt} act @param {CInt} let @param {CPtr<char>} txt */
 function ia_addmenu(win, act, let$, txt) {
     let any = cptr.alloc(8);
     let clr = NHM.NO_COLOR;
@@ -285,7 +285,7 @@ function ia_addmenu(win, act, let$, txt) {
     add_menu(win, nul_glyphinfo.v, any, let$, 0, NHM.ATR_NONE, clr, txt, NHM.MENU_ITEMFLAGS_NONE);
 }
 
-/** C ref: iactions.c:140 — @param {CPtr} otmp @param {CInt} act */
+/** C ref: iactions.c:140 — @param {CPtr<struct obj>} otmp @param {CInt} act */
 function itemactions_pushkeys(otmp, act) {
     switch (act) {
         default:
@@ -403,7 +403,7 @@ function itemactions_pushkeys(otmp, act) {
     }
 }
 
-/** C ref: iactions.c:278 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: iactions.c:278 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function itemactions(otmp) {
     let n;
     let act = NHC.IA_NONE;

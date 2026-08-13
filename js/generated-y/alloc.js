@@ -17,7 +17,7 @@ const __sl2 = cptr.lit("%p");
 const __sl3 = cptr.lit("dupstr: string length overflow");
 const __sl4 = cptr.lit("Overflow at %s:%d");
 
-/** C ref: alloc.c:68 — @param {CUInt} lth @returns {CPtr} */
+/** C ref: alloc.c:68 — @param {CUInt} lth @returns {CPtr<long>} */
 export function* alloc(lth) {
     let ptr;
     {
@@ -30,7 +30,7 @@ export function* alloc(lth) {
     return ptr;
 }
 
-/** C ref: alloc.c:85 — @param {CPtr} oldptr @param {CUInt} newlth @returns {CPtr} */
+/** C ref: alloc.c:85 — @param {CPtr<long>} oldptr @param {CUInt} newlth @returns {CPtr<long>} */
 export function* re_alloc(oldptr, newlth) {
     let newptr;
     {
@@ -49,7 +49,7 @@ const ptrbuf = (function () { const flat = new Uint8Array(4 * (32 * 1)); const a
 /** C ref: alloc.c:121 — int */
 let ptrbufidx = 0;
 
-/** C ref: alloc.c:125 — @param {CPtr} ptr @returns {CPtr} */
+/** C ref: alloc.c:125 — @param {CPtr<void>} ptr @returns {CPtr<char>} */
 export function fmt_ptr(ptr) {
     let buf;
     buf = cptr.decay(ptrbuf[ptrbufidx]);
@@ -59,7 +59,7 @@ export function fmt_ptr(ptr) {
     return buf;
 }
 
-/** C ref: alloc.c:238 — @param {CPtr} string @returns {CPtr} */
+/** C ref: alloc.c:238 — @param {CPtr<char>} string @returns {CPtr<char>} */
 export function* dupstr(string) {
     let len = cptr.strlen(string);
     if (len > BigInt(((~0 - 1) >>> 0) >>> 0))
@@ -67,7 +67,7 @@ export function* dupstr(string) {
     return cptr.strcpy((yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, len + 1n))))), string);
 }
 
-/** C ref: alloc.c:266 — @param {CLongLong} i @param {CPtr} file @param {CInt} line @returns {CInt} */
+/** C ref: alloc.c:266 — @param {CLongLong} i @param {CPtr<char>} file @param {CInt} line @returns {CInt} */
 export function* FITSint_(i, file, line) {
     let iret = Number(BigInt.asIntN(32, i));
     if (BigInt(iret) != i)
@@ -75,7 +75,7 @@ export function* FITSint_(i, file, line) {
     return iret;
 }
 
-/** C ref: alloc.c:276 — @param {CLongLong} ull @param {CPtr} file @param {CInt} line @returns {CUInt} */
+/** C ref: alloc.c:276 — @param {CLongLong} ull @param {CPtr<char>} file @param {CInt} line @returns {CUInt} */
 export function* FITSuint_(ull, file, line) {
     let uret = Number(BigInt.asUintN(32, ull));
     if (BigInt(uret >>> 0) != ull)

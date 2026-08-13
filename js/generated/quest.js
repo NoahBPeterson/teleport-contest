@@ -178,7 +178,7 @@ export function leaddead() {
     }
 }
 
-/** C ref: quest.c:125 — @param {CPtr} obj */
+/** C ref: quest.c:125 — @param {CPtr<struct obj>} obj */
 export function artitouch(obj) {
     if (!((cptr.ldI32o(svq, $q_score_touched_artifact) & 1))) {
         observe_object(obj);
@@ -243,7 +243,7 @@ function expulsion(seal) {
     }
 }
 
-/** C ref: quest.c:226 — @param {CPtr} obj */
+/** C ref: quest.c:226 — @param {CPtr<struct obj>} obj */
 export function finish_quest(obj) {
     let otmp;
     if (obj && !is_quest_artifact(obj)) {
@@ -278,7 +278,7 @@ export function finish_quest(obj) {
     }
 }
 
-/** C ref: quest.c:282 — @param {CPtr} mtmp */
+/** C ref: quest.c:282 — @param {CPtr<struct monst>} mtmp */
 function chat_with_leader(mtmp) {
     if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || ((cptr.ldI32o(svq, $q_score_pissed_off) & 1)) | 0)
         return;
@@ -332,7 +332,7 @@ function chat_with_leader(mtmp) {
     }
 }
 
-/** C ref: quest.c:371 — @param {CPtr} mtmp */
+/** C ref: quest.c:371 — @param {CPtr<struct monst>} mtmp */
 export function leader_speaks(mtmp) {
     if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1)) {
         if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1))) {
@@ -390,7 +390,7 @@ function chat_with_guardian() {
         qt_pager(__sl41);
 }
 
-/** C ref: quest.c:451 — @param {CPtr} mtmp */
+/** C ref: quest.c:451 — @param {CPtr<struct monst>} mtmp */
 function prisoner_speaks(mtmp) {
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_PRISONER, 96)) && (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
         if (canseemon(mtmp))
@@ -405,7 +405,7 @@ function prisoner_speaks(mtmp) {
     return;
 }
 
-/** C ref: quest.c:473 — @param {CPtr} mtmp */
+/** C ref: quest.c:473 — @param {CPtr<struct monst>} mtmp */
 export function quest_chat(mtmp) {
     if (cptr.ldI32o(mtmp, $monst_m_id) == (cptr.ldI32o(svq, $q_score_leader_m_id))) {
         chat_with_leader(mtmp);
@@ -425,7 +425,7 @@ export function quest_chat(mtmp) {
     }
 }
 
-/** C ref: quest.c:495 — @param {CPtr} mtmp */
+/** C ref: quest.c:495 — @param {CPtr<struct monst>} mtmp */
 export function quest_talk(mtmp) {
     if (cptr.ldI32o(mtmp, $monst_m_id) == (cptr.ldI32o(svq, $q_score_leader_m_id))) {
         leader_speaks(mtmp);
@@ -443,7 +443,7 @@ export function quest_talk(mtmp) {
     }
 }
 
-/** C ref: quest.c:514 — @param {CPtr} mtmp */
+/** C ref: quest.c:514 — @param {CPtr<struct monst>} mtmp */
 export function quest_stat_check(mtmp) {
     if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_NEMESIS)
         cptr.stI32o(svq, $q_score_in_battle, (!helpless(mtmp) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0) >>> 0);

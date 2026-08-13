@@ -241,7 +241,7 @@ const __sl150 = cptr.lit("splinters to fragments");
 const __sl151 = cptr.lit("is destroyed");
 const __sl152 = cptr.lit("%s %s!");
 
-/** C ref: lock.c:17 — @param {CPtr} x @param {CPtr} y @returns {CInt} */
+/** C ref: lock.c:17 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @returns {CInt} */
 export function picking_lock(x, y) {
     if (cptr.ldPtro(go, $instance_globals_o_occupation) === picklock) {
         cptr.stI16(x, i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)));
@@ -264,7 +264,7 @@ cptr.stPtro(__static_lock_action_actions, 8, __sl1);
 cptr.stPtro(__static_lock_action_actions, 16, __sl2);
 cptr.stPtro(__static_lock_action_actions, 24, __sl3); /** C ref: lock.c:41 — char *[4] (function-static) */
 
-/** C ref: lock.c:38 @returns {CPtr} */
+/** C ref: lock.c:38 @returns {CPtr<char>} */
 function lock_action() {
     if (cptr.ldPtro(gx, $instance_globals_x_xlock) && !(((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) & NHM.D_LOCKED))
         return cptr.add(cptr.ldPtro(__static_lock_action_actions, 0, 8), 2);
@@ -362,7 +362,7 @@ function* picklock() {
     return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
 }
 
-/** C ref: lock.c:162 — @param {CPtr} box @param {CInt} destroyit */
+/** C ref: lock.c:162 — @param {CPtr<struct obj>} box @param {CInt} destroyit */
 export function* breakchestlock(box, destroyit) {
     if (!destroyit) {
         let hide_contents = cptr.ldPtro(box, $obj_cobj);
@@ -443,13 +443,13 @@ export function reset_pick() {
     cptr.stPtro(gx, $instance_globals_x_xlock + $xlock_s_box, null);
 }
 
-/** C ref: lock.c:269 — @param {CPtr} container */
+/** C ref: lock.c:269 — @param {CPtr<struct obj>} container */
 export function maybe_reset_pick(container) {
     if (container ? (cptr.eq(container, cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box))) : (!cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box) || !(cptr.ld1so((cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box)), $obj_where) == NHM.OBJ_INVENT) ? 1 : 0))
         reset_pick();
 }
 
-/** C ref: lock.c:289 — @param {CInt} opening @returns {CPtr} */
+/** C ref: lock.c:289 — @param {CInt} opening @returns {CPtr<struct obj>} */
 export function autokey(opening) {
     let o;
     let key;
@@ -510,7 +510,7 @@ export function autokey(opening) {
 
 const __static_pick_lock_no_longer = cptr.bytes("Unfortunately, you can no longer %s %s."); /** C ref: lock.c:381 — char[40] (function-static) */
 
-/** C ref: lock.c:358 — @param {CPtr} pick @param {CInt} rx @param {CInt} ry @param {CPtr} container @returns {CInt} */
+/** C ref: lock.c:358 — @param {CPtr<struct obj>} pick @param {CInt} rx @param {CInt} ry @param {CPtr<struct obj>} container @returns {CInt} */
 export function* pick_lock(pick, rx, ry, container) {
     let dummypick = cptr.alloc(216);
     let picktyp;
@@ -1040,7 +1040,7 @@ export function* doclose() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: lock.c:1056 — @param {CPtr} obj @param {CPtr} otmp @returns {CInt} */
+/** C ref: lock.c:1056 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function* boxlock(obj, otmp) {
     let res = 0;
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
@@ -1081,7 +1081,7 @@ export function* boxlock(obj, otmp) {
     return res;
 }
 
-/** C ref: lock.c:1103 — @param {CPtr} otmp @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: lock.c:1103 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* doorlock(otmp, x, y) {
     let door = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     let res = 1;
@@ -1233,7 +1233,7 @@ export function* doorlock(otmp, x, y) {
     return res;
 }
 
-/** C ref: lock.c:1276 — @param {CPtr} otmp */
+/** C ref: lock.c:1276 — @param {CPtr<struct obj>} otmp */
 function* chest_shatter_msg(otmp) {
     let disposition;
     let thing;

@@ -168,7 +168,7 @@ cptr.stPtro(developers, 440, __sl38);
 cptr.stPtro(developers, 448, __sl13);
 cptr.stPtro(developers, 456, __sl39);
 
-/** C ref: mplayer.c:44 @returns {CPtr} */
+/** C ref: mplayer.c:44 @returns {CPtr<char>} */
 function dev_name() {
     let i;
     let m = 0;
@@ -193,7 +193,7 @@ function dev_name() {
     return (cptr.ldPtro(developers, i, 8));
 }
 
-/** C ref: mplayer.c:72 — @param {CPtr} mtmp @param {CPtr} nam */
+/** C ref: mplayer.c:72 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} nam */
 function get_mplname(mtmp, nam) {
     let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 131072n) != 0n));
     let devnam;
@@ -212,7 +212,7 @@ function get_mplname(mtmp, nam) {
     void cptr.strcat(nam, rank_of(cptr.ld1uo(mtmp, $monst_m_lev), (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)), schar((cptr.ldI32o(mtmp, $monst_female) & 1))));
 }
 
-/** C ref: mplayer.c:95 — @param {CPtr} mon @param {CInt} typ */
+/** C ref: mplayer.c:95 — @param {CPtr<struct monst>} mon @param {CInt} typ */
 function* mk_mplayer_armor(mon, typ) {
     let obj;
     if (typ == NHC.STRANGE_OBJECT)
@@ -229,7 +229,7 @@ function* mk_mplayer_armor(mon, typ) {
     void (yield* mpickobj(mon, obj));
 }
 
-/** C ref: mplayer.c:118 — @param {CPtr} ptr @param {CInt} x @param {CInt} y @param {CInt} special @returns {CPtr} */
+/** C ref: mplayer.c:118 — @param {CPtr<struct permonst>} ptr @param {CInt} x @param {CInt} y @param {CInt} special @returns {CPtr<struct monst>} */
 export function* mk_mplayer(ptr, x, y, special) {
     let mtmp;
     let nam = new Uint8Array(32);
@@ -438,7 +438,7 @@ cptr.stPtro(__static_mplayer_talk_other_class_msg, 0, __sl56);
 cptr.stPtro(__static_mplayer_talk_other_class_msg, 8, __sl57);
 cptr.stPtro(__static_mplayer_talk_other_class_msg, 16, __sl58); /** C ref: mplayer.c:364 — char *[3] (function-static) */
 
-/** C ref: mplayer.c:356 — @param {CPtr} mtmp */
+/** C ref: mplayer.c:356 — @param {CPtr<struct monst>} mtmp */
 export function* mplayer_talk(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
         return;

@@ -126,7 +126,7 @@ export function newpw() {
     return en;
 }
 
-/** C ref: exper.c:85 — @param {CPtr} mtmp @param {CInt} nk @returns {CInt} */
+/** C ref: exper.c:85 — @param {CPtr<struct monst>} mtmp @param {CInt} nk @returns {CInt} */
 export function experience(mtmp, nk) {
     let ptr = cptr.ldPtro(mtmp, $monst_data);
     let i;
@@ -203,7 +203,7 @@ export function more_experienced(exper, rexp) {
         cptr.st1o(flags, $flag_beginner, 0);
 }
 
-/** C ref: exper.c:207 — @param {CPtr} drainer */
+/** C ref: exper.c:207 — @param {CPtr<char>} drainer */
 export function losexp(drainer) {
     let num;
     let uhpmin;

@@ -131,7 +131,7 @@ cptr.stPtro(luaX_tokens, 272, __sl34);
 cptr.stPtro(luaX_tokens, 280, __sl35);
 cptr.stPtro(luaX_tokens, 288, __sl36);
 
-/** C ref: llex.c:57 — @param {CPtr} ls @param {CInt} c */
+/** C ref: llex.c:57 — @param {CPtr<LexState>} ls @param {CInt} c */
 function save(ls, c) {
     let b = cptr.ldPtro(ls, $LexState_buff);
     if (BigInt.asUintN(64, (cptr.ldU64o((b), $Mbuffer_n)) + 1n) > (cptr.ldU64o((b), $Mbuffer_buffsize))) {
@@ -144,7 +144,7 @@ function save(ls, c) {
     cptr.st1o(cptr.ldPtr(b), (cptr.stU64o((b), $Mbuffer_n, cptr.ldU64o((b), $Mbuffer_n) + 1n)) - (1n), (schar(((c)))));
 }
 
-/** C ref: llex.c:70 — @param {CPtr} L */
+/** C ref: llex.c:70 — @param {CPtr<lua_State>} L */
 export function luaX_init(L) {
     let i;
     let e = (luaS_newlstr(L, __sl38, BigInt.asUintN(64, (5n / 1n) - 1n)));
@@ -156,7 +156,7 @@ export function luaX_init(L) {
     }
 }
 
-/** C ref: llex.c:82 — @param {CPtr} ls @param {CInt} token @returns {CPtr} */
+/** C ref: llex.c:82 — @param {CPtr<LexState>} ls @param {CInt} token @returns {CPtr<char>} */
 export function luaX_token2str(ls, token) {
     if (token < 256) {
         if ((cptr.ld1uo(cptr.decay(luai_ctype_), ((token) + 1) | 0, 1) & 4))
@@ -172,7 +172,7 @@ export function luaX_token2str(ls, token) {
     }
 }
 
-/** C ref: llex.c:99 — @param {CPtr} ls @param {CInt} token @returns {CPtr} */
+/** C ref: llex.c:99 — @param {CPtr<LexState>} ls @param {CInt} token @returns {CPtr<char>} */
 function txtToken(ls, token) {
     switch (token) {
         case NHC.TK_NAME:
@@ -186,7 +186,7 @@ function txtToken(ls, token) {
     }
 }
 
-/** C ref: llex.c:111 — @param {CPtr} ls @param {CPtr} msg @param {CInt} token */
+/** C ref: llex.c:111 — @param {CPtr<LexState>} ls @param {CPtr<char>} msg @param {CInt} token */
 function lexerror(ls, msg, token) {
     msg = luaG_addinfo(cptr.ldPtro(ls, $LexState_L), msg, cptr.ldPtro(ls, $LexState_source), cptr.ldI32o(ls, $LexState_linenumber));
     if (token)
@@ -194,12 +194,12 @@ function lexerror(ls, msg, token) {
     luaD_throw(cptr.ldPtro(ls, $LexState_L), 3);
 }
 
-/** C ref: llex.c:119 — @param {CPtr} ls @param {CPtr} msg */
+/** C ref: llex.c:119 — @param {CPtr<LexState>} ls @param {CPtr<char>} msg */
 export function luaX_syntaxerror(ls, msg) {
     lexerror(ls, msg, cptr.ldI32o(ls, $LexState_t));
 }
 
-/** C ref: llex.c:134 — @param {CPtr} ls @param {CPtr} str @param {CLongLong} l @returns {CPtr} */
+/** C ref: llex.c:134 — @param {CPtr<LexState>} ls @param {CPtr<char>} str @param {CLongLong} l @returns {CPtr<TString>} */
 export function luaX_newstring(ls, str, l) {
     let L = cptr.ldPtro(ls, $LexState_L);
     let ts = luaS_newlstr(L, str, l);
@@ -232,7 +232,7 @@ export function luaX_newstring(ls, str, l) {
     return ts;
 }
 
-/** C ref: llex.c:156 — @param {CPtr} ls */
+/** C ref: llex.c:156 — @param {CPtr<LexState>} ls */
 function inclinenumber(ls) {
     let old = cptr.ldI32(ls);
     (void 0);
@@ -243,7 +243,7 @@ function inclinenumber(ls) {
         lexerror(ls, __sl43, 0);
 }
 
-/** C ref: llex.c:167 — @param {CPtr} L @param {CPtr} ls @param {CPtr} z @param {CPtr} source @param {CInt} firstchar */
+/** C ref: llex.c:167 — @param {CPtr<lua_State>} L @param {CPtr<LexState>} ls @param {CPtr<ZIO>} z @param {CPtr<TString>} source @param {CInt} firstchar */
 export function luaX_setinput(L, ls, z, source, firstchar) {
     cptr.stI32o(ls, $LexState_t, 0);
     cptr.stPtro(ls, $LexState_L, L);
@@ -258,7 +258,7 @@ export function luaX_setinput(L, ls, z, source, firstchar) {
     (cptr.stPtr((cptr.ldPtro(ls, $LexState_buff)), (((luaM_saferealloc_(cptr.ldPtro(ls, $LexState_L), (cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff)))), BigInt.asUintN(64, (cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_buffsize)) * 1n), 32n))))), cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_buffsize, 32n));
 }
 
-/** C ref: llex.c:191 — @param {CPtr} ls @param {CInt} c @returns {CInt} */
+/** C ref: llex.c:191 — @param {CPtr<LexState>} ls @param {CInt} c @returns {CInt} */
 function check_next1(ls, c) {
     if (cptr.ldI32(ls) == c) {
         (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtro(ls, $LexState_z)), cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); })))))) : luaZ_fill(cptr.ldPtro(ls, $LexState_z)))));
@@ -267,7 +267,7 @@ function check_next1(ls, c) {
         return 0;
 }
 
-/** C ref: llex.c:204 — @param {CPtr} ls @param {CPtr} set @returns {CInt} */
+/** C ref: llex.c:204 — @param {CPtr<LexState>} ls @param {CPtr<char>} set @returns {CInt} */
 function check_next2(ls, set) {
     (void 0);
     if (cptr.ldI32(ls) == cptr.ld1so(set, 0) || cptr.ldI32(ls) == cptr.ld1so(set, 1)) {
@@ -277,7 +277,7 @@ function check_next2(ls, set) {
         return 0;
 }
 
-/** C ref: llex.c:227 — @param {CPtr} ls @param {CPtr} seminfo @returns {CInt} */
+/** C ref: llex.c:227 — @param {CPtr<LexState>} ls @param {CPtr<SemInfo>} seminfo @returns {CInt} */
 function read_numeral(ls, seminfo) {
     let obj = cptr.alloc(16);
     let expo = __sl44;
@@ -309,7 +309,7 @@ function read_numeral(ls, seminfo) {
     }
 }
 
-/** C ref: llex.c:265 — @param {CPtr} ls @returns {*} */
+/** C ref: llex.c:265 — @param {CPtr<LexState>} ls @returns {*} */
 function skip_sep(ls) {
     let count = 0n;
     let s = cptr.ldI32(ls);
@@ -322,7 +322,7 @@ function skip_sep(ls) {
     return (cptr.ldI32(ls) == s) ? BigInt.asUintN(64, count + 2n) : BigInt.asUintN(64, BigInt(((count == 0n) ? 1 : 0)));
 }
 
-/** C ref: llex.c:280 — @param {CPtr} ls @param {CPtr} seminfo @param {CLongLong} sep */
+/** C ref: llex.c:280 — @param {CPtr<LexState>} ls @param {CPtr<SemInfo>} seminfo @param {CLongLong} sep */
 function read_long_string(ls, seminfo, sep) {
     let line = cptr.ldI32o(ls, $LexState_linenumber);
     __lbl_endloop: {
@@ -369,7 +369,7 @@ function read_long_string(ls, seminfo, sep) {
         cptr.stPtr(seminfo, luaX_newstring(ls, cptr.add((cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff)))), sep), BigInt.asUintN(64, (cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n)) - BigInt.asUintN(64, 2n * sep))));
 }
 
-/** C ref: llex.c:319 — @param {CPtr} ls @param {CInt} c @param {CPtr} msg */
+/** C ref: llex.c:319 — @param {CPtr<LexState>} ls @param {CInt} c @param {CPtr<char>} msg */
 function esccheck(ls, c, msg) {
     if (!c) {
         if (cptr.ldI32(ls) != -1)
@@ -378,14 +378,14 @@ function esccheck(ls, c, msg) {
     }
 }
 
-/** C ref: llex.c:328 — @param {CPtr} ls @returns {CInt} */
+/** C ref: llex.c:328 — @param {CPtr<LexState>} ls @returns {CInt} */
 function gethexa(ls) {
     (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtro(ls, $LexState_z)), cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); })))))) : luaZ_fill(cptr.ldPtro(ls, $LexState_z))))));
     esccheck(ls, (cptr.ld1uo(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1) & 16), __sl52);
     return luaO_hexavalue(cptr.ldI32(ls));
 }
 
-/** C ref: llex.c:335 — @param {CPtr} ls @returns {CInt} */
+/** C ref: llex.c:335 — @param {CPtr<LexState>} ls @returns {CInt} */
 function readhexaesc(ls) {
     let r = gethexa(ls);
     r = ((r << 4) + gethexa(ls)) | 0;
@@ -393,7 +393,7 @@ function readhexaesc(ls) {
     return r;
 }
 
-/** C ref: llex.c:343 — @param {CPtr} ls @returns {CLongLong} */
+/** C ref: llex.c:343 — @param {CPtr<LexState>} ls @returns {CLongLong} */
 function readutf8esc(ls) {
     let r;
     let i = 4;
@@ -411,7 +411,7 @@ function readutf8esc(ls) {
     return r;
 }
 
-/** C ref: llex.c:361 — @param {CPtr} ls */
+/** C ref: llex.c:361 — @param {CPtr<LexState>} ls */
 function utf8esc(ls) {
     let buff = new Uint8Array(8);
     let n = luaO_utf8esc(cptr.decay(buff), readutf8esc(ls));
@@ -419,7 +419,7 @@ function utf8esc(ls) {
         save(ls, cptr.ld1so(cptr.decay(buff), (8 - n) | 0, 1));
 }
 
-/** C ref: llex.c:369 — @param {CPtr} ls @returns {CInt} */
+/** C ref: llex.c:369 — @param {CPtr<LexState>} ls @returns {CInt} */
 function readdecesc(ls) {
     let i;
     let r = 0;
@@ -432,7 +432,7 @@ function readdecesc(ls) {
     return r;
 }
 
-/** C ref: llex.c:382 — @param {CPtr} ls @param {CInt} del @param {CPtr} seminfo */
+/** C ref: llex.c:382 — @param {CPtr<LexState>} ls @param {CInt} del @param {CPtr<SemInfo>} seminfo */
 function read_string(ls, del, seminfo) {
     (save(ls, cptr.ldI32(ls)), (cptr.stI32(ls, (((cptr.stU64((cptr.ldPtro(ls, $LexState_z)), cptr.ldU64((cptr.ldPtro(ls, $LexState_z))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtro(ls, $LexState_z)), $ZIO_p, v); })))))) : luaZ_fill(cptr.ldPtro(ls, $LexState_z))))));
     while (cptr.ldI32(ls) != del) {
@@ -526,7 +526,7 @@ function read_string(ls, del, seminfo) {
     cptr.stPtr(seminfo, luaX_newstring(ls, cptr.add((cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff)))), 1), BigInt.asUintN(64, (cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n)) - 2n)));
 }
 
-/** C ref: llex.c:445 — @param {CPtr} ls @param {CPtr} seminfo @returns {CInt} */
+/** C ref: llex.c:445 — @param {CPtr<LexState>} ls @param {CPtr<SemInfo>} seminfo @returns {CInt} */
 function llex(ls, seminfo) {
     (cptr.stU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n, 0n));
     for (; ; ) {
@@ -686,7 +686,7 @@ function llex(ls, seminfo) {
     }
 }
 
-/** C ref: llex.c:565 — @param {CPtr} ls */
+/** C ref: llex.c:565 — @param {CPtr<LexState>} ls */
 export function luaX_next(ls) {
     cptr.stI32o(ls, $LexState_lastline, cptr.ldI32o(ls, $LexState_linenumber));
     if (cptr.ldI32o(ls, $LexState_lookahead) != NHC.TK_EOS) {
@@ -696,7 +696,7 @@ export function luaX_next(ls) {
         cptr.stI32o(ls, $LexState_t, llex(ls, cptr.add(ls, $LexState_t + $Token_seminfo)));
 }
 
-/** C ref: llex.c:576 — @param {CPtr} ls @returns {CInt} */
+/** C ref: llex.c:576 — @param {CPtr<LexState>} ls @returns {CInt} */
 export function luaX_lookahead(ls) {
     (void 0);
     cptr.stI32o(ls, $LexState_lookahead, llex(ls, cptr.add(ls, $LexState_lookahead + $Token_seminfo)));

@@ -134,24 +134,24 @@ export function quest_info(typ) {
     return 0;
 }
 
-/** C ref: questpgr.c:50 @returns {CPtr} */
+/** C ref: questpgr.c:50 @returns {CPtr<char>} */
 export function ldrname() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_ldrnum);
     void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
-/** C ref: questpgr.c:61 @returns {CPtr} */
+/** C ref: questpgr.c:61 @returns {CPtr<char>} */
 function intermed() {
     return cptr.ldPtro(gu, $instance_globals_u_urole + $Role_intermed);
 }
 
-/** C ref: questpgr.c:67 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: questpgr.c:67 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function is_quest_artifact(otmp) {
     return schar((cptr.ld1so(otmp, $obj_oartifact) == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti)));
 }
 
-/** C ref: questpgr.c:73 — @param {CPtr} ochain @returns {CPtr} */
+/** C ref: questpgr.c:73 — @param {CPtr<struct obj>} ochain @returns {CPtr<struct obj>} */
 function find_qarti(ochain) {
     let otmp;
     let qarti;
@@ -164,7 +164,7 @@ function find_qarti(ochain) {
     return null;
 }
 
-/** C ref: questpgr.c:89 — @param {CUInt} whichchains @returns {CPtr} */
+/** C ref: questpgr.c:89 — @param {CUInt} whichchains @returns {CPtr<struct obj>} */
 export function find_quest_artifact(whichchains) {
     let mtmp;
     let qarti = null;
@@ -194,25 +194,25 @@ export function find_quest_artifact(whichchains) {
     return qarti;
 }
 
-/** C ref: questpgr.c:124 @returns {CPtr} */
+/** C ref: questpgr.c:124 @returns {CPtr<char>} */
 function neminame() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_neminum);
     void cptr.sprintf(cptr.add(gn, $instance_globals_n_nambuf), __sl1, ((cptr.ldU64o((cptr.add(mons, i, 96)), $permonst_mflags2) & 524288n) != 0n) ? __sl2 : __sl3, cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0));
     return cptr.add(gn, $instance_globals_n_nambuf);
 }
 
-/** C ref: questpgr.c:134 @returns {CPtr} */
+/** C ref: questpgr.c:134 @returns {CPtr<char>} */
 function guardname() {
     let i = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum);
     return cptr.ldPtro3(mons, i, 96, NHC.NEUTRAL, 8, 0);
 }
 
-/** C ref: questpgr.c:142 @returns {CPtr} */
+/** C ref: questpgr.c:142 @returns {CPtr<char>} */
 function homebase() {
     return cptr.ldPtro(gu, $instance_globals_u_urole + $Role_homebase);
 }
 
-/** C ref: questpgr.c:150 — @param {CPtr} mon @returns {CInt} */
+/** C ref: questpgr.c:150 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function stinky_nemesis(mon) {
     let mesg = cptr.box(null);
     let res = 0;
@@ -331,7 +331,7 @@ function convert_arg(c) {
     void cptr.strcpy(cptr.add(gc, $instance_globals_c_cvt_buf), str);
 }
 
-/** C ref: questpgr.c:328 — @param {CPtr} in_line @param {CPtr} out_line */
+/** C ref: questpgr.c:328 — @param {CPtr<char>} in_line @param {CPtr<char>} out_line */
 function convert_line(in_line, out_line) {
     let c;
     let cc;
@@ -411,7 +411,7 @@ function convert_line(in_line, out_line) {
     return;
 }
 
-/** C ref: questpgr.c:423 — @param {CPtr} str */
+/** C ref: questpgr.c:423 — @param {CPtr<char>} str */
 function deliver_by_pline(str) {
     let in_line = new Uint8Array(256);
     let out_line = new Uint8Array(256);
@@ -425,7 +425,7 @@ function deliver_by_pline(str) {
     }
 }
 
-/** C ref: questpgr.c:439 — @param {CPtr} msg @param {CInt} how */
+/** C ref: questpgr.c:439 — @param {CPtr<char>} msg @param {CInt} how */
 function deliver_by_window(msg, how) {
     let in_line = new Uint8Array(256);
     let out_line = new Uint8Array(256);
@@ -464,7 +464,7 @@ cptr.stI32o(__static_com_pager_core_howtoput2i, 12, 3);
 cptr.stI32o(__static_com_pager_core_howtoput2i, 16, 0);
 cptr.stI32o(__static_com_pager_core_howtoput2i, 20, 0); /** C ref: questpgr.c:477 — int[6] (function-static) */
 
-/** C ref: questpgr.c:468 — @param {CPtr} section @param {CPtr} msgid @param {CInt} showerror @param {CPtr} rawtext @returns {CInt} */
+/** C ref: questpgr.c:468 — @param {CPtr<char>} section @param {CPtr<char>} msgid @param {CInt} showerror @param {CPtr<char *>} rawtext @returns {CInt} */
 function com_pager_core(section, msgid, showerror, rawtext) {
     let output;
     let L;
@@ -637,18 +637,18 @@ function com_pager_core(section, msgid, showerror, rawtext) {
     }
 }
 
-/** C ref: questpgr.c:624 — @param {CPtr} msgid */
+/** C ref: questpgr.c:624 — @param {CPtr<char>} msgid */
 export function com_pager(msgid) {
     void com_pager_core(__sl51, msgid, 1, null);
 }
 
-/** C ref: questpgr.c:630 — @param {CPtr} msgid */
+/** C ref: questpgr.c:630 — @param {CPtr<char>} msgid */
 export function qt_pager(msgid) {
     if (!com_pager_core(cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), msgid, 0, null))
         void com_pager_core(__sl51, msgid, 1, null);
 }
 
-/** C ref: questpgr.c:637 @returns {CPtr} */
+/** C ref: questpgr.c:637 @returns {CPtr<struct permonst>} */
 export function qt_montype() {
     let qpm;
     if ((rng_log_enabled() ? (rng_log_set_caller(__sl45, 641, __sl52), rn2(5)) : rn2(5))) {

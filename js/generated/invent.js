@@ -519,7 +519,7 @@ cptr.stPtro(inuse_headers, 16, __sl2);
 cptr.stPtro(inuse_headers, 24, __sl3);
 cptr.stPtro(inuse_headers, 32, __sl4);
 
-/** C ref: invent.c:70 — @param {CPtr} sort_item @param {CPtr} obj */
+/** C ref: invent.c:70 — @param {CPtr<Loot>} sort_item @param {CPtr<struct obj>} obj */
 function inuse_classify(sort_item, obj) {
     let w_mask = (cptr.ldI64o(obj, $obj_owornmask) & 984959n);
     let rating = 0;
@@ -621,7 +621,7 @@ function inuse_classify(sort_item, obj) {
 const __static_loot_classify_def_srt_order = [NHC.COIN_CLASS, NHC.AMULET_CLASS, NHC.RING_CLASS, NHC.WAND_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLASS, NHC.SPBOOK_CLASS, NHC.GEM_CLASS, NHC.FOOD_CLASS, NHC.TOOL_CLASS, NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.ROCK_CLASS, NHC.BALL_CLASS, NHC.CHAIN_CLASS, 0]; /** C ref: invent.c:155 — char[18] (function-static) */
 const __static_loot_classify_armcat = new Uint8Array(8); /** C ref: invent.c:160 — char[8] (function-static) */
 
-/** C ref: invent.c:149 — @param {CPtr} sort_item @param {CPtr} obj */
+/** C ref: invent.c:149 — @param {CPtr<Loot>} sort_item @param {CPtr<struct obj>} obj */
 export function loot_classify(sort_item, obj) {
     let classorder;
     let p;
@@ -727,7 +727,7 @@ export function loot_classify(sort_item, obj) {
     cptr.st1o(sort_item, $Loot_inuse, 0);
 }
 
-/** C ref: invent.c:309 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:309 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function loot_xname(obj) {
     let saveo = cptr.alloc(216);
     let save_debug;
@@ -782,7 +782,7 @@ function invletter_value(c) {
     return (97 <= c && c <= 122) ? ((((c - 97) | 0) + 2) | 0) : ((65 <= c && c <= 90) ? ((((((c - 65) | 0) + 2) | 0) + 26) | 0) : ((c == 36) ? 1 : ((c == 35) ? ((((1 + NHC.invlet_basic) | 0) + 1) | 0) : ((((((1 + NHC.invlet_basic) | 0) + 1) | 0) + 1) | 0))));
 }
 
-/** C ref: invent.c:403 — @param {CPtr} vptr1 @param {CPtr} vptr2 @returns {CInt} */
+/** C ref: invent.c:403 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function sortloot_cmp(vptr1, vptr2) {
     let sli1 = vptr1;
     let sli2 = vptr2;
@@ -876,7 +876,7 @@ function sortloot_cmp(vptr1, vptr2) {
 
 let __static_sortloot_zerosli = cptr.alloc(24); /** C ref: invent.c:599 — struct sortloot_item (function-static) */
 
-/** C ref: invent.c:593 — @param {CPtr} olist @param {CUInt} mode @param {CInt} by_nexthere @param {CPtr} filterfunc @returns {CPtr} */
+/** C ref: invent.c:593 — @param {CPtr<struct obj *>} olist @param {CUInt} mode @param {CInt} by_nexthere @param {CPtr} filterfunc @returns {CPtr<Loot>} */
 export function sortloot(olist, mode, by_nexthere, filterfunc) {
     let sliarray;
     let o;
@@ -909,13 +909,13 @@ export function sortloot(olist, mode, by_nexthere, filterfunc) {
     return sliarray;
 }
 
-/** C ref: invent.c:647 — @param {CPtr} loot_array_p */
+/** C ref: invent.c:647 — @param {CPtr<Loot *>} loot_array_p */
 export function unsortloot(loot_array_p) {
     if (cptr.ldPtr(loot_array_p))
         cptr.free(cptr.ldPtr(loot_array_p)), cptr.stPtr(loot_array_p, null);
 }
 
-/** C ref: invent.c:694 — @param {CPtr} otmp */
+/** C ref: invent.c:694 — @param {CPtr<struct obj>} otmp */
 export function assigninvlet(otmp) {
     let inuse = new Uint8Array(52);
     let i;
@@ -977,7 +977,7 @@ function reorder_invent() {
     } while (need_more_sorting);
 }
 
-/** C ref: invent.c:775 — @param {CPtr} objlist @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:775 — @param {CPtr<struct obj>} objlist @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function merge_choice(objlist, obj) {
     let shkp;
     let save_nocharge;
@@ -1001,7 +1001,7 @@ export function merge_choice(objlist, obj) {
     return objlist;
 }
 
-/** C ref: invent.c:814 — @param {CPtr} potmp @param {CPtr} pobj @returns {CInt} */
+/** C ref: invent.c:814 — @param {CPtr<struct obj *>} potmp @param {CPtr<struct obj *>} pobj @returns {CInt} */
 export function merged(potmp, pobj) {
     let otmp = cptr.ldPtr(potmp);
     let obj = cptr.ldPtr(pobj);
@@ -1071,7 +1071,7 @@ export function merged(potmp, pobj) {
     return 0;
 }
 
-/** C ref: invent.c:960 — @param {CPtr} obj */
+/** C ref: invent.c:960 — @param {CPtr<struct obj>} obj */
 export function addinv_core1(obj) {
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
         cptr.st1(disp, 1);
@@ -1115,7 +1115,7 @@ export function addinv_core1(obj) {
     }
 }
 
-/** C ref: invent.c:1025 — @param {CPtr} obj */
+/** C ref: invent.c:1025 — @param {CPtr<struct obj>} obj */
 export function addinv_core2(obj) {
     if (confers_luck(obj)) {
         set_moreluck();
@@ -1129,7 +1129,7 @@ export function addinv_core2(obj) {
     }
 }
 
-/** C ref: invent.c:1056 — @param {CPtr} obj @param {CPtr} other_obj @param {CInt} update_perm_invent @returns {CPtr} */
+/** C ref: invent.c:1056 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} other_obj @param {CInt} update_perm_invent @returns {CPtr<struct obj>} */
 function addinv_core0(obj, other_obj, update_perm_invent) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
@@ -1196,17 +1196,17 @@ function addinv_core0(obj, other_obj, update_perm_invent) {
     return obj.v;
 }
 
-/** C ref: invent.c:1152 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:1152 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function addinv(obj) {
     return addinv_core0(obj, null, 1);
 }
 
-/** C ref: invent.c:1160 — @param {CPtr} obj @param {CPtr} other_obj @returns {CPtr} */
+/** C ref: invent.c:1160 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} other_obj @returns {CPtr<struct obj>} */
 export function addinv_before(obj, other_obj) {
     return addinv_core0(obj, other_obj, 1);
 }
 
-/** C ref: invent.c:1169 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:1169 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function addinv_nomerge(obj) {
     let result;
     let save_nomerge = (cptr.ldI32o(obj, $obj_nomerge) & 1);
@@ -1216,7 +1216,7 @@ export function addinv_nomerge(obj) {
     return result;
 }
 
-/** C ref: invent.c:1187 — @param {CPtr} obj */
+/** C ref: invent.c:1187 — @param {CPtr<struct obj>} obj */
 export function carry_obj_effects(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE) {
         if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM && !dead_species(cptr.ldI32o(obj, $obj_corpsenm), 1)) {
@@ -1225,7 +1225,7 @@ export function carry_obj_effects(obj) {
     }
 }
 
-/** C ref: invent.c:1208 — @param {CPtr} obj @param {CPtr} drop_fmt @param {CPtr} drop_arg @param {CPtr} hold_msg @returns {CPtr} */
+/** C ref: invent.c:1208 — @param {CPtr<struct obj>} obj @param {CPtr<char>} drop_fmt @param {CPtr<char>} drop_arg @param {CPtr<char>} hold_msg @returns {CPtr<struct obj>} */
 export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     let buf = new Uint8Array(256);
     __lbl_drop_it: {
@@ -1296,14 +1296,14 @@ export function hold_another_object(obj, drop_fmt, drop_arg, hold_msg) {
     return null;
 }
 
-/** C ref: invent.c:1312 — @param {CPtr} obj */
+/** C ref: invent.c:1312 — @param {CPtr<struct obj>} obj */
 export function useupall(obj) {
     setnotworn(obj);
     freeinv(obj);
     obfree(obj, null);
 }
 
-/** C ref: invent.c:1321 — @param {CPtr} obj */
+/** C ref: invent.c:1321 — @param {CPtr<struct obj>} obj */
 export function useup(obj) {
     if (cptr.ldI64o(obj, $obj_quan) > 1n) {
         cptr.stI32o(obj, $obj_in_use, 0);
@@ -1315,7 +1315,7 @@ export function useup(obj) {
     }
 }
 
-/** C ref: invent.c:1337 — @param {CPtr} obj @param {CInt} maybe_unpaid */
+/** C ref: invent.c:1337 — @param {CPtr<struct obj>} obj @param {CInt} maybe_unpaid */
 export function consume_obj_charge(obj, maybe_unpaid) {
     if (maybe_unpaid)
         check_unpaid(obj);
@@ -1324,7 +1324,7 @@ export function consume_obj_charge(obj, maybe_unpaid) {
         update_inventory();
 }
 
-/** C ref: invent.c:1356 — @param {CPtr} obj */
+/** C ref: invent.c:1356 — @param {CPtr<struct obj>} obj */
 export function freeinv_core(obj) {
     if (cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS) {
         cptr.st1(disp, 1);
@@ -1367,7 +1367,7 @@ export function freeinv_core(obj) {
     }
 }
 
-/** C ref: invent.c:1403 — @param {CPtr} obj */
+/** C ref: invent.c:1403 — @param {CPtr<struct obj>} obj */
 export function freeinv(obj) {
     extract_nobj(obj, cptr.add(gi, $instance_globals_i_invent));
     cptr.stI32o(obj, $obj_pickup_prev, 0);
@@ -1389,12 +1389,12 @@ export function delallobj(x, y) {
     }
 }
 
-/** C ref: invent.c:1430 — @param {CPtr} obj */
+/** C ref: invent.c:1430 — @param {CPtr<struct obj>} obj */
 export function delobj(obj) {
     delobj_core(obj, 0);
 }
 
-/** C ref: invent.c:1438 — @param {CPtr} obj @param {CInt} force */
+/** C ref: invent.c:1438 — @param {CPtr<struct obj>} obj @param {CInt} force */
 export function delobj_core(obj, force) {
     let update_map;
     if (!force && obj_resists(obj, 0, 0)) {
@@ -1410,7 +1410,7 @@ export function delobj_core(obj, force) {
     obfree(obj, null);
 }
 
-/** C ref: invent.c:1466 — @param {CInt} otyp @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: invent.c:1466 — @param {CInt} otyp @param {CInt} x @param {CInt} y @returns {CPtr<struct obj>} */
 export function sobj_at(otyp, x, y) {
     let otmp;
     for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
@@ -1419,7 +1419,7 @@ export function sobj_at(otyp, x, y) {
     return otmp;
 }
 
-/** C ref: invent.c:1479 — @param {CPtr} obj @param {CInt} type @param {CInt} by_nexthere @returns {CPtr} */
+/** C ref: invent.c:1479 — @param {CPtr<struct obj>} obj @param {CInt} type @param {CInt} by_nexthere @returns {CPtr<struct obj>} */
 export function nxtobj(obj, type, by_nexthere) {
     let otmp;
     otmp = obj;
@@ -1431,7 +1431,7 @@ export function nxtobj(obj, type, by_nexthere) {
     return otmp;
 }
 
-/** C ref: invent.c:1495 — @param {CInt} type @returns {CPtr} */
+/** C ref: invent.c:1495 — @param {CInt} type @returns {CPtr<struct obj>} */
 export function carrying(type) {
     let otmp;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -1440,7 +1440,7 @@ export function carrying(type) {
     return otmp;
 }
 
-/** C ref: invent.c:1508 @returns {CPtr} */
+/** C ref: invent.c:1508 @returns {CPtr<struct obj>} */
 export function carrying_stoning_corpse() {
     let otmp;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -1473,7 +1473,7 @@ cptr.stPtro(currencies, 144, __sl47);
 cptr.stPtro(currencies, 152, __sl48);
 cptr.stPtro(currencies, 160, __sl49);
 
-/** C ref: invent.c:1546 — @param {CLongLong} amount @returns {CPtr} */
+/** C ref: invent.c:1546 — @param {CLongLong} amount @returns {CPtr<char>} */
 export function currency(amount) {
     let res;
     res = Hallucination() ? cptr.ldPtro(currencies, (rng_log_enabled() ? (rng_log_set_caller(__sl50, 1550, __sl51), rn2(21)) : rn2(21)), 8) : __sl49;
@@ -1482,7 +1482,7 @@ export function currency(amount) {
     return res;
 }
 
-/** C ref: invent.c:1557 @returns {CPtr} */
+/** C ref: invent.c:1557 @returns {CPtr<struct obj>} */
 export function u_carried_gloves() {
     let otmp;
     let gloves = null;
@@ -1498,7 +1498,7 @@ export function u_carried_gloves() {
     return gloves;
 }
 
-/** C ref: invent.c:1576 @returns {CPtr} */
+/** C ref: invent.c:1576 @returns {CPtr<struct obj>} */
 export function u_have_novel() {
     let otmp;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -1507,7 +1507,7 @@ export function u_have_novel() {
     return null;
 }
 
-/** C ref: invent.c:1587 — @param {CUInt} id @param {CPtr} objchn @returns {CPtr} */
+/** C ref: invent.c:1587 — @param {CUInt} id @param {CPtr<struct obj>} objchn @returns {CPtr<struct obj>} */
 export function o_on(id, objchn) {
     let temp;
     while (objchn) {
@@ -1520,7 +1520,7 @@ export function o_on(id, objchn) {
     return null;
 }
 
-/** C ref: invent.c:1602 — @param {CPtr} obj @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: invent.c:1602 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @returns {CInt} */
 export function obj_here(obj, x, y) {
     let otmp;
     for (otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
@@ -1529,7 +1529,7 @@ export function obj_here(obj, x, y) {
     return 0;
 }
 
-/** C ref: invent.c:1613 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: invent.c:1613 — @param {CInt} x @param {CInt} y @returns {CPtr<struct obj>} */
 export function g_at(x, y) {
     let obj = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
     while (obj) {
@@ -1540,7 +1540,7 @@ export function g_at(x, y) {
     return null;
 }
 
-/** C ref: invent.c:1627 — @param {CPtr} buf */
+/** C ref: invent.c:1627 — @param {CPtr<char>} buf */
 function compactify(buf) {
     let i1 = 1;
     let i2 = 1;
@@ -1574,17 +1574,17 @@ function compactify(buf) {
     }
 }
 
-/** C ref: invent.c:1664 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:1664 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function splittable(obj) {
     return schar((!((cptr.ldI16o(obj, $obj_otyp) == NHC.LOADSTONE && (cptr.ldI32o(obj, $obj_cursed) & 1) | 0) || (cptr.eq(obj, uwep.v) && welded(uwep.v)))));
 }
 
-/** C ref: invent.c:1672 — @param {CPtr} action @returns {CInt} */
+/** C ref: invent.c:1672 — @param {CPtr<char>} action @returns {CInt} */
 function taking_off(action) {
     return schar((!strcmp(action, __sl52) || !strcmp(action, __sl53) ? 1 : 0));
 }
 
-/** C ref: invent.c:1678 — @param {CPtr} word */
+/** C ref: invent.c:1678 — @param {CPtr<char>} word */
 function mime_action(word) {
     let buf = new Uint8Array(256);
     let bp;
@@ -1608,14 +1608,14 @@ function mime_action(word) {
     You(__sl61, ing_suffix(bp), pfx ? __sl62 : __sl0, pfx ? pfx : __sl0, sfx ? __sl62 : __sl0, sfx ? sfx : __sl0);
 }
 
-/** C ref: invent.c:1710 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:1710 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function any_obj_ok(obj) {
     if (obj)
         return NHC.GETOBJ_SUGGEST;
     return NHC.GETOBJ_EXCLUDE;
 }
 
-/** C ref: invent.c:1719 — @param {CPtr} action @param {CPtr} qbuf @returns {CPtr} */
+/** C ref: invent.c:1719 — @param {CPtr<char>} action @param {CPtr<char>} qbuf @returns {CPtr<char>} */
 function getobj_hands_txt(action, qbuf) {
     if (!strcmp(action, __sl63)) {
         void cptr.sprintf(qbuf, __sl64, fingers_or_gloves(0));
@@ -1633,7 +1633,7 @@ function getobj_hands_txt(action, qbuf) {
 
 const __static_getobj_only_one = cptr.bytes("can only throw one at a time"); /** C ref: invent.c:2029 — char[29] (function-static) */
 
-/** C ref: invent.c:1752 — @param {CPtr} word @param {CPtr} obj_ok @param {CUInt} ctrlflags @returns {CPtr} */
+/** C ref: invent.c:1752 — @param {CPtr<char>} word @param {CPtr} obj_ok @param {CUInt} ctrlflags @returns {CPtr<struct obj>} */
 export function getobj(word, obj_ok, ctrlflags) {
     let otmp, ilet, buf, qbuf, lets, altlets, suggested, bp, ap, allowcnt, forceprompt, allownone, inaccess, cnt, cntgiven, msggiven, oneloop, sortedinvent = cptr.box(0), srtinv, cq, cmdq, need_more_cq, v, tmpcnt = cptr.box(0), allowed_choices, ctmp = cptr.box(0), menuquery, handsbuf, coins;
     let __pc = 0;
@@ -2021,7 +2021,7 @@ export function getobj(word, obj_ok, ctrlflags) {
     }
 }
 
-/** C ref: invent.c:2094 — @param {CPtr} word @param {CPtr} otmp */
+/** C ref: invent.c:2094 — @param {CPtr<char>} word @param {CPtr<struct obj>} otmp */
 export function silly_thing(word, otmp) {
     if (!strcmp(word, __sl92) && (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR || (cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, $obj_known) & 1))))
         pline_The(__sl93);
@@ -2029,12 +2029,12 @@ export function silly_thing(word, otmp) {
         pline(cptr.ldPtro(c_common_strings, $c_common_strings_c_silly_thing_to), word);
 }
 
-/** C ref: invent.c:2136 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: invent.c:2136 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function ckvalidcat(otmp) {
     return allow_category(otmp);
 }
 
-/** C ref: invent.c:2143 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: invent.c:2143 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function ckunpaid(otmp) {
     return ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 || ((cptr.ldPtro((otmp), $obj_cobj) !== null) && count_unpaid(cptr.ldPtro(otmp, $obj_cobj))) ? 1 : 0);
 }
@@ -2044,12 +2044,12 @@ export function wearing_armor() {
     return schar((uarm.v || uarmc.v || uarmf.v || uarmg.v || uarmh.v || uarms.v || uarmu.v ? 1 : 0));
 }
 
-/** C ref: invent.c:2156 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: invent.c:2156 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function is_worn(otmp) {
     return schar(((cptr.ldI64o(otmp, $obj_owornmask) & 2033535n) ? 1 : 0));
 }
 
-/** C ref: invent.c:2167 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:2167 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function is_inuse(obj) {
     return schar(((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) && (is_worn(obj) || tool_being_used(obj)) ? 1 : 0));
 }
@@ -2059,12 +2059,12 @@ export function is_inuse(obj) {
 /** C ref: invent.c:2176 — struct xprnctx */
 let safeq_xprn_ctx = cptr.alloc(2);
 
-/** C ref: invent.c:2180 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:2180 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function safeq_xprname(obj) {
     return xprname(obj, null, cptr.ld1s(safeq_xprn_ctx), cptr.ld1so(safeq_xprn_ctx, $xprnctx_dot), 0n, 0n);
 }
 
-/** C ref: invent.c:2188 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:2188 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function safeq_shortxprname(obj) {
     return xprname(obj, ansimpleoname(obj), cptr.ld1s(safeq_xprn_ctx), cptr.ld1so(safeq_xprn_ctx, $xprnctx_dot), 0n, 0n);
 }
@@ -2072,7 +2072,7 @@ function safeq_shortxprname(obj) {
 /** C ref: invent.c:2194 — char[6] */
 const removeables = [NHC.ARMOR_CLASS, NHC.WEAPON_CLASS, NHC.RING_CLASS, NHC.AMULET_CLASS, NHC.TOOL_CLASS, 0];
 
-/** C ref: invent.c:2202 — @param {CPtr} word @param {CPtr} fn @param {CInt} mx @param {CInt} combo @param {CPtr} resultflags @returns {CInt} */
+/** C ref: invent.c:2202 — @param {CPtr<char>} word @param {CPtr} fn @param {CInt} mx @param {CInt} combo @param {CPtr<unsigned int>} resultflags @returns {CInt} */
 export function ggetobj(word, fn, mx, combo, resultflags) {
     let ckfn = null;
     let ofilter = null;
@@ -2226,7 +2226,7 @@ export function ggetobj(word, fn, mx, combo, resultflags) {
     }
 }
 
-/** C ref: invent.c:2377 — @param {CPtr} objchn @param {CPtr} olets @param {CInt} allflag @param {CPtr} fn @param {CPtr} ckfn @param {CInt} mx @param {CPtr} word @returns {CInt} */
+/** C ref: invent.c:2377 — @param {CPtr<struct obj *>} objchn @param {CPtr<char>} olets @param {CInt} allflag @param {CPtr} fn @param {CPtr} ckfn @param {CInt} mx @param {CPtr<char>} word @returns {CInt} */
 export function askchain(objchn, olets, allflag, fn, ckfn, mx, word) {
     let otmp;
     let otmpo;
@@ -2404,7 +2404,7 @@ export function reroll_menu() {
     return 0;
 }
 
-/** C ref: invent.c:2624 — @param {CPtr} obj */
+/** C ref: invent.c:2624 — @param {CPtr<struct obj>} obj */
 export function set_cknown_lknown(obj) {
     if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
         cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
@@ -2413,7 +2413,7 @@ export function set_cknown_lknown(obj) {
     return;
 }
 
-/** C ref: invent.c:2637 — @param {CPtr} otmp */
+/** C ref: invent.c:2637 — @param {CPtr<struct obj>} otmp */
 export function fully_identify_obj(otmp) {
     discover_object((cptr.ldI16o(otmp, $obj_otyp)), 1, 1, 1);
     if (cptr.ld1so(otmp, $obj_oartifact))
@@ -2425,7 +2425,7 @@ export function fully_identify_obj(otmp) {
         learn_egg_type(cptr.ldI32o(otmp, $obj_corpsenm));
 }
 
-/** C ref: invent.c:2651 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: invent.c:2651 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function identify(otmp) {
     fully_identify_obj(otmp);
     prinv(null, otmp, 0n);
@@ -2466,7 +2466,7 @@ function menu_identify(id_limit) {
     }
 }
 
-/** C ref: invent.c:2698 — @param {CPtr} objchn @returns {CInt} */
+/** C ref: invent.c:2698 — @param {CPtr<struct obj>} objchn @returns {CInt} */
 export function count_unidentified(objchn) {
     let unid_cnt = 0;
     let obj;
@@ -2549,7 +2549,7 @@ export function doperminv() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: invent.c:2861 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:2861 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function obj_to_let(obj) {
     if (!cptr.ld1so(flags, $flag_invlet_constant)) {
         cptr.st1o(obj, $obj_invlet, 35);
@@ -2558,7 +2558,7 @@ function obj_to_let(obj) {
     return cptr.ld1so(obj, $obj_invlet);
 }
 
-/** C ref: invent.c:2875 — @param {CPtr} prefix @param {CPtr} obj @param {CLongLong} quan */
+/** C ref: invent.c:2875 — @param {CPtr<char>} prefix @param {CPtr<struct obj>} obj @param {CLongLong} quan */
 export function prinv(prefix, obj, quan) {
     let total_of = schar((quan && (quan < cptr.ldI64o(obj, $obj_quan)) ? 1 : 0));
     let totalbuf = new Uint8Array(128);
@@ -2572,7 +2572,7 @@ export function prinv(prefix, obj, quan) {
 
 const __static_xprname_li = new Uint8Array(256); /** C ref: invent.c:2903 — char[256] (function-static) */
 
-/** C ref: invent.c:2895 — @param {CPtr} obj @param {CPtr} txt @param {CInt} let @param {CInt} dot @param {CLongLong} cost @param {CLongLong} quan @returns {CPtr} */
+/** C ref: invent.c:2895 — @param {CPtr<struct obj>} obj @param {CPtr<char>} txt @param {CInt} let @param {CInt} dot @param {CLongLong} cost @param {CLongLong} quan @returns {CPtr<char>} */
 export function xprname(obj, txt, let$, dot, cost, quan) {
     let suffix = new Uint8Array(80);
     let sfxlen;
@@ -2613,7 +2613,7 @@ export function xprname(obj, txt, let$, dot, cost, quan) {
     return cptr.decay(__static_xprname_li);
 }
 
-/** C ref: invent.c:2964 — @param {CPtr} lets @param {CInt} use_inuse_ordering @param {CPtr} alt_label @returns {CInt} */
+/** C ref: invent.c:2964 — @param {CPtr<char>} lets @param {CInt} use_inuse_ordering @param {CPtr<char>} alt_label @returns {CInt} */
 function dispinv_with_action(lets, use_inuse_ordering, alt_label) {
     let otmp;
     let nextobj;
@@ -2652,7 +2652,7 @@ export function ddoinv() {
     return dispinv_with_action(null, 0, null);
 }
 
-/** C ref: invent.c:3021 — @param {CPtr} list @param {CPtr} last_found @returns {CPtr} */
+/** C ref: invent.c:3021 — @param {CPtr<struct obj>} list @param {CPtr<struct obj *>} last_found @returns {CPtr<struct obj>} */
 function find_unpaid(list, last_found) {
     let obj;
     while (list) {
@@ -2684,7 +2684,7 @@ const __static_display_pickinv_not_carrying_anything = cptr.bytes("Not carrying 
 const __static_display_pickinv_not_using_anything = cptr.bytes("Not using any items"); /** C ref: invent.c:3067 — char[20] (function-static) */
 const __static_display_pickinv_only_carrying_gold = cptr.bytes("Only carrying gold"); /** C ref: invent.c:3068 — char[19] (function-static) */
 
-/** C ref: invent.c:3057 — @param {CPtr} lets @param {CPtr} xtra_choice @param {CPtr} query @param {CInt} allowxtra @param {CInt} want_reply @param {CPtr} out_cnt @returns {CInt} */
+/** C ref: invent.c:3057 — @param {CPtr<char>} lets @param {CPtr<char>} xtra_choice @param {CPtr<char>} query @param {CInt} allowxtra @param {CInt} want_reply @param {CPtr<long>} out_cnt @returns {CInt} */
 function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cnt) {
     let otmp;
     let wizid_fakeobj = cptr.alloc(216);
@@ -2918,7 +2918,7 @@ function display_pickinv(lets, xtra_choice, query, allowxtra, want_reply, out_cn
     }
 }
 
-/** C ref: invent.c:3428 — @param {CPtr} lets @param {CInt} want_reply @returns {CInt} */
+/** C ref: invent.c:3428 — @param {CPtr<char>} lets @param {CInt} want_reply @returns {CInt} */
 export function display_inventory(lets, want_reply) {
     let cmdq = cmdq_pop();
     if (cmdq) {
@@ -2995,7 +2995,7 @@ function display_used_invlets(avoidlet) {
     return ret;
 }
 
-/** C ref: invent.c:3526 — @param {CPtr} list @returns {CInt} */
+/** C ref: invent.c:3526 — @param {CPtr<struct obj>} list @returns {CInt} */
 export function count_unpaid(list) {
     let count = 0;
     while (list) {
@@ -3008,7 +3008,7 @@ export function count_unpaid(list) {
     return count;
 }
 
-/** C ref: invent.c:3548 — @param {CPtr} list @param {CInt} type @param {CPtr} filterfunc @returns {CInt} */
+/** C ref: invent.c:3548 — @param {CPtr<struct obj>} list @param {CInt} type @param {CPtr} filterfunc @returns {CInt} */
 export function count_buc(list, type, filterfunc) {
     let count = 0;
     for (; list; list = cptr.ldPtr(list)) {
@@ -3027,7 +3027,7 @@ export function count_buc(list, type, filterfunc) {
     return count;
 }
 
-/** C ref: invent.c:3580 — @param {CPtr} list @param {CInt} by_nexthere @param {CPtr} bcp @param {CPtr} ucp @param {CPtr} ccp @param {CPtr} xcp @param {CPtr} ocp @param {CPtr} jcp */
+/** C ref: invent.c:3580 — @param {CPtr<struct obj>} list @param {CInt} by_nexthere @param {CPtr<int>} bcp @param {CPtr<int>} ucp @param {CPtr<int>} ccp @param {CPtr<int>} xcp @param {CPtr<int>} ocp @param {CPtr<int>} jcp */
 export function tally_BUCX(list, by_nexthere, bcp, ucp, ccp, xcp, ocp, jcp) {
     cptr.stI32(bcp, cptr.stI32(ucp, cptr.stI32(ccp, cptr.stI32(xcp, cptr.stI32(ocp, cptr.stI32(jcp, 0))))));
     for (; list; list = (by_nexthere ? cptr.ldPtro(list, $obj_v) : cptr.ldPtr(list))) {
@@ -3053,7 +3053,7 @@ export function tally_BUCX(list, by_nexthere, bcp, ucp, ccp, xcp, ocp, jcp) {
     }
 }
 
-/** C ref: invent.c:3620 — @param {CPtr} container @param {CInt} nested @param {CInt} quantity @param {CInt} everything @param {CInt} newdrop @returns {CLongLong} */
+/** C ref: invent.c:3620 — @param {CPtr<struct obj>} container @param {CInt} nested @param {CInt} quantity @param {CInt} everything @param {CInt} newdrop @returns {CLongLong} */
 export function count_contents(container, nested, quantity, everything, newdrop) {
     let otmp;
     let topc;
@@ -3172,7 +3172,7 @@ function dounpaid(count, floorcount, buriedcount) {
     return;
 }
 
-/** C ref: invent.c:3793 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:3793 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function this_type_only(obj) {
     let res = schar((cptr.ld1so(obj, $obj_oclass) == cptr.ldI32o(gt, $instance_globals_t_this_type)));
     if (cptr.ldI32o(gt, $instance_globals_t_this_type) == 80) {
@@ -3387,7 +3387,7 @@ export function dotypeinv() {
 
 const __static_dfeature_at_altbuf = new Uint8Array(256); /** C ref: invent.c:4042 — char[256] (function-static) */
 
-/** C ref: invent.c:4037 — @param {CInt} x @param {CInt} y @param {CPtr} buf @returns {CPtr} */
+/** C ref: invent.c:4037 — @param {CInt} x @param {CInt} y @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function dfeature_at(x, y, buf) {
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     let ltyp = cptr.ld1so(lev, $rm_typ);
@@ -3593,14 +3593,14 @@ export function dolook() {
     return res;
 }
 
-/** C ref: invent.c:4334 — @param {CPtr} otmp @param {CInt} force_touch @returns {CInt} */
+/** C ref: invent.c:4334 — @param {CPtr<struct obj>} otmp @param {CInt} force_touch @returns {CInt} */
 export function will_feel_cockatrice(otmp, force_touch) {
     if ((Blind() || force_touch) && !uarmg.v && !Stone_resistance() && (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96))))
         return 1;
     return 0;
 }
 
-/** C ref: invent.c:4343 — @param {CPtr} otmp @param {CInt} force_touch */
+/** C ref: invent.c:4343 — @param {CPtr<struct obj>} otmp @param {CInt} force_touch */
 export function feel_cockatrice(otmp, force_touch) {
     let kbuf = new Uint8Array(256);
     if (will_feel_cockatrice(otmp, force_touch)) {
@@ -3614,7 +3614,7 @@ export function feel_cockatrice(otmp, force_touch) {
     }
 }
 
-/** C ref: invent.c:4366 — @param {CPtr} obj */
+/** C ref: invent.c:4366 — @param {CPtr<struct obj>} obj */
 export function stackobj(obj) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
@@ -3624,7 +3624,7 @@ export function stackobj(obj) {
     return;
 }
 
-/** C ref: invent.c:4379 — @param {CPtr} otmp @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:4379 — @param {CPtr<struct obj>} otmp @param {CPtr<struct obj>} obj @returns {CInt} */
 export function mergable(otmp, obj) {
     let objnamelth = 0n;
     let otmpnamelth = 0n;
@@ -3812,7 +3812,7 @@ export function dopramulet() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: invent.c:4698 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:4698 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function tool_being_used(obj) {
     if ((cptr.ldI64o(obj, $obj_owornmask) & 1572864n) != 0n)
         return 1;
@@ -3856,7 +3856,7 @@ export function doprinuse() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: invent.c:4763 — @param {CPtr} obj @param {CLongLong} numused */
+/** C ref: invent.c:4763 — @param {CPtr<struct obj>} obj @param {CLongLong} numused */
 export function useupf(obj, numused) {
     let otmp;
     let at_u = schar(((cptr.ldI16o(obj, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(obj, $obj_oy)) == cptr.ldI16o(u, $you_uy) ? 1 : 0));
@@ -3903,7 +3903,7 @@ const oth_symbols = [62, 0];
 const oth_names = cptr.alloc(1 * 8);
 cptr.stPtro(oth_names, 0, __sl264);
 
-/** C ref: invent.c:4800 — @param {CInt} let @param {CInt} unpaid @param {CInt} showsym @returns {CPtr} */
+/** C ref: invent.c:4800 — @param {CInt} let @param {CInt} unpaid @param {CInt} showsym @returns {CPtr<char>} */
 export function let_to_name(let$, unpaid, showsym) {
     let ocsymfmt = __sl265;
     let invbuf_sympadding = 8;
@@ -3976,7 +3976,7 @@ export function reassign() {
     cptr.stI32o(gl, $instance_globals_l_lastinvnr, i);
 }
 
-/** C ref: invent.c:4889 — @param {CPtr} why @returns {CInt} */
+/** C ref: invent.c:4889 — @param {CPtr<char>} why @returns {CInt} */
 export function check_invent_gold(why) {
     let otmp;
     let goldstacks = 0;
@@ -3994,14 +3994,14 @@ export function check_invent_gold(why) {
     return 0;
 }
 
-/** C ref: invent.c:4917 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:4917 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function adjust_ok(obj) {
     if (!obj || cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return NHC.GETOBJ_EXCLUDE;
     return NHC.GETOBJ_SUGGEST;
 }
 
-/** C ref: invent.c:4927 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:4927 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function adjust_gold_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -4059,7 +4059,7 @@ export function adjust_split() {
     return doorganize_core(obj);
 }
 
-/** C ref: invent.c:5068 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:5068 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function doorganize_core(obj) {
     obj = cptr.box(obj);
     let otmp = cptr.box(0);
@@ -4233,7 +4233,7 @@ function doorganize_core(obj) {
     return NHM.ECMD_OK;
 }
 
-/** C ref: invent.c:5290 — @param {CPtr} hdr @param {CPtr} txt */
+/** C ref: invent.c:5290 — @param {CPtr<char>} hdr @param {CPtr<char>} txt */
 function invdisp_nothing(hdr, txt) {
     let win;
     let selected = cptr.box(0);
@@ -4249,12 +4249,12 @@ function invdisp_nothing(hdr, txt) {
     return;
 }
 
-/** C ref: invent.c:5309 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:5309 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function worn_wield_only(obj) {
     return schar((cptr.ldI64o(obj, $obj_owornmask) != 0n));
 }
 
-/** C ref: invent.c:5341 — @param {CPtr} mon @param {CInt} dflags @param {CPtr} title @returns {CPtr} */
+/** C ref: invent.c:5341 — @param {CPtr<struct monst>} mon @param {CInt} dflags @param {CPtr<char>} title @returns {CPtr<struct obj>} */
 export function display_minventory(mon, dflags, title) {
     let ret;
     let tmp = new Uint8Array(128);
@@ -4284,7 +4284,7 @@ export function display_minventory(mon, dflags, title) {
     return ret;
 }
 
-/** C ref: invent.c:5391 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:5391 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function cinv_doname(obj) {
     let result = doname(obj);
     if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && BigInt.asUintN(64, cptr.strlen(result) + 9n) <= 128n) {
@@ -4299,7 +4299,7 @@ function cinv_doname(obj) {
     return result;
 }
 
-/** C ref: invent.c:5423 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:5423 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function cinv_ansimpleoname(obj) {
     let result = ansimpleoname(obj);
     if ((cptr.ldI32o(obj, $obj_otrapped) & 1)) {
@@ -4315,7 +4315,7 @@ function cinv_ansimpleoname(obj) {
     return result;
 }
 
-/** C ref: invent.c:5446 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: invent.c:5446 — @param {CPtr<struct obj>} obj @returns {CPtr<struct obj>} */
 export function display_cinventory(obj) {
     let ret;
     let qbuf = new Uint8Array(128);
@@ -4337,7 +4337,7 @@ export function display_cinventory(obj) {
     return ret;
 }
 
-/** C ref: invent.c:5477 — @param {CPtr} obj @returns {CInt} */
+/** C ref: invent.c:5477 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function only_here(obj) {
     return schar((cptr.ldI16o(obj, $obj_ox) == cptr.ldI16o(go, $instance_globals_o_only) && cptr.ldI16o(obj, $obj_oy) == cptr.ldI16o(go, $instance_globals_o_only + $nhcoord_y) ? 1 : 0));
 }

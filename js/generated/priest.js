@@ -164,7 +164,7 @@ const __sl72 = cptr.lit("%s roars:  \"Thou dost profane my shrine!\"");
 const __sl73 = cptr.lit("angry_priest");
 const __sl74 = cptr.lit("has_emin(priest)");
 
-/** C ref: priest.c:16 — @param {CPtr} mtmp */
+/** C ref: priest.c:16 — @param {CPtr<struct monst>} mtmp */
 export function newepri(mtmp) {
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, newmextra());
@@ -175,7 +175,7 @@ export function newepri(mtmp) {
     }
 }
 
-/** C ref: priest.c:28 — @param {CPtr} mtmp */
+/** C ref: priest.c:28 — @param {CPtr<struct monst>} mtmp */
 export function free_epri(mtmp) {
     if (cptr.ldPtro(mtmp, $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri))) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)));
@@ -184,7 +184,7 @@ export function free_epri(mtmp) {
     cptr.stI32o(mtmp, $monst_ispriest, 0);
 }
 
-/** C ref: priest.c:42 — @param {CPtr} mtmp @param {CInt} in_his_shop @param {CInt} appr @param {CInt} uondoor @param {CInt} avoid @param {CInt} omx @param {CInt} omy @param {CInt} ggx @param {CInt} ggy @returns {CInt} */
+/** C ref: priest.c:42 — @param {CPtr<struct monst>} mtmp @param {CInt} in_his_shop @param {CInt} appr @param {CInt} uondoor @param {CInt} avoid @param {CInt} omx @param {CInt} omy @param {CInt} ggx @param {CInt} ggy @returns {CInt} */
 export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, ggx, ggy) {
     let nx;
     let ny;
@@ -258,7 +258,7 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
     }
 }
 
-/** C ref: priest.c:142 — @param {CPtr} array @returns {CInt} */
+/** C ref: priest.c:142 — @param {CPtr<char>} array @returns {CInt} */
 export function temple_occupied(array) {
     let ptr;
     for (ptr = array; cptr.ld1s(ptr); ptr = cptr.add(ptr, 1))
@@ -267,12 +267,12 @@ export function temple_occupied(array) {
     return 0;
 }
 
-/** C ref: priest.c:153 — @param {CPtr} priest @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: priest.c:153 — @param {CPtr<struct monst>} priest @param {CInt} x @param {CInt} y @returns {CInt} */
 function histemple_at(priest, x, y) {
     return schar((priest && (cptr.ldI32o(priest, $monst_ispriest) & 1) | 0 && (cptr.ld1so((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shroom) == cptr.ld1s(in_rooms(x, y, NHC.TEMPLE))) && on_level(cptr.add((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrlevel), cptr.add(u, $you_uz)) ? 1 : 0));
 }
 
-/** C ref: priest.c:161 — @param {CPtr} priest @returns {CInt} */
+/** C ref: priest.c:161 — @param {CPtr<struct monst>} priest @returns {CInt} */
 export function inhistemple(priest) {
     if (!priest || !(cptr.ldI32o(priest, $monst_ispriest) & 1))
         return 0;
@@ -281,7 +281,7 @@ export function inhistemple(priest) {
     return has_shrine(priest);
 }
 
-/** C ref: priest.c:177 — @param {CPtr} priest @returns {CInt} */
+/** C ref: priest.c:177 — @param {CPtr<struct monst>} priest @returns {CInt} */
 export function pri_move(priest) {
     let ggx;
     let ggy;
@@ -316,7 +316,7 @@ export function pri_move(priest) {
     return move_special(priest, 0, 1, 0, avoid, omx, omy, ggx, ggy);
 }
 
-/** C ref: priest.c:220 — @param {CPtr} lvl @param {CPtr} sroom @param {CInt} sx @param {CInt} sy @param {CInt} sanctum */
+/** C ref: priest.c:220 — @param {CPtr<d_level>} lvl @param {CPtr<struct mkroom>} sroom @param {CInt} sx @param {CInt} sy @param {CInt} sanctum */
 export function priestini(lvl, sroom, sx, sy, sanctum) {
     let priest;
     let otmp;
@@ -364,7 +364,7 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     }
 }
 
-/** C ref: priest.c:280 — @param {CPtr} mon @returns {*} */
+/** C ref: priest.c:280 — @param {CPtr<struct monst>} mon @returns {*} */
 export function mon_aligntyp(mon) {
     let algn = schar(((cptr.ldI32o(mon, $monst_ispriest) & 1) | 0 ? cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_epri)), $epri_shralign) : ((cptr.ldI32o(mon, $monst_isminion) & 1) | 0 ? cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mon), $monst_mextra), $mextra_emin)), $emin_min_align) : cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_maligntyp))));
     if (algn == -128)
@@ -372,7 +372,7 @@ export function mon_aligntyp(mon) {
     return schar(((algn > 0) ? NHM.A_LAWFUL : ((algn < 0) ? -1 : NHM.A_NEUTRAL)));
 }
 
-/** C ref: priest.c:302 — @param {CPtr} mon @param {CInt} article @param {CInt} reveal_high_priest @param {CPtr} pname @returns {CPtr} */
+/** C ref: priest.c:302 — @param {CPtr<struct monst>} mon @param {CInt} article @param {CInt} reveal_high_priest @param {CPtr<char>} pname @returns {CPtr<char>} */
 export function priestname(mon, article, reveal_high_priest, pname) {
     let do_hallu = schar((cptr.ldI64o2(u, NHC.HALLUC, 24, $you_uprops + $prop_intrinsic) && !(cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.HALLUC_RES, 24, $you_uprops)) ? 1 : 0));
     let aligned_priest = schar(cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_ALIGNED_CLERIC, 96)));
@@ -420,12 +420,12 @@ export function priestname(mon, article, reveal_high_priest, pname) {
     return pname;
 }
 
-/** C ref: priest.c:370 — @param {CPtr} priest @returns {CInt} */
+/** C ref: priest.c:370 — @param {CPtr<struct monst>} priest @returns {CInt} */
 export function p_coaligned(priest) {
     return schar((cptr.ld1so(u, $you_ualign) == mon_aligntyp(priest)));
 }
 
-/** C ref: priest.c:376 — @param {CPtr} pri @returns {CInt} */
+/** C ref: priest.c:376 — @param {CPtr<struct monst>} pri @returns {CInt} */
 function has_shrine(pri) {
     let lev;
     let epri_p;
@@ -438,7 +438,7 @@ function has_shrine(pri) {
     return schar((cptr.ld1so(epri_p, $epri_shralign) == ((schar(((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -9) & NHM.AM_MASK)) - 2) | 0)))))));
 }
 
-/** C ref: priest.c:392 — @param {CInt} roomno @returns {CPtr} */
+/** C ref: priest.c:392 — @param {CInt} roomno @returns {CPtr<struct monst>} */
 export function findpriest(roomno) {
     let mtmp;
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
@@ -552,7 +552,7 @@ export function intemple(roomno) {
     }
 }
 
-/** C ref: priest.c:545 — @param {CPtr} priest */
+/** C ref: priest.c:545 — @param {CPtr<struct monst>} priest */
 export function forget_temple_entry(priest) {
     let epri_p = (cptr.ldI32o(priest, $monst_ispriest) & 1) | 0 ? (cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)) : null;
     if (!epri_p) {
@@ -567,7 +567,7 @@ cptr.stPtro(__static_priest_talk_cranky_msg, 0, __sl66);
 cptr.stPtro(__static_priest_talk_cranky_msg, 8, __sl67);
 cptr.stPtro(__static_priest_talk_cranky_msg, 16, __sl68); /** C ref: priest.c:585 — char *[3] (function-static) */
 
-/** C ref: priest.c:558 — @param {CPtr} priest */
+/** C ref: priest.c:558 — @param {CPtr<struct monst>} priest */
 export function priest_talk(priest) {
     let coaligned = p_coaligned(priest);
     let strayed = schar((cptr.ldI32o(u, $you_ualign + $align_record) < 0));
@@ -684,7 +684,7 @@ export function priest_talk(priest) {
     }
 }
 
-/** C ref: priest.c:724 — @param {CPtr} ptr @param {CInt} alignment @param {CInt} x @param {CInt} y @param {CInt} peaceful @returns {CPtr} */
+/** C ref: priest.c:724 — @param {CPtr<struct permonst>} ptr @param {CInt} alignment @param {CInt} x @param {CInt} y @param {CInt} peaceful @returns {CPtr<struct monst>} */
 export function mk_roamer(ptr, alignment, x, y, peaceful) {
     let roamer;
     let coaligned = schar((cptr.ld1so(u, $you_ualign) == alignment));
@@ -703,7 +703,7 @@ export function mk_roamer(ptr, alignment, x, y, peaceful) {
     return roamer;
 }
 
-/** C ref: priest.c:755 — @param {CPtr} roamer */
+/** C ref: priest.c:755 — @param {CPtr<struct monst>} roamer */
 export function reset_hostility(roamer) {
     if (!(cptr.ldI32o(roamer, $monst_isminion) & 1))
         return;
@@ -716,7 +716,7 @@ export function reset_hostility(roamer) {
     newsym(cptr.ldI16o(roamer, $monst_mx), cptr.ldI16o(roamer, $monst_my));
 }
 
-/** C ref: priest.c:771 — @param {CPtr} mon @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: priest.c:771 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y @returns {CInt} */
 export function in_your_sanctuary(mon, x, y) {
     let roomno;
     let priest;
@@ -734,7 +734,7 @@ export function in_your_sanctuary(mon, x, y) {
     return schar((has_shrine(priest) && p_coaligned(priest) && (cptr.ldI32o(priest, $monst_mpeaceful) & 1) | 0 ? 1 : 0));
 }
 
-/** C ref: priest.c:796 — @param {CPtr} priest */
+/** C ref: priest.c:796 — @param {CPtr<struct monst>} priest */
 export function ghod_hitsu(priest) {
     let troom;
     let oldbuzzer;
@@ -841,7 +841,7 @@ export function clearpriests() {
     }
 }
 
-/** C ref: priest.c:933 — @param {CPtr} mtmp @param {CInt} ghostly */
+/** C ref: priest.c:933 — @param {CPtr<struct monst>} mtmp @param {CInt} ghostly */
 export function restpriest(mtmp, ghostly) {
     if (cptr.ldI16o(u, $you_uz + $d_level_dlevel)) {
         if (ghostly)

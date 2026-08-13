@@ -122,7 +122,7 @@ export function getmailstatus() {
     }
 }
 
-/** C ref: mail.c:149 — @param {CPtr} startp @returns {CInt} */
+/** C ref: mail.c:149 — @param {CPtr<coord>} startp @returns {CInt} */
 function md_start(startp) {
     let testcc = cptr.alloc(4);
     let row;
@@ -183,7 +183,7 @@ function md_start(startp) {
     }
 }
 
-/** C ref: mail.c:248 — @param {CPtr} stopp @param {CPtr} startp @returns {CInt} */
+/** C ref: mail.c:248 — @param {CPtr<coord>} stopp @param {CPtr<coord>} startp @returns {CInt} */
 function md_stop(stopp, startp) {
     let x;
     let y;
@@ -213,7 +213,7 @@ cptr.stPtro(mail_text, 0, __sl6);
 cptr.stPtro(mail_text, 8, __sl7);
 cptr.stPtro(mail_text, 16, __sl8);
 
-/** C ref: mail.c:288 — @param {CPtr} md @param {CInt} tx @param {CInt} ty @returns {CInt} */
+/** C ref: mail.c:288 — @param {CPtr<struct monst>} md @param {CInt} tx @param {CInt} ty @returns {CInt} */
 function md_rush(md, tx, ty) {
     let mon;
     let dx;
@@ -294,7 +294,7 @@ function md_rush(md, tx, ty) {
     return 1;
 }
 
-/** C ref: mail.c:399 — @param {CPtr} info */
+/** C ref: mail.c:399 — @param {CPtr<struct mail_info>} info */
 function newmail(info) {
     let md;
     let start = cptr.alloc(4);
@@ -368,7 +368,7 @@ export function ckmailstatus() {
 export function ck_server_admin_msg() {
 }
 
-/** C ref: mail.c:704 — @param {CPtr} otmp */
+/** C ref: mail.c:704 — @param {CPtr<struct obj>} otmp */
 export function readmail(otmp) {
     let mr = null;
     if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer))

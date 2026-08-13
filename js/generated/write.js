@@ -98,7 +98,7 @@ const __sl52 = cptr.lit("parchment");
 const __sl53 = cptr.lit("vellum");
 const __sl54 = cptr.lit("cloth");
 
-/** C ref: write.c:14 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: write.c:14 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function cost(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.SPBOOK_CLASS)
         return (Math.imul(10, cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_oc2)));
@@ -140,7 +140,7 @@ function cost(otmp) {
     return 1000;
 }
 
-/** C ref: write.c:61 — @param {CPtr} obj @returns {CInt} */
+/** C ref: write.c:61 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function write_ok(obj) {
     if (!obj || (cptr.ld1so(obj, $obj_oclass) != NHC.SCROLL_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.SPBOOK_CLASS))
         return NHC.GETOBJ_EXCLUDE;
@@ -149,7 +149,7 @@ function write_ok(obj) {
     return NHC.GETOBJ_DOWNPLAY;
 }
 
-/** C ref: write.c:74 — @param {CPtr} pen @returns {CInt} */
+/** C ref: write.c:74 — @param {CPtr<struct obj>} pen @returns {CInt} */
 export function dowrite(pen) {
     let paper;
     let namebuf = [0];
@@ -351,7 +351,7 @@ cptr.stPtro(__static_new_book_description_compositions, 8, __sl53);
 cptr.stPtro(__static_new_book_description_compositions, 16, __sl54);
 cptr.stPtro(__static_new_book_description_compositions, 24, null); /** C ref: write.c:399 — char *[4] (function-static) */
 
-/** C ref: write.c:395 — @param {CInt} booktype @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: write.c:395 — @param {CInt} booktype @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function new_book_description(booktype, outbuf) {
     let descr;
     let comp_p;

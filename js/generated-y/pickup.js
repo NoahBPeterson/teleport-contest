@@ -430,7 +430,7 @@ const nearloadpfx = cptr.bytes("You have much trouble");
 /** C ref: pickup.c:70 — char[28] */
 const overloadpfx = cptr.bytes("You have extreme difficulty");
 
-/** C ref: pickup.c:76 — @param {CPtr} otmp @param {CInt} here */
+/** C ref: pickup.c:76 — @param {CPtr<struct obj>} otmp @param {CInt} here */
 function* simple_look(otmp, here) {
     if (!otmp) {
         (yield* impossible(__sl0));
@@ -448,7 +448,7 @@ function* simple_look(otmp, here) {
     }
 }
 
-/** C ref: pickup.c:101 — @param {CPtr} ilets @param {CPtr} otmp @param {CInt} here @param {CPtr} filter @param {CPtr} itemcount @returns {CInt} */
+/** C ref: pickup.c:101 — @param {CPtr<char>} ilets @param {CPtr<struct obj>} otmp @param {CInt} here @param {CPtr} filter @param {CPtr<int>} itemcount @returns {CInt} */
 export function* collect_obj_classes(ilets, otmp, here, filter, itemcount) {
     let iletct = 0;
     let c;
@@ -464,7 +464,7 @@ export function* collect_obj_classes(ilets, otmp, here, filter, itemcount) {
     return iletct;
 }
 
-/** C ref: pickup.c:141 — @param {CPtr} oclasses @param {CPtr} one_at_a_time @param {CPtr} everything @param {CPtr} action @param {CPtr} objs @param {CInt} here @param {CPtr} menu_on_demand @returns {CInt} */
+/** C ref: pickup.c:141 — @param {CPtr<char>} oclasses @param {CPtr<boolean>} one_at_a_time @param {CPtr<boolean>} everything @param {CPtr<char>} action @param {CPtr<struct obj>} objs @param {CInt} here @param {CPtr<int>} menu_on_demand @returns {CInt} */
 function* query_classes(oclasses, one_at_a_time, everything, action, objs, here, menu_on_demand) {
     let ilets = new Uint8Array(36);
     let inbuf = [0];
@@ -577,14 +577,14 @@ function* query_classes(oclasses, one_at_a_time, everything, action, objs, here,
     return 1;
 }
 
-/** C ref: pickup.c:273 — @param {CPtr} obj @param {CInt} tests @returns {CInt} */
+/** C ref: pickup.c:273 — @param {CPtr<struct obj>} obj @param {CInt} tests @returns {CInt} */
 export function u_safe_from_fatal_corpse(obj, tests) {
     if (((tests & NHC.st_gloves) && uarmg.v) || ((tests & NHC.st_corpse) && cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE) || ((tests & NHC.st_petrifies) && !touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96))) || ((tests & NHC.st_resists) && Stone_resistance()))
         return 1;
     return 0;
 }
 
-/** C ref: pickup.c:285 — @param {CPtr} obj @param {CInt} remotely @returns {CInt} */
+/** C ref: pickup.c:285 — @param {CPtr<struct obj>} obj @param {CInt} remotely @returns {CInt} */
 function* fatal_corpse_mistake(obj, remotely) {
     if (u_safe_from_fatal_corpse(obj, NHC.st_all) || remotely)
         return 0;
@@ -597,7 +597,7 @@ function* fatal_corpse_mistake(obj, remotely) {
     return 1;
 }
 
-/** C ref: pickup.c:303 — @param {CPtr} obj @param {CInt} remotely @returns {CInt} */
+/** C ref: pickup.c:303 — @param {CPtr<struct obj>} obj @param {CInt} remotely @returns {CInt} */
 export function* rider_corpse_revival(obj, remotely) {
     if (!obj || cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE || !is_rider(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)))
         return 0;
@@ -700,7 +700,7 @@ function* check_here(picked_some) {
     }
 }
 
-/** C ref: pickup.c:460 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:460 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function n_or_more(obj) {
     if (cptr.eq(obj, uchain.v))
         return 0;
@@ -743,17 +743,17 @@ export function add_valid_menu_class(c) {
     cptr.st1o2(gv, __static_add_valid_menu_class_vmc_count, 1, $instance_globals_v_valid_menu_classes, 0);
 }
 
-/** C ref: pickup.c:509 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:509 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function all_but_uchain(obj) {
     return schar((!cptr.eq(obj, uchain.v)));
 }
 
-/** C ref: pickup.c:517 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:517 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function allow_all(obj) {
     return 1;
 }
 
-/** C ref: pickup.c:523 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:523 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* allow_category(obj) {
     if (!cptr.ld1so(gc, $instance_globals_c_class_filter) && !cptr.ld1so(gs, $instance_globals_s_shop_filter) && !cptr.ld1so(gb, $instance_globals_b_bucx_filter) && !cptr.ld1so(gp, $instance_globals_p_picked_filter) && !ParanoidAutoAll())
         return 0;
@@ -780,19 +780,19 @@ export function* allow_category(obj) {
     return 1;
 }
 
-/** C ref: pickup.c:609 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: pickup.c:609 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function* is_worn_by_type(otmp) {
     return schar(((is_worn(otmp) && (yield* allow_category(otmp))) ? 1 : 0));
 }
 
-/** C ref: pickup.c:616 — @param {CPtr} olist */
+/** C ref: pickup.c:616 — @param {CPtr<struct obj>} olist */
 export function reset_justpicked(olist) {
     let otmp;
     for (otmp = olist; otmp; otmp = cptr.ldPtr(otmp))
         cptr.stI32o(otmp, $obj_pickup_prev, 0);
 }
 
-/** C ref: pickup.c:635 — @param {CPtr} olist @returns {CInt} */
+/** C ref: pickup.c:635 — @param {CPtr<struct obj>} olist @returns {CInt} */
 export function count_justpicked(olist) {
     let otmp;
     let cnt = 0;
@@ -802,7 +802,7 @@ export function count_justpicked(olist) {
     return cnt;
 }
 
-/** C ref: pickup.c:648 — @param {CPtr} olist @returns {CPtr} */
+/** C ref: pickup.c:648 — @param {CPtr<struct obj>} olist @returns {CPtr<struct obj>} */
 export function find_justpicked(olist) {
     let otmp;
     for (otmp = olist; otmp; otmp = cptr.ldPtr(otmp))
@@ -993,7 +993,7 @@ export function* pickup(what) {
     return (n_tried > 0);
 }
 
-/** C ref: pickup.c:913 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: pickup.c:913 — @param {CPtr<struct obj>} obj @returns {CPtr<struct autopickup_exception>} */
 export function* check_autopickup_exceptions(obj) {
     let ape = cptr.ldPtro(ga, $instance_globals_a_apelist);
     if (ape) {
@@ -1006,7 +1006,7 @@ export function* check_autopickup_exceptions(obj) {
 
 let __static_autopick_testobj_costly = 0; /** C ref: pickup.c:933 — signed char (function-static) */
 
-/** C ref: pickup.c:930 — @param {CPtr} otmp @param {CInt} calc_costly @returns {CInt} */
+/** C ref: pickup.c:930 — @param {CPtr<struct obj>} otmp @param {CInt} calc_costly @returns {CInt} */
 export function* autopick_testobj(otmp, calc_costly) {
     let ape;
     let otypes = cptr.add(flags, $flag_pickup_types);
@@ -1028,7 +1028,7 @@ export function* autopick_testobj(otmp, calc_costly) {
     return pickit;
 }
 
-/** C ref: pickup.c:975 — @param {CPtr} olist @param {CInt} follow @param {CPtr} pick_list @returns {CInt} */
+/** C ref: pickup.c:975 — @param {CPtr<struct obj>} olist @param {CInt} follow @param {CPtr<menu_item *>} pick_list @returns {CInt} */
 function* autopick(olist, follow, pick_list) {
     let pi;
     let curr;
@@ -1052,7 +1052,7 @@ function* autopick(olist, follow, pick_list) {
     return n;
 }
 
-/** C ref: pickup.c:1025 — @param {CPtr} qstr @param {CPtr} olist_p @param {CInt} qflags @param {CPtr} pick_list @param {CInt} how @param {CPtr} allow @returns {CInt} */
+/** C ref: pickup.c:1025 — @param {CPtr<char>} qstr @param {CPtr<struct obj *>} olist_p @param {CInt} qflags @param {CPtr<menu_item *>} pick_list @param {CInt} how @param {CPtr} allow @returns {CInt} */
 export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
     let i;
     let n;
@@ -1192,7 +1192,7 @@ export function* query_objlist(qstr, olist_p, qflags, pick_list, how, allow) {
     return n;
 }
 
-/** C ref: pickup.c:1226 — @param {CPtr} qstr @param {CPtr} olist @param {CInt} qflags @param {CPtr} pick_list @param {CInt} how @returns {CInt} */
+/** C ref: pickup.c:1226 — @param {CPtr<char>} qstr @param {CPtr<struct obj>} olist @param {CInt} qflags @param {CPtr<menu_item *>} pick_list @param {CInt} how @returns {CInt} */
 export function* query_category(qstr, olist, qflags, pick_list, how) {
     let n;
     let win;
@@ -1415,7 +1415,7 @@ export function* query_category(qstr, olist, qflags, pick_list, how) {
     return n;
 }
 
-/** C ref: pickup.c:1511 — @param {CPtr} olist @param {CInt} qflags @returns {CInt} */
+/** C ref: pickup.c:1511 — @param {CPtr<struct obj>} olist @param {CInt} qflags @returns {CInt} */
 function count_categories(olist, qflags) {
     let pack;
     let counted_category;
@@ -1440,7 +1440,7 @@ function count_categories(olist, qflags) {
     return ccount;
 }
 
-/** C ref: pickup.c:1544 — @param {CPtr} container @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:1544 — @param {CPtr<struct obj>} container @param {CPtr<struct obj>} obj @returns {CInt} */
 function* delta_cwt(container, obj) {
     let prev;
     let owt;
@@ -1461,7 +1461,7 @@ function* delta_cwt(container, obj) {
     return (owt - nwt) | 0;
 }
 
-/** C ref: pickup.c:1570 — @param {CPtr} obj @param {CPtr} container @param {CLongLong} count @param {CInt} telekinesis @param {CPtr} wt_before @param {CPtr} wt_after @returns {CLongLong} */
+/** C ref: pickup.c:1570 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} container @param {CLongLong} count @param {CInt} telekinesis @param {CPtr<int>} wt_before @param {CPtr<int>} wt_after @returns {CLongLong} */
 function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     let adjust_wt = schar((container && (cptr.ld1so((container), $obj_where) == NHM.OBJ_INVENT) ? 1 : 0));
     let is_gold = schar((cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS));
@@ -1576,7 +1576,7 @@ function* carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     return 0n;
 }
 
-/** C ref: pickup.c:1705 — @param {CPtr} obj @param {CPtr} container @param {CPtr} cnt_p @param {CInt} telekinesis @returns {CInt} */
+/** C ref: pickup.c:1705 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} container @param {CPtr<long>} cnt_p @param {CInt} telekinesis @returns {CInt} */
 function* lift_object(obj, container, cnt_p, telekinesis) {
     let result;
     let old_wt = cptr.box(0);
@@ -1634,7 +1634,7 @@ function* lift_object(obj, container, cnt_p, telekinesis) {
     return result;
 }
 
-/** C ref: pickup.c:1803 — @param {CPtr} obj @param {CLongLong} count @param {CInt} telekinesis @returns {CInt} */
+/** C ref: pickup.c:1803 — @param {CPtr<struct obj>} obj @param {CLongLong} count @param {CInt} telekinesis @returns {CInt} */
 export function* pickup_object(obj, count, telekinesis) {
     count = cptr.box(count);
     let res;
@@ -1689,7 +1689,7 @@ export function* pickup_object(obj, count, telekinesis) {
     return 1;
 }
 
-/** C ref: pickup.c:1897 — @param {CPtr} otmp @returns {CPtr} */
+/** C ref: pickup.c:1897 — @param {CPtr<struct obj>} otmp @returns {CPtr<struct obj>} */
 export function* pick_obj(otmp) {
     let result;
     let ox = cptr.box(0);
@@ -1718,7 +1718,7 @@ export function* pick_obj(otmp) {
     return result;
 }
 
-/** C ref: pickup.c:1948 — @param {CPtr} obj @param {CLongLong} count @param {CPtr} verb */
+/** C ref: pickup.c:1948 — @param {CPtr<struct obj>} obj @param {CLongLong} count @param {CPtr<char>} verb */
 function* pickup_prinv(obj, count, verb) {
     let pbuf = new Uint8Array(128);
     let prefix;
@@ -1829,7 +1829,7 @@ function mon_beside(x, y) {
     return 0;
 }
 
-/** C ref: pickup.c:2088 — @param {CPtr} cobjp @param {CInt} cindex @param {CInt} ccount @returns {CInt} */
+/** C ref: pickup.c:2088 — @param {CPtr<struct obj *>} cobjp @param {CInt} cindex @param {CInt} ccount @returns {CInt} */
 function* do_loot_cont(cobjp, cindex, ccount) {
     let cobj = cptr.ldPtr(cobjp);
     if (!cobj)
@@ -2117,7 +2117,7 @@ function* reverse_loot() {
     return 1;
 }
 
-/** C ref: pickup.c:2431 — @param {CPtr} mtmp @param {CPtr} passed_info @param {CPtr} prev_loot @returns {CInt} */
+/** C ref: pickup.c:2431 — @param {CPtr<struct monst>} mtmp @param {CPtr<int>} passed_info @param {CPtr<boolean>} prev_loot @returns {CInt} */
 export function* loot_mon(mtmp, passed_info, prev_loot) {
     let c = -1;
     let timepassed = 0;
@@ -2155,7 +2155,7 @@ export function* loot_mon(mtmp, passed_info, prev_loot) {
     return timepassed;
 }
 
-/** C ref: pickup.c:2488 — @param {CPtr} obj @param {CInt} depthin @returns {CInt} */
+/** C ref: pickup.c:2488 — @param {CPtr<struct obj>} obj @param {CInt} depthin @returns {CInt} */
 function mbag_explodes(obj, depthin) {
     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_TRICKS) && cptr.ld1so(obj, $obj_spe) <= 0)
         return 0;
@@ -2175,7 +2175,7 @@ function is_boh_item_gone() {
     return schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl34, 2512, __sl143), rn2(13)) : rn2(13))));
 }
 
-/** C ref: pickup.c:2518 — @param {CPtr} boh @param {CInt} on_floor */
+/** C ref: pickup.c:2518 — @param {CPtr<struct obj>} boh @param {CInt} on_floor */
 function* do_boh_explosion(boh, on_floor) {
     let otmp;
     let nobj;
@@ -2192,7 +2192,7 @@ function* do_boh_explosion(boh, on_floor) {
     }
 }
 
-/** C ref: pickup.c:2537 — @param {CPtr} container @param {CInt} held @returns {CLongLong} */
+/** C ref: pickup.c:2537 — @param {CPtr<struct obj>} container @param {CInt} held @returns {CLongLong} */
 function* boh_loss(container, held) {
     if (Is_mbag(container) && (cptr.ldI32o(container, $obj_cursed) & 1) | 0 && (cptr.ldPtro((container), $obj_cobj) !== null)) {
         let loss = 0n;
@@ -2210,7 +2210,7 @@ function* boh_loss(container, held) {
     return 0n;
 }
 
-/** C ref: pickup.c:2558 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:2558 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* in_container(obj) {
     let floor_container = schar((!(cptr.ld1so((cptr.ldPtro(gc, $instance_globals_c_current_container)), $obj_where) == NHM.OBJ_INVENT)));
     let was_unpaid = 0;
@@ -2318,12 +2318,12 @@ function* in_container(obj) {
     return (cptr.ldPtro(gc, $instance_globals_c_current_container) ? 1 : -1);
 }
 
-/** C ref: pickup.c:2720 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:2720 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function ck_bag(obj) {
     return (cptr.ldPtro(gc, $instance_globals_c_current_container) && !cptr.eq(obj, cptr.ldPtro(gc, $instance_globals_c_current_container)) ? 1 : 0);
 }
 
-/** C ref: pickup.c:2727 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:2727 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* out_container(obj) {
     let otmp;
     let res;
@@ -2363,7 +2363,7 @@ function* out_container(obj) {
     return 1;
 }
 
-/** C ref: pickup.c:2781 — @param {CPtr} obj */
+/** C ref: pickup.c:2781 — @param {CPtr<struct obj>} obj */
 export function* removed_from_icebox(obj) {
     if (!age_is_relative(obj)) {
         cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(obj, $obj_age)));
@@ -2378,7 +2378,7 @@ export function* removed_from_icebox(obj) {
     }
 }
 
-/** C ref: pickup.c:2803 — @param {CInt} held @param {CPtr} item @param {CInt} silent @returns {CLongLong} */
+/** C ref: pickup.c:2803 — @param {CInt} held @param {CPtr<struct obj>} item @param {CInt} silent @returns {CLongLong} */
 function* mbag_item_gone(held, item, silent) {
     let shkp;
     let loss = 0n;
@@ -2398,7 +2398,7 @@ function* mbag_item_gone(held, item, silent) {
 
 const __static_observe_quantum_cat_sc = cptr.bytes("Schroedinger's Cat"); /** C ref: pickup.c:2828 — char[19] (function-static) */
 
-/** C ref: pickup.c:2826 — @param {CPtr} box @param {CInt} makecat @param {CInt} givemsg */
+/** C ref: pickup.c:2826 — @param {CPtr<struct obj>} box @param {CInt} makecat @param {CInt} givemsg */
 export function* observe_quantum_cat(box, makecat, givemsg) {
     let deadcat;
     let livecat = null;
@@ -2498,7 +2498,7 @@ export function* u_handsy() {
     return 1;
 }
 
-/** C ref: pickup.c:2957 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:2957 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function stash_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -2507,7 +2507,7 @@ function stash_ok(obj) {
     return NHC.GETOBJ_SUGGEST;
 }
 
-/** C ref: pickup.c:2972 — @param {CPtr} objp @param {CInt} held @param {CInt} more_containers @returns {CInt} */
+/** C ref: pickup.c:2972 — @param {CPtr<struct obj *>} objp @param {CInt} held @param {CInt} more_containers @returns {CInt} */
 export function* use_container(objp, held, more_containers) {
     let otmp;
     let obj = cptr.ldPtr(objp);
@@ -2830,7 +2830,7 @@ function* menu_loot(retry, put_in) {
 const __static_in_or_out_menu_lootchars = cptr.bytes("_:oibrsnq"); /** C ref: pickup.c:3406 — char[10] (function-static) */
 const __static_in_or_out_menu_abc_chars = cptr.bytes("_:abcdenq"); /** C ref: pickup.c:3406 — char[10] (function-static) */
 
-/** C ref: pickup.c:3397 — @param {CPtr} prompt @param {CPtr} obj @param {CInt} outokay @param {CInt} inokay @param {CInt} alreadyused @param {CInt} more_containers @returns {CInt} */
+/** C ref: pickup.c:3397 — @param {CPtr<char>} prompt @param {CPtr<struct obj>} obj @param {CInt} outokay @param {CInt} inokay @param {CInt} alreadyused @param {CInt} more_containers @returns {CInt} */
 function* in_or_out_menu(prompt, obj, outokay, inokay, alreadyused, more_containers) {
     let win;
     let any = cptr.alloc(8);
@@ -2889,7 +2889,7 @@ function* in_or_out_menu(prompt, obj, outokay, inokay, alreadyused, more_contain
     return schar(((n == 0 && more_containers) ? 110 : 113));
 }
 
-/** C ref: pickup.c:3481 — @param {CPtr} obj @returns {CInt} */
+/** C ref: pickup.c:3481 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function tip_ok(obj) {
     if (!obj || cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
         return NHC.GETOBJ_EXCLUDE;
@@ -3026,7 +3026,7 @@ export const TIPCHECK_TRAPPED = 2;
 export const TIPCHECK_CANNOT = 3;
 export const TIPCHECK_EMPTY = 4;
 
-/** C ref: pickup.c:3688 — @param {CPtr} box */
+/** C ref: pickup.c:3688 — @param {CPtr<struct obj>} box */
 function* tipcontainer(box) {
     let ox = cptr.box(cptr.ldI16(u));
     let oy = cptr.box(cptr.ldI16o(u, $you_uy));
@@ -3128,7 +3128,7 @@ function* tipcontainer(box) {
         (yield* update_inventory());
 }
 
-/** C ref: pickup.c:3871 — @param {CPtr} box @param {CPtr} cancelled @returns {CPtr} */
+/** C ref: pickup.c:3871 — @param {CPtr<struct obj>} box @param {CPtr<boolean>} cancelled @returns {CPtr<struct obj>} */
 function* tipcontainer_gettarget(box, cancelled) {
     let n;
     let n_conts;
@@ -3179,7 +3179,7 @@ function* tipcontainer_gettarget(box, cancelled) {
     return otmp;
 }
 
-/** C ref: pickup.c:3954 — @param {CPtr} box @param {CPtr} targetbox @param {CInt} allowempty @returns {CInt} */
+/** C ref: pickup.c:3954 — @param {CPtr<struct obj>} box @param {CPtr<struct obj>} targetbox @param {CInt} allowempty @returns {CInt} */
 function* tipcontainer_checks(box, targetbox, allowempty) {
     if (targetbox && cptr.ldI16o(targetbox, $obj_otyp) == NHC.BAG_OF_TRICKS) {
         let seencount = cptr.box(0);

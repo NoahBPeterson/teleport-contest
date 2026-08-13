@@ -714,7 +714,7 @@ const __sl542 = cptr.lit("tails");
 /** C ref: apply.c:58 — char[42] */
 const no_elbow_room = cptr.bytes("don't have enough elbow-room to maneuver.");
 
-/** C ref: apply.c:61 — @param {CPtr} obj */
+/** C ref: apply.c:61 — @param {CPtr<struct obj>} obj */
 export function do_blinding_ray(obj) {
     obj = cptr.box(obj);
     let mtmp = bhit(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy), NHM.COLNO, NHC.FLASHED_LIGHT, null, null, obj);
@@ -727,7 +727,7 @@ export function do_blinding_ray(obj) {
     transient_light_cleanup();
 }
 
-/** C ref: apply.c:79 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:79 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function use_camera(obj) {
     if (Underwater()) {
         pline(__sl0);
@@ -754,7 +754,7 @@ function use_camera(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: apply.c:112 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:112 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function use_towel(obj) {
     let drying_feedback = schar((cptr.eq(obj, uwep.v)));
     if (!freehand()) {
@@ -824,7 +824,7 @@ function use_towel(obj) {
     return NHM.ECMD_OK;
 }
 
-/** C ref: apply.c:198 — @param {CInt} rx @param {CInt} ry @param {CPtr} resp @returns {CInt} */
+/** C ref: apply.c:198 — @param {CInt} rx @param {CInt} ry @param {CPtr<int>} resp @returns {CInt} */
 function its_dead(rx, ry, resp) {
     let buf = new Uint8Array(256);
     let more_corpses;
@@ -918,7 +918,7 @@ function its_dead(rx, ry, resp) {
 /** C ref: apply.c:311 — char[43] */
 const hollow_str = cptr.bytes("a hollow sound.  This must be a secret %s!");
 
-/** C ref: apply.c:318 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:318 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function use_stethoscope(obj) {
     let mtmp;
     let lev;
@@ -1059,7 +1059,7 @@ const whistle_str = cptr.bytes("produce a %s whistling sound.");
 /** C ref: apply.c:473 — char[31] */
 const alt_whistle_str = cptr.bytes("produce a %s, sharp vibration.");
 
-/** C ref: apply.c:476 — @param {CPtr} obj */
+/** C ref: apply.c:476 — @param {CPtr<struct obj>} obj */
 function use_whistle(obj) {
     if (!can_blow(cptr.add(gy, $instance_globals_y_youmonst))) {
         You(__sl68);
@@ -1077,7 +1077,7 @@ function use_whistle(obj) {
     }
 }
 
-/** C ref: apply.c:495 — @param {CPtr} obj */
+/** C ref: apply.c:495 — @param {CPtr<struct obj>} obj */
 function use_magic_whistle(obj) {
     if (!can_blow(cptr.add(gy, $instance_globals_y_youmonst))) {
         You(__sl68);
@@ -1093,7 +1093,7 @@ function use_magic_whistle(obj) {
     }
 }
 
-/** C ref: apply.c:518 — @param {CPtr} obj */
+/** C ref: apply.c:518 — @param {CPtr<struct obj>} obj */
 function magic_whistled(obj) {
     let mtmp;
     let nextmon;
@@ -1206,7 +1206,7 @@ export function number_leashed() {
     return i;
 }
 
-/** C ref: apply.c:711 — @param {CPtr} otmp */
+/** C ref: apply.c:711 — @param {CPtr<struct obj>} otmp */
 export function o_unleash(otmp) {
     let mtmp;
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
@@ -1218,7 +1218,7 @@ export function o_unleash(otmp) {
     update_inventory();
 }
 
-/** C ref: apply.c:726 — @param {CPtr} mtmp @param {CInt} feedback */
+/** C ref: apply.c:726 — @param {CPtr<struct monst>} mtmp @param {CInt} feedback */
 export function m_unleash(mtmp, feedback) {
     let otmp;
     if (feedback) {
@@ -1245,12 +1245,12 @@ export function unleash_all() {
         cptr.stI32o(mtmp, $monst_mleashed, 0);
 }
 
-/** C ref: apply.c:761 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: apply.c:761 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function leashable(mtmp) {
     return schar((cptr.ldI16o(mtmp, $monst_mnum) != NHC.PM_LONG_WORM && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1048576n) != 0n) && (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 32768n) == 0n)) ? 1 : 0));
 }
 
-/** C ref: apply.c:769 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:769 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function use_leash(obj) {
     let cc = cptr.alloc(4);
     let mtmp;
@@ -1282,7 +1282,7 @@ function use_leash(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: apply.c:821 — @param {CPtr} obj @param {CPtr} mtmp @param {CPtr} cc @param {CInt} spotmon */
+/** C ref: apply.c:821 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mtmp @param {CPtr<coord>} cc @param {CInt} spotmon */
 function use_leash_core(obj, mtmp, cc, spotmon) {
     if (!spotmon && !((cptr.ldI32o3(svl, cptr.ldI16(cc), 756, cptr.ldI16o(cc, $coord_y), 36, $instance_globals_saved_l_level)) == NHC.GLYPH_INVIS_OFF)) {
         You(__sl109, cptr.ldI32o(obj, $obj_corpsenm) ? __sl110 : __sl35);
@@ -1326,7 +1326,7 @@ function use_leash_core(obj, mtmp, cc, spotmon) {
     }
 }
 
-/** C ref: apply.c:880 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: apply.c:880 — @param {CPtr<struct monst>} mtmp @returns {CPtr<struct obj>} */
 export function get_mleash(mtmp) {
     let otmp;
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
@@ -1335,7 +1335,7 @@ export function get_mleash(mtmp) {
     return otmp;
 }
 
-/** C ref: apply.c:891 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: apply.c:891 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function mleashed_next2u(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1)) {
         if (!m_next2u(mtmp))
@@ -1418,7 +1418,7 @@ export function check_leash(x, y) {
     }
 }
 
-/** C ref: apply.c:997 @returns {CPtr} */
+/** C ref: apply.c:997 @returns {CPtr<char>} */
 export function beautiful() {
     let res;
     let cha = (acurr(NHC.A_CHA));
@@ -1429,7 +1429,7 @@ export function beautiful() {
 /** C ref: apply.c:1015 — char[9] */
 const look_str = cptr.bytes("look %s.");
 
-/** C ref: apply.c:1018 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:1018 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function use_mirror(obj) {
     obj = cptr.box(obj);
     let mirror;
@@ -1585,7 +1585,7 @@ function use_mirror(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: apply.c:1202 — @param {CPtr} optr */
+/** C ref: apply.c:1202 — @param {CPtr<struct obj *>} optr */
 function use_bell(optr) {
     let obj = cptr.ldPtr(optr);
     let mtmp;
@@ -1678,7 +1678,7 @@ function use_bell(optr) {
         wake_nearby(1);
 }
 
-/** C ref: apply.c:1319 — @param {CPtr} obj */
+/** C ref: apply.c:1319 — @param {CPtr<struct obj>} obj */
 function use_candelabrum(obj) {
     let s = (cptr.ld1so(obj, $obj_spe) != 1) ? __sl193 : __sl194;
     if ((cptr.ldI32o(obj, $obj_lamplit) & 1)) {
@@ -1731,7 +1731,7 @@ function use_candelabrum(obj) {
     begin_burn(obj, 0);
 }
 
-/** C ref: apply.c:1387 — @param {CPtr} optr */
+/** C ref: apply.c:1387 — @param {CPtr<struct obj *>} optr */
 function use_candle(optr) {
     let obj = cptr.ldPtr(optr);
     let otmp;
@@ -1788,7 +1788,7 @@ function use_candle(optr) {
     }
 }
 
-/** C ref: apply.c:1472 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: apply.c:1472 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function snuff_candle(otmp) {
     let candle = schar(Is_candle(otmp));
     if ((candle || cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) && (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0) {
@@ -1805,7 +1805,7 @@ export function snuff_candle(otmp) {
     return 0;
 }
 
-/** C ref: apply.c:1497 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:1497 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function snuff_lit(obj) {
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -1823,7 +1823,7 @@ export function snuff_lit(obj) {
     return 0;
 }
 
-/** C ref: apply.c:1518 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:1518 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function splash_lit(obj) {
     let result;
     let dunk = 0;
@@ -1859,7 +1859,7 @@ export function splash_lit(obj) {
     return result;
 }
 
-/** C ref: apply.c:1577 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:1577 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function catch_lit(obj) {
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -1890,7 +1890,7 @@ export function catch_lit(obj) {
     return 0;
 }
 
-/** C ref: apply.c:1628 — @param {CPtr} obj */
+/** C ref: apply.c:1628 — @param {CPtr<struct obj>} obj */
 function use_lamp(obj) {
     let buf = new Uint8Array(256);
     let lamp = (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(obj, $obj_otyp) == NHC.MAGIC_LAMP) ? __sl256 : ((cptr.ldI16o(obj, $obj_otyp) == NHC.BRASS_LANTERN) ? __sl257 : null);
@@ -1944,7 +1944,7 @@ function use_lamp(obj) {
     }
 }
 
-/** C ref: apply.c:1703 — @param {CPtr} optr */
+/** C ref: apply.c:1703 — @param {CPtr<struct obj *>} optr */
 function light_cocktail(optr) {
     let obj = cptr.ldPtr(optr);
     let buf = new Uint8Array(256);
@@ -1988,7 +1988,7 @@ function light_cocktail(optr) {
     cptr.stPtr(optr, obj);
 }
 
-/** C ref: apply.c:1770 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:1770 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function rub_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -2059,7 +2059,7 @@ export const jHorz = 1;
 export const jVert = 2;
 export const jDiag = 3;
 
-/** C ref: apply.c:1862 — @param {CPtr} arg @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: apply.c:1862 — @param {CPtr<void>} arg @param {CInt} x @param {CInt} y @returns {CInt} */
 function check_jump(arg, x, y) {
     let traj = cptr.ldI32(arg);
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
@@ -2297,7 +2297,7 @@ export function jump(magic) {
     }
 }
 
-/** C ref: apply.c:2167 — @param {CPtr} corpse @returns {CInt} */
+/** C ref: apply.c:2167 — @param {CPtr<struct obj>} corpse @returns {CInt} */
 export function tinnable(corpse) {
     if (cptr.ldI32o(corpse, $obj_oeaten))
         return 0;
@@ -2308,7 +2308,7 @@ export function tinnable(corpse) {
 
 const __static_use_tinning_kit_you_buy_it = cptr.bytes("You tin it, you bought it!"); /** C ref: apply.c:2224 — char[27] (function-static) */
 
-/** C ref: apply.c:2177 — @param {CPtr} obj */
+/** C ref: apply.c:2177 — @param {CPtr<struct obj>} obj */
 function use_tinning_kit(obj) {
     let corpse;
     let can;
@@ -2375,7 +2375,7 @@ function use_tinning_kit(obj) {
         impossible(__sl336);
 }
 
-/** C ref: apply.c:2259 — @param {CPtr} optr */
+/** C ref: apply.c:2259 — @param {CPtr<struct obj *>} optr */
 export function use_unicorn_horn(optr) {
     let idx;
     let val;
@@ -2484,7 +2484,7 @@ export function use_unicorn_horn(optr) {
         pline(__sl1, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
 }
 
-/** C ref: apply.c:2398 — @param {CPtr} arg @param {CLongLong} timeout */
+/** C ref: apply.c:2398 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function fig_transform(arg, timeout) {
     let figurine = cptr.ldPtr(arg);
     let mtmp;
@@ -2570,7 +2570,7 @@ export function fig_transform(arg, timeout) {
         newsym(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
 }
 
-/** C ref: apply.c:2511 — @param {CPtr} obj @param {CPtr} cc @param {CInt} quietly @returns {CInt} */
+/** C ref: apply.c:2511 — @param {CPtr<struct obj>} obj @param {CPtr<coord>} cc @param {CInt} quietly @returns {CInt} */
 function figurine_location_checks(obj, cc, quietly) {
     let x;
     let y;
@@ -2599,7 +2599,7 @@ function figurine_location_checks(obj, cc, quietly) {
     return 1;
 }
 
-/** C ref: apply.c:2544 — @param {CPtr} optr @returns {CInt} */
+/** C ref: apply.c:2544 — @param {CPtr<struct obj *>} optr @returns {CInt} */
 function use_figurine(optr) {
     let obj = cptr.ldPtr(optr);
     let x;
@@ -2629,7 +2629,7 @@ function use_figurine(optr) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: apply.c:2585 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:2585 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function grease_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_SUGGEST;
@@ -2640,7 +2640,7 @@ function grease_ok(obj) {
     return NHC.GETOBJ_SUGGEST;
 }
 
-/** C ref: apply.c:2604 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:2604 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function use_grease(obj) {
     let otmp;
     if (Glib()) {
@@ -2684,7 +2684,7 @@ function use_grease(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: apply.c:2658 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:2658 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function touchstone_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -2697,7 +2697,7 @@ function touchstone_ok(obj) {
 
 const __static_use_stone_scritch = cptr.bytes("\"scritch, scritch\""); /** C ref: apply.c:2682 — char[19] (function-static) */
 
-/** C ref: apply.c:2680 — @param {CPtr} tstone @returns {CInt} */
+/** C ref: apply.c:2680 — @param {CPtr<struct obj>} tstone @returns {CInt} */
 function use_stone(tstone) {
     let obj;
     let do_scratch;
@@ -2805,7 +2805,7 @@ export function reset_trapset() {
     cptr.st1o(gt, $trapinfo_force_bungle, 0);
 }
 
-/** C ref: apply.c:2821 — @param {CPtr} otmp */
+/** C ref: apply.c:2821 — @param {CPtr<struct obj>} otmp */
 function use_trap(otmp) {
     let ttyp;
     let tmp;
@@ -2918,7 +2918,7 @@ function set_trap() {
     return 0;
 }
 
-/** C ref: apply.c:2955 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:2955 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function use_whip(obj) {
     let mtmp, otmp, rx, ry, proficient, msg_slipsfree, msg_snap;
     let __go_whipattack = false;
@@ -3141,7 +3141,7 @@ const cant_see_spot = cptr.bytes("won't hit anything if you can't see that spot.
 /** C ref: apply.c:3277 — char[33] */
 const cant_reach = cptr.bytes("can't reach that spot from here.");
 
-/** C ref: apply.c:3284 — @param {CPtr} pos @returns {CInt} */
+/** C ref: apply.c:3284 — @param {CPtr<coord>} pos @returns {CInt} */
 function find_poleable_mon(pos) {
     let mtmp;
     let mpos = cptr.alloc(4); cptr.stI16(mpos, 0); cptr.stI16o(mpos, $nhcoord_y, 0);
@@ -3206,7 +3206,7 @@ function display_polearm_positions(on_off) {
     }
 }
 
-/** C ref: apply.c:3371 — @param {CPtr} min_range @param {CPtr} max_range */
+/** C ref: apply.c:3371 — @param {CPtr<int>} min_range @param {CPtr<int>} max_range */
 function calc_pole_range(min_range, max_range) {
     let typ = uwep_skill_type();
     cptr.stI32(min_range, 4);
@@ -3240,14 +3240,14 @@ export function could_pole_mon() {
     return 0;
 }
 
-/** C ref: apply.c:3416 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:3416 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function snickersnee_used_dist_attk(obj) {
     if (obj && cptr.eq(obj, uwep.v) && is_art(uwep.v, NHC.ART_SNICKERSNEE) && cptr.ldI64o(svc, $context_info_snickersnee_turn) == cptr.ldI64o(svm, $instance_globals_saved_m_moves))
         return 1;
     return 0;
 }
 
-/** C ref: apply.c:3426 — @param {CPtr} obj @param {CInt} autohit @returns {CInt} */
+/** C ref: apply.c:3426 — @param {CPtr<struct obj>} obj @param {CInt} autohit @returns {CInt} */
 export function use_pole(obj, autohit) {
     let thump = cptr.bytes("Thump!  Your blow bounces harmlessly off the %s.");
     let res = NHM.ECMD_OK;
@@ -3347,7 +3347,7 @@ export function use_pole(obj, autohit) {
     return freehit ? NHM.ECMD_OK : NHM.ECMD_TIME;
 }
 
-/** C ref: apply.c:3568 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:3568 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function use_cream_pie(obj) {
     let wasblind = schar(((cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked) ? 1 : 0));
     let wascreamed = schar(cptr.ldI32o(u, $you_ucreamed));
@@ -3376,14 +3376,14 @@ function use_cream_pie(obj) {
     return NHM.ECMD_OK;
 }
 
-/** C ref: apply.c:3607 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:3607 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function jelly_ok(obj) {
     if (obj && cptr.ldI16o(obj, $obj_otyp) == NHC.EGG)
         return NHC.GETOBJ_SUGGEST;
     return NHC.GETOBJ_EXCLUDE;
 }
 
-/** C ref: apply.c:3616 — @param {CPtr} optr @returns {CInt} */
+/** C ref: apply.c:3616 — @param {CPtr<struct obj *>} optr @returns {CInt} */
 function use_royal_jelly(optr) {
     let oldcorpsenm;
     let was_timed;
@@ -3477,7 +3477,7 @@ function display_grapple_positions(on_off) {
     }
 }
 
-/** C ref: apply.c:3729 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:3729 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function use_grapple(obj) {
     let res = NHM.ECMD_OK;
     let typ;
@@ -3609,7 +3609,7 @@ function discard_broken_wand() {
     nomul(0);
 }
 
-/** C ref: apply.c:3888 — @param {CPtr} obj @param {CInt} dmg @param {CInt} expltype */
+/** C ref: apply.c:3888 — @param {CPtr<struct obj>} obj @param {CInt} dmg @param {CInt} expltype */
 function broken_wand_explode(obj, dmg, expltype) {
     explode(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), -(cptr.ldI16o(obj, $obj_otyp)), dmg, NHC.WAND_CLASS, expltype);
     discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1);
@@ -3627,7 +3627,7 @@ export function maybe_dunk_boulders(x, y) {
 
 const __static_do_break_wand_nothing_else_happens = cptr.bytes("But nothing else happens..."); /** C ref: apply.c:3912 — char[28] (function-static) */
 
-/** C ref: apply.c:3909 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:3909 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function do_break_wand(obj) {
     let i;
     let x;
@@ -3789,7 +3789,7 @@ function do_break_wand(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: apply.c:4151 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:4151 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function apply_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -4049,7 +4049,7 @@ cptr.stPtro(__static_flip_through_book_fadeness, 16, __sl531);
 cptr.stPtro(__static_flip_through_book_fadeness, 24, __sl532);
 cptr.stPtro(__static_flip_through_book_fadeness, 32, __sl533); /** C ref: apply.c:4509 — char *[5] (function-static) */
 
-/** C ref: apply.c:4473 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:4473 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function flip_through_book(obj) {
     if (Underwater()) {
         You(__sl512);
@@ -4083,7 +4083,7 @@ function flip_through_book(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: apply.c:4527 — @param {CPtr} obj @returns {CInt} */
+/** C ref: apply.c:4527 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function flip_coin(obj) {
     let otmp = obj;
     let lose_coin = 0;

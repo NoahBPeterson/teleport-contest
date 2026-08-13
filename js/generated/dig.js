@@ -420,7 +420,7 @@ function mkcavearea(rockit) {
     cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
 }
 
-/** C ref: dig.c:141 — @param {CPtr} pick @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: dig.c:141 — @param {CPtr<struct obj>} pick @param {CInt} x @param {CInt} y @returns {CInt} */
 function pick_can_reach(pick, x, y) {
     let t = t_at(x, y);
     let target_in_pit = schar((t && is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) && (cptr.ldI32o(t, $trap_tseen) & 1) | 0 ? 1 : 0));
@@ -436,7 +436,7 @@ function pick_can_reach(pick, x, y) {
     return 0;
 }
 
-/** C ref: dig.c:169 — @param {CPtr} otmp @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: dig.c:169 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function dig_typ(otmp, x, y) {
     let ltyp;
     if (!isok(x, y) || !otmp || (!is_pick(otmp) && !is_axe(otmp)))
@@ -455,7 +455,7 @@ export function is_digging() {
     return 0;
 }
 
-/** C ref: dig.c:207 — @param {CPtr} madeby @param {CInt} x @param {CInt} y @returns {*} */
+/** C ref: dig.c:207 — @param {CPtr<struct monst>} madeby @param {CInt} x @param {CInt} y @returns {*} */
 export function dig_check(madeby, x, y) {
     let ttmp = t_at(x, y);
     if (On_stairs(x, y)) {
@@ -494,7 +494,7 @@ export function dig_check(madeby, x, y) {
     return NHC.DIGCHECK_PASSED;
 }
 
-/** C ref: dig.c:255 — @param {*} digresult @param {CPtr} madeby @param {CInt} x @param {CInt} y */
+/** C ref: dig.c:255 — @param {*} digresult @param {CPtr<struct monst>} madeby @param {CInt} x @param {CInt} y */
 export function digcheck_fail_message(digresult, madeby, x, y) {
     let verb = (cptr.eq(madeby, (cptr.add(gy, $instance_globals_y_youmonst))) && uwep.v && is_axe(uwep.v)) ? __sl5 : __sl6;
     if (digresult < NHC.DIGCHECK_FAILED)
@@ -818,7 +818,7 @@ export function fillholetyp(x, y, fill_if_any) {
         return NHC.ROOM;
 }
 
-/** C ref: dig.c:640 — @param {CInt} x @param {CInt} y @param {CPtr} madeby @param {CInt} ttyp */
+/** C ref: dig.c:640 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} madeby @param {CInt} ttyp */
 export function digactualhole(x, y, madeby, ttyp) {
     let oldobjs;
     let newobjs;
@@ -976,7 +976,7 @@ export function digactualhole(x, y, madeby, ttyp) {
     }
 }
 
-/** C ref: dig.c:838 — @param {CInt} x @param {CInt} y @param {CInt} typ @param {CPtr} ttmp @param {CPtr} fillmsg */
+/** C ref: dig.c:838 — @param {CInt} x @param {CInt} y @param {CInt} typ @param {CPtr<struct trap>} ttmp @param {CPtr<char>} fillmsg */
 export function liquid_flow(x, y, typ, ttmp, fillmsg) {
     let objchain;
     let mon;
@@ -1006,7 +1006,7 @@ export function liquid_flow(x, y, typ, ttmp, fillmsg) {
     }
 }
 
-/** C ref: dig.c:885 — @param {CInt} pit_only @param {CInt} by_magic @param {CPtr} cc @returns {CInt} */
+/** C ref: dig.c:885 — @param {CInt} pit_only @param {CInt} by_magic @param {CPtr<coord>} cc @returns {CInt} */
 export function dighole(pit_only, by_magic, cc) {
     let ttmp;
     let lev;
@@ -1105,7 +1105,7 @@ export function dighole(pit_only, by_magic, cc) {
     return retval;
 }
 
-/** C ref: dig.c:1027 — @param {CPtr} cc */
+/** C ref: dig.c:1027 — @param {CPtr<coord>} cc */
 function dig_up_grave(cc) {
     let otmp;
     let what_happens;
@@ -1162,7 +1162,7 @@ function dig_up_grave(cc) {
     return;
 }
 
-/** C ref: dig.c:1092 — @param {CPtr} obj @returns {CInt} */
+/** C ref: dig.c:1092 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function use_pick_axe(obj) {
     let verb;
     let dsp;
@@ -1222,7 +1222,7 @@ cptr.stPtro(__static_use_pick_axe2_d_action, 24, __sl139);
 cptr.stPtro(__static_use_pick_axe2_d_action, 32, __sl140);
 cptr.stPtro(__static_use_pick_axe2_d_action, 40, __sl141); /** C ref: dig.c:1276 — char *[6] (function-static) */
 
-/** C ref: dig.c:1162 — @param {CPtr} obj @returns {CInt} */
+/** C ref: dig.c:1162 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function use_pick_axe2(obj) {
     let rx;
     let ry;
@@ -1370,14 +1370,14 @@ export function use_pick_axe2(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: dig.c:1362 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: dig.c:1362 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function watchman_canseeu(mtmp) {
     if (is_watch(cptr.ldPtro(mtmp, $monst_data)) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && ((!Invis() || ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.COULD_SEE) != 0)) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0)
         return 1;
     return 0;
 }
 
-/** C ref: dig.c:1377 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @param {CInt} zap */
+/** C ref: dig.c:1377 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CInt} zap */
 export function watch_dig(mtmp, x, y, zap) {
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     if (in_town(x, y) && (closed_door(x, y) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR || IS_WALL(cptr.ld1so(lev, $rm_typ)) || ((cptr.ld1so(lev, $rm_typ)) == NHC.FOUNTAIN) || IS_TREE(cptr.ld1so(lev, $rm_typ)))) {
@@ -1407,7 +1407,7 @@ export function watch_dig(mtmp, x, y, zap) {
     }
 }
 
-/** C ref: dig.c:1414 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: dig.c:1414 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mdig_tunnel(mtmp) {
     let here;
     let sawit;
@@ -1693,7 +1693,7 @@ export function zap_dig() {
     return;
 }
 
-/** C ref: dig.c:1763 — @param {CPtr} cc @param {CPtr} msg @returns {CInt} */
+/** C ref: dig.c:1763 — @param {CPtr<coord>} cc @param {CPtr<char>} msg @returns {CInt} */
 function adj_pit_checks(cc, msg) {
     let ltyp;
     let room;
@@ -1750,7 +1750,7 @@ function adj_pit_checks(cc, msg) {
     return 1;
 }
 
-/** C ref: dig.c:1844 — @param {CPtr} trap @param {CInt} filltyp */
+/** C ref: dig.c:1844 — @param {CPtr<struct trap>} trap @param {CInt} filltyp */
 function pit_flow(trap, filltyp) {
     if (trap && filltyp != NHC.ROOM && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31))) {
         let t = cptr.alloc(40);
@@ -1772,7 +1772,7 @@ function pit_flow(trap, filltyp) {
     }
 }
 
-/** C ref: dig.c:1885 — @param {CPtr} cc @returns {CPtr} */
+/** C ref: dig.c:1885 — @param {CPtr<coord>} cc @returns {CPtr<struct obj>} */
 export function buried_ball(cc) {
     let odist;
     let bdist = NHM.COLNO;
@@ -1831,7 +1831,7 @@ export function buried_ball_to_freedom() {
     }
 }
 
-/** C ref: dig.c:1984 — @param {CPtr} otmp @param {CPtr} dealloced @returns {CPtr} */
+/** C ref: dig.c:1984 — @param {CPtr<struct obj>} otmp @param {CPtr<boolean>} dealloced @returns {CPtr<struct obj>} */
 export function bury_an_obj(otmp, dealloced) {
     let otmp2;
     let under_ice;
@@ -1940,7 +1940,7 @@ export function unearth_objs(x, y) {
     newsym(i16(x), i16(y));
 }
 
-/** C ref: dig.c:2125 — @param {CPtr} arg @param {CLongLong} timeout */
+/** C ref: dig.c:2125 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function rot_organic(arg, timeout) {
     let obj = cptr.ldPtr(arg);
     while ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
@@ -1951,7 +1951,7 @@ export function rot_organic(arg, timeout) {
     obfree(obj, null);
 }
 
-/** C ref: dig.c:2146 — @param {CPtr} arg @param {CLongLong} timeout */
+/** C ref: dig.c:2146 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function rot_corpse(arg, timeout) {
     let x = 0;
     let y = 0;

@@ -47,7 +47,7 @@ const __sl8 = cptr.lit("get length of");
 const __sl9 = cptr.lit("attempt to divide by zero");
 const __sl10 = cptr.lit("attempt to perform 'n%%0'");
 
-/** C ref: lvm.c:90 — @param {CPtr} obj @param {CPtr} result @returns {CInt} */
+/** C ref: lvm.c:90 — @param {CPtr<TValue>} obj @param {CPtr<TValue>} result @returns {CInt} */
 function l_strton(obj, result) {
     (void 0);
     if (!(((((cptr.ld1uo(((obj)), $TValue_tt_))) & 15)) == 4))
@@ -58,7 +58,7 @@ function l_strton(obj, result) {
     }
 }
 
-/** C ref: lvm.c:105 — @param {CPtr} obj @param {CPtr} n @returns {CInt} */
+/** C ref: lvm.c:105 — @param {CPtr<TValue>} obj @param {CPtr<lua_Number>} n @returns {CInt} */
 export function luaV_tonumber_(obj, n) {
     let v = cptr.alloc(16);
     if (((cptr.ld1uo(((obj)), $TValue_tt_)) == 3)) {
@@ -71,7 +71,7 @@ export function luaV_tonumber_(obj, n) {
         return 0;
 }
 
-/** C ref: lvm.c:123 — @param {CDouble} n @param {CPtr} p @param {*} mode @returns {CInt} */
+/** C ref: lvm.c:123 — @param {CDouble} n @param {CPtr<lua_Integer>} p @param {*} mode @returns {CInt} */
 export function luaV_flttointeger(n, p, mode) {
     let f = (floor(n));
     if (n != f) {
@@ -83,7 +83,7 @@ export function luaV_flttointeger(n, p, mode) {
     return ((f) >= Number((-9223372036854775808n)) && (f) < -Number((-9223372036854775808n)) && (cptr.stI64((p), BigInt.asIntN(64, BigInt(Math.trunc((f))))), 1) ? 1 : 0);
 }
 
-/** C ref: lvm.c:139 — @param {CPtr} obj @param {CPtr} p @param {*} mode @returns {CInt} */
+/** C ref: lvm.c:139 — @param {CPtr<TValue>} obj @param {CPtr<lua_Integer>} p @param {*} mode @returns {CInt} */
 export function luaV_tointegerns(obj, p, mode) {
     if (((cptr.ld1uo(((obj)), $TValue_tt_)) == 19))
         return luaV_flttointeger((cptr.ldF64(((obj)))), p, mode);
@@ -94,7 +94,7 @@ export function luaV_tointegerns(obj, p, mode) {
         return 0;
 }
 
-/** C ref: lvm.c:154 — @param {CPtr} obj @param {CPtr} p @param {*} mode @returns {CInt} */
+/** C ref: lvm.c:154 — @param {CPtr<TValue>} obj @param {CPtr<lua_Integer>} p @param {*} mode @returns {CInt} */
 export function luaV_tointeger(obj, p, mode) {
     let v = cptr.alloc(16);
     if (l_strton(obj, v))
@@ -102,7 +102,7 @@ export function luaV_tointeger(obj, p, mode) {
     return luaV_tointegerns(obj, p, mode);
 }
 
-/** C ref: lvm.c:178 — @param {CPtr} L @param {CLongLong} init @param {CPtr} lim @param {CPtr} p @param {CLongLong} step @returns {CInt} */
+/** C ref: lvm.c:178 — @param {CPtr<lua_State>} L @param {CLongLong} init @param {CPtr<TValue>} lim @param {CPtr<lua_Integer>} p @param {CLongLong} step @returns {CInt} */
 function forlimit(L, init, lim, p, step) {
     if (!luaV_tointeger(lim, p, (step < 0n ? NHC.F2Iceil : NHC.F2Ifloor))) {
         let flim = cptr.box(0);
@@ -121,7 +121,7 @@ function forlimit(L, init, lim, p, step) {
     return (step > 0n ? init > cptr.ldI64(p) : init < cptr.ldI64(p));
 }
 
-/** C ref: lvm.c:208 — @param {CPtr} L @param {CPtr} ra @returns {CInt} */
+/** C ref: lvm.c:208 — @param {CPtr<lua_State>} L @param {CPtr} ra @returns {CInt} */
 function forprep(L, ra) {
     let pinit = ((ra));
     let plimit = ((cptr.add(ra, 1, 16)));
@@ -225,7 +225,7 @@ function floatforloop(ra) {
         return 0;
 }
 
-/** C ref: lvm.c:289 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @param {CPtr} val @param {CPtr} slot */
+/** C ref: lvm.c:289 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} t @param {CPtr<TValue>} key @param {CPtr} val @param {CPtr<TValue>} slot */
 export function luaV_finishget(L, t, key, val, slot) {
     let loop;
     let tm;
@@ -264,7 +264,7 @@ export function luaV_finishget(L, t, key, val, slot) {
     luaG_runerror(L, __sl5);
 }
 
-/** C ref: lvm.c:332 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @param {CPtr} val @param {CPtr} slot */
+/** C ref: lvm.c:332 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} t @param {CPtr<TValue>} key @param {CPtr<TValue>} val @param {CPtr<TValue>} slot */
 export function luaV_finishset(L, t, key, val, slot) {
     let loop;
     for (loop = 0; loop < 2000; loop++) {
@@ -319,7 +319,7 @@ export function luaV_finishset(L, t, key, val, slot) {
     luaG_runerror(L, __sl6);
 }
 
-/** C ref: lvm.c:381 — @param {CPtr} ts1 @param {CPtr} ts2 @returns {CInt} */
+/** C ref: lvm.c:381 — @param {CPtr<TString>} ts1 @param {CPtr<TString>} ts2 @returns {CInt} */
 function l_strcmp(ts1, ts2) {
     let s1 = (cptr.add((ts1), $TString_contents));
     let rl1 = (cptr.ld1uo((ts1), $TString_shrlen) != 255 ? BigInt(cptr.ld1uo((ts1), $TString_shrlen) >>> 0) : cptr.ldU64o((ts1), $TString_u));
@@ -398,7 +398,7 @@ function LEfloatint(f, i) {
     }
 }
 
-/** C ref: lvm.c:483 — @param {CPtr} l @param {CPtr} r @returns {CInt} */
+/** C ref: lvm.c:483 — @param {CPtr<TValue>} l @param {CPtr<TValue>} r @returns {CInt} */
 function LTnum(l, r) {
     (void 0);
     if (((cptr.ld1uo(((l)), $TValue_tt_)) == 3)) {
@@ -416,7 +416,7 @@ function LTnum(l, r) {
     }
 }
 
-/** C ref: lvm.c:505 — @param {CPtr} l @param {CPtr} r @returns {CInt} */
+/** C ref: lvm.c:505 — @param {CPtr<TValue>} l @param {CPtr<TValue>} r @returns {CInt} */
 function LEnum(l, r) {
     (void 0);
     if (((cptr.ld1uo(((l)), $TValue_tt_)) == 3)) {
@@ -434,7 +434,7 @@ function LEnum(l, r) {
     }
 }
 
-/** C ref: lvm.c:527 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
+/** C ref: lvm.c:527 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} l @param {CPtr<TValue>} r @returns {CInt} */
 function lessthanothers(L, l, r) {
     (void 0);
     if ((((((cptr.ld1uo(((l)), $TValue_tt_))) & 15)) == 4) && (((((cptr.ld1uo(((r)), $TValue_tt_))) & 15)) == 4))
@@ -443,7 +443,7 @@ function lessthanothers(L, l, r) {
         return luaT_callorderTM(L, l, r, NHC.TM_LT);
 }
 
-/** C ref: lvm.c:539 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
+/** C ref: lvm.c:539 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} l @param {CPtr<TValue>} r @returns {CInt} */
 export function luaV_lessthan(L, l, r) {
     if ((((((cptr.ld1uo(((l)), $TValue_tt_))) & 15)) == 3) && (((((cptr.ld1uo(((r)), $TValue_tt_))) & 15)) == 3))
         return LTnum(l, r);
@@ -451,7 +451,7 @@ export function luaV_lessthan(L, l, r) {
         return lessthanothers(L, l, r);
 }
 
-/** C ref: lvm.c:549 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
+/** C ref: lvm.c:549 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} l @param {CPtr<TValue>} r @returns {CInt} */
 function lessequalothers(L, l, r) {
     (void 0);
     if ((((((cptr.ld1uo(((l)), $TValue_tt_))) & 15)) == 4) && (((((cptr.ld1uo(((r)), $TValue_tt_))) & 15)) == 4))
@@ -460,7 +460,7 @@ function lessequalothers(L, l, r) {
         return luaT_callorderTM(L, l, r, NHC.TM_LE);
 }
 
-/** C ref: lvm.c:561 — @param {CPtr} L @param {CPtr} l @param {CPtr} r @returns {CInt} */
+/** C ref: lvm.c:561 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} l @param {CPtr<TValue>} r @returns {CInt} */
 export function luaV_lessequal(L, l, r) {
     if ((((((cptr.ld1uo(((l)), $TValue_tt_))) & 15)) == 3) && (((((cptr.ld1uo(((r)), $TValue_tt_))) & 15)) == 3))
         return LEnum(l, r);
@@ -468,7 +468,7 @@ export function luaV_lessequal(L, l, r) {
         return lessequalothers(L, l, r);
 }
 
-/** C ref: lvm.c:572 — @param {CPtr} L @param {CPtr} t1 @param {CPtr} t2 @returns {CInt} */
+/** C ref: lvm.c:572 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} t1 @param {CPtr<TValue>} t2 @returns {CInt} */
 export function luaV_equalobj(L, t1, t2) {
     let tm;
     if ((((cptr.ld1uo((t1), $TValue_tt_))) & 63) != (((cptr.ld1uo((t2), $TValue_tt_))) & 63)) {
@@ -530,7 +530,7 @@ export function luaV_equalobj(L, t1, t2) {
     }
 }
 
-/** C ref: lvm.c:631 — @param {CPtr} top @param {CInt} n @param {CPtr} buff */
+/** C ref: lvm.c:631 — @param {CPtr} top @param {CInt} n @param {CPtr<char>} buff */
 function copy2buff(top, n, buff) {
     let tl = 0n;
     do {
@@ -541,7 +541,7 @@ function copy2buff(top, n, buff) {
     } while (--n > 0);
 }
 
-/** C ref: lvm.c:646 — @param {CPtr} L @param {CInt} total */
+/** C ref: lvm.c:646 — @param {CPtr<lua_State>} L @param {CInt} total */
 export function luaV_concat(L, total) {
     if (total == 1)
         return;
@@ -595,7 +595,7 @@ export function luaV_concat(L, total) {
     } while (total > 1);
 }
 
-/** C ref: lvm.c:693 — @param {CPtr} L @param {CPtr} ra @param {CPtr} rb */
+/** C ref: lvm.c:693 — @param {CPtr<lua_State>} L @param {CPtr} ra @param {CPtr<TValue>} rb */
 export function luaV_objlen(L, ra, rb) {
     let tm;
     switch ((((cptr.ld1uo((rb), $TValue_tt_))) & 63)) {
@@ -644,7 +644,7 @@ export function luaV_objlen(L, ra, rb) {
     luaT_callTMres(L, tm, rb, rb, ra);
 }
 
-/** C ref: lvm.c:728 — @param {CPtr} L @param {CLongLong} m @param {CLongLong} n @returns {*} */
+/** C ref: lvm.c:728 — @param {CPtr<lua_State>} L @param {CLongLong} m @param {CLongLong} n @returns {*} */
 export function luaV_idiv(L, m, n) {
     if ((__builtin_expect(BigInt(((BigInt.asUintN(64, (BigInt.asUintN(64, (n))) + 1n) <= 1n) != 0)), 0n))) {
         if (n == 0n)
@@ -658,7 +658,7 @@ export function luaV_idiv(L, m, n) {
     }
 }
 
-/** C ref: lvm.c:748 — @param {CPtr} L @param {CLongLong} m @param {CLongLong} n @returns {*} */
+/** C ref: lvm.c:748 — @param {CPtr<lua_State>} L @param {CLongLong} m @param {CLongLong} n @returns {*} */
 export function luaV_mod(L, m, n) {
     if ((__builtin_expect(BigInt(((BigInt.asUintN(64, (BigInt.asUintN(64, (n))) + 1n) <= 1n) != 0)), 0n))) {
         if (n == 0n)
@@ -672,7 +672,7 @@ export function luaV_mod(L, m, n) {
     }
 }
 
-/** C ref: lvm.c:766 — @param {CPtr} L @param {CDouble} m @param {CDouble} n @returns {*} */
+/** C ref: lvm.c:766 — @param {CPtr<lua_State>} L @param {CDouble} m @param {CDouble} n @returns {*} */
 export function luaV_modf(L, m, n) {
     let r;
     {
@@ -700,7 +700,7 @@ export function luaV_shiftl(x, y) {
     }
 }
 
-/** C ref: lvm.c:796 — @param {CPtr} L @param {CPtr} p @param {CPtr} encup @param {CPtr} base @param {CPtr} ra */
+/** C ref: lvm.c:796 — @param {CPtr<lua_State>} L @param {CPtr<Proto>} p @param {CPtr<UpVal *>} encup @param {CPtr} base @param {CPtr} ra */
 function pushclosure(L, p, encup, base, ra) {
     let nup = cptr.ldI32o(p, $Proto_sizeupvalues);
     let uv = cptr.ldPtro(p, $Proto_upvalues);
@@ -724,7 +724,7 @@ function pushclosure(L, p, encup, base, ra) {
     }
 }
 
-/** C ref: lvm.c:817 — @param {CPtr} L */
+/** C ref: lvm.c:817 — @param {CPtr<lua_State>} L */
 export function luaV_finishOp(L) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let base = cptr.add(cptr.ldPtr(ci), 1, 16);
@@ -904,7 +904,7 @@ cptr.stPtro(__static_luaV_execute_disptab, 640, "L_OP_VARARG");
 cptr.stPtro(__static_luaV_execute_disptab, 648, "L_OP_VARARGPREP");
 cptr.stPtro(__static_luaV_execute_disptab, 656, "L_OP_EXTRAARG"); /** C ref: lvm.c:23 — void *[83] (function-static) */
 
-/** C ref: lvm.c:1154 — @param {CPtr} L @param {CPtr} ci */
+/** C ref: lvm.c:1154 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci */
 export function luaV_execute(L, ci) {
     let cl, k, base, pc, trap, i, ra, io1, io2, b, io, rb, uv, slot, upval, rc, key, n, c, t, x_, v1, imm, iv1, nb, fimm, v2, i1 = cptr.box(0), i2 = cptr.box(0), n1, n2, ic, ib = cptr.box(0), pi, tm, result, flip, cond, ni, ia, im, fa, fim, isf, newci, nresults, nparams1, delta, nres, count, step, idx, last, h, val, p;
     const __smNums = { "startfunc": 1, "returning": 2, "L_OP_MOVE": 3, "L_OP_LOADI": 4, "L_OP_LOADF": 5, "L_OP_LOADK": 6, "L_OP_LOADKX": 7, "L_OP_LOADFALSE": 8, "L_OP_LFALSESKIP": 9, "L_OP_LOADTRUE": 10, "L_OP_LOADNIL": 11, "L_OP_GETUPVAL": 12, "L_OP_SETUPVAL": 13, "L_OP_GETTABUP": 14, "L_OP_GETTABLE": 15, "L_OP_GETI": 16, "L_OP_GETFIELD": 17, "L_OP_SETTABUP": 18, "L_OP_SETTABLE": 19, "L_OP_SETI": 20, "L_OP_SETFIELD": 21, "L_OP_NEWTABLE": 22, "L_OP_SELF": 23, "L_OP_ADDI": 24, "L_OP_ADDK": 25, "L_OP_SUBK": 26, "L_OP_MULK": 27, "L_OP_MODK": 28, "L_OP_POWK": 29, "L_OP_DIVK": 30, "L_OP_IDIVK": 31, "L_OP_BANDK": 32, "L_OP_BORK": 33, "L_OP_BXORK": 34, "L_OP_SHRI": 35, "L_OP_SHLI": 36, "L_OP_ADD": 37, "L_OP_SUB": 38, "L_OP_MUL": 39, "L_OP_MOD": 40, "L_OP_POW": 41, "L_OP_DIV": 42, "L_OP_IDIV": 43, "L_OP_BAND": 44, "L_OP_BOR": 45, "L_OP_BXOR": 46, "L_OP_SHR": 47, "L_OP_SHL": 48, "L_OP_MMBIN": 49, "L_OP_MMBINI": 50, "L_OP_MMBINK": 51, "L_OP_UNM": 52, "L_OP_BNOT": 53, "L_OP_NOT": 54, "L_OP_LEN": 55, "L_OP_CONCAT": 56, "L_OP_CLOSE": 57, "L_OP_TBC": 58, "L_OP_JMP": 59, "L_OP_EQ": 60, "L_OP_LT": 61, "L_OP_LE": 62, "L_OP_EQK": 63, "L_OP_EQI": 64, "L_OP_LTI": 65, "L_OP_LEI": 66, "L_OP_GTI": 67, "L_OP_GEI": 68, "L_OP_TEST": 69, "L_OP_TESTSET": 70, "L_OP_CALL": 71, "L_OP_TAILCALL": 72, "L_OP_RETURN": 73, "L_OP_RETURN0": 74, "L_OP_RETURN1": 75, "ret": 76, "L_OP_FORLOOP": 77, "L_OP_FORPREP": 78, "L_OP_TFORPREP": 79, "L_OP_TFORCALL": 80, "l_tforcall": 81, "L_OP_TFORLOOP": 82, "l_tforloop": 83, "L_OP_SETLIST": 84, "L_OP_CLOSURE": 85, "L_OP_VARARG": 86, "L_OP_VARARGPREP": 87, "L_OP_EXTRAARG": 88 };

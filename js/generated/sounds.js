@@ -423,7 +423,7 @@ const __sl305 = cptr.lit("assign_soundlib: invalid soundlib (%d)");
 const __sl306 = cptr.lit("get_soundlib_name: invalid active_soundlib (%d)");
 const __sl307 = cptr.lit("base_soundname_to_filename");
 
-/** C ref: sounds.c:20 — @param {CPtr} mon @param {CInt} rmtyp @returns {CInt} */
+/** C ref: sounds.c:20 — @param {CPtr<struct monst>} mon @param {CInt} rmtyp @returns {CInt} */
 function mon_in_room(mon, rmtyp) {
     let rno = (cptr.ldI32o3(svl, cptr.ldI16o(mon, $monst_mx), 756, cptr.ldI16o(mon, $monst_my), 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0;
     if (rno >= NHM.ROOMOFFSET)
@@ -437,7 +437,7 @@ cptr.stPtro(__static_throne_mon_sound_throne_msg, 8, __sl4);
 cptr.stPtro(__static_throne_mon_sound_throne_msg, 16, __sl5);
 cptr.stPtro(__static_throne_mon_sound_throne_msg, 24, __sl6); /** C ref: sounds.c:35 — char *[4] (function-static) */
 
-/** C ref: sounds.c:30 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: sounds.c:30 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function throne_mon_sound(mtmp) {
     if (((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2048n) != 0n)) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n) && mon_in_room(mtmp, NHC.COURT)) {
         let which = ((rng_log_enabled() ? (rng_log_set_caller(__sl0, 41, __sl1), rn2(3)) : rn2(3)) + (Hallucination() ? 1 : 0)) | 0;
@@ -456,7 +456,7 @@ function throne_mon_sound(mtmp) {
     return 0;
 }
 
-/** C ref: sounds.c:62 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: sounds.c:62 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function beehive_mon_sound(mtmp) {
     if ((cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_ANT && ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n)) && mon_in_room(mtmp, NHC.BEEHIVE)) {
         let hallu = Hallucination() ? 1 : 0;
@@ -479,7 +479,7 @@ function beehive_mon_sound(mtmp) {
     return 0;
 }
 
-/** C ref: sounds.c:89 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: sounds.c:89 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function morgue_mon_sound(mtmp) {
     if ((((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp)) && mon_in_room(mtmp, NHC.MORGUE)) {
         let hallu = Hallucination() ? 1 : 0;
@@ -505,7 +505,7 @@ cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 0, __sl20);
 cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 8, __sl21);
 cptr.stPtro(__static_zoo_mon_sound_zoo_msg, 16, __sl22); /** C ref: sounds.c:120 — char *[3] (function-static) */
 
-/** C ref: sounds.c:115 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: sounds.c:115 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function zoo_mon_sound(mtmp) {
     if (((cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0 || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 262144n) != 0n)) && mon_in_room(mtmp, NHC.ZOO)) {
         let hallu = Hallucination() ? 1 : 0;
@@ -522,7 +522,7 @@ cptr.stPtro(__static_temple_priest_sound_temple_msg, 8, __sl25);
 cptr.stPtro(__static_temple_priest_sound_temple_msg, 16, __sl26);
 cptr.stPtro(__static_temple_priest_sound_temple_msg, 24, __sl27); /** C ref: sounds.c:146 — char *[4] (function-static) */
 
-/** C ref: sounds.c:131 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: sounds.c:131 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function temple_priest_sound(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 && inhistemple(mtmp) && !helpless(mtmp) && temple_occupied(cptr.add(u, $you_urooms)) != cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), $epri_shroom)) {
         let msg;
@@ -558,7 +558,7 @@ cptr.stPtro(__static_oracle_sound_ora_msg, 16, __sl31);
 cptr.stPtro(__static_oracle_sound_ora_msg, 24, __sl32);
 cptr.stPtro(__static_oracle_sound_ora_msg, 32, __sl33); /** C ref: sounds.c:189 — char *[5] (function-static) */
 
-/** C ref: sounds.c:181 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: sounds.c:181 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function oracle_sound(mtmp) {
     if (!cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ORACLE, 96)))
         return 0;
@@ -734,7 +734,7 @@ cptr.stPtro(h_sounds, 256, __sl89);
 cptr.stPtro(h_sounds, 264, __sl90);
 cptr.stPtro(h_sounds, 272, __sl91);
 
-/** C ref: sounds.c:351 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: sounds.c:351 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function growl_sound(mtmp) {
     let ret;
     switch (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound)) {
@@ -782,7 +782,7 @@ export function growl_sound(mtmp) {
     return ret;
 }
 
-/** C ref: sounds.c:402 — @param {CPtr} mtmp */
+/** C ref: sounds.c:402 — @param {CPtr<struct monst>} mtmp */
 export function growl(mtmp) {
     let growl_verb = null;
     if (helpless(mtmp) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_SILENT)
@@ -802,7 +802,7 @@ export function growl(mtmp) {
     }
 }
 
-/** C ref: sounds.c:427 — @param {CPtr} mtmp */
+/** C ref: sounds.c:427 — @param {CPtr<struct monst>} mtmp */
 export function yelp(mtmp) {
     let yelp_verb = null;
     let se = NHC.se_yelp;
@@ -847,7 +847,7 @@ export function yelp(mtmp) {
     (void (se));
 }
 
-/** C ref: sounds.c:479 — @param {CPtr} mtmp */
+/** C ref: sounds.c:479 — @param {CPtr<struct monst>} mtmp */
 export function whimper(mtmp) {
     let whimper_verb = null;
     let se = NHC.se_canine_whine;
@@ -881,7 +881,7 @@ export function whimper(mtmp) {
     (void (se));
 }
 
-/** C ref: sounds.c:519 — @param {CPtr} mtmp */
+/** C ref: sounds.c:519 — @param {CPtr<struct monst>} mtmp */
 export function beg(mtmp) {
     if (helpless(mtmp) || !(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1073741824n) != 0n)))
         return;
@@ -905,7 +905,7 @@ cptr.stPtro(__static_maybe_gasp_Exclam, 16, __sl124);
 cptr.stPtro(__static_maybe_gasp_Exclam, 24, __sl125);
 cptr.stPtro(__static_maybe_gasp_Exclam, 32, __sl126); /** C ref: sounds.c:548 — char *[5] (function-static) */
 
-/** C ref: sounds.c:546 — @param {CPtr} mon @returns {CPtr} */
+/** C ref: sounds.c:546 — @param {CPtr<struct monst>} mon @returns {CPtr<char>} */
 export function maybe_gasp(mon) {
     let mptr = cptr.ldPtro(mon, $monst_data);
     let msound = cptr.ld1uo(mptr, $permonst_msound);
@@ -955,7 +955,7 @@ export function maybe_gasp(mon) {
     return null;
 }
 
-/** C ref: sounds.c:617 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: sounds.c:617 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function cry_sound(mtmp) {
     let ret = null;
     let ptr = cptr.ldPtro(mtmp, $monst_data);
@@ -990,7 +990,7 @@ export function cry_sound(mtmp) {
     return ret;
 }
 
-/** C ref: sounds.c:659 — @param {CPtr} mon @returns {CInt} */
+/** C ref: sounds.c:659 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function mon_is_gecko(mon) {
     let glyph;
     if (cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_GECKO, 96)))
@@ -1022,7 +1022,7 @@ cptr.stPtro(__static_domonnoise_soldier_pax_msg, 0, __sl256);
 cptr.stPtro(__static_domonnoise_soldier_pax_msg, 8, __sl257);
 cptr.stPtro(__static_domonnoise_soldier_pax_msg, 16, __sl258); /** C ref: sounds.c:1184 — char *[3] (function-static) */
 
-/** C ref: sounds.c:679 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: sounds.c:679 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function domonnoise(mtmp) {
     let verbuf = new Uint8Array(256);
     let pline_msg = null;
@@ -1576,7 +1576,7 @@ function dochat() {
     return domonnoise(mtmp);
 }
 
-/** C ref: sounds.c:1413 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: sounds.c:1413 — @param {CInt} x @param {CInt} y @returns {CPtr<struct monst>} */
 function responsive_mon_at(x, y) {
     let mtmp = isok(i16(x), i16(y)) ? (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) : null;
     if (mtmp && (helpless(mtmp) || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) == 0n) || (Invis() && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) || (x != cptr.ldI16o(mtmp, $monst_mx) || y != cptr.ldI16o(mtmp, $monst_my))))
@@ -1725,7 +1725,7 @@ export function assign_soundlib(idx) {
     cptr.stI32o(gc, $instance_globals_c_chosen_soundlib, cptr.ldI32o(cptr.ldPtro(soundlib_choices, idx, 8), $sound_procs_soundlib_id));
 }
 
-/** C ref: sounds.c:1864 — @param {CPtr} dest @param {CInt} maxlen */
+/** C ref: sounds.c:1864 — @param {CPtr<char>} dest @param {CInt} maxlen */
 export function get_soundlib_name(dest, maxlen) {
     let count;
     let idx;
@@ -1742,7 +1742,7 @@ export function get_soundlib_name(dest, maxlen) {
     cptr.st1(dest, 0);
 }
 
-/** C ref: sounds.c:1883 — @param {CPtr} op @returns {*} */
+/** C ref: sounds.c:1883 — @param {CPtr<char>} op @returns {*} */
 export function soundlib_id_from_opt(op) {
     let idx;
     let defproc = nosound_procs;
@@ -1757,7 +1757,7 @@ export function soundlib_id_from_opt(op) {
 
 const __static_base_soundname_to_filename_suffix = cptr.bytes(".wav"); /** C ref: sounds.c:2090 — char[5] (function-static) */
 
-/** C ref: sounds.c:2084 — @param {CPtr} basename @param {CPtr} buf @param {CLongLong} bufsz @param {CInt} approach @returns {CPtr} */
+/** C ref: sounds.c:2084 — @param {CPtr<char>} basename @param {CPtr<char>} buf @param {CLongLong} bufsz @param {CInt} approach @returns {CPtr<char>} */
 export function base_soundname_to_filename(basename, buf, bufsz, approach) {
     let consumes = 0n;
     let baselen = 0n;
@@ -1801,11 +1801,11 @@ export function base_soundname_to_filename(basename, buf, bufsz, approach) {
     return buf;
 }
 
-/** C ref: sounds.c:2161 — @param {CPtr} mtmp @param {CInt} tone @param {CInt} volume @param {CInt} moreinfo */
+/** C ref: sounds.c:2161 — @param {CPtr<struct monst>} mtmp @param {CInt} tone @param {CInt} volume @param {CInt} moreinfo */
 export function set_voice(mtmp, tone, volume, moreinfo) {
 }
 
-/** C ref: sounds.c:2185 — @param {CPtr} text */
+/** C ref: sounds.c:2185 — @param {CPtr<char>} text */
 export function sound_speak(text) {
 }
 

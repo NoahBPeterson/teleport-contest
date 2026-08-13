@@ -65,7 +65,7 @@ const __sl2 = cptr.lit("(no name)");
 /** C ref: lapi.c:35 — char[129] */
 export const lua_ident = cptr.bytes("$LuaVersion: Lua 5.4.8  Copyright (C) 1994-2025 Lua.org, PUC-Rio $$LuaAuthors: R. Ierusalimschy, L. H. de Figueiredo, W. Celes $");
 
-/** C ref: lapi.c:60 — @param {CPtr} L @param {CInt} idx @returns {CPtr} */
+/** C ref: lapi.c:60 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CPtr<TValue>} */
 function index2value(L, idx) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     if (idx > 0) {
@@ -93,7 +93,7 @@ function index2value(L, idx) {
     }
 }
 
-/** C ref: lapi.c:95 — @param {CPtr} L @param {CInt} idx @returns {*} */
+/** C ref: lapi.c:95 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {*} */
 function index2stack(L, idx) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     if (idx > 0) {
@@ -107,7 +107,7 @@ function index2stack(L, idx) {
     }
 }
 
-/** C ref: lapi.c:111 — @param {CPtr} L @param {CInt} n @returns {CInt} */
+/** C ref: lapi.c:111 — @param {CPtr<lua_State>} L @param {CInt} n @returns {CInt} */
 export function lua_checkstack(L, n) {
     let res;
     let ci;
@@ -124,7 +124,7 @@ export function lua_checkstack(L, n) {
     return res;
 }
 
-/** C ref: lapi.c:128 — @param {CPtr} from @param {CPtr} to @param {CInt} n */
+/** C ref: lapi.c:128 — @param {CPtr<lua_State>} from @param {CPtr<lua_State>} to @param {CInt} n */
 export function lua_xmove(from, to, n) {
     let i;
     if (cptr.eq(from, to))
@@ -149,7 +149,7 @@ export function lua_xmove(from, to, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:144 — @param {CPtr} L @param {CPtr} panicf @returns {*} */
+/** C ref: lapi.c:144 — @param {CPtr<lua_State>} L @param {CPtr} panicf @returns {*} */
 export function lua_atpanic(L, panicf) {
     let old;
     (void 0);
@@ -159,23 +159,23 @@ export function lua_atpanic(L, panicf) {
     return old;
 }
 
-/** C ref: lapi.c:154 — @param {CPtr} L @returns {*} */
+/** C ref: lapi.c:154 — @param {CPtr<lua_State>} L @returns {*} */
 export function lua_version(L) {
     (void (L));
     return 504;
 }
 
-/** C ref: lapi.c:169 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:169 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_absindex(L, idx) {
     return (idx > 0 || ((idx) <= -1001000)) ? idx : ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci))) / 16n))))) + idx) | 0;
 }
 
-/** C ref: lapi.c:176 — @param {CPtr} L @returns {CInt} */
+/** C ref: lapi.c:176 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_gettop(L) {
     return (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)), 1, 16))) / 16n)))));
 }
 
-/** C ref: lapi.c:181 — @param {CPtr} L @param {CInt} idx */
+/** C ref: lapi.c:181 — @param {CPtr<lua_State>} L @param {CInt} idx */
 export function lua_settop(L, idx) {
     let ci;
     let func;
@@ -203,7 +203,7 @@ export function lua_settop(L, idx) {
     (void 0);
 }
 
-/** C ref: lapi.c:209 — @param {CPtr} L @param {CInt} idx */
+/** C ref: lapi.c:209 — @param {CPtr<lua_State>} L @param {CInt} idx */
 export function lua_closeslot(L, idx) {
     let level;
     (void 0);
@@ -214,7 +214,7 @@ export function lua_closeslot(L, idx) {
     (void 0);
 }
 
-/** C ref: lapi.c:227 — @param {CPtr} L @param {CPtr} from @param {CPtr} to */
+/** C ref: lapi.c:227 — @param {CPtr<lua_State>} L @param {CPtr} from @param {CPtr} to */
 function reverse(L, from, to) {
     for (; cptr.cmp(from, to) < 0; from = cptr.add(from, 1, 16), to = cptr.add(to, -1, 16)) {
         let temp = cptr.alloc(16);
@@ -248,7 +248,7 @@ function reverse(L, from, to) {
     }
 }
 
-/** C ref: lapi.c:241 — @param {CPtr} L @param {CInt} idx @param {CInt} n */
+/** C ref: lapi.c:241 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CInt} n */
 export function lua_rotate(L, idx, n) {
     let p;
     let t;
@@ -264,7 +264,7 @@ export function lua_rotate(L, idx, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:255 — @param {CPtr} L @param {CInt} fromidx @param {CInt} toidx */
+/** C ref: lapi.c:255 — @param {CPtr<lua_State>} L @param {CInt} fromidx @param {CInt} toidx */
 export function lua_copy(L, fromidx, toidx) {
     let fr;
     let to;
@@ -286,7 +286,7 @@ export function lua_copy(L, fromidx, toidx) {
     (void 0);
 }
 
-/** C ref: lapi.c:270 — @param {CPtr} L @param {CInt} idx */
+/** C ref: lapi.c:270 — @param {CPtr<lua_State>} L @param {CInt} idx */
 export function lua_pushvalue(L, idx) {
     (void 0);
     {
@@ -306,58 +306,58 @@ export function lua_pushvalue(L, idx) {
     (void 0);
 }
 
-/** C ref: lapi.c:284 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:284 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_type(L, idx) {
     let o = index2value(L, idx);
     return ((!(((((cptr.ld1uo(((o)), $TValue_tt_))) & 15)) == 0) || !cptr.eq(o, cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue))) ? ((((cptr.ld1uo((o), $TValue_tt_))) & 15)) : -1);
 }
 
-/** C ref: lapi.c:290 — @param {CPtr} L @param {CInt} t @returns {CPtr} */
+/** C ref: lapi.c:290 — @param {CPtr<lua_State>} L @param {CInt} t @returns {CPtr<char>} */
 export function lua_typename(L, t) {
     (void (L));
     (void L, (void 0));
     return cptr.ldPtro(luaT_typenames_, ((t) + 1) | 0, 8);
 }
 
-/** C ref: lapi.c:297 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:297 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_iscfunction(L, idx) {
     let o = index2value(L, idx);
     return (((cptr.ld1uo(((o)), $TValue_tt_)) == 22) || (((cptr.ld1uo(((o)), $TValue_tt_)) == 102)) ? 1 : 0);
 }
 
-/** C ref: lapi.c:303 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:303 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_isinteger(L, idx) {
     let o = index2value(L, idx);
     return ((cptr.ld1uo(((o)), $TValue_tt_)) == 3);
 }
 
-/** C ref: lapi.c:309 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:309 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_isnumber(L, idx) {
     let n = cptr.box(0);
     let o = index2value(L, idx);
     return (((cptr.ld1uo(((o)), $TValue_tt_)) == 19) ? (cptr.stF64((n), (cptr.ldF64(((o))))), 1) : luaV_tonumber_(o, n));
 }
 
-/** C ref: lapi.c:316 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:316 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_isstring(L, idx) {
     let o = index2value(L, idx);
     return ((((((cptr.ld1uo(((o)), $TValue_tt_))) & 15)) == 4) || (((((cptr.ld1uo(((o)), $TValue_tt_))) & 15)) == 3) ? 1 : 0);
 }
 
-/** C ref: lapi.c:322 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:322 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_isuserdata(L, idx) {
     let o = index2value(L, idx);
     return (((cptr.ld1uo(((o)), $TValue_tt_)) == 71) || ((cptr.ld1uo(((o)), $TValue_tt_)) == 2) ? 1 : 0);
 }
 
-/** C ref: lapi.c:328 — @param {CPtr} L @param {CInt} index1 @param {CInt} index2 @returns {CInt} */
+/** C ref: lapi.c:328 — @param {CPtr<lua_State>} L @param {CInt} index1 @param {CInt} index2 @returns {CInt} */
 export function lua_rawequal(L, index1, index2) {
     let o1 = index2value(L, index1);
     let o2 = index2value(L, index2);
     return ((!(((((cptr.ld1uo(((o1)), $TValue_tt_))) & 15)) == 0) || !cptr.eq(o1, cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue))) && (!(((((cptr.ld1uo(((o2)), $TValue_tt_))) & 15)) == 0) || !cptr.eq(o2, cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue)))) ? luaV_equalobj(null, o1, o2) : 0;
 }
 
-/** C ref: lapi.c:335 — @param {CPtr} L @param {CInt} op */
+/** C ref: lapi.c:335 — @param {CPtr<lua_State>} L @param {CInt} op */
 export function lua_arith(L, op) {
     (void 0);
     if (op != 12 && op != 13)
@@ -384,7 +384,7 @@ export function lua_arith(L, op) {
     (void 0);
 }
 
-/** C ref: lapi.c:351 — @param {CPtr} L @param {CInt} index1 @param {CInt} index2 @param {CInt} op @returns {CInt} */
+/** C ref: lapi.c:351 — @param {CPtr<lua_State>} L @param {CInt} index1 @param {CInt} index2 @param {CInt} op @returns {CInt} */
 export function lua_compare(L, index1, index2, op) {
     let o1;
     let o2;
@@ -411,7 +411,7 @@ export function lua_compare(L, index1, index2, op) {
     return i;
 }
 
-/** C ref: lapi.c:371 — @param {CPtr} L @param {CPtr} s @returns {*} */
+/** C ref: lapi.c:371 — @param {CPtr<lua_State>} L @param {CPtr<char>} s @returns {*} */
 export function lua_stringtonumber(L, s) {
     let sz = luaO_str2num(s, ((cptr.ldPtro(L, $lua_State_top))));
     if (sz != 0n) {
@@ -422,7 +422,7 @@ export function lua_stringtonumber(L, s) {
     return sz;
 }
 
-/** C ref: lapi.c:379 — @param {CPtr} L @param {CInt} idx @param {CPtr} pisnum @returns {*} */
+/** C ref: lapi.c:379 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<int>} pisnum @returns {*} */
 export function lua_tonumberx(L, idx, pisnum) {
     let n = cptr.box(0);
     let o = index2value(L, idx);
@@ -432,7 +432,7 @@ export function lua_tonumberx(L, idx, pisnum) {
     return n.v;
 }
 
-/** C ref: lapi.c:389 — @param {CPtr} L @param {CInt} idx @param {CPtr} pisnum @returns {*} */
+/** C ref: lapi.c:389 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<int>} pisnum @returns {*} */
 export function lua_tointegerx(L, idx, pisnum) {
     let res = cptr.box(0n);
     let o = index2value(L, idx);
@@ -442,13 +442,13 @@ export function lua_tointegerx(L, idx, pisnum) {
     return res.v;
 }
 
-/** C ref: lapi.c:399 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:399 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_toboolean(L, idx) {
     let o = index2value(L, idx);
     return !(((cptr.ld1uo(((o)), $TValue_tt_)) == 1) || (((((cptr.ld1uo(((o)), $TValue_tt_))) & 15)) == 0));
 }
 
-/** C ref: lapi.c:405 — @param {CPtr} L @param {CInt} idx @param {CPtr} len @returns {CPtr} */
+/** C ref: lapi.c:405 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<size_t>} len @returns {CPtr<char>} */
 export function lua_tolstring(L, idx, len) {
     let o;
     (void 0);
@@ -479,7 +479,7 @@ export function lua_tolstring(L, idx, len) {
     return (cptr.add((((((((cptr.ldPtr(((o)))))))))), $TString_contents));
 }
 
-/** C ref: lapi.c:426 — @param {CPtr} L @param {CInt} idx @returns {*} */
+/** C ref: lapi.c:426 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {*} */
 export function lua_rawlen(L, idx) {
     let o = index2value(L, idx);
     switch ((((cptr.ld1uo((o), $TValue_tt_))) & 63)) {
@@ -496,7 +496,7 @@ export function lua_rawlen(L, idx) {
     }
 }
 
-/** C ref: lapi.c:438 — @param {CPtr} L @param {CInt} idx @returns {*} */
+/** C ref: lapi.c:438 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {*} */
 export function lua_tocfunction(L, idx) {
     let o = index2value(L, idx);
     if (((cptr.ld1uo(((o)), $TValue_tt_)) == 22))
@@ -507,7 +507,7 @@ export function lua_tocfunction(L, idx) {
         return null;
 }
 
-/** C ref: lapi.c:447 — @param {CPtr} o @returns {CPtr} */
+/** C ref: lapi.c:447 — @param {CPtr<TValue>} o @returns {CPtr<void>} */
 function touserdata(o) {
     switch (((((cptr.ld1uo((o), $TValue_tt_))) & 15))) {
         case 7:
@@ -519,19 +519,19 @@ function touserdata(o) {
     }
 }
 
-/** C ref: lapi.c:456 — @param {CPtr} L @param {CInt} idx @returns {CPtr} */
+/** C ref: lapi.c:456 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CPtr<void>} */
 export function lua_touserdata(L, idx) {
     let o = index2value(L, idx);
     return touserdata(o);
 }
 
-/** C ref: lapi.c:462 — @param {CPtr} L @param {CInt} idx @returns {CPtr} */
+/** C ref: lapi.c:462 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CPtr<lua_State>} */
 export function lua_tothread(L, idx) {
     let o = index2value(L, idx);
     return (!((cptr.ld1uo(((o)), $TValue_tt_)) == 72)) ? null : ((((((cptr.ldPtr(((o)))))))));
 }
 
-/** C ref: lapi.c:475 — @param {CPtr} L @param {CInt} idx @returns {CPtr} */
+/** C ref: lapi.c:475 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CPtr<void>} */
 export function lua_topointer(L, idx) {
     let o = index2value(L, idx);
     switch ((((cptr.ld1uo((o), $TValue_tt_))) & 63)) {
@@ -550,7 +550,7 @@ export function lua_topointer(L, idx) {
     }
 }
 
-/** C ref: lapi.c:497 — @param {CPtr} L */
+/** C ref: lapi.c:497 — @param {CPtr<lua_State>} L */
 export function lua_pushnil(L) {
     (void 0);
     (cptr.st1o((((cptr.ldPtro(L, $lua_State_top)))), $TValue_tt_, 0));
@@ -562,7 +562,7 @@ export function lua_pushnil(L) {
     (void 0);
 }
 
-/** C ref: lapi.c:505 — @param {CPtr} L @param {CDouble} n */
+/** C ref: lapi.c:505 — @param {CPtr<lua_State>} L @param {CDouble} n */
 export function lua_pushnumber(L, n) {
     (void 0);
     {
@@ -579,7 +579,7 @@ export function lua_pushnumber(L, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:513 — @param {CPtr} L @param {CLongLong} n */
+/** C ref: lapi.c:513 — @param {CPtr<lua_State>} L @param {CLongLong} n */
 export function lua_pushinteger(L, n) {
     (void 0);
     {
@@ -596,7 +596,7 @@ export function lua_pushinteger(L, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:526 — @param {CPtr} L @param {CPtr} s @param {CLongLong} len @returns {CPtr} */
+/** C ref: lapi.c:526 — @param {CPtr<lua_State>} L @param {CPtr<char>} s @param {CLongLong} len @returns {CPtr<char>} */
 export function lua_pushlstring(L, s, len) {
     let ts;
     (void 0);
@@ -628,7 +628,7 @@ export function lua_pushlstring(L, s, len) {
     return (cptr.add((ts), $TString_contents));
 }
 
-/** C ref: lapi.c:538 — @param {CPtr} L @param {CPtr} s @returns {CPtr} */
+/** C ref: lapi.c:538 — @param {CPtr<lua_State>} L @param {CPtr<char>} s @returns {CPtr<char>} */
 export function lua_pushstring(L, s) {
     (void 0);
     if (cptr.eq(s, (null)))
@@ -665,7 +665,7 @@ export function lua_pushstring(L, s) {
     return s;
 }
 
-/** C ref: lapi.c:555 — @param {CPtr} L @param {CPtr} fmt @param {CPtr} argp @returns {CPtr} */
+/** C ref: lapi.c:555 — @param {CPtr<lua_State>} L @param {CPtr<char>} fmt @param {CPtr} argp @returns {CPtr<char>} */
 export function lua_pushvfstring(L, fmt, argp) {
     let ret;
     (void 0);
@@ -684,7 +684,7 @@ export function lua_pushvfstring(L, fmt, argp) {
     return ret;
 }
 
-/** C ref: lapi.c:566 — @param {CPtr} L @param {CPtr} fmt @returns {CPtr} */
+/** C ref: lapi.c:566 — @param {CPtr<lua_State>} L @param {CPtr<char>} fmt @returns {CPtr<char>} */
 export function lua_pushfstring(L, fmt, ...__va) {
     let ret;
     let argp;
@@ -706,7 +706,7 @@ export function lua_pushfstring(L, fmt, ...__va) {
     return ret;
 }
 
-/** C ref: lapi.c:579 — @param {CPtr} L @param {CPtr} fn @param {CInt} n */
+/** C ref: lapi.c:579 — @param {CPtr<lua_State>} L @param {CPtr} fn @param {CInt} n */
 export function lua_pushcclosure(L, fn, n) {
     (void 0);
     if (n == 0) {
@@ -767,7 +767,7 @@ export function lua_pushcclosure(L, fn, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:605 — @param {CPtr} L @param {CInt} b */
+/** C ref: lapi.c:605 — @param {CPtr<lua_State>} L @param {CInt} b */
 export function lua_pushboolean(L, b) {
     (void 0);
     if (b)
@@ -782,7 +782,7 @@ export function lua_pushboolean(L, b) {
     (void 0);
 }
 
-/** C ref: lapi.c:616 — @param {CPtr} L @param {CPtr} p */
+/** C ref: lapi.c:616 — @param {CPtr<lua_State>} L @param {CPtr<void>} p */
 export function lua_pushlightuserdata(L, p) {
     (void 0);
     {
@@ -799,7 +799,7 @@ export function lua_pushlightuserdata(L, p) {
     (void 0);
 }
 
-/** C ref: lapi.c:624 — @param {CPtr} L @returns {CInt} */
+/** C ref: lapi.c:624 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_pushthread(L) {
     (void 0);
     {
@@ -819,7 +819,7 @@ export function lua_pushthread(L) {
     return (cptr.eq(cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread), L));
 }
 
-/** C ref: lapi.c:639 — @param {CPtr} L @param {CPtr} t @param {CPtr} k @returns {CInt} */
+/** C ref: lapi.c:639 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} t @param {CPtr<char>} k @returns {CInt} */
 function auxgetstr(L, t, k) {
     let slot;
     let str = luaS_new(L, k);
@@ -858,7 +858,7 @@ function auxgetstr(L, t, k) {
     return ((((cptr.ld1uo((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)))), $TValue_tt_))) & 15));
 }
 
-/** C ref: lapi.c:666 — @param {CPtr} L @param {CPtr} name @returns {CInt} */
+/** C ref: lapi.c:666 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @returns {CInt} */
 export function lua_getglobal(L, name) {
     let G;
     (void 0);
@@ -866,7 +866,7 @@ export function lua_getglobal(L, name) {
     return auxgetstr(L, G, name);
 }
 
-/** C ref: lapi.c:674 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:674 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_gettable(L, idx) {
     let slot;
     let t;
@@ -888,13 +888,13 @@ export function lua_gettable(L, idx) {
     return ((((cptr.ld1uo((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)))), $TValue_tt_))) & 15));
 }
 
-/** C ref: lapi.c:689 — @param {CPtr} L @param {CInt} idx @param {CPtr} k @returns {CInt} */
+/** C ref: lapi.c:689 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<char>} k @returns {CInt} */
 export function lua_getfield(L, idx, k) {
     (void 0);
     return auxgetstr(L, index2value(L, idx), k);
 }
 
-/** C ref: lapi.c:695 — @param {CPtr} L @param {CInt} idx @param {CLongLong} n @returns {CInt} */
+/** C ref: lapi.c:695 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CLongLong} n @returns {CInt} */
 export function lua_geti(L, idx, n) {
     let t;
     let slot;
@@ -929,7 +929,7 @@ export function lua_geti(L, idx, n) {
     return ((((cptr.ld1uo((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)))), $TValue_tt_))) & 15));
 }
 
-/** C ref: lapi.c:714 — @param {CPtr} L @param {CPtr} val @returns {CInt} */
+/** C ref: lapi.c:714 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} val @returns {CInt} */
 function finishrawget(L, val) {
     if ((((((cptr.ld1uo(((val)), $TValue_tt_))) & 15)) == 0))
         (cptr.st1o((((cptr.ldPtro(L, $lua_State_top)))), $TValue_tt_, 0));
@@ -951,14 +951,14 @@ function finishrawget(L, val) {
     return ((((cptr.ld1uo((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)))), $TValue_tt_))) & 15));
 }
 
-/** C ref: lapi.c:725 — @param {CPtr} L @param {CInt} idx @returns {CPtr} */
+/** C ref: lapi.c:725 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CPtr<Table>} */
 function gettable(L, idx) {
     let t = index2value(L, idx);
     (void L, (void 0));
     return ((((((cptr.ldPtr(((t)))))))));
 }
 
-/** C ref: lapi.c:732 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:732 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_rawget(L, idx) {
     let t;
     let val;
@@ -970,7 +970,7 @@ export function lua_rawget(L, idx) {
     return finishrawget(L, val);
 }
 
-/** C ref: lapi.c:744 — @param {CPtr} L @param {CInt} idx @param {CLongLong} n @returns {CInt} */
+/** C ref: lapi.c:744 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CLongLong} n @returns {CInt} */
 export function lua_rawgeti(L, idx, n) {
     let t;
     (void 0);
@@ -978,7 +978,7 @@ export function lua_rawgeti(L, idx, n) {
     return finishrawget(L, luaH_getint(t, n));
 }
 
-/** C ref: lapi.c:752 — @param {CPtr} L @param {CInt} idx @param {CPtr} p @returns {CInt} */
+/** C ref: lapi.c:752 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<void>} p @returns {CInt} */
 export function lua_rawgetp(L, idx, p) {
     let t;
     let k = cptr.alloc(16);
@@ -993,7 +993,7 @@ export function lua_rawgetp(L, idx, p) {
     return finishrawget(L, luaH_get(t, k));
 }
 
-/** C ref: lapi.c:762 — @param {CPtr} L @param {CInt} narray @param {CInt} nrec */
+/** C ref: lapi.c:762 — @param {CPtr<lua_State>} L @param {CInt} narray @param {CInt} nrec */
 export function lua_createtable(L, narray, nrec) {
     let t;
     (void 0);
@@ -1026,7 +1026,7 @@ export function lua_createtable(L, narray, nrec) {
     (void 0);
 }
 
-/** C ref: lapi.c:775 — @param {CPtr} L @param {CInt} objindex @returns {CInt} */
+/** C ref: lapi.c:775 — @param {CPtr<lua_State>} L @param {CInt} objindex @returns {CInt} */
 export function lua_getmetatable(L, objindex) {
     let obj;
     let mt;
@@ -1064,7 +1064,7 @@ export function lua_getmetatable(L, objindex) {
     return res;
 }
 
-/** C ref: lapi.c:802 — @param {CPtr} L @param {CInt} idx @param {CInt} n @returns {CInt} */
+/** C ref: lapi.c:802 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CInt} n @returns {CInt} */
 export function lua_getiuservalue(L, idx, n) {
     let o;
     let t;
@@ -1095,7 +1095,7 @@ export function lua_getiuservalue(L, idx, n) {
     return t;
 }
 
-/** C ref: lapi.c:829 — @param {CPtr} L @param {CPtr} t @param {CPtr} k */
+/** C ref: lapi.c:829 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} t @param {CPtr<char>} k */
 function auxsetstr(L, t, k) {
     let slot;
     let str = luaS_new(L, k);
@@ -1135,7 +1135,7 @@ function auxsetstr(L, t, k) {
     (void 0);
 }
 
-/** C ref: lapi.c:847 — @param {CPtr} L @param {CPtr} name */
+/** C ref: lapi.c:847 — @param {CPtr<lua_State>} L @param {CPtr<char>} name */
 export function lua_setglobal(L, name) {
     let G;
     (void 0);
@@ -1143,7 +1143,7 @@ export function lua_setglobal(L, name) {
     auxsetstr(L, G, name);
 }
 
-/** C ref: lapi.c:855 — @param {CPtr} L @param {CInt} idx */
+/** C ref: lapi.c:855 — @param {CPtr<lua_State>} L @param {CInt} idx */
 export function lua_settable(L, idx) {
     let t;
     let slot;
@@ -1170,13 +1170,13 @@ export function lua_settable(L, idx) {
     (void 0);
 }
 
-/** C ref: lapi.c:871 — @param {CPtr} L @param {CInt} idx @param {CPtr} k */
+/** C ref: lapi.c:871 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<char>} k */
 export function lua_setfield(L, idx, k) {
     (void 0);
     auxsetstr(L, index2value(L, idx), k);
 }
 
-/** C ref: lapi.c:877 — @param {CPtr} L @param {CInt} idx @param {CLongLong} n */
+/** C ref: lapi.c:877 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CLongLong} n */
 export function lua_seti(L, idx, n) {
     let t;
     let slot;
@@ -1211,7 +1211,7 @@ export function lua_seti(L, idx, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:896 — @param {CPtr} L @param {CInt} idx @param {CPtr} key @param {CInt} n */
+/** C ref: lapi.c:896 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<TValue>} key @param {CInt} n */
 function aux_rawset(L, idx, key, n) {
     let t;
     (void 0);
@@ -1224,12 +1224,12 @@ function aux_rawset(L, idx, key, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:909 — @param {CPtr} L @param {CInt} idx */
+/** C ref: lapi.c:909 — @param {CPtr<lua_State>} L @param {CInt} idx */
 export function lua_rawset(L, idx) {
     aux_rawset(L, idx, ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16))), 2);
 }
 
-/** C ref: lapi.c:914 — @param {CPtr} L @param {CInt} idx @param {CPtr} p */
+/** C ref: lapi.c:914 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CPtr<void>} p */
 export function lua_rawsetp(L, idx, p) {
     let k = cptr.alloc(16);
     {
@@ -1241,7 +1241,7 @@ export function lua_rawsetp(L, idx, p) {
     aux_rawset(L, idx, k, 1);
 }
 
-/** C ref: lapi.c:921 — @param {CPtr} L @param {CInt} idx @param {CLongLong} n */
+/** C ref: lapi.c:921 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CLongLong} n */
 export function lua_rawseti(L, idx, n) {
     let t;
     (void 0);
@@ -1253,7 +1253,7 @@ export function lua_rawseti(L, idx, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:933 — @param {CPtr} L @param {CInt} objindex @returns {CInt} */
+/** C ref: lapi.c:933 — @param {CPtr<lua_State>} L @param {CInt} objindex @returns {CInt} */
 export function lua_setmetatable(L, objindex) {
     let obj;
     let mt;
@@ -1296,7 +1296,7 @@ export function lua_setmetatable(L, objindex) {
     return 1;
 }
 
-/** C ref: lapi.c:973 — @param {CPtr} L @param {CInt} idx @param {CInt} n @returns {CInt} */
+/** C ref: lapi.c:973 — @param {CPtr<lua_State>} L @param {CInt} idx @param {CInt} n @returns {CInt} */
 export function lua_setiuservalue(L, idx, n) {
     let o;
     let res;
@@ -1324,7 +1324,7 @@ export function lua_setiuservalue(L, idx, n) {
     return res;
 }
 
-/** C ref: lapi.c:1004 — @param {CPtr} L @param {CInt} nargs @param {CInt} nresults @param {CLongLong} ctx @param {CPtr} k */
+/** C ref: lapi.c:1004 — @param {CPtr<lua_State>} L @param {CInt} nargs @param {CInt} nresults @param {CLongLong} ctx @param {CPtr} k */
 export function lua_callk(L, nargs, nresults, ctx, k) {
     let func;
     (void 0);
@@ -1349,13 +1349,13 @@ export function lua_callk(L, nargs, nresults, ctx, k) {
 
 /** C ref: lapi.c:1030 — struct CallS { func, nresults } (memory model v0.5) */
 
-/** C ref: lapi.c:1036 — @param {CPtr} L @param {CPtr} ud */
+/** C ref: lapi.c:1036 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud */
 function f_call(L, ud) {
     let c = ((ud));
     luaD_callnoyield(L, cptr.ldPtr(c), cptr.ldI32o(c, $CallS_nresults));
 }
 
-/** C ref: lapi.c:1043 — @param {CPtr} L @param {CInt} nargs @param {CInt} nresults @param {CInt} errfunc @param {CLongLong} ctx @param {CPtr} k @returns {CInt} */
+/** C ref: lapi.c:1043 — @param {CPtr<lua_State>} L @param {CInt} nargs @param {CInt} nresults @param {CInt} errfunc @param {CLongLong} ctx @param {CPtr} k @returns {CInt} */
 export function lua_pcallk(L, nargs, nresults, errfunc, ctx, k) {
     let c = cptr.alloc(16);
     let status;
@@ -1399,7 +1399,7 @@ export function lua_pcallk(L, nargs, nresults, errfunc, ctx, k) {
     return status;
 }
 
-/** C ref: lapi.c:1087 — @param {CPtr} L @param {CPtr} reader @param {CPtr} data @param {CPtr} chunkname @param {CPtr} mode @returns {CInt} */
+/** C ref: lapi.c:1087 — @param {CPtr<lua_State>} L @param {CPtr} reader @param {CPtr<void>} data @param {CPtr<char>} chunkname @param {CPtr<char>} mode @returns {CInt} */
 export function lua_load(L, reader, data, chunkname, mode) {
     let z = cptr.alloc(40);
     let status;
@@ -1428,7 +1428,7 @@ export function lua_load(L, reader, data, chunkname, mode) {
     return status;
 }
 
-/** C ref: lapi.c:1110 — @param {CPtr} L @param {CPtr} writer @param {CPtr} data @param {CInt} strip @returns {CInt} */
+/** C ref: lapi.c:1110 — @param {CPtr<lua_State>} L @param {CPtr} writer @param {CPtr<void>} data @param {CInt} strip @returns {CInt} */
 export function lua_dump(L, writer, data, strip) {
     let status;
     let o;
@@ -1443,12 +1443,12 @@ export function lua_dump(L, writer, data, strip) {
     return status;
 }
 
-/** C ref: lapi.c:1125 — @param {CPtr} L @returns {CInt} */
+/** C ref: lapi.c:1125 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_status(L) {
     return cptr.ld1uo(L, $lua_State_status);
 }
 
-/** C ref: lapi.c:1133 — @param {CPtr} L @param {CInt} what @returns {CInt} */
+/** C ref: lapi.c:1133 — @param {CPtr<lua_State>} L @param {CInt} what @returns {CInt} */
 export function lua_gc(L, what, ...__va) {
     let argp;
     let res = 0;
@@ -1566,7 +1566,7 @@ export function lua_gc(L, what, ...__va) {
     return res;
 }
 
-/** C ref: lapi.c:1238 — @param {CPtr} L @returns {CInt} */
+/** C ref: lapi.c:1238 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_error(L) {
     let errobj;
     (void 0);
@@ -1579,7 +1579,7 @@ export function lua_error(L) {
     return 0;
 }
 
-/** C ref: lapi.c:1253 — @param {CPtr} L @param {CInt} idx @returns {CInt} */
+/** C ref: lapi.c:1253 — @param {CPtr<lua_State>} L @param {CInt} idx @returns {CInt} */
 export function lua_next(L, idx) {
     let t;
     let more;
@@ -1599,7 +1599,7 @@ export function lua_next(L, idx) {
     return more;
 }
 
-/** C ref: lapi.c:1270 — @param {CPtr} L @param {CInt} idx */
+/** C ref: lapi.c:1270 — @param {CPtr<lua_State>} L @param {CInt} idx */
 export function lua_toclose(L, idx) {
     let nresults;
     let o;
@@ -1614,7 +1614,7 @@ export function lua_toclose(L, idx) {
     (void 0);
 }
 
-/** C ref: lapi.c:1285 — @param {CPtr} L @param {CInt} n */
+/** C ref: lapi.c:1285 — @param {CPtr<lua_State>} L @param {CInt} n */
 export function lua_concat(L, n) {
     (void 0);
     (void L, (void 0));
@@ -1648,7 +1648,7 @@ export function lua_concat(L, n) {
     (void 0);
 }
 
-/** C ref: lapi.c:1299 — @param {CPtr} L @param {CInt} idx */
+/** C ref: lapi.c:1299 — @param {CPtr<lua_State>} L @param {CInt} idx */
 export function lua_len(L, idx) {
     let t;
     (void 0);
@@ -1662,7 +1662,7 @@ export function lua_len(L, idx) {
     (void 0);
 }
 
-/** C ref: lapi.c:1309 — @param {CPtr} L @param {CPtr} ud @returns {*} */
+/** C ref: lapi.c:1309 — @param {CPtr<lua_State>} L @param {CPtr<void *>} ud @returns {*} */
 export function lua_getallocf(L, ud) {
     let f;
     (void 0);
@@ -1673,7 +1673,7 @@ export function lua_getallocf(L, ud) {
     return f;
 }
 
-/** C ref: lapi.c:1319 — @param {CPtr} L @param {CPtr} f @param {CPtr} ud */
+/** C ref: lapi.c:1319 — @param {CPtr<lua_State>} L @param {CPtr} f @param {CPtr<void>} ud */
 export function lua_setallocf(L, f, ud) {
     (void 0);
     cptr.stPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_ud, ud);
@@ -1681,7 +1681,7 @@ export function lua_setallocf(L, f, ud) {
     (void 0);
 }
 
-/** C ref: lapi.c:1327 — @param {CPtr} L @param {CPtr} f @param {CPtr} ud */
+/** C ref: lapi.c:1327 — @param {CPtr<lua_State>} L @param {CPtr} f @param {CPtr<void>} ud */
 export function lua_setwarnf(L, f, ud) {
     (void 0);
     cptr.stPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_ud_warn, ud);
@@ -1689,14 +1689,14 @@ export function lua_setwarnf(L, f, ud) {
     (void 0);
 }
 
-/** C ref: lapi.c:1335 — @param {CPtr} L @param {CPtr} msg @param {CInt} tocont */
+/** C ref: lapi.c:1335 — @param {CPtr<lua_State>} L @param {CPtr<char>} msg @param {CInt} tocont */
 export function lua_warning(L, msg, tocont) {
     (void 0);
     luaE_warning(L, msg, tocont);
     (void 0);
 }
 
-/** C ref: lapi.c:1343 — @param {CPtr} L @param {CLongLong} size @param {CInt} nuvalue @returns {CPtr} */
+/** C ref: lapi.c:1343 — @param {CPtr<lua_State>} L @param {CLongLong} size @param {CInt} nuvalue @returns {CPtr<void>} */
 export function lua_newuserdatauv(L, size, nuvalue) {
     let u;
     (void 0);
@@ -1729,7 +1729,7 @@ export function lua_newuserdatauv(L, size, nuvalue) {
     return (cptr.add((((u))), ((cptr.ldU16o((u), $Udata_nuvalue)) == 0 ? 32n : BigInt.asUintN(64, 40n + (BigInt.asUintN(64, 16n * BigInt((cptr.ldU16o((u), $Udata_nuvalue)) >>> 0)))))));
 }
 
-/** C ref: lapi.c:1357 — @param {CPtr} fi @param {CInt} n @param {CPtr} val @param {CPtr} owner @returns {CPtr} */
+/** C ref: lapi.c:1357 — @param {CPtr<TValue>} fi @param {CInt} n @param {CPtr<TValue *>} val @param {CPtr<GCObject *>} owner @returns {CPtr<char>} */
 function aux_upvalue(fi, n, val, owner) {
     switch ((((cptr.ld1uo((fi), $TValue_tt_))) & 63)) {
         case 38:
@@ -1760,7 +1760,7 @@ function aux_upvalue(fi, n, val, owner) {
     }
 }
 
-/** C ref: lapi.c:1384 — @param {CPtr} L @param {CInt} funcindex @param {CInt} n @returns {CPtr} */
+/** C ref: lapi.c:1384 — @param {CPtr<lua_State>} L @param {CInt} funcindex @param {CInt} n @returns {CPtr<char>} */
 export function lua_getupvalue(L, funcindex, n) {
     let name;
     let val = cptr.box(null);
@@ -1786,7 +1786,7 @@ export function lua_getupvalue(L, funcindex, n) {
     return name;
 }
 
-/** C ref: lapi.c:1398 — @param {CPtr} L @param {CInt} funcindex @param {CInt} n @returns {CPtr} */
+/** C ref: lapi.c:1398 — @param {CPtr<lua_State>} L @param {CInt} funcindex @param {CInt} n @returns {CPtr<char>} */
 export function lua_setupvalue(L, funcindex, n) {
     let name;
     let val = cptr.box(null);
@@ -1815,7 +1815,7 @@ export function lua_setupvalue(L, funcindex, n) {
 
 let __static_getupvalref_nullup = cptr.box(null); /** C ref: lapi.c:1418 — UpVal * (function-static, boxed) */
 
-/** C ref: lapi.c:1417 — @param {CPtr} L @param {CInt} fidx @param {CInt} n @param {CPtr} pf @returns {CPtr} */
+/** C ref: lapi.c:1417 — @param {CPtr<lua_State>} L @param {CInt} fidx @param {CInt} n @param {CPtr<LClosure *>} pf @returns {CPtr<UpVal *>} */
 function getupvalref(L, fidx, n, pf) {
     let f;
     let fi = index2value(L, fidx);
@@ -1829,7 +1829,7 @@ function getupvalref(L, fidx, n, pf) {
         return __static_getupvalref_nullup;
 }
 
-/** C ref: lapi.c:1431 — @param {CPtr} L @param {CInt} fidx @param {CInt} n @returns {CPtr} */
+/** C ref: lapi.c:1431 — @param {CPtr<lua_State>} L @param {CInt} fidx @param {CInt} n @returns {CPtr<void>} */
 export function lua_upvalueid(L, fidx, n) {
     let fi = index2value(L, fidx);
     switch ((((cptr.ld1uo((fi), $TValue_tt_))) & 63)) {
@@ -1853,7 +1853,7 @@ export function lua_upvalueid(L, fidx, n) {
     }
 }
 
-/** C ref: lapi.c:1453 — @param {CPtr} L @param {CInt} fidx1 @param {CInt} n1 @param {CInt} fidx2 @param {CInt} n2 */
+/** C ref: lapi.c:1453 — @param {CPtr<lua_State>} L @param {CInt} fidx1 @param {CInt} n1 @param {CInt} fidx2 @param {CInt} n2 */
 export function lua_upvaluejoin(L, fidx1, n1, fidx2, n2) {
     let f1 = cptr.box(0);
     let up1 = getupvalref(L, fidx1, n1, f1);

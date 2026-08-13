@@ -160,7 +160,7 @@ export function rng_log_enabled() {
     return schar((rng_logfile ? 1 : 0));
 }
 
-/** C ref: rnd.c:58 — @param {CPtr} file @param {CInt} line @param {CPtr} func */
+/** C ref: rnd.c:58 — @param {CPtr<char>} file @param {CInt} line @param {CPtr<char>} func */
 export function rng_log_set_caller(file, line, func) {
     rng_caller_file = file;
     rng_caller_line = line;
@@ -172,7 +172,7 @@ export function rng_log_get_call_count() {
     return rng_call_count;
 }
 
-/** C ref: rnd.c:72 — @param {CPtr} func @param {CPtr} args @param {CInt} result */
+/** C ref: rnd.c:72 — @param {CPtr<char>} func @param {CPtr<char>} args @param {CInt} result */
 function rng_log_write(func, args, result) {
     if (!rng_logfile)
         return;
@@ -369,7 +369,7 @@ export function reseed_random(fn) {
         init_random(fn);
 }
 
-/** C ref: rnd.c:440 — @param {CPtr} indices @param {CInt} count */
+/** C ref: rnd.c:440 — @param {CPtr<int>} indices @param {CInt} count */
 export function shuffle_int_array(indices, count) {
     let i;
     let iswap;

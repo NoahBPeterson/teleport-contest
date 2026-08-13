@@ -99,12 +99,12 @@ const __sl28 = cptr.lit("multiple to-be-closed variables in local list");
 
 /** C ref: lparser.c:57 — typedef BlockCnt (type alias only, no runtime output) */
 
-/** C ref: lparser.c:68 — @param {CPtr} ls @param {CInt} token */
+/** C ref: lparser.c:68 — @param {CPtr<LexState>} ls @param {CInt} token */
 function* error_expected(ls, token) {
     (yield* luaX_syntaxerror(ls, (yield* luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __sl0, (yield* luaX_token2str(ls, token))))));
 }
 
-/** C ref: lparser.c:74 — @param {CPtr} fs @param {CInt} limit @param {CPtr} what */
+/** C ref: lparser.c:74 — @param {CPtr<FuncState>} fs @param {CInt} limit @param {CPtr<char>} what */
 function* errorlimit(fs, limit, what) {
     let L = cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L);
     let msg;
@@ -114,13 +114,13 @@ function* errorlimit(fs, limit, what) {
     (yield* luaX_syntaxerror(cptr.ldPtro(fs, $FuncState_ls), msg));
 }
 
-/** C ref: lparser.c:87 — @param {CPtr} fs @param {CInt} v @param {CInt} l @param {CPtr} what */
+/** C ref: lparser.c:87 — @param {CPtr<FuncState>} fs @param {CInt} v @param {CInt} l @param {CPtr<char>} what */
 function* checklimit(fs, v, l, what) {
     if (v > l)
         (yield* errorlimit(fs, l, what));
 }
 
-/** C ref: lparser.c:95 — @param {CPtr} ls @param {CInt} c @returns {CInt} */
+/** C ref: lparser.c:95 — @param {CPtr<LexState>} ls @param {CInt} c @returns {CInt} */
 function* testnext(ls, c) {
     if (cptr.ldI32o(ls, $LexState_t) == c) {
         (yield* luaX_next(ls));
@@ -129,19 +129,19 @@ function* testnext(ls, c) {
         return 0;
 }
 
-/** C ref: lparser.c:107 — @param {CPtr} ls @param {CInt} c */
+/** C ref: lparser.c:107 — @param {CPtr<LexState>} ls @param {CInt} c */
 function* check(ls, c) {
     if (cptr.ldI32o(ls, $LexState_t) != c)
         (yield* error_expected(ls, c));
 }
 
-/** C ref: lparser.c:116 — @param {CPtr} ls @param {CInt} c */
+/** C ref: lparser.c:116 — @param {CPtr<LexState>} ls @param {CInt} c */
 function* checknext(ls, c) {
     (yield* check(ls, c));
     (yield* luaX_next(ls));
 }
 
-/** C ref: lparser.c:130 — @param {CPtr} ls @param {CInt} what @param {CInt} who @param {CInt} where */
+/** C ref: lparser.c:130 — @param {CPtr<LexState>} ls @param {CInt} what @param {CInt} who @param {CInt} where */
 function* check_match(ls, what, who, where) {
     if ((__builtin_expect(BigInt(((!(yield* testnext(ls, what))) != 0)), 0n))) {
         if (where == cptr.ldI32o(ls, $LexState_linenumber))
@@ -152,7 +152,7 @@ function* check_match(ls, what, who, where) {
     }
 }
 
-/** C ref: lparser.c:143 — @param {CPtr} ls @returns {CPtr} */
+/** C ref: lparser.c:143 — @param {CPtr<LexState>} ls @returns {CPtr<TString>} */
 function* str_checkname(ls) {
     let ts;
     (yield* check(ls, NHC.TK_NAME));
@@ -161,26 +161,26 @@ function* str_checkname(ls) {
     return ts;
 }
 
-/** C ref: lparser.c:152 — @param {CPtr} e @param {*} k @param {CInt} i */
+/** C ref: lparser.c:152 — @param {CPtr<expdesc>} e @param {*} k @param {CInt} i */
 function init_exp(e, k, i) {
     cptr.stI32o(e, $expdesc_f, cptr.stI32o(e, $expdesc_t, -1));
     cptr.stI32(e, k);
     cptr.stI32o(e, $expdesc_u, i);
 }
 
-/** C ref: lparser.c:159 — @param {CPtr} e @param {CPtr} s */
+/** C ref: lparser.c:159 — @param {CPtr<expdesc>} e @param {CPtr<TString>} s */
 function codestring(e, s) {
     cptr.stI32o(e, $expdesc_f, cptr.stI32o(e, $expdesc_t, -1));
     cptr.stI32(e, NHC.VKSTR);
     cptr.stPtro(e, $expdesc_u, s);
 }
 
-/** C ref: lparser.c:166 — @param {CPtr} ls @param {CPtr} e */
+/** C ref: lparser.c:166 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} e */
 function* codename(ls, e) {
     codestring(e, (yield* str_checkname(ls)));
 }
 
-/** C ref: lparser.c:175 — @param {CPtr} ls @param {CPtr} fs @param {CPtr} varname @returns {CInt} */
+/** C ref: lparser.c:175 — @param {CPtr<LexState>} ls @param {CPtr<FuncState>} fs @param {CPtr<TString>} varname @returns {CInt} */
 function* registerlocalvar(ls, fs, varname) {
     let f = cptr.ldPtr(fs);
     let oldsize = cptr.ldI32o(f, $Proto_sizelocvars);
@@ -193,7 +193,7 @@ function* registerlocalvar(ls, fs, varname) {
     return (cptr.stI16o(fs, $FuncState_ndebugvars, cptr.ldI16o(fs, $FuncState_ndebugvars) + 1)) - (1);
 }
 
-/** C ref: lparser.c:193 — @param {CPtr} ls @param {CPtr} name @returns {CInt} */
+/** C ref: lparser.c:193 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @returns {CInt} */
 function* new_localvar(ls, name) {
     let L = cptr.ldPtro(ls, $LexState_L);
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -207,12 +207,12 @@ function* new_localvar(ls, name) {
     return (((cptr.ldI32o(dyd, 8) - 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0;
 }
 
-/** C ref: lparser.c:219 — @param {CPtr} fs @param {CInt} vidx @returns {CPtr} */
+/** C ref: lparser.c:219 — @param {CPtr<FuncState>} fs @param {CInt} vidx @returns {CPtr<Vardesc>} */
 function getlocalvardesc(fs, vidx) {
     return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), (cptr.ldI32o(fs, $FuncState_firstlocal) + vidx) | 0, 24);
 }
 
-/** C ref: lparser.c:229 — @param {CPtr} fs @param {CInt} nvar @returns {CInt} */
+/** C ref: lparser.c:229 — @param {CPtr<FuncState>} fs @param {CInt} nvar @returns {CInt} */
 function reglevel(fs, nvar) {
     while (nvar-- > 0) {
         let vd = getlocalvardesc(fs, nvar);
@@ -222,12 +222,12 @@ function reglevel(fs, nvar) {
     return 0;
 }
 
-/** C ref: lparser.c:243 — @param {CPtr} fs @returns {CInt} */
+/** C ref: lparser.c:243 — @param {CPtr<FuncState>} fs @returns {CInt} */
 export function luaY_nvarstack(fs) {
     return reglevel(fs, cptr.ld1uo(fs, $FuncState_nactvar));
 }
 
-/** C ref: lparser.c:251 — @param {CPtr} fs @param {CInt} vidx @returns {CPtr} */
+/** C ref: lparser.c:251 — @param {CPtr<FuncState>} fs @param {CInt} vidx @returns {CPtr<LocVar>} */
 function localdebuginfo(fs, vidx) {
     let vd = getlocalvardesc(fs, vidx);
     if (cptr.ld1uo(vd, 9) == 3)
@@ -239,7 +239,7 @@ function localdebuginfo(fs, vidx) {
     }
 }
 
-/** C ref: lparser.c:266 — @param {CPtr} fs @param {CPtr} e @param {CInt} vidx */
+/** C ref: lparser.c:266 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} vidx */
 function init_var(fs, e, vidx) {
     cptr.stI32o(e, $expdesc_f, cptr.stI32o(e, $expdesc_t, -1));
     cptr.stI32(e, NHC.VLOCAL);
@@ -247,7 +247,7 @@ function init_var(fs, e, vidx) {
     cptr.st1o(e, $expdesc_u, cptr.ld1uo(getlocalvardesc(fs, vidx), 10));
 }
 
-/** C ref: lparser.c:277 — @param {CPtr} ls @param {CPtr} e */
+/** C ref: lparser.c:277 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} e */
 function* check_readonly(ls, e) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let varname = null;
@@ -280,7 +280,7 @@ function* check_readonly(ls, e) {
     }
 }
 
-/** C ref: lparser.c:311 — @param {CPtr} ls @param {CInt} nvars */
+/** C ref: lparser.c:311 — @param {CPtr<LexState>} ls @param {CInt} nvars */
 function* adjustlocalvars(ls, nvars) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let reglevel = luaY_nvarstack(fs);
@@ -293,7 +293,7 @@ function* adjustlocalvars(ls, nvars) {
     }
 }
 
-/** C ref: lparser.c:328 — @param {CPtr} fs @param {CInt} tolevel */
+/** C ref: lparser.c:328 — @param {CPtr<FuncState>} fs @param {CInt} tolevel */
 function removevars(fs, tolevel) {
     cptr.stI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), 8, (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), 8) - ((cptr.ld1uo(fs, $FuncState_nactvar) - tolevel) | 0)) | 0);
     while (cptr.ld1uo(fs, $FuncState_nactvar) > tolevel) {
@@ -303,7 +303,7 @@ function removevars(fs, tolevel) {
     }
 }
 
-/** C ref: lparser.c:342 — @param {CPtr} fs @param {CPtr} name @returns {CInt} */
+/** C ref: lparser.c:342 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} name @returns {CInt} */
 function searchupvalue(fs, name) {
     let i;
     let up = cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues);
@@ -314,7 +314,7 @@ function searchupvalue(fs, name) {
     return -1;
 }
 
-/** C ref: lparser.c:352 — @param {CPtr} fs @returns {CPtr} */
+/** C ref: lparser.c:352 — @param {CPtr<FuncState>} fs @returns {CPtr<Upvaldesc>} */
 function* allocupvalue(fs) {
     let f = cptr.ldPtr(fs);
     let oldsize = cptr.ldI32o(f, $Proto_sizeupvalues);
@@ -325,7 +325,7 @@ function* allocupvalue(fs) {
     return cptr.add(cptr.ldPtro(f, $Proto_upvalues), cptr.postinc1(cptr.add(fs, $FuncState_nups)), 16);
 }
 
-/** C ref: lparser.c:364 — @param {CPtr} fs @param {CPtr} name @param {CPtr} v @returns {CInt} */
+/** C ref: lparser.c:364 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} name @param {CPtr<expdesc>} v @returns {CInt} */
 function* newupvalue(fs, name, v) {
     let up = (yield* allocupvalue(fs));
     let prev = cptr.ldPtro(fs, $FuncState_prev);
@@ -345,7 +345,7 @@ function* newupvalue(fs, name, v) {
     return (cptr.ld1uo(fs, $FuncState_nups) - 1) | 0;
 }
 
-/** C ref: lparser.c:390 — @param {CPtr} fs @param {CPtr} n @param {CPtr} var @returns {CInt} */
+/** C ref: lparser.c:390 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} n @param {CPtr<expdesc>} var @returns {CInt} */
 function searchvar(fs, n, var$) {
     let i;
     for (i = ((((cptr.ld1uo(fs, $FuncState_nactvar)))) - 1) | 0; i >= 0; i--) {
@@ -361,7 +361,7 @@ function searchvar(fs, n, var$) {
     return -1;
 }
 
-/** C ref: lparser.c:410 — @param {CPtr} fs @param {CInt} level */
+/** C ref: lparser.c:410 — @param {CPtr<FuncState>} fs @param {CInt} level */
 function markupval(fs, level) {
     let bl = cptr.ldPtro(fs, $FuncState_bl);
     while (cptr.ld1uo(bl, $BlockCnt_nactvar) > level)
@@ -370,7 +370,7 @@ function markupval(fs, level) {
     cptr.st1o(fs, $FuncState_needclose, 1);
 }
 
-/** C ref: lparser.c:422 — @param {CPtr} fs */
+/** C ref: lparser.c:422 — @param {CPtr<FuncState>} fs */
 function marktobeclosed(fs) {
     let bl = cptr.ldPtro(fs, $FuncState_bl);
     cptr.st1o(bl, $BlockCnt_upval, 1);
@@ -378,7 +378,7 @@ function marktobeclosed(fs) {
     cptr.st1o(fs, $FuncState_needclose, 1);
 }
 
-/** C ref: lparser.c:435 — @param {CPtr} fs @param {CPtr} n @param {CPtr} var @param {CInt} base */
+/** C ref: lparser.c:435 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} n @param {CPtr<expdesc>} var @param {CInt} base */
 function* singlevaraux(fs, n, var$, base) {
     if (cptr.eq(fs, (null)))
         init_exp(var$, NHC.VVOID, 0);
@@ -401,7 +401,7 @@ function* singlevaraux(fs, n, var$, base) {
     }
 }
 
-/** C ref: lparser.c:463 — @param {CPtr} ls @param {CPtr} var */
+/** C ref: lparser.c:463 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} var */
 function* singlevar(ls, var$) {
     let varname = (yield* str_checkname(ls));
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -416,7 +416,7 @@ function* singlevar(ls, var$) {
     }
 }
 
-/** C ref: lparser.c:482 — @param {CPtr} ls @param {CInt} nvars @param {CInt} nexps @param {CPtr} e */
+/** C ref: lparser.c:482 — @param {CPtr<LexState>} ls @param {CInt} nvars @param {CInt} nexps @param {CPtr<expdesc>} e */
 function* adjust_assign(ls, nvars, nexps, e) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let needed = (nvars - nexps) | 0;
@@ -437,7 +437,7 @@ function* adjust_assign(ls, nvars, nexps, e) {
         cptr.st1o(fs, $FuncState_freereg, cptr.ld1uo(fs, $FuncState_freereg) + needed);
 }
 
-/** C ref: lparser.c:514 — @param {CPtr} ls @param {CPtr} gt */
+/** C ref: lparser.c:514 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} gt */
 function* jumpscopeerror(ls, gt) {
     let varname = (cptr.add((cptr.ldPtro(getlocalvardesc(cptr.ldPtro(ls, $LexState_fs), cptr.ld1uo(gt, $Labeldesc_nactvar)), 16)), $TString_contents));
     let msg = __sl8;
@@ -445,7 +445,7 @@ function* jumpscopeerror(ls, gt) {
     (yield* luaK_semerror(ls, msg));
 }
 
-/** C ref: lparser.c:527 — @param {CPtr} ls @param {CInt} g @param {CPtr} label */
+/** C ref: lparser.c:527 — @param {CPtr<LexState>} ls @param {CInt} g @param {CPtr<Labeldesc>} label */
 function* solvegoto(ls, g, label) {
     let i;
     let gl = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt);
@@ -459,7 +459,7 @@ function* solvegoto(ls, g, label) {
     (cptr.stI32o(gl, $Labellist_n, cptr.ldI32o(gl, $Labellist_n) + -1)) - (-1);
 }
 
-/** C ref: lparser.c:544 — @param {CPtr} ls @param {CPtr} name @returns {CPtr} */
+/** C ref: lparser.c:544 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @returns {CPtr<Labeldesc>} */
 function findlabel(ls, name) {
     let i;
     let dyd = cptr.ldPtro(ls, $LexState_dyd);
@@ -471,7 +471,7 @@ function findlabel(ls, name) {
     return null;
 }
 
-/** C ref: lparser.c:560 — @param {CPtr} ls @param {CPtr} l @param {CPtr} name @param {CInt} line @param {CInt} pc @returns {CInt} */
+/** C ref: lparser.c:560 — @param {CPtr<LexState>} ls @param {CPtr<Labellist>} l @param {CPtr<TString>} name @param {CInt} line @param {CInt} pc @returns {CInt} */
 function* newlabelentry(ls, l, name, line, pc) {
     let n = cptr.ldI32o(l, $Labellist_n);
     (cptr.stPtr(l, (((yield* luaM_growaux_(cptr.ldPtro(ls, $LexState_L), cptr.ldPtr(l), n, cptr.add(l, $Labellist_size), 24, 32767, __sl9))))));
@@ -484,12 +484,12 @@ function* newlabelentry(ls, l, name, line, pc) {
     return n;
 }
 
-/** C ref: lparser.c:575 — @param {CPtr} ls @param {CPtr} name @param {CInt} line @param {CInt} pc @returns {CInt} */
+/** C ref: lparser.c:575 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @param {CInt} line @param {CInt} pc @returns {CInt} */
 function* newgotoentry(ls, name, line, pc) {
     return (yield* newlabelentry(ls, cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt), name, line, pc));
 }
 
-/** C ref: lparser.c:585 — @param {CPtr} ls @param {CPtr} lb @returns {CInt} */
+/** C ref: lparser.c:585 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} lb @returns {CInt} */
 function* solvegotos(ls, lb) {
     let gl = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt);
     let i = cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(ls, $LexState_fs), $FuncState_bl), $BlockCnt_firstgoto);
@@ -504,7 +504,7 @@ function* solvegotos(ls, lb) {
     return needsclose;
 }
 
-/** C ref: lparser.c:608 — @param {CPtr} ls @param {CPtr} name @param {CInt} line @param {CInt} last @returns {CInt} */
+/** C ref: lparser.c:608 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @param {CInt} line @param {CInt} last @returns {CInt} */
 function* createlabel(ls, name, line, last) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let ll = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label);
@@ -519,7 +519,7 @@ function* createlabel(ls, name, line, last) {
     return 0;
 }
 
-/** C ref: lparser.c:628 — @param {CPtr} fs @param {CPtr} bl */
+/** C ref: lparser.c:628 — @param {CPtr<FuncState>} fs @param {CPtr<BlockCnt>} bl */
 function movegotosout(fs, bl) {
     let i;
     let gl = cptr.add(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), $Dyndata_gt);
@@ -531,7 +531,7 @@ function movegotosout(fs, bl) {
     }
 }
 
-/** C ref: lparser.c:642 — @param {CPtr} fs @param {CPtr} bl @param {CUInt} isloop */
+/** C ref: lparser.c:642 — @param {CPtr<FuncState>} fs @param {CPtr<BlockCnt>} bl @param {CUInt} isloop */
 function enterblock(fs, bl, isloop) {
     cptr.st1o(bl, $BlockCnt_isloop, isloop);
     cptr.st1o(bl, $BlockCnt_nactvar, cptr.ld1uo(fs, $FuncState_nactvar));
@@ -544,7 +544,7 @@ function enterblock(fs, bl, isloop) {
     (void 0);
 }
 
-/** C ref: lparser.c:658 — @param {CPtr} ls @param {CPtr} gt */
+/** C ref: lparser.c:658 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} gt */
 function* undefgoto(ls, gt) {
     let msg;
     if ((cptr.eq((cptr.ldPtr(gt)), (((yield* luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __sl10, BigInt.asUintN(64, (6n / 1n) - 1n)))))))) {
@@ -557,7 +557,7 @@ function* undefgoto(ls, gt) {
     (yield* luaK_semerror(ls, msg));
 }
 
-/** C ref: lparser.c:672 — @param {CPtr} fs */
+/** C ref: lparser.c:672 — @param {CPtr<FuncState>} fs */
 function* leaveblock(fs) {
     let bl = cptr.ldPtro(fs, $FuncState_bl);
     let ls = cptr.ldPtro(fs, $FuncState_ls);
@@ -580,7 +580,7 @@ function* leaveblock(fs) {
     }
 }
 
-/** C ref: lparser.c:698 — @param {CPtr} ls @returns {CPtr} */
+/** C ref: lparser.c:698 — @param {CPtr<LexState>} ls @returns {CPtr<Proto>} */
 function* addprototype(ls) {
     let clp;
     let L = cptr.ldPtro(ls, $LexState_L);
@@ -597,14 +597,14 @@ function* addprototype(ls) {
     return clp;
 }
 
-/** C ref: lparser.c:722 — @param {CPtr} ls @param {CPtr} v */
+/** C ref: lparser.c:722 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* codeclosure(ls, v) {
     let fs = cptr.ldPtro(cptr.ldPtro(ls, $LexState_fs), $FuncState_prev);
     init_exp(v, NHC.VRELOC, (yield* luaK_codeABx(fs, NHC.OP_CLOSURE, 0, ((cptr.ldI32o(fs, $FuncState_np) - 1) | 0) >>> 0)));
     (yield* luaK_exp2nextreg(fs, v));
 }
 
-/** C ref: lparser.c:729 — @param {CPtr} ls @param {CPtr} fs @param {CPtr} bl */
+/** C ref: lparser.c:729 — @param {CPtr<LexState>} ls @param {CPtr<FuncState>} fs @param {CPtr<BlockCnt>} bl */
 function open_func(ls, fs, bl) {
     let f = cptr.ldPtr(fs);
     cptr.stPtro(fs, $FuncState_prev, cptr.ldPtro(ls, $LexState_fs));
@@ -631,7 +631,7 @@ function open_func(ls, fs, bl) {
     enterblock(fs, bl, 0);
 }
 
-/** C ref: lparser.c:756 — @param {CPtr} ls */
+/** C ref: lparser.c:756 — @param {CPtr<LexState>} ls */
 function* close_func(ls) {
     let L = cptr.ldPtro(ls, $LexState_L);
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -660,7 +660,7 @@ function* close_func(ls) {
     ;
 }
 
-/** C ref: lparser.c:788 — @param {CPtr} ls @param {CInt} withuntil @returns {CInt} */
+/** C ref: lparser.c:788 — @param {CPtr<LexState>} ls @param {CInt} withuntil @returns {CInt} */
 function block_follow(ls, withuntil) {
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case NHC.TK_ELSE:
@@ -675,7 +675,7 @@ function block_follow(ls, withuntil) {
     }
 }
 
-/** C ref: lparser.c:799 — @param {CPtr} ls */
+/** C ref: lparser.c:799 — @param {CPtr<LexState>} ls */
 function* statlist(ls) {
     while (!block_follow(ls, 1)) {
         if (cptr.ldI32o(ls, $LexState_t) == NHC.TK_RETURN) {
@@ -686,7 +686,7 @@ function* statlist(ls) {
     }
 }
 
-/** C ref: lparser.c:811 — @param {CPtr} ls @param {CPtr} v */
+/** C ref: lparser.c:811 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* fieldsel(ls, v) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let key = cptr.alloc(24);
@@ -696,7 +696,7 @@ function* fieldsel(ls, v) {
     (yield* luaK_indexed(fs, v, key));
 }
 
-/** C ref: lparser.c:822 — @param {CPtr} ls @param {CPtr} v */
+/** C ref: lparser.c:822 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* yindex(ls, v) {
     (yield* luaX_next(ls));
     (yield* expr(ls, v));
@@ -708,7 +708,7 @@ function* yindex(ls, v) {
 
 /** C ref: lparser.c:844 — typedef ConsControl (type alias only, no runtime output) */
 
-/** C ref: lparser.c:847 — @param {CPtr} ls @param {CPtr} cc */
+/** C ref: lparser.c:847 — @param {CPtr<LexState>} ls @param {CPtr<ConsControl>} cc */
 function* recfield(ls, cc) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let reg = cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg);
@@ -729,7 +729,7 @@ function* recfield(ls, cc) {
     cptr.st1o(fs, $FuncState_freereg, uchar(reg));
 }
 
-/** C ref: lparser.c:867 — @param {CPtr} fs @param {CPtr} cc */
+/** C ref: lparser.c:867 — @param {CPtr<FuncState>} fs @param {CPtr<ConsControl>} cc */
 function* closelistfield(fs, cc) {
     if (cptr.ldI32(cc) == NHC.VVOID)
         return;
@@ -742,7 +742,7 @@ function* closelistfield(fs, cc) {
     }
 }
 
-/** C ref: lparser.c:879 — @param {CPtr} fs @param {CPtr} cc */
+/** C ref: lparser.c:879 — @param {CPtr<FuncState>} fs @param {CPtr<ConsControl>} cc */
 function* lastlistfield(fs, cc) {
     if (cptr.ldI32o(cc, $ConsControl_tostore) == 0)
         return;
@@ -758,13 +758,13 @@ function* lastlistfield(fs, cc) {
     cptr.stI32o(cc, $ConsControl_na, (cptr.ldI32o(cc, $ConsControl_na) + cptr.ldI32o(cc, $ConsControl_tostore)) | 0);
 }
 
-/** C ref: lparser.c:895 — @param {CPtr} ls @param {CPtr} cc */
+/** C ref: lparser.c:895 — @param {CPtr<LexState>} ls @param {CPtr<ConsControl>} cc */
 function* listfield(ls, cc) {
     (yield* expr(ls, cc));
     (cptr.stI32o(cc, $ConsControl_tostore, cptr.ldI32o(cc, $ConsControl_tostore) + 1)) - (1);
 }
 
-/** C ref: lparser.c:902 — @param {CPtr} ls @param {CPtr} cc */
+/** C ref: lparser.c:902 — @param {CPtr<LexState>} ls @param {CPtr<ConsControl>} cc */
 function* field(ls, cc) {
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case NHC.TK_NAME:
@@ -788,7 +788,7 @@ function* field(ls, cc) {
     }
 }
 
-/** C ref: lparser.c:924 — @param {CPtr} ls @param {CPtr} t */
+/** C ref: lparser.c:924 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} t */
 function* constructor(ls, t) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let line = cptr.ldI32o(ls, $LexState_linenumber);
@@ -813,13 +813,13 @@ function* constructor(ls, t) {
     luaK_settablesize(fs, pc, cptr.ldI32o(t, $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), cptr.ldI32o(cc, $ConsControl_nh));
 }
 
-/** C ref: lparser.c:952 — @param {CPtr} fs @param {CInt} nparams */
+/** C ref: lparser.c:952 — @param {CPtr<FuncState>} fs @param {CInt} nparams */
 function* setvararg(fs, nparams) {
     cptr.st1o(cptr.ldPtr(fs), $Proto_is_vararg, 1);
     (yield* luaK_codeABCk(fs, NHC.OP_VARARGPREP, nparams, 0, 0, 0));
 }
 
-/** C ref: lparser.c:958 — @param {CPtr} ls */
+/** C ref: lparser.c:958 — @param {CPtr<LexState>} ls */
 function* parlist(ls) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let f = cptr.ldPtr(fs);
@@ -852,7 +852,7 @@ function* parlist(ls) {
     (yield* luaK_reserveregs(fs, cptr.ld1uo(fs, $FuncState_nactvar)));
 }
 
-/** C ref: lparser.c:989 — @param {CPtr} ls @param {CPtr} e @param {CInt} ismethod @param {CInt} line */
+/** C ref: lparser.c:989 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} e @param {CInt} ismethod @param {CInt} line */
 function* body(ls, e, ismethod, line) {
     let new_fs = cptr.alloc(72);
     let bl = cptr.alloc(24);
@@ -874,7 +874,7 @@ function* body(ls, e, ismethod, line) {
     (yield* close_func(ls));
 }
 
-/** C ref: lparser.c:1011 — @param {CPtr} ls @param {CPtr} v @returns {CInt} */
+/** C ref: lparser.c:1011 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v @returns {CInt} */
 function* explist(ls, v) {
     let n = 1;
     (yield* expr(ls, v));
@@ -886,7 +886,7 @@ function* explist(ls, v) {
     return n;
 }
 
-/** C ref: lparser.c:1024 — @param {CPtr} ls @param {CPtr} f */
+/** C ref: lparser.c:1024 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} f */
 function* funcargs(ls, f) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let args = cptr.alloc(24);
@@ -937,7 +937,7 @@ function* funcargs(ls, f) {
     cptr.st1o(fs, $FuncState_freereg, uchar(((base + 1) | 0)));
 }
 
-/** C ref: lparser.c:1080 — @param {CPtr} ls @param {CPtr} v */
+/** C ref: lparser.c:1080 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* primaryexp(ls, v) {
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case 40:
@@ -961,7 +961,7 @@ function* primaryexp(ls, v) {
     }
 }
 
-/** C ref: lparser.c:1102 — @param {CPtr} ls @param {CPtr} v */
+/** C ref: lparser.c:1102 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* suffixedexp(ls, v) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     (yield* primaryexp(ls, v));
@@ -1003,7 +1003,7 @@ function* suffixedexp(ls, v) {
     }
 }
 
-/** C ref: lparser.c:1139 — @param {CPtr} ls @param {CPtr} v */
+/** C ref: lparser.c:1139 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* simpleexp(ls, v) {
     switch (cptr.ldI32o(ls, $LexState_t)) {
         case NHC.TK_FLT:
@@ -1182,7 +1182,7 @@ cptr.st1o(priority, 39, 2);
 cptr.st1o(priority, 40, 1);
 cptr.st1o(priority, 41, 1);
 
-/** C ref: lparser.c:1259 — @param {CPtr} ls @param {CPtr} v @param {CInt} limit @returns {*} */
+/** C ref: lparser.c:1259 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v @param {CInt} limit @returns {*} */
 function* subexpr(ls, v, limit) {
     let op;
     let uop;
@@ -1210,12 +1210,12 @@ function* subexpr(ls, v, limit) {
     return op;
 }
 
-/** C ref: lparser.c:1289 — @param {CPtr} ls @param {CPtr} v */
+/** C ref: lparser.c:1289 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function* expr(ls, v) {
     (yield* subexpr(ls, v, 0));
 }
 
-/** C ref: lparser.c:1304 — @param {CPtr} ls */
+/** C ref: lparser.c:1304 — @param {CPtr<LexState>} ls */
 function* block(ls) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let bl = cptr.alloc(24);
@@ -1226,7 +1226,7 @@ function* block(ls) {
 
 /** C ref: lparser.c:1318 — struct LHS_assign { prev, v } (memory model v0.5) */
 
-/** C ref: lparser.c:1330 — @param {CPtr} ls @param {CPtr} lh @param {CPtr} v */
+/** C ref: lparser.c:1330 — @param {CPtr<LexState>} ls @param {CPtr<struct LHS_assign>} lh @param {CPtr<expdesc>} v */
 function* check_conflict(ls, lh, v) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let extra = cptr.ld1uo(fs, $FuncState_freereg);
@@ -1260,7 +1260,7 @@ function* check_conflict(ls, lh, v) {
     }
 }
 
-/** C ref: lparser.c:1374 — @param {CPtr} ls @param {CPtr} lh @param {CInt} nvars */
+/** C ref: lparser.c:1374 — @param {CPtr<LexState>} ls @param {CPtr<struct LHS_assign>} lh @param {CInt} nvars */
 function* restassign(ls, lh, nvars) {
     let e = cptr.alloc(24);
     {
@@ -1294,7 +1294,7 @@ function* restassign(ls, lh, nvars) {
     (yield* luaK_storevar(cptr.ldPtro(ls, $LexState_fs), cptr.add(lh, $LHS_assign_v), e));
 }
 
-/** C ref: lparser.c:1405 — @param {CPtr} ls @returns {CInt} */
+/** C ref: lparser.c:1405 — @param {CPtr<LexState>} ls @returns {CInt} */
 function* cond(ls) {
     let v = cptr.alloc(24);
     (yield* expr(ls, v));
@@ -1304,7 +1304,7 @@ function* cond(ls) {
     return cptr.ldI32o(v, $expdesc_f);
 }
 
-/** C ref: lparser.c:1415 — @param {CPtr} ls */
+/** C ref: lparser.c:1415 — @param {CPtr<LexState>} ls */
 function* gotostat(ls) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let line = cptr.ldI32o(ls, $LexState_linenumber);
@@ -1320,14 +1320,14 @@ function* gotostat(ls) {
     }
 }
 
-/** C ref: lparser.c:1437 — @param {CPtr} ls */
+/** C ref: lparser.c:1437 — @param {CPtr<LexState>} ls */
 function* breakstat(ls) {
     let line = cptr.ldI32o(ls, $LexState_linenumber);
     (yield* luaX_next(ls));
     (yield* newgotoentry(ls, ((yield* luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __sl10, BigInt.asUintN(64, (6n / 1n) - 1n)))), line, (yield* luaK_jump(cptr.ldPtro(ls, $LexState_fs)))));
 }
 
-/** C ref: lparser.c:1447 — @param {CPtr} ls @param {CPtr} name */
+/** C ref: lparser.c:1447 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name */
 function* checkrepeated(ls, name) {
     let lb = findlabel(ls, name);
     if ((__builtin_expect(BigInt(((!cptr.eq(lb, (null))) != 0)), 0n))) {
@@ -1337,7 +1337,7 @@ function* checkrepeated(ls, name) {
     }
 }
 
-/** C ref: lparser.c:1457 — @param {CPtr} ls @param {CPtr} name @param {CInt} line */
+/** C ref: lparser.c:1457 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @param {CInt} line */
 function* labelstat(ls, name, line) {
     (yield* checknext(ls, NHC.TK_DBCOLON));
     while (cptr.ldI32o(ls, $LexState_t) == 59 || cptr.ldI32o(ls, $LexState_t) == NHC.TK_DBCOLON)
@@ -1346,7 +1346,7 @@ function* labelstat(ls, name, line) {
     (yield* createlabel(ls, name, line, block_follow(ls, 0)));
 }
 
-/** C ref: lparser.c:1467 — @param {CPtr} ls @param {CInt} line */
+/** C ref: lparser.c:1467 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* whilestat(ls, line) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let whileinit;
@@ -1364,7 +1364,7 @@ function* whilestat(ls, line) {
     (yield* luaK_patchtohere(fs, condexit));
 }
 
-/** C ref: lparser.c:1486 — @param {CPtr} ls @param {CInt} line */
+/** C ref: lparser.c:1486 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* repeatstat(ls, line) {
     let condexit;
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -1389,7 +1389,7 @@ function* repeatstat(ls, line) {
     (yield* leaveblock(fs));
 }
 
-/** C ref: lparser.c:1516 — @param {CPtr} ls */
+/** C ref: lparser.c:1516 — @param {CPtr<LexState>} ls */
 function* exp1(ls) {
     let e = cptr.alloc(24);
     (yield* expr(ls, e));
@@ -1397,7 +1397,7 @@ function* exp1(ls) {
     (void 0);
 }
 
-/** C ref: lparser.c:1529 — @param {CPtr} fs @param {CInt} pc @param {CInt} dest @param {CInt} back */
+/** C ref: lparser.c:1529 — @param {CPtr<FuncState>} fs @param {CInt} pc @param {CInt} dest @param {CInt} back */
 function* fixforjump(fs, pc, dest, back) {
     let jmp = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
     let offset = (dest - ((pc + 1) | 0)) | 0;
@@ -1415,7 +1415,7 @@ const __static_forbody_forloop = cptr.alloc(2 * 4);
 cptr.stI32o(__static_forbody_forloop, 0, NHC.OP_FORLOOP);
 cptr.stI32o(__static_forbody_forloop, 4, NHC.OP_TFORLOOP); /** C ref: lparser.c:1546 — OpCode[2] (function-static) */
 
-/** C ref: lparser.c:1543 — @param {CPtr} ls @param {CInt} base @param {CInt} line @param {CInt} nvars @param {CInt} isgen */
+/** C ref: lparser.c:1543 — @param {CPtr<LexState>} ls @param {CInt} base @param {CInt} line @param {CInt} nvars @param {CInt} isgen */
 function* forbody(ls, base, line, nvars, isgen) {
     let bl = cptr.alloc(24);
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -1438,7 +1438,7 @@ function* forbody(ls, base, line, nvars, isgen) {
     (yield* luaK_fixline(fs, line));
 }
 
-/** C ref: lparser.c:1568 — @param {CPtr} ls @param {CPtr} varname @param {CInt} line */
+/** C ref: lparser.c:1568 — @param {CPtr<LexState>} ls @param {CPtr<TString>} varname @param {CInt} line */
 function* fornum(ls, varname, line) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let base = cptr.ld1uo(fs, $FuncState_freereg);
@@ -1463,7 +1463,7 @@ function* fornum(ls, varname, line) {
     (yield* forbody(ls, base, line, 1, 0));
 }
 
-/** C ref: lparser.c:1591 — @param {CPtr} ls @param {CPtr} indexname */
+/** C ref: lparser.c:1591 — @param {CPtr<LexState>} ls @param {CPtr<TString>} indexname */
 function* forlist(ls, indexname) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let e = cptr.alloc(24);
@@ -1492,7 +1492,7 @@ function* forlist(ls, indexname) {
     (yield* forbody(ls, base, line, (nvars - 4) | 0, 1));
 }
 
-/** C ref: lparser.c:1619 — @param {CPtr} ls @param {CInt} line */
+/** C ref: lparser.c:1619 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* forstat(ls, line) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let varname;
@@ -1515,7 +1515,7 @@ function* forstat(ls, line) {
     (yield* leaveblock(fs));
 }
 
-/** C ref: lparser.c:1637 — @param {CPtr} ls @param {CPtr} escapelist */
+/** C ref: lparser.c:1637 — @param {CPtr<LexState>} ls @param {CPtr<int>} escapelist */
 function* test_then_block(ls, escapelist) {
     let bl = cptr.alloc(24);
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -1549,7 +1549,7 @@ function* test_then_block(ls, escapelist) {
     (yield* luaK_patchtohere(fs, jf));
 }
 
-/** C ref: lparser.c:1674 — @param {CPtr} ls @param {CInt} line */
+/** C ref: lparser.c:1674 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* ifstat(ls, line) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let escapelist = cptr.box(-1);
@@ -1562,7 +1562,7 @@ function* ifstat(ls, line) {
     (yield* luaK_patchtohere(fs, escapelist.v));
 }
 
-/** C ref: lparser.c:1688 — @param {CPtr} ls */
+/** C ref: lparser.c:1688 — @param {CPtr<LexState>} ls */
 function* localfunc(ls) {
     let b = cptr.alloc(24);
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -1573,7 +1573,7 @@ function* localfunc(ls) {
     cptr.stI32o(localdebuginfo(fs, fvar), $LocVar_startpc, cptr.ldI32o(fs, $FuncState_pc));
 }
 
-/** C ref: lparser.c:1700 — @param {CPtr} ls @returns {CInt} */
+/** C ref: lparser.c:1700 — @param {CPtr<LexState>} ls @returns {CInt} */
 function* getlocalattribute(ls) {
     if ((yield* testnext(ls, 60))) {
         let attr = (cptr.add(((yield* str_checkname(ls))), $TString_contents));
@@ -1588,7 +1588,7 @@ function* getlocalattribute(ls) {
     return 0;
 }
 
-/** C ref: lparser.c:1717 — @param {CPtr} fs @param {CInt} level */
+/** C ref: lparser.c:1717 — @param {CPtr<FuncState>} fs @param {CInt} level */
 function* checktoclose(fs, level) {
     if (level != -1) {
         marktobeclosed(fs);
@@ -1596,7 +1596,7 @@ function* checktoclose(fs, level) {
     }
 }
 
-/** C ref: lparser.c:1725 — @param {CPtr} ls */
+/** C ref: lparser.c:1725 — @param {CPtr<LexState>} ls */
 function* localstat(ls) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let toclose = -1;
@@ -1635,7 +1635,7 @@ function* localstat(ls) {
     (yield* checktoclose(fs, toclose));
 }
 
-/** C ref: lparser.c:1767 — @param {CPtr} ls @param {CPtr} v @returns {CInt} */
+/** C ref: lparser.c:1767 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v @returns {CInt} */
 function* funcname(ls, v) {
     let ismethod = 0;
     (yield* singlevar(ls, v));
@@ -1648,7 +1648,7 @@ function* funcname(ls, v) {
     return ismethod;
 }
 
-/** C ref: lparser.c:1781 — @param {CPtr} ls @param {CInt} line */
+/** C ref: lparser.c:1781 — @param {CPtr<LexState>} ls @param {CInt} line */
 function* funcstat(ls, line) {
     let ismethod;
     let v = cptr.alloc(24);
@@ -1661,7 +1661,7 @@ function* funcstat(ls, line) {
     (yield* luaK_fixline(cptr.ldPtro(ls, $LexState_fs), line));
 }
 
-/** C ref: lparser.c:1794 — @param {CPtr} ls */
+/** C ref: lparser.c:1794 — @param {CPtr<LexState>} ls */
 function* exprstat(ls) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let v = cptr.alloc(32);
@@ -1681,7 +1681,7 @@ function* exprstat(ls) {
     }
 }
 
-/** C ref: lparser.c:1812 — @param {CPtr} ls */
+/** C ref: lparser.c:1812 — @param {CPtr<LexState>} ls */
 function* retstat(ls) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let e = cptr.alloc(24);
@@ -1711,7 +1711,7 @@ function* retstat(ls) {
     (yield* testnext(ls, 59));
 }
 
-/** C ref: lparser.c:1844 — @param {CPtr} ls */
+/** C ref: lparser.c:1844 — @param {CPtr<LexState>} ls */
 function* statement(ls) {
     let line = cptr.ldI32o(ls, $LexState_linenumber);
     (yield* luaE_incCstack(cptr.ldPtro(ls, $LexState_L)));
@@ -1796,7 +1796,7 @@ function* statement(ls) {
     ((cptr.stI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls, cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1)) - (-1));
 }
 
-/** C ref: lparser.c:1923 — @param {CPtr} ls @param {CPtr} fs */
+/** C ref: lparser.c:1923 — @param {CPtr<LexState>} ls @param {CPtr<FuncState>} fs */
 function* mainfunc(ls, fs) {
     let bl = cptr.alloc(24);
     let env;
@@ -1814,7 +1814,7 @@ function* mainfunc(ls, fs) {
     (yield* close_func(ls));
 }
 
-/** C ref: lparser.c:1941 — @param {CPtr} L @param {CPtr} z @param {CPtr} buff @param {CPtr} dyd @param {CPtr} name @param {CInt} firstchar @returns {CPtr} */
+/** C ref: lparser.c:1941 — @param {CPtr<lua_State>} L @param {CPtr<ZIO>} z @param {CPtr<Mbuffer>} buff @param {CPtr<Dyndata>} dyd @param {CPtr<char>} name @param {CInt} firstchar @returns {CPtr<LClosure>} */
 export function* luaY_parser(L, z, buff, dyd, name, firstchar) {
     let lexstate = cptr.alloc(112);
     let funcstate = cptr.alloc(72);

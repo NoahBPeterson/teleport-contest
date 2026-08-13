@@ -54,7 +54,7 @@ export function free_rect() {
     n_rects = (rect_cnt = 0);
 }
 
-/** C ref: rect.c:60 — @param {CPtr} r @returns {CInt} */
+/** C ref: rect.c:60 — @param {CPtr<NhRect>} r @returns {CInt} */
 export function get_rect_ind(r) {
     let rectp;
     let lx;
@@ -72,7 +72,7 @@ export function get_rect_ind(r) {
     return -1;
 }
 
-/** C ref: rect.c:82 — @param {CPtr} r @returns {CPtr} */
+/** C ref: rect.c:82 — @param {CPtr<NhRect>} r @returns {CPtr<NhRect>} */
 export function get_rect(r) {
     let rectp;
     let lx;
@@ -90,12 +90,12 @@ export function get_rect(r) {
     return null;
 }
 
-/** C ref: rect.c:104 @returns {CPtr} */
+/** C ref: rect.c:104 @returns {CPtr<NhRect>} */
 export function rnd_rect() {
     return rect_cnt > 0 ? cptr.add(rect, (rng_log_enabled() ? (rng_log_set_caller(__sl1, 106, __sl2), rn2(rect_cnt)) : rn2(rect_cnt)), 8) : null;
 }
 
-/** C ref: rect.c:116 — @param {CPtr} r1 @param {CPtr} r2 @param {CPtr} r3 @returns {CInt} */
+/** C ref: rect.c:116 — @param {CPtr<NhRect>} r1 @param {CPtr<NhRect>} r2 @param {CPtr<NhRect>} r3 @returns {CInt} */
 function intersect(r1, r2, r3) {
     if (cptr.ldI16(r2) > cptr.ldI16o(r1, $NhRect_hx) || cptr.ldI16o(r2, $NhRect_ly) > cptr.ldI16o(r1, $NhRect_hy) || cptr.ldI16o(r2, $NhRect_hx) < cptr.ldI16(r1) || cptr.ldI16o(r2, $NhRect_hy) < cptr.ldI16o(r1, $NhRect_ly))
         return 0;
@@ -108,7 +108,7 @@ function intersect(r1, r2, r3) {
     return 1;
 }
 
-/** C ref: rect.c:134 — @param {*} r1 @param {*} r2 @param {CPtr} r3 */
+/** C ref: rect.c:134 — @param {*} r1 @param {*} r2 @param {CPtr<NhRect>} r3 */
 export function rect_bounds(r1, r2, r3) {
     r1 = cptr.dup(r1, 8); // by-value struct param
     r2 = cptr.dup(r2, 8); // by-value struct param
@@ -118,7 +118,7 @@ export function rect_bounds(r1, r2, r3) {
     cptr.stI16o(r3, $NhRect_hy, i16(max(cptr.ldI16o(r1, $nhrect_hy), cptr.ldI16o(r2, $nhrect_hy))));
 }
 
-/** C ref: rect.c:147 — @param {CPtr} r */
+/** C ref: rect.c:147 — @param {CPtr<NhRect>} r */
 export function remove_rect(r) {
     let ind;
     ind = get_rect_ind(r);
@@ -126,7 +126,7 @@ export function remove_rect(r) {
         cptr.memcpy(cptr.add(rect, ind, 8), cptr.add(rect, --rect_cnt, 8), 8);
 }
 
-/** C ref: rect.c:161 — @param {CPtr} r */
+/** C ref: rect.c:161 — @param {CPtr<NhRect>} r */
 export function add_rect(r) {
     if (rect_cnt >= n_rects) {
         impossible(__sl3);
@@ -138,7 +138,7 @@ export function add_rect(r) {
     rect_cnt++;
 }
 
-/** C ref: rect.c:182 — @param {CPtr} r1 @param {CPtr} r2 */
+/** C ref: rect.c:182 — @param {CPtr<NhRect>} r1 @param {CPtr<NhRect>} r2 */
 export function split_rects(r1, r2) {
     let r = cptr.alloc(8);
     let old_r = cptr.alloc(8);

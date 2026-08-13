@@ -2135,7 +2135,7 @@ export function decl_globals_init() {
 export let hands_obj = cptr.alloc(216);
 cptr.stPtr(hands_obj, null);
 
-/** C ref: decl.c:1199 — @param {CPtr} context_victual */
+/** C ref: decl.c:1199 — @param {CPtr<struct victual_info>} context_victual */
 export function sa_victual(context_victual) {
     return;
 }

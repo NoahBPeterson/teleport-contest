@@ -213,7 +213,7 @@ const __sl111 = cptr.lit("lltype=%ld\tname=%s\trole=%s\trace=%s\tgender=%s\talig
 
 const __static_nh_basename_basebuf = new Uint8Array(80); /** C ref: files.c:202 — char[80] (function-static) */
 
-/** C ref: files.c:199 — @param {CPtr} fname @param {CInt} keep_suffix @returns {CPtr} */
+/** C ref: files.c:199 — @param {CPtr<char>} fname @param {CInt} keep_suffix @returns {CPtr<char>} */
 export function nh_basename(fname, keep_suffix) {
     let p;
     if ((p = cptr.strrchr(fname, 47)) !== null)
@@ -231,7 +231,7 @@ export function nh_basename(fname, keep_suffix) {
 
 const __static_fname_encode_hexdigits = cptr.bytes("0123456789ABCDEF"); /** C ref: files.c:264 — char[17] (function-static) */
 
-/** C ref: files.c:255 — @param {CPtr} legal @param {CInt} quotechar @param {CPtr} s @param {CPtr} callerbuf @param {CInt} bufsz @returns {CPtr} */
+/** C ref: files.c:255 — @param {CPtr<char>} legal @param {CInt} quotechar @param {CPtr<char>} s @param {CPtr<char>} callerbuf @param {CInt} bufsz @returns {CPtr<char>} */
 export function fname_encode(legal, quotechar, s, callerbuf, bufsz) {
     let sp;
     let op;
@@ -262,7 +262,7 @@ export function fname_encode(legal, quotechar, s, callerbuf, bufsz) {
 
 const __static_fname_decode_hexdigits = cptr.bytes("0123456789ABCDEF"); /** C ref: files.c:309 — char[17] (function-static) */
 
-/** C ref: files.c:305 — @param {CInt} quotechar @param {CPtr} s @param {CPtr} callerbuf @param {CInt} bufsz @returns {CPtr} */
+/** C ref: files.c:305 — @param {CInt} quotechar @param {CPtr<char>} s @param {CPtr<char>} callerbuf @param {CInt} bufsz @returns {CPtr<char>} */
 export function fname_decode(quotechar, s, callerbuf, bufsz) {
     let sp;
     let op;
@@ -302,19 +302,19 @@ export function fname_decode(quotechar, s, callerbuf, bufsz) {
     return callerbuf;
 }
 
-/** C ref: files.c:354 — @param {CPtr} basenam @param {CInt} whichprefix @param {CInt} buffnum @returns {CPtr} */
+/** C ref: files.c:354 — @param {CPtr<char>} basenam @param {CInt} whichprefix @param {CInt} buffnum @returns {CPtr<char>} */
 export function fqname(basenam, whichprefix, buffnum) {
     return basenam;
 }
 
-/** C ref: files.c:394 — @param {CPtr} reasonbuf @returns {CInt} */
+/** C ref: files.c:394 — @param {CPtr<char>} reasonbuf @returns {CInt} */
 export function validate_prefix_locations(reasonbuf) {
     if (reasonbuf)
         cptr.st1o(reasonbuf, 0, 0);
     return 1;
 }
 
-/** C ref: files.c:444 — @param {CPtr} filename @param {CPtr} mode @param {CInt} prefix @returns {CPtr} */
+/** C ref: files.c:444 — @param {CPtr<char>} filename @param {CPtr<char>} mode @param {CInt} prefix @returns {CPtr<FILE>} */
 export function fopen_datafile(filename, mode, prefix) {
     let fp;
     filename = fqname(filename, prefix, prefix == NHM.TROUBLEPREFIX ? 3 : 0);
@@ -325,7 +325,7 @@ export function fopen_datafile(filename, mode, prefix) {
 /** C ref: files.c:457 — int */
 let bei = cptr.box(1);
 
-/** C ref: files.c:461 — @param {CPtr} nhfp */
+/** C ref: files.c:461 — @param {CPtr<NHFILE>} nhfp */
 export function init_nhfile(nhfp) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         if (cptr.ldI32(nhfp) != -1) {
@@ -355,7 +355,7 @@ export function init_nhfile(nhfp) {
     cptr.stPtro(nhfp, $NHFILE_nhfpconvert, null);
 }
 
-/** C ref: files.c:496 @returns {CPtr} */
+/** C ref: files.c:496 @returns {CPtr<NHFILE>} */
 function new_nhfile() {
     let nhfp = alloc(88);
     __builtin___memset_chk(nhfp, 0, 88n, __builtin_object_size(nhfp, 0));
@@ -363,7 +363,7 @@ function new_nhfile() {
     return nhfp;
 }
 
-/** C ref: files.c:509 — @param {CPtr} nhfp */
+/** C ref: files.c:509 — @param {CPtr<NHFILE>} nhfp */
 function free_nhfile(nhfp) {
     if (nhfp) {
         init_nhfile(nhfp);
@@ -371,7 +371,7 @@ function free_nhfile(nhfp) {
     }
 }
 
-/** C ref: files.c:518 — @param {CPtr} nhfp */
+/** C ref: files.c:518 — @param {CPtr<NHFILE>} nhfp */
 export function close_nhfile(nhfp) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel) && cptr.ldI32(nhfp) != -1)
         void nhclose(cptr.ldI32(nhfp)), cptr.stI32(nhfp, -1);
@@ -386,7 +386,7 @@ export function close_nhfile(nhfp) {
     free_nhfile(nhfp);
 }
 
-/** C ref: files.c:534 — @param {CPtr} nhfp */
+/** C ref: files.c:534 — @param {CPtr<NHFILE>} nhfp */
 export function rewind_nhfile(nhfp) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         void lseek(cptr.ldI32(nhfp), 0n, 0);
@@ -395,7 +395,7 @@ export function rewind_nhfile(nhfp) {
     }
 }
 
-/** C ref: files.c:549 — @param {CPtr} nhfp @returns {CPtr} */
+/** C ref: files.c:549 — @param {CPtr<NHFILE>} nhfp @returns {CPtr<NHFILE>} */
 function viable_nhfile(nhfp) {
     if (nhfp) {
         if (((cptr.ldI32(nhfp) == -1) && !cptr.ldPtro(nhfp, $NHFILE_fpdef)) || (cptr.ld1so(nhfp, $NHFILE_structlevel) && cptr.ldI32(nhfp) < 0) || (cptr.ld1so(nhfp, $NHFILE_fieldlevel) && !cptr.ldPtro(nhfp, $NHFILE_fpdef))) {
@@ -430,7 +430,7 @@ export function nhclose(fd) {
     return retval;
 }
 
-/** C ref: files.c:606 — @param {CPtr} file @param {CInt} lev */
+/** C ref: files.c:606 — @param {CPtr<char>} file @param {CInt} lev */
 export function set_levelfile_name(file, lev) {
     let tf;
     tf = cptr.strrchr(file, 46);
@@ -440,7 +440,7 @@ export function set_levelfile_name(file, lev) {
     return;
 }
 
-/** C ref: files.c:621 — @param {CInt} lev @param {CPtr} errbuf @returns {CPtr} */
+/** C ref: files.c:621 — @param {CInt} lev @param {CPtr<char>} errbuf @returns {CPtr<NHFILE>} */
 export function create_levelfile(lev, errbuf) {
     let fq_lock;
     let nhfp = null;
@@ -470,7 +470,7 @@ export function create_levelfile(lev, errbuf) {
     return nhfp;
 }
 
-/** C ref: files.c:673 — @param {CInt} lev @param {CPtr} errbuf @returns {CPtr} */
+/** C ref: files.c:673 — @param {CInt} lev @param {CPtr<char>} errbuf @returns {CPtr<NHFILE>} */
 export function open_levelfile(lev, errbuf) {
     let fq_lock;
     let nhfp = null;
@@ -520,12 +520,12 @@ export function clearlocks() {
         delete_levelfile(x);
 }
 
-/** C ref: files.c:755 — @param {CPtr} p @param {CPtr} q @returns {CInt} */
+/** C ref: files.c:755 — @param {CPtr<void>} p @param {CPtr<void>} q @returns {CInt} */
 function strcmp_wrap(p, q) {
     return strcmp(cptr.ldPtr(p), cptr.ldPtr(q));
 }
 
-/** C ref: files.c:769 — @param {CPtr} file @param {CPtr} lev @returns {CPtr} */
+/** C ref: files.c:769 — @param {CPtr<char>} file @param {CPtr<d_level>} lev @returns {CPtr<char>} */
 function set_bonesfile_name(file, lev) {
     let sptr;
     let dptr;
@@ -544,7 +544,7 @@ function set_bonesfile_name(file, lev) {
     return dptr;
 }
 
-/** C ref: files.c:818 @returns {CPtr} */
+/** C ref: files.c:818 @returns {CPtr<char>} */
 function set_bonestemp_name() {
     let tf;
     tf = cptr.strrchr(cptr.add(gl, $instance_globals_l_lock), 46);
@@ -554,7 +554,7 @@ function set_bonestemp_name() {
     return cptr.add(gl, $instance_globals_l_lock);
 }
 
-/** C ref: files.c:833 — @param {CPtr} lev @param {CPtr} bonesid @param {CPtr} errbuf @returns {CPtr} */
+/** C ref: files.c:833 — @param {CPtr<d_level>} lev @param {CPtr<char *>} bonesid @param {CPtr<char>} errbuf @returns {CPtr<NHFILE>} */
 export function create_bonesfile(lev, bonesid, errbuf) {
     let file;
     let nhfp = null;
@@ -592,7 +592,7 @@ export function create_bonesfile(lev, bonesid, errbuf) {
     return nhfp;
 }
 
-/** C ref: files.c:915 — @param {CPtr} lev */
+/** C ref: files.c:915 — @param {CPtr<d_level>} lev */
 export function commit_bonesfile(lev) {
     let fq_bones;
     let tempname;
@@ -606,7 +606,7 @@ export function commit_bonesfile(lev) {
         pline(__sl15, tempname, fq_bones);
 }
 
-/** C ref: files.c:940 — @param {CPtr} lev @param {CPtr} bonesid @returns {CPtr} */
+/** C ref: files.c:940 — @param {CPtr<d_level>} lev @param {CPtr<char *>} bonesid @returns {CPtr<NHFILE>} */
 export function open_bonesfile(lev, bonesid) {
     let fq_bones;
     let nhfp = null;
@@ -635,7 +635,7 @@ export function open_bonesfile(lev, bonesid) {
     return nhfp;
 }
 
-/** C ref: files.c:993 — @param {CPtr} lev @returns {CInt} */
+/** C ref: files.c:993 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function delete_bonesfile(lev) {
     let reslt;
     void set_bonesfile_name(cptr.add(gb, $instance_globals_b_bones), lev);
@@ -688,7 +688,7 @@ export function set_savefile_name(regularize_it) {
     }
 }
 
-/** C ref: files.c:1128 — @param {CPtr} nhfp */
+/** C ref: files.c:1128 — @param {CPtr<NHFILE>} nhfp */
 export function save_savefile_name(nhfp) {
     sfo_char(nhfp, cptr.add(gs, $instance_globals_s_SAVEF), __sl18, 54);
 }
@@ -698,7 +698,7 @@ export function set_error_savefile() {
     void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __sl19);
 }
 
-/** C ref: files.c:1159 @returns {CPtr} */
+/** C ref: files.c:1159 @returns {CPtr<NHFILE>} */
 export function create_savefile() {
     let fq_save;
     let nhfp = null;
@@ -725,7 +725,7 @@ export function create_savefile() {
     return nhfp;
 }
 
-/** C ref: files.c:1217 @returns {CPtr} */
+/** C ref: files.c:1217 @returns {CPtr<NHFILE>} */
 export function open_savefile() {
     let fq_save;
     let nhfp = null;
@@ -761,7 +761,7 @@ export function delete_savefile() {
     return 0;
 }
 
-/** C ref: files.c:1270 @returns {CPtr} */
+/** C ref: files.c:1270 @returns {CPtr<NHFILE>} */
 export function restore_saved_game() {
     let fq_save;
     let nhfp = null;
@@ -778,7 +778,7 @@ export function restore_saved_game() {
     return nhfp;
 }
 
-/** C ref: files.c:1299 @returns {CPtr} */
+/** C ref: files.c:1299 @returns {CPtr<NHFILE>} */
 export function get_freeing_nhfile() {
     let nhfp = null;
     nhfp = new_nhfile();
@@ -814,7 +814,7 @@ export function check_panic_save() {
     return result;
 }
 
-/** C ref: files.c:1357 — @param {CPtr} filename @param {CInt} without_wait_synch_per_file @returns {CPtr} */
+/** C ref: files.c:1357 — @param {CPtr<char>} filename @param {CInt} without_wait_synch_per_file @returns {CPtr<char>} */
 export function plname_from_file(filename, without_wait_synch_per_file) {
     let nhfp;
     let ln;
@@ -840,7 +840,7 @@ export function plname_from_file(filename, without_wait_synch_per_file) {
     return result;
 }
 
-/** C ref: files.c:1399 @returns {CPtr} */
+/** C ref: files.c:1399 @returns {CPtr<char *>} */
 export function get_saved_games() {
     let result = null;
     let n;
@@ -888,7 +888,7 @@ export function get_saved_games() {
     return result;
 }
 
-/** C ref: files.c:1543 — @param {CPtr} saved */
+/** C ref: files.c:1543 — @param {CPtr<char *>} saved */
 export function free_saved_games(saved) {
     if (saved) {
         let i;
@@ -898,7 +898,7 @@ export function free_saved_games(saved) {
     }
 }
 
-/** C ref: files.c:1563 — @param {CPtr} filename @param {CPtr} mode @param {CPtr} stream @param {CInt} uncomp */
+/** C ref: files.c:1563 — @param {CPtr<char>} filename @param {CPtr<char>} mode @param {CPtr<FILE>} stream @param {CInt} uncomp */
 function redirect(filename, mode, stream, uncomp) {
     if (freopen(filename, mode, stream) === null) {
         let details;
@@ -909,7 +909,7 @@ function redirect(filename, mode, stream, uncomp) {
     }
 }
 
-/** C ref: files.c:1591 — @param {CPtr} filename @param {CInt} uncomp */
+/** C ref: files.c:1591 — @param {CPtr<char>} filename @param {CInt} uncomp */
 function docompress_file(filename, uncomp) {
     let cfn = null;
     let xtra;
@@ -1001,12 +1001,12 @@ function docompress_file(filename, uncomp) {
     return;
 }
 
-/** C ref: files.c:1787 — @param {CPtr} filename */
+/** C ref: files.c:1787 — @param {CPtr<char>} filename */
 export function nh_compress(filename) {
     docompress_file(filename, 0);
 }
 
-/** C ref: files.c:1796 — @param {CPtr} filename */
+/** C ref: files.c:1796 — @param {CPtr<char>} filename */
 export function nh_uncompress(filename) {
     docompress_file(filename, 1);
 }
@@ -1036,7 +1036,7 @@ cptr.stPtro(sf2msg, 128 + $sfstatus_to_msg_msg, __sl42);
 cptr.stI32o(sf2msg, 144, NHM.SF_DM_MISMATCH);
 cptr.stPtro(sf2msg, 144 + $sfstatus_to_msg_msg, __sl43);
 
-/** C ref: files.c:2015 — @param {CInt} sfstatus @param {CPtr} savefilenm @returns {CPtr} */
+/** C ref: files.c:2015 — @param {CInt} sfstatus @param {CPtr<char>} savefilenm @returns {CPtr<NHFILE>} */
 function problematic_savefile(sfstatus, savefilenm) {
     let i;
     let nhfp = null;
@@ -1074,7 +1074,7 @@ let unconverted_filename = null;
 /** C ref: files.c:2056 — char * */
 let converted_filename = null;
 
-/** C ref: files.c:2062 — @param {CPtr} filename @param {CInt} sfstatus @param {CInt} unconvert @returns {CInt} */
+/** C ref: files.c:2062 — @param {CPtr<char>} filename @param {CInt} sfstatus @param {CInt} unconvert @returns {CInt} */
 function doconvert_file(filename, sfstatus, unconvert) {
     (void (filename));
     (void (sfstatus));
@@ -1082,17 +1082,17 @@ function doconvert_file(filename, sfstatus, unconvert) {
     return 1;
 }
 
-/** C ref: files.c:2072 — @param {CPtr} filename */
+/** C ref: files.c:2072 — @param {CPtr<char>} filename */
 export function nh_sfconvert(filename) {
     void doconvert_file(filename, 0, 0);
 }
 
-/** C ref: files.c:2079 — @param {CPtr} filename */
+/** C ref: files.c:2079 — @param {CPtr<char>} filename */
 export function nh_sfunconvert(filename) {
     void doconvert_file(filename, 0, 1);
 }
 
-/** C ref: files.c:2090 — @param {CPtr} filename @returns {CInt} */
+/** C ref: files.c:2090 — @param {CPtr<char>} filename @returns {CInt} */
 function make_converted_name(filename) {
     let ln;
     let xtra;
@@ -1132,7 +1132,7 @@ function make_converted_name(filename) {
     return 1;
 }
 
-/** C ref: files.c:2157 — @param {CPtr} basefilename @returns {CInt} */
+/** C ref: files.c:2157 — @param {CPtr<char>} basefilename @returns {CInt} */
 export function delete_convertedfile(basefilename) {
     if (!converted_filename)
         make_converted_name(basefilename);
@@ -1151,7 +1151,7 @@ export function free_convert_filenames() {
     cvtinit = 0;
 }
 
-/** C ref: files.c:2179 — @param {CPtr} s @returns {CInt} */
+/** C ref: files.c:2179 — @param {CPtr<char>} s @returns {CInt} */
 export function contains_directory(s) {
     let i;
     let slen = Number(BigInt.asIntN(32, cptr.strlen(s)));
@@ -1170,7 +1170,7 @@ let lockfd = -1;
 /** C ref: files.c:2204 — struct flock */
 let sflock = cptr.alloc(24);
 
-/** C ref: files.c:2255 — @param {CPtr} filename @param {CInt} whichprefix @param {CInt} retryct @returns {CInt} */
+/** C ref: files.c:2255 — @param {CPtr<char>} filename @param {CInt} whichprefix @param {CInt} retryct @returns {CInt} */
 export function lock_file(filename, whichprefix, retryct) {
     (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + 1)) - (1);
     if (cptr.ldI32o(gn, $instance_globals_n_nesting) > 1) {
@@ -1206,7 +1206,7 @@ export function lock_file(filename, whichprefix, retryct) {
     return 1;
 }
 
-/** C ref: files.c:2416 — @param {CPtr} filename */
+/** C ref: files.c:2416 — @param {CPtr<char>} filename */
 export function unlock_file(filename) {
     if (cptr.ldI32o(gn, $instance_globals_n_nesting) == 1) {
         cptr.stI16o(sflock, $flock_l_type, 2);
@@ -1220,7 +1220,7 @@ export function unlock_file(filename) {
     (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
 }
 
-/** C ref: files.c:2465 @returns {CPtr} */
+/** C ref: files.c:2465 @returns {CPtr<FILE>} */
 function fopen_wizkit_file() {
     let fp;
     let tmp_wizkit = new Uint8Array(256);
@@ -1253,7 +1253,7 @@ function fopen_wizkit_file() {
     return null;
 }
 
-/** C ref: files.c:2537 — @param {CPtr} obj */
+/** C ref: files.c:2537 — @param {CPtr<struct obj>} obj */
 function wizkit_addinv(obj) {
     if (!obj || cptr.eq(obj, hands_obj))
         return;
@@ -1270,7 +1270,7 @@ function wizkit_addinv(obj) {
     }
 }
 
-/** C ref: files.c:2562 — @param {CPtr} buf @returns {CInt} */
+/** C ref: files.c:2562 — @param {CPtr<char>} buf @returns {CInt} */
 export function proc_wizkit_line(buf) {
     let otmp;
     if (cptr.strlen(buf) >= 256n)
@@ -1302,7 +1302,7 @@ export function read_wizkit() {
     return;
 }
 
-/** C ref: files.c:2611 @returns {CPtr} */
+/** C ref: files.c:2611 @returns {CPtr<FILE>} */
 function fopen_sym_file() {
     let fp;
     fp = fopen_datafile(__sl67, __sl21, NHM.HACKPREFIX);
@@ -1338,7 +1338,7 @@ export function read_sym_file(which_set) {
     return 1;
 }
 
-/** C ref: files.c:2689 — @param {CPtr} dir */
+/** C ref: files.c:2689 — @param {CPtr<char>} dir */
 export function check_recordfile(dir) {
     let fq_record;
     let fd;
@@ -1354,7 +1354,7 @@ export function check_recordfile(dir) {
     }
 }
 
-/** C ref: files.c:2801 — @param {CPtr} type @param {CPtr} reason */
+/** C ref: files.c:2801 — @param {CPtr<char>} type @param {CPtr<char>} reason */
 export function paniclog(type, reason) {
     let lfile;
     if (!cptr.ldI32o(program_state, $sinfo_in_paniclog)) {
@@ -1373,7 +1373,7 @@ export function paniclog(type, reason) {
     return;
 }
 
-/** C ref: files.c:2836 — @param {CPtr} filenm @param {CPtr} type @param {CPtr} reason */
+/** C ref: files.c:2836 — @param {CPtr<char>} filenm @param {CPtr<char>} type @param {CPtr<char>} reason */
 export function testinglog(filenm, type, reason) {
     let lfile;
     let fnbuf = new Uint8Array(256);
@@ -1400,7 +1400,7 @@ export function do_deferred_showpaths(code) {
     after_opt_showpaths(cptr.ldPtro(gd, $instance_globals_d_deferred_showpaths_dir));
 }
 
-/** C ref: files.c:3126 — @param {CPtr} filename @param {CInt} wildcards @returns {CInt} */
+/** C ref: files.c:3126 — @param {CPtr<char>} filename @param {CInt} wildcards @returns {CInt} */
 export function debugcore(filename, wildcards) {
     let debugfiles;
     let p;
@@ -1512,7 +1512,7 @@ function choose_passage(passagecnt, oid) {
     return res;
 }
 
-/** C ref: files.c:3474 — @param {CPtr} tribsection @param {CPtr} tribtitle @param {CInt} tribpassage @param {CPtr} nowin_buf @param {CInt} bufsz @param {CUInt} oid @returns {CInt} */
+/** C ref: files.c:3474 — @param {CPtr<char>} tribsection @param {CPtr<char>} tribtitle @param {CInt} tribpassage @param {CPtr<char>} nowin_buf @param {CInt} bufsz @param {CUInt} oid @returns {CInt} */
 export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bufsz, oid) {
     let fp;
     let line = new Uint8Array(256);
@@ -1653,13 +1653,13 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
     return grasped;
 }
 
-/** C ref: files.c:3648 — @param {CPtr} buf @param {CInt} bufsz @returns {CInt} */
+/** C ref: files.c:3648 — @param {CPtr<char>} buf @param {CInt} bufsz @returns {CInt} */
 export function Death_quote(buf, bufsz) {
     let death_oid = 1;
     return read_tribute(__sl107, __sl108, 0, buf, bufsz, death_oid);
 }
 
-/** C ref: files.c:3667 — @param {CLongLong} ll_type @param {CPtr} str */
+/** C ref: files.c:3667 — @param {CLongLong} ll_type @param {CPtr<char>} str */
 export function livelog_add(ll_type, str) {
     let livelogfile;
     let now;

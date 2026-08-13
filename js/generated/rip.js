@@ -53,7 +53,7 @@ cptr.stPtro(rip_txt, 104, __sl8);
 cptr.stPtro(rip_txt, 112, __sl9);
 cptr.stPtro(rip_txt, 120, null);
 
-/** C ref: rip.c:76 — @param {CInt} line @param {CPtr} text */
+/** C ref: rip.c:76 — @param {CInt} line @param {CPtr<char>} text */
 function center(line, text) {
     let ip;
     let op;

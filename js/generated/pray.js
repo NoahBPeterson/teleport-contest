@@ -564,7 +564,7 @@ function in_trouble() {
     return 0;
 }
 
-/** C ref: pray.c:288 @returns {CPtr} */
+/** C ref: pray.c:288 @returns {CPtr<struct obj>} */
 function worst_cursed_item() {
     let otmp;
     if (near_capacity() >= NHC.HVY_ENCUMBER) {
@@ -611,7 +611,7 @@ function worst_cursed_item() {
     return otmp;
 }
 
-/** C ref: pray.c:349 — @param {CPtr} otmp @param {CPtr} what */
+/** C ref: pray.c:349 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} what */
 function fix_curse_trouble(otmp, what) {
     if (!otmp) {
         impossible(__sl5);
@@ -974,7 +974,7 @@ function angrygods(resp_god) {
     return;
 }
 
-/** C ref: pray.c:788 — @param {CPtr} str */
+/** C ref: pray.c:788 — @param {CPtr<char>} str */
 function at_your_feet(str) {
     if (Blind())
         str = cptr.ldPtro(c_common_strings, $c_common_strings_c_Something);
@@ -1408,7 +1408,7 @@ function water_prayer(bless_water) {
     return schar((changed > 0n));
 }
 
-/** C ref: pray.c:1415 — @param {CInt} g_align @param {CPtr} words */
+/** C ref: pray.c:1415 — @param {CInt} g_align @param {CPtr<char>} words */
 function godvoice(g_align, words) {
     let quot = __sl20;
     if (words)
@@ -1432,7 +1432,7 @@ function gods_upset(g_align) {
     angrygods(g_align);
 }
 
-/** C ref: pray.c:1446 — @param {CPtr} otmp */
+/** C ref: pray.c:1446 — @param {CPtr<struct obj>} otmp */
 function consume_offering(otmp) {
     if (Hallucination())
         switch ((rng_log_enabled() ? (rng_log_set_caller(__sl16, 1449, __sl136), rn2(3)) : rn2(3))) {
@@ -1482,7 +1482,7 @@ export function desecrate_altar(highaltar, altaralign) {
 
 const __static_offer_real_amulet_cloud_of_smoke = cptr.bytes("A cloud of %s smoke surrounds you..."); /** C ref: pray.c:1532 — char[37] (function-static) */
 
-/** C ref: pray.c:1529 — @param {CPtr} otmp @param {CInt} altaralign */
+/** C ref: pray.c:1529 — @param {CPtr<struct obj>} otmp @param {CInt} altaralign */
 function offer_real_amulet(otmp, altaralign) {
     if (cptr.eq(uamul.v, otmp))
         Amulet_off();
@@ -1533,7 +1533,7 @@ function offer_negative_valued(highaltar, altaralign) {
     }
 }
 
-/** C ref: pray.c:1602 — @param {CPtr} otmp @param {CInt} highaltar @param {CInt} altaralign */
+/** C ref: pray.c:1602 — @param {CPtr<struct obj>} otmp @param {CInt} highaltar @param {CInt} altaralign */
 function offer_fake_amulet(otmp, highaltar, altaralign) {
     if (!highaltar && !(cptr.ldI32o(otmp, $obj_known) & 1)) {
         offer_too_soon(altaralign);
@@ -1555,7 +1555,7 @@ function offer_fake_amulet(otmp, highaltar, altaralign) {
     }
 }
 
-/** C ref: pray.c:1631 — @param {CPtr} otmp @param {CInt} altaralign */
+/** C ref: pray.c:1631 — @param {CPtr<struct obj>} otmp @param {CInt} altaralign */
 function offer_different_alignment_altar(otmp, altaralign) {
     if ((cptr.ldI32o(u, $you_ualign + $align_record) < 0) || (altaralign == -128 && In_hell(cptr.add(u, $you_uz)))) {
         if (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase) && altaralign != -128) {
@@ -1605,7 +1605,7 @@ function offer_different_alignment_altar(otmp, altaralign) {
     }
 }
 
-/** C ref: pray.c:1698 — @param {CPtr} otmp @param {CInt} highaltar @param {CInt} altaralign */
+/** C ref: pray.c:1698 — @param {CPtr<struct obj>} otmp @param {CInt} highaltar @param {CInt} altaralign */
 function sacrifice_your_race(otmp, highaltar, altaralign) {
     let pm;
     if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
@@ -1713,7 +1713,7 @@ function bestow_artifact(max_giftvalue) {
     return 0;
 }
 
-/** C ref: pray.c:1839 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: pray.c:1839 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function sacrifice_value(otmp) {
     let value = 0;
     if (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.PM_ACID_BLOB || (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= BigInt.asIntN(64, peek_at_iced_corpse_age(otmp) + 50n))) {
@@ -1760,7 +1760,7 @@ export function dosacrifice() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: pray.c:1899 — @param {CPtr} otmp @param {CInt} altaralign @returns {CInt} */
+/** C ref: pray.c:1899 — @param {CPtr<struct obj>} otmp @param {CInt} altaralign @returns {CInt} */
 function eval_offering(otmp, altaralign) {
     let ptr;
     let value;
@@ -1794,7 +1794,7 @@ function eval_offering(otmp, altaralign) {
     return value;
 }
 
-/** C ref: pray.c:1959 — @param {CPtr} otmp @param {CInt} highaltar @param {CInt} altaralign */
+/** C ref: pray.c:1959 — @param {CPtr<struct obj>} otmp @param {CInt} highaltar @param {CInt} altaralign */
 function offer_corpse(otmp, highaltar, altaralign) {
     let value;
     let ptr;
@@ -2057,7 +2057,7 @@ function prayer_done() {
     return 1;
 }
 
-/** C ref: pray.c:2347 — @param {CPtr} mtmp */
+/** C ref: pray.c:2347 — @param {CPtr<struct monst>} mtmp */
 function maybe_turn_mon_iter(mtmp) {
     if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) || dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > turn_undead_range)
         return;
@@ -2164,24 +2164,24 @@ export function altarmask_at(x, y) {
     return res;
 }
 
-/** C ref: pray.c:2507 @returns {CPtr} */
+/** C ref: pray.c:2507 @returns {CPtr<char>} */
 export function a_gname() {
     return a_gname_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 }
 
-/** C ref: pray.c:2514 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: pray.c:2514 — @param {CInt} x @param {CInt} y @returns {CPtr<char>} */
 export function a_gname_at(x, y) {
     if (!((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
         return null;
     return align_gname(((schar(((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))));
 }
 
-/** C ref: pray.c:2524 @returns {CPtr} */
+/** C ref: pray.c:2524 @returns {CPtr<char>} */
 export function u_gname() {
     return align_gname(cptr.ld1so(u, $you_ualign));
 }
 
-/** C ref: pray.c:2530 — @param {CInt} alignment @returns {CPtr} */
+/** C ref: pray.c:2530 — @param {CInt} alignment @returns {CPtr<char>} */
 export function align_gname(alignment) {
     let gnam;
     switch (alignment) {
@@ -2224,7 +2224,7 @@ cptr.stPtro(hallu_gods, 88, __sl275);
 cptr.stPtro(hallu_gods, 96, __sl276);
 cptr.stPtro(hallu_gods, 104, __sl277);
 
-/** C ref: pray.c:2577 — @param {CInt} alignment @returns {CPtr} */
+/** C ref: pray.c:2577 — @param {CInt} alignment @returns {CPtr<char>} */
 export function halu_gname(alignment) {
     let gnam = null;
     let which;
@@ -2265,7 +2265,7 @@ export function halu_gname(alignment) {
     return gnam;
 }
 
-/** C ref: pray.c:2628 — @param {CInt} alignment @returns {CPtr} */
+/** C ref: pray.c:2628 — @param {CInt} alignment @returns {CPtr<char>} */
 export function align_gtitle(alignment) {
     let gnam;
     let result = __sl280;

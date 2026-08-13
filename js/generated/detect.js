@@ -303,7 +303,7 @@ function map_redisplay() {
         under_ground(2);
 }
 
-/** C ref: detect.c:106 — @param {CUInt} ter_typ @param {CPtr} ter_explain */
+/** C ref: detect.c:106 — @param {CUInt} ter_typ @param {CPtr<char>} ter_explain */
 function browse_map(ter_typ, ter_explain) {
     let dummy_pos = cptr.alloc(4);
     let save_autodescribe;
@@ -316,7 +316,7 @@ function browse_map(ter_typ, ter_explain) {
     cptr.st1o(iflags, $instance_flags_autodescribe, save_autodescribe);
 }
 
-/** C ref: detect.c:122 — @param {CPtr} mtmp @param {CInt} showtail */
+/** C ref: detect.c:122 — @param {CPtr<struct monst>} mtmp @param {CInt} showtail */
 function map_monst(mtmp, showtail) {
     let glyph = ((cptr.ld1so(def_monsyms, cptr.ld1so((cptr.ldPtro(mtmp, $monst_data)), $permonst_mlet), 24)) == 32) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(mtmp, $monst_mtame) ? (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((mtmp), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((mtmp), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
     show_glyph(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), glyph);
@@ -366,7 +366,7 @@ export function trapped_door_at(ttyp, x, y) {
     return 1;
 }
 
-/** C ref: detect.c:201 — @param {CPtr} obj @param {CInt} oclass @returns {CPtr} */
+/** C ref: detect.c:201 — @param {CPtr<struct obj>} obj @param {CInt} oclass @returns {CPtr<struct obj>} */
 export function o_in(obj, oclass) {
     let otmp;
     let temp;
@@ -382,7 +382,7 @@ export function o_in(obj, oclass) {
     return null;
 }
 
-/** C ref: detect.c:229 — @param {CPtr} obj @param {CUInt} material @returns {CPtr} */
+/** C ref: detect.c:229 — @param {CPtr<struct obj>} obj @param {CUInt} material @returns {CPtr<struct obj>} */
 export function o_material(obj, material) {
     let otmp;
     let temp;
@@ -398,7 +398,7 @@ export function o_material(obj, material) {
     return null;
 }
 
-/** C ref: detect.c:249 — @param {CPtr} obj */
+/** C ref: detect.c:249 — @param {CPtr<struct obj>} obj */
 function observe_recursively(obj) {
     let otmp;
     observe_object(obj);
@@ -459,7 +459,7 @@ function clear_stale_map(oclass, material) {
     return change_made;
 }
 
-/** C ref: detect.c:335 — @param {CPtr} sobj @returns {CInt} */
+/** C ref: detect.c:335 — @param {CPtr<struct obj>} sobj @returns {CInt} */
 export function gold_detect(sobj) {
     let obj;
     let mtmp;
@@ -581,7 +581,7 @@ export function gold_detect(sobj) {
     return 0;
 }
 
-/** C ref: detect.c:479 — @param {CPtr} sobj @returns {CInt} */
+/** C ref: detect.c:479 — @param {CPtr<struct obj>} sobj @returns {CInt} */
 export function food_detect(sobj) {
     let obj;
     let mtmp;
@@ -688,7 +688,7 @@ export function food_detect(sobj) {
     return 0;
 }
 
-/** C ref: detect.c:603 — @param {CPtr} detector @param {CInt} class @returns {CInt} */
+/** C ref: detect.c:603 — @param {CPtr<struct obj>} detector @param {CInt} class @returns {CInt} */
 export function object_detect(detector, class$) {
     let x;
     let y;
@@ -835,7 +835,7 @@ export function object_detect(detector, class$) {
     return 0;
 }
 
-/** C ref: detect.c:798 — @param {CPtr} otmp @param {CInt} mclass @returns {CInt} */
+/** C ref: detect.c:798 — @param {CPtr<struct obj>} otmp @param {CInt} mclass @returns {CInt} */
 export function monster_detect(otmp, mclass) {
     let mtmp;
     let mcnt = 0;
@@ -883,7 +883,7 @@ export function monster_detect(otmp, mclass) {
     return 0;
 }
 
-/** C ref: detect.c:865 — @param {CPtr} trap @param {CInt} x @param {CInt} y @param {CInt} src_cursed */
+/** C ref: detect.c:865 — @param {CPtr<struct trap>} trap @param {CInt} x @param {CInt} y @param {CInt} src_cursed */
 function sense_trap(trap, x, y, src_cursed) {
     if (Hallucination() || src_cursed) {
         let obj = cptr.alloc(216);
@@ -910,7 +910,7 @@ function sense_trap(trap, x, y, src_cursed) {
     }
 }
 
-/** C ref: detect.c:907 — @param {CPtr} objlist @param {CInt} show_them @param {CInt} how @param {CPtr} ft @returns {CInt} */
+/** C ref: detect.c:907 — @param {CPtr<struct obj>} objlist @param {CInt} show_them @param {CInt} how @param {CPtr<struct found_things>} ft @returns {CInt} */
 function detect_obj_traps(objlist, show_them, how, ft) {
     let otmp;
     let x = cptr.box(0);
@@ -987,7 +987,7 @@ function display_trap_map(cursed_src) {
     map_redisplay();
 }
 
-/** C ref: detect.c:1011 — @param {CPtr} sobj @returns {CInt} */
+/** C ref: detect.c:1011 — @param {CPtr<struct obj>} sobj @returns {CInt} */
 export function trap_detect(sobj) {
     let ttmp;
     let mon;
@@ -1093,7 +1093,7 @@ function furniture_detect() {
     return 0;
 }
 
-/** C ref: detect.c:1142 — @param {CPtr} where @returns {CPtr} */
+/** C ref: detect.c:1142 — @param {CPtr<d_level>} where @returns {CPtr<char>} */
 export function level_distance(where) {
     let ll = schar(((depth(cptr.add(u, $you_uz)) - depth(where)) | 0));
     let indun = schar((cptr.ldI16o(u, $you_uz) == cptr.ldI16(where)));
@@ -1150,7 +1150,7 @@ cptr.stPtro(level_detects, 32 + $crystalballlevels_where, cptr.add(svd, $instanc
 cptr.stPtro(level_detects, 48, __sl65);
 cptr.stPtro(level_detects, 48 + $crystalballlevels_where, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level));
 
-/** C ref: detect.c:1206 — @param {CPtr} optr */
+/** C ref: detect.c:1206 — @param {CPtr<struct obj *>} optr */
 export function use_crystal_ball(optr) {
     let ch;
     let oops;
@@ -1343,7 +1343,7 @@ export function do_mapping() {
     exercise(NHC.A_WIS, 1);
 }
 
-/** C ref: detect.c:1448 — @param {CPtr} sobj */
+/** C ref: detect.c:1448 — @param {CPtr<struct obj>} sobj */
 export function do_vicinity_map(sobj) {
     let zx;
     let zy;
@@ -1421,7 +1421,7 @@ export function do_vicinity_map(sobj) {
         docrt();
 }
 
-/** C ref: detect.c:1589 — @param {CPtr} lev */
+/** C ref: detect.c:1589 — @param {CPtr<struct rm>} lev */
 export function cvt_sdoor_to_door(lev) {
     let newmask = ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & -8;
     if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
@@ -1662,7 +1662,7 @@ export function detecting(func) {
     return schar((func === findone || func === openone ? 1 : 0));
 }
 
-/** C ref: detect.c:1935 — @param {CPtr} trap */
+/** C ref: detect.c:1935 — @param {CPtr<struct trap>} trap */
 export function find_trap(trap) {
     let cleared = 0;
     cptr.stI32o(trap, $trap_tseen, 1);
@@ -1682,7 +1682,7 @@ export function find_trap(trap) {
     }
 }
 
-/** C ref: detect.c:1965 — @param {CPtr} mtmp @param {CInt} via_warning @returns {CInt} */
+/** C ref: detect.c:1965 — @param {CPtr<struct monst>} mtmp @param {CInt} via_warning @returns {CInt} */
 function mfind0(mtmp, via_warning) {
     let x = cptr.ldI16o(mtmp, $monst_mx);
     let y = cptr.ldI16o(mtmp, $monst_my);

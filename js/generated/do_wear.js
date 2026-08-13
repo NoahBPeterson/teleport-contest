@@ -370,18 +370,18 @@ cptr.stI64o(takeoff_order, 96, 1024n);
 cptr.stI64o(takeoff_order, 104, 512n);
 cptr.stI64o(takeoff_order, 112, 0n);
 
-/** C ref: do_wear.c:60 — @param {CInt} check_gloves @returns {CPtr} */
+/** C ref: do_wear.c:60 — @param {CInt} check_gloves @returns {CPtr<char>} */
 export function fingers_or_gloves(check_gloves) {
     return ((check_gloves && uarmg.v) ? gloves_simple_name(uarmg.v) : makeplural(body_part(NHC.FINGER)));
 }
 
-/** C ref: do_wear.c:68 — @param {CPtr} otmp */
+/** C ref: do_wear.c:68 — @param {CPtr<struct obj>} otmp */
 export function off_msg(otmp) {
     if (cptr.ld1so(flags, $flag_verbose))
         You(__sl0, doname(otmp));
 }
 
-/** C ref: do_wear.c:76 — @param {CPtr} otmp */
+/** C ref: do_wear.c:76 — @param {CPtr<struct obj>} otmp */
 function on_msg(otmp) {
     if ((cptr.ldI64o(otmp, $obj_owornmask) & 458752n) != 0n || ((cptr.ldI64o(otmp, $obj_owornmask) & 524288n) != 0n && !cptr.ld1so(flags, $flag_verbose))) {
         prinv((null), otmp, 0n);
@@ -397,7 +397,7 @@ function on_msg(otmp) {
     }
 }
 
-/** C ref: do_wear.c:107 — @param {CPtr} obj @param {CLongLong} oldprop @param {CInt} on */
+/** C ref: do_wear.c:107 — @param {CPtr<struct obj>} obj @param {CLongLong} oldprop @param {CInt} on */
 function toggle_stealth(obj, oldprop, on) {
     if (on ? cptr.ld1so(gi, $instance_globals_i_initial_don) : cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
         return;
@@ -420,7 +420,7 @@ function toggle_stealth(obj, oldprop, on) {
     }
 }
 
-/** C ref: do_wear.c:148 — @param {CPtr} obj @param {CLongLong} oldprop @param {CInt} on */
+/** C ref: do_wear.c:148 — @param {CPtr<struct obj>} obj @param {CLongLong} oldprop @param {CInt} on */
 export function toggle_displacement(obj, oldprop, on) {
     if (on ? cptr.ld1so(gi, $instance_globals_i_initial_don) : cptr.ld1so(svc, $context_info_takeoff + $takeoff_info_cancelled_don))
         return;
@@ -732,7 +732,7 @@ export function Helmet_off() {
     return 0;
 }
 
-/** C ref: do_wear.c:568 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_wear.c:568 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function hard_helmet(obj) {
     if (!obj || !is_helmet(obj))
         return 0;
@@ -766,7 +766,7 @@ function Gloves_on() {
     return 0;
 }
 
-/** C ref: do_wear.c:608 — @param {CPtr} obj @param {CPtr} how @param {CInt} voluntary */
+/** C ref: do_wear.c:608 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} how @param {CInt} voluntary */
 export function wielding_corpse(obj, how, voluntary) {
     if (!obj || cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE || uarmg.v)
         return;
@@ -899,7 +899,7 @@ export function Shirt_off() {
     return 0;
 }
 
-/** C ref: do_wear.c:798 — @param {CPtr} otmp @param {CInt} puton @param {CInt} on_purpose */
+/** C ref: do_wear.c:798 — @param {CPtr<struct obj>} otmp @param {CInt} puton @param {CInt} on_purpose */
 function dragon_armor_handling(otmp, puton, on_purpose) {
     if (!otmp)
         return;
@@ -1025,7 +1025,7 @@ export function Armor_gone() {
     return 0;
 }
 
-/** C ref: do_wear.c:963 — @param {CPtr} amul */
+/** C ref: do_wear.c:963 — @param {CPtr<struct obj>} amul */
 function Amulet_on(amul) {
     let on_msg_done = 0;
     remove_worn_item(amul, 0);
@@ -1211,7 +1211,7 @@ export function Amulet_off() {
     return;
 }
 
-/** C ref: do_wear.c:1193 — @param {CPtr} ring @param {CInt} observed */
+/** C ref: do_wear.c:1193 — @param {CPtr<struct obj>} ring @param {CInt} observed */
 function learnring(ring, observed) {
     let ringtype = cptr.ldI16o(ring, $obj_otyp);
     if (observed) {
@@ -1227,7 +1227,7 @@ function learnring(ring, observed) {
     }
 }
 
-/** C ref: do_wear.c:1223 — @param {CPtr} obj @param {CInt} which @param {CInt} val */
+/** C ref: do_wear.c:1223 — @param {CPtr<struct obj>} obj @param {CInt} which @param {CInt} val */
 function adjust_attrib(obj, which, val) {
     let old_attrib;
     let observable;
@@ -1239,7 +1239,7 @@ function adjust_attrib(obj, which, val) {
     cptr.st1(disp, 1);
 }
 
-/** C ref: do_wear.c:1242 — @param {CPtr} obj */
+/** C ref: do_wear.c:1242 — @param {CPtr<struct obj>} obj */
 export function Ring_on(obj) {
     let oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_oprop), 24, $you_uprops);
     let observable;
@@ -1330,7 +1330,7 @@ export function Ring_on(obj) {
     }
 }
 
-/** C ref: do_wear.c:1347 — @param {CPtr} obj @param {CInt} gone */
+/** C ref: do_wear.c:1347 — @param {CPtr<struct obj>} obj @param {CInt} gone */
 function Ring_off_or_gone(obj, gone) {
     let mask = (cptr.ldI64o(obj, $obj_owornmask) & 393216n);
     let observable;
@@ -1421,17 +1421,17 @@ function Ring_off_or_gone(obj, gone) {
     }
 }
 
-/** C ref: do_wear.c:1449 — @param {CPtr} obj */
+/** C ref: do_wear.c:1449 — @param {CPtr<struct obj>} obj */
 export function Ring_off(obj) {
     Ring_off_or_gone(obj, 0);
 }
 
-/** C ref: do_wear.c:1455 — @param {CPtr} obj */
+/** C ref: do_wear.c:1455 — @param {CPtr<struct obj>} obj */
 export function Ring_gone(obj) {
     Ring_off_or_gone(obj, 1);
 }
 
-/** C ref: do_wear.c:1461 — @param {CPtr} otmp */
+/** C ref: do_wear.c:1461 — @param {CPtr<struct obj>} otmp */
 export function Blindf_on(otmp) {
     let already_blind = schar(((cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked) ? 1 : 0));
     let changed = 0;
@@ -1457,7 +1457,7 @@ export function Blindf_on(otmp) {
     }
 }
 
-/** C ref: do_wear.c:1495 — @param {CPtr} otmp */
+/** C ref: do_wear.c:1495 — @param {CPtr<struct obj>} otmp */
 export function Blindf_off(otmp) {
     let was_blind = schar(((cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops)) && !cptr.ldI64o2(u, NHC.BLINDED, 24, $you_uprops + $prop_blocked) ? 1 : 0));
     let changed = 0;
@@ -1493,7 +1493,7 @@ export function Blindf_off(otmp) {
     }
 }
 
-/** C ref: do_wear.c:1539 — @param {CPtr} obj */
+/** C ref: do_wear.c:1539 — @param {CPtr<struct obj>} obj */
 export function set_wear(obj) {
     cptr.st1o(gi, $instance_globals_i_initial_don, schar((!obj)));
     if (!obj ? ublindf.v !== null : (cptr.eq(obj, ublindf.v)))
@@ -1521,7 +1521,7 @@ export function set_wear(obj) {
     cptr.st1o(gi, $instance_globals_i_initial_don, 0);
 }
 
-/** C ref: do_wear.c:1574 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: do_wear.c:1574 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function donning(otmp) {
     let result = 0;
     if (doffing(otmp))
@@ -1543,7 +1543,7 @@ export function donning(otmp) {
     return result;
 }
 
-/** C ref: do_wear.c:1603 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: do_wear.c:1603 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function doffing(otmp) {
     let what = cptr.ldI64o(svc, $context_info_takeoff + $takeoff_info_what);
     let result = 0;
@@ -1578,7 +1578,7 @@ export function doffing(otmp) {
     return result;
 }
 
-/** C ref: do_wear.c:1645 — @param {CPtr} obj @param {CLongLong} slotmask */
+/** C ref: do_wear.c:1645 — @param {CPtr<struct obj>} obj @param {CLongLong} slotmask */
 export function cancel_doff(obj, slotmask) {
     if (!(cptr.ldI64o(svc, $context_info_takeoff) & 536870912n) && donning(obj))
         cancel_don();
@@ -1595,7 +1595,7 @@ export function cancel_don() {
     cptr.stI64o(svc, $context_info_takeoff + $takeoff_info_what, 0n);
 }
 
-/** C ref: do_wear.c:1688 — @param {CPtr} stolenobj @returns {CInt} */
+/** C ref: do_wear.c:1688 — @param {CPtr<struct obj>} stolenobj @returns {CInt} */
 export function stop_donning(stolenobj) {
     let buf = new Uint8Array(256);
     let otmp;
@@ -1627,7 +1627,7 @@ let Narmorpieces = 0;
 /** C ref: do_wear.c:1729 — int */
 let Naccessories = 0;
 
-/** C ref: do_wear.c:1733 — @param {CPtr} which @param {CInt} accessorizing */
+/** C ref: do_wear.c:1733 — @param {CPtr<struct obj *>} which @param {CInt} accessorizing */
 function count_worn_stuff(which, accessorizing) {
     let otmp;
     Narmorpieces = (Naccessories = 0);
@@ -1708,7 +1708,7 @@ function count_worn_stuff(which, accessorizing) {
         cptr.stPtr(which, otmp);
 }
 
-/** C ref: do_wear.c:1771 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_wear.c:1771 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function armor_or_accessory_off(obj) {
     if (!(cptr.ldI64o(obj, $obj_owornmask) & 983167n)) {
         You(__sl86);
@@ -1797,7 +1797,7 @@ export function doremring() {
     return armor_or_accessory_off(otmp.v);
 }
 
-/** C ref: do_wear.c:1893 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: do_wear.c:1893 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function cursed(otmp) {
     if (!otmp) {
         impossible(__sl100);
@@ -1817,7 +1817,7 @@ export function cursed(otmp) {
 
 const __static_armoroff_offdelaybuf = new Uint8Array(60); /** C ref: do_wear.c:1922 — char[60] (function-static) */
 
-/** C ref: do_wear.c:1920 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: do_wear.c:1920 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function armoroff(otmp) {
     let delay = -cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_delay);
     let what = null;
@@ -1896,17 +1896,17 @@ export function armoroff(otmp) {
     return 1;
 }
 
-/** C ref: do_wear.c:2011 — @param {CPtr} cc */
+/** C ref: do_wear.c:2011 — @param {CPtr<char>} cc */
 function already_wearing(cc) {
     You(__sl110, cc, (cptr.eq(cc, cptr.decay(c_that_))) ? 33 : 46);
 }
 
-/** C ref: do_wear.c:2017 — @param {CPtr} cc1 @param {CPtr} cc2 */
+/** C ref: do_wear.c:2017 — @param {CPtr<char>} cc1 @param {CPtr<char>} cc2 */
 function already_wearing2(cc1, cc2) {
     You_cant(__sl111, cc1, cc2);
 }
 
-/** C ref: do_wear.c:2030 — @param {CPtr} otmp @param {CPtr} mask @param {CInt} noisy @returns {CInt} */
+/** C ref: do_wear.c:2030 — @param {CPtr<struct obj>} otmp @param {CPtr<long>} mask @param {CInt} noisy @returns {CInt} */
 export function canwearobj(otmp, mask, noisy) {
     let err = 0;
     let which;
@@ -2036,7 +2036,7 @@ export function canwearobj(otmp, mask, noisy) {
     return !err;
 }
 
-/** C ref: do_wear.c:2209 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_wear.c:2209 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function accessory_or_armor_on(obj) {
     obj = cptr.box(obj);
     let mask = cptr.box(0n);
@@ -2337,7 +2337,7 @@ export function glibr() {
     }
 }
 
-/** C ref: do_wear.c:2630 — @param {CPtr} victim @returns {CPtr} */
+/** C ref: do_wear.c:2630 — @param {CPtr<struct monst>} victim @returns {CPtr<struct obj>} */
 export function some_armor(victim) {
     let otmph;
     let otmp;
@@ -2361,7 +2361,7 @@ export function some_armor(victim) {
     return otmph;
 }
 
-/** C ref: do_wear.c:2657 — @param {CPtr} ring @param {CInt} otyp @returns {CPtr} */
+/** C ref: do_wear.c:2657 — @param {CPtr<struct obj>} ring @param {CInt} otyp @returns {CPtr<struct obj>} */
 export function stuck_ring(ring, otyp) {
     if (!cptr.eq(ring, uleft.v) && !cptr.eq(ring, uright.v)) {
         impossible(__sl169);
@@ -2382,14 +2382,14 @@ export function stuck_ring(ring, otyp) {
     return null;
 }
 
-/** C ref: do_wear.c:2687 @returns {CPtr} */
+/** C ref: do_wear.c:2687 @returns {CPtr<struct obj>} */
 export function unchanger() {
     if (uamul.v && cptr.ldI16o(uamul.v, $obj_otyp) == NHC.AMULET_OF_UNCHANGING)
         return uamul.v;
     return null;
 }
 
-/** C ref: do_wear.c:2696 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: do_wear.c:2696 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function select_off(otmp) {
     let why;
     let buf = new Uint8Array(256);
@@ -2495,7 +2495,7 @@ function select_off(otmp) {
     return 0;
 }
 
-/** C ref: do_wear.c:2824 @returns {CPtr} */
+/** C ref: do_wear.c:2824 @returns {CPtr<struct obj>} */
 function do_takeoff() {
     let otmp = null;
     let was_twoweap = cptr.ld1so(u, $you_twoweap);
@@ -2636,7 +2636,7 @@ function take_off() {
     return 1;
 }
 
-/** C ref: do_wear.c:2990 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: do_wear.c:2990 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function better_not_take_that_off(otmp) {
     let corpse = carrying_stoning_corpse();
     let buf = new Uint8Array(256);
@@ -2735,7 +2735,7 @@ function menu_remarm(retry) {
     return 0;
 }
 
-/** C ref: do_wear.c:3144 — @param {CPtr} wornarm */
+/** C ref: do_wear.c:3144 — @param {CPtr<struct obj>} wornarm */
 function wornarm_destroyed(wornarm) {
     let invobj;
     let nextobj;
@@ -2765,7 +2765,7 @@ function wornarm_destroyed(wornarm) {
     }
 }
 
-/** C ref: do_wear.c:3189 — @param {CPtr} armor @param {CPtr} atmp @param {CPtr} resisted @returns {CPtr} */
+/** C ref: do_wear.c:3189 — @param {CPtr<struct obj>} armor @param {CPtr<struct obj>} atmp @param {CPtr<boolean>} resisted @returns {CPtr<struct obj>} */
 function maybe_destroy_armor(armor, atmp, resisted) {
     if ((armor !== null) && (!atmp || cptr.eq(atmp, armor)) && ((cptr.st1(resisted, obj_resists(armor, 0, 90))) == 0)) {
         cptr.stI32o(armor, $obj_in_use, 1);
@@ -2774,7 +2774,7 @@ function maybe_destroy_armor(armor, atmp, resisted) {
     return null;
 }
 
-/** C ref: do_wear.c:3201 — @param {CPtr} atmp @returns {CInt} */
+/** C ref: do_wear.c:3201 — @param {CPtr<struct obj>} atmp @returns {CInt} */
 export function disintegrate_arm(atmp) {
     let otmp = null;
     let losing_gloves = 0;
@@ -2809,7 +2809,7 @@ export function disintegrate_arm(atmp) {
     return 1;
 }
 
-/** C ref: do_wear.c:3260 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: do_wear.c:3260 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function obj_erode_type(otmp) {
     if (is_flammable(otmp))
         return NHM.ERODE_BURN;
@@ -2866,7 +2866,7 @@ export function destroy_arm() {
     return ret;
 }
 
-/** C ref: do_wear.c:3319 — @param {CPtr} otmp @param {CInt} delta */
+/** C ref: do_wear.c:3319 — @param {CPtr<struct obj>} otmp @param {CInt} delta */
 export function adj_abon(otmp, delta) {
     if (uarmg.v && cptr.eq(uarmg.v, otmp) && cptr.ldI16o(otmp, $obj_otyp) == NHC.GAUNTLETS_OF_DEXTERITY) {
         if (delta) {
@@ -2887,7 +2887,7 @@ export function adj_abon(otmp, delta) {
 
 const __static_inaccessible_equipment_need_to_take_off_outer_armor = cptr.bytes("need to take off %s to %s %s."); /** C ref: do_wear.c:3348 — char[30] (function-static) */
 
-/** C ref: do_wear.c:3342 — @param {CPtr} obj @param {CPtr} verb @param {CInt} only_if_known_cursed @returns {CInt} */
+/** C ref: do_wear.c:3342 — @param {CPtr<struct obj>} obj @param {CPtr<char>} verb @param {CInt} only_if_known_cursed @returns {CInt} */
 export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
     let buf = new Uint8Array(256);
     let anycovering = schar((!only_if_known_cursed));
@@ -2926,7 +2926,7 @@ export function inaccessible_equipment(obj, verb, only_if_known_cursed) {
     return 0;
 }
 
-/** C ref: do_wear.c:3404 — @param {CPtr} obj @param {CInt} removing @param {CInt} accessory @returns {CInt} */
+/** C ref: do_wear.c:3404 — @param {CPtr<struct obj>} obj @param {CInt} removing @param {CInt} accessory @returns {CInt} */
 function equip_ok(obj, removing, accessory) {
     let is_worn;
     let dummymask = cptr.box(0n);
@@ -2950,27 +2950,27 @@ function equip_ok(obj, removing, accessory) {
     return NHC.GETOBJ_SUGGEST;
 }
 
-/** C ref: do_wear.c:3451 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_wear.c:3451 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function puton_ok(obj) {
     return equip_ok(obj, 0, 1);
 }
 
-/** C ref: do_wear.c:3458 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_wear.c:3458 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function remove_ok(obj) {
     return equip_ok(obj, 1, 1);
 }
 
-/** C ref: do_wear.c:3465 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_wear.c:3465 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function wear_ok(obj) {
     return equip_ok(obj, 0, 0);
 }
 
-/** C ref: do_wear.c:3472 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_wear.c:3472 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function takeoff_ok(obj) {
     return equip_ok(obj, 1, 0);
 }
 
-/** C ref: do_wear.c:3480 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do_wear.c:3480 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function any_worn_armor_ok(obj) {
     if (obj && (cptr.ldI64o(obj, $obj_owornmask) & 127n))
         return NHC.GETOBJ_SUGGEST;

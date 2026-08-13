@@ -62,7 +62,7 @@ let nh_qsort_size = 0n;
 /** C ref: hacklib.c:16 — int (*)( void *, void *) */
 let nh_qsort_cmp_fn = null;
 
-/** C ref: hacklib.c:19 — @param {CPtr} va @param {CPtr} vb @returns {CInt} */
+/** C ref: hacklib.c:19 — @param {CPtr<void>} va @param {CPtr<void>} vb @returns {CInt} */
 function nh_qsort_idx_cmp(va, vb) {
     let a = va;
     let b = vb;
@@ -74,7 +74,7 @@ function nh_qsort_idx_cmp(va, vb) {
     return (cptr.ldU64(a) > cptr.ldU64(b));
 }
 
-/** C ref: hacklib.c:36 — @param {CPtr} base @param {CLongLong} nmemb @param {CLongLong} size @param {CPtr} compar */
+/** C ref: hacklib.c:36 — @param {CPtr<void>} base @param {CLongLong} nmemb @param {CLongLong} size @param {CPtr} compar */
 export function nh_deterministic_qsort(base, nmemb, size, compar) {
     let bytes = base;
     let order;
@@ -124,7 +124,7 @@ export function lowc(c) {
     return schar(((65 <= c && c <= 90) ? (c | 32) : c));
 }
 
-/** C ref: hacklib.c:154 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:154 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function lcase(s) {
     let p;
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
@@ -133,7 +133,7 @@ export function lcase(s) {
     return s;
 }
 
-/** C ref: hacklib.c:166 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:166 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function ucase(s) {
     let p;
     for (p = s; cptr.ld1s(p); p = cptr.add(p, 1))
@@ -142,14 +142,14 @@ export function ucase(s) {
     return s;
 }
 
-/** C ref: hacklib.c:178 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:178 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function upstart(s) {
     if (s)
         cptr.st1(s, highc(cptr.ld1s(s)));
     return s;
 }
 
-/** C ref: hacklib.c:187 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:187 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function upwords(s) {
     let p;
     let space = 1;
@@ -165,7 +165,7 @@ export function upwords(s) {
     return s;
 }
 
-/** C ref: hacklib.c:206 — @param {CPtr} bp @returns {CPtr} */
+/** C ref: hacklib.c:206 — @param {CPtr<char>} bp @returns {CPtr<char>} */
 export function mungspaces(bp) {
     let c;
     let p;
@@ -186,7 +186,7 @@ export function mungspaces(bp) {
     return bp;
 }
 
-/** C ref: hacklib.c:228 — @param {CPtr} txt @returns {CPtr} */
+/** C ref: hacklib.c:228 — @param {CPtr<char>} txt @returns {CPtr<char>} */
 export function trimspaces(txt) {
     let end;
     while (cptr.ld1s(txt) == 32 || cptr.ld1s(txt) == 9)
@@ -197,7 +197,7 @@ export function trimspaces(txt) {
     return txt;
 }
 
-/** C ref: hacklib.c:244 — @param {CPtr} str @returns {CPtr} */
+/** C ref: hacklib.c:244 — @param {CPtr<char>} str @returns {CPtr<char>} */
 export function strip_newline(str) {
     let p = cptr.strrchr(str, 10);
     if (p) {
@@ -208,21 +208,21 @@ export function strip_newline(str) {
     return str;
 }
 
-/** C ref: hacklib.c:258 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:258 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function eos(s) {
     while (cptr.ld1s(s))
         s = cptr.add(s, 1);
     return s;
 }
 
-/** C ref: hacklib.c:267 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:267 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function c_eos(s) {
     while (cptr.ld1s(s))
         s = cptr.add(s, 1);
     return s;
 }
 
-/** C ref: hacklib.c:277 — @param {CPtr} str @param {CPtr} chkstr @param {CInt} caseblind @returns {CInt} */
+/** C ref: hacklib.c:277 — @param {CPtr<char>} str @param {CPtr<char>} chkstr @param {CInt} caseblind @returns {CInt} */
 export function str_start_is(str, chkstr, caseblind) {
     let t1;
     let t2;
@@ -241,7 +241,7 @@ export function str_start_is(str, chkstr, caseblind) {
     return 1;
 }
 
-/** C ref: hacklib.c:305 — @param {CPtr} str @param {CPtr} chkstr @returns {CInt} */
+/** C ref: hacklib.c:305 — @param {CPtr<char>} str @param {CPtr<char>} chkstr @returns {CInt} */
 export function str_end_is(str, chkstr) {
     let clen = Number(BigInt.asIntN(32, cptr.strlen(chkstr)));
     if (Number(BigInt.asIntN(32, cptr.strlen(str))) >= clen)
@@ -249,7 +249,7 @@ export function str_end_is(str, chkstr) {
     return 0;
 }
 
-/** C ref: hacklib.c:316 — @param {CPtr} str @returns {CInt} */
+/** C ref: hacklib.c:316 — @param {CPtr<char>} str @returns {CInt} */
 export function str_lines_maxlen(str) {
     let s1;
     let s2;
@@ -271,7 +271,7 @@ export function str_lines_maxlen(str) {
     return max_len;
 }
 
-/** C ref: hacklib.c:340 — @param {CPtr} s @param {CInt} c @returns {CPtr} */
+/** C ref: hacklib.c:340 — @param {CPtr<char>} s @param {CInt} c @returns {CPtr<char>} */
 export function strkitten(s, c) {
     let p = eos(s);
     cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), c);
@@ -279,7 +279,7 @@ export function strkitten(s, c) {
     return s;
 }
 
-/** C ref: hacklib.c:351 — @param {CPtr} dst @param {CPtr} src @param {CInt} n */
+/** C ref: hacklib.c:351 — @param {CPtr<char>} dst @param {CPtr<char>} src @param {CInt} n */
 export function copynchars(dst, src, n) {
     while (n > 0 && cptr.ld1s(src) != 0 && cptr.ld1s(src) != 10) {
         cptr.st1(cptr.postinc(() => dst, (v) => { dst = v; }), cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; })));
@@ -300,7 +300,7 @@ export function chrcasecpy(oc, nc) {
     return schar(nc);
 }
 
-/** C ref: hacklib.c:387 — @param {CPtr} dst @param {CPtr} src @returns {CPtr} */
+/** C ref: hacklib.c:387 — @param {CPtr<char>} dst @param {CPtr<char>} src @returns {CPtr<char>} */
 export function strcasecpy(dst, src) {
     let result = dst;
     let ic;
@@ -318,7 +318,7 @@ export function strcasecpy(dst, src) {
 
 const __static_s_suffix_buf = new Uint8Array(256); /** C ref: hacklib.c:411 — char[256] (function-static) */
 
-/** C ref: hacklib.c:409 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:409 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function s_suffix(s) {
     void cptr.strcpy(cptr.decay(__static_s_suffix_buf), s);
     if (!strncmpi(cptr.decay((__static_s_suffix_buf)), (__sl0), -1))
@@ -335,7 +335,7 @@ export function s_suffix(s) {
 const __static_ing_suffix_vowel = cptr.bytes("aeiouwy"); /** C ref: hacklib.c:429 — char[8] (function-static) */
 const __static_ing_suffix_buf = new Uint8Array(256); /** C ref: hacklib.c:430 — char[256] (function-static) */
 
-/** C ref: hacklib.c:427 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:427 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function ing_suffix(s) {
     let onoff = new Uint8Array(10);
     let p;
@@ -362,7 +362,7 @@ export function ing_suffix(s) {
     return cptr.decay(__static_ing_suffix_buf);
 }
 
-/** C ref: hacklib.c:464 — @param {CPtr} str @param {CPtr} buf @returns {CPtr} */
+/** C ref: hacklib.c:464 — @param {CPtr<char>} str @param {CPtr<char>} buf @returns {CPtr<char>} */
 export function xcrypt(str, buf) {
     let p;
     let q;
@@ -378,7 +378,7 @@ export function xcrypt(str, buf) {
     return buf;
 }
 
-/** C ref: hacklib.c:483 — @param {CPtr} s @returns {CInt} */
+/** C ref: hacklib.c:483 — @param {CPtr<char>} s @returns {CInt} */
 export function onlyspace(s) {
     for (; cptr.ld1s(s); s = cptr.add(s, 1))
         if (cptr.ld1s(s) != 32 && cptr.ld1s(s) != 9)
@@ -386,7 +386,7 @@ export function onlyspace(s) {
     return 1;
 }
 
-/** C ref: hacklib.c:493 — @param {CPtr} sbuf @returns {CPtr} */
+/** C ref: hacklib.c:493 — @param {CPtr<char>} sbuf @returns {CPtr<char>} */
 export function tabexpand(sbuf) {
     let buf = new Uint8Array(266);
     let bp;
@@ -415,7 +415,7 @@ export function tabexpand(sbuf) {
 const __static_visctrl_visctrl_bufs = (function () { const flat = new Uint8Array(5 * (5 * 1)); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * (5 * 1), (r + 1) * (5 * 1))); a.buf = flat; return a; })(); /** C ref: hacklib.c:535 — char[5][5] (function-static) */
 let __static_visctrl_nbuf = 0; /** C ref: hacklib.c:536 — int (function-static) */
 
-/** C ref: hacklib.c:533 — @param {CInt} c @returns {CPtr} */
+/** C ref: hacklib.c:533 — @param {CInt} c @returns {CPtr<char>} */
 export function visctrl(c) {
     let i = 0;
     let ccc = cptr.decay(__static_visctrl_visctrl_bufs[__static_visctrl_nbuf]);
@@ -438,7 +438,7 @@ export function visctrl(c) {
     return ccc;
 }
 
-/** C ref: hacklib.c:563 — @param {CPtr} bp @param {CPtr} stuff_to_strip @param {CPtr} orig @returns {CPtr} */
+/** C ref: hacklib.c:563 — @param {CPtr<char>} bp @param {CPtr<char>} stuff_to_strip @param {CPtr<char>} orig @returns {CPtr<char>} */
 export function stripchars(bp, stuff_to_strip, orig) {
     let i = 0;
     let s = bp;
@@ -453,7 +453,7 @@ export function stripchars(bp, stuff_to_strip, orig) {
     return bp;
 }
 
-/** C ref: hacklib.c:585 — @param {CPtr} s @returns {CPtr} */
+/** C ref: hacklib.c:585 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function stripdigits(s) {
     let s1;
     let s2;
@@ -464,7 +464,7 @@ export function stripdigits(s) {
     return s;
 }
 
-/** C ref: hacklib.c:600 — @param {CPtr} bp @param {CPtr} orig @param {CPtr} replacement @returns {CPtr} */
+/** C ref: hacklib.c:600 — @param {CPtr<char>} bp @param {CPtr<char>} orig @param {CPtr<char>} replacement @returns {CPtr<char>} */
 export function strsubst(bp, orig, replacement) {
     let found;
     let buf = new Uint8Array(256);
@@ -477,7 +477,7 @@ export function strsubst(bp, orig, replacement) {
     return bp;
 }
 
-/** C ref: hacklib.c:621 — @param {CPtr} inoutbuf @param {CPtr} orig @param {CPtr} replacement @param {CInt} n @returns {CInt} */
+/** C ref: hacklib.c:621 — @param {CPtr<char>} inoutbuf @param {CPtr<char>} orig @param {CPtr<char>} replacement @param {CInt} n @returns {CInt} */
 export function strNsubst(inoutbuf, orig, replacement, n) {
     let bp;
     let op;
@@ -510,7 +510,7 @@ export function strNsubst(inoutbuf, orig, replacement, n) {
     return rcount;
 }
 
-/** C ref: hacklib.c:665 — @param {CPtr} list @param {CPtr} word @param {CInt} wordlen @param {CInt} ignorecase @returns {CPtr} */
+/** C ref: hacklib.c:665 — @param {CPtr<char>} list @param {CPtr<char>} word @param {CInt} wordlen @param {CInt} ignorecase @returns {CPtr<char>} */
 export function findword(list, word, wordlen, ignorecase) {
     let p = list;
     while (p) {
@@ -525,7 +525,7 @@ export function findword(list, word, wordlen, ignorecase) {
     return null;
 }
 
-/** C ref: hacklib.c:689 — @param {CInt} n @returns {CPtr} */
+/** C ref: hacklib.c:689 — @param {CInt} n @returns {CPtr<char>} */
 export function ordin(n) {
     let dd = n % 10;
     return (dd == 0 || dd > 3 || (((n % 100) / 10) | 0) == 1) ? __sl12 : ((dd == 1) ? __sl13 : ((dd == 2) ? __sl14 : __sl15));
@@ -533,7 +533,7 @@ export function ordin(n) {
 
 const __static_sitoa_buf = new Uint8Array(13); /** C ref: hacklib.c:704 — char[13] (function-static) */
 
-/** C ref: hacklib.c:702 — @param {CInt} n @returns {CPtr} */
+/** C ref: hacklib.c:702 — @param {CInt} n @returns {CPtr<char>} */
 export function sitoa(n) {
     void cptr.sprintf(cptr.decay(__static_sitoa_buf), (n < 0) ? __sl16 : __sl17, n);
     return cptr.decay(__static_sitoa_buf);
@@ -581,7 +581,7 @@ export function online2(x0, y0, x1, y1) {
     return schar((!dy || !dx || dy == dx || dy == -dx ? 1 : 0));
 }
 
-/** C ref: hacklib.c:781 — @param {CPtr} s1 @param {CPtr} s2 @param {CInt} n @returns {CInt} */
+/** C ref: hacklib.c:781 — @param {CPtr<char>} s1 @param {CPtr<char>} s2 @param {CInt} n @returns {CInt} */
 export function strncmpi(s1, s2, n) {
     let t1;
     let t2;
@@ -598,7 +598,7 @@ export function strncmpi(s1, s2, n) {
     return 0;
 }
 
-/** C ref: hacklib.c:804 — @param {CPtr} str @param {CPtr} sub @returns {CPtr} */
+/** C ref: hacklib.c:804 — @param {CPtr<char>} str @param {CPtr<char>} sub @returns {CPtr<char>} */
 export function strstri(str, sub) {
     let s1;
     let s2;
@@ -629,7 +629,7 @@ export function strstri(str, sub) {
     return null;
 }
 
-/** C ref: hacklib.c:849 — @param {CPtr} s1 @param {CPtr} s2 @param {CPtr} ignore_chars @param {CInt} caseblind @returns {CInt} */
+/** C ref: hacklib.c:849 — @param {CPtr<char>} s1 @param {CPtr<char>} s2 @param {CPtr<char>} ignore_chars @param {CInt} caseblind @returns {CInt} */
 export function fuzzymatch(s1, s2, ignore_chars, caseblind) {
     let c1;
     let c2;
@@ -654,7 +654,7 @@ export function swapbits(val, bita, bitb) {
     return (val ^ ((tmp << bita) | (tmp << bitb)));
 }
 
-/** C ref: hacklib.c:918 — @param {CPtr} func @param {CInt} line @param {CPtr} str @param {CLongLong} size @param {CPtr} fmt */
+/** C ref: hacklib.c:918 — @param {CPtr<char>} func @param {CInt} line @param {CPtr<char>} str @param {CLongLong} size @param {CPtr<char>} fmt */
 export function nh_snprintf(func, line, str, size, fmt, ...__va) {
     let ap;
     let n;
@@ -666,7 +666,7 @@ export function nh_snprintf(func, line, str, size, fmt, ...__va) {
     }
 }
 
-/** C ref: hacklib.c:946 — @param {CInt} uval @param {CPtr} buffer @param {CLongLong} bufsz @returns {CInt} */
+/** C ref: hacklib.c:946 — @param {CInt} uval @param {CPtr<uint8>} buffer @param {CLongLong} bufsz @returns {CInt} */
 export function unicodeval_to_utf8str(uval, buffer, bufsz) {
     let b = buffer;
     if (bufsz < 5n)
@@ -695,7 +695,7 @@ export function unicodeval_to_utf8str(uval, buffer, bufsz) {
     return 1;
 }
 
-/** C ref: hacklib.c:986 — @param {CPtr} s1 @param {CPtr} s2 @returns {CInt} */
+/** C ref: hacklib.c:986 — @param {CPtr<char>} s1 @param {CPtr<char>} s2 @returns {CInt} */
 export function case_insensitive_comp(s1, s2) {
     let u1;
     let u2;
@@ -770,7 +770,7 @@ cptr.stPtro(dm, 160 + $datamodel_information_dmplatform, __sl26);
 
 let __static_datamodel_unknown = __sl27; /** C ref: hacklib.c:1049 — char * (function-static) */
 
-/** C ref: hacklib.c:1046 — @param {CInt} retidx @returns {CPtr} */
+/** C ref: hacklib.c:1046 — @param {CInt} retidx @returns {CPtr<char>} */
 export function datamodel(retidx) {
     let i;
     let j;
@@ -789,7 +789,7 @@ export function datamodel(retidx) {
 
 let __static_what_datamodel_is_this_unknown = __sl27; /** C ref: hacklib.c:1068 — char * (function-static) */
 
-/** C ref: hacklib.c:1064 — @param {CInt} retidx @param {CInt} szshort @param {CInt} szint @param {CInt} szlong @param {CInt} szll @param {CInt} szptr @returns {CPtr} */
+/** C ref: hacklib.c:1064 — @param {CInt} retidx @param {CInt} szshort @param {CInt} szint @param {CInt} szlong @param {CInt} szll @param {CInt} szptr @returns {CPtr<char>} */
 export function what_datamodel_is_this(retidx, szshort, szint, szlong, szll, szptr) {
     let i;
     for (i = 1; i < 5; ++i) {

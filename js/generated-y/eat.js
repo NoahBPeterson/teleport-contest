@@ -606,7 +606,7 @@ cptr.stPtr(zero_victual, null);
 /** C ref: eat.c:84 — int */
 let getobj_else = 0;
 
-/** C ref: eat.c:91 — @param {CPtr} obj @returns {CInt} */
+/** C ref: eat.c:91 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function is_edible(obj) {
     if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_unique) & 1))
         return 0;
@@ -740,7 +740,7 @@ export function* eatmupdate() {
     }
 }
 
-/** C ref: eat.c:217 — @param {CPtr} food @param {CInt} the_pfx @returns {CPtr} */
+/** C ref: eat.c:217 — @param {CPtr<struct obj>} food @param {CInt} the_pfx @returns {CPtr<char>} */
 function* food_xname(food, the_pfx) {
     let result;
     if (cptr.ldI16o(food, $obj_otyp) == NHC.CORPSE) {
@@ -755,7 +755,7 @@ function* food_xname(food, the_pfx) {
     return result;
 }
 
-/** C ref: eat.c:245 — @param {CPtr} food */
+/** C ref: eat.c:245 — @param {CPtr<struct obj>} food */
 function* choke(food) {
     if (cptr.ldI32o(u, $you_uhs) != NHC.SATIATED) {
         if (!food || cptr.ldI16o(food, $obj_otyp) != NHC.AMULET_OF_STRANGULATION)
@@ -838,7 +838,7 @@ export function* reset_eat() {
     return;
 }
 
-/** C ref: eat.c:325 — @param {CPtr} otmp @returns {CUInt} */
+/** C ref: eat.c:325 — @param {CPtr<struct obj>} otmp @returns {CUInt} */
 export function obj_nutrition(otmp) {
     let nut = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE) ? cptr.ldU16o2(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96, $permonst_cnutrit) : ((cptr.ldI32o(otmp, $obj_globby) & 1) | 0 ? cptr.ldI32o(otmp, $obj_owt) : cptr.ldU16o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_nutrition));
     return nut;
@@ -862,7 +862,7 @@ function adj_victual_nutrition() {
     return nut;
 }
 
-/** C ref: eat.c:360 — @param {CPtr} otmp @returns {CPtr} */
+/** C ref: eat.c:360 — @param {CPtr<struct obj>} otmp @returns {CPtr<struct obj>} */
 function* touchfood(otmp) {
     if (cptr.ldI64o(otmp, $obj_quan) > 1n) {
         if (!(cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
@@ -896,7 +896,7 @@ function* touchfood(otmp) {
     return otmp;
 }
 
-/** C ref: eat.c:396 — @param {CPtr} obj */
+/** C ref: eat.c:396 — @param {CPtr<struct obj>} obj */
 export function* food_disappears(obj) {
     if (cptr.eq(obj, cptr.ldPtro(svc, $context_info_victual)))
         cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);
@@ -904,7 +904,7 @@ export function* food_disappears(obj) {
         (yield* obj_stop_timers(obj));
 }
 
-/** C ref: eat.c:409 — @param {CPtr} old_obj @param {CPtr} new_obj */
+/** C ref: eat.c:409 — @param {CPtr<struct obj>} old_obj @param {CPtr<struct obj>} new_obj */
 export function food_substitution(old_obj, new_obj) {
     if (cptr.eq(old_obj, cptr.ldPtro(svc, $context_info_victual))) {
         cptr.stPtro(svc, $context_info_victual, new_obj);
@@ -1008,7 +1008,7 @@ function* done_eating(message) {
     cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);
 }
 
-/** C ref: eat.c:576 — @param {CPtr} pd */
+/** C ref: eat.c:576 — @param {CPtr<struct permonst>} pd */
 export function* eating_conducts(pd) {
     let ll_conduct = 0;
     if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_food, cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n)) - (1n))) {
@@ -1030,7 +1030,7 @@ export function* eating_conducts(pd) {
 
 const __static_eat_brains_brainlessness = cptr.bytes("brainlessness"); /** C ref: eat.c:699 — char[14] (function-static) */
 
-/** C ref: eat.c:603 — @param {CPtr} magr @param {CPtr} mdef @param {CInt} visflag @param {CPtr} dmg_p @returns {CInt} */
+/** C ref: eat.c:603 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} visflag @param {CPtr<int>} dmg_p @returns {CInt} */
 export function* eat_brains(magr, mdef, visflag, dmg_p) {
     let pd = cptr.ldPtro(mdef, $monst_data);
     let give_nutrit = 0;
@@ -1226,7 +1226,7 @@ export function* fix_petrification() {
     (yield* make_stoned(0n, cptr.decay(buf), 0, null));
 }
 
-/** C ref: eat.c:890 — @param {CInt} type @param {CPtr} ptr @returns {CInt} */
+/** C ref: eat.c:890 — @param {CInt} type @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function* intrinsic_possible(type, ptr) {
     let res = 0;
     switch (type) {
@@ -1379,7 +1379,7 @@ export function* intrinsic_possible(type, ptr) {
     return res;
 }
 
-/** C ref: eat.c:961 — @param {CInt} type @param {CPtr} ptr @returns {CInt} */
+/** C ref: eat.c:961 — @param {CInt} type @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function should_givit(type, ptr) {
     let chance;
     switch (type) {
@@ -1405,13 +1405,13 @@ export function should_givit(type, ptr) {
     return schar((cptr.ld1so(ptr, $permonst_mlevel) > (rng_log_enabled() ? (rng_log_set_caller(__sl27, 988, __sl90), rn2(chance)) : rn2(chance))));
 }
 
-/** C ref: eat.c:992 — @param {CInt} type @param {CPtr} ptr @returns {CInt} */
+/** C ref: eat.c:992 — @param {CInt} type @param {CPtr<struct permonst>} ptr @returns {CInt} */
 function temp_givit(type, ptr) {
     let chance = (type == NHC.STONE_RES) ? 6 : ((type == NHC.ACID_RES) ? 3 : 0);
     return schar((chance ? (cptr.ld1so(ptr, $permonst_mlevel) > (rng_log_enabled() ? (rng_log_set_caller(__sl27, 996, __sl91), rn2(chance)) : rn2(chance))) : 0));
 }
 
-/** C ref: eat.c:1003 — @param {CInt} type @param {CPtr} ptr */
+/** C ref: eat.c:1003 — @param {CInt} type @param {CPtr<struct permonst>} ptr */
 function* givit(type, ptr) {
     {
         if ((yield* debugcore(__sl27, 1))) {
@@ -1772,7 +1772,7 @@ function* cpostfx(pm) {
     return;
 }
 
-/** C ref: eat.c:1339 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: eat.c:1339 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function* corpse_intrinsic(ptr) {
     let conveys_STR = schar(((cptr.ldU64o((ptr), $permonst_mflags2) & 8192n) != 0n));
     let i;
@@ -1819,7 +1819,7 @@ export function* violated_vegetarian() {
     return;
 }
 
-/** C ref: eat.c:1389 — @param {CInt} alter_type @returns {CPtr} */
+/** C ref: eat.c:1389 — @param {CInt} alter_type @returns {CPtr<struct obj>} */
 function* costly_tin(alter_type) {
     let tin = cptr.ldPtro(svc, $context_info_tin);
     if ((cptr.ld1so((tin), $obj_where) == NHM.OBJ_INVENT) ? (cptr.ldI32o(tin, $obj_unpaid) & 1) | 0 : ((yield* costly_spot(cptr.ldI16o(tin, $obj_ox), cptr.ldI16o(tin, $obj_oy))) && !(cptr.ldI32o(tin, $obj_no_charge) & 1) ? 1 : 0)) {
@@ -1832,7 +1832,7 @@ function* costly_tin(alter_type) {
     return tin;
 }
 
-/** C ref: eat.c:1405 — @param {CPtr} s @param {CPtr} tinvariety @returns {CInt} */
+/** C ref: eat.c:1405 — @param {CPtr<char>} s @param {CPtr<int>} tinvariety @returns {CInt} */
 export function* tin_variety_txt(s, tinvariety) {
     let k;
     let l;
@@ -1849,7 +1849,7 @@ export function* tin_variety_txt(s, tinvariety) {
     return 0;
 }
 
-/** C ref: eat.c:1428 — @param {CPtr} obj @param {CInt} mnum @param {CPtr} buf */
+/** C ref: eat.c:1428 — @param {CPtr<struct obj>} obj @param {CInt} mnum @param {CPtr<char>} buf */
 export function tin_details(obj, mnum, buf) {
     let buf2 = new Uint8Array(256);
     if (!obj || !buf)
@@ -1877,7 +1877,7 @@ export function tin_details(obj, mnum, buf) {
     }
 }
 
-/** C ref: eat.c:1461 — @param {CPtr} obj @param {CInt} forcetype */
+/** C ref: eat.c:1461 — @param {CPtr<struct obj>} obj @param {CInt} forcetype */
 export function set_tin_variety(obj, forcetype) {
     let r;
     let mnum = cptr.ldI32o(obj, $obj_corpsenm);
@@ -1901,7 +1901,7 @@ export function set_tin_variety(obj, forcetype) {
     cptr.st1o(obj, $obj_spe, schar((-((r + 1) | 0))));
 }
 
-/** C ref: eat.c:1489 — @param {CPtr} obj @param {CInt} displ @returns {CInt} */
+/** C ref: eat.c:1489 — @param {CPtr<struct obj>} obj @param {CInt} displ @returns {CInt} */
 function tin_variety(obj, displ) {
     let r;
     let mnum = cptr.ldI32o(obj, $obj_corpsenm);
@@ -1922,7 +1922,7 @@ function tin_variety(obj, displ) {
     return r;
 }
 
-/** C ref: eat.c:1516 — @param {CPtr} tin */
+/** C ref: eat.c:1516 — @param {CPtr<struct obj>} tin */
 function* use_up_tin(tin) {
     if ((cptr.ld1so((tin), $obj_where) == NHM.OBJ_INVENT))
         (yield* useup(tin));
@@ -1932,7 +1932,7 @@ function* use_up_tin(tin) {
     cptr.stI32o(svc, $context_info_tin + $tin_info_o_id, 0);
 }
 
-/** C ref: eat.c:1528 — @param {CPtr} mesg */
+/** C ref: eat.c:1528 — @param {CPtr<char>} mesg */
 function* consume_tin(mesg) {
     let what;
     let which;
@@ -2068,7 +2068,7 @@ function* opentin() {
     return 0;
 }
 
-/** C ref: eat.c:1723 — @param {CPtr} otmp */
+/** C ref: eat.c:1723 — @param {CPtr<struct obj>} otmp */
 function* start_tin(otmp) {
     let mesg, tmp;
     let __go_no_opener = false;
@@ -2150,7 +2150,7 @@ export function* Hear_again() {
     return 0;
 }
 
-/** C ref: eat.c:1813 — @param {CPtr} obj @returns {CInt} */
+/** C ref: eat.c:1813 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* rottenfood(obj) {
     (yield* pline(__sl196, is_rottable(obj) ? __sl197 : __sl198, (yield* foodword(obj))));
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl27, 1817, __sl199), rn2(4)) : rn2(4))) {
@@ -2193,7 +2193,7 @@ cptr.stPtro(__static_eatcorpse_palatable_msgs, 16, __sl252);
 cptr.stPtro(__static_eatcorpse_palatable_msgs, 24, __sl253);
 cptr.stPtro(__static_eatcorpse_palatable_msgs, 32, __sl254); /** C ref: eat.c:1991 — char *[5] (function-static) */
 
-/** C ref: eat.c:1855 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: eat.c:1855 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* eatcorpse(otmp) {
     let retcode = 0;
     let tp = 0;
@@ -2299,7 +2299,7 @@ function* eatcorpse(otmp) {
 
 const __static_start_eating_msgbuf = new Uint8Array(256); /** C ref: eat.c:2025 — char[256] (function-static) */
 
-/** C ref: eat.c:2022 — @param {CPtr} otmp @param {CInt} already_partly_eaten */
+/** C ref: eat.c:2022 — @param {CPtr<struct obj>} otmp @param {CInt} already_partly_eaten */
 function* start_eating(otmp, already_partly_eaten) {
     let old_nomovemsg;
     let save_nomovemsg;
@@ -2366,18 +2366,18 @@ function* start_eating(otmp, already_partly_eaten) {
     set_occupation(eatfood, cptr.decay(__static_start_eating_msgbuf), 0n);
 }
 
-/** C ref: eat.c:2078 — @param {CPtr} glob @returns {CInt} */
+/** C ref: eat.c:2078 — @param {CPtr<struct obj>} glob @returns {CInt} */
 export function eating_glob(glob) {
     return schar((cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood && cptr.eq(glob, cptr.ldPtro(svc, $context_info_victual)) ? 1 : 0));
 }
 
-/** C ref: eat.c:2085 — @param {CPtr} mtmp */
+/** C ref: eat.c:2085 — @param {CPtr<struct monst>} mtmp */
 function* garlic_breath(mtmp) {
     if (olfaction(cptr.ldPtro(mtmp, $monst_data)) && dist2((cptr.ldI16o(mtmp, $monst_mx)), (cptr.ldI16o(mtmp, $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 7)
         (yield* monflee(mtmp, 0, 0, 0));
 }
 
-/** C ref: eat.c:2099 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: eat.c:2099 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* fprefx(otmp) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.EGG:
@@ -2500,12 +2500,12 @@ function bounded_increase(old, inc, typ) {
     return (old + inc) | 0;
 }
 
-/** C ref: eat.c:2258 — @param {CPtr} otmp */
+/** C ref: eat.c:2258 — @param {CPtr<struct obj>} otmp */
 function* accessory_has_effect(otmp) {
     (yield* pline(__sl289, (cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) ? __sl290 : __sl291));
 }
 
-/** C ref: eat.c:2265 — @param {CPtr} otmp */
+/** C ref: eat.c:2265 — @param {CPtr<struct obj>} otmp */
 function* eataccessory(otmp) {
     let typ = cptr.ldI16o(otmp, $obj_otyp);
     let oldprop;
@@ -2711,7 +2711,7 @@ cptr.stPtro(foodwords, 152, __sl325);
 cptr.stPtro(foodwords, 160, __sl326);
 cptr.stPtro(foodwords, 168, __sl327);
 
-/** C ref: eat.c:2498 — @param {CPtr} otmp @returns {CPtr} */
+/** C ref: eat.c:2498 — @param {CPtr<struct obj>} otmp @returns {CPtr<char>} */
 function* foodword(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS)
         return __sl312;
@@ -2720,7 +2720,7 @@ function* foodword(otmp) {
     return cptr.ldPtro(foodwords, (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_material) & 31), 8);
 }
 
-/** C ref: eat.c:2510 — @param {CPtr} otmp */
+/** C ref: eat.c:2510 — @param {CPtr<struct obj>} otmp */
 function* fpostfx(otmp) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.SPRIG_OF_WOLFSBANE:
@@ -2798,7 +2798,7 @@ function* fpostfx(otmp) {
     return;
 }
 
-/** C ref: eat.c:2627 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: eat.c:2627 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* edibility_prompts(otmp) {
     let buf = new Uint8Array(256);
     let foodsmell = new Uint8Array(256);
@@ -2854,7 +2854,7 @@ function* edibility_prompts(otmp) {
     return 0;
 }
 
-/** C ref: eat.c:2734 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: eat.c:2734 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function* doeat_nonfood(otmp) {
     let basenutrit;
     let ll_conduct = 0;
@@ -3092,14 +3092,14 @@ export function* doeat() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: eat.c:3088 — @param {CPtr} obj @returns {CInt} */
+/** C ref: eat.c:3088 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function tinopen_ok(obj) {
     if (obj && cptr.ldI16o(obj, $obj_otyp) == NHC.TIN)
         return NHC.GETOBJ_SUGGEST;
     return NHC.GETOBJ_EXCLUDE;
 }
 
-/** C ref: eat.c:3098 — @param {CPtr} obj @returns {CInt} */
+/** C ref: eat.c:3098 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* use_tin_opener(obj) {
     let otmp;
     let res = NHM.ECMD_OK;
@@ -3353,7 +3353,7 @@ export function* newuhs(incr) {
     }
 }
 
-/** C ref: eat.c:3517 — @param {CPtr} obj @returns {CInt} */
+/** C ref: eat.c:3517 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function eat_ok(obj) {
     if (!obj)
         return getobj_else ? NHC.GETOBJ_EXCLUDE_NONINVENT : NHC.GETOBJ_EXCLUDE;
@@ -3364,7 +3364,7 @@ function eat_ok(obj) {
     return NHC.GETOBJ_EXCLUDE_SELECTABLE;
 }
 
-/** C ref: eat.c:3539 — @param {CPtr} obj @returns {CInt} */
+/** C ref: eat.c:3539 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function offer_ok(obj) {
     if (!obj)
         return getobj_else ? NHC.GETOBJ_EXCLUDE_NONINVENT : NHC.GETOBJ_EXCLUDE;
@@ -3377,7 +3377,7 @@ function offer_ok(obj) {
     return NHC.GETOBJ_SUGGEST;
 }
 
-/** C ref: eat.c:3561 — @param {CPtr} obj @returns {CInt} */
+/** C ref: eat.c:3561 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function tin_ok(obj) {
     if (!obj)
         return getobj_else ? NHC.GETOBJ_EXCLUDE_NONINVENT : NHC.GETOBJ_EXCLUDE;
@@ -3388,7 +3388,7 @@ function tin_ok(obj) {
     return NHC.GETOBJ_SUGGEST;
 }
 
-/** C ref: eat.c:3579 — @param {CPtr} verb @param {CInt} corpsecheck @returns {CPtr} */
+/** C ref: eat.c:3579 — @param {CPtr<char>} verb @param {CInt} corpsecheck @returns {CPtr<struct obj>} */
 export function* floorfood(verb, corpsecheck) {
     let otmp;
     let qbuf = new Uint8Array(128);
@@ -3525,7 +3525,7 @@ export function* vomit() {
     }
 }
 
-/** C ref: eat.c:3788 — @param {CInt} base @param {CPtr} obj @returns {CInt} */
+/** C ref: eat.c:3788 — @param {CInt} base @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* eaten_stat(base, obj) {
     let uneaten_amt;
     let full_amount;
@@ -3539,7 +3539,7 @@ export function* eaten_stat(base, obj) {
     return (base < 1) ? 1 : base;
 }
 
-/** C ref: eat.c:3808 — @param {CPtr} obj @param {CInt} amt */
+/** C ref: eat.c:3808 — @param {CPtr<struct obj>} obj @param {CInt} amt */
 export function* consume_oeaten(obj, amt) {
     if (!obj_nutrition(obj)) {
         let itembuf = new Uint8Array(40);
@@ -3579,7 +3579,7 @@ export function* maybe_finished_meal(stopping) {
     return 0;
 }
 
-/** C ref: eat.c:3893 — @param {CPtr} corpse */
+/** C ref: eat.c:3893 — @param {CPtr<struct obj>} corpse */
 export function* cant_finish_meal(corpse) {
     if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood && cptr.eq(cptr.ldPtro(svc, $context_info_victual), corpse)) {
         cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);

@@ -192,7 +192,7 @@ let nonzero_black = 16777216n;
 let __static_to_custom_symset_entry_callback_glyphnag = 0; /** C ref: glyphs.c:84 — int (function-static) */
 let __static_to_custom_symset_entry_callback_colornag = 0; /** C ref: glyphs.c:97 — int (function-static) */
 
-/** C ref: glyphs.c:53 — @param {CInt} glyph @param {CPtr} findwhat */
+/** C ref: glyphs.c:53 — @param {CInt} glyph @param {CPtr<struct find_struct>} findwhat */
 function* to_custom_symset_entry_callback(glyph, findwhat) {
     let idx = cptr.ldI32o(gs, $instance_globals_s_symset_which_set);
     let utf8str = [0, 0, 0, 0, 0, 0];
@@ -220,7 +220,7 @@ function* to_custom_symset_entry_callback(glyph, findwhat) {
     }
 }
 
-/** C ref: glyphs.c:112 — @param {CPtr} op @param {CPtr} glyphptr @returns {CInt} */
+/** C ref: glyphs.c:112 — @param {CPtr<char>} op @param {CPtr<int>} glyphptr @returns {CInt} */
 export function* glyphrep_to_custom_map_entries(op, glyphptr) {
     cptr.memcpy(to_custom_symbol_find, zero_find, 64);
     let buf = new Uint8Array(256);
@@ -281,7 +281,7 @@ export function* glyphrep_to_custom_map_entries(op, glyphptr) {
     return reslt;
 }
 
-/** C ref: glyphs.c:184 — @param {CPtr} str @returns {CPtr} */
+/** C ref: glyphs.c:184 — @param {CPtr<char>} str @returns {CPtr<char>} */
 function fix_glyphname(str) {
     let c;
     for (c = str; cptr.ld1s(c); c = cptr.add(c, 1)) {
@@ -327,7 +327,7 @@ export function glyph_to_cmap(glyph) {
         return NHC.MAXPCHARS;
 }
 
-/** C ref: glyphs.c:234 — @param {CPtr} id @param {CPtr} findwhat @returns {CInt} */
+/** C ref: glyphs.c:234 — @param {CPtr<char>} id @param {CPtr<struct find_struct>} findwhat @returns {CInt} */
 function* glyph_find_core(id, findwhat) {
     let glyph;
     let do_callback;
@@ -423,7 +423,7 @@ export function free_glyphid_cache() {
     glyphid_cache = null;
 }
 
-/** C ref: glyphs.c:372 — @param {CInt} glyphnum @param {CPtr} id */
+/** C ref: glyphs.c:372 — @param {CInt} glyphnum @param {CPtr<char>} id */
 function* add_glyph_to_cache(glyphnum, id) {
     let hash = glyph_hash(id);
     let hash1 = (BigInt(hash >>> 0) & (BigInt.asUintN(64, glyphid_cache_size - 1n)));
@@ -440,7 +440,7 @@ function* add_glyph_to_cache(glyphnum, id) {
     (yield* panic(__sl6));
 }
 
-/** C ref: glyphs.c:395 — @param {CPtr} id @returns {CInt} */
+/** C ref: glyphs.c:395 — @param {CPtr<char>} id @returns {CInt} */
 function* find_glyph_in_cache(id) {
     let hash = glyph_hash(id);
     let hash1 = (BigInt(hash >>> 0) & (BigInt.asUintN(64, glyphid_cache_size - 1n)));
@@ -458,7 +458,7 @@ function* find_glyph_in_cache(id) {
     return -1;
 }
 
-/** C ref: glyphs.c:418 — @param {CInt} glyphnum @returns {CPtr} */
+/** C ref: glyphs.c:418 — @param {CInt} glyphnum @returns {CPtr<char>} */
 function find_glyphid_in_cache_by_glyphnum(glyphnum) {
     let idx;
     if (!glyphid_cache)
@@ -471,7 +471,7 @@ function find_glyphid_in_cache_by_glyphnum(glyphnum) {
     return null;
 }
 
-/** C ref: glyphs.c:435 — @param {CPtr} id @returns {*} */
+/** C ref: glyphs.c:435 — @param {CPtr<char>} id @returns {*} */
 function glyph_hash(id) {
     let hash = 0;
     let i;
@@ -491,14 +491,14 @@ export function glyphid_cache_status() {
     return schar((glyphid_cache !== null));
 }
 
-/** C ref: glyphs.c:458 — @param {CPtr} buf @returns {CInt} */
+/** C ref: glyphs.c:458 — @param {CPtr<char>} buf @returns {CInt} */
 export function* match_glyph(buf) {
     let workbuf = new Uint8Array(256);
     nh_snprintf(__sl7, 465, cptr.decay(workbuf), 256n, __sl5, buf);
     return (yield* glyphrep(cptr.decay(workbuf)));
 }
 
-/** C ref: glyphs.c:470 — @param {CPtr} op @returns {CInt} */
+/** C ref: glyphs.c:470 — @param {CPtr<char>} op @returns {CInt} */
 export function* glyphrep(op) {
     let reslt = 0;
     let glyph = cptr.box(NHC.MAX_GLYPH);
@@ -511,7 +511,7 @@ export function* glyphrep(op) {
     return 0;
 }
 
-/** C ref: glyphs.c:484 — @param {CPtr} customization_name @param {CInt} glyphidx @param {CUInt} nhcolor @param {*} which_set @returns {CInt} */
+/** C ref: glyphs.c:484 — @param {CPtr<char>} customization_name @param {CInt} glyphidx @param {CUInt} nhcolor @param {*} which_set @returns {CInt} */
 export function* add_custom_nhcolor_entry(customization_name, glyphidx, nhcolor, which_set) {
     let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, 128), NHC.custom_nhcolor, 32);
     let details;
@@ -648,7 +648,7 @@ function* shuffle_customizations() {
     }
 }
 
-/** C ref: glyphs.c:736 — @param {CPtr} customization_name @param {*} custtype @param {*} which_set @returns {CPtr} */
+/** C ref: glyphs.c:736 — @param {CPtr<char>} customization_name @param {*} custtype @param {*} which_set @returns {CPtr<struct customization_detail>} */
 export function find_matching_customization(customization_name, custtype, which_set) {
     let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, 128), custtype, 32);
     if ((cptr.ldI32o(gdc, $symset_customization_custtype) == custtype) && cptr.ldPtr(gdc) && (strcmp(customization_name, cptr.ldPtr(gdc)) == 0))
@@ -699,7 +699,7 @@ export function purge_custom_entries(which_set) {
     }
 }
 
-/** C ref: glyphs.c:797 — @param {CPtr} fp */
+/** C ref: glyphs.c:797 — @param {CPtr<FILE>} fp */
 export function* dump_all_glyphids(fp) {
     let dump_glyphid_find = cptr.alloc(64); cptr.memcpy(dump_glyphid_find, zero_find, 64);
     cptr.stI32(dump_glyphid_find, NHC.find_nothing);
@@ -765,7 +765,7 @@ cptr.stPtro(__static_parse_id_expl_texts, 48, __sl91);
 cptr.stPtro(__static_parse_id_expl_texts, 56, __sl92);
 cptr.stPtro(__static_parse_id_expl_texts, 64, __sl93); /** C ref: glyphs.c:1071 — char *[9] (function-static) */
 
-/** C ref: glyphs.c:824 — @param {CPtr} id @param {CPtr} findwhat @returns {CInt} */
+/** C ref: glyphs.c:824 — @param {CPtr<char>} id @param {CPtr<struct find_struct>} findwhat @returns {CInt} */
 function* parse_id(id, findwhat) {
     let fp = null;
     let i = 0;

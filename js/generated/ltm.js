@@ -110,7 +110,7 @@ cptr.stPtro(__static_luaT_init_luaT_eventname, 176, __sl32);
 cptr.stPtro(__static_luaT_init_luaT_eventname, 184, __sl33);
 cptr.stPtro(__static_luaT_init_luaT_eventname, 192, __sl34); /** C ref: ltm.c:39 — char *[25] (function-static) */
 
-/** C ref: ltm.c:38 — @param {CPtr} L */
+/** C ref: ltm.c:38 — @param {CPtr<lua_State>} L */
 export function luaT_init(L) {
     let i;
     for (i = 0; i < NHC.TM_N; i++) {
@@ -119,7 +119,7 @@ export function luaT_init(L) {
     }
 }
 
-/** C ref: ltm.c:60 — @param {CPtr} events @param {*} event @param {CPtr} ename @returns {CPtr} */
+/** C ref: ltm.c:60 — @param {CPtr<Table>} events @param {*} event @param {CPtr<TString>} ename @returns {CPtr<TValue>} */
 export function luaT_gettm(events, event, ename) {
     let tm = luaH_getshortstr(events, ename);
     (void 0);
@@ -130,7 +130,7 @@ export function luaT_gettm(events, event, ename) {
         return tm;
 }
 
-/** C ref: ltm.c:71 — @param {CPtr} L @param {CPtr} o @param {*} event @returns {CPtr} */
+/** C ref: ltm.c:71 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {*} event @returns {CPtr<TValue>} */
 export function luaT_gettmbyobj(L, o, event) {
     let mt;
     switch (((((cptr.ld1uo((o), $TValue_tt_))) & 15))) {
@@ -146,7 +146,7 @@ export function luaT_gettmbyobj(L, o, event) {
     return (mt ? luaH_getshortstr(mt, cptr.ldPtro2((cptr.ldPtro(L, $lua_State_l_G)), event, 8, $global_State_tmname)) : cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_nilvalue));
 }
 
-/** C ref: ltm.c:91 — @param {CPtr} L @param {CPtr} o @returns {CPtr} */
+/** C ref: ltm.c:91 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @returns {CPtr<char>} */
 export function luaT_objtypename(L, o) {
     let mt;
     if ((((cptr.ld1uo(((o)), $TValue_tt_)) == 69) && !cptr.eq((mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $Table_metatable)), (null))) || (((cptr.ld1uo(((o)), $TValue_tt_)) == 71) && !cptr.eq((mt = cptr.ldPtro(((((((cptr.ldPtr(((o))))))))), $Udata_metatable)), (null)))) {
@@ -157,7 +157,7 @@ export function luaT_objtypename(L, o) {
     return cptr.ldPtro(luaT_typenames_, ((((((cptr.ld1uo((o), $TValue_tt_))) & 15))) + 1) | 0, 8);
 }
 
-/** C ref: ltm.c:103 — @param {CPtr} L @param {CPtr} f @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} p3 */
+/** C ref: ltm.c:103 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} f @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr<TValue>} p3 */
 export function luaT_callTM(L, f, p1, p2, p3) {
     let func = cptr.ldPtro(L, $lua_State_top);
     {
@@ -203,7 +203,7 @@ export function luaT_callTM(L, f, p1, p2, p3) {
         luaD_callnoyield(L, func, 0);
 }
 
-/** C ref: ltm.c:119 — @param {CPtr} L @param {CPtr} f @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} res */
+/** C ref: ltm.c:119 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} f @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr} res */
 export function luaT_callTMres(L, f, p1, p2, res) {
     let result = (cptr.diff((((res))), (((cptr.ldPtro(L, $lua_State_stack))))));
     let func = cptr.ldPtro(L, $lua_State_top);
@@ -251,7 +251,7 @@ export function luaT_callTMres(L, f, p1, p2, res) {
     ;
 }
 
-/** C ref: ltm.c:137 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} res @param {*} event @returns {CInt} */
+/** C ref: ltm.c:137 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr} res @param {*} event @returns {CInt} */
 function callbinTM(L, p1, p2, res, event) {
     let tm = luaT_gettmbyobj(L, p1, event);
     if ((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0))
@@ -262,7 +262,7 @@ function callbinTM(L, p1, p2, res, event) {
     return 1;
 }
 
-/** C ref: ltm.c:148 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} res @param {*} event */
+/** C ref: ltm.c:148 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr} res @param {*} event */
 export function luaT_trybinTM(L, p1, p2, res, event) {
     if ((__builtin_expect(BigInt(((!callbinTM(L, p1, p2, res, event)) != 0)), 0n))) {
         switch (event) {
@@ -284,14 +284,14 @@ export function luaT_trybinTM(L, p1, p2, res, event) {
     }
 }
 
-/** C ref: ltm.c:167 — @param {CPtr} L */
+/** C ref: ltm.c:167 — @param {CPtr<lua_State>} L */
 export function luaT_tryconcatTM(L) {
     let top = cptr.ldPtro(L, $lua_State_top);
     if ((__builtin_expect(BigInt(((!callbinTM(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16))), cptr.add(top, -(2), 16), NHC.TM_CONCAT)) != 0)), 0n)))
         luaG_concaterror(L, ((cptr.add(top, -(2), 16))), ((cptr.add(top, -(1), 16))));
 }
 
-/** C ref: ltm.c:175 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 @param {CInt} flip @param {CPtr} res @param {*} event */
+/** C ref: ltm.c:175 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CInt} flip @param {CPtr} res @param {*} event */
 export function luaT_trybinassocTM(L, p1, p2, flip, res, event) {
     if (flip)
         luaT_trybinTM(L, p2, p1, res, event);
@@ -299,7 +299,7 @@ export function luaT_trybinassocTM(L, p1, p2, flip, res, event) {
         luaT_trybinTM(L, p1, p2, res, event);
 }
 
-/** C ref: ltm.c:184 — @param {CPtr} L @param {CPtr} p1 @param {CLongLong} i2 @param {CInt} flip @param {CPtr} res @param {*} event */
+/** C ref: ltm.c:184 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CLongLong} i2 @param {CInt} flip @param {CPtr} res @param {*} event */
 export function luaT_trybiniTM(L, p1, i2, flip, res, event) {
     let aux = cptr.alloc(16);
     {
@@ -311,7 +311,7 @@ export function luaT_trybiniTM(L, p1, i2, flip, res, event) {
     luaT_trybinassocTM(L, p1, aux, flip, res, event);
 }
 
-/** C ref: ltm.c:201 — @param {CPtr} L @param {CPtr} p1 @param {CPtr} p2 @param {*} event @returns {CInt} */
+/** C ref: ltm.c:201 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {*} event @returns {CInt} */
 export function luaT_callorderTM(L, p1, p2, event) {
     if (callbinTM(L, p1, p2, cptr.ldPtro(L, $lua_State_top), event))
         return !(((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_)) == 1) || (((((cptr.ld1uo(((((cptr.ldPtro(L, $lua_State_top))))), $TValue_tt_))) & 15)) == 0));
@@ -319,7 +319,7 @@ export function luaT_callorderTM(L, p1, p2, event) {
     return 0;
 }
 
-/** C ref: ltm.c:221 — @param {CPtr} L @param {CPtr} p1 @param {CInt} v2 @param {CInt} flip @param {CInt} isfloat @param {*} event @returns {CInt} */
+/** C ref: ltm.c:221 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CInt} v2 @param {CInt} flip @param {CInt} isfloat @param {*} event @returns {CInt} */
 export function luaT_callorderiTM(L, p1, v2, flip, isfloat, event) {
     let aux = cptr.alloc(16);
     let p2;
@@ -344,7 +344,7 @@ export function luaT_callorderiTM(L, p1, v2, flip, isfloat, event) {
     return luaT_callorderTM(L, p1, p2, event);
 }
 
-/** C ref: ltm.c:238 — @param {CPtr} L @param {CInt} nfixparams @param {CPtr} ci @param {CPtr} p */
+/** C ref: ltm.c:238 — @param {CPtr<lua_State>} L @param {CInt} nfixparams @param {CPtr<CallInfo>} ci @param {CPtr<Proto>} p */
 export function luaT_adjustvarargs(L, nfixparams, ci, p) {
     let i;
     let actual = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtr(ci)) / 16n))))) - 1) | 0;
@@ -384,7 +384,7 @@ export function luaT_adjustvarargs(L, nfixparams, ci, p) {
     (void 0);
 }
 
-/** C ref: ltm.c:258 — @param {CPtr} L @param {CPtr} ci @param {CPtr} where @param {CInt} wanted */
+/** C ref: ltm.c:258 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr} where @param {CInt} wanted */
 export function luaT_getvarargs(L, ci, where, wanted) {
     let i;
     let nextra = cptr.ldI32o(ci, $CallInfo_u + 12);

@@ -254,7 +254,7 @@ export function is_db_wall(x, y) {
     return schar((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DBWALL));
 }
 
-/** C ref: dbridge.c:180 — @param {CPtr} x @param {CPtr} y @returns {CInt} */
+/** C ref: dbridge.c:180 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @returns {CInt} */
 export function find_drawbridge(x, y) {
     let dir;
     if (((cptr.ld1so3(svl, cptr.ldI16(x), 756, cptr.ldI16(y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_UP || (cptr.ld1so3(svl, cptr.ldI16(x), 756, cptr.ldI16(y), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.DRAWBRIDGE_DOWN))
@@ -280,7 +280,7 @@ export function find_drawbridge(x, y) {
     return 0;
 }
 
-/** C ref: dbridge.c:211 — @param {CPtr} x @param {CPtr} y */
+/** C ref: dbridge.c:211 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y */
 function get_wall_for_db(x, y) {
     switch (((cptr.ldI32o3(svl, cptr.ldI16(x), 756, cptr.ldI16(y), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.DB_DIR) {
         case NHM.DB_NORTH:
@@ -347,7 +347,7 @@ export function* create_drawbridge(x, y, dir, flag) {
     return 1;
 }
 
-/** C ref: dbridge.c:286 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: dbridge.c:286 — @param {CInt} x @param {CInt} y @returns {CPtr<struct entity>} */
 function* e_at(x, y) {
     let entitycnt;
     for (entitycnt = 0; entitycnt < NHM.ENTITIES; entitycnt++)
@@ -363,7 +363,7 @@ function* e_at(x, y) {
     return (entitycnt == NHM.ENTITIES) ? null : cptr.add(cptr.add(go, $instance_globals_o_occupants), entitycnt, 24);
 }
 
-/** C ref: dbridge.c:304 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @param {CPtr} etmp */
+/** C ref: dbridge.c:304 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CPtr<struct entity>} etmp */
 function m_to_e(mtmp, x, y, etmp) {
     cptr.stPtr(etmp, mtmp);
     if (mtmp) {
@@ -379,7 +379,7 @@ function m_to_e(mtmp, x, y, etmp) {
     }
 }
 
-/** C ref: dbridge.c:321 — @param {CPtr} etmp */
+/** C ref: dbridge.c:321 — @param {CPtr<struct entity>} etmp */
 function u_to_e(etmp) {
     cptr.stPtr(etmp, cptr.add(gy, $instance_globals_y_youmonst));
     cptr.stI32o(etmp, $entity_ex, cptr.ldI16(u));
@@ -387,7 +387,7 @@ function u_to_e(etmp) {
     cptr.stPtro(etmp, $entity_edata, cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data));
 }
 
-/** C ref: dbridge.c:330 — @param {CInt} x @param {CInt} y @param {CPtr} etmp */
+/** C ref: dbridge.c:330 — @param {CInt} x @param {CInt} y @param {CPtr<struct entity>} etmp */
 function set_entity(x, y, etmp) {
     if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         u_to_e(etmp);
@@ -395,14 +395,14 @@ function set_entity(x, y, etmp) {
         m_to_e((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), x, y, etmp);
 }
 
-/** C ref: dbridge.c:351 — @param {CPtr} etmp @returns {CPtr} */
+/** C ref: dbridge.c:351 — @param {CPtr<struct entity>} etmp @returns {CPtr<char>} */
 function* e_nam(etmp) {
     return (cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? __sl3 : (yield* mon_nam(cptr.ldPtr(etmp)));
 }
 
 const __static_E_phrase_wholebuf = new Uint8Array(80); /** C ref: dbridge.c:363 — char[80] (function-static) */
 
-/** C ref: dbridge.c:361 — @param {CPtr} etmp @param {CPtr} verb @returns {CPtr} */
+/** C ref: dbridge.c:361 — @param {CPtr<struct entity>} etmp @param {CPtr<char>} verb @returns {CPtr<char>} */
 function* E_phrase(etmp, verb) {
     void cptr.strcpy(cptr.decay(__static_E_phrase_wholebuf), (cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? __sl4 : (yield* Monnam(cptr.ldPtr(etmp))));
     if (!verb || !cptr.ld1s(verb))
@@ -415,7 +415,7 @@ function* E_phrase(etmp, verb) {
     return cptr.decay(__static_E_phrase_wholebuf);
 }
 
-/** C ref: dbridge.c:380 — @param {CPtr} etmp @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: dbridge.c:380 — @param {CPtr<struct entity>} etmp @param {CInt} x @param {CInt} y @returns {CInt} */
 function e_survives_at(etmp, x, y) {
     if ((cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_GHOST))
         return 1;
@@ -428,7 +428,7 @@ function e_survives_at(etmp, x, y) {
     return 1;
 }
 
-/** C ref: dbridge.c:402 — @param {CPtr} etmp @param {CInt} xkill_flags @param {CInt} how */
+/** C ref: dbridge.c:402 — @param {CPtr<struct entity>} etmp @param {CInt} xkill_flags @param {CInt} how */
 function* e_died(etmp, xkill_flags, how) {
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst)))) {
         if (how == NHC.DROWNING) {
@@ -481,12 +481,12 @@ function* e_died(etmp, xkill_flags, how) {
     }
 }
 
-/** C ref: dbridge.c:486 — @param {CPtr} etmp @returns {CInt} */
+/** C ref: dbridge.c:486 — @param {CPtr<struct entity>} etmp @returns {CInt} */
 function automiss(etmp) {
     return schar((((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? Passes_walls() : ((cptr.ldU64o((cptr.ldPtro(etmp, $entity_edata)), $permonst_mflags1) & 8n) != 0n)) || (cptr.ld1so((cptr.ldPtro(etmp, $entity_edata)), $permonst_mlet) == NHC.S_GHOST) ? 1 : 0));
 }
 
-/** C ref: dbridge.c:496 — @param {CPtr} etmp @param {CInt} chunks @returns {CInt} */
+/** C ref: dbridge.c:496 — @param {CPtr<struct entity>} etmp @param {CInt} chunks @returns {CInt} */
 function* e_missed(etmp, chunks) {
     let misses;
     if (chunks) {
@@ -520,7 +520,7 @@ function* e_missed(etmp, chunks) {
     return schar(((misses >= (rng_log_enabled() ? (rng_log_set_caller(__sl1, 524, __sl14), rnd(8)) : rnd(8))) ? 1 : 0));
 }
 
-/** C ref: dbridge.c:531 — @param {CPtr} etmp @returns {CInt} */
+/** C ref: dbridge.c:531 — @param {CPtr<struct entity>} etmp @returns {CInt} */
 function* e_jumps(etmp) {
     let tmp = 4;
     if ((cptr.eq(cptr.ldPtr(etmp), cptr.add(gy, $instance_globals_y_youmonst))) ? ((cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || Fumbling() ? 1 : 0) : (helpless(cptr.ldPtr(etmp)) || !cptr.ld1so(cptr.ldPtro(etmp, $entity_edata), $permonst_mmove) || (cptr.ldI32o(cptr.ldPtr(etmp), $monst_wormno) & 31) | 0 ? 1 : 0))
@@ -541,7 +541,7 @@ function* e_jumps(etmp) {
     return schar(((tmp >= (rng_log_enabled() ? (rng_log_set_caller(__sl1, 550, __sl17), rnd(10)) : rnd(10))) ? 1 : 0));
 }
 
-/** C ref: dbridge.c:554 — @param {CPtr} etmp */
+/** C ref: dbridge.c:554 — @param {CPtr<struct entity>} etmp */
 function* do_entity(etmp) {
     let newx = cptr.box(0);
     let newy = cptr.box(0);

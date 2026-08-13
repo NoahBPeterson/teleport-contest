@@ -292,7 +292,7 @@ cptr.stI32o(mon_wizard_spells, 36, NHC.MCAST_SUMMON_MONS);
 cptr.stI32o(mon_wizard_spells, 40, NHC.MCAST_CLONE_WIZ);
 cptr.stI32o(mon_wizard_spells, 44, NHC.MCAST_DEATH_TOUCH);
 
-/** C ref: mcastu.c:63 — @param {CPtr} mtmp @param {CInt} undirected */
+/** C ref: mcastu.c:63 — @param {CPtr<struct monst>} mtmp @param {CInt} undirected */
 function* cursetxt(mtmp, undirected) {
     if (canseemon(mtmp) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0)) {
         let point_msg;
@@ -311,7 +311,7 @@ function* cursetxt(mtmp, undirected) {
     }
 }
 
-/** C ref: mcastu.c:89 — @param {CPtr} mtmp @param {CInt} adtyp @returns {CInt} */
+/** C ref: mcastu.c:89 — @param {CPtr<struct monst>} mtmp @param {CInt} adtyp @returns {CInt} */
 function* choose_monster_spell(mtmp, adtyp) {
     let list = null;
     let i;
@@ -337,7 +337,7 @@ function* choose_monster_spell(mtmp, adtyp) {
     return cptr.ldI32o(list, 0, 4);
 }
 
-/** C ref: mcastu.c:130 — @param {CPtr} mtmp @param {CPtr} mattk @param {CInt} thinks_it_foundyou @param {CInt} foundyou @returns {CInt} */
+/** C ref: mcastu.c:130 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @param {CInt} thinks_it_foundyou @param {CInt} foundyou @returns {CInt} */
 export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
     let dmg;
     let ml = cptr.ld1uo(mtmp, $monst_m_lev);
@@ -452,7 +452,7 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
     return ret;
 }
 
-/** C ref: mcastu.c:308 — @param {CPtr} mtmp @param {CInt} dmg @returns {CInt} */
+/** C ref: mcastu.c:308 — @param {CPtr<struct monst>} mtmp @param {CInt} dmg @returns {CInt} */
 function* m_cure_self(mtmp, dmg) {
     if (cptr.ldI32o(mtmp, $monst_mhp) < cptr.ldI32o(mtmp, $monst_mhpmax)) {
         if (canseemon(mtmp))
@@ -463,7 +463,7 @@ function* m_cure_self(mtmp, dmg) {
     return dmg;
 }
 
-/** C ref: mcastu.c:323 — @param {CPtr} mtmp */
+/** C ref: mcastu.c:323 — @param {CPtr<struct monst>} mtmp */
 export function* touch_of_death(mtmp) {
     let kbuf = new Uint8Array(256);
     let dmg = (50 + (rng_log_enabled() ? (rng_log_set_caller(__sl5, 326, __sl30), d(8, 6)) : d(8, 6))) | 0;
@@ -488,7 +488,7 @@ export function* touch_of_death(mtmp) {
     cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
 }
 
-/** C ref: mcastu.c:358 — @param {CPtr} outbuf @param {CPtr} deathreason @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: mcastu.c:358 — @param {CPtr<char>} outbuf @param {CPtr<char>} deathreason @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function* death_inflicted_by(outbuf, deathreason, mtmp) {
     void cptr.strcpy(outbuf, deathreason);
     if (mtmp) {
@@ -505,7 +505,7 @@ export function* death_inflicted_by(outbuf, deathreason, mtmp) {
     return outbuf;
 }
 
-/** C ref: mcastu.c:389 — @param {CPtr} mtmp */
+/** C ref: mcastu.c:389 — @param {CPtr<struct monst>} mtmp */
 function* mcast_death_touch(mtmp) {
     (yield* pline(__sl36, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he))));
     if (nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
@@ -526,7 +526,7 @@ function* mcast_death_touch(mtmp) {
     }
 }
 
-/** C ref: mcastu.c:411 — @param {CPtr} mtmp */
+/** C ref: mcastu.c:411 — @param {CPtr<struct monst>} mtmp */
 function* mcast_clone_wiz(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && cptr.ldI32o(svc, $context_info_no_of_wizards) == 1) {
         (yield* pline(__sl41));
@@ -535,7 +535,7 @@ function* mcast_clone_wiz(mtmp) {
         (yield* impossible(__sl42));
 }
 
-/** C ref: mcastu.c:421 — @param {CPtr} mtmp */
+/** C ref: mcastu.c:421 — @param {CPtr<struct monst>} mtmp */
 function* mcast_summon_mons(mtmp) {
     let count = (yield* nasty(mtmp));
     if (!count) {
@@ -568,7 +568,7 @@ function* mcast_destroy_armor() {
     }
 }
 
-/** C ref: mcastu.c:466 — @param {CPtr} mtmp @param {CInt} dmg */
+/** C ref: mcastu.c:466 — @param {CPtr<struct monst>} mtmp @param {CInt} dmg */
 function* mcast_weaken_you(mtmp, dmg) {
     if (Antimagic()) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -588,7 +588,7 @@ function* mcast_weaken_you(mtmp, dmg) {
     }
 }
 
-/** C ref: mcastu.c:490 — @param {CPtr} mtmp */
+/** C ref: mcastu.c:490 — @param {CPtr<struct monst>} mtmp */
 function* mcast_disappear(mtmp) {
     if (!(cptr.ldI32o(mtmp, $monst_minvis) & 1) && !(cptr.ldI32o(mtmp, $monst_invis_blkd) & 1)) {
         if (canseemon(mtmp))
@@ -627,7 +627,7 @@ function* mcast_geyser(dmg) {
     return dmg;
 }
 
-/** C ref: mcastu.c:540 — @param {CPtr} mtmp @param {CInt} dmg @returns {CInt} */
+/** C ref: mcastu.c:540 — @param {CPtr<struct monst>} mtmp @param {CInt} dmg @returns {CInt} */
 function* mcast_fire_pillar(mtmp, dmg) {
     let orig_dmg;
     (yield* pline(__sl69));
@@ -649,7 +649,7 @@ function* mcast_fire_pillar(mtmp, dmg) {
     return dmg;
 }
 
-/** C ref: mcastu.c:566 — @param {CPtr} mtmp @param {CInt} dmg @returns {CInt} */
+/** C ref: mcastu.c:566 — @param {CPtr<struct monst>} mtmp @param {CInt} dmg @returns {CInt} */
 function* mcast_lightning(mtmp, dmg) {
     let orig_dmg;
     let reflects;
@@ -717,7 +717,7 @@ function* mcast_open_wounds(dmg) {
     return dmg;
 }
 
-/** C ref: mcastu.c:645 — @param {CPtr} mtmp */
+/** C ref: mcastu.c:645 — @param {CPtr<struct monst>} mtmp */
 function* mcast_insects(mtmp) {
     let pm = (yield* mkclass(NHC.S_ANT, 0));
     let mtmp2 = null;
@@ -797,7 +797,7 @@ function* mcast_blind_you() {
         (yield* impossible(__sl96));
 }
 
-/** C ref: mcastu.c:746 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mcastu.c:746 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function* mcast_paralyze(mtmp) {
     let dmg = 0;
     if (Antimagic() || Free_action()) {
@@ -820,7 +820,7 @@ function* mcast_paralyze(mtmp) {
     return dmg;
 }
 
-/** C ref: mcastu.c:771 — @param {CPtr} mtmp */
+/** C ref: mcastu.c:771 — @param {CPtr<struct monst>} mtmp */
 function* mcast_confuse_you(mtmp) {
     if (Antimagic()) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -840,7 +840,7 @@ function* mcast_confuse_you(mtmp) {
     }
 }
 
-/** C ref: mcastu.c:801 — @param {CPtr} mtmp @param {CInt} dmg @param {CInt} spellnum */
+/** C ref: mcastu.c:801 — @param {CPtr<struct monst>} mtmp @param {CInt} dmg @param {CInt} spellnum */
 function* mcast_spell(mtmp, dmg, spellnum) {
     if (dmg < 0) {
         (yield* impossible(__sl106, spellnum, dmg));
@@ -942,7 +942,7 @@ function is_undirected_spell(spellnum) {
     return 0;
 }
 
-/** C ref: mcastu.c:909 — @param {CPtr} mtmp @param {CInt} spellnum @returns {CInt} */
+/** C ref: mcastu.c:909 — @param {CPtr<struct monst>} mtmp @param {CInt} spellnum @returns {CInt} */
 function* spell_would_be_useless(mtmp, spellnum) {
     if ((cptr.ldI32o2(mcast_data, spellnum, 8, $_mcast_data_flags) & NHM.MCF_HOSTILE) != 0) {
         if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
@@ -994,7 +994,7 @@ function* spell_would_be_useless(mtmp, spellnum) {
     return 0;
 }
 
-/** C ref: mcastu.c:989 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
+/** C ref: mcastu.c:989 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function* buzzmu(mtmp, mattk) {
     if (!BZ_VALID_ADTYP(cptr.ld1uo(mattk, $attack_adtyp)))
         return NHM.M_ATTK_MISS;

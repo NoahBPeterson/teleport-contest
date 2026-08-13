@@ -227,13 +227,13 @@ function make_version() {
     return;
 }
 
-/** C ref: mdlib.c:300 — @param {CPtr} outbuf @param {CPtr} delim @returns {CPtr} */
+/** C ref: mdlib.c:300 — @param {CPtr<char>} outbuf @param {CPtr<char>} delim @returns {CPtr<char>} */
 export function mdlib_version_string(outbuf, delim) {
     void cptr.sprintf(outbuf, __sl37, NHM.VERSION_MAJOR, delim, NHM.VERSION_MINOR, delim, NHM.PATCHLEVEL);
     return outbuf;
 }
 
-/** C ref: mdlib.c:316 — @param {CPtr} outbuf @param {CLongLong} bufsz @param {CPtr} build_date @returns {CPtr} */
+/** C ref: mdlib.c:316 — @param {CPtr<char>} outbuf @param {CLongLong} bufsz @param {CPtr<char>} build_date @returns {CPtr<char>} */
 export function version_id_string(outbuf, bufsz, build_date) {
     let subbuf = new Uint8Array(64);
     let versbuf = new Uint8Array(64);
@@ -244,7 +244,7 @@ export function version_id_string(outbuf, bufsz, build_date) {
     return outbuf;
 }
 
-/** C ref: mdlib.c:349 — @param {CPtr} outbuf @param {CLongLong} bufsz @param {CPtr} build_date @returns {CPtr} */
+/** C ref: mdlib.c:349 — @param {CPtr<char>} outbuf @param {CLongLong} bufsz @param {CPtr<char>} build_date @returns {CPtr<char>} */
 export function bannerc_string(outbuf, bufsz, build_date) {
     let subbuf = new Uint8Array(64);
     let versbuf = new Uint8Array(64);
@@ -313,7 +313,7 @@ function count_and_validate_soundlibopts() {
     return cnt;
 }
 
-/** C ref: mdlib.c:641 — @param {CPtr} str @param {CPtr} length_p */
+/** C ref: mdlib.c:641 — @param {CPtr<char>} str @param {CPtr<int>} length_p */
 function opt_out_words(str, length_p) {
     let word;
     while (cptr.ld1s(str)) {
@@ -437,7 +437,7 @@ export function runtime_info_init() {
     }
 }
 
-/** C ref: mdlib.c:849 — @param {CPtr} rtcontext @returns {CPtr} */
+/** C ref: mdlib.c:849 — @param {CPtr<int>} rtcontext @returns {CPtr<char>} */
 export function do_runtime_info(rtcontext) {
     let retval = null;
     if (!done_runtime_opt_init_once)

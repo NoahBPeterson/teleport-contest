@@ -51,7 +51,7 @@ cptr.stU64o(__static_utf8_decode_limits, 24, 65536);
 cptr.stU64o(__static_utf8_decode_limits, 32, 2097152);
 cptr.stU64o(__static_utf8_decode_limits, 40, 67108864); /** C ref: lutf8lib.c:62 — unsigned long[6] (function-static) */
 
-/** C ref: lutf8lib.c:61 — @param {CPtr} s @param {CPtr} val @param {CInt} strict @returns {CPtr} */
+/** C ref: lutf8lib.c:61 — @param {CPtr<char>} s @param {CPtr<utfint>} val @param {CInt} strict @returns {CPtr<char>} */
 function utf8_decode(s, val, strict) {
     let c = uchar(cptr.ld1so(s, 0));
     let res = 0;
@@ -79,7 +79,7 @@ function utf8_decode(s, val, strict) {
     return cptr.add(s, 1);
 }
 
-/** C ref: lutf8lib.c:96 — @param {CPtr} L @returns {CInt} */
+/** C ref: lutf8lib.c:96 — @param {CPtr<lua_State>} L @returns {CInt} */
 function utflen(L) {
     let n = 0n;
     let len = cptr.box(0n);
@@ -103,7 +103,7 @@ function utflen(L) {
     return 1;
 }
 
-/** C ref: lutf8lib.c:126 — @param {CPtr} L @returns {CInt} */
+/** C ref: lutf8lib.c:126 — @param {CPtr<lua_State>} L @returns {CInt} */
 function codepoint(L) {
     let len = cptr.box(0n);
     let s = luaL_checklstring(L, 1, len);
@@ -133,14 +133,14 @@ function codepoint(L) {
     return n;
 }
 
-/** C ref: lutf8lib.c:155 — @param {CPtr} L @param {CInt} arg */
+/** C ref: lutf8lib.c:155 — @param {CPtr<lua_State>} L @param {CInt} arg */
 function pushutfchar(L, arg) {
     let code = BigInt.asUintN(64, luaL_checkinteger(L, arg));
     (void ((__builtin_expect(BigInt(((code <= 2147483647n) != 0)), 1n)) || luaL_argerror(L, (arg), (__sl5)) ? 1 : 0));
     lua_pushfstring(L, __sl6, BigInt.asIntN(64, code));
 }
 
-/** C ref: lutf8lib.c:165 — @param {CPtr} L @returns {CInt} */
+/** C ref: lutf8lib.c:165 — @param {CPtr<lua_State>} L @returns {CInt} */
 function utfchar(L) {
     let n = lua_gettop(L);
     if (n == 1)
@@ -158,7 +158,7 @@ function utfchar(L) {
     return 1;
 }
 
-/** C ref: lutf8lib.c:187 — @param {CPtr} L @returns {CInt} */
+/** C ref: lutf8lib.c:187 — @param {CPtr<lua_State>} L @returns {CInt} */
 function byteoffset(L) {
     let len = cptr.box(0n);
     let s = luaL_checklstring(L, 1, len);
@@ -196,7 +196,7 @@ function byteoffset(L) {
     return 1;
 }
 
-/** C ref: lutf8lib.c:228 — @param {CPtr} L @param {CInt} strict @returns {CInt} */
+/** C ref: lutf8lib.c:228 — @param {CPtr<lua_State>} L @param {CInt} strict @returns {CInt} */
 function iter_aux(L, strict) {
     let len = cptr.box(0n);
     let s = luaL_checklstring(L, 1, len);
@@ -218,17 +218,17 @@ function iter_aux(L, strict) {
     }
 }
 
-/** C ref: lutf8lib.c:249 — @param {CPtr} L @returns {CInt} */
+/** C ref: lutf8lib.c:249 — @param {CPtr<lua_State>} L @returns {CInt} */
 function iter_auxstrict(L) {
     return iter_aux(L, 1);
 }
 
-/** C ref: lutf8lib.c:253 — @param {CPtr} L @returns {CInt} */
+/** C ref: lutf8lib.c:253 — @param {CPtr<lua_State>} L @returns {CInt} */
 function iter_auxlax(L) {
     return iter_aux(L, 0);
 }
 
-/** C ref: lutf8lib.c:258 — @param {CPtr} L @returns {CInt} */
+/** C ref: lutf8lib.c:258 — @param {CPtr<lua_State>} L @returns {CInt} */
 function iter_codes(L) {
     let lax = lua_toboolean(L, 2);
     let s = (luaL_checklstring(L, 1, null));
@@ -256,7 +256,7 @@ cptr.stPtro(funcs, 80 + $luaL_Reg_func, null);
 cptr.stPtro(funcs, 96, null);
 cptr.stPtro(funcs, 96 + $luaL_Reg_func, null);
 
-/** C ref: lutf8lib.c:285 — @param {CPtr} L @returns {CInt} */
+/** C ref: lutf8lib.c:285 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_utf8(L) {
     (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 112n / 16n - 1n)))), luaL_setfuncs(L, funcs, 0));
     lua_pushlstring(L, __sl15, BigInt.asUintN(64, 15n / 1n - 1n));

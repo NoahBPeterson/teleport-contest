@@ -390,7 +390,7 @@ export function* dosave0() {
     return res;
 }
 
-/** C ref: save.c:237 — @param {CPtr} nhfp */
+/** C ref: save.c:237 — @param {CPtr<NHFILE>} nhfp */
 function* save_gamelog(nhfp) {
     let tmp = cptr.ldPtro(gg, $instance_globals_g_gamelog);
     let tmp2;
@@ -417,7 +417,7 @@ function* save_gamelog(nhfp) {
         cptr.stPtro(gg, $instance_globals_g_gamelog, null);
 }
 
-/** C ref: save.c:265 — @param {CPtr} nhfp */
+/** C ref: save.c:265 — @param {CPtr<NHFILE>} nhfp */
 function* savegamestate(nhfp) {
     let i;
     let uid = cptr.box(0n);
@@ -478,7 +478,7 @@ function* savegamestate(nhfp) {
     return;
 }
 
-/** C ref: save.c:337 — @param {CPtr} nhfp @param {CPtr} whynot @returns {CInt} */
+/** C ref: save.c:337 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} whynot @returns {CInt} */
 export function* tricked_fileremoved(nhfp, whynot) {
     if (!nhfp) {
         (yield* pline(__sl7, whynot));
@@ -541,7 +541,7 @@ export function* savestateinlock() {
     return;
 }
 
-/** C ref: save.c:429 — @param {CPtr} nhfp @param {CInt} lev */
+/** C ref: save.c:429 — @param {CPtr<NHFILE>} nhfp @param {CInt} lev */
 export function* savelev(nhfp, lev) {
     let set_uz_save = schar((cptr.ldI16o(gu, $instance_globals_u_uz_save) == 0 && cptr.ldI16o(gu, $instance_globals_u_uz_save + $d_level_dlevel) == 0 ? 1 : 0));
     if (set_uz_save && (cptr.ldI32o(nhfp, $NHFILE_mode) & 3)) {
@@ -556,7 +556,7 @@ export function* savelev(nhfp, lev) {
         cptr.stI16o(gu, $instance_globals_u_uz_save, cptr.stI16o(gu, $instance_globals_u_uz_save + $d_level_dlevel, 0));
 }
 
-/** C ref: save.c:452 — @param {CPtr} nhfp @param {CInt} lev */
+/** C ref: save.c:452 — @param {CPtr<NHFILE>} nhfp @param {CInt} lev */
 function* savelev_core(nhfp, lev) {
     lev = cptr.box(lev);
     let i;
@@ -638,7 +638,7 @@ export function save_adjust_levelflags() {
     moves_to_relative_time(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until));
 }
 
-/** C ref: save.c:577 — @param {CPtr} nhfp */
+/** C ref: save.c:577 — @param {CPtr<NHFILE>} nhfp */
 function* savelevl(nhfp) {
     let x;
     let y;
@@ -650,7 +650,7 @@ function* savelevl(nhfp) {
     return;
 }
 
-/** C ref: save.c:591 — @param {CPtr} nhfp @param {CInt} lev */
+/** C ref: save.c:591 — @param {CPtr<NHFILE>} nhfp @param {CInt} lev */
 function* save_bubbles(nhfp, lev) {
     let bbubbly = cptr.box(0);
     bbubbly.v = 0;
@@ -663,7 +663,7 @@ function* save_bubbles(nhfp, lev) {
         (yield* save_waterlevel(nhfp));
 }
 
-/** C ref: save.c:617 — @param {CPtr} nhfp @param {CPtr} cemeteryaddr */
+/** C ref: save.c:617 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct cemetery *>} cemeteryaddr */
 export function* savecemetery(nhfp, cemeteryaddr) {
     let thisbones;
     let nextbones;
@@ -685,7 +685,7 @@ export function* savecemetery(nhfp, cemeteryaddr) {
         cptr.stPtr(cemeteryaddr, null);
 }
 
-/** C ref: save.c:640 — @param {CPtr} nhfp */
+/** C ref: save.c:640 — @param {CPtr<NHFILE>} nhfp */
 function* savedamage(nhfp) {
     let damageptr;
     let tmp_dam;
@@ -709,7 +709,7 @@ function* savedamage(nhfp) {
         cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist, null);
 }
 
-/** C ref: save.c:665 — @param {CPtr} nhfp */
+/** C ref: save.c:665 — @param {CPtr<NHFILE>} nhfp */
 function* save_stairs(nhfp) {
     let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
     let buflen = cptr.box(24);
@@ -733,7 +733,7 @@ function* save_stairs(nhfp) {
     }
 }
 
-/** C ref: save.c:696 — @param {CPtr} nhfp */
+/** C ref: save.c:696 — @param {CPtr<NHFILE>} nhfp */
 function* save_bc(nhfp) {
     let bc_objs = cptr.box(null);
     if (cptr.ldPtro(gl, $instance_globals_l_loosechain)) {
@@ -755,7 +755,7 @@ function* save_bc(nhfp) {
     (yield* saveobjchn(nhfp, bc_objs));
 }
 
-/** C ref: save.c:726 — @param {CPtr} nhfp @param {CPtr} otmp */
+/** C ref: save.c:726 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct obj>} otmp */
 function* saveobj(nhfp, otmp) {
     let buflen = cptr.box(0);
     let zerobuf = cptr.box(0);
@@ -782,7 +782,7 @@ function* saveobj(nhfp, otmp) {
     }
 }
 
-/** C ref: save.c:762 — @param {CPtr} nhfp @param {CPtr} obj_p */
+/** C ref: save.c:762 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct obj *>} obj_p */
 function* saveobjchn(nhfp, obj_p) {
     let otmp = cptr.ldPtr(obj_p);
     let otmp2;
@@ -833,7 +833,7 @@ function* saveobjchn(nhfp, obj_p) {
     }
 }
 
-/** C ref: save.c:826 — @param {CPtr} nhfp @param {CPtr} mtmp */
+/** C ref: save.c:826 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct monst>} mtmp */
 function* savemon(nhfp, mtmp) {
     let buflen = cptr.box(0);
     cptr.stI32o(mtmp, $monst_mtemplit, 0);
@@ -885,7 +885,7 @@ function* savemon(nhfp, mtmp) {
     }
 }
 
-/** C ref: save.c:884 — @param {CPtr} nhfp @param {CPtr} mtmp */
+/** C ref: save.c:884 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct monst>} mtmp */
 function* savemonchn(nhfp, mtmp) {
     let mtmp2;
     let minusone = cptr.box(-1);
@@ -920,7 +920,7 @@ function* savemonchn(nhfp, mtmp) {
 
 let __static_savetrapchn_zerotrap = cptr.alloc(40); /** C ref: save.c:922 — struct trap (function-static) */
 
-/** C ref: save.c:920 — @param {CPtr} nhfp @param {CPtr} trap */
+/** C ref: save.c:920 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct trap>} trap */
 function* savetrapchn(nhfp, trap) {
     let trap2;
     while (trap) {
@@ -944,7 +944,7 @@ function* savetrapchn(nhfp, trap) {
 
 let __static_savefruitchn_zerofruit = cptr.alloc(48); /** C ref: save.c:953 — struct fruit (function-static) */
 
-/** C ref: save.c:951 — @param {CPtr} nhfp */
+/** C ref: save.c:951 — @param {CPtr<NHFILE>} nhfp */
 export function* savefruitchn(nhfp) {
     let f2;
     let f1;
@@ -965,7 +965,7 @@ export function* savefruitchn(nhfp) {
         cptr.stPtro(gf, $instance_globals_f_ffruit, null);
 }
 
-/** C ref: save.c:974 — @param {CPtr} nhfp */
+/** C ref: save.c:974 — @param {CPtr<NHFILE>} nhfp */
 function* savelevchn(nhfp) {
     let tmplev;
     let tmplev2;
@@ -987,7 +987,7 @@ function* savelevchn(nhfp) {
         cptr.stPtro(svs, $instance_globals_saved_s_sp_levchn, null);
 }
 
-/** C ref: save.c:999 — @param {CPtr} nhfp */
+/** C ref: save.c:999 — @param {CPtr<NHFILE>} nhfp */
 export function* store_plname_in_file(nhfp) {
     let hero = new Uint8Array(49);
     let plsiztmp = cptr.box(49);
@@ -1005,7 +1005,7 @@ export function* store_plname_in_file(nhfp) {
     return;
 }
 
-/** C ref: save.c:1030 — @param {CPtr} nhfp */
+/** C ref: save.c:1030 — @param {CPtr<NHFILE>} nhfp */
 function* save_msghistory(nhfp) {
     let msg;
     let msgcount = 0;

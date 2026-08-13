@@ -641,7 +641,7 @@ function zaptype(type) {
     return type;
 }
 
-/** C ref: zap.c:123 — @param {CPtr} obj */
+/** C ref: zap.c:123 — @param {CPtr<struct obj>} obj */
 export function learnwand(obj) {
     if (cptr.ld1so(obj, $obj_oclass) != NHC.SPBOOK_CLASS) {
         if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_name_known) & 1)) {
@@ -656,7 +656,7 @@ export function learnwand(obj) {
     }
 }
 
-/** C ref: zap.c:160 — @param {CPtr} mtmp @param {CPtr} otmp @returns {CInt} */
+/** C ref: zap.c:160 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function bhitm(mtmp, otmp) {
     let ret = 0;
     let wake = 1;
@@ -1005,7 +1005,7 @@ export function release_hold() {
     }
 }
 
-/** C ref: zap.c:612 — @param {CPtr} otmp */
+/** C ref: zap.c:612 — @param {CPtr<struct obj>} otmp */
 function probe_objchain(otmp) {
     for (; otmp; otmp = cptr.ldPtr(otmp)) {
         observe_object(otmp);
@@ -1018,7 +1018,7 @@ function probe_objchain(otmp) {
     }
 }
 
-/** C ref: zap.c:626 — @param {CPtr} mtmp */
+/** C ref: zap.c:626 — @param {CPtr<struct monst>} mtmp */
 export function probe_monster(mtmp) {
     mstatusline(mtmp);
     if (cptr.ld1so(gn, $instance_globals_n_notonhead))
@@ -1031,7 +1031,7 @@ export function probe_monster(mtmp) {
     }
 }
 
-/** C ref: zap.c:654 — @param {CPtr} obj @param {CPtr} xp @param {CPtr} yp @param {CInt} locflags @returns {CInt} */
+/** C ref: zap.c:654 — @param {CPtr<struct obj>} obj @param {CPtr<coordxy>} xp @param {CPtr<coordxy>} yp @param {CInt} locflags @returns {CInt} */
 export function get_obj_location(obj, xp, yp, locflags) {
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_INVENT:
@@ -1065,7 +1065,7 @@ export function get_obj_location(obj, xp, yp, locflags) {
     return 0;
 }
 
-/** C ref: zap.c:692 — @param {CPtr} mon @param {CPtr} xp @param {CPtr} yp @param {CInt} locflags @returns {CInt} */
+/** C ref: zap.c:692 — @param {CPtr<struct monst>} mon @param {CPtr<coordxy>} xp @param {CPtr<coordxy>} yp @param {CInt} locflags @returns {CInt} */
 export function get_mon_location(mon, xp, yp, locflags) {
     if (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)) || (cptr.ldPtro(u, $you_usteed) && cptr.eq(mon, cptr.ldPtro(u, $you_usteed)))) {
         cptr.stI16(xp, cptr.ldI16(u));
@@ -1081,7 +1081,7 @@ export function get_mon_location(mon, xp, yp, locflags) {
     }
 }
 
-/** C ref: zap.c:713 — @param {CPtr} obj @param {CPtr} cc @param {CInt} adjacentok @returns {CPtr} */
+/** C ref: zap.c:713 — @param {CPtr<struct obj>} obj @param {CPtr<coord>} cc @param {CInt} adjacentok @returns {CPtr<struct monst>} */
 export function montraits(obj, cc, adjacentok) {
     let mtmp = null;
     let mtmp2 = has_omonst(obj) ? get_mtraits(obj, 1) : null;
@@ -1156,7 +1156,7 @@ export function montraits(obj, cc, adjacentok) {
     return mtmp2;
 }
 
-/** C ref: zap.c:841 — @param {CPtr} obj @param {CPtr} loc @param {CPtr} container_nesting @returns {CPtr} */
+/** C ref: zap.c:841 — @param {CPtr<struct obj>} obj @param {CPtr<int>} loc @param {CPtr<int>} container_nesting @returns {CPtr<struct monst>} */
 export function get_container_location(obj, loc, container_nesting) {
     if (container_nesting)
         cptr.stI32(container_nesting, 0);
@@ -1186,7 +1186,7 @@ function zombie_can_dig(x, y) {
     return 0;
 }
 
-/** C ref: zap.c:884 — @param {CPtr} corpse @param {CInt} by_hero @returns {CPtr} */
+/** C ref: zap.c:884 — @param {CPtr<struct obj>} corpse @param {CInt} by_hero @returns {CPtr<struct monst>} */
 export function revive(corpse, by_hero) {
     let mtmp = null;
     let mptr;
@@ -1365,7 +1365,7 @@ export function revive(corpse, by_hero) {
     return mtmp;
 }
 
-/** C ref: zap.c:1143 — @param {CPtr} obj */
+/** C ref: zap.c:1143 — @param {CPtr<struct obj>} obj */
 function revive_egg(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) != NHC.EGG)
         return;
@@ -1373,7 +1373,7 @@ function revive_egg(obj) {
         attach_egg_hatch_timeout(obj, 0n);
 }
 
-/** C ref: zap.c:1156 — @param {CPtr} mon @returns {CInt} */
+/** C ref: zap.c:1156 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function unturn_dead(mon) {
     let otmp;
     let otmp2;
@@ -1437,7 +1437,7 @@ export function unturn_you() {
     }
 }
 
-/** C ref: zap.c:1239 — @param {CPtr} obj */
+/** C ref: zap.c:1239 — @param {CPtr<struct obj>} obj */
 export function cancel_item(obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT)) {
@@ -1535,7 +1535,7 @@ export function cancel_item(obj) {
     return;
 }
 
-/** C ref: zap.c:1367 — @param {CPtr} obj */
+/** C ref: zap.c:1367 — @param {CPtr<struct obj>} obj */
 export function blank_novel(obj) {
     (__builtin_expect(BigInt((!(cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BLANK_PAPER))), 0n) ? __assert_rtn(__sl69, __sl21, 1369, __sl70) : void 0);
     cptr.stI32o(obj, $obj_corpsenm, 0);
@@ -1543,7 +1543,7 @@ export function blank_novel(obj) {
     container_weight(obj);
 }
 
-/** C ref: zap.c:1382 — @param {CPtr} obj @param {CInt} by_you @returns {CInt} */
+/** C ref: zap.c:1382 — @param {CPtr<struct obj>} obj @param {CInt} by_you @returns {CInt} */
 export function drain_item(obj, by_you) {
     let u_ring;
     if (!obj || (!(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_charged) & 1) && cptr.ld1so(obj, $obj_oclass) != NHC.WEAPON_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.ARMOR_CLASS && !is_weptool(obj)) || cptr.ld1so(obj, $obj_spe) <= 0)
@@ -1608,7 +1608,7 @@ export function drain_item(obj, by_you) {
     return 1;
 }
 
-/** C ref: zap.c:1458 — @param {CPtr} obj @param {CInt} ochance @param {CInt} achance @returns {CInt} */
+/** C ref: zap.c:1458 — @param {CPtr<struct obj>} obj @param {CInt} ochance @param {CInt} achance @returns {CInt} */
 export function obj_resists(obj, ochance, achance) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR || cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD || cptr.ldI16o(obj, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING || (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && is_rider(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)))) {
         return 1;
@@ -1618,7 +1618,7 @@ export function obj_resists(obj, ochance, achance) {
     }
 }
 
-/** C ref: zap.c:1476 — @param {CPtr} obj @returns {CInt} */
+/** C ref: zap.c:1476 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_shudders(obj) {
     let zap_odds;
     if (cptr.ld1so(svc, $context_info_bypasses) && (cptr.ldI32o(obj, $obj_bypass) & 1) | 0)
@@ -1636,7 +1636,7 @@ export function obj_shudders(obj) {
     return schar((!(rng_log_enabled() ? (rng_log_set_caller(__sl21, 1496, __sl72), rn2(zap_odds)) : rn2(zap_odds))));
 }
 
-/** C ref: zap.c:1505 — @param {CPtr} objhdr @param {CInt} mat @param {CInt} minwt */
+/** C ref: zap.c:1505 — @param {CPtr<struct obj>} objhdr @param {CInt} mat @param {CInt} minwt */
 function polyuse(objhdr, mat, minwt) {
     let otmp;
     let otmp2;
@@ -1666,7 +1666,7 @@ function polyuse(objhdr, mat, minwt) {
     }
 }
 
-/** C ref: zap.c:1546 — @param {CPtr} obj @param {CInt} okind */
+/** C ref: zap.c:1546 — @param {CPtr<struct obj>} obj @param {CInt} okind */
 function create_polymon(obj, okind) {
     let mdat = null;
     let mtmp;
@@ -1740,7 +1740,7 @@ function create_polymon(obj, okind) {
     }
 }
 
-/** C ref: zap.c:1637 — @param {CPtr} obj */
+/** C ref: zap.c:1637 — @param {CPtr<struct obj>} obj */
 export function do_osshock(obj) {
     let i;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_MAIL)
@@ -1768,7 +1768,7 @@ export function do_osshock(obj) {
     delobj(obj);
 }
 
-/** C ref: zap.c:1678 — @param {CPtr} obj @returns {CInt} */
+/** C ref: zap.c:1678 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_unpolyable(obj) {
     return schar((unpolyable(obj) || cptr.eq(obj, uball.v) || cptr.eq(obj, uskin.v) || obj_resists(obj, 5, 95) ? 1 : 0));
 }
@@ -1776,7 +1776,7 @@ export function obj_unpolyable(obj) {
 /** C ref: zap.c:1687 — char[4] */
 const charged_objs = [NHC.WAND_CLASS, NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, 0];
 
-/** C ref: zap.c:1702 — @param {CPtr} obj @param {CInt} id @returns {CPtr} */
+/** C ref: zap.c:1702 — @param {CPtr<struct obj>} obj @param {CInt} id @returns {CPtr<struct obj>} */
 export function poly_obj(obj, id) {
     let otmp;
     let ox = cptr.box(0);
@@ -1970,7 +1970,7 @@ export function poly_obj(obj, id) {
     return otmp;
 }
 
-/** C ref: zap.c:1993 — @param {CPtr} obj @returns {CInt} */
+/** C ref: zap.c:1993 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function stone_to_flesh_obj(obj) {
     let ptr;
     let mon;
@@ -2070,7 +2070,7 @@ function stone_to_flesh_obj(obj) {
     return res;
 }
 
-/** C ref: zap.c:2119 — @param {CPtr} obj @param {CPtr} otmp @returns {CInt} */
+/** C ref: zap.c:2119 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function bhito(obj, otmp) {
     let res = 1;
     let learn_it = 0;
@@ -2290,7 +2290,7 @@ export function bhito(obj, otmp) {
     return res;
 }
 
-/** C ref: zap.c:2428 — @param {CPtr} obj @param {CPtr} fhito @param {CInt} tx @param {CInt} ty @param {CInt} zz @returns {CInt} */
+/** C ref: zap.c:2428 — @param {CPtr<struct obj>} obj @param {CPtr} fhito @param {CInt} tx @param {CInt} ty @param {CInt} zz @returns {CInt} */
 export function bhitpile(obj, fhito, tx, ty, zz) {
     let otmp;
     let next_obj;
@@ -2343,7 +2343,7 @@ export function bhitpile(obj, fhito, tx, ty, zz) {
     return hitanything;
 }
 
-/** C ref: zap.c:2514 — @param {CPtr} wand @returns {CInt} */
+/** C ref: zap.c:2514 — @param {CPtr<struct obj>} wand @returns {CInt} */
 export function zappable(wand) {
     if (cptr.ld1so(wand, $obj_spe) < 0 || (cptr.ld1so(wand, $obj_spe) == 0 && (rng_log_enabled() ? (rng_log_set_caller(__sl21, 2516, __sl112), rn2(NHM.WAND_WREST_CHANCE)) : rn2(NHM.WAND_WREST_CHANCE))))
         return 0;
@@ -2362,7 +2362,7 @@ export function do_enlightenment_effect() {
     exercise(NHC.A_WIS, 1);
 }
 
-/** C ref: zap.c:2539 — @param {CPtr} obj */
+/** C ref: zap.c:2539 — @param {CPtr<struct obj>} obj */
 export function zapnodir(obj) {
     let known = 0;
     switch (cptr.ldI16o(obj, $obj_otyp)) {
@@ -2411,7 +2411,7 @@ export function zapnodir(obj) {
     }
 }
 
-/** C ref: zap.c:2605 — @param {CPtr} otmp */
+/** C ref: zap.c:2605 — @param {CPtr<struct obj>} otmp */
 function backfire(otmp) {
     let dmg;
     cptr.stI32o(otmp, $obj_in_use, 1);
@@ -2421,7 +2421,7 @@ function backfire(otmp) {
     useupall(otmp);
 }
 
-/** C ref: zap.c:2618 — @param {CPtr} obj @returns {CInt} */
+/** C ref: zap.c:2618 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function zap_ok(obj) {
     if (obj && cptr.ld1so(obj, $obj_oclass) == NHC.WAND_CLASS)
         return NHC.GETOBJ_SUGGEST;
@@ -2473,7 +2473,7 @@ export function dozap() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: zap.c:2687 — @param {CPtr} obj */
+/** C ref: zap.c:2687 — @param {CPtr<struct obj>} obj */
 function boxlock_invent(obj) {
     let otmp;
     let nextobj;
@@ -2489,7 +2489,7 @@ function boxlock_invent(obj) {
         update_inventory();
 }
 
-/** C ref: zap.c:2705 — @param {CPtr} obj @param {CInt} ordinary @returns {CInt} */
+/** C ref: zap.c:2705 — @param {CPtr<struct obj>} obj @param {CInt} ordinary @returns {CInt} */
 export function zapyourself(obj, ordinary) {
     let learn_it = cptr.box(0);
     let damage = 0;
@@ -2758,13 +2758,13 @@ export function zapyourself(obj, ordinary) {
     return damage;
 }
 
-/** C ref: zap.c:3017 — @param {CPtr} mattk */
+/** C ref: zap.c:3017 — @param {CPtr<struct attack>} mattk */
 export function ubreatheu(mattk) {
     let dtyp = (((20 + cptr.ld1uo(mattk, $attack_adtyp)) | 0) - 1) | 0;
     zhitu(dtyp, cptr.ld1uo(mattk, $attack_damn), flash_str(dtyp, 1), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 }
 
-/** C ref: zap.c:3026 — @param {CPtr} obj @param {CInt} ordinary @param {CInt} amt @returns {CInt} */
+/** C ref: zap.c:3026 — @param {CPtr<struct obj>} obj @param {CInt} ordinary @param {CInt} amt @returns {CInt} */
 export function lightdamage(obj, ordinary, amt) {
     let buf = new Uint8Array(256);
     let how;
@@ -2801,7 +2801,7 @@ export function flashburn(duration, via_lightning) {
     return 0;
 }
 
-/** C ref: zap.c:3087 — @param {CPtr} obj @returns {CInt} */
+/** C ref: zap.c:3087 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function zap_steed(obj) {
     let steedhit = 0;
     cptr.stI16o(gb, $instance_globals_b_bhitpos, cptr.ldI16o(cptr.ldPtro(u, $you_usteed), $monst_mx)), cptr.stI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y, cptr.ldI16o(cptr.ldPtro(u, $you_usteed), $monst_my));
@@ -2848,7 +2848,7 @@ function zap_steed(obj) {
 const __static_cancel_monst_writing_vanishes = cptr.bytes("Some writing vanishes from %s head!"); /** C ref: zap.c:3154 — char[36] (function-static) */
 const __static_cancel_monst_your = cptr.bytes("your"); /** C ref: zap.c:3155 — char[5] (function-static) */
 
-/** C ref: zap.c:3150 — @param {CPtr} mdef @param {CPtr} obj @param {CInt} youattack @param {CInt} allow_cancel_kill @param {CInt} self_cancel @returns {CInt} */
+/** C ref: zap.c:3150 — @param {CPtr<struct monst>} mdef @param {CPtr<struct obj>} obj @param {CInt} youattack @param {CInt} allow_cancel_kill @param {CInt} self_cancel @returns {CInt} */
 export function cancel_monst(mdef, obj, youattack, allow_cancel_kill, self_cancel) {
     let youdefend = schar((cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))));
     if (youdefend ? (!youattack && Antimagic() ? 1 : 0) : resist(mdef, cptr.ld1so(obj, $obj_oclass), 0, NHM.NOTELL))
@@ -2893,7 +2893,7 @@ export function cancel_monst(mdef, obj, youattack, allow_cancel_kill, self_cance
     return 1;
 }
 
-/** C ref: zap.c:3219 — @param {CPtr} obj @returns {CInt} */
+/** C ref: zap.c:3219 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function zap_updown(obj) {
     let striking = 0;
     let disclose = cptr.box(0);
@@ -3056,7 +3056,7 @@ export function zapwrapup() {
     cptr.st1o(go, $instance_globals_o_obj_zapped, 0);
 }
 
-/** C ref: zap.c:3431 — @param {CPtr} obj */
+/** C ref: zap.c:3431 — @param {CPtr<struct obj>} obj */
 export function weffects(obj) {
     obj = cptr.box(obj);
     let otyp = cptr.ldI16o(obj.v, $obj_otyp);
@@ -3145,23 +3145,23 @@ function spell_hit_bonus(skill) {
     return hit_bon;
 }
 
-/** C ref: zap.c:3547 — @param {CInt} force @returns {CPtr} */
+/** C ref: zap.c:3547 — @param {CInt} force @returns {CPtr<char>} */
 export function exclam(force) {
     return ((force < 0) ? __sl187 : ((force <= 4) ? __sl188 : __sl189));
 }
 
-/** C ref: zap.c:3556 — @param {CPtr} str @param {CPtr} mtmp @param {CPtr} force */
+/** C ref: zap.c:3556 — @param {CPtr<char>} str @param {CPtr<struct monst>} mtmp @param {CPtr<char>} force */
 export function hit(str, mtmp, force) {
     let verbosely = schar((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)) || (cptr.ld1so(flags, $flag_verbose) && (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0) || canspotmon(mtmp) || ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mtmp)))))) ? 1 : 0));
     pline(__sl190, The(str), vtense(str, __sl191), verbosely ? mon_nam(mtmp) : __sl164, force);
 }
 
-/** C ref: zap.c:3571 — @param {CPtr} str @param {CPtr} mtmp */
+/** C ref: zap.c:3571 — @param {CPtr<char>} str @param {CPtr<struct monst>} mtmp */
 export function miss(str, mtmp) {
     pline(__sl192, The(str), vtense(str, __sl193), ((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y), 8), cptr.ldI16o(gb, $instance_globals_b_bhitpos)) & NHM.IN_SIGHT) != 0) || canspotmon(mtmp)) && cptr.ld1so(flags, $flag_verbose)) ? mon_nam(mtmp) : __sl164);
 }
 
-/** C ref: zap.c:3579 — @param {CInt} range @param {CPtr} skipstart @param {CPtr} skipend */
+/** C ref: zap.c:3579 — @param {CInt} range @param {CPtr<int>} skipstart @param {CPtr<int>} skipend */
 function skiprange(range, skipstart, skipend) {
     let tr = ((range / 4) | 0);
     let tmp = (range - ((tr > 0) ? (rng_log_enabled() ? (rng_log_set_caller(__sl21, 3582, __sl194), rnd(tr)) : rnd(tr)) : 0)) | 0;
@@ -3171,7 +3171,7 @@ function skiprange(range, skipstart, skipend) {
         cptr.stI32(skipend, (tmp - 1) | 0);
 }
 
-/** C ref: zap.c:3594 — @param {CPtr} ttmp @param {CPtr} otmp @param {CPtr} learn_it */
+/** C ref: zap.c:3594 — @param {CPtr<struct trap>} ttmp @param {CPtr<struct obj>} otmp @param {CPtr<boolean>} learn_it */
 function maybe_explode_trap(ttmp, otmp, learn_it) {
     if (!ttmp || !otmp)
         return;
@@ -3196,7 +3196,7 @@ function maybe_explode_trap(ttmp, otmp, learn_it) {
     }
 }
 
-/** C ref: zap.c:3628 — @param {CInt} x @param {CInt} y @param {CPtr} obj */
+/** C ref: zap.c:3628 — @param {CInt} x @param {CInt} y @param {CPtr<struct obj>} obj */
 function zap_map(x, y, obj) {
     let ttmp = t_at(x, y);
     let dbx = cptr.box(x);
@@ -3321,7 +3321,7 @@ function zap_map(x, y, obj) {
     return;
 }
 
-/** C ref: zap.c:3827 — @param {CInt} ddx @param {CInt} ddy @param {CInt} range @param {*} weapon @param {CPtr} fhitm @param {CPtr} fhito @param {CPtr} pobj @returns {CPtr} */
+/** C ref: zap.c:3827 — @param {CInt} ddx @param {CInt} ddy @param {CInt} range @param {*} weapon @param {CPtr} fhitm @param {CPtr} fhito @param {CPtr<struct obj *>} pobj @returns {CPtr<struct monst>} */
 export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
     let mtmp;
     let result = null;
@@ -3547,7 +3547,7 @@ export function bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
     return result;
 }
 
-/** C ref: zap.c:4148 — @param {CPtr} obj @param {CInt} dx @param {CInt} dy @returns {CPtr} */
+/** C ref: zap.c:4148 — @param {CPtr<struct obj>} obj @param {CInt} dx @param {CInt} dy @returns {CPtr<struct monst>} */
 export function boomhit(obj, dx, dy) {
     obj = cptr.box(obj);
     let i;
@@ -3616,7 +3616,7 @@ export function boomhit(obj, dx, dy) {
     return null;
 }
 
-/** C ref: zap.c:4238 — @param {CPtr} mon @param {CInt} type @param {CInt} nd @param {CPtr} ootmp @returns {CInt} */
+/** C ref: zap.c:4238 — @param {CPtr<struct monst>} mon @param {CInt} type @param {CInt} nd @param {CPtr<struct obj *>} ootmp @returns {CInt} */
 export function zhitm(mon, type, nd, ootmp) {
     let tmp = 0;
     let orig_dmg = 0;
@@ -3764,7 +3764,7 @@ export function zhitm(mon, type, nd, ootmp) {
     return tmp;
 }
 
-/** C ref: zap.c:4401 — @param {CInt} type @param {CInt} nd @param {CPtr} fltxt @param {CInt} sx @param {CInt} sy */
+/** C ref: zap.c:4401 — @param {CInt} type @param {CInt} nd @param {CPtr<char>} fltxt @param {CInt} sx @param {CInt} sy */
 function zhitu(type, nd, fltxt, sx, sy) {
     let dam = 0;
     let abstyp = zaptype(type);
@@ -3968,7 +3968,7 @@ export function burn_floor_objects(x, y, give_feedback, u_caused) {
     return cnt;
 }
 
-/** C ref: zap.c:4664 — @param {CInt} sx @param {CInt} sy @param {CPtr} ddx @param {CPtr} ddy @param {CInt} bounceback */
+/** C ref: zap.c:4664 — @param {CInt} sx @param {CInt} sy @param {CPtr<int>} ddx @param {CPtr<int>} ddy @param {CInt} bounceback */
 function bounce_dir(sx, sy, ddx, ddy, bounceback) {
     if (!cptr.ldI32(ddx) || !cptr.ldI32(ddy) || (bounceback > 0 && !(rng_log_enabled() ? (rng_log_set_caller(__sl21, 4668, __sl241), rn2(bounceback)) : rn2(bounceback)))) {
         cptr.stI32(ddx, -(cptr.ldI32(ddx)));
@@ -4008,7 +4008,7 @@ function zap_hit(ac, type) {
     return (((3 - chance) | 0) < ((ac + spell_bonus) | 0));
 }
 
-/** C ref: zap.c:4723 — @param {CPtr} mon @param {CInt} type @param {CPtr} fltxt */
+/** C ref: zap.c:4723 — @param {CPtr<struct monst>} mon @param {CInt} type @param {CPtr<char>} fltxt */
 function disintegrate_mon(mon, type, fltxt) {
     let otmp;
     let otmp2;
@@ -4347,7 +4347,7 @@ export function dobuzz(type, nd, sx, sy, dx, dy, sayhit, saymiss, forcemiss) {
     }
 }
 
-/** C ref: zap.c:5040 — @param {CInt} x @param {CInt} y @param {CPtr} msg */
+/** C ref: zap.c:5040 — @param {CInt} x @param {CInt} y @param {CPtr<char>} msg */
 export function melt_ice(x, y, msg) {
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     let otmp;
@@ -4402,7 +4402,7 @@ export function start_melt_ice_timeout(x, y, min_time) {
     }
 }
 
-/** C ref: zap.c:5119 — @param {CPtr} arg @param {CLongLong} timeout */
+/** C ref: zap.c:5119 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function melt_ice_away(arg, timeout) {
     let x;
     let y;
@@ -4415,7 +4415,7 @@ export function melt_ice_away(arg, timeout) {
     cptr.st1o(svc, $context_info_mon_moving, save_mon_moving);
 }
 
-/** C ref: zap.c:5141 — @param {CInt} x @param {CInt} y @param {CInt} type @param {CPtr} shopdamage @param {CInt} ignoremon @param {CInt} exploding_wand_typ @returns {CInt} */
+/** C ref: zap.c:5141 — @param {CInt} x @param {CInt} y @param {CInt} type @param {CPtr<boolean>} shopdamage @param {CInt} ignoremon @param {CInt} exploding_wand_typ @returns {CInt} */
 export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand_typ) {
     let zapverb;
     let mon;
@@ -4714,7 +4714,7 @@ export function zap_over_floor(x, y, type, shopdamage, ignoremon, exploding_wand
     return rangemod;
 }
 
-/** C ref: zap.c:5501 — @param {CPtr} caster @param {CInt} adtyp @param {CInt} x @param {CInt} y */
+/** C ref: zap.c:5501 — @param {CPtr<struct monst>} caster @param {CInt} adtyp @param {CInt} x @param {CInt} y */
 export function mon_spell_hits_spot(caster, adtyp, x, y) {
     if (adtyp == NHM.AD_MAGM || adtyp == NHM.AD_ACID) {
         let ep = engr_at(x, y);
@@ -4732,7 +4732,7 @@ export function mon_spell_hits_spot(caster, adtyp, x, y) {
     }
 }
 
-/** C ref: zap.c:5537 — @param {CPtr} obj */
+/** C ref: zap.c:5537 — @param {CPtr<struct obj>} obj */
 export function fracture_rock(obj) {
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -4766,7 +4766,7 @@ export function fracture_rock(obj) {
     }
 }
 
-/** C ref: zap.c:5582 — @param {CPtr} obj @returns {CInt} */
+/** C ref: zap.c:5582 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function break_statue(obj) {
     let trap = t_at(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy));
     let item;
@@ -4786,7 +4786,7 @@ export function break_statue(obj) {
     return 1;
 }
 
-/** C ref: zap.c:5613 — @param {CPtr} obj @param {CInt} adtyp @returns {CInt} */
+/** C ref: zap.c:5613 — @param {CPtr<struct obj>} obj @param {CInt} adtyp @returns {CInt} */
 function destroyable(obj, adtyp) {
     if (cptr.ld1so(obj, $obj_oartifact)) {
         return 0;
@@ -4857,7 +4857,7 @@ export function inventory_resistance_check(dmgtyp) {
 
 const __static_item_what_whatbuf = new Uint8Array(50); /** C ref: zap.c:5724 — char[50] (function-static) */
 
-/** C ref: zap.c:5722 — @param {CInt} dmgtyp @returns {CPtr} */
+/** C ref: zap.c:5722 — @param {CInt} dmgtyp @returns {CPtr<char>} */
 export function item_what(dmgtyp) {
     let what = null;
     let prop = adtyp_to_prop(dmgtyp);
@@ -4920,7 +4920,7 @@ cptr.stPtro(cptr.decay(destroy_strings[6]), 0, __sl337);
 cptr.stPtro(cptr.decay(destroy_strings[6]), 8, __sl6);
 cptr.stPtro(cptr.decay(destroy_strings[6]), 16, __sl120);
 
-/** C ref: zap.c:5798 — @param {CPtr} carrier @param {CPtr} obj @param {CInt} dmgtyp @returns {CInt} */
+/** C ref: zap.c:5798 — @param {CPtr<struct monst>} carrier @param {CPtr<struct obj>} obj @param {CInt} dmgtyp @returns {CInt} */
 function maybe_destroy_item(carrier, obj, dmgtyp) {
     let i;
     let cnt;
@@ -5054,7 +5054,7 @@ function maybe_destroy_item(carrier, obj, dmgtyp) {
     return dmg;
 }
 
-/** C ref: zap.c:5965 — @param {CPtr} mon @param {CInt} dmgtyp @param {CInt} dmg_in @returns {CInt} */
+/** C ref: zap.c:5965 — @param {CPtr<struct monst>} mon @param {CInt} dmgtyp @param {CInt} dmg_in @returns {CInt} */
 export function destroy_items(mon, dmgtyp, dmg_in) {
     let obj;
     let i;
@@ -5118,7 +5118,7 @@ export function destroy_items(mon, dmgtyp, dmg_in) {
     return dmg_out;
 }
 
-/** C ref: zap.c:6100 — @param {CPtr} mtmp @param {CInt} oclass @param {CInt} damage @param {CInt} tell @returns {CInt} */
+/** C ref: zap.c:6100 — @param {CPtr<struct monst>} mtmp @param {CInt} oclass @param {CInt} damage @param {CInt} tell @returns {CInt} */
 export function resist(mtmp, oclass, damage, tell) {
     let resisted;
     let alev;
@@ -5231,7 +5231,7 @@ cptr.stPtro(wish_history, 0, null);
 /** C ref: zap.c:6223 — int */
 let wish_history_idx = 0;
 
-/** C ref: zap.c:6227 — @param {CPtr} buf */
+/** C ref: zap.c:6227 — @param {CPtr<char>} buf */
 export function wish_history_add(buf) {
     let i;
     if (!wizard())
@@ -5263,7 +5263,7 @@ export function wish_history_flush() {
     wish_history_idx = 0;
 }
 
-/** C ref: zap.c:6275 — @param {CPtr} buf */
+/** C ref: zap.c:6275 — @param {CPtr<char>} buf */
 function wish_history_menu(buf) {
     let win;
     let any = cptr.alloc(8);
@@ -5372,7 +5372,7 @@ export function makewish() {
 
 const __static_flash_str_fltxt = new Uint8Array(256); /** C ref: zap.c:6433 — char[256] (function-static) */
 
-/** C ref: zap.c:6429 — @param {CInt} typ @param {CInt} nohallu @returns {CPtr} */
+/** C ref: zap.c:6429 — @param {CInt} typ @param {CInt} nohallu @returns {CPtr<char>} */
 export function flash_str(typ, nohallu) {
     typ = zaptype(typ);
     if (Hallucination() && !nohallu) {

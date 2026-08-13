@@ -1685,7 +1685,7 @@ function randrole_filtered() {
     return n ? cptr.ldI32o(set, (rng_log_enabled() ? (rng_log_set_caller(__sl273, 743, __sl275), rn2(n)) : rn2(n)), 4) : randrole(0);
 }
 
-/** C ref: role.c:747 — @param {CPtr} str @returns {CInt} */
+/** C ref: role.c:747 — @param {CPtr<char>} str @returns {CInt} */
 export function str2role(str) {
     let i;
     let len;
@@ -1729,7 +1729,7 @@ export function randrace(rolenum) {
     return (rng_log_enabled() ? (rng_log_set_caller(__sl273, 809, __sl277), rn2((6 - 1) | 0)) : rn2((6 - 1) | 0));
 }
 
-/** C ref: role.c:813 — @param {CPtr} str @returns {CInt} */
+/** C ref: role.c:813 — @param {CPtr<char>} str @returns {CInt} */
 export function str2race(str) {
     let i;
     let len;
@@ -1773,7 +1773,7 @@ export function randgend(rolenum, racenum) {
     return (rng_log_enabled() ? (rng_log_set_caller(__sl273, 876, __sl279), rn2(NHM.ROLE_GENDERS)) : rn2(NHM.ROLE_GENDERS));
 }
 
-/** C ref: role.c:880 — @param {CPtr} str @returns {CInt} */
+/** C ref: role.c:880 — @param {CPtr<char>} str @returns {CInt} */
 export function str2gend(str) {
     let i;
     let len;
@@ -1815,7 +1815,7 @@ export function randalign(rolenum, racenum) {
     return (rng_log_enabled() ? (rng_log_set_caller(__sl273, 939, __sl281), rn2(NHM.ROLE_ALIGNS)) : rn2(NHM.ROLE_ALIGNS));
 }
 
-/** C ref: role.c:943 — @param {CPtr} str @returns {CInt} */
+/** C ref: role.c:943 — @param {CPtr<char>} str @returns {CInt} */
 export function str2align(str) {
     let i;
     let len;
@@ -2057,7 +2057,7 @@ export function rigid_role_checks() {
     }
 }
 
-/** C ref: role.c:1284 — @param {CPtr} bufp @returns {CInt} */
+/** C ref: role.c:1284 — @param {CPtr<char>} bufp @returns {CInt} */
 export function setrolefilter(bufp) {
     let i;
     let reslt = 1;
@@ -2085,7 +2085,7 @@ export function gotrolefilter() {
     return 0;
 }
 
-/** C ref: role.c:1318 — @param {CPtr} outbuf @param {CInt} which @returns {CPtr} */
+/** C ref: role.c:1318 — @param {CPtr<char>} outbuf @param {CInt} which @returns {CPtr<char>} */
 export function rolefilterstring(outbuf, which) {
     let i;
     cptr.st1o(outbuf, 0, cptr.st1o(outbuf, 1, 0));
@@ -2146,7 +2146,7 @@ export function clearrolefilter(which) {
     }
 }
 
-/** C ref: role.c:1384 — @param {CPtr} buf @param {CInt} num_post_attribs @returns {CPtr} */
+/** C ref: role.c:1384 — @param {CPtr<char>} buf @param {CInt} num_post_attribs @returns {CPtr<char>} */
 function promptsep(buf, num_post_attribs) {
     let conjuct = __sl291;
     if (num_post_attribs > 1 && cptr.ld1so(gr, $instance_globals_r_role_post_attribs) < num_post_attribs && cptr.ld1so(gr, $instance_globals_r_role_post_attribs) > 1)
@@ -2188,7 +2188,7 @@ function race_alignmentcount(racenum) {
 
 const __static_root_plselection_prompt_err_ret = cptr.bytes(" character's"); /** C ref: role.c:1437 — char[13] (function-static) */
 
-/** C ref: role.c:1431 — @param {CPtr} suppliedbuf @param {CInt} buflen @param {CInt} rolenum @param {CInt} racenum @param {CInt} gendnum @param {CInt} alignnum @returns {CPtr} */
+/** C ref: role.c:1431 — @param {CPtr<char>} suppliedbuf @param {CInt} buflen @param {CInt} rolenum @param {CInt} racenum @param {CInt} gendnum @param {CInt} alignnum @returns {CPtr<char>} */
 export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, gendnum, alignnum) {
     let k;
     let gendercount = 0;
@@ -2292,7 +2292,7 @@ export function root_plselection_prompt(suppliedbuf, buflen, rolenum, racenum, g
         return cptr.decay(__static_root_plselection_prompt_err_ret);
 }
 
-/** C ref: role.c:1583 — @param {CPtr} buf @param {CInt} buflen @param {CInt} rolenum @param {CInt} racenum @param {CInt} gendnum @param {CInt} alignnum @returns {CPtr} */
+/** C ref: role.c:1583 — @param {CPtr<char>} buf @param {CInt} buflen @param {CInt} rolenum @param {CInt} racenum @param {CInt} gendnum @param {CInt} alignnum @returns {CPtr<char>} */
 export function build_plselection_prompt(buf, buflen, rolenum, racenum, gendnum, alignnum) {
     let defprompt = __sl298;
     let num_post_attribs = 0;
@@ -2654,7 +2654,7 @@ export function role_init() {
     return;
 }
 
-/** C ref: role.c:2120 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: role.c:2120 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function Hello(mtmp) {
     switch (Role_switch()) {
         case NHC.PM_KNIGHT:
@@ -2670,7 +2670,7 @@ export function Hello(mtmp) {
     }
 }
 
-/** C ref: role.c:2143 @returns {CPtr} */
+/** C ref: role.c:2143 @returns {CPtr<char>} */
 export function Goodbye() {
     switch (Role_switch()) {
         case NHC.PM_KNIGHT:
@@ -2686,7 +2686,7 @@ export function Goodbye() {
     }
 }
 
-/** C ref: role.c:2163 — @param {CInt} pmindex @returns {CPtr} */
+/** C ref: role.c:2163 — @param {CInt} pmindex @returns {CPtr<struct Race>} */
 export function character_race(pmindex) {
     let r;
     for (r = races; !cptr.eq(cptr.ldPtr(r), (null)); r = cptr.add(r, 1, 112))

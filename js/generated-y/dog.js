@@ -190,7 +190,7 @@ export const With_you = 1;
 export const After_you = 2;
 export const Wiz_arrive = -1;
 
-/** C ref: dog.c:23 — @param {CPtr} mtmp */
+/** C ref: dog.c:23 — @param {CPtr<struct monst>} mtmp */
 export function* newedog(mtmp) {
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, (yield* newmextra()));
@@ -201,7 +201,7 @@ export function* newedog(mtmp) {
     }
 }
 
-/** C ref: dog.c:35 — @param {CPtr} mtmp */
+/** C ref: dog.c:35 — @param {CPtr<struct monst>} mtmp */
 export function free_edog(mtmp) {
     if (cptr.ldPtro(mtmp, $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog))) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)));
@@ -210,7 +210,7 @@ export function free_edog(mtmp) {
     cptr.st1o(mtmp, $monst_mtame, 0);
 }
 
-/** C ref: dog.c:45 — @param {CPtr} mtmp @param {CInt} everything */
+/** C ref: dog.c:45 — @param {CPtr<struct monst>} mtmp @param {CInt} everything */
 export function* initedog(mtmp, everything) {
     let edogp = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog));
     let minhungry = BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1000n);
@@ -256,7 +256,7 @@ function pet_type() {
         return (rng_log_enabled() ? (rng_log_set_caller(__sl1, 100, __sl2), rn2(2)) : rn2(2)) ? NHC.PM_KITTEN : NHC.PM_LITTLE_DOG;
 }
 
-/** C ref: dog.c:104 — @param {CPtr} otmp @param {CInt} quietly @returns {CPtr} */
+/** C ref: dog.c:104 — @param {CPtr<struct obj>} otmp @param {CInt} quietly @returns {CPtr<struct permonst>} */
 function* pick_familiar_pm(otmp, quietly) {
     let pm = null;
     if (otmp) {
@@ -280,7 +280,7 @@ function* pick_familiar_pm(otmp, quietly) {
     return pm;
 }
 
-/** C ref: dog.c:138 — @param {CPtr} otmp @param {CInt} x @param {CInt} y @param {CInt} quietly @returns {CPtr} */
+/** C ref: dog.c:138 — @param {CPtr<struct obj>} otmp @param {CInt} x @param {CInt} y @param {CInt} quietly @returns {CPtr<struct monst>} */
 export function* make_familiar(otmp, x, y, quietly) {
     let pm;
     let mtmp = null;
@@ -339,7 +339,7 @@ export function* make_familiar(otmp, x, y, quietly) {
     return mtmp;
 }
 
-/** C ref: dog.c:219 @returns {CPtr} */
+/** C ref: dog.c:219 @returns {CPtr<struct monst>} */
 export function* makedog() {
     let mtmp;
     let petname;
@@ -382,7 +382,7 @@ export function* makedog() {
     return mtmp;
 }
 
-/** C ref: dog.c:287 — @param {CPtr} mtmp */
+/** C ref: dog.c:287 — @param {CPtr<struct monst>} mtmp */
 function set_mon_lastmove(mtmp) {
     cptr.stI64o(mtmp, $monst_mlstmv, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
 }
@@ -453,7 +453,7 @@ export function* losedogs() {
     }
 }
 
-/** C ref: dog.c:420 — @param {CPtr} mtmp @param {CInt} when */
+/** C ref: dog.c:420 — @param {CPtr<struct monst>} mtmp @param {CInt} when */
 export function* mon_arrive(mtmp, when) {
     let t;
     let xlocale;
@@ -608,7 +608,7 @@ export function* mon_arrive(mtmp, when) {
     cptr.stI64o(mtmp, $monst_mstate, cptr.ldI64o(mtmp, $monst_mstate) & (-257n));
 }
 
-/** C ref: dog.c:627 — @param {CPtr} mtmp @param {CLongLong} nmv */
+/** C ref: dog.c:627 — @param {CPtr<struct monst>} mtmp @param {CLongLong} nmv */
 export function* mon_catchup_elapsed_time(mtmp, nmv) {
     let imv = 0;
     if (nmv < 0n) {
@@ -678,7 +678,7 @@ export function* mon_catchup_elapsed_time(mtmp, nmv) {
     set_mon_lastmove(mtmp);
 }
 
-/** C ref: dog.c:729 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: dog.c:729 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function* mon_leave(mtmp) {
     let obj;
     let num_segs = 0;
@@ -701,7 +701,7 @@ function* mon_leave(mtmp) {
     return num_segs;
 }
 
-/** C ref: dog.c:768 — @param {CPtr} mon @returns {CInt} */
+/** C ref: dog.c:768 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function keep_mon_accessible(mon) {
     if ((cptr.ldI32o(mon, $monst_iswiz) & 1))
         return 1;
@@ -770,7 +770,7 @@ export function* keepdogs(pets_only) {
     }
 }
 
-/** C ref: dog.c:887 — @param {CPtr} mtmp @param {CInt} tolev @param {CInt} xyloc @param {CPtr} cc */
+/** C ref: dog.c:887 — @param {CPtr<struct monst>} mtmp @param {CInt} tolev @param {CInt} xyloc @param {CPtr<coord>} cc */
 export function* migrate_to_level(mtmp, tolev, xyloc, cc) {
     let new_lev = cptr.alloc(4);
     let xyflags;
@@ -840,7 +840,7 @@ export function* discard_migrations() {
     }
 }
 
-/** C ref: dog.c:995 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: dog.c:995 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* dogfood(mon, obj) {
     let mptr = cptr.ldPtro(mon, $monst_data);
     let fptr;
@@ -934,7 +934,7 @@ export function* dogfood(mon, obj) {
     }
 }
 
-/** C ref: dog.c:1143 — @param {CPtr} mtmp @param {CPtr} obj @param {CInt} givemsg @returns {CInt} */
+/** C ref: dog.c:1143 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} obj @param {CInt} givemsg @returns {CInt} */
 export function* tamedog(mtmp, obj, givemsg) {
     let blessed_scroll = 0;
     if (obj && (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS)) {
@@ -1018,7 +1018,7 @@ export function* tamedog(mtmp, obj, givemsg) {
     return 1;
 }
 
-/** C ref: dog.c:1292 — @param {CPtr} mtmp @param {CInt} was_dead */
+/** C ref: dog.c:1292 — @param {CPtr<struct monst>} mtmp @param {CInt} was_dead */
 export function* wary_dog(mtmp, was_dead) {
     let edog;
     let quietly = was_dead;
@@ -1073,7 +1073,7 @@ export function* wary_dog(mtmp, was_dead) {
     }
 }
 
-/** C ref: dog.c:1362 — @param {CPtr} mtmp */
+/** C ref: dog.c:1362 — @param {CPtr<struct monst>} mtmp */
 export function* abuse_dog(mtmp) {
     if (!cptr.ld1so(mtmp, $monst_mtame))
         return;

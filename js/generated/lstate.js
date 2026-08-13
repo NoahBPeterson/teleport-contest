@@ -77,7 +77,7 @@ const __sl4 = cptr.lit(")");
 
 /** C ref: lstate.c:47 — typedef LG (type alias only, no runtime output) */
 
-/** C ref: lstate.c:71 — @param {CPtr} L @returns {CUInt} */
+/** C ref: lstate.c:71 — @param {CPtr<lua_State>} L @returns {CUInt} */
 function luai_makeseed(L) {
     let buff = new Uint8Array(24);
     let h = cptr.box((Number(BigInt.asUintN(32, ((time(null)))))));
@@ -104,7 +104,7 @@ function luai_makeseed(L) {
     return luaS_hash(cptr.decay(buff), BigInt.asUintN(64, BigInt(p)), h.v);
 }
 
-/** C ref: lstate.c:89 — @param {CPtr} g @param {CLongLong} debt */
+/** C ref: lstate.c:89 — @param {CPtr<global_State>} g @param {CLongLong} debt */
 export function luaE_setdebt(g, debt) {
     let tb = BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));
     (void 0);
@@ -114,14 +114,14 @@ export function luaE_setdebt(g, debt) {
     cptr.stI64o(g, $global_State_GCdebt, debt);
 }
 
-/** C ref: lstate.c:99 — @param {CPtr} L @param {CUInt} limit @returns {CInt} */
+/** C ref: lstate.c:99 — @param {CPtr<lua_State>} L @param {CUInt} limit @returns {CInt} */
 export function lua_setcstacklimit(L, limit) {
     (void (L));
     (void (limit));
     return 200;
 }
 
-/** C ref: lstate.c:105 — @param {CPtr} L @returns {CPtr} */
+/** C ref: lstate.c:105 — @param {CPtr<lua_State>} L @returns {CPtr<CallInfo>} */
 export function luaE_extendCI(L) {
     let ci;
     (void 0);
@@ -135,7 +135,7 @@ export function luaE_extendCI(L) {
     return ci;
 }
 
-/** C ref: lstate.c:122 — @param {CPtr} L */
+/** C ref: lstate.c:122 — @param {CPtr<lua_State>} L */
 function freeCI(L) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let next = cptr.ldPtro(ci, $CallInfo_next);
@@ -147,7 +147,7 @@ function freeCI(L) {
     }
 }
 
-/** C ref: lstate.c:138 — @param {CPtr} L */
+/** C ref: lstate.c:138 — @param {CPtr<lua_State>} L */
 export function luaE_shrinkCI(L) {
     let ci = cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next);
     let next;
@@ -167,7 +167,7 @@ export function luaE_shrinkCI(L) {
     }
 }
 
-/** C ref: lstate.c:165 — @param {CPtr} L */
+/** C ref: lstate.c:165 — @param {CPtr<lua_State>} L */
 export function luaE_checkcstack(L) {
     if (((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) == 200)
         luaG_runerror(L, __sl0);
@@ -175,14 +175,14 @@ export function luaE_checkcstack(L) {
         luaD_errerr(L);
 }
 
-/** C ref: lstate.c:173 — @param {CPtr} L */
+/** C ref: lstate.c:173 — @param {CPtr<lua_State>} L */
 export function luaE_incCstack(L) {
     (cptr.stI32o(L, $lua_State_nCcalls, cptr.ldI32o(L, $lua_State_nCcalls) + 1)) - (1);
     if ((__builtin_expect(BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)), 0n)))
         luaE_checkcstack(L);
 }
 
-/** C ref: lstate.c:180 — @param {CPtr} L1 @param {CPtr} L */
+/** C ref: lstate.c:180 — @param {CPtr<lua_State>} L1 @param {CPtr<lua_State>} L */
 function stack_init(L1, L) {
     let i;
     let ci;
@@ -204,7 +204,7 @@ function stack_init(L1, L) {
     cptr.stPtro(L1, $lua_State_ci, ci);
 }
 
-/** C ref: lstate.c:203 — @param {CPtr} L */
+/** C ref: lstate.c:203 — @param {CPtr<lua_State>} L */
 function freestack(L) {
     if (cptr.eq(cptr.ldPtro(L, $lua_State_stack), (null)))
         return;
@@ -214,7 +214,7 @@ function freestack(L) {
     luaM_free_(L, (cptr.ldPtro(L, $lua_State_stack)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), $lua_State_stack_last), cptr.ldPtro((L), $lua_State_stack)) / 16n))))) + 5) | 0))) * 16n));
 }
 
-/** C ref: lstate.c:216 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lstate.c:216 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function init_registry(L, g) {
     let registry = luaH_new(L);
     {
@@ -244,7 +244,7 @@ function init_registry(L, g) {
     ;
 }
 
-/** C ref: lstate.c:231 — @param {CPtr} L @param {CPtr} ud */
+/** C ref: lstate.c:231 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud */
 function f_luaopen(L, ud) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void (ud));
@@ -258,7 +258,7 @@ function f_luaopen(L, ud) {
     (void L);
 }
 
-/** C ref: lstate.c:249 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lstate.c:249 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function preinit_thread(L, g) {
     cptr.stPtro(L, $lua_State_l_G, g);
     cptr.stPtro(L, $lua_State_stack, null);
@@ -278,7 +278,7 @@ function preinit_thread(L, g) {
     cptr.stI32o(L, $lua_State_oldpc, 0);
 }
 
-/** C ref: lstate.c:269 — @param {CPtr} L */
+/** C ref: lstate.c:269 — @param {CPtr<lua_State>} L */
 function close_state(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     if (!(((((cptr.ld1uo(((cptr.add(g, $global_State_nilvalue))), $TValue_tt_))) & 15)) == 0))
@@ -297,7 +297,7 @@ function close_state(L) {
     (cptr.ldPtr(g))(cptr.ldPtro(g, $global_State_ud), (((cptr.add((((L))), -(8n))))), 1624n, 0n);
 }
 
-/** C ref: lstate.c:288 — @param {CPtr} L @returns {CPtr} */
+/** C ref: lstate.c:288 — @param {CPtr<lua_State>} L @returns {CPtr<lua_State>} */
 export function lua_newthread(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let o;
@@ -340,7 +340,7 @@ export function lua_newthread(L) {
     return L1;
 }
 
-/** C ref: lstate.c:315 — @param {CPtr} L @param {CPtr} L1 */
+/** C ref: lstate.c:315 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} L1 */
 export function luaE_freethread(L, L1) {
     let l = (((cptr.add((((L1))), -(8n)))));
     luaF_closeupval(L1, cptr.ldPtro(L1, $lua_State_stack));
@@ -350,7 +350,7 @@ export function luaE_freethread(L, L1) {
     luaM_free_(L, (l), 208n);
 }
 
-/** C ref: lstate.c:325 — @param {CPtr} L @param {CInt} status @returns {CInt} */
+/** C ref: lstate.c:325 — @param {CPtr<lua_State>} L @param {CInt} status @returns {CInt} */
 export function luaE_resetthread(L, status) {
     let ci = cptr.stPtro(L, $lua_State_ci, cptr.add(L, $lua_State_base_ci));
     (cptr.st1o((((cptr.ldPtro(L, $lua_State_stack)))), $TValue_tt_, 0));
@@ -370,7 +370,7 @@ export function luaE_resetthread(L, status) {
     return status;
 }
 
-/** C ref: lstate.c:345 — @param {CPtr} L @param {CPtr} from @returns {CInt} */
+/** C ref: lstate.c:345 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} from @returns {CInt} */
 export function lua_closethread(L, from) {
     let status;
     (void 0);
@@ -380,12 +380,12 @@ export function lua_closethread(L, from) {
     return status;
 }
 
-/** C ref: lstate.c:358 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstate.c:358 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function lua_resetthread(L) {
     return lua_closethread(L, null);
 }
 
-/** C ref: lstate.c:363 — @param {CPtr} f @param {CPtr} ud @returns {CPtr} */
+/** C ref: lstate.c:363 — @param {CPtr} f @param {CPtr<void>} ud @returns {CPtr<lua_State>} */
 export function lua_newstate(f, ud) {
     let i;
     let L;
@@ -447,21 +447,21 @@ export function lua_newstate(f, ud) {
     return L;
 }
 
-/** C ref: lstate.c:419 — @param {CPtr} L */
+/** C ref: lstate.c:419 — @param {CPtr<lua_State>} L */
 export function lua_close(L) {
     (void 0);
     L = cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread);
     close_state(L);
 }
 
-/** C ref: lstate.c:426 — @param {CPtr} L @param {CPtr} msg @param {CInt} tocont */
+/** C ref: lstate.c:426 — @param {CPtr<lua_State>} L @param {CPtr<char>} msg @param {CInt} tocont */
 export function luaE_warning(L, msg, tocont) {
     let wf = cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_warnf);
     if (wf !== (null))
         wf(cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_ud_warn), msg, tocont);
 }
 
-/** C ref: lstate.c:436 — @param {CPtr} L @param {CPtr} where */
+/** C ref: lstate.c:436 — @param {CPtr<lua_State>} L @param {CPtr<char>} where */
 export function luaE_warnerror(L, where) {
     let errobj = ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)));
     let msg = ((((((cptr.ld1uo(((errobj)), $TValue_tt_))) & 15)) == 4)) ? (cptr.add((((((((cptr.ldPtr(((errobj)))))))))), $TString_contents)) : __sl1;

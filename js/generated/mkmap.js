@@ -375,7 +375,7 @@ export function litstate_rnd(litstate) {
     return schar(litstate);
 }
 
-/** C ref: mkmap.c:451 — @param {CPtr} init_lev */
+/** C ref: mkmap.c:451 — @param {CPtr<lev_init>} init_lev */
 export function mkmap(init_lev) {
     let bg_typ = cptr.ld1so(init_lev, $lev_init_bg);
     let fg_typ = cptr.ld1so(init_lev, $lev_init_fg);

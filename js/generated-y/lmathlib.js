@@ -52,7 +52,7 @@ const __sl30 = cptr.lit("huge");
 const __sl31 = cptr.lit("maxinteger");
 const __sl32 = cptr.lit("mininteger");
 
-/** C ref: lmathlib.c:29 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:29 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_abs(L) {
     if (lua_isinteger(L, 1)) {
         let n = (yield* lua_tointegerx(L, 1, null));
@@ -64,37 +64,37 @@ function* math_abs(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:40 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:40 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_sin(L) {
     (yield* lua_pushnumber(L, sin((yield* luaL_checknumber(L, 1)))));
     return 1;
 }
 
-/** C ref: lmathlib.c:45 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:45 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_cos(L) {
     (yield* lua_pushnumber(L, cos((yield* luaL_checknumber(L, 1)))));
     return 1;
 }
 
-/** C ref: lmathlib.c:50 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:50 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_tan(L) {
     (yield* lua_pushnumber(L, tan((yield* luaL_checknumber(L, 1)))));
     return 1;
 }
 
-/** C ref: lmathlib.c:55 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:55 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_asin(L) {
     (yield* lua_pushnumber(L, asin((yield* luaL_checknumber(L, 1)))));
     return 1;
 }
 
-/** C ref: lmathlib.c:60 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:60 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_acos(L) {
     (yield* lua_pushnumber(L, acos((yield* luaL_checknumber(L, 1)))));
     return 1;
 }
 
-/** C ref: lmathlib.c:65 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:65 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_atan(L) {
     let y = (yield* luaL_checknumber(L, 1));
     let x = (yield* luaL_optnumber(L, 2, 1));
@@ -102,7 +102,7 @@ function* math_atan(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:73 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:73 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_toint(L) {
     let valid = cptr.box(0);
     let n = (yield* lua_tointegerx(L, 1, valid));
@@ -115,7 +115,7 @@ function* math_toint(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:86 — @param {CPtr} L @param {CDouble} d */
+/** C ref: lmathlib.c:86 — @param {CPtr<lua_State>} L @param {CDouble} d */
 function* pushnumint(L, d) {
     let n = cptr.box(0n);
     if (((d) >= Number((-9223372036854775808n)) && (d) < -Number((-9223372036854775808n)) && (cptr.stI64((n), BigInt.asIntN(64, BigInt(Math.trunc((d))))), 1)))
@@ -124,7 +124,7 @@ function* pushnumint(L, d) {
         (yield* lua_pushnumber(L, d));
 }
 
-/** C ref: lmathlib.c:95 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:95 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_floor(L) {
     if (lua_isinteger(L, 1))
         (yield* lua_settop(L, 1));
@@ -135,7 +135,7 @@ function* math_floor(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:106 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:106 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_ceil(L) {
     if (lua_isinteger(L, 1))
         (yield* lua_settop(L, 1));
@@ -146,7 +146,7 @@ function* math_ceil(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:117 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:117 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_fmod(L) {
     if (lua_isinteger(L, 1) && lua_isinteger(L, 2)) {
         let d = (yield* lua_tointegerx(L, 2, null));
@@ -160,7 +160,7 @@ function* math_fmod(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:139 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:139 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_modf(L) {
     if (lua_isinteger(L, 1)) {
         (yield* lua_settop(L, 1));
@@ -174,13 +174,13 @@ function* math_modf(L) {
     return 2;
 }
 
-/** C ref: lmathlib.c:156 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:156 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_sqrt(L) {
     (yield* lua_pushnumber(L, sqrt((yield* luaL_checknumber(L, 1)))));
     return 1;
 }
 
-/** C ref: lmathlib.c:162 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:162 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_ult(L) {
     let a = (yield* luaL_checkinteger(L, 1));
     let b = (yield* luaL_checkinteger(L, 2));
@@ -188,7 +188,7 @@ function* math_ult(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:169 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:169 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_log(L) {
     let x = (yield* luaL_checknumber(L, 1));
     let res;
@@ -207,25 +207,25 @@ function* math_log(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:190 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:190 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_exp(L) {
     (yield* lua_pushnumber(L, exp((yield* luaL_checknumber(L, 1)))));
     return 1;
 }
 
-/** C ref: lmathlib.c:195 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:195 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_deg(L) {
     (yield* lua_pushnumber(L, (yield* luaL_checknumber(L, 1)) * (180 / (3.1415926535897931))));
     return 1;
 }
 
-/** C ref: lmathlib.c:200 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:200 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_rad(L) {
     (yield* lua_pushnumber(L, (yield* luaL_checknumber(L, 1)) * ((3.1415926535897931) / 180)));
     return 1;
 }
 
-/** C ref: lmathlib.c:206 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:206 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_min(L) {
     let n = lua_gettop(L);
     let imin = 1;
@@ -239,7 +239,7 @@ function* math_min(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:220 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:220 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_max(L) {
     let n = lua_gettop(L);
     let imax = 1;
@@ -253,7 +253,7 @@ function* math_max(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:234 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:234 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_type(L) {
     if (lua_type(L, 1) == 3)
         (yield* lua_pushstring(L, (lua_isinteger(L, 1)) ? __sl2 : __sl3));
@@ -269,7 +269,7 @@ function rotl(x, n) {
     return (x << BigInt.asUintN(64, BigInt(n))) | (((x) & 18446744073709551615n) >> BigInt.asUintN(64, BigInt(((64 - n) | 0))));
 }
 
-/** C ref: lmathlib.c:320 — @param {CPtr} state @returns {CLongLong} */
+/** C ref: lmathlib.c:320 — @param {CPtr<unsigned long>} state @returns {CLongLong} */
 function nextrand(state) {
     let state0 = cptr.ldU64o(state, 0, 8);
     let state1 = cptr.ldU64o(state, 1, 8);
@@ -297,7 +297,7 @@ function I2d(x) {
 
 /** C ref: lmathlib.c:536 — typedef RanState (type alias only, no runtime output) */
 
-/** C ref: lmathlib.c:549 — @param {CLongLong} ran @param {CLongLong} n @param {CPtr} state @returns {*} */
+/** C ref: lmathlib.c:549 — @param {CLongLong} ran @param {CLongLong} n @param {CPtr<RanState>} state @returns {*} */
 function project(ran, n, state) {
     if ((n & (BigInt.asUintN(64, n + 1n))) == 0n)
         return ran & n;
@@ -316,7 +316,7 @@ function project(ran, n, state) {
     }
 }
 
-/** C ref: lmathlib.c:574 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:574 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_random(L) {
     let low;
     let up;
@@ -354,7 +354,7 @@ function* math_random(L) {
     return 1;
 }
 
-/** C ref: lmathlib.c:609 — @param {CPtr} L @param {CPtr} state @param {CLongLong} n1 @param {CLongLong} n2 */
+/** C ref: lmathlib.c:609 — @param {CPtr<lua_State>} L @param {CPtr<unsigned long>} state @param {CLongLong} n1 @param {CLongLong} n2 */
 function* setseed(L, state, n1, n2) {
     let i;
     cptr.stU64o(state, 0, ((n1)), 8);
@@ -367,14 +367,14 @@ function* setseed(L, state, n1, n2) {
     (yield* lua_pushinteger(L, BigInt.asIntN(64, n2)));
 }
 
-/** C ref: lmathlib.c:628 — @param {CPtr} L @param {CPtr} state */
+/** C ref: lmathlib.c:628 — @param {CPtr<lua_State>} L @param {CPtr<RanState>} state */
 function* randseed(L, state) {
     let seed1 = BigInt.asUintN(64, time(null));
     let seed2 = cptr.addr(L);
     (yield* setseed(L, state, seed1, seed2));
 }
 
-/** C ref: lmathlib.c:635 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:635 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* math_randomseed(L) {
     let state = lua_touserdata(L, -1001001);
     if ((lua_type(L, 1) == -1)) {
@@ -396,7 +396,7 @@ cptr.stPtro(randfuncs, 16 + $luaL_Reg_func, math_randomseed);
 cptr.stPtro(randfuncs, 32, null);
 cptr.stPtro(randfuncs, 32 + $luaL_Reg_func, null);
 
-/** C ref: lmathlib.c:659 — @param {CPtr} L */
+/** C ref: lmathlib.c:659 — @param {CPtr<lua_State>} L */
 function* setrandfunc(L) {
     let state = (yield* lua_newuserdatauv(L, 32n, 0));
     (yield* randseed(L, state));
@@ -463,7 +463,7 @@ cptr.stPtro(mathlib, 416 + $luaL_Reg_func, null);
 cptr.stPtro(mathlib, 432, null);
 cptr.stPtro(mathlib, 432 + $luaL_Reg_func, null);
 
-/** C ref: lmathlib.c:768 — @param {CPtr} L @returns {CInt} */
+/** C ref: lmathlib.c:768 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* luaopen_math(L) {
     ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 448n / 16n - 1n))))), (yield* luaL_setfuncs(L, mathlib, 0)));
     (yield* lua_pushnumber(L, (3.1415926535897931)));

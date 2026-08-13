@@ -129,7 +129,7 @@ const __sl59 = cptr.lit("None of your discoveries can be assigned names...");
 const __sl60 = cptr.lit("Pick an object type to name");
 const __sl61 = cptr.lit("%c");
 
-/** C ref: o_init.c:54 — @param {CPtr} dlev */
+/** C ref: o_init.c:54 — @param {CPtr<d_level>} dlev */
 function setgemprobs(dlev) {
     let j;
     let first;
@@ -282,7 +282,7 @@ export function init_oclass_probs() {
     }
 }
 
-/** C ref: o_init.c:269 — @param {CInt} otyp @param {CPtr} lo_p @param {CPtr} hi_p */
+/** C ref: o_init.c:269 — @param {CInt} otyp @param {CPtr<int>} lo_p @param {CPtr<int>} hi_p */
 export function obj_shuffle_range(otyp, lo_p, hi_p) {
     let i;
     let ocls = cptr.ld1so2(objects, otyp, 120, $objclass_oc_class);
@@ -346,7 +346,7 @@ function shuffle_all() {
     return;
 }
 
-/** C ref: o_init.c:352 — @param {CPtr} obj @param {CPtr} descr @returns {CInt} */
+/** C ref: o_init.c:352 — @param {CPtr<struct obj>} obj @param {CPtr<char>} descr @returns {CInt} */
 export function objdescr_is(obj, descr) {
     let objdescr;
     if (!obj) {
@@ -364,7 +364,7 @@ export function oinit() {
     setgemprobs(cptr.add(u, $you_uz));
 }
 
-/** C ref: o_init.c:375 — @param {CPtr} nhfp */
+/** C ref: o_init.c:375 — @param {CPtr<NHFILE>} nhfp */
 export function savenames(nhfp) {
     let i;
     let len = cptr.box(0);
@@ -393,7 +393,7 @@ export function savenames(nhfp) {
         }
 }
 
-/** C ref: o_init.c:411 — @param {CPtr} nhfp */
+/** C ref: o_init.c:411 — @param {CPtr<NHFILE>} nhfp */
 export function restnames(nhfp) {
     let i;
     let len = cptr.box(0);
@@ -417,7 +417,7 @@ export function restnames(nhfp) {
     }
 }
 
-/** C ref: o_init.c:442 — @param {CPtr} obj */
+/** C ref: o_init.c:442 — @param {CPtr<struct obj>} obj */
 export function observe_object(obj) {
     let oindx = cptr.ldI16o(obj, $obj_otyp);
     if (oindx >= NHC.FIRST_OBJECT && !Hallucination()) {
@@ -486,7 +486,7 @@ cptr.stI16o(uniq_objs, 2, NHC.BELL_OF_OPENING);
 cptr.stI16o(uniq_objs, 4, NHC.SPE_BOOK_OF_THE_DEAD);
 cptr.stI16o(uniq_objs, 6, NHC.CANDELABRUM_OF_INVOCATION);
 
-/** C ref: o_init.c:553 — @param {CPtr} v1 @param {CPtr} v2 @returns {CInt} */
+/** C ref: o_init.c:553 — @param {CPtr<void>} v1 @param {CPtr<void>} v2 @returns {CInt} */
 function discovered_cmp(v1, v2) {
     let s1 = cptr.ldPtr(v1);
     let s2 = cptr.ldPtr(v2);
@@ -497,7 +497,7 @@ function discovered_cmp(v1, v2) {
     return res;
 }
 
-/** C ref: o_init.c:567 — @param {CInt} otyp @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: o_init.c:567 — @param {CInt} otyp @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 function sortloot_descr(otyp, outbuf) {
     let sl_cookie = cptr.alloc(24);
     let o = cptr.alloc(216);
@@ -563,7 +563,7 @@ export function choose_disco_sort(mode) {
     return n;
 }
 
-/** C ref: o_init.c:661 — @param {CInt} otyp @returns {CPtr} */
+/** C ref: o_init.c:661 — @param {CInt} otyp @returns {CPtr<char>} */
 function disco_typename(otyp) {
     let result = obj_typename(otyp);
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) && Japanese_item_name(otyp, null)) {
@@ -584,7 +584,7 @@ function disco_typename(otyp) {
     return result;
 }
 
-/** C ref: o_init.c:694 — @param {CPtr} buf @param {CInt} dis */
+/** C ref: o_init.c:694 — @param {CPtr<char>} buf @param {CInt} dis */
 function disco_append_typename(buf, dis) {
     let len = cptr.strlen(buf);
     let p;
@@ -606,14 +606,14 @@ function disco_append_typename(buf, dis) {
     append_price_quote(buf, eos, dis);
 }
 
-/** C ref: o_init.c:725 — @param {CInt} uidx @param {CPtr} outbuf */
+/** C ref: o_init.c:725 — @param {CInt} uidx @param {CPtr<char>} outbuf */
 function disco_fmt_uniq(uidx, outbuf) {
     void cptr.sprintf(outbuf, __sl38, (cptr.ldI32o2(objects, uidx, 120, $objclass_oc_name_known) & 1) | 0 ? (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, uidx, 120))), 16)) : (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, uidx, 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr)));
     if (!(cptr.ldI32o2(objects, uidx, 120, $objclass_oc_name_known) & 1) && cptr.ld1so2(objects, uidx, 120, $objclass_oc_class) == NHC.SPBOOK_CLASS)
         void cptr.strcat(outbuf, __sl39);
 }
 
-/** C ref: o_init.c:741 — @param {CInt} tmpwin @param {CPtr} sorted_lines @param {CInt} sorted_ct @param {CInt} lootsort */
+/** C ref: o_init.c:741 — @param {CInt} tmpwin @param {CPtr<char *>} sorted_lines @param {CInt} sorted_ct @param {CInt} lootsort */
 function disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort) {
     let p;
     let j;
@@ -723,7 +723,7 @@ export function dodiscovered() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: o_init.c:877 — @param {CInt} oclass @param {CPtr} buf @returns {CPtr} */
+/** C ref: o_init.c:877 — @param {CInt} oclass @param {CPtr<char>} buf @returns {CPtr<char>} */
 function oclass_to_name(oclass, buf) {
     let s;
     void cptr.strcpy(buf, let_to_name(oclass, 0, 0));
@@ -985,7 +985,7 @@ export function rename_disco() {
     return;
 }
 
-/** C ref: o_init.c:1210 — @param {CPtr} opts @param {CInt} cnf */
+/** C ref: o_init.c:1210 — @param {CPtr<char>} opts @param {CInt} cnf */
 export function get_sortdisco(opts, cnf) {
     let p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, $flag_discosort));
     if (!p)

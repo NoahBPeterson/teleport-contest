@@ -15,7 +15,7 @@ const $nhmd4_context_a = FLD.nhmd4_context_a, $nhmd4_context_b = FLD.nhmd4_conte
     $nhmd4_context_c = FLD.nhmd4_context_c, $nhmd4_context_d = FLD.nhmd4_context_d,
     $nhmd4_context_hi = FLD.nhmd4_context_hi;
 
-/** C ref: nhmd4.c:83 — @param {CPtr} ctx @param {CPtr} data @param {CLongLong} size @returns {CPtr} */
+/** C ref: nhmd4.c:83 — @param {CPtr<struct nhmd4_context>} ctx @param {CPtr<unsigned char>} data @param {CLongLong} size @returns {CPtr<unsigned char>} */
 function nhmd4_body(ctx, data, size) {
     let ptr;
     let a;
@@ -97,7 +97,7 @@ function nhmd4_body(ctx, data, size) {
     return ptr;
 }
 
-/** C ref: nhmd4.c:183 — @param {CPtr} ctx */
+/** C ref: nhmd4.c:183 — @param {CPtr<struct nhmd4_context>} ctx */
 export function nhmd4_init(ctx) {
     cptr.stI32o(ctx, $nhmd4_context_a, 1732584193);
     cptr.stI32o(ctx, $nhmd4_context_b, 4023233417);
@@ -107,7 +107,7 @@ export function nhmd4_init(ctx) {
     cptr.stI32o(ctx, $nhmd4_context_hi, 0);
 }
 
-/** C ref: nhmd4.c:196 — @param {CPtr} ctx @param {CPtr} data @param {CLongLong} size */
+/** C ref: nhmd4.c:196 — @param {CPtr<struct nhmd4_context>} ctx @param {CPtr<unsigned char>} data @param {CLongLong} size */
 export function nhmd4_update(ctx, data, size) {
     let saved_lo;
     let used;
@@ -135,7 +135,7 @@ export function nhmd4_update(ctx, data, size) {
     cptr.memcpy(cptr.add(ctx, $nhmd4_context_buffer), data, size);
 }
 
-/** C ref: nhmd4.c:235 — @param {CPtr} ctx @param {CPtr} result */
+/** C ref: nhmd4.c:235 — @param {CPtr<struct nhmd4_context>} ctx @param {CPtr<unsigned char>} result */
 export function nhmd4_final(ctx, result) {
     let used;
     let free;

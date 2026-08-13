@@ -75,7 +75,7 @@ const $CClosure_gclist = FLD.CClosure_gclist, $CClosure_nupvalues = FLD.CClosure
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("__gc");
 
-/** C ref: lgc.c:125 — @param {CPtr} o @returns {CPtr} */
+/** C ref: lgc.c:125 — @param {CPtr<GCObject>} o @returns {CPtr<GCObject *>} */
 function getgclist(o) {
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 5:
@@ -100,7 +100,7 @@ function getgclist(o) {
     }
 }
 
-/** C ref: lgc.c:148 — @param {CPtr} o @param {CPtr} pnext @param {CPtr} list */
+/** C ref: lgc.c:148 — @param {CPtr<GCObject>} o @param {CPtr<GCObject *>} pnext @param {CPtr<GCObject *>} list */
 function linkgclist_(o, pnext, list) {
     (void 0);
     cptr.stPtr(pnext, cptr.ldPtr(list));
@@ -108,14 +108,14 @@ function linkgclist_(o, pnext, list) {
     (cptr.st1o(o, $GCObject_marked, cptr.ld1uo(o, $GCObject_marked) & 199));
 }
 
-/** C ref: lgc.c:171 — @param {CPtr} n */
+/** C ref: lgc.c:171 — @param {CPtr<Node>} n */
 function clearkey(n) {
     (void 0);
     if (((cptr.ld1uo((n), $NodeKey_key_tt)) & 64))
         (cptr.st1o((n), $NodeKey_key_tt, 11));
 }
 
-/** C ref: lgc.c:185 — @param {CPtr} g @param {CPtr} o @returns {CInt} */
+/** C ref: lgc.c:185 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} o @returns {CInt} */
 function iscleared(g, o) {
     if (cptr.eq(o, (null)))
         return 0;
@@ -130,7 +130,7 @@ function iscleared(g, o) {
         return ((cptr.ld1uo((o), $GCObject_marked)) & 24);
 }
 
-/** C ref: lgc.c:208 — @param {CPtr} L @param {CPtr} o @param {CPtr} v */
+/** C ref: lgc.c:208 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o @param {CPtr<GCObject>} v */
 export function luaC_barrier_(L, o, v) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
@@ -147,7 +147,7 @@ export function luaC_barrier_(L, o, v) {
     }
 }
 
-/** C ref: lgc.c:230 — @param {CPtr} L @param {CPtr} o */
+/** C ref: lgc.c:230 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o */
 export function luaC_barrierback_(L, o) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
@@ -160,7 +160,7 @@ export function luaC_barrierback_(L, o) {
         (cptr.st1o((o), $GCObject_marked, (uchar((((cptr.ld1uo((o), $GCObject_marked) & -8) | 5))))));
 }
 
-/** C ref: lgc.c:243 — @param {CPtr} L @param {CPtr} o */
+/** C ref: lgc.c:243 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o */
 export function luaC_fix(L, o) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
@@ -171,7 +171,7 @@ export function luaC_fix(L, o) {
     cptr.stPtro(g, $global_State_fixedgc, o);
 }
 
-/** C ref: lgc.c:258 — @param {CPtr} L @param {CInt} tt @param {CLongLong} sz @param {CLongLong} offset @returns {CPtr} */
+/** C ref: lgc.c:258 — @param {CPtr<lua_State>} L @param {CInt} tt @param {CLongLong} sz @param {CLongLong} offset @returns {CPtr<GCObject>} */
 export function* luaC_newobjdt(L, tt, sz, offset) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let p = ((((yield* luaM_malloc_(L, (sz), ((tt) & 15))))));
@@ -183,12 +183,12 @@ export function* luaC_newobjdt(L, tt, sz, offset) {
     return o;
 }
 
-/** C ref: lgc.c:270 — @param {CPtr} L @param {CInt} tt @param {CLongLong} sz @returns {CPtr} */
+/** C ref: lgc.c:270 — @param {CPtr<lua_State>} L @param {CInt} tt @param {CLongLong} sz @returns {CPtr<GCObject>} */
 export function* luaC_newobj(L, tt, sz) {
     return (yield* luaC_newobjdt(L, tt, sz, 0n));
 }
 
-/** C ref: lgc.c:297 — @param {CPtr} g @param {CPtr} o */
+/** C ref: lgc.c:297 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} o */
 function reallymarkobject(g, o) {
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 4:
@@ -243,7 +243,7 @@ function reallymarkobject(g, o) {
     }
 }
 
-/** C ref: lgc.c:335 — @param {CPtr} g */
+/** C ref: lgc.c:335 — @param {CPtr<global_State>} g */
 function markmt(g) {
     let i;
     for (i = 0; i < 9; i++) {
@@ -256,7 +256,7 @@ function markmt(g) {
     ;
 }
 
-/** C ref: lgc.c:345 — @param {CPtr} g @returns {*} */
+/** C ref: lgc.c:345 — @param {CPtr<global_State>} g @returns {*} */
 function markbeingfnz(g) {
     let o;
     let count = 0n;
@@ -271,7 +271,7 @@ function markbeingfnz(g) {
     return count;
 }
 
-/** C ref: lgc.c:367 — @param {CPtr} g @returns {CInt} */
+/** C ref: lgc.c:367 — @param {CPtr<global_State>} g @returns {CInt} */
 function remarkupvals(g) {
     let thread;
     let p = cptr.add(g, $global_State_twups);
@@ -303,13 +303,13 @@ function remarkupvals(g) {
     return work;
 }
 
-/** C ref: lgc.c:394 — @param {CPtr} g */
+/** C ref: lgc.c:394 — @param {CPtr<global_State>} g */
 function cleargraylists(g) {
     cptr.stPtro(g, $global_State_gray, cptr.stPtro(g, $global_State_grayagain, null));
     cptr.stPtro(g, $global_State_weak, cptr.stPtro(g, $global_State_allweak, cptr.stPtro(g, $global_State_ephemeron, null)));
 }
 
-/** C ref: lgc.c:403 — @param {CPtr} g */
+/** C ref: lgc.c:403 — @param {CPtr<global_State>} g */
 function restartcollection(g) {
     cleargraylists(g);
     {
@@ -327,7 +327,7 @@ function restartcollection(g) {
     markbeingfnz(g);
 }
 
-/** C ref: lgc.c:430 — @param {CPtr} g @param {CPtr} o */
+/** C ref: lgc.c:430 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} o */
 function genlink(g, o) {
     (void 0);
     if ((cptr.ld1uo((o), $GCObject_marked) & 7) == 5) {
@@ -336,7 +336,7 @@ function genlink(g, o) {
         (cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) ^ 2));
 }
 
-/** C ref: lgc.c:446 — @param {CPtr} g @param {CPtr} h */
+/** C ref: lgc.c:446 — @param {CPtr<global_State>} g @param {CPtr<Table>} h */
 function traverseweakvalue(g, h) {
     let n;
     let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
@@ -361,7 +361,7 @@ function traverseweakvalue(g, h) {
         linkgclist_(((((h)))), cptr.add((h), $Table_gclist), cptr.add(g, $global_State_grayagain));
 }
 
-/** C ref: lgc.c:480 — @param {CPtr} g @param {CPtr} h @param {CInt} inv @returns {CInt} */
+/** C ref: lgc.c:480 — @param {CPtr<global_State>} g @param {CPtr<Table>} h @param {CInt} inv @returns {CInt} */
 function traverseephemeron(g, h, inv) {
     let marked = 0;
     let hasclears = 0;
@@ -399,7 +399,7 @@ function traverseephemeron(g, h, inv) {
     return marked;
 }
 
-/** C ref: lgc.c:523 — @param {CPtr} g @param {CPtr} h */
+/** C ref: lgc.c:523 — @param {CPtr<global_State>} g @param {CPtr<Table>} h */
 function traversestrongtable(g, h) {
     let n;
     let limit = (cptr.add(cptr.ldPtro((h), $Table_node), (BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((h), $Table_lsizenode))))))))), 24));
@@ -432,7 +432,7 @@ function traversestrongtable(g, h) {
     genlink(g, ((((h)))));
 }
 
-/** C ref: lgc.c:542 — @param {CPtr} g @param {CPtr} h @returns {*} */
+/** C ref: lgc.c:542 — @param {CPtr<global_State>} g @param {CPtr<Table>} h @returns {*} */
 function traversetable(g, h) {
     let weakkey;
     let weakvalue;
@@ -458,7 +458,7 @@ function traversetable(g, h) {
     return BigInt(((((1 + cptr.ldI32o(h, $Table_alimit)) >>> 0) + (Math.imul(2, ((cptr.eq(cptr.ldPtro((h), $Table_lastfree), (null))) ? 0 : ((1 << (cptr.ld1uo((h), $Table_lsizenode)))))) >>> 0)) >>> 0) >>> 0);
 }
 
-/** C ref: lgc.c:565 — @param {CPtr} g @param {CPtr} u @returns {CInt} */
+/** C ref: lgc.c:565 — @param {CPtr<global_State>} g @param {CPtr<Udata>} u @returns {CInt} */
 function traverseudata(g, u) {
     let i;
     {
@@ -479,7 +479,7 @@ function traverseudata(g, u) {
     return (1 + cptr.ldU16o(u, $Udata_nuvalue)) | 0;
 }
 
-/** C ref: lgc.c:580 — @param {CPtr} g @param {CPtr} f @returns {CInt} */
+/** C ref: lgc.c:580 — @param {CPtr<global_State>} g @param {CPtr<Proto>} f @returns {CInt} */
 function traverseproto(g, f) {
     let i;
     {
@@ -523,7 +523,7 @@ function traverseproto(g, f) {
     return (((((((1 + cptr.ldI32o(f, $Proto_sizek)) | 0) + cptr.ldI32o(f, $Proto_sizeupvalues)) | 0) + cptr.ldI32o(f, $Proto_sizep)) | 0) + cptr.ldI32o(f, $Proto_sizelocvars)) | 0;
 }
 
-/** C ref: lgc.c:595 — @param {CPtr} g @param {CPtr} cl @returns {CInt} */
+/** C ref: lgc.c:595 — @param {CPtr<global_State>} g @param {CPtr<CClosure>} cl @returns {CInt} */
 function traverseCclosure(g, cl) {
     let i;
     for (i = 0; i < cptr.ld1uo(cl, $CClosure_nupvalues); i++) {
@@ -535,7 +535,7 @@ function traverseCclosure(g, cl) {
     return (1 + cptr.ld1uo(cl, $CClosure_nupvalues)) | 0;
 }
 
-/** C ref: lgc.c:606 — @param {CPtr} g @param {CPtr} cl @returns {CInt} */
+/** C ref: lgc.c:606 — @param {CPtr<global_State>} g @param {CPtr<LClosure>} cl @returns {CInt} */
 function traverseLclosure(g, cl) {
     let i;
     {
@@ -560,7 +560,7 @@ function traverseLclosure(g, cl) {
     return (1 + cptr.ld1uo(cl, $LClosure_nupvalues)) | 0;
 }
 
-/** C ref: lgc.c:629 — @param {CPtr} g @param {CPtr} th @returns {CInt} */
+/** C ref: lgc.c:629 — @param {CPtr<global_State>} g @param {CPtr<lua_State>} th @returns {CInt} */
 function* traversethread(g, th) {
     let uv;
     let o = cptr.ldPtro(th, $lua_State_stack);
@@ -593,7 +593,7 @@ function* traversethread(g, th) {
     return (1 + (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((th), $lua_State_stack_last), cptr.ldPtro((th), $lua_State_stack)) / 16n)))))) | 0;
 }
 
-/** C ref: lgc.c:660 — @param {CPtr} g @returns {*} */
+/** C ref: lgc.c:660 — @param {CPtr<global_State>} g @returns {*} */
 function* propagatemark(g) {
     let o = cptr.ldPtro(g, $global_State_gray);
     ((cptr.st1o((o), $GCObject_marked, cptr.ld1uo((o), $GCObject_marked) | 32)));
@@ -617,7 +617,7 @@ function* propagatemark(g) {
     }
 }
 
-/** C ref: lgc.c:676 — @param {CPtr} g @returns {*} */
+/** C ref: lgc.c:676 — @param {CPtr<global_State>} g @returns {*} */
 function* propagateall(g) {
     let tot = 0n;
     while (cptr.ldPtro(g, $global_State_gray))
@@ -625,7 +625,7 @@ function* propagateall(g) {
     return tot;
 }
 
-/** C ref: lgc.c:691 — @param {CPtr} g */
+/** C ref: lgc.c:691 — @param {CPtr<global_State>} g */
 function* convergeephemerons(g) {
     let changed;
     let dir = 0;
@@ -647,7 +647,7 @@ function* convergeephemerons(g) {
     } while (changed);
 }
 
-/** C ref: lgc.c:725 — @param {CPtr} g @param {CPtr} l */
+/** C ref: lgc.c:725 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} l */
 function clearbykeys(g, l) {
     for (; l; l = cptr.ldPtro((((((l))))), $Table_gclist)) {
         let h = (((((l)))));
@@ -662,7 +662,7 @@ function clearbykeys(g, l) {
     }
 }
 
-/** C ref: lgc.c:744 — @param {CPtr} g @param {CPtr} l @param {CPtr} f */
+/** C ref: lgc.c:744 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} l @param {CPtr<GCObject>} f */
 function clearbyvalues(g, l, f) {
     for (; !cptr.eq(l, f); l = cptr.ldPtro((((((l))))), $Table_gclist)) {
         let h = (((((l)))));
@@ -684,14 +684,14 @@ function clearbyvalues(g, l, f) {
     }
 }
 
-/** C ref: lgc.c:765 — @param {CPtr} L @param {CPtr} uv */
+/** C ref: lgc.c:765 — @param {CPtr<lua_State>} L @param {CPtr<UpVal>} uv */
 function* freeupval(L, uv) {
     if ((!cptr.eq(cptr.ldPtro((uv), $UpVal_v), cptr.add((uv), $UpVal_u))))
         luaF_unlinkupval(uv);
     (yield* luaM_free_(L, (uv), 40n));
 }
 
-/** C ref: lgc.c:772 — @param {CPtr} L @param {CPtr} o */
+/** C ref: lgc.c:772 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o */
 function* freeobj(L, o) {
     switch (cptr.ld1uo(o, $GCObject_tt)) {
         case 10:
@@ -742,7 +742,7 @@ function* freeobj(L, o) {
     }
 }
 
-/** C ref: lgc.c:824 — @param {CPtr} L @param {CPtr} p @param {CInt} countin @param {CPtr} countout @returns {CPtr} */
+/** C ref: lgc.c:824 — @param {CPtr<lua_State>} L @param {CPtr<GCObject *>} p @param {CInt} countin @param {CPtr<int>} countout @returns {CPtr<GCObject *>} */
 function* sweeplist(L, p, countin, countout) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let ow = (cptr.ld1uo((g), $global_State_currentwhite) ^ 24);
@@ -764,7 +764,7 @@ function* sweeplist(L, p, countin, countout) {
     return (cptr.eq(cptr.ldPtr(p), (null))) ? null : p;
 }
 
-/** C ref: lgc.c:851 — @param {CPtr} L @param {CPtr} p @returns {CPtr} */
+/** C ref: lgc.c:851 — @param {CPtr<lua_State>} L @param {CPtr<GCObject *>} p @returns {CPtr<GCObject *>} */
 function* sweeptolive(L, p) {
     let old = p;
     do {
@@ -773,7 +773,7 @@ function* sweeptolive(L, p) {
     return p;
 }
 
-/** C ref: lgc.c:871 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lgc.c:871 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* checkSizes(L, g) {
     if (!cptr.ld1uo(g, $global_State_gcemergency)) {
         if (cptr.ldI32o(g, $global_State_strt + $stringtable_nuse) < ((cptr.ldI32o(g, $global_State_strt + $stringtable_size) / 4) | 0)) {
@@ -784,7 +784,7 @@ function* checkSizes(L, g) {
     }
 }
 
-/** C ref: lgc.c:886 — @param {CPtr} g @returns {CPtr} */
+/** C ref: lgc.c:886 — @param {CPtr<global_State>} g @returns {CPtr<GCObject>} */
 function udata2finalize(g) {
     let o = cptr.ldPtro(g, $global_State_tobefnz);
     (void 0);
@@ -799,13 +799,13 @@ function udata2finalize(g) {
     return o;
 }
 
-/** C ref: lgc.c:901 — @param {CPtr} L @param {CPtr} ud */
+/** C ref: lgc.c:901 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud */
 function* dothecall(L, ud) {
     (void (ud));
     (yield* luaD_callnoyield(L, cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16), 0));
 }
 
-/** C ref: lgc.c:907 — @param {CPtr} L */
+/** C ref: lgc.c:907 — @param {CPtr<lua_State>} L */
 function* GCTM(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let tm;
@@ -855,7 +855,7 @@ function* GCTM(L) {
     }
 }
 
-/** C ref: lgc.c:938 — @param {CPtr} L @param {CInt} n @returns {CInt} */
+/** C ref: lgc.c:938 — @param {CPtr<lua_State>} L @param {CInt} n @returns {CInt} */
 function* runafewfinalizers(L, n) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let i;
@@ -864,21 +864,21 @@ function* runafewfinalizers(L, n) {
     return i;
 }
 
-/** C ref: lgc.c:950 — @param {CPtr} L */
+/** C ref: lgc.c:950 — @param {CPtr<lua_State>} L */
 function* callallpendingfinalizers(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     while (cptr.ldPtro(g, $global_State_tobefnz))
         (yield* GCTM(L));
 }
 
-/** C ref: lgc.c:960 — @param {CPtr} p @returns {CPtr} */
+/** C ref: lgc.c:960 — @param {CPtr<GCObject *>} p @returns {CPtr<GCObject *>} */
 function findlast(p) {
     while (!cptr.eq(cptr.ldPtr(p), (null)))
         p = (cptr.ldPtr(p));
     return p;
 }
 
-/** C ref: lgc.c:974 — @param {CPtr} g @param {CInt} all */
+/** C ref: lgc.c:974 — @param {CPtr<global_State>} g @param {CInt} all */
 function separatetobefnz(g, all) {
     let curr;
     let p = cptr.add(g, $global_State_finobj);
@@ -898,13 +898,13 @@ function separatetobefnz(g, all) {
     }
 }
 
-/** C ref: lgc.c:997 — @param {CPtr} p @param {CPtr} o */
+/** C ref: lgc.c:997 — @param {CPtr<GCObject *>} p @param {CPtr<GCObject>} o */
 function checkpointer(p, o) {
     if (cptr.eq(o, cptr.ldPtr(p)))
         cptr.stPtr(p, cptr.ldPtr(o));
 }
 
-/** C ref: lgc.c:1007 — @param {CPtr} g @param {CPtr} o */
+/** C ref: lgc.c:1007 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} o */
 function correctpointers(g, o) {
     checkpointer(cptr.add(g, $global_State_survival), o);
     checkpointer(cptr.add(g, $global_State_old1), o);
@@ -912,7 +912,7 @@ function correctpointers(g, o) {
     checkpointer(cptr.add(g, $global_State_firstold1), o);
 }
 
-/** C ref: lgc.c:1019 — @param {CPtr} L @param {CPtr} o @param {CPtr} mt */
+/** C ref: lgc.c:1019 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} o @param {CPtr<Table>} mt */
 export function* luaC_checkfinalizer(L, o, mt) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     if (((cptr.ld1uo((o), $GCObject_marked)) & 64) || cptr.eq((cptr.eq((mt), (null)) ? null : (((cptr.ld1uo((mt), $Table_flags) & ((1 << (NHC.TM_GC)) >>> 0)) >>> 0) ? null : luaT_gettm(mt, NHC.TM_GC, cptr.ldPtro2((g), NHC.TM_GC, 8, $global_State_tmname)))), (null)) || (cptr.ld1uo(g, $global_State_gcstp) & 4))
@@ -934,7 +934,7 @@ export function* luaC_checkfinalizer(L, o, mt) {
     }
 }
 
-/** C ref: lgc.c:1059 — @param {CPtr} g */
+/** C ref: lgc.c:1059 — @param {CPtr<global_State>} g */
 function setpause(g) {
     let threshold;
     let debt;
@@ -948,7 +948,7 @@ function setpause(g) {
     luaE_setdebt(g, debt);
 }
 
-/** C ref: lgc.c:1079 — @param {CPtr} L @param {CPtr} p */
+/** C ref: lgc.c:1079 — @param {CPtr<lua_State>} L @param {CPtr<GCObject *>} p */
 function* sweep2old(L, p) {
     let curr;
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -973,7 +973,7 @@ function* sweep2old(L, p) {
 
 const __static_sweepgen_nextage = [1, 3, 3, 4, 4, 5, 6]; /** C ref: lgc.c:1117 — unsigned char[7] (function-static) */
 
-/** C ref: lgc.c:1115 — @param {CPtr} L @param {CPtr} g @param {CPtr} p @param {CPtr} limit @param {CPtr} pfirstold1 @returns {CPtr} */
+/** C ref: lgc.c:1115 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g @param {CPtr<GCObject *>} p @param {CPtr<GCObject>} limit @param {CPtr<GCObject *>} pfirstold1 @returns {CPtr<GCObject *>} */
 function* sweepgen(L, g, p, limit, pfirstold1) {
     let white = (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))));
     let curr;
@@ -997,14 +997,14 @@ function* sweepgen(L, g, p, limit, pfirstold1) {
     return p;
 }
 
-/** C ref: lgc.c:1156 — @param {CPtr} g @param {CPtr} p */
+/** C ref: lgc.c:1156 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} p */
 function whitelist(g, p) {
     let white = (uchar(((cptr.ld1uo((g), $global_State_currentwhite) & 24))));
     for (; !cptr.eq(p, (null)); p = cptr.ldPtr(p))
         cptr.st1o(p, $GCObject_marked, (uchar((((cptr.ld1uo(p, $GCObject_marked) & -64) | white)))));
 }
 
-/** C ref: lgc.c:1172 — @param {CPtr} p @returns {CPtr} */
+/** C ref: lgc.c:1172 — @param {CPtr<GCObject *>} p @returns {CPtr<GCObject *>} */
 function correctgraylist(p) {
     let curr;
     while (!cptr.eq((curr = cptr.ldPtr(p)), (null))) {
@@ -1038,7 +1038,7 @@ function correctgraylist(p) {
     return p;
 }
 
-/** C ref: lgc.c:1205 — @param {CPtr} g */
+/** C ref: lgc.c:1205 — @param {CPtr<global_State>} g */
 function correctgraylists(g) {
     let list = correctgraylist(cptr.add(g, $global_State_grayagain));
     cptr.stPtr(list, cptr.ldPtro(g, $global_State_weak));
@@ -1052,7 +1052,7 @@ function correctgraylists(g) {
     correctgraylist(list);
 }
 
-/** C ref: lgc.c:1221 — @param {CPtr} g @param {CPtr} from @param {CPtr} to */
+/** C ref: lgc.c:1221 — @param {CPtr<global_State>} g @param {CPtr<GCObject>} from @param {CPtr<GCObject>} to */
 function markold(g, from, to) {
     let p;
     for (p = from; !cptr.eq(p, to); p = cptr.ldPtr(p)) {
@@ -1065,7 +1065,7 @@ function markold(g, from, to) {
     }
 }
 
-/** C ref: lgc.c:1237 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lgc.c:1237 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* finishgencycle(L, g) {
     correctgraylists(g);
     (yield* checkSizes(L, g));
@@ -1074,7 +1074,7 @@ function* finishgencycle(L, g) {
         (yield* callallpendingfinalizers(L));
 }
 
-/** C ref: lgc.c:1251 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lgc.c:1251 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* youngcollection(L, g) {
     let psurvival;
     let dummy = cptr.box(0);
@@ -1102,7 +1102,7 @@ function* youngcollection(L, g) {
     (yield* finishgencycle(L, g));
 }
 
-/** C ref: lgc.c:1292 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lgc.c:1292 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* atomic2gen(L, g) {
     cleargraylists(g);
     cptr.st1o(g, $global_State_gcstate, 3);
@@ -1118,12 +1118,12 @@ function* atomic2gen(L, g) {
     (yield* finishgencycle(L, g));
 }
 
-/** C ref: lgc.c:1318 — @param {CPtr} g */
+/** C ref: lgc.c:1318 — @param {CPtr<global_State>} g */
 function setminordebt(g) {
     luaE_setdebt(g, -(BigInt.asIntN(64, (BigInt.asIntN(64, (((BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))) / 100n)))) * BigInt(cptr.ld1uo(g, $global_State_genminormul) >>> 0))));
 }
 
-/** C ref: lgc.c:1329 — @param {CPtr} L @param {CPtr} g @returns {*} */
+/** C ref: lgc.c:1329 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g @returns {*} */
 function* entergen(L, g) {
     let numobjs;
     (yield* luaC_runtilstate(L, 256));
@@ -1134,7 +1134,7 @@ function* entergen(L, g) {
     return numobjs;
 }
 
-/** C ref: lgc.c:1345 — @param {CPtr} g */
+/** C ref: lgc.c:1345 — @param {CPtr<global_State>} g */
 function enterinc(g) {
     whitelist(g, cptr.ldPtro(g, $global_State_allgc));
     cptr.stPtro(g, $global_State_reallyold, cptr.stPtro(g, $global_State_old1, cptr.stPtro(g, $global_State_survival, null)));
@@ -1146,7 +1146,7 @@ function enterinc(g) {
     cptr.stU64o(g, $global_State_lastatomic, 0n);
 }
 
-/** C ref: lgc.c:1360 — @param {CPtr} L @param {CInt} newmode */
+/** C ref: lgc.c:1360 — @param {CPtr<lua_State>} L @param {CInt} newmode */
 export function* luaC_changemode(L, newmode) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     if (newmode != cptr.ld1uo(g, $global_State_gckind)) {
@@ -1158,13 +1158,13 @@ export function* luaC_changemode(L, newmode) {
     cptr.stU64o(g, $global_State_lastatomic, 0n);
 }
 
-/** C ref: lgc.c:1375 — @param {CPtr} L @param {CPtr} g @returns {*} */
+/** C ref: lgc.c:1375 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g @returns {*} */
 function* fullgen(L, g) {
     enterinc(g);
     return (yield* entergen(L, g));
 }
 
-/** C ref: lgc.c:1402 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lgc.c:1402 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* stepgenfull(L, g) {
     let newatomic;
     let lastatomic = cptr.ldU64o(g, $global_State_lastatomic);
@@ -1184,7 +1184,7 @@ function* stepgenfull(L, g) {
     }
 }
 
-/** C ref: lgc.c:1442 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lgc.c:1442 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* genstep(L, g) {
     if (cptr.ldU64o(g, $global_State_lastatomic) != 0n)
         (yield* stepgenfull(L, g));
@@ -1208,7 +1208,7 @@ function* genstep(L, g) {
     (void 0);
 }
 
-/** C ref: lgc.c:1486 — @param {CPtr} L */
+/** C ref: lgc.c:1486 — @param {CPtr<lua_State>} L */
 function* entersweep(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     cptr.st1o(g, $global_State_gcstate, 3);
@@ -1216,7 +1216,7 @@ function* entersweep(L) {
     cptr.stPtro(g, $global_State_sweepgc, (yield* sweeptolive(L, cptr.add(g, $global_State_allgc))));
 }
 
-/** C ref: lgc.c:1498 — @param {CPtr} L @param {CPtr} p @param {CPtr} limit */
+/** C ref: lgc.c:1498 — @param {CPtr<lua_State>} L @param {CPtr<GCObject>} p @param {CPtr<GCObject>} limit */
 function* deletelist(L, p, limit) {
     while (!cptr.eq(p, limit)) {
         let next = cptr.ldPtr(p);
@@ -1225,7 +1225,7 @@ function* deletelist(L, p, limit) {
     }
 }
 
-/** C ref: lgc.c:1511 — @param {CPtr} L */
+/** C ref: lgc.c:1511 — @param {CPtr<lua_State>} L */
 export function* luaC_freeallobjects(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     cptr.st1o(g, $global_State_gcstp, 4);
@@ -1239,7 +1239,7 @@ export function* luaC_freeallobjects(L) {
     (void 0);
 }
 
-/** C ref: lgc.c:1525 — @param {CPtr} L @returns {*} */
+/** C ref: lgc.c:1525 — @param {CPtr<lua_State>} L @returns {*} */
 function* atomic(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let work = 0n;
@@ -1286,7 +1286,7 @@ function* atomic(L) {
     return work;
 }
 
-/** C ref: lgc.c:1568 — @param {CPtr} L @param {CPtr} g @param {CInt} nextstate @param {CPtr} nextlist @returns {CInt} */
+/** C ref: lgc.c:1568 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g @param {CInt} nextstate @param {CPtr<GCObject *>} nextlist @returns {CInt} */
 function* sweepstep(L, g, nextstate, nextlist) {
     if (cptr.ldPtro(g, $global_State_sweepgc)) {
         let olddebt = cptr.ldI64o(g, $global_State_GCdebt);
@@ -1301,7 +1301,7 @@ function* sweepstep(L, g, nextstate, nextlist) {
     }
 }
 
-/** C ref: lgc.c:1585 — @param {CPtr} L @returns {*} */
+/** C ref: lgc.c:1585 — @param {CPtr<lua_State>} L @returns {*} */
 function* singlestep(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let work;
@@ -1372,14 +1372,14 @@ function* singlestep(L) {
     return work;
 }
 
-/** C ref: lgc.c:1652 — @param {CPtr} L @param {CInt} statesmask */
+/** C ref: lgc.c:1652 — @param {CPtr<lua_State>} L @param {CInt} statesmask */
 export function* luaC_runtilstate(L, statesmask) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     while (!((statesmask) & ((1 << (cptr.ld1uo(g, $global_State_gcstate))))))
         (yield* singlestep(L));
 }
 
-/** C ref: lgc.c:1667 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lgc.c:1667 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* incstep(L, g) {
     let stepmul = ((Math.imul((cptr.ld1uo(g, $global_State_gcstepmul)), 4)) | 1);
     let debt = BigInt.asIntN(64, BigInt.asUintN(64, (BigInt.asUintN(64, cptr.ldI64o(g, $global_State_GCdebt)) / 16n) * BigInt.asUintN(64, BigInt(stepmul))));
@@ -1396,7 +1396,7 @@ function* incstep(L, g) {
     }
 }
 
-/** C ref: lgc.c:1690 — @param {CPtr} L */
+/** C ref: lgc.c:1690 — @param {CPtr<lua_State>} L */
 export function* luaC_step(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     if (!(cptr.ld1uo((g), $global_State_gcstp) == 0))
@@ -1409,7 +1409,7 @@ export function* luaC_step(L) {
     }
 }
 
-/** C ref: lgc.c:1710 — @param {CPtr} L @param {CPtr} g */
+/** C ref: lgc.c:1710 — @param {CPtr<lua_State>} L @param {CPtr<global_State>} g */
 function* fullinc(L, g) {
     if ((cptr.ld1uo((g), $global_State_gcstate) <= 2))
         (yield* entersweep(L));
@@ -1422,7 +1422,7 @@ function* fullinc(L, g) {
     setpause(g);
 }
 
-/** C ref: lgc.c:1730 — @param {CPtr} L @param {CInt} isemergency */
+/** C ref: lgc.c:1730 — @param {CPtr<lua_State>} L @param {CInt} isemergency */
 export function* luaC_fullgc(L, isemergency) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);

@@ -217,7 +217,7 @@ const __sl79 = cptr.lit("m_move_aggress");
 const __sl80 = cptr.lit("set_apparxy");
 const __sl81 = cptr.lit("undesirable_disp");
 
-/** C ref: monmove.c:33 — @param {CPtr} mtmp @param {CInt} omx @param {CInt} omy */
+/** C ref: monmove.c:33 — @param {CPtr<struct monst>} mtmp @param {CInt} omx @param {CInt} omy */
 function msg_mon_movement(mtmp, omx, omy) {
     if (cptr.ld1so(a11y, $accessibility_data_mon_movement) && canspotmon(mtmp) && (cptr.ldI32o(mtmp, $monst_mspotted) & 1) | 0) {
         let nix = cptr.ldI16o(mtmp, $monst_mx);
@@ -229,7 +229,7 @@ function msg_mon_movement(mtmp, omx, omy) {
     }
 }
 
-/** C ref: monmove.c:54 — @param {CPtr} mtmp @param {CInt} canseeit @returns {CInt} */
+/** C ref: monmove.c:54 — @param {CPtr<struct monst>} mtmp @param {CInt} canseeit @returns {CInt} */
 export function mb_trapped(mtmp, canseeit) {
     if (cptr.ld1so(flags, $flag_verbose)) {
         if (canseeit && !(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())))
@@ -249,7 +249,7 @@ export function mb_trapped(mtmp, canseeit) {
     return 0;
 }
 
-/** C ref: monmove.c:78 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y */
+/** C ref: monmove.c:78 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y */
 export function mon_track_add(mtmp, x, y) {
     let j;
     for (j = 3; j > 0; j--)
@@ -258,19 +258,19 @@ export function mon_track_add(mtmp, x, y) {
     cptr.stI16o2(mtmp, 0, 4, $monst_mtrack + $nhcoord_y, y);
 }
 
-/** C ref: monmove.c:89 — @param {CPtr} mtmp */
+/** C ref: monmove.c:89 — @param {CPtr<struct monst>} mtmp */
 export function mon_track_clear(mtmp) {
     __builtin___memset_chk(cptr.add(mtmp, $monst_mtrack), 0, 16n, __builtin_object_size(cptr.add(mtmp, $monst_mtrack), 0));
 }
 
-/** C ref: monmove.c:96 — @param {CPtr} mon @param {CInt} for_unlocking @returns {CInt} */
+/** C ref: monmove.c:96 — @param {CPtr<struct monst>} mon @param {CInt} for_unlocking @returns {CInt} */
 export function monhaskey(mon, for_unlocking) {
     if (for_unlocking && m_carrying(mon, NHC.CREDIT_CARD))
         return 1;
     return schar((m_carrying(mon, NHC.SKELETON_KEY) || m_carrying(mon, NHC.LOCK_PICK) ? 1 : 0));
 }
 
-/** C ref: monmove.c:106 — @param {CPtr} mon @param {CPtr} shout */
+/** C ref: monmove.c:106 — @param {CPtr<struct monst>} mon @param {CPtr<char>} shout */
 export function mon_yells(mon, shout) {
     if (Deaf()) {
         if (canspotmon(mon))
@@ -286,12 +286,12 @@ export function mon_yells(mon, shout) {
     }
 }
 
-/** C ref: monmove.c:133 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:133 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function m_can_break_boulder(mtmp) {
     return schar((is_rider(cptr.ldPtro(mtmp, $monst_data)) || (!cptr.ldI32o(mtmp, $monst_mspec_used) && ((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_LEADER))) ? 1 : 0));
 }
 
-/** C ref: monmove.c:143 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y */
+/** C ref: monmove.c:143 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y */
 export function m_break_boulder(mtmp, x, y) {
     let otmp;
     if (m_can_break_boulder(mtmp) && ((otmp = sobj_at(NHC.BOULDER, x, y)) !== null)) {
@@ -314,7 +314,7 @@ export function m_break_boulder(mtmp, x, y) {
     }
 }
 
-/** C ref: monmove.c:176 — @param {CPtr} mtmp */
+/** C ref: monmove.c:176 — @param {CPtr<struct monst>} mtmp */
 function watch_on_duty(mtmp) {
     let x = cptr.box(0);
     let y = cptr.box(0);
@@ -336,7 +336,7 @@ function watch_on_duty(mtmp) {
     }
 }
 
-/** C ref: monmove.c:204 — @param {CPtr} mtmp @param {CInt} chug @returns {CInt} */
+/** C ref: monmove.c:204 — @param {CPtr<struct monst>} mtmp @param {CInt} chug @returns {CInt} */
 export function dochugw(mtmp, chug) {
     let x = cptr.ldI16o(mtmp, $monst_mx);
     let y = cptr.ldI16o(mtmp, $monst_my);
@@ -347,7 +347,7 @@ export function dochugw(mtmp, chug) {
     return rd;
 }
 
-/** C ref: monmove.c:241 — @param {CInt} x @param {CInt} y @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:241 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function onscary(x, y, mtmp) {
     let ep;
     let auditory_scare = schar((x == 0 && y == 0 ? 1 : 0));
@@ -367,7 +367,7 @@ export function onscary(x, y, mtmp) {
     return schar(((ep = sengr_at(__sl26, x, y, 1)) !== null && (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || (Displaced() && cptr.ldI16o(mtmp, $monst_mux) == x && cptr.ldI16o(mtmp, $monst_muy) == y) || ((cptr.ldI32o(ep, $engr_guardobjects) & 1) | 0 && (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects)))) && !((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isgd) & 1) | 0 || !(cptr.ldI32o(mtmp, $monst_mcansee) & 1) || (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MINOTAUR, 96)) || In_hell(cptr.add(u, $you_uz)) || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) ? 1 : 0));
 }
 
-/** C ref: monmove.c:307 — @param {CPtr} mon @param {CInt} digest_meal */
+/** C ref: monmove.c:307 — @param {CPtr<struct monst>} mon @param {CInt} digest_meal */
 export function mon_regen(mon, digest_meal) {
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 20n == 0n || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8388608n) != 0n))
         healmon(mon, 1, 0);
@@ -382,7 +382,7 @@ export function mon_regen(mon, digest_meal) {
     }
 }
 
-/** C ref: monmove.c:327 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:327 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function disturb(mtmp) {
     if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 100 && (!Stealth() || (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_ETTIN, 96)) && (rng_log_enabled() ? (rng_log_set_caller(__sl10, 342, __sl27), rn2(10)) : rn2(10)))) && (!(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_NYMPH || cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_JABBERWOCK, 96)) || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_LEPRECHAUN) || !(rng_log_enabled() ? (rng_log_set_caller(__sl10, 348, __sl27), rn2(50)) : rn2(50))) && (Aggravate_monster() || (cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_DOG || cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) == NHC.S_HUMAN) || (!(rng_log_enabled() ? (rng_log_set_caller(__sl10, 351, __sl27), rn2(7)) : rn2(7)) && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT))) {
         wake_msg(mtmp, schar((!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))));
@@ -392,7 +392,7 @@ function disturb(mtmp) {
     return 0;
 }
 
-/** C ref: monmove.c:362 — @param {CPtr} mon */
+/** C ref: monmove.c:362 — @param {CPtr<struct monst>} mon */
 function release_hero(mon) {
     if (cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))) {
         if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -404,7 +404,7 @@ function release_hero(mon) {
     }
 }
 
-/** C ref: monmove.c:375 — @param {CInt} pm @returns {CPtr} */
+/** C ref: monmove.c:375 — @param {CInt} pm @returns {CPtr<struct monst>} */
 export function find_pmmonst(pm) {
     let mtmp = null;
     if ((cptr.ld1uo2(svm, pm, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) == 0)
@@ -417,7 +417,7 @@ export function find_pmmonst(pm) {
     return mtmp;
 }
 
-/** C ref: monmove.c:394 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: monmove.c:394 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function bee_eat_jelly(mon, obj) {
     let m_delay;
     let mtmp = find_pmmonst(NHC.PM_QUEEN_BEE);
@@ -439,7 +439,7 @@ export function bee_eat_jelly(mon, obj) {
     return -1;
 }
 
-/** C ref: monmove.c:424 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:424 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function gelcube_digests(mtmp) {
     let otmp = cptr.ldPtro(mtmp, $monst_minvent);
     if (cptr.ldI32o(mtmp, $monst_meating) || !cptr.ldPtro(mtmp, $monst_minvent))
@@ -457,7 +457,7 @@ function gelcube_digests(mtmp) {
     return 0;
 }
 
-/** C ref: monmove.c:462 — @param {CPtr} mtmp @param {CInt} fleetime @param {CInt} first @param {CInt} fleemsg */
+/** C ref: monmove.c:462 — @param {CPtr<struct monst>} mtmp @param {CInt} fleetime @param {CInt} first @param {CInt} fleemsg */
 export function monflee(mtmp, fleetime, first, fleemsg) {
     if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
         return;
@@ -498,7 +498,7 @@ export function monflee(mtmp, fleetime, first, fleemsg) {
     mon_track_clear(mtmp);
 }
 
-/** C ref: monmove.c:533 — @param {CPtr} mtmp @param {CPtr} inrange @param {CPtr} nearby @param {CPtr} scared */
+/** C ref: monmove.c:533 — @param {CPtr<struct monst>} mtmp @param {CPtr<int>} inrange @param {CPtr<int>} nearby @param {CPtr<int>} scared */
 function distfleeck(mtmp, inrange, nearby, scared) {
     let seescaryx;
     let seescaryy;
@@ -521,13 +521,13 @@ function distfleeck(mtmp, inrange, nearby, scared) {
         cptr.stI32(scared, 0);
 }
 
-/** C ref: monmove.c:574 — @param {CPtr} mon @returns {CInt} */
+/** C ref: monmove.c:574 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function m_arrival(mon) {
     cptr.stU64o(mon, $monst_mstrategy, cptr.ldU64o(mon, $monst_mstrategy) & 18446744072635809791n);
     return -1;
 }
 
-/** C ref: monmove.c:583 — @param {CPtr} mtmp */
+/** C ref: monmove.c:583 — @param {CPtr<struct monst>} mtmp */
 function mind_blast(mtmp) {
     let m2;
     let nmon = null;
@@ -580,7 +580,7 @@ function mind_blast(mtmp) {
     }
 }
 
-/** C ref: monmove.c:650 — @param {CPtr} mtmp */
+/** C ref: monmove.c:650 — @param {CPtr<struct monst>} mtmp */
 export function m_everyturn_effect(mtmp) {
     let is_u = schar(((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) ? 1 : 0));
     let x = i16((is_u ? cptr.ldI16(u) : cptr.ldI16o(mtmp, $monst_mx)));
@@ -591,7 +591,7 @@ export function m_everyturn_effect(mtmp) {
     }
 }
 
-/** C ref: monmove.c:672 — @param {CPtr} mtmp */
+/** C ref: monmove.c:672 — @param {CPtr<struct monst>} mtmp */
 export function m_postmove_effect(mtmp) {
     let is_u = schar(((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) ? 1 : 0));
     let x = i16((is_u ? cptr.ldI16o(u, $you_ux0) : cptr.ldI16o(mtmp, $monst_mx)));
@@ -602,7 +602,7 @@ export function m_postmove_effect(mtmp) {
         create_gas_cloud(x, y, 1, 0);
 }
 
-/** C ref: monmove.c:690 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:690 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function dochug(mtmp) {
     let mdat;
     let status = NHM.MMOVE_NOTHING;
@@ -774,7 +774,7 @@ const practical = [NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.GEM_CLASS, NHC.FOOD_CL
 /** C ref: monmove.c:993 — char[7] */
 const magical = [NHC.AMULET_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLASS, NHC.WAND_CLASS, NHC.RING_CLASS, NHC.SPBOOK_CLASS, 0];
 
-/** C ref: monmove.c:999 — @param {CPtr} mtmp @param {CPtr} otmp @returns {CInt} */
+/** C ref: monmove.c:999 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function mon_would_take_item(mtmp, otmp) {
     let pctload = ((Math.imul(curr_mon_load(mtmp), 100)) / max_mon_load(mtmp)) | 0;
     if (cptr.eq(otmp, uball.v) || cptr.eq(otmp, uchain.v))
@@ -800,7 +800,7 @@ export function mon_would_take_item(mtmp, otmp) {
     return 0;
 }
 
-/** C ref: monmove.c:1036 — @param {CPtr} mtmp @param {CPtr} otmp @returns {CInt} */
+/** C ref: monmove.c:1036 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function mon_would_consume_item(mtmp, otmp) {
     let ftyp;
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && !touch_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), 96)) && corpse_eater(cptr.ldPtro(mtmp, $monst_data)))
@@ -810,7 +810,7 @@ export function mon_would_consume_item(mtmp, otmp) {
     return 0;
 }
 
-/** C ref: monmove.c:1053 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:1053 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function itsstuck(mtmp) {
     if (sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         pline_mon(mtmp, __sl55, Monnam(mtmp));
@@ -819,7 +819,7 @@ export function itsstuck(mtmp) {
     return 0;
 }
 
-/** C ref: monmove.c:1070 — @param {CPtr} mtmp @param {CPtr} data @param {CInt} ggx @param {CInt} ggy @returns {CInt} */
+/** C ref: monmove.c:1070 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct mfndposdata>} data @param {CInt} ggx @param {CInt} ggy @returns {CInt} */
 export function should_displace(mtmp, data, ggx, ggy) {
     let shortest_with_displacing = -1;
     let shortest_without_displacing = -1;
@@ -846,7 +846,7 @@ export function should_displace(mtmp, data, ggx, ggy) {
     return 0;
 }
 
-/** C ref: monmove.c:1108 — @param {CPtr} mtmp @param {CInt} nix @param {CInt} niy @returns {CInt} */
+/** C ref: monmove.c:1108 — @param {CPtr<struct monst>} mtmp @param {CInt} nix @param {CInt} niy @returns {CInt} */
 export function m_digweapon_check(mtmp, nix, niy) {
     let can_tunnel = 0;
     let mw_tmp = (cptr.ldPtro((mtmp), $monst_mw));
@@ -869,7 +869,7 @@ export function m_digweapon_check(mtmp, nix, niy) {
     return 0;
 }
 
-/** C ref: monmove.c:1139 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:1139 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function leppie_avoidance(mtmp) {
     let lepgold;
     let ygold;
@@ -878,7 +878,7 @@ function leppie_avoidance(mtmp) {
     return 0;
 }
 
-/** C ref: monmove.c:1154 — @param {CPtr} mtmp */
+/** C ref: monmove.c:1154 — @param {CPtr<struct monst>} mtmp */
 function leppie_stash(mtmp) {
     let gold;
     if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LEPRECHAUN, 96)) && !(cptr.ldI32o((mtmp), $monst_mhp) < 1) && !((!Invis() || ((cptr.ldU64o((cptr.ldPtro((mtmp), $monst_data)), $permonst_mflags1) & 16777216n) != 0n)) && !Underwater() && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mtmp), $monst_my), 8), cptr.ldI16o((mtmp), $monst_mx)) & NHM.COULD_SEE) != 0)) && !cptr.ld1s(in_rooms(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), NHC.SHOPBASE)) && cptr.ld1so3(svl, cptr.ldI16o(mtmp, $monst_mx), 756, cptr.ldI16o(mtmp, $monst_my), 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM && !t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && (rng_log_enabled() ? (rng_log_set_caller(__sl10, 1164, __sl56), rn2(4)) : rn2(4)) && (gold = findgold(cptr.ldPtro(mtmp, $monst_minvent))) !== null) {
@@ -889,7 +889,7 @@ function leppie_stash(mtmp) {
     }
 }
 
-/** C ref: monmove.c:1181 — @param {CInt} oldappr @param {CPtr} mtmp @param {CPtr} pdistmin @param {CPtr} pdistmax @returns {CInt} */
+/** C ref: monmove.c:1181 — @param {CInt} oldappr @param {CPtr<struct monst>} mtmp @param {CPtr<int>} pdistmin @param {CPtr<int>} pdistmax @returns {CInt} */
 function m_balks_at_approaching(oldappr, mtmp, pdistmin, pdistmax) {
     let mwep = (cptr.ldPtro((mtmp), $monst_mw));
     let x = cptr.ldI16o(mtmp, $monst_mx);
@@ -933,7 +933,7 @@ function count_webbing_walls(x, y) {
     return ((((((holds_up_web(x, i16(((y - 1) | 0))) + holds_up_web(i16(((x + 1) | 0)), y)) | 0) + holds_up_web(x, i16(((y + 1) | 0)))) | 0) + holds_up_web(i16(((x - 1) | 0)), y)) | 0);
 }
 
-/** C ref: monmove.c:1252 — @param {CPtr} mon @returns {CInt} */
+/** C ref: monmove.c:1252 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function soko_allow_web(mon) {
     let stway;
     if (!Sokoban())
@@ -944,7 +944,7 @@ function soko_allow_web(mon) {
     return 0;
 }
 
-/** C ref: monmove.c:1269 — @param {CPtr} mtmp */
+/** C ref: monmove.c:1269 — @param {CPtr<struct monst>} mtmp */
 function maybe_spin_web(mtmp) {
     if (webmaker(cptr.ldPtro(mtmp, $monst_data)) && !helpless(mtmp) && !cptr.ldI32o(mtmp, $monst_mspec_used) && !t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) && soko_allow_web(mtmp)) {
         let trap;
@@ -963,21 +963,21 @@ function maybe_spin_web(mtmp) {
     }
 }
 
-/** C ref: monmove.c:1297 — @param {CPtr} mtmp @param {CInt} nx @param {CInt} ny @returns {CInt} */
+/** C ref: monmove.c:1297 — @param {CPtr<struct monst>} mtmp @param {CInt} nx @param {CInt} ny @returns {CInt} */
 export function m_avoid_kicked_loc(mtmp, nx, ny) {
     if (((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame)) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0 && !(cptr.ldI32o(mtmp, $monst_mconf) & 1) && !(cptr.ldI32o(mtmp, $monst_mstun) & 1) && !Conflict() && isok(cptr.ldI16(gk), cptr.ldI16o(gk, $nhcoord_y)) && nx == cptr.ldI16(gk) && ny == cptr.ldI16o(gk, $nhcoord_y) && (dist2(((nx)), ((ny)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
         return 1;
     return 0;
 }
 
-/** C ref: monmove.c:1313 — @param {CPtr} mtmp @param {CInt} nx @param {CInt} ny @returns {CInt} */
+/** C ref: monmove.c:1313 — @param {CPtr<struct monst>} mtmp @param {CInt} nx @param {CInt} ny @returns {CInt} */
 export function m_avoid_soko_push_loc(mtmp, nx, ny) {
     if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1) | 0 && ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame)) && !(cptr.ldI32o(mtmp, $monst_mconf) & 1) && !(cptr.ldI32o(mtmp, $monst_mstun) & 1) && !Conflict() && (dist2(nx, ny, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) == 4) && sobj_at(NHC.BOULDER, i16(((nx + sgn((cptr.ldI16(u) - nx) | 0)) | 0)), i16(((ny + sgn((cptr.ldI16o(u, $you_uy) - ny) | 0)) | 0))))
         return 1;
     return 0;
 }
 
-/** C ref: monmove.c:1330 — @param {CPtr} mtmp @param {CPtr} ggx @param {CPtr} ggy @param {CPtr} mmoved @param {CPtr} appr @returns {CInt} */
+/** C ref: monmove.c:1330 — @param {CPtr<struct monst>} mtmp @param {CPtr<coordxy>} ggx @param {CPtr<coordxy>} ggy @param {CPtr<int>} mmoved @param {CPtr<int>} appr @returns {CInt} */
 function m_search_items(mtmp, ggx, ggy, mmoved, appr) {
     let minr = 5;
     let otmp;
@@ -1059,7 +1059,7 @@ function m_search_items(mtmp, ggx, ggy, mmoved, appr) {
     return 0;
 }
 
-/** C ref: monmove.c:1455 — @param {CPtr} mtmp @param {CPtr} ptr @param {CInt} omx @param {CInt} omy @param {CInt} mmoved @param {CUInt} seenflgs @param {CInt} can_tunnel @param {CInt} can_unlock @param {CInt} can_open @returns {CInt} */
+/** C ref: monmove.c:1455 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct permonst>} ptr @param {CInt} omx @param {CInt} omy @param {CInt} mmoved @param {CUInt} seenflgs @param {CInt} can_tunnel @param {CInt} can_unlock @param {CInt} can_open @returns {CInt} */
 function postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock, can_open) {
     let nix;
     let niy;
@@ -1235,7 +1235,7 @@ function postmov(mtmp, ptr, omx, omy, mmoved, seenflgs, can_tunnel, can_unlock, 
     return mmoved;
 }
 
-/** C ref: monmove.c:1715 — @param {CPtr} mtmp @param {CInt} after @returns {CInt} */
+/** C ref: monmove.c:1715 — @param {CPtr<struct monst>} mtmp @param {CInt} after @returns {CInt} */
 export function m_move(mtmp, after) {
     let appr = cptr.box(0);
     let ggx = cptr.box(0);
@@ -1486,7 +1486,7 @@ export function m_move(mtmp, after) {
     return postmov(mtmp, ptr, omx, omy, mmoved.v, seenflgs, can_tunnel, can_unlock, can_open);
 }
 
-/** C ref: monmove.c:2088 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: monmove.c:2088 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function m_move_aggress(mtmp, x, y) {
     let mtmp2;
     let mstatus = 0;
@@ -1512,7 +1512,7 @@ export function m_move_aggress(mtmp, x, y) {
     return NHM.MMOVE_DONE;
 }
 
-/** C ref: monmove.c:2121 — @param {CPtr} obj @returns {CInt} */
+/** C ref: monmove.c:2121 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function can_hide_under_obj(obj) {
     let t;
     if (!obj || cptr.ld1so(obj, $obj_where) != NHM.OBJ_FLOOR)
@@ -1552,7 +1552,7 @@ export function accessible(x, y) {
     return schar((((levtyp) >= NHC.DOOR) && !closed_door(x, y) ? 1 : 0));
 }
 
-/** C ref: monmove.c:2198 — @param {CPtr} mtmp */
+/** C ref: monmove.c:2198 — @param {CPtr<struct monst>} mtmp */
 export function set_apparxy(mtmp) {
     let notseen;
     let notthere;
@@ -1602,7 +1602,7 @@ export function set_apparxy(mtmp) {
     cptr.stI16o(mtmp, $monst_muy, my);
 }
 
-/** C ref: monmove.c:2277 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: monmove.c:2277 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
 export function undesirable_disp(mtmp, x, y) {
     let is_pet = schar((cptr.ld1so(mtmp, $monst_mtame) && !(cptr.ldI32o(mtmp, $monst_isminion) & 1) ? 1 : 0));
     let trap = t_at(x, y);
@@ -1619,7 +1619,7 @@ export function undesirable_disp(mtmp, x, y) {
     return 0;
 }
 
-/** C ref: monmove.c:2319 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:2319 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function stuff_prevents_passage(mtmp) {
     let chain;
     let obj;
@@ -1640,21 +1640,21 @@ function stuff_prevents_passage(mtmp) {
     return 0;
 }
 
-/** C ref: monmove.c:2356 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:2356 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function can_ooze(mtmp) {
     if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4n) != 0n) || stuff_prevents_passage(mtmp))
         return 0;
     return 1;
 }
 
-/** C ref: monmove.c:2365 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: monmove.c:2365 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function can_fog(mtmp) {
     if (!(cptr.ld1uo2(svm, NHC.PM_FOG_CLOUD, 12, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) && is_vampshifter(mtmp) && !Protection_from_shape_changers() && !stuff_prevents_passage(mtmp))
         return 1;
     return 0;
 }
 
-/** C ref: monmove.c:2377 — @param {CPtr} mon @param {CPtr} ptr @param {CInt} domsg @returns {CInt} */
+/** C ref: monmove.c:2377 — @param {CPtr<struct monst>} mon @param {CPtr<struct permonst>} ptr @param {CInt} domsg @returns {CInt} */
 function vamp_shift(mon, ptr, domsg) {
     let reslt = 0;
     if (cptr.eq(cptr.ldPtro(mon, $monst_data), ptr)) {

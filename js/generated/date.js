@@ -67,7 +67,7 @@ cptr.stU64o(nomakedefs, $nomakedefs_s_ignored_features, 0n);
 cptr.stU64o(nomakedefs, $nomakedefs_s_version_sanity1, 0n);
 cptr.stU64o(nomakedefs, $nomakedefs_s_build_time, 554476737n);
 
-/** C ref: date.c:52 — @param {CPtr} version */
+/** C ref: date.c:52 — @param {CPtr<struct version_info>} version */
 export function populate_nomakedefs(version) {
     let i;
     let tmpbuf1 = new Uint8Array(256);

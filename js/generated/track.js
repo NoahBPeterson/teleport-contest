@@ -51,7 +51,7 @@ export function settrack() {
     utpnt.v++;
 }
 
-/** C ref: track.c:42 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: track.c:42 — @param {CInt} x @param {CInt} y @returns {CPtr<coord>} */
 export function gettrack(x, y) {
     let cnt;
     let ndist;
@@ -78,7 +78,7 @@ export function hastrack(x, y) {
     return 0;
 }
 
-/** C ref: track.c:76 — @param {CPtr} nhfp */
+/** C ref: track.c:76 — @param {CPtr<NHFILE>} nhfp */
 export function save_track(nhfp) {
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         let i;
@@ -92,7 +92,7 @@ export function save_track(nhfp) {
         initrack();
 }
 
-/** C ref: track.c:93 — @param {CPtr} nhfp */
+/** C ref: track.c:93 — @param {CPtr<NHFILE>} nhfp */
 export function rest_track(nhfp) {
     let i;
     sfi_int(nhfp, utcnt, __sl0);

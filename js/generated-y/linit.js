@@ -63,7 +63,7 @@ cptr.stPtro(loadedlibs, 144 + $luaL_Reg_func, luaopen_debug);
 cptr.stPtro(loadedlibs, 160, null);
 cptr.stPtro(loadedlibs, 160 + $luaL_Reg_func, null);
 
-/** C ref: linit.c:57 — @param {CPtr} L */
+/** C ref: linit.c:57 — @param {CPtr<lua_State>} L */
 export function* luaL_openlibs(L) {
     let lib;
     for (lib = loadedlibs; cptr.ldPtro(lib, $luaL_Reg_func); lib = cptr.add(lib, 1, 16)) {

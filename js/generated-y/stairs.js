@@ -48,7 +48,7 @@ const __sl13 = cptr.lit("branch %s %s to %s");
 const __sl14 = cptr.lit("The ");
 const __sl15 = cptr.lit("the ");
 
-/** C ref: stairs.c:8 — @param {CInt} x @param {CInt} y @param {CInt} up @param {CInt} isladder @param {CPtr} dest */
+/** C ref: stairs.c:8 — @param {CInt} x @param {CInt} y @param {CInt} up @param {CInt} isladder @param {CPtr<d_level>} dest */
 export function* stairway_add(x, y, up, isladder, dest) {
     let tmp = (yield* alloc(24));
     void __builtin___memset_chk(tmp, 0, 24n, __builtin_object_size(tmp, 0));
@@ -73,7 +73,7 @@ export function stairway_free_all() {
     cptr.stPtro(gs, $instance_globals_s_stairs, null);
 }
 
-/** C ref: stairs.c:40 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: stairs.c:40 — @param {CInt} x @param {CInt} y @returns {CPtr<stairway>} */
 export function stairway_at(x, y) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (tmp && !(cptr.ldI16(tmp) == x && cptr.ldI16o(tmp, $stairway_sy) == y))
@@ -81,7 +81,7 @@ export function stairway_at(x, y) {
     return tmp;
 }
 
-/** C ref: stairs.c:50 — @param {CPtr} fromdlev @returns {CPtr} */
+/** C ref: stairs.c:50 — @param {CPtr<d_level>} fromdlev @returns {CPtr<stairway>} */
 export function stairway_find(fromdlev) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (tmp) {
@@ -92,7 +92,7 @@ export function stairway_find(fromdlev) {
     return tmp;
 }
 
-/** C ref: stairs.c:64 — @param {CPtr} fromdlev @param {CInt} isladder @returns {CPtr} */
+/** C ref: stairs.c:64 — @param {CPtr<d_level>} fromdlev @param {CInt} isladder @returns {CPtr<stairway>} */
 export function stairway_find_from(fromdlev, isladder) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (tmp) {
@@ -103,7 +103,7 @@ export function stairway_find_from(fromdlev, isladder) {
     return tmp;
 }
 
-/** C ref: stairs.c:79 — @param {CInt} up @returns {CPtr} */
+/** C ref: stairs.c:79 — @param {CInt} up @returns {CPtr<stairway>} */
 export function stairway_find_dir(up) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (tmp && !(cptr.ld1so(tmp, $stairway_up) == up))
@@ -111,7 +111,7 @@ export function stairway_find_dir(up) {
     return tmp;
 }
 
-/** C ref: stairs.c:89 — @param {CInt} isladder @param {CInt} up @returns {CPtr} */
+/** C ref: stairs.c:89 — @param {CInt} isladder @param {CInt} up @returns {CPtr<stairway>} */
 export function stairway_find_type_dir(isladder, up) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (tmp && !(cptr.ld1so(tmp, $stairway_isladder) == isladder && cptr.ld1so(tmp, $stairway_up) == up))
@@ -119,7 +119,7 @@ export function stairway_find_type_dir(isladder, up) {
     return tmp;
 }
 
-/** C ref: stairs.c:99 — @param {CInt} up @returns {CPtr} */
+/** C ref: stairs.c:99 — @param {CInt} up @returns {CPtr<stairway>} */
 export function stairway_find_special_dir(up) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (tmp) {
@@ -180,12 +180,12 @@ export function On_stairs_dn(x, y) {
     return schar((stway && !cptr.ld1so(stway, $stairway_up) ? 1 : 0));
 }
 
-/** C ref: stairs.c:180 — @param {CPtr} sway @returns {CInt} */
+/** C ref: stairs.c:180 — @param {CPtr<stairway>} sway @returns {CInt} */
 export function known_branch_stairs(sway) {
     return schar((sway && cptr.ldI16o(sway, $stairway_tolev) != cptr.ldI16o(u, $you_uz) && cptr.ld1so(sway, $stairway_u_traversed) ? 1 : 0));
 }
 
-/** C ref: stairs.c:187 — @param {CPtr} sway @param {CPtr} outbuf @param {CInt} stcase @returns {CPtr} */
+/** C ref: stairs.c:187 — @param {CPtr<stairway>} sway @param {CPtr<char>} outbuf @param {CInt} stcase @returns {CPtr<char>} */
 export function stairs_description(sway, outbuf, stcase) {
     let tolev = cptr.alloc(4);
     let stairs;

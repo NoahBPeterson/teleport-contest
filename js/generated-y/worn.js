@@ -233,7 +233,7 @@ export function recalc_telepat_range() {
         cptr.stI32o(u, $you_unblind_telepat_range, -1);
 }
 
-/** C ref: worn.c:73 — @param {CPtr} obj @param {CLongLong} mask */
+/** C ref: worn.c:73 — @param {CPtr<struct obj>} obj @param {CLongLong} mask */
 export function* setworn(obj, mask) {
     let wp;
     let oobj;
@@ -287,7 +287,7 @@ export function* setworn(obj, mask) {
     recalc_telepat_range();
 }
 
-/** C ref: worn.c:150 — @param {CPtr} obj */
+/** C ref: worn.c:150 — @param {CPtr<struct obj>} obj */
 export function* setnotworn(obj) {
     let wp;
     let p;
@@ -327,7 +327,7 @@ export function allunworn() {
     }
 }
 
-/** C ref: worn.c:206 — @param {CLongLong} wornmask @returns {CPtr} */
+/** C ref: worn.c:206 — @param {CLongLong} wornmask @returns {CPtr<struct obj>} */
 export function wearmask_to_obj(wornmask) {
     let wp;
     for (wp = worn; cptr.ldI64(wp); wp = cptr.add(wp, 1, 24))
@@ -394,7 +394,7 @@ export function armcat_to_wornmask(cat) {
     return mask;
 }
 
-/** C ref: worn.c:282 — @param {CPtr} obj @returns {CLongLong} */
+/** C ref: worn.c:282 — @param {CPtr<struct obj>} obj @returns {CLongLong} */
 export function wearslot(obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let res = 0n;
@@ -497,7 +497,7 @@ export function* check_wornmask_slots() {
     return;
 }
 
-/** C ref: worn.c:474 — @param {CPtr} mon @param {CInt} cursed_potion */
+/** C ref: worn.c:474 — @param {CPtr<struct monst>} mon @param {CInt} cursed_potion */
 export function* mon_set_minvis(mon, cursed_potion) {
     cptr.stI32o(mon, $monst_perminvis, (!cursed_potion ? 1 : 0) >>> 0);
     if (!(cptr.ldI32o(mon, $monst_invis_blkd) & 1)) {
@@ -508,7 +508,7 @@ export function* mon_set_minvis(mon, cursed_potion) {
     }
 }
 
-/** C ref: worn.c:488 — @param {CPtr} mon @param {CInt} adjust @param {CPtr} obj */
+/** C ref: worn.c:488 — @param {CPtr<struct monst>} mon @param {CInt} adjust @param {CPtr<struct obj>} obj */
 export function* mon_adjust_speed(mon, adjust, obj) {
     let otmp;
     let give_msg = schar((!cptr.ld1so(gi, $instance_globals_i_in_mklev)));
@@ -569,7 +569,7 @@ export function* mon_adjust_speed(mon, adjust, obj) {
     }
 }
 
-/** C ref: worn.c:579 — @param {CPtr} mon @param {CPtr} obj @param {CInt} on @param {CInt} silently */
+/** C ref: worn.c:579 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} on @param {CInt} silently */
 export function* update_mon_extrinsics(mon, obj, on, silently) {
     let unseen, mask, otmp, which, altwhich, save_in_mklev;
     let __pc = 0;
@@ -694,7 +694,7 @@ export function* update_mon_extrinsics(mon, obj, on, silently) {
     }
 }
 
-/** C ref: worn.c:717 — @param {CPtr} mon @returns {CInt} */
+/** C ref: worn.c:717 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function find_mac(mon) {
     let obj;
     let base = cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_ac);
@@ -712,7 +712,7 @@ export function find_mac(mon) {
     return base;
 }
 
-/** C ref: worn.c:757 — @param {CPtr} mon @param {CInt} creation */
+/** C ref: worn.c:757 — @param {CPtr<struct monst>} mon @param {CInt} creation */
 export function* m_dowear(mon, creation) {
     let can_wear_armor;
     if ((cptr.ld1uo((cptr.ldPtro(mon, $monst_data)), $permonst_msize) < NHM.MZ_SMALL) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 262144n) != 0n))
@@ -737,7 +737,7 @@ export function* m_dowear(mon, creation) {
         (yield* m_dowear_type(mon, 1n, creation, 1));
 }
 
-/** C ref: worn.c:799 — @param {CPtr} mon @param {CLongLong} flag @param {CInt} creation @param {CInt} racialexception */
+/** C ref: worn.c:799 — @param {CPtr<struct monst>} mon @param {CLongLong} flag @param {CInt} creation @param {CInt} racialexception */
 function* m_dowear_type(mon, flag, creation, racialexception) {
     let old;
     let best;
@@ -888,7 +888,7 @@ function* m_dowear_type(mon, flag, creation, racialexception) {
     }
 }
 
-/** C ref: worn.c:1006 — @param {CPtr} mon @param {CLongLong} flag @returns {CPtr} */
+/** C ref: worn.c:1006 — @param {CPtr<struct monst>} mon @param {CLongLong} flag @returns {CPtr<struct obj>} */
 export function* which_armor(mon, flag) {
     if (cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) {
         switch (flag) {
@@ -919,7 +919,7 @@ export function* which_armor(mon, flag) {
     }
 }
 
-/** C ref: worn.c:1040 — @param {CPtr} mon @param {CPtr} obj @param {CInt} polyspot */
+/** C ref: worn.c:1040 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} polyspot */
 function* m_lose_armor(mon, obj, polyspot) {
     (yield* extract_from_minvent(mon, obj, 1, 0));
     (yield* place_object(obj, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
@@ -928,7 +928,7 @@ function* m_lose_armor(mon, obj, polyspot) {
     (yield* newsym(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my)));
 }
 
-/** C ref: worn.c:1055 — @param {CPtr} objchn */
+/** C ref: worn.c:1055 — @param {CPtr<struct obj>} objchn */
 function clear_bypass(objchn) {
     let o;
     for (o = objchn; o; o = cptr.ldPtr(o)) {
@@ -966,13 +966,13 @@ export function clear_bypasses() {
     cptr.st1o(svc, $context_info_bypasses, 0);
 }
 
-/** C ref: worn.c:1119 — @param {CPtr} obj */
+/** C ref: worn.c:1119 — @param {CPtr<struct obj>} obj */
 export function bypass_obj(obj) {
     cptr.stI32o(obj, $obj_bypass, 1);
     cptr.st1o(svc, $context_info_bypasses, 1);
 }
 
-/** C ref: worn.c:1127 — @param {CPtr} objchain @param {CInt} on */
+/** C ref: worn.c:1127 — @param {CPtr<struct obj>} objchain @param {CInt} on */
 export function bypass_objlist(objchain, on) {
     if (on && objchain)
         cptr.st1o(svc, $context_info_bypasses, 1);
@@ -982,7 +982,7 @@ export function bypass_objlist(objchain, on) {
     }
 }
 
-/** C ref: worn.c:1142 — @param {CPtr} objchain @returns {CPtr} */
+/** C ref: worn.c:1142 — @param {CPtr<struct obj>} objchain @returns {CPtr<struct obj>} */
 export function nxt_unbypassed_obj(objchain) {
     while (objchain) {
         if (!(cptr.ldI32o(objchain, $obj_bypass) & 1)) {
@@ -994,7 +994,7 @@ export function nxt_unbypassed_obj(objchain) {
     return objchain;
 }
 
-/** C ref: worn.c:1159 — @param {CPtr} lootarray @param {CPtr} listhead @returns {CPtr} */
+/** C ref: worn.c:1159 — @param {CPtr<Loot>} lootarray @param {CPtr<struct obj>} listhead @returns {CPtr<struct obj>} */
 export function nxt_unbypassed_loot(lootarray, listhead) {
     let o;
     let obj;
@@ -1011,7 +1011,7 @@ export function nxt_unbypassed_loot(lootarray, listhead) {
     return obj;
 }
 
-/** C ref: worn.c:1177 — @param {CPtr} mon @param {CInt} polyspot */
+/** C ref: worn.c:1177 — @param {CPtr<struct monst>} mon @param {CInt} polyspot */
 export function* mon_break_armor(mon, polyspot) {
     let otmp;
     let mdat = cptr.ldPtro(mon, $monst_data);
@@ -1140,7 +1140,7 @@ export function* mon_break_armor(mon, polyspot) {
     return;
 }
 
-/** C ref: worn.c:1339 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: worn.c:1339 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 function extra_pref(mon, obj) {
     if (obj) {
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.SPEED_BOOTS && ((cptr.ldI32o(mon, $monst_permspeed) & 3) | 0) != NHM.MFAST)
@@ -1149,7 +1149,7 @@ function extra_pref(mon, obj) {
     return 0;
 }
 
-/** C ref: worn.c:1360 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: worn.c:1360 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function racial_exception(mon, obj) {
     let ptr = raceptr(mon);
     if (cptr.eq(ptr, cptr.add(mons, NHC.PM_HOBBIT, 96)) && is_elven_armor(obj))
@@ -1157,7 +1157,7 @@ export function racial_exception(mon, obj) {
     return 0;
 }
 
-/** C ref: worn.c:1377 — @param {CPtr} mon @param {CPtr} obj @param {CInt} do_extrinsics @param {CInt} silently */
+/** C ref: worn.c:1377 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} do_extrinsics @param {CInt} silently */
 export function* extract_from_minvent(mon, obj, do_extrinsics, silently) {
     let unwornmask = cptr.ldI64o(obj, $obj_owornmask);
     if (cptr.ld1so(obj, $obj_where) != NHM.OBJ_MINVENT) {

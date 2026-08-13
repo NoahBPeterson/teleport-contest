@@ -147,12 +147,12 @@ const __sl57 = cptr.lit("gas cloud has dissipated.");
 /** C ref: region.c:45 — callback_proc[2] */
 const callbacks = [inside_gas_cloud, expire_gas_cloud];
 
-/** C ref: region.c:54 — @param {CPtr} r @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: region.c:54 — @param {CPtr<NhRect>} r @param {CInt} x @param {CInt} y @returns {CInt} */
 export function inside_rect(r, x, y) {
     return schar((x >= cptr.ldI16(r) && x <= cptr.ldI16o(r, $NhRect_hx) && y >= cptr.ldI16o(r, $NhRect_ly) && y <= cptr.ldI16o(r, $NhRect_hy) ? 1 : 0));
 }
 
-/** C ref: region.c:63 — @param {CPtr} reg @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: region.c:63 — @param {CPtr<NhRegion>} reg @param {CInt} x @param {CInt} y @returns {CInt} */
 export function inside_region(reg, x, y) {
     let i;
     if (reg === null || !inside_rect(reg, x, y))
@@ -163,7 +163,7 @@ export function inside_region(reg, x, y) {
     return 0;
 }
 
-/** C ref: region.c:79 — @param {CPtr} rects @param {CInt} nrect @returns {CPtr} */
+/** C ref: region.c:79 — @param {CPtr<NhRect>} rects @param {CInt} nrect @returns {CPtr<NhRegion>} */
 export function* create_region(rects, nrect) {
     let i;
     let reg;
@@ -210,7 +210,7 @@ export function* create_region(rects, nrect) {
     return reg;
 }
 
-/** C ref: region.c:133 — @param {CPtr} reg @param {CPtr} rect */
+/** C ref: region.c:133 — @param {CPtr<NhRegion>} reg @param {CPtr<NhRect>} rect */
 export function* add_rect_to_reg(reg, rect) {
     let tmp_rect;
     tmp_rect = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((cptr.ldI16o(reg, $NhRegion_nrects) + 1) | 0))) * 8n)))));
@@ -231,7 +231,7 @@ export function* add_rect_to_reg(reg, rect) {
         cptr.stI16o(reg, $nhrect_hy, cptr.ldI16o(rect, $NhRect_hy));
 }
 
-/** C ref: region.c:161 — @param {CPtr} reg @param {CPtr} mon */
+/** C ref: region.c:161 — @param {CPtr<NhRegion>} reg @param {CPtr<struct monst>} mon */
 export function* add_mon_to_reg(reg, mon) {
     let i;
     let tmp_m;
@@ -253,7 +253,7 @@ export function* add_mon_to_reg(reg, mon) {
     cptr.stI32o(cptr.ldPtro(reg, $NhRegion_monsters), (cptr.stI16o(reg, $NhRegion_n_monst, cptr.ldI16o(reg, $NhRegion_n_monst) + 1)) - (1), cptr.ldI32o(mon, $monst_m_id), 4);
 }
 
-/** C ref: region.c:192 — @param {CPtr} reg @param {CPtr} mon */
+/** C ref: region.c:192 — @param {CPtr<NhRegion>} reg @param {CPtr<struct monst>} mon */
 export function remove_mon_from_reg(reg, mon) {
     let i;
     for (i = 0; i < cptr.ldI16o(reg, $NhRegion_n_monst); i++)
@@ -264,7 +264,7 @@ export function remove_mon_from_reg(reg, mon) {
         }
 }
 
-/** C ref: region.c:210 — @param {CPtr} reg @param {CPtr} mon @returns {CInt} */
+/** C ref: region.c:210 — @param {CPtr<NhRegion>} reg @param {CPtr<struct monst>} mon @returns {CInt} */
 export function mon_in_region(reg, mon) {
     let i;
     for (i = 0; i < cptr.ldI16o(reg, $NhRegion_n_monst); i++)
@@ -273,7 +273,7 @@ export function mon_in_region(reg, mon) {
     return 0;
 }
 
-/** C ref: region.c:263 — @param {CPtr} reg */
+/** C ref: region.c:263 — @param {CPtr<NhRegion>} reg */
 export function free_region(reg) {
     if (reg) {
         if (cptr.ldPtro(reg, $NhRegion_rects))
@@ -288,7 +288,7 @@ export function free_region(reg) {
     }
 }
 
-/** C ref: region.c:284 — @param {CPtr} reg */
+/** C ref: region.c:284 — @param {CPtr<NhRegion>} reg */
 export function* add_region(reg) {
     let tmp_reg;
     let i;
@@ -329,7 +329,7 @@ export function* add_region(reg) {
         (cptr.stI32o((reg), $NhRegion_player_flags, cptr.ldI32o((reg), $NhRegion_player_flags) & 4294967294));
 }
 
-/** C ref: region.c:344 — @param {CPtr} reg */
+/** C ref: region.c:344 — @param {CPtr<NhRegion>} reg */
 export function* remove_region(reg) {
     let i;
     let x;
@@ -458,7 +458,7 @@ export function* in_out_region(x, y) {
     return 1;
 }
 
-/** C ref: region.c:533 — @param {CPtr} mon @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: region.c:533 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y @returns {CInt} */
 export function* m_in_out_region(mon, x, y) {
     let i;
     let f_indx = 0;
@@ -501,7 +501,7 @@ export function update_player_regions() {
             (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & 4294967294));
 }
 
-/** C ref: region.c:598 — @param {CPtr} mon */
+/** C ref: region.c:598 — @param {CPtr<struct monst>} mon */
 export function* update_monster_region(mon) {
     let i;
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
@@ -515,7 +515,7 @@ export function* update_monster_region(mon) {
     }
 }
 
-/** C ref: region.c:651 — @param {CPtr} reg @returns {CInt} */
+/** C ref: region.c:651 — @param {CPtr<NhRegion>} reg @returns {CInt} */
 export function reg_damg(reg) {
     let damg = (!cptr.ld1so(reg, $NhRegion_visible) || cptr.ldI64o(reg, $NhRegion_ttl) == -2n) ? 0 : cptr.ldI32o(reg, $NhRegion_arg);
     return damg;
@@ -561,7 +561,7 @@ export function* visible_region_summary(win) {
     }
 }
 
-/** C ref: region.c:718 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: region.c:718 — @param {CInt} x @param {CInt} y @returns {CPtr<NhRegion>} */
 export function visible_region_at(x, y) {
     let i;
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
@@ -573,12 +573,12 @@ export function visible_region_at(x, y) {
     return null;
 }
 
-/** C ref: region.c:732 — @param {CPtr} reg @param {CInt} x @param {CInt} y */
+/** C ref: region.c:732 — @param {CPtr<NhRegion>} reg @param {CInt} x @param {CInt} y */
 export function* show_region(reg, x, y) {
     (yield* show_glyph(x, y, cptr.ldI32o(reg, $NhRegion_glyph)));
 }
 
-/** C ref: region.c:741 — @param {CPtr} nhfp */
+/** C ref: region.c:741 — @param {CPtr<NHFILE>} nhfp */
 export function* save_regions(nhfp) {
     let r;
     let i;
@@ -632,7 +632,7 @@ export function* save_regions(nhfp) {
         clear_regions();
 }
 
-/** C ref: region.c:799 — @param {CPtr} nhfp */
+/** C ref: region.c:799 — @param {CPtr<NHFILE>} nhfp */
 export function* rest_regions(nhfp) {
     let r;
     let i;
@@ -728,7 +728,7 @@ export function* rest_regions(nhfp) {
     }
 }
 
-/** C ref: region.c:899 — @param {CPtr} hdrfmt @param {CPtr} hdrbuf @param {CPtr} count @param {CPtr} size */
+/** C ref: region.c:899 — @param {CPtr<char>} hdrfmt @param {CPtr<char>} hdrbuf @param {CPtr<long>} count @param {CPtr<long>} size */
 export function region_stats(hdrfmt, hdrbuf, count, size) {
     let rg;
     let i;
@@ -746,7 +746,7 @@ export function region_stats(hdrfmt, hdrbuf, count, size) {
     }
 }
 
-/** C ref: region.c:928 — @param {CPtr} reg */
+/** C ref: region.c:928 — @param {CPtr<NhRegion>} reg */
 function reset_region_mids(reg) {
     let i = 0;
     let n = cptr.ldI16o(reg, $NhRegion_n_monst);
@@ -872,7 +872,7 @@ function is_hero_inside_gas_cloud() {
     return 0;
 }
 
-/** C ref: region.c:1182 — @param {CPtr} cloud @param {CInt} damage @param {CInt} inside_cloud */
+/** C ref: region.c:1182 — @param {CPtr<NhRegion>} cloud @param {CInt} damage @param {CInt} inside_cloud */
 function* make_gas_cloud(cloud, damage, inside_cloud) {
     if (!cptr.ld1so(gi, $instance_globals_i_in_mklev) && !cptr.ld1so(svc, $context_info_mon_moving))
         (cptr.stI32o((cloud), $NhRegion_player_flags, cptr.ldI32o((cloud), $NhRegion_player_flags) & 4294967293));
@@ -889,7 +889,7 @@ function* make_gas_cloud(cloud, damage, inside_cloud) {
     }
 }
 
-/** C ref: region.c:1213 — @param {CInt} x @param {CInt} y @param {CInt} cloudsize @param {CInt} damage @returns {CPtr} */
+/** C ref: region.c:1213 — @param {CInt} x @param {CInt} y @param {CInt} cloudsize @param {CInt} damage @returns {CPtr<NhRegion>} */
 export function* create_gas_cloud(x, y, cloudsize, damage) {
     let cloud;
     let i;
@@ -958,7 +958,7 @@ export function* create_gas_cloud(x, y, cloudsize, damage) {
     return cloud;
 }
 
-/** C ref: region.c:1313 — @param {CPtr} sel @param {CInt} damage @returns {CPtr} */
+/** C ref: region.c:1313 — @param {CPtr<struct selectionvar>} sel @param {CInt} damage @returns {CPtr<NhRegion>} */
 export function* create_gas_cloud_selection(sel, damage) {
     let cloud;
     let tmprect = cptr.alloc(8);

@@ -209,42 +209,42 @@ const __sl73 = cptr.lit("wall_angle: bottom of crwall check");
 const __sl74 = cptr.lit("wall_angle: unknown crosswall mode");
 const __sl75 = cptr.lit("wall_angle: unexpected wall type %d");
 
-/** C ref: display.c:166 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:166 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function tp_sensemon(mon) {
     return ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range)))) ? 1 : 0);
 }
 
-/** C ref: display.c:173 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:173 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function sensemon(mon) {
     return ((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) && (!Underwater() || (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2 && is_pool(cptr.ldI16o((mon), $monst_mx), cptr.ldI16o((mon), $monst_my)))) && (Detect_monsters() || ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))) ? 1 : 0);
 }
 
-/** C ref: display.c:180 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:180 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function mon_warning(mon) {
     return (Warning() && !(cptr.ldI32o((mon), $monst_mpeaceful) & 1) && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 100) && ((((cptr.ld1uo((mon), $monst_m_lev) / 4) | 0)) >= cptr.ldI32o(svc, $context_info_warnlevel)) ? 1 : 0);
 }
 
-/** C ref: display.c:187 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:187 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function mon_visible(mon) {
     return ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(mon, $monst_mundetected) & 1) ? 1 : 0);
 }
 
-/** C ref: display.c:194 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:194 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function see_with_infrared(mon) {
     return (!Blind() && Infravision() && ((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_INFRAVISIBLE)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.COULD_SEE) != 0) ? 1 : 0);
 }
 
-/** C ref: display.c:201 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:201 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function canseemon(mon) {
     return (((cptr.ldI32o(mon, $monst_wormno) & 31) | 0 ? worm_known(mon) : (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0) || (!Blind() && Infravision() && ((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_INFRAVISIBLE)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.COULD_SEE) != 0)) ? 1 : 0)) && ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(mon, $monst_mundetected) & 1)) ? 1 : 0);
 }
 
-/** C ref: display.c:208 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:208 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function knowninvisible(mon) {
     return ((cptr.ldI32o((mon), $monst_minvis) & 1) | 0 && ((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o((mon), $monst_my), 8), cptr.ldI16o((mon), $monst_mx)) & NHM.IN_SIGHT) != 0) && (See_invisible() || Detect_monsters())) || (!Blind() && (HTelepat() & -117440513n) && dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 64)) ? 1 : 0);
 }
 
-/** C ref: display.c:215 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:215 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function is_safemon(mon) {
     return (cptr.ld1so(flags, $flag_safe_dog) && (cptr.ldI32o((mon), $monst_mpeaceful) & 1) | 0 && ((((cptr.ldI32o(mon, $monst_wormno) & 31) | 0 ? worm_known(mon) : (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.IN_SIGHT) != 0) || (!Blind() && Infravision() && ((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_INFRAVISIBLE)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mon, $monst_my), 8), cptr.ldI16o(mon, $monst_mx)) & NHM.COULD_SEE) != 0)) ? 1 : 0)) && ((!(cptr.ldI32o(mon, $monst_minvis) & 1) || See_invisible()) && !(cptr.ldI32o(mon, $monst_mundetected) & 1))) || ((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) && (!Underwater() || (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2 && is_pool(cptr.ldI16o((mon), $monst_mx), cptr.ldI16o((mon), $monst_my)))) && (Detect_monsters() || ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))))) && !HConfusion() && !Hallucination() && !HStun() ? 1 : 0);
 }
@@ -275,7 +275,7 @@ export function map_background(x, y, show) {
         show_glyph(x, y, glyph);
 }
 
-/** C ref: display.c:296 — @param {CPtr} trap @param {CInt} show */
+/** C ref: display.c:296 — @param {CPtr<struct trap>} trap @param {CInt} show */
 export function map_trap(trap, show) {
     let x = cptr.ldI16o(trap, $trap_tx);
     let y = cptr.ldI16o(trap, $trap_ty);
@@ -286,7 +286,7 @@ export function map_trap(trap, show) {
         show_glyph(x, y, glyph);
 }
 
-/** C ref: display.c:313 — @param {CPtr} ep @param {CInt} show */
+/** C ref: display.c:313 — @param {CPtr<struct engr>} ep @param {CInt} show */
 export function map_engraving(ep, show) {
     let x = cptr.ldI16o(ep, $engr_engr_x);
     let y = cptr.ldI16o(ep, $engr_engr_y);
@@ -297,7 +297,7 @@ export function map_engraving(ep, show) {
         show_glyph(x, y, glyph);
 }
 
-/** C ref: display.c:333 — @param {CPtr} obj @param {CInt} show */
+/** C ref: display.c:333 — @param {CPtr<struct obj>} obj @param {CInt} show */
 export function map_object(obj, show) {
     let x = cptr.ldI16o(obj, $obj_ox);
     let y = cptr.ldI16o(obj, $obj_oy);
@@ -397,7 +397,7 @@ function show_mon_or_warn(x, y, monglyph) {
     show_glyph(x, y, monglyph);
 }
 
-/** C ref: display.c:514 — @param {CInt} x @param {CInt} y @param {CPtr} mon @param {CInt} sightflags @param {CInt} worm_tail */
+/** C ref: display.c:514 — @param {CInt} x @param {CInt} y @param {CPtr<struct monst>} mon @param {CInt} sightflags @param {CInt} worm_tail */
 function display_monster(x, y, mon, sightflags, worm_tail) {
     let mon_mimic = schar(((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING));
     let sensed = (mon_mimic && (Protection_from_shape_changers() || ((!(cptr.ldI32o(u, $you_uswallow) & 1) || cptr.eq((mon), cptr.ldPtro(u, $you_ustuck))) && (!Underwater() || (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2 && is_pool(cptr.ldI16o((mon), $monst_mx), cptr.ldI16o((mon), $monst_my)))) && (Detect_monsters() || ((!((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 65536n) != 0n)) && ((Blind() && Blind_telepat()) || (Unblind_telepat() && (dist2((cptr.ldI16o((mon), $monst_mx)), (cptr.ldI16o((mon), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= cptr.ldI32o(u, $you_unblind_telepat_range))))) || (Warn_of_mon() && ((cptr.ldU64o(svc, $context_info_warntype) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & cptr.ldU64o(cptr.ldPtro((mon), $monst_data), $permonst_mflags2)) != 0n || (cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species) && (cptr.eq(cptr.ldPtro(svc, $context_info_warntype + $warntype_info_species), cptr.ldPtro((mon), $monst_data))))))))) ? 1 : 0);
@@ -464,7 +464,7 @@ function display_monster(x, y, mon, sightflags, worm_tail) {
     }
 }
 
-/** C ref: display.c:634 — @param {CPtr} mon */
+/** C ref: display.c:634 — @param {CPtr<struct monst>} mon */
 function display_warning(mon) {
     let x = cptr.ldI16o(mon, $monst_mx);
     let y = cptr.ldI16o(mon, $monst_my);
@@ -481,7 +481,7 @@ function display_warning(mon) {
     show_mon_or_warn(x, y, glyph);
 }
 
-/** C ref: display.c:654 — @param {CPtr} mon @returns {CInt} */
+/** C ref: display.c:654 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function warning_of(mon) {
     let wl = 0;
     let tmp = 0;
@@ -492,7 +492,7 @@ export function warning_of(mon) {
     return wl;
 }
 
-/** C ref: display.c:668 — @param {CPtr} mon @param {CInt} mx @param {CInt} my @returns {CInt} */
+/** C ref: display.c:668 — @param {CPtr<struct monst>} mon @param {CInt} mx @param {CInt} my @returns {CInt} */
 function mon_overrides_region(mon, mx, my) {
     let r;
     if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (!mon || !cptr.eq(mon, cptr.ldPtro(u, $you_ustuck))))
@@ -1031,7 +1031,7 @@ export function see_monsters() {
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 }
 
-/** C ref: display.c:1532 — @param {CPtr} mtmp */
+/** C ref: display.c:1532 — @param {CPtr<struct monst>} mtmp */
 function mimic_light_blocking(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_minvis) & 1) | 0 && is_lightblocker_mappear(mtmp)) {
         if (See_invisible())
@@ -1663,7 +1663,7 @@ export function glyph_at(x, y) {
     return cptr.ldI32o3(gg, y, 4480, x, 56, $gbuf_entry_glyphinfo);
 }
 
-/** C ref: display.c:2507 — @param {CInt} x @param {CInt} y @param {CPtr} bkglyph @param {CPtr} framecolor */
+/** C ref: display.c:2507 — @param {CInt} x @param {CInt} y @param {CPtr<int>} bkglyph @param {CPtr<uint32>} framecolor */
 function get_bkglyph_and_framecolor(x, y, bkglyph, framecolor) {
     let idx;
     let tmp_bkglyph = NHC.GLYPH_UNEXPLORED_OFF;
@@ -1722,7 +1722,7 @@ function get_bkglyph_and_framecolor(x, y, bkglyph, framecolor) {
         cptr.stI32(framecolor, NHM.NO_COLOR);
 }
 
-/** C ref: display.c:2594 — @param {CInt} x @param {CInt} y @param {CInt} glyph @param {CUInt} mgflags @param {CPtr} glyphinfo */
+/** C ref: display.c:2594 — @param {CInt} x @param {CInt} y @param {CInt} glyph @param {CUInt} mgflags @param {CPtr<glyph_info>} glyphinfo */
 export function map_glyphinfo(x, y, glyph, mgflags, glyphinfo) {
     let offset;
     let is_you = schar((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && glyph_is_monster(glyph) ? 1 : 0));
@@ -2259,14 +2259,14 @@ export function set_wall_state() {
 /** C ref: display.c:3358 — unsigned char[3][3] */
 export const seenv_matrix = [[4, 2, 1], [8, 255, 128], [16, 32, 64]];
 
-/** C ref: display.c:3369 — @param {CPtr} lev @param {CInt} x0 @param {CInt} y0 @param {CInt} x @param {CInt} y */
+/** C ref: display.c:3369 — @param {CPtr<struct rm>} lev @param {CInt} x0 @param {CInt} y0 @param {CInt} x @param {CInt} y */
 function set_seenv(lev, x0, y0, x, y) {
     let dx = i16(((x - x0) | 0));
     let dy = i16(((y0 - y) | 0));
     cptr.st1o(lev, $rm_seenv, cptr.ld1uo(lev, $rm_seenv) | cptr.ld1uo(cptr.decay(seenv_matrix[(((dy) < 0 ? -1 : ((dy) != 0)) + 1) | 0]), (((dx) < 0 ? -1 : ((dx) != 0)) + 1) | 0, 1));
 }
 
-/** C ref: display.c:3384 — @param {CPtr} lev @param {CInt} x0 @param {CInt} y0 @param {CInt} x1 @param {CInt} y1 */
+/** C ref: display.c:3384 — @param {CPtr<struct rm>} lev @param {CInt} x0 @param {CInt} y0 @param {CInt} x1 @param {CInt} y1 */
 export function unset_seenv(lev, x0, y0, x1, y1) {
     let dx = i16(((x1 - x0) | 0));
     let dy = i16(((y0 - y1) | 0));
@@ -2325,7 +2325,7 @@ cptr.stI32o(cptr.decay(cross_matrix[3]), 20, NHC.S_crwall);
 
 const __static_t_warn_warn_str = cptr.bytes("wall_angle: %s: case %d: seenv = 0x%x"); /** C ref: display.c:3455 — char[38] (function-static) */
 
-/** C ref: display.c:3453 — @param {CPtr} lev */
+/** C ref: display.c:3453 — @param {CPtr<struct rm>} lev */
 function t_warn(lev) {
     let wname;
     switch (cptr.ld1so(lev, $rm_typ)) {
@@ -2366,7 +2366,7 @@ function t_warn(lev) {
     impossible(cptr.decay(__static_t_warn_warn_str), wname, ((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & NHM.WM_MASK, cptr.ld1uo(lev, $rm_seenv));
 }
 
-/** C ref: display.c:3513 — @param {CPtr} lev @returns {CInt} */
+/** C ref: display.c:3513 — @param {CPtr<struct rm>} lev @returns {CInt} */
 function wall_angle(lev) {
     let seenv = (cptr.ld1uo(lev, $rm_seenv) & 255) >>> 0;
     let row;

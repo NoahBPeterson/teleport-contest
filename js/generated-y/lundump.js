@@ -61,19 +61,19 @@ const __sl16 = cptr.lit("binary string");
 
 /** C ref: lundump.c:37 — typedef LoadState (type alias only, no runtime output) */
 
-/** C ref: lundump.c:40 — @param {CPtr} S @param {CPtr} why */
+/** C ref: lundump.c:40 — @param {CPtr<LoadState>} S @param {CPtr<char>} why */
 function* error(S, why) {
     (yield* luaO_pushfstring(cptr.ldPtr(S), __sl0, cptr.ldPtro(S, $LoadState_name), why));
     (yield* luaD_throw(cptr.ldPtr(S), 3));
 }
 
-/** C ref: lundump.c:52 — @param {CPtr} S @param {CPtr} b @param {CLongLong} size */
+/** C ref: lundump.c:52 — @param {CPtr<LoadState>} S @param {CPtr<void>} b @param {CLongLong} size */
 function* loadBlock(S, b, size) {
     if ((yield* luaZ_read(cptr.ldPtro(S, $LoadState_Z), b, size)) != 0n)
         (yield* error(S, __sl1));
 }
 
-/** C ref: lundump.c:61 — @param {CPtr} S @returns {*} */
+/** C ref: lundump.c:61 — @param {CPtr<LoadState>} S @returns {*} */
 function* loadByte(S) {
     let b = (((cptr.stU64((cptr.ldPtro(S, $LoadState_Z)), cptr.ldU64((cptr.ldPtro(S, $LoadState_Z))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtro(S, $LoadState_Z)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtro(S, $LoadState_Z)), $ZIO_p, v); })))))) : (yield* luaZ_fill(cptr.ldPtro(S, $LoadState_Z))));
     if (b == -1)
@@ -81,7 +81,7 @@ function* loadByte(S) {
     return (uchar(((b))));
 }
 
-/** C ref: lundump.c:69 — @param {CPtr} S @param {CLongLong} limit @returns {*} */
+/** C ref: lundump.c:69 — @param {CPtr<LoadState>} S @param {CLongLong} limit @returns {*} */
 function* loadUnsigned(S, limit) {
     let x = 0n;
     let b;
@@ -95,31 +95,31 @@ function* loadUnsigned(S, limit) {
     return x;
 }
 
-/** C ref: lundump.c:83 — @param {CPtr} S @returns {*} */
+/** C ref: lundump.c:83 — @param {CPtr<LoadState>} S @returns {*} */
 function* loadSize(S) {
     return (yield* loadUnsigned(S, 18446744073709551615n));
 }
 
-/** C ref: lundump.c:88 — @param {CPtr} S @returns {CInt} */
+/** C ref: lundump.c:88 — @param {CPtr<LoadState>} S @returns {CInt} */
 function* loadInt(S) {
     return (Number(BigInt.asIntN(32, (((yield* loadUnsigned(S, 2147483647n)))))));
 }
 
-/** C ref: lundump.c:93 — @param {CPtr} S @returns {*} */
+/** C ref: lundump.c:93 — @param {CPtr<LoadState>} S @returns {*} */
 function* loadNumber(S) {
     let x = cptr.box(0);
     (yield* loadBlock(S, x, 8n));
     return x.v;
 }
 
-/** C ref: lundump.c:100 — @param {CPtr} S @returns {*} */
+/** C ref: lundump.c:100 — @param {CPtr<LoadState>} S @returns {*} */
 function* loadInteger(S) {
     let x = cptr.box(0n);
     (yield* loadBlock(S, x, 8n));
     return x.v;
 }
 
-/** C ref: lundump.c:110 — @param {CPtr} S @param {CPtr} p @returns {CPtr} */
+/** C ref: lundump.c:110 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} p @returns {CPtr<TString>} */
 function* loadStringN(S, p) {
     let L = cptr.ldPtr(S);
     let ts;
@@ -148,7 +148,7 @@ function* loadStringN(S, p) {
     return ts;
 }
 
-/** C ref: lundump.c:136 — @param {CPtr} S @param {CPtr} p @returns {CPtr} */
+/** C ref: lundump.c:136 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} p @returns {CPtr<TString>} */
 function* loadString(S, p) {
     let st = (yield* loadStringN(S, p));
     if (cptr.eq(st, (null)))
@@ -156,7 +156,7 @@ function* loadString(S, p) {
     return st;
 }
 
-/** C ref: lundump.c:144 — @param {CPtr} S @param {CPtr} f */
+/** C ref: lundump.c:144 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadCode(S, f) {
     let n = (yield* loadInt(S));
     cptr.stPtro(f, $Proto_code, (((void 0)), (((yield* luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n), 0))))));
@@ -164,7 +164,7 @@ function* loadCode(S, f) {
     (yield* loadBlock(S, cptr.ldPtro(f, $Proto_code), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n)));
 }
 
-/** C ref: lundump.c:155 — @param {CPtr} S @param {CPtr} f */
+/** C ref: lundump.c:155 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadConstants(S, f) {
     let i;
     let n = (yield* loadInt(S));
@@ -218,7 +218,7 @@ function* loadConstants(S, f) {
     }
 }
 
-/** C ref: lundump.c:191 — @param {CPtr} S @param {CPtr} f */
+/** C ref: lundump.c:191 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadProtos(S, f) {
     let i;
     let n = (yield* loadInt(S));
@@ -233,7 +233,7 @@ function* loadProtos(S, f) {
     }
 }
 
-/** C ref: lundump.c:212 — @param {CPtr} S @param {CPtr} f */
+/** C ref: lundump.c:212 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadUpvalues(S, f) {
     let i;
     let n;
@@ -249,7 +249,7 @@ function* loadUpvalues(S, f) {
     }
 }
 
-/** C ref: lundump.c:227 — @param {CPtr} S @param {CPtr} f */
+/** C ref: lundump.c:227 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadDebug(S, f) {
     let i;
     let n;
@@ -281,7 +281,7 @@ function* loadDebug(S, f) {
         cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, (yield* loadStringN(S, f)), 16);
 }
 
-/** C ref: lundump.c:258 — @param {CPtr} S @param {CPtr} f @param {CPtr} psource */
+/** C ref: lundump.c:258 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f @param {CPtr<TString>} psource */
 function* loadFunction(S, f, psource) {
     cptr.stPtro(f, $Proto_source, (yield* loadStringN(S, f)));
     if (cptr.eq(cptr.ldPtro(f, $Proto_source), (null)))
@@ -298,7 +298,7 @@ function* loadFunction(S, f, psource) {
     (yield* loadDebug(S, f));
 }
 
-/** C ref: lundump.c:275 — @param {CPtr} S @param {CPtr} s @param {CPtr} msg */
+/** C ref: lundump.c:275 — @param {CPtr<LoadState>} S @param {CPtr<char>} s @param {CPtr<char>} msg */
 function* checkliteral(S, s, msg) {
     let buff = new Uint8Array(12);
     let len = cptr.strlen(s);
@@ -307,13 +307,13 @@ function* checkliteral(S, s, msg) {
         (yield* error(S, msg));
 }
 
-/** C ref: lundump.c:284 — @param {CPtr} S @param {CLongLong} size @param {CPtr} tname */
+/** C ref: lundump.c:284 — @param {CPtr<LoadState>} S @param {CLongLong} size @param {CPtr<char>} tname */
 function* fchecksize(S, size, tname) {
     if (BigInt((yield* loadByte(S)) >>> 0) != size)
         (yield* error(S, (yield* luaO_pushfstring(cptr.ldPtr(S), __sl4, tname))));
 }
 
-/** C ref: lundump.c:292 — @param {CPtr} S */
+/** C ref: lundump.c:292 — @param {CPtr<LoadState>} S */
 function* checkHeader(S) {
     (yield* checkliteral(S, cptr.add(__sl5, 1, 1), __sl6));
     if ((yield* loadByte(S)) != 84)
@@ -330,7 +330,7 @@ function* checkHeader(S) {
         (yield* error(S, __sl15));
 }
 
-/** C ref: lundump.c:313 — @param {CPtr} L @param {CPtr} Z @param {CPtr} name @returns {CPtr} */
+/** C ref: lundump.c:313 — @param {CPtr<lua_State>} L @param {CPtr<ZIO>} Z @param {CPtr<char>} name @returns {CPtr<LClosure>} */
 export function* luaU_undump(L, Z, name) {
     let S = cptr.alloc(24);
     let cl;

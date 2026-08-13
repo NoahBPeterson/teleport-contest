@@ -1254,7 +1254,7 @@ export function init_artifacts() {
     hack_artifacts();
 }
 
-/** C ref: artifact.c:119 — @param {CPtr} nhfp */
+/** C ref: artifact.c:119 — @param {CPtr<NHFILE>} nhfp */
 export function* save_artifacts(nhfp) {
     let i;
     for (i = 0; i < ((NHC.NROFARTIFACTS + 1) | 0); ++i)
@@ -1263,7 +1263,7 @@ export function* save_artifacts(nhfp) {
         (yield* sfo_xint16(nhfp, cptr.add(artidisco, i, 2), __sl35));
 }
 
-/** C ref: artifact.c:133 — @param {CPtr} nhfp */
+/** C ref: artifact.c:133 — @param {CPtr<NHFILE>} nhfp */
 export function* restore_artifacts(nhfp) {
     let i;
     for (i = 0; i < ((NHC.NROFARTIFACTS + 1) | 0); ++i)
@@ -1273,14 +1273,14 @@ export function* restore_artifacts(nhfp) {
     hack_artifacts();
 }
 
-/** C ref: artifact.c:151 — @param {CInt} artinum @returns {CPtr} */
+/** C ref: artifact.c:151 — @param {CInt} artinum @returns {CPtr<char>} */
 export function artiname(artinum) {
     if (artinum <= 0 || artinum > NHC.NROFARTIFACTS)
         return __sl0;
     return cptr.ldPtro2(artilist, artinum, 80, $artifact_name);
 }
 
-/** C ref: artifact.c:172 — @param {CPtr} otmp @param {CInt} alignment @param {CUInt} max_giftvalue @param {CInt} adjust_spe @returns {CPtr} */
+/** C ref: artifact.c:172 — @param {CPtr<struct obj>} otmp @param {CInt} alignment @param {CUInt} max_giftvalue @param {CInt} adjust_spe @returns {CPtr<struct obj>} */
 export function* mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
     let a;
     let m;
@@ -1360,7 +1360,7 @@ export function* mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
     return otmp;
 }
 
-/** C ref: artifact.c:312 — @param {CPtr} obj */
+/** C ref: artifact.c:312 — @param {CPtr<struct obj>} obj */
 function* dispose_of_orig_obj(obj) {
     if (!obj)
         return;
@@ -1368,7 +1368,7 @@ function* dispose_of_orig_obj(obj) {
     (yield* obfree(obj, null));
 }
 
-/** C ref: artifact.c:329 — @param {CPtr} name @param {CPtr} otyp_p @param {CInt} fuzzy @returns {CPtr} */
+/** C ref: artifact.c:329 — @param {CPtr<char>} name @param {CPtr<short>} otyp_p @param {CInt} fuzzy @returns {CPtr<char>} */
 export function* artifact_name(name, otyp_p, fuzzy) {
     let a;
     let aname;
@@ -1387,7 +1387,7 @@ export function* artifact_name(name, otyp_p, fuzzy) {
     return null;
 }
 
-/** C ref: artifact.c:356 — @param {CInt} otyp @param {CPtr} name @returns {CInt} */
+/** C ref: artifact.c:356 — @param {CInt} otyp @param {CPtr<char>} name @returns {CInt} */
 export function exist_artifact(otyp, name) {
     let a;
     let arex;
@@ -1398,7 +1398,7 @@ export function exist_artifact(otyp, name) {
     return 0;
 }
 
-/** C ref: artifact.c:371 — @param {CPtr} otmp @param {CPtr} name @param {CInt} mod @param {CUInt} flgs */
+/** C ref: artifact.c:371 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} name @param {CInt} mod @param {CUInt} flgs */
 export function* artifact_exists(otmp, name, mod, flgs) {
     let a;
     if (otmp && cptr.ld1s(name))
@@ -1431,7 +1431,7 @@ export function* found_artifact(a) {
         cptr.stI32o2(artiexist, a, 36, $arti_info_found, 1);
 }
 
-/** C ref: artifact.c:422 — @param {CPtr} otmp */
+/** C ref: artifact.c:422 — @param {CPtr<struct obj>} otmp */
 export function* find_artifact(otmp) {
     let a = cptr.ld1so(otmp, $obj_oartifact);
     if (a && !(cptr.ldI32o2(artiexist, a, 36, $arti_info_found) & 1)) {
@@ -1452,7 +1452,7 @@ export function nartifact_exist() {
     return a;
 }
 
-/** C ref: artifact.c:478 — @param {CPtr} arti @param {CUInt} aflags */
+/** C ref: artifact.c:478 — @param {CPtr<struct obj>} arti @param {CUInt} aflags */
 export function* artifact_origin(arti, aflags) {
     let ct;
     let a = cptr.ld1so(arti, $obj_oartifact);
@@ -1481,20 +1481,20 @@ export function* artifact_origin(arti, aflags) {
     }
 }
 
-/** C ref: artifact.c:516 — @param {CPtr} otmp @param {CLongLong} abil @returns {CInt} */
+/** C ref: artifact.c:516 — @param {CPtr<struct obj>} otmp @param {CLongLong} abil @returns {CInt} */
 export function spec_ability(otmp, abil) {
     let arti = get_artifact(otmp);
     return schar((!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, 80)) && (cptr.ldU64o(arti, $artifact_spfx) & abil) != 0n ? 1 : 0));
 }
 
-/** C ref: artifact.c:526 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:526 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function confers_luck(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.LUCKSTONE)
         return 1;
     return schar((cptr.ld1so(obj, $obj_oartifact) && spec_ability(obj, 524288n) ? 1 : 0));
 }
 
-/** C ref: artifact.c:537 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:537 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function arti_reflects(obj) {
     let arti = get_artifact(obj);
     if (!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, 80))) {
@@ -1506,7 +1506,7 @@ export function arti_reflects(obj) {
     return 0;
 }
 
-/** C ref: artifact.c:555 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:555 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function shade_glare(obj) {
     let arti;
     if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.SILVER)
@@ -1517,7 +1517,7 @@ export function shade_glare(obj) {
     return 0;
 }
 
-/** C ref: artifact.c:575 — @param {CPtr} otmp @param {CPtr} name @returns {CInt} */
+/** C ref: artifact.c:575 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} name @returns {CInt} */
 export function* restrict_name(otmp, name) {
     let a;
     let aname;
@@ -1556,7 +1556,7 @@ export function* restrict_name(otmp, name) {
     return 0;
 }
 
-/** C ref: artifact.c:626 — @param {CInt} adtyp @param {CPtr} otmp @returns {CInt} */
+/** C ref: artifact.c:626 — @param {CInt} adtyp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function attacks(adtyp, otmp) {
     let weap;
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, 80)))
@@ -1564,7 +1564,7 @@ export function attacks(adtyp, otmp) {
     return 0;
 }
 
-/** C ref: artifact.c:636 — @param {CInt} adtyp @param {CPtr} otmp @returns {CInt} */
+/** C ref: artifact.c:636 — @param {CInt} adtyp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function defends(adtyp, otmp) {
     let weap;
     if (!otmp)
@@ -1606,7 +1606,7 @@ export function defends(adtyp, otmp) {
     return 0;
 }
 
-/** C ref: artifact.c:687 — @param {CInt} adtyp @param {CPtr} otmp @returns {CInt} */
+/** C ref: artifact.c:687 — @param {CInt} adtyp @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function defends_when_carried(adtyp, otmp) {
     let weap;
     if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, 80)))
@@ -1614,7 +1614,7 @@ export function defends_when_carried(adtyp, otmp) {
     return 0;
 }
 
-/** C ref: artifact.c:698 — @param {CPtr} otmp @param {CInt} being_worn @returns {CInt} */
+/** C ref: artifact.c:698 — @param {CPtr<struct obj>} otmp @param {CInt} being_worn @returns {CInt} */
 export function protects(otmp, being_worn) {
     let arti;
     if (being_worn && cptr.ld1uo2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_oprop) == NHC.PROTECTION)
@@ -1625,7 +1625,7 @@ export function protects(otmp, being_worn) {
     return schar(((cptr.ldU64o(arti, $artifact_cspfx) & 134217728n) != 0n || (being_worn && (cptr.ldU64o(arti, $artifact_spfx) & 134217728n) != 0n) ? 1 : 0));
 }
 
-/** C ref: artifact.c:716 — @param {CPtr} otmp @param {CInt} on @param {CLongLong} wp_mask */
+/** C ref: artifact.c:716 — @param {CPtr<struct obj>} otmp @param {CInt} on @param {CLongLong} wp_mask */
 export function* set_artifact_intrinsic(otmp, on, wp_mask) {
     let mask = null;
     let art;
@@ -1780,7 +1780,7 @@ export function* set_artifact_intrinsic(otmp, on, wp_mask) {
 /** C ref: artifact.c:898 — signed char */
 let touch_blasted = 0;
 
-/** C ref: artifact.c:908 — @param {CPtr} obj @param {CPtr} mon @returns {CInt} */
+/** C ref: artifact.c:908 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* touch_artifact(obj, mon) {
     let oart = get_artifact(obj);
     let badclass;
@@ -1830,7 +1830,7 @@ export function* touch_artifact(obj, mon) {
     return 1;
 }
 
-/** C ref: artifact.c:979 — @param {CPtr} obj @param {CInt} dtyp @returns {CInt} */
+/** C ref: artifact.c:979 — @param {CPtr<struct obj>} obj @param {CInt} dtyp @returns {CInt} */
 export function arti_immune(obj, dtyp) {
     let weap = get_artifact(obj);
     if (cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, 80)))
@@ -1840,7 +1840,7 @@ export function arti_immune(obj, dtyp) {
     return schar((cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == dtyp || cptr.ld1uo(weap, $artifact_defn + $attack_adtyp) == dtyp || cptr.ld1uo(weap, $artifact_cary + $attack_adtyp) == dtyp ? 1 : 0));
 }
 
-/** C ref: artifact.c:993 — @param {CPtr} oart @param {CPtr} mon @returns {CInt} */
+/** C ref: artifact.c:993 — @param {CPtr<struct artifact>} oart @param {CPtr<struct monst>} mon @returns {CInt} */
 function* bane_applies(oart, mon) {
     let atmp = cptr.alloc(80);
     if (!cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, 80)) && (cptr.ldU64o(oart, $artifact_spfx) & 32505856n) != 0n) {
@@ -1852,7 +1852,7 @@ function* bane_applies(oart, mon) {
     return 0;
 }
 
-/** C ref: artifact.c:1009 — @param {CPtr} weap @param {CPtr} mtmp @returns {CInt} */
+/** C ref: artifact.c:1009 — @param {CPtr<struct artifact>} weap @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function* spec_applies(weap, mtmp) {
     let ptr;
     let yours;
@@ -1896,7 +1896,7 @@ function* spec_applies(weap, mtmp) {
     return 0;
 }
 
-/** C ref: artifact.c:1065 — @param {CPtr} otmp @returns {CLongLong} */
+/** C ref: artifact.c:1065 — @param {CPtr<struct obj>} otmp @returns {CLongLong} */
 export function spec_m2(otmp) {
     let artifact = get_artifact(otmp);
     if (!cptr.eq(artifact, cptr.add(artilist, NHC.ART_NONARTIFACT, 80)))
@@ -1904,7 +1904,7 @@ export function spec_m2(otmp) {
     return 0n;
 }
 
-/** C ref: artifact.c:1076 — @param {CPtr} otmp @param {CPtr} mon @returns {CInt} */
+/** C ref: artifact.c:1076 — @param {CPtr<struct obj>} otmp @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* spec_abon(otmp, mon) {
     let weap = get_artifact(otmp);
     if (!cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, 80)) && cptr.ld1uo(weap, $artifact_attk + $attack_damn) && (yield* spec_applies(weap, mon)))
@@ -1912,7 +1912,7 @@ export function* spec_abon(otmp, mon) {
     return 0;
 }
 
-/** C ref: artifact.c:1091 — @param {CPtr} otmp @param {CPtr} mon @param {CInt} tmp @returns {CInt} */
+/** C ref: artifact.c:1091 — @param {CPtr<struct obj>} otmp @param {CPtr<struct monst>} mon @param {CInt} tmp @returns {CInt} */
 export function* spec_dbon(otmp, mon, tmp) {
     let weap = get_artifact(otmp);
     if ((cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, 80))) || (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS && cptr.ld1uo(weap, $artifact_attk + $attack_damn) == 0 && cptr.ld1uo(weap, $artifact_attk + $attack_damd) == 0))
@@ -2005,7 +2005,7 @@ cptr.stPtro(cptr.decay(mb_verb[1]), 8, __sl82);
 cptr.stPtro(cptr.decay(mb_verb[1]), 16, __sl83);
 cptr.stPtro(cptr.decay(mb_verb[1]), 24, __sl84);
 
-/** C ref: artifact.c:1249 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mb @param {CPtr} dmgptr @param {CInt} dieroll @param {CInt} vis @param {CPtr} hittee @returns {CInt} */
+/** C ref: artifact.c:1249 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct obj>} mb @param {CPtr<int>} dmgptr @param {CInt} dieroll @param {CInt} vis @param {CPtr<char>} hittee @returns {CInt} */
 function* Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     let old_mdat;
     let verb;
@@ -2152,7 +2152,7 @@ const __static_artifact_hit_behead_msg = cptr.alloc(2 * 8);
 cptr.stPtro(__static_artifact_hit_behead_msg, 0, __sl135);
 cptr.stPtro(__static_artifact_hit_behead_msg, 8, __sl136); /** C ref: artifact.c:1597 — char *[2] (function-static) */
 
-/** C ref: artifact.c:1447 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} otmp @param {CPtr} dmgptr @param {CInt} dieroll @returns {CInt} */
+/** C ref: artifact.c:1447 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct obj>} otmp @param {CPtr<int>} dmgptr @param {CInt} dieroll @returns {CInt} */
 export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     let youattack = schar((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))));
     let youdefend = schar((cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))));
@@ -2340,7 +2340,7 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     return 0;
 }
 
-/** C ref: artifact.c:1727 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1727 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -2362,13 +2362,13 @@ export function* doinvoke() {
     return (yield* arti_invoke(obj.v));
 }
 
-/** C ref: artifact.c:1762 — @param {CPtr} obj */
+/** C ref: artifact.c:1762 — @param {CPtr<struct obj>} obj */
 function* nothing_special(obj) {
     if ((cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT))
         (yield* You_feel(__sl138));
 }
 
-/** C ref: artifact.c:1769 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1769 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_taming(obj) {
     let pseudo = cptr.alloc(216);
     cptr.memcpy(pseudo, cg, 216);
@@ -2377,7 +2377,7 @@ function* invoke_taming(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:1780 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1780 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_healing(obj) {
     let healamt = (((((cptr.ldI32o(u, $you_uhpmax) + 1) | 0) - cptr.ldI32o(u, $you_uhp)) | 0) / 2) | 0;
     let creamed = BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0);
@@ -2407,7 +2407,7 @@ function* invoke_healing(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:1818 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1818 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_energy_boost(obj) {
     let epboost = (((((cptr.ldI32o(u, $you_uenmax) + 1) | 0) - cptr.ldI32o(u, $you_uen)) | 0) / 2) | 0;
     if (epboost > 120)
@@ -2425,7 +2425,7 @@ function* invoke_energy_boost(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:1838 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1838 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_untrap(obj) {
     if (!(yield* untrap(1, 0, 0, null))) {
         cptr.stI64o(obj, $obj_age, 0n);
@@ -2434,7 +2434,7 @@ function* invoke_untrap(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:1848 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1848 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_charge_obj(obj) {
     let oart = get_artifact(obj);
     let otmp = (yield* getobj(__sl143, charge_ok, 3));
@@ -2449,7 +2449,7 @@ function* invoke_charge_obj(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:1867 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1867 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_create_portal(obj) {
     let i;
     let num_ok_dungeons;
@@ -2502,7 +2502,7 @@ function* invoke_create_portal(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:1934 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1934 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_create_ammo(obj) {
     let otmp = (yield* mksobj(NHC.ARROW, 1, 0));
     if (!otmp) {
@@ -2528,7 +2528,7 @@ function* invoke_create_ammo(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:1963 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:1963 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_banish(obj) {
     let nvanished = 0;
     let nstayed = 0;
@@ -2575,7 +2575,7 @@ function* invoke_banish(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:2022 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2022 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_fling_poison(obj) {
     if ((yield* getdir(null))) {
         let venom = (rng_log_enabled() ? (rng_log_set_caller(__sl36, 2025, __sl157), rn2(2)) : rn2(2)) ? NHC.BLINDING_VENOM : NHC.ACID_VENOM;
@@ -2590,7 +2590,7 @@ function* invoke_fling_poison(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:2040 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2040 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_storm_spell(obj) {
     let oart = get_artifact(obj);
     let storm = cptr.ld1uo(oart, $artifact_inv_prop) == NHC.SNOWSTORM ? NHC.SPE_CONE_OF_COLD : NHC.SPE_FIREBALL;
@@ -2602,7 +2602,7 @@ function* invoke_storm_spell(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:2054 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2054 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_blinding_ray(obj) {
     if ((yield* getdir(null))) {
         if (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) {
@@ -2626,7 +2626,7 @@ function* invoke_blinding_ray(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:2091 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2091 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function arti_invoke_cost_pw(obj) {
     let oart = get_artifact(obj);
     if (cptr.ld1uo(oart, $artifact_inv_prop) == NHC.FLING_POISON || cptr.ld1uo(oart, $artifact_inv_prop) == NHC.BLINDING_RAY) {
@@ -2635,7 +2635,7 @@ function arti_invoke_cost_pw(obj) {
     return -1;
 }
 
-/** C ref: artifact.c:2106 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2106 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* arti_invoke_cost(obj) {
     if (cptr.ldI64o(obj, $obj_age) > cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
         let pw_cost = arti_invoke_cost_pw(obj);
@@ -2654,7 +2654,7 @@ function* arti_invoke_cost(obj) {
     return 1;
 }
 
-/** C ref: artifact.c:2131 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2131 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* arti_invoke(obj) {
     obj = cptr.box(obj);
     let oart;
@@ -2768,7 +2768,7 @@ function* arti_invoke(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:2236 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2236 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function finesse_ahriman(obj) {
     let oart;
     let save_Lev = cptr.alloc(24);
@@ -2783,14 +2783,14 @@ export function finesse_ahriman(obj) {
     return result;
 }
 
-/** C ref: artifact.c:2264 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2264 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function artifact_light(obj) {
     if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALE_MAIL || cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALES) && (cptr.ldI64o(obj, $obj_owornmask) & 1n) != 0n)
         return 1;
     return schar(((!cptr.eq(get_artifact(obj), cptr.add(artilist, NHC.ART_NONARTIFACT, 80))) && is_art(obj, NHC.ART_SUNSWORD) ? 1 : 0));
 }
 
-/** C ref: artifact.c:2279 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2279 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function* arti_speak(obj) {
     let oart = get_artifact(obj);
     let line;
@@ -2806,13 +2806,13 @@ export function* arti_speak(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:2299 — @param {CPtr} otmp @param {CUInt} inv_prop @returns {CInt} */
+/** C ref: artifact.c:2299 — @param {CPtr<struct obj>} otmp @param {CUInt} inv_prop @returns {CInt} */
 export function artifact_has_invprop(otmp, inv_prop) {
     let arti = get_artifact(otmp);
     return schar(((!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, 80))) && (cptr.ld1uo(arti, $artifact_inv_prop) == inv_prop) ? 1 : 0));
 }
 
-/** C ref: artifact.c:2309 — @param {CPtr} otmp @returns {CLongLong} */
+/** C ref: artifact.c:2309 — @param {CPtr<struct obj>} otmp @returns {CLongLong} */
 export function arti_cost(otmp) {
     if (!cptr.ld1so(otmp, $obj_oartifact))
         return BigInt(cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_cost));
@@ -2822,7 +2822,7 @@ export function arti_cost(otmp) {
         return (BigInt.asIntN(64, 100n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), 120, $objclass_oc_cost))));
 }
 
-/** C ref: artifact.c:2320 — @param {CPtr} abil @returns {*} */
+/** C ref: artifact.c:2320 — @param {CPtr<long>} abil @returns {*} */
 function abil_to_adtyp(abil) {
     let abil2adtyp = cptr.alloc(7 * 16); cptr.stPtro(abil2adtyp, 0, cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, 24)); cptr.st1o(abil2adtyp, 0 + $abil2adtyp_tag_adtyp, NHM.AD_FIRE); cptr.stPtro(abil2adtyp, 16, cptr.add(cptr.add(u, $you_uprops), NHC.COLD_RES, 24)); cptr.st1o(abil2adtyp, 16 + $abil2adtyp_tag_adtyp, NHM.AD_COLD); cptr.stPtro(abil2adtyp, 32, cptr.add(cptr.add(u, $you_uprops), NHC.SHOCK_RES, 24)); cptr.st1o(abil2adtyp, 32 + $abil2adtyp_tag_adtyp, NHM.AD_ELEC); cptr.stPtro(abil2adtyp, 48, cptr.add(cptr.add(u, $you_uprops), NHC.ANTIMAGIC, 24)); cptr.st1o(abil2adtyp, 48 + $abil2adtyp_tag_adtyp, NHM.AD_MAGM); cptr.stPtro(abil2adtyp, 64, cptr.add(cptr.add(u, $you_uprops), NHC.DISINT_RES, 24)); cptr.st1o(abil2adtyp, 64 + $abil2adtyp_tag_adtyp, NHM.AD_DISN); cptr.stPtro(abil2adtyp, 80, cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, 24)); cptr.st1o(abil2adtyp, 80 + $abil2adtyp_tag_adtyp, NHM.AD_DRST); cptr.stPtro(abil2adtyp, 96, cptr.add(cptr.add(u, $you_uprops), NHC.DRAIN_RES, 24)); cptr.st1o(abil2adtyp, 96 + $abil2adtyp_tag_adtyp, NHM.AD_DRLI);
     let k;
@@ -2859,7 +2859,7 @@ cptr.stU64o(__static_abil_to_spfx_abil2spfx, 160 + $abil2spfx_tag_spfx, 131072n)
 cptr.stPtro(__static_abil_to_spfx_abil2spfx, 176, cptr.add(cptr.add(u, $you_uprops), NHC.REFLECTING, 24));
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 176 + $abil2spfx_tag_spfx, 67108864n); /** C ref: artifact.c:2349 — struct abil2spfx_tag[12] (function-static) */
 
-/** C ref: artifact.c:2344 — @param {CPtr} abil @returns {CLongLong} */
+/** C ref: artifact.c:2344 — @param {CPtr<long>} abil @returns {CLongLong} */
 function abil_to_spfx(abil) {
     let k;
     for (k = 0; k < 12; k++) {
@@ -2869,7 +2869,7 @@ function abil_to_spfx(abil) {
     return 0n;
 }
 
-/** C ref: artifact.c:2376 — @param {CPtr} abil @returns {CPtr} */
+/** C ref: artifact.c:2376 — @param {CPtr<long>} abil @returns {CPtr<struct obj>} */
 export function what_gives(abil) {
     let obj;
     let dtyp;
@@ -2907,7 +2907,7 @@ export function what_gives(abil) {
     return null;
 }
 
-/** C ref: artifact.c:2427 — @param {CInt} arti_indx @returns {CPtr} */
+/** C ref: artifact.c:2427 — @param {CInt} arti_indx @returns {CPtr<char>} */
 export function glow_color(arti_indx) {
     let colornum = cptr.ld1so2(artilist, arti_indx, 80, $artifact_acolor);
     let colorstr = clr2colorname(colornum);
@@ -2928,7 +2928,7 @@ function glow_strength(count) {
 
 const __static_glow_verb_resbuf = new Uint8Array(20); /** C ref: artifact.c:2454 — char[20] (function-static) */
 
-/** C ref: artifact.c:2451 — @param {CInt} count @param {CInt} ingsfx @returns {CPtr} */
+/** C ref: artifact.c:2451 — @param {CInt} count @param {CInt} ingsfx @returns {CPtr<char>} */
 export function glow_verb(count, ingsfx) {
     void cptr.strcpy(cptr.decay(__static_glow_verb_resbuf), cptr.ldPtro(glow_verbs, glow_strength(count), 8));
     if (ingsfx)
@@ -2955,7 +2955,7 @@ export function* Sting_effects(orc_count) {
     }
 }
 
-/** C ref: artifact.c:2508 — @param {CPtr} objp @param {CInt} loseit @returns {CInt} */
+/** C ref: artifact.c:2508 — @param {CPtr<struct obj *>} objp @param {CInt} loseit @returns {CInt} */
 export function* retouch_object(objp, loseit) {
     let obj = cptr.ldPtr(objp);
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING && invocation_pos(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
@@ -3010,7 +3010,7 @@ export function* retouch_object(objp, loseit) {
     return 0;
 }
 
-/** C ref: artifact.c:2598 — @param {CPtr} obj @param {CInt} drop_untouchable @returns {CInt} */
+/** C ref: artifact.c:2598 — @param {CPtr<struct obj>} obj @param {CInt} drop_untouchable @returns {CInt} */
 function* untouchable(obj, drop_untouchable) {
     obj = cptr.box(obj);
     let art;
@@ -3125,7 +3125,7 @@ export function* mkot_trap_warn() {
         cptr.stI32(gm, 0);
 }
 
-/** C ref: artifact.c:2775 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2775 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function is_magic_key(mon, obj) {
     if (is_art(obj, NHC.ART_MASTER_KEY_OF_THIEVERY)) {
         if ((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE) : (mon && cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_ROGUE, 96)) ? 1 : 0))
@@ -3135,7 +3135,7 @@ export function is_magic_key(mon, obj) {
     return 0;
 }
 
-/** C ref: artifact.c:2790 — @param {CPtr} mon @returns {CPtr} */
+/** C ref: artifact.c:2790 — @param {CPtr<struct monst>} mon @returns {CPtr<struct obj>} */
 export function has_magic_key(mon) {
     let o;
     let key = cptr.ldI16o(artilist, NHC.ART_MASTER_KEY_OF_THIEVERY, 80);
@@ -3148,14 +3148,14 @@ export function has_magic_key(mon) {
     return null;
 }
 
-/** C ref: artifact.c:2808 — @param {CPtr} obj @param {CInt} art @returns {CInt} */
+/** C ref: artifact.c:2808 — @param {CPtr<struct obj>} obj @param {CInt} art @returns {CInt} */
 export function is_art(obj, art) {
     if (obj && cptr.ld1so(obj, $obj_oartifact) == art)
         return 1;
     return 0;
 }
 
-/** C ref: artifact.c:2821 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: artifact.c:2821 — @param {CPtr<struct obj>} obj @returns {CPtr<struct artifact>} */
 function get_artifact(obj) {
     if (obj) {
         let artidx = cptr.ld1so(obj, $obj_oartifact);
@@ -3165,7 +3165,7 @@ function get_artifact(obj) {
     return cptr.add(artilist, NHC.ART_NONARTIFACT, 80);
 }
 
-/** C ref: artifact.c:2837 — @param {CPtr} obj @returns {CInt} */
+/** C ref: artifact.c:2837 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function permapoisoned(obj) {
     return schar((obj && is_art(obj, NHC.ART_GRIMTOOTH) ? 1 : 0));
 }

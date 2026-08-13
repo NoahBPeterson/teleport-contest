@@ -287,7 +287,7 @@ cptr.stPtro(__static_formatkiller_killed_by_prefix, 104, __sl14);
 cptr.stPtro(__static_formatkiller_killed_by_prefix, 112, __sl14);
 cptr.stPtro(__static_formatkiller_killed_by_prefix, 120, __sl14); /** C ref: topten.c:96 — char *[16] (function-static) */
 
-/** C ref: topten.c:90 — @param {CPtr} buf @param {CUInt} siz @param {CInt} how @param {CInt} incl_helpless */
+/** C ref: topten.c:90 — @param {CPtr<char>} buf @param {CUInt} siz @param {CInt} how @param {CInt} incl_helpless */
 export function* formatkiller(buf, siz, how, incl_helpless) {
     let l;
     let c;
@@ -331,7 +331,7 @@ export function* formatkiller(buf, siz, how, incl_helpless) {
     }
 }
 
-/** C ref: topten.c:165 — @param {CPtr} x */
+/** C ref: topten.c:165 — @param {CPtr<char>} x */
 function* topten_print(x) {
     if (cptr.ldI32o(gt, $instance_globals_t_toptenwin) == -1)
         (yield* Y.icall(raw_print()(x)));
@@ -339,7 +339,7 @@ function* topten_print(x) {
         (yield* Y.icall(putstr()(cptr.ldI32o(gt, $instance_globals_t_toptenwin), NHM.ATR_NONE, x)));
 }
 
-/** C ref: topten.c:174 — @param {CPtr} x */
+/** C ref: topten.c:174 — @param {CPtr<char>} x */
 function* topten_print_bold(x) {
     if (cptr.ldI32o(gt, $instance_globals_t_toptenwin) == -1)
         (yield* Y.icall(raw_print_bold()(x)));
@@ -347,12 +347,12 @@ function* topten_print_bold(x) {
         (yield* Y.icall(putstr()(cptr.ldI32o(gt, $instance_globals_t_toptenwin), NHM.ATR_BOLD, x)));
 }
 
-/** C ref: topten.c:183 — @param {CPtr} lev @returns {CInt} */
+/** C ref: topten.c:183 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function observable_depth(lev) {
     return depth(lev);
 }
 
-/** C ref: topten.c:208 — @param {CPtr} rfile */
+/** C ref: topten.c:208 — @param {CPtr<FILE>} rfile */
 function discardexcess(rfile) {
     let c;
     do {
@@ -364,7 +364,7 @@ const __static_readentry_fmt = cptr.bytes("%d.%d.%d %ld %d %d %d %d %d %d %ld %l
 const __static_readentry_fmt32 = cptr.bytes("%c%c %[^,],%[^\n]%*c"); /** C ref: topten.c:231 — char[20] (function-static) */
 const __static_readentry_fmt33 = cptr.bytes("%s %s %s %s %[^,],%[^\n]%*c"); /** C ref: topten.c:232 — char[27] (function-static) */
 
-/** C ref: topten.c:220 — @param {CPtr} rfile @param {CPtr} tt */
+/** C ref: topten.c:220 — @param {CPtr<FILE>} rfile @param {CPtr<struct toptenentry>} tt */
 function* readentry(rfile, tt) {
     let inbuf = new Uint8Array(129);
     let s1 = new Uint8Array(129);
@@ -420,7 +420,7 @@ const __static_writeentry_fmt33 = cptr.bytes("%s %s %s %s "); /** C ref: topten.
 const __static_writeentry_fmt0 = cptr.bytes("%d.%d.%d %ld %d %d %d %d %d %d %ld %ld %d "); /** C ref: topten.c:306 — char[43] (function-static) */
 const __static_writeentry_fmtX = cptr.bytes("%s,%s\n"); /** C ref: topten.c:307 — char[7] (function-static) */
 
-/** C ref: topten.c:301 — @param {CPtr} rfile @param {CPtr} tt */
+/** C ref: topten.c:301 — @param {CPtr<FILE>} rfile @param {CPtr<struct toptenentry>} tt */
 function writeentry(rfile, tt) {
     void fprintf(rfile, cptr.decay(__static_writeentry_fmt0), cptr.ldI32o(tt, $toptenentry_ver_major), cptr.ldI32o(tt, $toptenentry_ver_minor), cptr.ldI32o(tt, $toptenentry_patchlevel), cptr.ldI64o(tt, $toptenentry_points), cptr.ldI32o(tt, $toptenentry_deathdnum), cptr.ldI32o(tt, $toptenentry_deathlev), cptr.ldI32o(tt, $toptenentry_maxlvl), cptr.ldI32o(tt, $toptenentry_hp), cptr.ldI32o(tt, $toptenentry_maxhp), cptr.ldI32o(tt, $toptenentry_deaths), cptr.ldI64o(tt, $toptenentry_deathdate), cptr.ldI64o(tt, $toptenentry_birthdate), cptr.ldI32o(tt, $toptenentry_uid));
     if (cptr.ldI32o(tt, $toptenentry_ver_major) < 3 || (cptr.ldI32o(tt, $toptenentry_ver_major) == 3 && cptr.ldI32o(tt, $toptenentry_ver_minor) < 3))
@@ -430,7 +430,7 @@ function writeentry(rfile, tt) {
     void fprintf(rfile, cptr.decay(__static_writeentry_fmtX), onlyspace(cptr.add(tt, $toptenentry_name)) ? __sl19 : cptr.add(tt, $toptenentry_name), cptr.add(tt, $toptenentry_death));
 }
 
-/** C ref: topten.c:340 — @param {CPtr} rfile @param {CPtr} tt @param {CInt} how */
+/** C ref: topten.c:340 — @param {CPtr<FILE>} rfile @param {CPtr<struct toptenentry>} tt @param {CInt} how */
 function* writexlentry(rfile, tt, how) {
     let buf = new Uint8Array(256);
     let tmpbuf = new Uint8Array(101);
@@ -522,7 +522,7 @@ function encodeachieve(secondlong) {
     return r;
 }
 
-/** C ref: topten.c:480 — @param {CPtr} buf @param {CPtr} achievement @param {CInt} condition */
+/** C ref: topten.c:480 — @param {CPtr<char>} buf @param {CPtr<char>} achievement @param {CInt} condition */
 function add_achieveX(buf, achievement, condition) {
     if (condition) {
         if (cptr.ld1so(buf, 0) != 0) {
@@ -532,7 +532,7 @@ function add_achieveX(buf, achievement, condition) {
     }
 }
 
-/** C ref: topten.c:491 — @param {CPtr} buf @returns {CPtr} */
+/** C ref: topten.c:491 — @param {CPtr<char>} buf @returns {CPtr<char>} */
 function* encode_extended_achievements(buf) {
     let rnkbuf = new Uint8Array(40);
     let achievement = null;
@@ -627,7 +627,7 @@ function* encode_extended_achievements(buf) {
     return buf;
 }
 
-/** C ref: topten.c:584 — @param {CPtr} buf @returns {CPtr} */
+/** C ref: topten.c:584 — @param {CPtr<char>} buf @returns {CPtr<char>} */
 function* encode_extended_conducts(buf) {
     cptr.st1o(buf, 0, 0);
     add_achieveX(buf, __sl64, schar((!cptr.ldI64o(u, $you_uconduct + $u_conduct_food))));
@@ -654,7 +654,7 @@ function* encode_extended_conducts(buf) {
     return buf;
 }
 
-/** C ref: topten.c:615 — @param {CPtr} tt */
+/** C ref: topten.c:615 — @param {CPtr<struct toptenentry>} tt */
 function free_ttlist(tt) {
     let ttnext;
     while (cptr.ldI64o(tt, $toptenentry_points) > 0n) {
@@ -881,7 +881,7 @@ function* outheader() {
     (yield* topten_print(cptr.decay(linebuf)));
 }
 
-/** C ref: topten.c:946 — @param {CInt} rank @param {CPtr} t1 @param {CInt} so */
+/** C ref: topten.c:946 — @param {CInt} rank @param {CPtr<struct toptenentry>} t1 @param {CInt} so */
 function* outentry(rank, t1, so) {
     let second_line = 1;
     let linebuf = new Uint8Array(256);
@@ -1016,7 +1016,7 @@ function* outentry(rank, t1, so) {
         (yield* topten_print(cptr.decay(linebuf)));
 }
 
-/** C ref: topten.c:1112 — @param {CInt} current_ver @param {CInt} rank @param {CPtr} t1 @param {CInt} playerct @param {CPtr} players @param {CInt} uid @returns {CInt} */
+/** C ref: topten.c:1112 — @param {CInt} current_ver @param {CInt} rank @param {CPtr<struct toptenentry>} t1 @param {CInt} playerct @param {CPtr<char *>} players @param {CInt} uid @returns {CInt} */
 function* score_wanted(current_ver, rank, t1, playerct, players, uid) {
     let arg;
     let nxt;
@@ -1040,7 +1040,7 @@ function* score_wanted(current_ver, rank, t1, playerct, players, uid) {
     return 0;
 }
 
-/** C ref: topten.c:1194 — @param {CInt} argc @param {CPtr} argv */
+/** C ref: topten.c:1194 — @param {CInt} argc @param {CPtr<char *>} argv */
 export function* prscore(argc, argv) {
     let players;
     let player0 = cptr.box(0);
@@ -1159,7 +1159,7 @@ export function* prscore(argc, argv) {
     free_ttlist(tt_head);
 }
 
-/** C ref: topten.c:1356 — @param {CPtr} plch @returns {CInt} */
+/** C ref: topten.c:1356 — @param {CPtr<char>} plch @returns {CInt} */
 function* classmon(plch) {
     let i;
     for (i = 0; cptr.ldPtro(roles, i, 312); i++) {
@@ -1178,7 +1178,7 @@ function* classmon(plch) {
 
 let __static_get_rnd_toptenentry_tt_buf = cptr.alloc(208); /** C ref: topten.c:1386 — struct toptenentry (function-static) */
 
-/** C ref: topten.c:1381 @returns {CPtr} */
+/** C ref: topten.c:1381 @returns {CPtr<struct toptenentry>} */
 export function* get_rnd_toptenentry() {
     let rank;
     let i;
@@ -1210,7 +1210,7 @@ export function* get_rnd_toptenentry() {
     }
 }
 
-/** C ref: topten.c:1422 — @param {CPtr} otmp @returns {CPtr} */
+/** C ref: topten.c:1422 — @param {CPtr<struct obj>} otmp @returns {CPtr<struct obj>} */
 export function* tt_oname(otmp) {
     let tt;
     if (!otmp)
@@ -1227,7 +1227,7 @@ export function* tt_oname(otmp) {
     return otmp;
 }
 
-/** C ref: topten.c:1445 — @param {CPtr} mon @returns {CInt} */
+/** C ref: topten.c:1445 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function* tt_doppel(mon) {
     let tt = (rng_log_enabled() ? (rng_log_set_caller(__sl166, 1446, __sl168), rn2(13)) : rn2(13)) ? (yield* get_rnd_toptenentry()) : null;
     let ret;

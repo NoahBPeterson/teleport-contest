@@ -176,7 +176,7 @@ export const EXPL_MON = 1;
 export const EXPL_HERO = 2;
 export const EXPL_SKIP = 4;
 
-/** C ref: explode.c:26 — @param {CPtr} m @param {CUInt} adtyp @param {CInt} olet @returns {CInt} */
+/** C ref: explode.c:26 — @param {CPtr<struct monst>} m @param {CUInt} adtyp @param {CInt} olet @returns {CInt} */
 function* explosionmask(m, adtyp, olet) {
     let res = NHC.EXPL_NONE;
     if (cptr.eq(m, cptr.add(gy, $instance_globals_y_youmonst))) {
@@ -674,7 +674,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
 
 /** C ref: explode.c:698 — struct scatter_chain { next, obj, ox, oy, dx, dy, range, stopped } (memory model v0.5) */
 
-/** C ref: explode.c:721 — @param {CInt} sx @param {CInt} sy @param {CInt} blastforce @param {CUInt} scflags @param {CPtr} obj @returns {CLongLong} */
+/** C ref: explode.c:721 — @param {CInt} sx @param {CInt} sy @param {CInt} blastforce @param {CUInt} scflags @param {CPtr<struct obj>} obj @returns {CLongLong} */
 export function* scatter(sx, sy, blastforce, scflags, obj) {
     let otmp;
     let tmp;
@@ -872,7 +872,7 @@ export function* splatter_burning_oil(x, y, diluted_oil) {
     (yield* explode(x, y, 11, dmg, (schar(((NHC.MAXOCLASSES + 1) | 0))), NHC.EXPL_FIERY));
 }
 
-/** C ref: explode.c:974 — @param {CPtr} obj @param {CInt} x @param {CInt} y */
+/** C ref: explode.c:974 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function* explode_oil(obj, x, y) {
     let diluted_oil = schar((cptr.ldI32o(obj, $obj_oeroded) & 3));
     if (!(cptr.ldI32o(obj, $obj_lamplit) & 1))
@@ -907,7 +907,7 @@ export function* adtyp_to_expltype(adtyp) {
     }
 }
 
-/** C ref: explode.c:1019 — @param {CPtr} mon @param {CPtr} mattk */
+/** C ref: explode.c:1019 — @param {CPtr<struct monst>} mon @param {CPtr<struct attack>} mattk */
 export function* mon_explodes(mon, mattk) {
     let dmg;
     let type;

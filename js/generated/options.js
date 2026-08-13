@@ -6453,7 +6453,7 @@ export function ask_do_tutorial() {
     return dotut;
 }
 
-/** C ref: options.c:489 — @param {CPtr} opts @param {CInt} tinitial @param {CInt} tfrom_file @returns {CInt} */
+/** C ref: options.c:489 — @param {CPtr<char>} opts @param {CInt} tinitial @param {CInt} tfrom_file @returns {CInt} */
 export function parseoptions(opts, tinitial, tfrom_file) {
     let op;
     let negated;
@@ -6572,7 +6572,7 @@ export function parseoptions(opts, tinitial, tfrom_file) {
     return 0;
 }
 
-/** C ref: options.c:694 — @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:694 — @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function check_misc_menu_command(opts, op) {
     let i;
     let name_to_check;
@@ -6608,7 +6608,7 @@ function opt2roleopt(roleopt) {
     return 0;
 }
 
-/** C ref: options.c:734 — @param {CInt} optidx @param {CInt} ophase @returns {CPtr} */
+/** C ref: options.c:734 — @param {CInt} optidx @param {CInt} ophase @returns {CPtr<char>} */
 function getoptstr(optidx, ophase) {
     let roleoptindx = opt2roleopt(optidx);
     if (ophase == NHC.num_opt_phases) {
@@ -6624,7 +6624,7 @@ function getoptstr(optidx, ophase) {
     panic(__sl557, roleoptindx, ophase);
 }
 
-/** C ref: options.c:758 — @param {CInt} optidx @param {CPtr} optstr */
+/** C ref: options.c:758 — @param {CInt} optidx @param {CPtr<char>} optstr */
 function saveoptstr(optidx, optstr) {
     let phase = cptr.ldI32o(go, $instance_globals_o_opt_phase);
     let roleoptindx = opt2roleopt(optidx);
@@ -6655,7 +6655,7 @@ export function freeroleoptvals() {
             unsaveoptstr(cptr.ldI32o(roleopt2opt, i, 4), j);
 }
 
-/** C ref: options.c:848 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:848 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function petname_optfn(optidx, req, negated, opts, op) {
     let failsafe = new Uint8Array(64);
     let petname = (optidx == NHC.opt_catname) ? cptr.add(gc, $instance_globals_c_catname) : ((optidx == NHC.opt_dogname) ? cptr.add(gd, $instance_globals_d_dogname) : ((optidx == NHC.opt_horsename) ? cptr.add(gh, $instance_globals_h_horsename) : cptr.decay(failsafe)));
@@ -6675,7 +6675,7 @@ function petname_optfn(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:885 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:885 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_alignment(optidx, req, negated, opts, op) {
     op = cptr.box(op);
     if (req == NHC.do_init) {
@@ -6705,7 +6705,7 @@ function optfn_alignment(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:923 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:923 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_align_message(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -6743,7 +6743,7 @@ function optfn_align_message(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:973 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:973 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_align_status(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -6781,7 +6781,7 @@ function optfn_align_status(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1022 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1022 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_altkeyhandling(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -6800,7 +6800,7 @@ function optfn_altkeyhandling(optidx, req, negated, opts, op) {
 
 const __static_optfn_autounlock_plus = cptr.bytes(" + "); /** C ref: options.c:1149 — char[4] (function-static) */
 
-/** C ref: options.c:1066 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1066 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_autounlock(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         cptr.stI32o(flags, $flag_autounlock, NHM.AUTOUNLOCK_APPLY_KEY);
@@ -6884,7 +6884,7 @@ function optfn_autounlock(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1171 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1171 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_boulder(optidx, req, negated, opts, op) {
     let clash = 0;
     if (req == NHC.do_init) {
@@ -6923,12 +6923,12 @@ function optfn_boulder(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1249 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1249 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_catname(optidx, req, negated, opts, op) {
     return petname_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1259 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1259 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_crash_email(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -6951,7 +6951,7 @@ function optfn_crash_email(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1285 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1285 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_crash_name(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -6974,7 +6974,7 @@ function optfn_crash_name(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1311 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1311 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_crash_urlmax(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7000,7 +7000,7 @@ function optfn_crash_urlmax(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1394 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1394 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_DECgraphics(optidx, req, negated, opts, op) {
     let badflag = 0;
     if (req == NHC.do_init) {
@@ -7034,7 +7034,7 @@ function optfn_DECgraphics(optidx, req, negated, opts, op) {
 
 const __static_optfn_disclose_valid_settings = [121, 110, 63, 43, 45, 35, 0]; /** C ref: options.c:1500 — char[7] (function-static) */
 
-/** C ref: options.c:1442 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1442 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_disclose(optidx, req, negated, opts, op) {
     let i;
     let idx;
@@ -7112,12 +7112,12 @@ function optfn_disclose(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1563 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1563 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_dogname(optidx, req, negated, opts, op) {
     return petname_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1572 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1572 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_dungeon(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7136,7 +7136,7 @@ function optfn_dungeon(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1594 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1594 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_effects(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7155,57 +7155,57 @@ function optfn_effects(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1616 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1616 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_map(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1625 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1625 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_menu(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1634 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1634 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_message(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1643 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1643 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_size_map(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1652 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1652 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_size_menu(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1661 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1661 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_size_message(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1670 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1670 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_size_status(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1679 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1679 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_size_text(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1688 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1688 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_status(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1697 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1697 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_font_text(optidx, req, negated, opts, op) {
     return pfxfn_font(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1706 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1706 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_fruit(optidx, req, negated, opts, op) {
     let forig = null;
     if (req == NHC.do_init) {
@@ -7257,7 +7257,7 @@ function optfn_fruit(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1777 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1777 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_gender(optidx, req, negated, opts, op) {
     op = cptr.box(op);
     if (req == NHC.do_init) {
@@ -7288,7 +7288,7 @@ function optfn_gender(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1815 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1815 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_glyph(optidx, req, negated, opts, op) {
     let glyph = cptr.box(0);
     if (req == NHC.do_init) {
@@ -7319,7 +7319,7 @@ function optfn_glyph(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1852 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1852 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_hilite_status(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7346,12 +7346,12 @@ function optfn_hilite_status(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1897 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1897 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_horsename(optidx, req, negated, opts, op) {
     return petname_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:1906 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1906 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_IBMgraphics(optidx, req, negated, opts, op) {
     let sym_name = cptr.ldPtro(allopt, optidx, 104);
     let badflag = 0;
@@ -7393,7 +7393,7 @@ function optfn_IBMgraphics(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1963 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:1963 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_map_mode(optidx, req, negated, opts, op) {
     let i;
     if (req == NHC.do_init) {
@@ -7451,7 +7451,7 @@ function optfn_map_mode(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2052 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2052 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function shared_menu_optfn(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7473,72 +7473,72 @@ function shared_menu_optfn(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2077 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2077 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_deselect_all(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2085 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2085 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_deselect_page(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2093 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2093 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_first_page(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2101 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2101 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_invert_all(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2109 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2109 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_invert_page(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2117 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2117 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_last_page(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2125 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2125 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_next_page(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2133 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2133 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_previous_page(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2141 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2141 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_search(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2149 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2149 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_select_all(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2157 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2157 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_select_page(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2165 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2165 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_shift_left(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2173 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2173 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_shift_right(optidx, req, negated, opts, op) {
     return shared_menu_optfn(optidx, req, negated, opts, op);
 }
 
-/** C ref: options.c:2183 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2183 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_headings(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7573,7 +7573,7 @@ function optfn_menu_headings(optidx, req, negated, opts, op) {
 
 const __static_optfn_menu_objsyms_alt5 = cptr.bytes("one-or-the-other"); /** C ref: options.c:2260 — char[17] (function-static) */
 
-/** C ref: options.c:2225 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2225 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menu_objsyms(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         set_menuobjsyms_flags(4);
@@ -7622,7 +7622,7 @@ function optfn_menu_objsyms(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2290 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2290 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menuinvertmode(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7645,7 +7645,7 @@ function optfn_menuinvertmode(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2320 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2320 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_menustyle(optidx, req, negated, opts, op) {
     let tmp;
     let val_required;
@@ -7691,7 +7691,7 @@ function optfn_menustyle(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2378 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2378 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_monsters(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7714,7 +7714,7 @@ cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 8, __sl604);
 cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 0, __sl605);
 cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 8, __sl606); /** C ref: options.c:2435 — char *[3][2] (function-static) */
 
-/** C ref: options.c:2396 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2396 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_mouse_support(optidx, req, negated, opts, op) {
     let compat;
     if (req == NHC.do_init) {
@@ -7751,7 +7751,7 @@ function optfn_mouse_support(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2456 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2456 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_msg_window(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let tmp;
@@ -7797,7 +7797,7 @@ function optfn_msg_window(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2523 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2523 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_msghistory(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7819,7 +7819,7 @@ function optfn_msghistory(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2549 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2549 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_name(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7846,7 +7846,7 @@ cptr.stPtro(__static_optfn_number_pad_numpadmodes, 24, __sl609);
 cptr.stPtro(__static_optfn_number_pad_numpadmodes, 32, __sl610);
 cptr.stPtro(__static_optfn_number_pad_numpadmodes, 40, __sl611); /** C ref: options.c:2623 — char *[6] (function-static) */
 
-/** C ref: options.c:2574 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2574 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_number_pad(optidx, req, negated, opts, op) {
     let compat;
     if (req == NHC.do_init) {
@@ -7899,7 +7899,7 @@ function optfn_number_pad(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2648 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2648 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_objects(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7918,7 +7918,7 @@ function optfn_objects(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2670 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2670 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_packorder(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7939,7 +7939,7 @@ function optfn_packorder(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2818 — @param {CInt} optidx @param {CInt} req @param {CInt} opt_negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:2818 — @param {CInt} optidx @param {CInt} req @param {CInt} opt_negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
     let fld_negated;
     let i;
@@ -8035,7 +8035,7 @@ function optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3046 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3046 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_perminv_mode(optidx, req, negated, opts, op) {
     let old_perm_invent = cptr.ld1so(iflags, $instance_flags_perm_invent);
     let old_perminv_mode = cptr.ld1uo(iflags, $instance_flags_perminv_mode);
@@ -8097,7 +8097,7 @@ function optfn_perminv_mode(optidx, req, negated, opts, op) {
     return retval;
 }
 
-/** C ref: options.c:3138 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3138 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_petattr(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     if (req == NHC.do_init) {
@@ -8141,7 +8141,7 @@ function optfn_petattr(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3197 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3197 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_pettype(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8189,7 +8189,7 @@ function optfn_pettype(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3256 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3256 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_pickup_burden(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8234,7 +8234,7 @@ function optfn_pickup_burden(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3308 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3308 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_pickup_types(optidx, req, negated, opts, op) {
     let ocl = new Uint8Array(19);
     let tbuf = new Uint8Array(19);
@@ -8316,7 +8316,7 @@ function optfn_pickup_types(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3404 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3404 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_pile_limit(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8341,7 +8341,7 @@ function optfn_pile_limit(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3438 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3438 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_player_selection(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8367,7 +8367,7 @@ function optfn_player_selection(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3471 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3471 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_playmode(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8396,7 +8396,7 @@ function optfn_playmode(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3507 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3507 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_race(optidx, req, negated, opts, op) {
     op = cptr.box(op);
     if (req == NHC.do_init) {
@@ -8427,7 +8427,7 @@ function optfn_race(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3545 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3545 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_roguesymset(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8463,7 +8463,7 @@ function optfn_roguesymset(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3589 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3589 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_role(optidx, req, negated, opts, op) {
     op = cptr.box(op);
     if (req == NHC.do_init) {
@@ -8494,7 +8494,7 @@ function optfn_role(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3627 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3627 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_runmode(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8531,7 +8531,7 @@ function optfn_runmode(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3669 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3669 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_scores(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8602,7 +8602,7 @@ function optfn_scores(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3763 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3763 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_scroll_amount(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8627,7 +8627,7 @@ function optfn_scroll_amount(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3794 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3794 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_scroll_margin(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8652,7 +8652,7 @@ function optfn_scroll_margin(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3824 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3824 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_soundlib(optidx, req, negated, opts, op) {
     let soundlibbuf = new Uint8Array(16);
     if (req == NHC.do_init) {
@@ -8677,7 +8677,7 @@ function optfn_soundlib(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3863 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3863 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_sortdiscoveries(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         cptr.st1o(flags, $flag_discosort, 111);
@@ -8723,7 +8723,7 @@ function optfn_sortdiscoveries(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3914 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3914 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_sortloot(optidx, req, negated, opts, op) {
     let i;
     if (req == NHC.do_init) {
@@ -8763,7 +8763,7 @@ function optfn_sortloot(optidx, req, negated, opts, op) {
 
 const __static_optfn_sortvanquished_vanqmodes = cptr.bytes("tdaACcnz"); /** C ref: options.c:3963 — char[9] (function-static) */
 
-/** C ref: options.c:3958 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:3958 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_sortvanquished(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, 104);
     if (req == NHC.do_init) {
@@ -8804,7 +8804,7 @@ function optfn_sortvanquished(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4013 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4013 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_statushilites(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8835,7 +8835,7 @@ function optfn_statushilites(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4067 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4067 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_statuslines(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let itmp = 0;
@@ -8871,7 +8871,7 @@ function optfn_statuslines(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4135 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4135 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_suppress_alert(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8896,7 +8896,7 @@ function optfn_suppress_alert(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4167 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4167 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_symset(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8946,7 +8946,7 @@ function optfn_symset(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4239 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4239 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_term_cols(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let ltmp;
@@ -8977,7 +8977,7 @@ function optfn_term_cols(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4280 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4280 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_term_rows(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let ltmp;
@@ -9008,7 +9008,7 @@ function optfn_term_rows(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4321 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4321 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_tile_file(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9036,7 +9036,7 @@ function optfn_tile_file(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4354 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4354 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_tile_height(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9063,7 +9063,7 @@ function optfn_tile_height(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4386 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4386 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_tile_width(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9090,7 +9090,7 @@ function optfn_tile_width(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4418 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4418 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_traps(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9109,7 +9109,7 @@ function optfn_traps(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4440 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4440 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_vary_msgcount(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9136,7 +9136,7 @@ function optfn_vary_msgcount(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4472 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4472 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_versinfo(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, 104);
     let vi = cptr.ldI32o(flags, $flag_versinfo);
@@ -9179,7 +9179,7 @@ function optfn_versinfo(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4682 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4682 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_warnings(optidx, req, negated, opts, op) {
     let reslt;
     if (req == NHC.do_init) {
@@ -9198,7 +9198,7 @@ function optfn_warnings(optidx, req, negated, opts, op) {
 
 const __static_optfn_whatis_coord_gpcoords = [110, 99, 102, 109, 115, 0]; /** C ref: options.c:4716 — char[6] (function-static) */
 
-/** C ref: options.c:4703 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4703 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_whatis_coord(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9229,7 +9229,7 @@ function optfn_whatis_coord(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4748 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4748 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_whatis_filter(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9270,7 +9270,7 @@ function optfn_whatis_filter(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4797 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4797 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_windowborders(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     if (req == NHC.do_init) {
@@ -9329,7 +9329,7 @@ cptr.stPtro(wcshortnames, 24, __sl693);
 /** C ref: options.c:4891 — int[4] */
 export const wcolors_opt = cptr.alloc(4 * 4);
 
-/** C ref: options.c:4894 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4894 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_windowcolors(optidx, req, negated, opts, op) {
     let wccount;
     if (req == NHC.do_init) {
@@ -9365,7 +9365,7 @@ function optfn_windowcolors(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4943 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4943 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_windowtype(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9392,7 +9392,7 @@ function optfn_windowtype(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4994 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:4994 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function pfxfn_cond_(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         condopt(0, null, 0);
@@ -9429,7 +9429,7 @@ function pfxfn_cond_(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:5039 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:5039 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function pfxfn_font(optidx, req, negated, opts, op) {
     let opttype = -1;
     if (req == NHC.do_init) {
@@ -9538,7 +9538,7 @@ function pfxfn_font(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:5192 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:5192 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 export function optfn_boolean(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9721,7 +9721,7 @@ export function optfn_boolean(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:5452 — @param {CInt} midx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:5452 — @param {CInt} midx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function spcfn_misc_menu_cmd(midx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -10658,7 +10658,7 @@ function handler_windowborders() {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:6665 — @param {CPtr} opts @param {CInt} val_optional @returns {CPtr} */
+/** C ref: options.c:6665 — @param {CPtr<char>} opts @param {CInt} val_optional @returns {CPtr<char>} */
 function string_for_opt(opts, val_optional) {
     let colon;
     let equals;
@@ -10674,7 +10674,7 @@ function string_for_opt(opts, val_optional) {
     return colon;
 }
 
-/** C ref: options.c:6683 — @param {CPtr} optname @param {CPtr} opts @param {CInt} val_optional @returns {CPtr} */
+/** C ref: options.c:6683 — @param {CPtr<char>} optname @param {CPtr<char>} opts @param {CInt} val_optional @returns {CPtr<char>} */
 function string_for_env_opt(optname, opts, val_optional) {
     if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
         rejectoption(optname);
@@ -10683,7 +10683,7 @@ function string_for_env_opt(optname, opts, val_optional) {
     return string_for_opt(opts, val_optional);
 }
 
-/** C ref: options.c:6693 — @param {CPtr} optname @param {CInt} with_parameter */
+/** C ref: options.c:6693 — @param {CPtr<char>} optname @param {CInt} with_parameter */
 function bad_negation(optname, with_parameter) {
     config_error_add(__sl812, optname, with_parameter ? __sl813 : __sl491);
 }
@@ -10724,7 +10724,7 @@ function determine_ambiguities() {
     }
 }
 
-/** C ref: options.c:6739 — @param {CPtr} user_string @param {CInt} len @returns {CInt} */
+/** C ref: options.c:6739 — @param {CPtr<char>} user_string @param {CInt} len @returns {CInt} */
 function length_without_val(user_string, len) {
     let p = cptr.strchr(user_string, 58);
     let q = cptr.strchr(user_string, 61);
@@ -10738,7 +10738,7 @@ function length_without_val(user_string, len) {
     return len;
 }
 
-/** C ref: options.c:6760 — @param {CPtr} user_string @param {CPtr} optn_name @param {CInt} min_length @param {CInt} val_allowed @returns {CInt} */
+/** C ref: options.c:6760 — @param {CPtr<char>} user_string @param {CPtr<char>} optn_name @param {CInt} min_length @param {CInt} val_allowed @returns {CInt} */
 export function match_optname(user_string, optn_name, min_length, val_allowed) {
     let len = Number(BigInt.asIntN(32, cptr.strlen(user_string)));
     if (val_allowed)
@@ -10770,12 +10770,12 @@ function complain_about_duplicate(optidx) {
     return;
 }
 
-/** C ref: options.c:6812 — @param {CPtr} optname */
+/** C ref: options.c:6812 — @param {CPtr<char>} optname */
 function rejectoption(optname) {
     pline(__sl819, optname, get_configfile());
 }
 
-/** C ref: options.c:6848 — @param {CPtr} ev @returns {CPtr} */
+/** C ref: options.c:6848 — @param {CPtr<char>} ev @returns {CPtr<char>} */
 export function nh_getenv(ev) {
     let getev = getenv(ev);
     if (getev && cptr.strlen(getev) <= 128n)
@@ -10784,7 +10784,7 @@ export function nh_getenv(ev) {
         return null;
 }
 
-/** C ref: options.c:6861 — @param {CPtr} dest @param {CPtr} src @param {CInt} maxlen */
+/** C ref: options.c:6861 — @param {CPtr<char>} dest @param {CPtr<char>} src @param {CInt} maxlen */
 function nmcpy(dest, src, maxlen) {
     let count;
     for (count = 1; count < maxlen; count++) {
@@ -10798,7 +10798,7 @@ function nmcpy(dest, src, maxlen) {
 const __static_escapes_oct = cptr.bytes("01234567"); /** C ref: options.c:6899 — char[9] (function-static) */
 const __static_escapes_dec = cptr.bytes("0123456789"); /** C ref: options.c:6899 — char[11] (function-static) */
 
-/** C ref: options.c:6896 — @param {CPtr} cp @param {CPtr} tp */
+/** C ref: options.c:6896 — @param {CPtr<char>} cp @param {CPtr<char>} tp */
 function escapes(cp, tp) {
     let dp;
     let cval;
@@ -10858,7 +10858,7 @@ function escapes(cp, tp) {
     cptr.st1(tp, 0);
 }
 
-/** C ref: options.c:6971 — @param {CPtr} txt @returns {*} */
+/** C ref: options.c:6971 — @param {CPtr<char>} txt @returns {*} */
 export function txt2key(txt) {
     let uc;
     let makemeta = 0;
@@ -11074,7 +11074,7 @@ function set_menuobjsyms_flags(newobjsyms) {
     cptr.st1o(iflags, $instance_flags_use_menu_glyphs, schar((((newobjsyms & 6) != 0) ? 1 : 0)));
 }
 
-/** C ref: options.c:7466 — @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:7466 — @param {CPtr<char>} op @returns {CInt} */
 function change_inv_order(op) {
     let oc_sym;
     let num;
@@ -11112,7 +11112,7 @@ function change_inv_order(op) {
     return retval;
 }
 
-/** C ref: options.c:7521 — @param {CPtr} opts @param {CPtr} optype @returns {CInt} */
+/** C ref: options.c:7521 — @param {CPtr<char>} opts @param {CPtr<char>} optype @returns {CInt} */
 function warning_opts(opts, optype) {
     let translate = new Uint8Array(6);
     let length;
@@ -11127,7 +11127,7 @@ function warning_opts(opts, optype) {
     return 1;
 }
 
-/** C ref: options.c:7541 — @param {CPtr} graph_chars */
+/** C ref: options.c:7541 — @param {CPtr<uchar>} graph_chars */
 export function assign_warnings(graph_chars) {
     let i;
     for (i = 0; i < NHM.WARNCOUNT; i++)
@@ -11135,7 +11135,7 @@ export function assign_warnings(graph_chars) {
             cptr.st1o2(gw, i, 1, $instance_globals_w_warnsyms, cptr.ld1uo(graph_chars, i));
 }
 
-/** C ref: options.c:7558 — @param {CPtr} op @param {CPtr} optn @returns {CInt} */
+/** C ref: options.c:7558 — @param {CPtr<char>} op @param {CPtr<char>} optn @returns {CInt} */
 function feature_alert_opts(op, optn) {
     let buf = new Uint8Array(256);
     let fnv = get_feature_notice_ver(op);
@@ -11161,7 +11161,7 @@ const __static_parsebindings_mousebtn_names = cptr.alloc(2 * 8);
 cptr.stPtro(__static_parsebindings_mousebtn_names, 0, __sl841);
 cptr.stPtro(__static_parsebindings_mousebtn_names, 8, __sl842); /** C ref: options.c:7602 — char *[2] (function-static) */
 
-/** C ref: options.c:7596 — @param {CPtr} bindings @returns {CInt} */
+/** C ref: options.c:7596 — @param {CPtr<char>} bindings @returns {CInt} */
 export function parsebindings(bindings) {
     let bind;
     let key;
@@ -11238,7 +11238,7 @@ cptr.stPtro(msgtype_names, 120, __sl851);
 cptr.st1o(msgtype_names, 128, NHM.MSGTYP_NOREP);
 cptr.stPtro(msgtype_names, 136, __sl852);
 
-/** C ref: options.c:7690 — @param {CInt} typ @returns {CPtr} */
+/** C ref: options.c:7690 — @param {CInt} typ @returns {CPtr<char>} */
 function msgtype2name(typ) {
     let i;
     for (i = 0; i < 6; i++)
@@ -11276,7 +11276,7 @@ function query_msgtype() {
 
 let __static_msgtype_add_re_error = __sl855; /** C ref: options.c:7733 — char * (function-static) */
 
-/** C ref: options.c:7731 — @param {CInt} typ @param {CPtr} pattern @returns {CInt} */
+/** C ref: options.c:7731 — @param {CInt} typ @param {CPtr<char>} pattern @returns {CInt} */
 function msgtype_add(typ, pattern) {
     let tmp = alloc(32);
     cptr.stI16(tmp, i16(typ));
@@ -11331,7 +11331,7 @@ function free_one_msgtype(idx) {
     }
 }
 
-/** C ref: options.c:7797 — @param {CPtr} msg @param {CInt} norepeat @returns {CInt} */
+/** C ref: options.c:7797 — @param {CPtr<char>} msg @param {CInt} norepeat @returns {CInt} */
 export function msgtype_type(msg, norepeat) {
     let tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types);
     while (tmp) {
@@ -11366,7 +11366,7 @@ function msgtype_count() {
     return c;
 }
 
-/** C ref: options.c:7844 — @param {CPtr} str @returns {CInt} */
+/** C ref: options.c:7844 — @param {CPtr<char>} str @returns {CInt} */
 export function msgtype_parse_add(str) {
     let pattern = new Uint8Array(256);
     let msgtype = new Uint8Array(11);
@@ -11390,7 +11390,7 @@ export function msgtype_parse_add(str) {
 
 const __static_test_regex_pattern_def_errmsg = cptr.bytes("NHregex error"); /** C ref: options.c:7873 — char[14] (function-static) */
 
-/** C ref: options.c:7871 — @param {CPtr} str @param {CPtr} errmsg @returns {CInt} */
+/** C ref: options.c:7871 — @param {CPtr<char>} str @param {CPtr<char>} errmsg @returns {CInt} */
 function test_regex_pattern(str, errmsg) {
     let match;
     let re_error_desc;
@@ -11415,7 +11415,7 @@ function test_regex_pattern(str, errmsg) {
 
 const __static_parse_role_opt_neg_opt = cptr.bytes("!"); /** C ref: options.c:7912 — char[2] (function-static) */
 
-/** C ref: options.c:7905 — @param {CInt} optidx @param {CInt} negated @param {CPtr} fullname @param {CPtr} opts @param {CPtr} opp @returns {CInt} */
+/** C ref: options.c:7905 — @param {CInt} optidx @param {CInt} negated @param {CPtr<char>} fullname @param {CPtr<char>} opts @param {CPtr<char *>} opp @returns {CInt} */
 function parse_role_opt(optidx, negated, fullname, opts, opp) {
     let preval;
     let op;
@@ -11486,7 +11486,7 @@ function parse_role_opt(optidx, negated, fullname, opts, opp) {
     return ok;
 }
 
-/** C ref: options.c:8021 — @param {CInt} optidx @returns {CPtr} */
+/** C ref: options.c:8021 — @param {CInt} optidx @returns {CPtr<char>} */
 function get_cnf_role_opt(optidx) {
     let phase;
     let op = null;
@@ -11514,7 +11514,7 @@ function illegal_menu_cmd_key(c) {
     return 0;
 }
 
-/** C ref: options.c:8062 — @param {CPtr} src @param {CPtr} dest */
+/** C ref: options.c:8062 — @param {CPtr<char>} src @param {CPtr<char>} dest */
 export function oc_to_str(src, dest) {
     let i;
     while ((i = cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))) != 0) {
@@ -11573,7 +11573,7 @@ cptr.st1o(__static_collect_menu_keys_scroll_keys, 8 + $menuscrollinfo_maskindx, 
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 10, 125);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 10 + $menuscrollinfo_maskindx, 8); /** C ref: options.c:8139 — struct menuscrollinfo[6] (function-static) */
 
-/** C ref: options.c:8126 — @param {CPtr} outbuf @param {CUInt} scrollmask @param {CInt} printable @returns {CPtr} */
+/** C ref: options.c:8126 — @param {CPtr<char>} outbuf @param {CUInt} scrollmask @param {CInt} printable @returns {CPtr<char>} */
 export function collect_menu_keys(outbuf, scrollmask, printable) {
     let i;
     cptr.st1o(outbuf, 0, 0);
@@ -11589,7 +11589,7 @@ export function collect_menu_keys(outbuf, scrollmask, printable) {
     return outbuf;
 }
 
-/** C ref: options.c:8170 — @param {CPtr} str @param {CPtr} replace_fruit @returns {CInt} */
+/** C ref: options.c:8170 — @param {CPtr<char>} str @param {CPtr<struct fruit>} replace_fruit @returns {CInt} */
 export function fruitadd(str, replace_fruit) {
     let i;
     let f;
@@ -11651,7 +11651,7 @@ export function fruitadd(str, replace_fruit) {
     return cptr.ldI32o(f, $fruit_fid);
 }
 
-/** C ref: options.c:8302 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:8302 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_o_autopickup_exceptions(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -11670,7 +11670,7 @@ function optfn_o_autopickup_exceptions(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8324 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:8324 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_o_bind_keys(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -11689,7 +11689,7 @@ function optfn_o_bind_keys(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8346 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:8346 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_o_autocomplete(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -11708,7 +11708,7 @@ function optfn_o_autocomplete(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8368 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:8368 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_o_menu_colors(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -11727,7 +11727,7 @@ function optfn_o_menu_colors(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8389 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:8389 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_o_message_types(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -11746,7 +11746,7 @@ function optfn_o_message_types(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8414 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:8414 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_o_status_cond(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -11771,7 +11771,7 @@ function optfn_o_status_cond(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8446 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr} opts @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:8446 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
 function optfn_o_status_hilites(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -11798,7 +11798,7 @@ function optfn_o_status_hilites(optidx, req, negated, opts, op) {
 
 const __static_get_option_value_retbuf = new Uint8Array(256); /** C ref: options.c:8483 — char[256] (function-static) */
 
-/** C ref: options.c:8481 — @param {CPtr} optname @param {CInt} cnfvalid @returns {CPtr} */
+/** C ref: options.c:8481 — @param {CPtr<char>} optname @param {CInt} cnfvalid @returns {CPtr<char>} */
 export function get_option_value(optname, cnfvalid) {
     let bool_p;
     let i;
@@ -12001,7 +12001,7 @@ cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 8, __sl509);
 cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 16, __sl899);
 cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[1]), 24, __sl900); /** C ref: options.c:8742 — char *[2][4] (function-static) */
 
-/** C ref: options.c:8738 — @param {CInt} idx @param {CPtr} b @returns {CPtr} */
+/** C ref: options.c:8738 — @param {CInt} idx @param {CPtr<boolean>} b @returns {CPtr<char>} */
 function term_for_boolean(idx, b) {
     let i;
     let f_t = (cptr.ld1s(b)) ? 1 : 0;
@@ -12199,7 +12199,7 @@ function reset_needed_visuals() {
     cptr.st1o(go, $instance_globals_o_opt_update_basic_palette, 0);
 }
 
-/** C ref: options.c:9018 — @param {CInt} win @param {CPtr} option @param {CPtr} fmtstr @param {CInt} idx @param {CInt} indexoffset */
+/** C ref: options.c:9018 — @param {CInt} win @param {CPtr<char>} option @param {CPtr<char>} fmtstr @param {CInt} idx @param {CInt} indexoffset */
 function doset_add_menu(win, option, fmtstr, idx, indexoffset) {
     let value = __sl665;
     let indent;
@@ -12338,7 +12338,7 @@ cptr.stPtro(__static_handle_add_list_remove_action_titles, 32 + $action_desc, __
 cptr.st1o(__static_handle_add_list_remove_action_titles, 48, 120);
 cptr.stPtro(__static_handle_add_list_remove_action_titles, 48 + $action_desc, __sl952); /** C ref: options.c:9217 — struct action[4] (function-static) */
 
-/** C ref: options.c:9208 — @param {CPtr} optname @param {CInt} numtotal @returns {CInt} */
+/** C ref: options.c:9208 — @param {CPtr<char>} optname @param {CInt} numtotal @returns {CInt} */
 function handle_add_list_remove(optname, numtotal) {
     let tmpwin;
     let any = cptr.alloc(8);
@@ -12385,7 +12385,7 @@ export function dotogglepickup() {
     return NHM.ECMD_OK;
 }
 
-/** C ref: options.c:9278 — @param {CPtr} p @returns {CInt} */
+/** C ref: options.c:9278 — @param {CPtr<char>} p @returns {CInt} */
 export function toggle_bool_option(p) {
     let i;
     let ret = NHM.ECMD_FAIL;
@@ -12403,7 +12403,7 @@ export function toggle_bool_option(p) {
 const __static_add_autopickup_exception_APE_regex_error = cptr.bytes("regex error in AUTOPICKUP_EXCEPTION"); /** C ref: options.c:9303 — char[36] (function-static) */
 const __static_add_autopickup_exception_APE_syntax_error = cptr.bytes("syntax error in AUTOPICKUP_EXCEPTION"); /** C ref: options.c:9304 — char[37] (function-static) */
 
-/** C ref: options.c:9300 — @param {CPtr} mapping @returns {CInt} */
+/** C ref: options.c:9300 — @param {CPtr<char>} mapping @returns {CInt} */
 export function add_autopickup_exception(mapping) {
     let ape;
     let text = new Uint8Array(256);
@@ -12436,7 +12436,7 @@ export function add_autopickup_exception(mapping) {
     return 1;
 }
 
-/** C ref: options.c:9349 — @param {CPtr} whichape */
+/** C ref: options.c:9349 — @param {CPtr<struct autopickup_exception>} whichape */
 function remove_autopickup_exception(whichape) {
     let ape;
     let freeape;
@@ -12470,7 +12470,7 @@ export function free_autopickup_exceptions() {
     }
 }
 
-/** C ref: options.c:9385 — @param {CPtr} strval @returns {CInt} */
+/** C ref: options.c:9385 — @param {CPtr<char>} strval @returns {CInt} */
 export function sym_val(strval) {
     let buf = new Uint8Array(128);
     let tmp = new Uint8Array(128);
@@ -12578,7 +12578,7 @@ export function option_help() {
     return;
 }
 
-/** C ref: options.c:9556 — @param {CPtr} sbuf */
+/** C ref: options.c:9556 — @param {CPtr<strbuf_t>} sbuf */
 function all_options_conds(sbuf) {
     let buf = new Uint8Array(256);
     let nextcond = new Uint8Array(256);
@@ -12607,7 +12607,7 @@ function all_options_conds(sbuf) {
     }
 }
 
-/** C ref: options.c:9595 — @param {CPtr} sbuf */
+/** C ref: options.c:9595 — @param {CPtr<strbuf_t>} sbuf */
 function all_options_menucolors(sbuf) {
     let i = 0;
     let ncolors = count_menucolors();
@@ -12631,7 +12631,7 @@ function all_options_menucolors(sbuf) {
     cptr.free(arr);
 }
 
-/** C ref: options.c:9628 — @param {CPtr} sbuf */
+/** C ref: options.c:9628 — @param {CPtr<strbuf_t>} sbuf */
 function all_options_msgtypes(sbuf) {
     let tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types);
     let buf = new Uint8Array(256);
@@ -12643,7 +12643,7 @@ function all_options_msgtypes(sbuf) {
     }
 }
 
-/** C ref: options.c:9643 — @param {CPtr} sbuf */
+/** C ref: options.c:9643 — @param {CPtr<strbuf_t>} sbuf */
 function all_options_apes(sbuf) {
     let tmp = cptr.ldPtro(ga, $instance_globals_a_apelist);
     let buf = new Uint8Array(256);
@@ -12654,7 +12654,7 @@ function all_options_apes(sbuf) {
     }
 }
 
-/** C ref: options.c:9678 — @param {CPtr} sbuf */
+/** C ref: options.c:9678 — @param {CPtr<strbuf_t>} sbuf */
 export function all_options_strbuf(sbuf) {
     let name;
     let tmp = new Uint8Array(256);
@@ -12708,7 +12708,7 @@ export function all_options_strbuf(sbuf) {
 
 let __static_next_opt_buf = null; /** C ref: options.c:9757 — char * (function-static) */
 
-/** C ref: options.c:9755 — @param {CInt} datawin @param {CPtr} str */
+/** C ref: options.c:9755 — @param {CInt} datawin @param {CPtr<char>} str */
 export function next_opt(datawin, str) {
     let i;
     let s;
@@ -12848,7 +12848,7 @@ cptr.stU64o(wc2_options, 272 + $wc_Opt_wc_bit, 4n);
 cptr.stPtro(wc2_options, 288, null);
 cptr.stU64o(wc2_options, 288 + $wc_Opt_wc_bit, 0n);
 
-/** C ref: options.c:9855 — @param {CPtr} optnam @param {CInt} status */
+/** C ref: options.c:9855 — @param {CPtr<char>} optnam @param {CInt} status */
 export function set_option_mod_status(optnam, status) {
     let k;
     if (SET__IS_VALUE_VALID(status)) {
@@ -12878,7 +12878,7 @@ export function set_wc_option_mod_status(optmask, status) {
     }
 }
 
-/** C ref: options.c:9899 — @param {CPtr} optnam @returns {CInt} */
+/** C ref: options.c:9899 — @param {CPtr<char>} optnam @returns {CInt} */
 function is_wc_option(optnam) {
     let k = 0;
     while (cptr.ldPtro(wc_options, k, 16)) {
@@ -12889,7 +12889,7 @@ function is_wc_option(optnam) {
     return 0;
 }
 
-/** C ref: options.c:9912 — @param {CPtr} optnam @returns {CInt} */
+/** C ref: options.c:9912 — @param {CPtr<char>} optnam @returns {CInt} */
 function wc_supported(optnam) {
     let k;
     for (k = 0; cptr.ldPtro(wc_options, k, 16); ++k) {
@@ -12914,7 +12914,7 @@ export function set_wc2_option_mod_status(optmask, status) {
     }
 }
 
-/** C ref: options.c:9953 — @param {CPtr} optnam @returns {CInt} */
+/** C ref: options.c:9953 — @param {CPtr<char>} optnam @returns {CInt} */
 function is_wc2_option(optnam) {
     let k = 0;
     while (cptr.ldPtro(wc2_options, k, 16)) {
@@ -12925,7 +12925,7 @@ function is_wc2_option(optnam) {
     return 0;
 }
 
-/** C ref: options.c:9966 — @param {CPtr} optnam @returns {CInt} */
+/** C ref: options.c:9966 — @param {CPtr<char>} optnam @returns {CInt} */
 function wc2_supported(optnam) {
     let k;
     for (k = 0; cptr.ldPtro(wc2_options, k, 16); ++k) {
@@ -12935,7 +12935,7 @@ function wc2_supported(optnam) {
     return 0;
 }
 
-/** C ref: options.c:9979 — @param {CInt} opttype @param {CPtr} fontname */
+/** C ref: options.c:9979 — @param {CInt} opttype @param {CPtr<char>} fontname */
 function wc_set_font_name(opttype, fontname) {
     let fn = null;
     if (!fontname)
@@ -12984,7 +12984,7 @@ cptr.stPtro(bgp, 24, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors)
 /** C ref: options.c:10020 — int */
 export let options_set_window_colors_flag = 0;
 
-/** C ref: options.c:10023 — @param {CPtr} op @returns {CInt} */
+/** C ref: options.c:10023 — @param {CPtr<char>} op @returns {CInt} */
 function wc_set_window_colors(op) {
     let j;
     let clr;
@@ -13082,7 +13082,7 @@ export function set_playmode() {
     }
 }
 
-/** C ref: options.c:10155 — @param {CPtr} buf @param {CLongLong} sz @param {CInt} whichpass @param {CPtr} bool_p @param {CPtr} thisopt */
+/** C ref: options.c:10155 — @param {CPtr<char>} buf @param {CLongLong} sz @param {CInt} whichpass @param {CPtr<boolean>} bool_p @param {CPtr<struct allopt_t>} thisopt */
 function enhance_menu_text(buf, sz, whichpass, bool_p, thisopt) {
     let nowsz;
     let availsz;

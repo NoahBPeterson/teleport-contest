@@ -338,7 +338,7 @@ const __sl189 = cptr.lit("%s slime is burned away!");
 
 let __static_precheck_empty = __sl18; /** C ref: muse.c:69 — char * (function-static) */
 
-/** C ref: muse.c:59 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: muse.c:59 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 function precheck(mon, obj) {
     let vis;
     if (!obj)
@@ -415,7 +415,7 @@ function precheck(mon, obj) {
     return 0;
 }
 
-/** C ref: muse.c:165 — @param {CPtr} mtmp @param {CPtr} otmp @param {CInt} self */
+/** C ref: muse.c:165 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @param {CInt} self */
 function mzapwand(mtmp, otmp, self) {
     if (cptr.ld1so(otmp, $obj_spe) < 1) {
         impossible(__sl19, cptr.ld1so(otmp, $obj_spe));
@@ -435,7 +435,7 @@ function mzapwand(mtmp, otmp, self) {
     cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) - 1);
 }
 
-/** C ref: muse.c:195 — @param {CPtr} mtmp @param {CPtr} otmp @param {CInt} self */
+/** C ref: muse.c:195 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @param {CInt} self */
 function mplayhorn(mtmp, otmp, self) {
     let objnamp;
     let objbuf = new Uint8Array(256);
@@ -464,7 +464,7 @@ function mplayhorn(mtmp, otmp, self) {
     cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) - 1);
 }
 
-/** C ref: muse.c:238 — @param {CPtr} mtmp @param {CPtr} otmp */
+/** C ref: muse.c:238 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp */
 function mreadmsg(mtmp, otmp) {
     let onambuf = new Uint8Array(256);
     let vismon = schar(canseemon(mtmp));
@@ -496,7 +496,7 @@ function mreadmsg(mtmp, otmp) {
         pline(__sl38, vismon ? mon_nam(mtmp) : (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_he)));
 }
 
-/** C ref: muse.c:293 — @param {CPtr} mtmp @param {CPtr} otmp */
+/** C ref: muse.c:293 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp */
 function mquaffmsg(mtmp, otmp) {
     if (canseemon(mtmp)) {
         observe_object(otmp);
@@ -507,7 +507,7 @@ function mquaffmsg(mtmp, otmp) {
     }
 }
 
-/** C ref: muse.c:337 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:337 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function m_use_healing(mtmp) {
     let obj;
     if ((obj = m_carrying(mtmp, NHC.POT_FULL_HEALING)) !== null) {
@@ -528,7 +528,7 @@ function m_use_healing(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:361 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:361 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function m_sees_sleepy_soldier(mtmp) {
     let x = cptr.ldI16o(mtmp, $monst_mx);
     let y = cptr.ldI16o(mtmp, $monst_my);
@@ -545,7 +545,7 @@ function m_sees_sleepy_soldier(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:384 — @param {CPtr} mtmp @param {CInt} vismon @param {CInt} oseen @param {CInt} how */
+/** C ref: muse.c:384 — @param {CPtr<struct monst>} mtmp @param {CInt} vismon @param {CInt} oseen @param {CInt} how */
 function m_tele(mtmp, vismon, oseen, how) {
     if (tele_restrict(mtmp)) {
         if (vismon && how)
@@ -567,7 +567,7 @@ function m_tele(mtmp, vismon, oseen, how) {
     }
 }
 
-/** C ref: muse.c:420 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:420 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function m_next2m(mtmp) {
     let x;
     let y;
@@ -584,7 +584,7 @@ function m_next2m(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:441 — @param {CPtr} mtmp @param {CInt} tryescape @returns {CInt} */
+/** C ref: muse.c:441 — @param {CPtr<struct monst>} mtmp @param {CInt} tryescape @returns {CInt} */
 export function find_defensive(mtmp, tryescape) {
     let obj;
     let t;
@@ -818,7 +818,7 @@ export function find_defensive(mtmp, tryescape) {
     return schar((!!cptr.ldI32o(gm, $instance_globals_m_m + $musable_has_defense)));
 }
 
-/** C ref: muse.c:757 — @param {CPtr} t @param {CInt} seeit */
+/** C ref: muse.c:757 — @param {CPtr<struct trap>} t @param {CInt} seeit */
 function reveal_trap(t, seeit) {
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), cptr.ldI16o(t, $trap_tx), 756), cptr.ldI16o(t, $trap_ty), 36);
     if (cptr.ld1so(lev, $rm_typ) == NHC.SCORR) {
@@ -829,7 +829,7 @@ function reveal_trap(t, seeit) {
         seetrap(t);
 }
 
-/** C ref: muse.c:780 — @param {CPtr} mtmp @param {CInt} vismon @returns {CInt} */
+/** C ref: muse.c:780 — @param {CPtr<struct monst>} mtmp @param {CInt} vismon @returns {CInt} */
 function mon_escape(mtmp, vismon) {
     if (mon_has_special(mtmp) || ((cptr.ldI32o(mtmp, $monst_iswiz) & 1) | 0 && cptr.ldI32o(svc, $context_info_no_of_wizards) < 2))
         return 0;
@@ -841,7 +841,7 @@ function mon_escape(mtmp, vismon) {
 
 const __static_use_defensive_MissingDefensiveItem = cptr.bytes("use_defensive: no %s"); /** C ref: muse.c:798 — char[21] (function-static) */
 
-/** C ref: muse.c:796 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:796 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function use_defensive(mtmp) {
     let i;
     let fleetim;
@@ -1216,7 +1216,7 @@ export function use_defensive(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:1222 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:1222 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function rnd_defensive_item(mtmp) {
     let pm = cptr.ldPtro(mtmp, $monst_data);
     let difficulty = cptr.ld1uo2(mons, ((cptr.ldI32o((pm), $permonst_pmidx))), 96, $permonst_difficulty);
@@ -1267,7 +1267,7 @@ function linedup_chk_corpse(x, y) {
     return schar((sobj_at(NHC.CORPSE, x, y) !== null));
 }
 
-/** C ref: muse.c:1300 — @param {CPtr} mtmp @param {CPtr} obj */
+/** C ref: muse.c:1300 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} obj */
 function m_use_undead_turning(mtmp, obj) {
     let ax = i16(((cptr.ldI16(u) + Math.imul(sgn((cptr.ldI16o(mtmp, $monst_mux) - cptr.ldI16o(mtmp, $monst_mx)) | 0), 3)) | 0));
     let ay = i16(((cptr.ldI16o(u, $you_uy) + Math.imul(sgn((cptr.ldI16o(mtmp, $monst_muy) - cptr.ldI16o(mtmp, $monst_my)) | 0), 3)) | 0));
@@ -1281,7 +1281,7 @@ function m_use_undead_turning(mtmp, obj) {
     }
 }
 
-/** C ref: muse.c:1344 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:1344 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function hero_behind_chokepoint(mtmp) {
     let dx = i16(sgn((cptr.ldI16o(mtmp, $monst_mx) - cptr.ldI16o(mtmp, $monst_mux)) | 0));
     let dy = i16(sgn((cptr.ldI16o(mtmp, $monst_my) - cptr.ldI16o(mtmp, $monst_muy)) | 0));
@@ -1301,7 +1301,7 @@ function hero_behind_chokepoint(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:1371 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:1371 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function mon_has_friends(mtmp) {
     let dx;
     let dy;
@@ -1318,7 +1318,7 @@ function mon_has_friends(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:1395 — @param {CPtr} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: muse.c:1395 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @returns {CInt} */
 function mon_likes_objpile_at(mtmp, x, y) {
     let i;
     let otmp;
@@ -1334,7 +1334,7 @@ function mon_likes_objpile_at(mtmp, x, y) {
     return 0;
 }
 
-/** C ref: muse.c:1421 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:1421 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function find_offensive(mtmp) {
     let obj;
     let mtmp_helmet;
@@ -1483,7 +1483,7 @@ export function find_offensive(mtmp) {
     return schar((!!cptr.ldI32o(gm, $instance_globals_m_m + $musable_has_offense)));
 }
 
-/** C ref: muse.c:1597 — @param {CPtr} mtmp @param {CPtr} otmp @returns {CInt} */
+/** C ref: muse.c:1597 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @returns {CInt} */
 function mbhitm(mtmp, otmp) {
     let tmp;
     let reveal_invis = 0;
@@ -1580,7 +1580,7 @@ function mbhitm(mtmp, otmp) {
     return 0;
 }
 
-/** C ref: muse.c:1707 — @param {CPtr} obj @param {CInt} tx @param {CInt} ty @param {CPtr} fhito @returns {CInt} */
+/** C ref: muse.c:1707 — @param {CPtr<struct obj>} obj @param {CInt} tx @param {CInt} ty @param {CPtr} fhito @returns {CInt} */
 function fhito_loc(obj, tx, ty, fhito) {
     let otmp;
     let next_obj;
@@ -1596,7 +1596,7 @@ function fhito_loc(obj, tx, ty, fhito) {
     return schar((hitanything ? 1 : 0));
 }
 
-/** C ref: muse.c:1734 — @param {CPtr} mon @param {CInt} range @param {CPtr} fhitm @param {CPtr} fhito @param {CPtr} obj */
+/** C ref: muse.c:1734 — @param {CPtr<struct monst>} mon @param {CInt} range @param {CPtr} fhitm @param {CPtr} fhito @param {CPtr<struct obj>} obj */
 function mbhit(mon, range, fhitm, fhito, obj) {
     let mtmp;
     let ltyp;
@@ -1663,7 +1663,7 @@ function buzz_force_miss(type, nd, sx, sy, dx, dy) {
     dobuzz(type, nd, sx, sy, dx, dy, 1, 0, 1);
 }
 
-/** C ref: muse.c:1824 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:1824 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function use_offensive(mtmp) {
     let i;
     let otmp = cptr.ldPtro(gm, $instance_globals_m_m);
@@ -1788,7 +1788,7 @@ export function use_offensive(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:2035 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:2035 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function rnd_offensive_item(mtmp) {
     let pm = cptr.ldPtro(mtmp, $monst_data);
     let difficulty = cptr.ld1uo2(mons, ((cptr.ldI32o((pm), $permonst_pmidx))), 96, $permonst_difficulty);
@@ -1832,7 +1832,7 @@ export function rnd_offensive_item(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:2095 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:2095 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function find_misc(mtmp) {
     let obj;
     let mdat = cptr.ldPtro(mtmp, $monst_data);
@@ -1926,7 +1926,7 @@ export function find_misc(mtmp) {
     return schar((!!cptr.ldI32o(gm, $instance_globals_m_m + $musable_has_misc)));
 }
 
-/** C ref: muse.c:2250 — @param {CPtr} mon @returns {CPtr} */
+/** C ref: muse.c:2250 — @param {CPtr<struct monst>} mon @returns {CPtr<struct permonst>} */
 function muse_newcham_mon(mon) {
     let m_armr;
     if ((m_armr = which_armor(mon, 1n)) !== null) {
@@ -1938,7 +1938,7 @@ function muse_newcham_mon(mon) {
     return rndmonst();
 }
 
-/** C ref: muse.c:2264 — @param {CPtr} mon @param {CPtr} container @param {CInt} vismon @returns {CInt} */
+/** C ref: muse.c:2264 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} container @param {CInt} vismon @returns {CInt} */
 function mloot_container(mon, container, vismon) {
     let contnr_nam = new Uint8Array(256);
     let mpronounbuf = new Uint8Array(20);
@@ -2026,7 +2026,7 @@ function mloot_container(mon, container, vismon) {
 
 const __static_use_misc_MissingMiscellaneousItem = cptr.bytes("use_misc: no %s"); /** C ref: muse.c:2385 — char[16] (function-static) */
 
-/** C ref: muse.c:2383 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:2383 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function use_misc(mtmp) {
     let nambuf = new Uint8Array(256);
     let vis;
@@ -2230,7 +2230,7 @@ export function use_misc(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:2631 — @param {CPtr} mtmp */
+/** C ref: muse.c:2631 — @param {CPtr<struct monst>} mtmp */
 function you_aggravate(mtmp) {
     pline(__sl144, s_suffix(noit_mon_nam(mtmp)));
     cls();
@@ -2249,7 +2249,7 @@ function you_aggravate(mtmp) {
         map_invisible(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
 }
 
-/** C ref: muse.c:2654 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: muse.c:2654 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function rnd_misc_item(mtmp) {
     let pm = cptr.ldPtro(mtmp, $monst_data);
     let difficulty = cptr.ld1uo2(mons, ((cptr.ldI32o((pm), $permonst_pmidx))), 96, $permonst_difficulty);
@@ -2274,7 +2274,7 @@ export function rnd_misc_item(mtmp) {
     return 0;
 }
 
-/** C ref: muse.c:2706 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: muse.c:2706 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function searches_for_item(mon, obj) {
     let typ = cptr.ldI16o(obj, $obj_otyp);
     if (cptr.ld1so(obj, $obj_where) == NHM.OBJ_FLOOR && (cptr.ldI16o(obj, $obj_ox) == cptr.ldI16o(mon, $monst_mx) && cptr.ldI16o(obj, $obj_oy) == cptr.ldI16o(mon, $monst_my)) && onscary(cptr.ldI16o(obj, $obj_ox), cptr.ldI16o(obj, $obj_oy), mon)) {
@@ -2339,7 +2339,7 @@ export function searches_for_item(mon, obj) {
     return 0;
 }
 
-/** C ref: muse.c:2797 — @param {CPtr} mon @param {CPtr} str @returns {CInt} */
+/** C ref: muse.c:2797 — @param {CPtr<struct monst>} mon @param {CPtr<char>} str @returns {CInt} */
 export function mon_reflects(mon, str) {
     let orefl = which_armor(mon, 8n);
     if (orefl && cptr.ldI16o(orefl, $obj_otyp) == NHC.SHIELD_OF_REFLECTION) {
@@ -2370,7 +2370,7 @@ export function mon_reflects(mon, str) {
     return 0;
 }
 
-/** C ref: muse.c:2836 — @param {CPtr} fmt @param {CPtr} str @returns {CInt} */
+/** C ref: muse.c:2836 — @param {CPtr<char>} fmt @param {CPtr<char>} str @returns {CInt} */
 export function ureflects(fmt, str) {
     if (EReflecting() & 8n) {
         if (fmt && str) {
@@ -2400,7 +2400,7 @@ export function ureflects(fmt, str) {
     return 0;
 }
 
-/** C ref: muse.c:2872 — @param {CPtr} mon @param {CInt} verbos */
+/** C ref: muse.c:2872 — @param {CPtr<struct monst>} mon @param {CInt} verbos */
 export function mcureblindness(mon, verbos) {
     if (!(cptr.ldI32o(mon, $monst_mcansee) & 1)) {
         cptr.stI32o(mon, $monst_mcansee, 1);
@@ -2410,7 +2410,7 @@ export function mcureblindness(mon, verbos) {
     }
 }
 
-/** C ref: muse.c:2884 — @param {CPtr} mon @param {CInt} by_you @returns {CInt} */
+/** C ref: muse.c:2884 — @param {CPtr<struct monst>} mon @param {CInt} by_you @returns {CInt} */
 export function munstone(mon, by_you) {
     let obj;
     let tinok;
@@ -2429,7 +2429,7 @@ export function munstone(mon, by_you) {
     return 0;
 }
 
-/** C ref: muse.c:2906 — @param {CPtr} mon @param {CPtr} obj @param {CInt} by_you @param {CInt} stoning */
+/** C ref: muse.c:2906 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} by_you @param {CInt} stoning */
 function mon_consume_unstone(mon, obj, by_you, stoning) {
     let vis = schar(canseemon(mon));
     let tinned = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.TIN));
@@ -2483,7 +2483,7 @@ function mon_consume_unstone(mon, obj, by_you, stoning) {
     cptr.stI64o(mon, $monst_mlstmv, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
 }
 
-/** C ref: muse.c:2985 — @param {CPtr} mon @param {CPtr} obj @param {CInt} tinok @returns {CInt} */
+/** C ref: muse.c:2985 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} tinok @returns {CInt} */
 function cures_stoning(mon, obj, tinok) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_ACID)
         return 1;
@@ -2496,7 +2496,7 @@ function cures_stoning(mon, obj, tinok) {
     return schar((cptr.ldI32o(obj, $obj_corpsenm) == NHC.PM_LIZARD || ((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), 96)), $permonst_mflags1) & 134217728n) != 0n) ? 1 : 0));
 }
 
-/** C ref: muse.c:3001 — @param {CPtr} mon @returns {CInt} */
+/** C ref: muse.c:3001 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function mcould_eat_tin(mon) {
     let obj;
     let mwep;
@@ -2514,7 +2514,7 @@ function mcould_eat_tin(mon) {
     return 0;
 }
 
-/** C ref: muse.c:3031 — @param {CPtr} mon @param {CInt} by_you @returns {CInt} */
+/** C ref: muse.c:3031 — @param {CPtr<struct monst>} mon @param {CInt} by_you @returns {CInt} */
 export function munslime(mon, by_you) {
     let obj;
     let odummy = cptr.alloc(216);
@@ -2566,7 +2566,7 @@ export function munslime(mon, by_you) {
     return 0;
 }
 
-/** C ref: muse.c:3104 — @param {CPtr} mon @param {CPtr} obj @param {CPtr} trap @param {CInt} by_you @returns {CInt} */
+/** C ref: muse.c:3104 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CPtr<struct trap>} trap @param {CInt} by_you @returns {CInt} */
 function muse_unslime(mon, obj, trap, by_you) {
     let odummyp = cptr.box(0);
     let otyp = cptr.ldI16o(obj, $obj_otyp);
@@ -2665,7 +2665,7 @@ function muse_unslime(mon, obj, trap, by_you) {
     return res;
 }
 
-/** C ref: muse.c:3246 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: muse.c:3246 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 function cures_sliming(mon, obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_FIRE)
         return (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mon, $monst_mcansee) & 1) | 0 && !((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 8192n) != 0n) ? 1 : 0);
@@ -2674,7 +2674,7 @@ function cures_sliming(mon, obj) {
     return ((cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_FIRE || (cptr.ldI16o(obj, $obj_otyp) == NHC.FIRE_HORN && can_blow(mon))) && cptr.ld1so(obj, $obj_spe) > 0 ? 1 : 0);
 }
 
-/** C ref: muse.c:3269 — @param {CPtr} mon @returns {CInt} */
+/** C ref: muse.c:3269 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function green_mon(mon) {
     let ptr = cptr.ldPtro(mon, $monst_data);
     if (Hallucination())

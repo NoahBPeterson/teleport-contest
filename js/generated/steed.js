@@ -179,13 +179,13 @@ export function rider_cant_reach() {
     You(__sl0, y_monnam(cptr.ldPtro(u, $you_usteed)));
 }
 
-/** C ref: steed.c:26 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: steed.c:26 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function can_saddle(mtmp) {
     let ptr = cptr.ldPtro(mtmp, $monst_data);
     return schar((cptr.strchr(cptr.decay(steeds), cptr.ld1so(ptr, $permonst_mlet)) && (cptr.ld1uo(ptr, $permonst_msize) >= NHM.MZ_MEDIUM) && (!((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n) || cptr.ld1so(ptr, $permonst_mlet) == NHC.S_CENTAUR) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 4n) != 0n) && !(cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GHOST) && !is_whirly(ptr) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 1048576n) != 0n) ? 1 : 0));
 }
 
-/** C ref: steed.c:36 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: steed.c:36 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function use_saddle(otmp) {
     let mtmp;
     let ptr;
@@ -271,7 +271,7 @@ export function use_saddle(otmp) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: steed.c:142 — @param {CPtr} saddle @param {CPtr} mtmp */
+/** C ref: steed.c:142 — @param {CPtr<struct obj>} saddle @param {CPtr<struct monst>} mtmp */
 export function put_saddle_on_mon(saddle, mtmp) {
     if (!can_saddle(mtmp) || which_armor(mtmp, 1048576n)) {
         if (saddle)
@@ -293,7 +293,7 @@ export function put_saddle_on_mon(saddle, mtmp) {
     update_mon_extrinsics(mtmp, saddle, 1, 0);
 }
 
-/** C ref: steed.c:169 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: steed.c:169 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function can_ride(mtmp) {
     return schar((cptr.ld1so(mtmp, $monst_mtame) && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) && !(cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) < NHM.MZ_SMALL) && !(cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) >= NHM.MZ_LARGE) && (!Underwater() || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 2n) != 0n)) ? 1 : 0));
 }
@@ -313,7 +313,7 @@ export function doride() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: steed.c:197 — @param {CPtr} mtmp @param {CInt} force @returns {CInt} */
+/** C ref: steed.c:197 — @param {CPtr<struct monst>} mtmp @param {CInt} force @returns {CInt} */
 export function mount_steed(mtmp, force) {
     let otmp;
     let buf = new Uint8Array(256);
@@ -485,7 +485,7 @@ export function kick_steed() {
     return;
 }
 
-/** C ref: steed.c:460 — @param {CPtr} spot @param {CInt} reason @param {CInt} forceit @returns {CInt} */
+/** C ref: steed.c:460 — @param {CPtr<coord>} spot @param {CInt} reason @param {CInt} forceit @returns {CInt} */
 function landing_spot(spot, reason, forceit) {
     let cc = cptr.alloc(4);
     let try$ = cptr.alloc(8 * 4);
@@ -716,7 +716,7 @@ export function dismount_steed(reason) {
     return;
 }
 
-/** C ref: steed.c:827 — @param {CPtr} steed */
+/** C ref: steed.c:827 — @param {CPtr<struct monst>} steed */
 function maybewakesteed(steed) {
     let frozen = (cptr.ldI32o(steed, $monst_mfrozen) & 127) | 0;
     let wasimmobile = schar(helpless(steed));
@@ -735,7 +735,7 @@ function maybewakesteed(steed) {
     finish_meating(steed);
 }
 
-/** C ref: steed.c:852 — @param {CPtr} steed @param {CPtr} oldshape */
+/** C ref: steed.c:852 — @param {CPtr<struct monst>} steed @param {CPtr<struct permonst>} oldshape */
 export function poly_steed(steed, oldshape) {
     if (!can_saddle(steed) || !can_ride(steed)) {
         dismount_steed(NHC.DISMOUNT_FELL);
@@ -765,7 +765,7 @@ export function stucksteed(checkfeeding) {
     return 0;
 }
 
-/** C ref: steed.c:898 — @param {CPtr} mon @param {CInt} x @param {CInt} y */
+/** C ref: steed.c:898 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y */
 export function place_monster(mon, x, y) {
     let othermon;
     let monnm;

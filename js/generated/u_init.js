@@ -1969,7 +1969,7 @@ export function u_init_misc() {
     return;
 }
 
-/** C ref: u_init.c:1037 @returns {CPtr} */
+/** C ref: u_init.c:1037 @returns {CPtr<struct def_skill>} */
 function skills_for_role() {
     let skills;
     switch (Role_switch()) {
@@ -2031,14 +2031,14 @@ function restricted_spell_discipline(otyp) {
     return 1;
 }
 
-/** C ref: u_init.c:1106 — @param {CPtr} trop @returns {CLongLong} */
+/** C ref: u_init.c:1106 — @param {CPtr<struct trobj>} trop @returns {CLongLong} */
 function trquan(trop) {
     if (!cptr.ld1so(trop, $trobj_trquan_min))
         return 1n;
     return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) + (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1110, __sl5), rn2((((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0)) : rn2((((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0))) | 0));
 }
 
-/** C ref: u_init.c:1115 — @param {CInt} oclass @param {CInt} got_level1_spellbook @returns {CPtr} */
+/** C ref: u_init.c:1115 — @param {CInt} oclass @param {CInt} got_level1_spellbook @returns {CPtr<struct obj>} */
 function ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
     let obj;
     let otyp;
@@ -2057,7 +2057,7 @@ function ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
     return obj;
 }
 
-/** C ref: u_init.c:1179 — @param {CPtr} trop @param {CPtr} obj @returns {CInt} */
+/** C ref: u_init.c:1179 — @param {CPtr<struct trobj>} trop @param {CPtr<struct obj>} obj @returns {CInt} */
 function ini_inv_obj_substitution(trop, obj) {
     if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) != NHC.PM_HUMAN) {
         let i;
@@ -2077,7 +2077,7 @@ function ini_inv_obj_substitution(trop, obj) {
     return cptr.ldI16o(obj, $obj_otyp);
 }
 
-/** C ref: u_init.c:1205 — @param {CPtr} trop @param {CPtr} obj @returns {CInt} */
+/** C ref: u_init.c:1205 — @param {CPtr<struct trobj>} trop @param {CPtr<struct obj>} obj @returns {CInt} */
 function ini_inv_adjust_obj(trop, obj) {
     let stop = 0;
     if (cptr.ld1so(trop, $trobj_trclass) == NHC.COIN_CLASS) {
@@ -2114,7 +2114,7 @@ function ini_inv_adjust_obj(trop, obj) {
     return stop;
 }
 
-/** C ref: u_init.c:1251 — @param {CPtr} obj */
+/** C ref: u_init.c:1251 — @param {CPtr<struct obj>} obj */
 function ini_inv_use_obj(obj) {
     if ((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), 120)), $objclass_oc_descr_idx), 16, $objdescr_oc_descr)) && (cptr.ldI32o(obj, $obj_known) & 1) | 0)
         discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0);
@@ -2151,7 +2151,7 @@ function ini_inv_use_obj(obj) {
         initialspell(obj);
 }
 
-/** C ref: u_init.c:1298 — @param {CPtr} trop */
+/** C ref: u_init.c:1298 — @param {CPtr<struct trobj>} trop */
 function ini_inv(trop) {
     let obj;
     let otyp;

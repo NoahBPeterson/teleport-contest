@@ -163,7 +163,7 @@ export function* tty_doprev_message() {
     return 0;
 }
 
-/** C ref: topl.c:122 — @param {CPtr} str */
+/** C ref: topl.c:122 — @param {CPtr<char>} str */
 function* redotoplin(str) {
     let otoplin = cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin);
     (yield* home());
@@ -181,7 +181,7 @@ function* redotoplin(str) {
         (yield* more());
 }
 
-/** C ref: topl.c:145 — @param {CPtr} str */
+/** C ref: topl.c:145 — @param {CPtr<char>} str */
 export function* show_topl(str) {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     if ((cptr.ldI32(cw) & 5) != NHM.WIN_STOP) {
@@ -218,7 +218,7 @@ export function* remember_topl() {
     }
 }
 
-/** C ref: topl.c:194 — @param {CPtr} s */
+/** C ref: topl.c:194 — @param {CPtr<char>} s */
 export function* addtopl(s) {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     (yield* tty_curs(BASE_WINDOW, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury)))));
@@ -263,7 +263,7 @@ export function* more() {
     cptr.stI32o(ttyDisplay, $DisplayDesc_inmore, 0);
 }
 
-/** C ref: topl.c:251 — @param {CPtr} bp */
+/** C ref: topl.c:251 — @param {CPtr<char>} bp */
 export function* update_topl(bp) {
     let tl;
     let otl;
@@ -346,7 +346,7 @@ function* topl_putsym(c) {
     }
 }
 
-/** C ref: topl.c:355 — @param {CPtr} str */
+/** C ref: topl.c:355 — @param {CPtr<char>} str */
 export function* putsyms(str) {
     while (cptr.ld1s(str))
         (yield* topl_putsym(cptr.ld1s(cptr.postinc(() => str, (v) => { str = v; }))));
@@ -358,7 +358,7 @@ function* removetopl(n) {
         (yield* putsyms(__sl8));
 }
 
-/** C ref: topl.c:373 — @param {CPtr} query @param {CPtr} resp @param {CInt} def @returns {CInt} */
+/** C ref: topl.c:373 — @param {CPtr<char>} query @param {CPtr<char>} resp @param {CInt} def @returns {CInt} */
 export function* tty_yn_function(query, resp, def) {
     let q;
     let rtmp = new Uint8Array(40);
@@ -565,7 +565,7 @@ function free_msghistory_snapshot(purged) {
 
 let __static_tty_getmsghistory_nxtidx = 0; /** C ref: topl.c:647 — int (function-static) */
 
-/** C ref: topl.c:645 — @param {CInt} init @returns {CPtr} */
+/** C ref: topl.c:645 — @param {CInt} init @returns {CPtr<char>} */
 export function* tty_getmsghistory(init) {
     let nextmesg;
     let result = null;
@@ -586,7 +586,7 @@ export function* tty_getmsghistory(init) {
 
 let __static_tty_putmsghistory_initd = 0; /** C ref: topl.c:687 — signed char (function-static) */
 
-/** C ref: topl.c:685 — @param {CPtr} msg @param {CInt} restoring_msghist */
+/** C ref: topl.c:685 — @param {CPtr<char>} msg @param {CInt} restoring_msghist */
 export function* tty_putmsghistory(msg, restoring_msghist) {
     let idx;
     if (restoring_msghist && !__static_tty_putmsghistory_initd) {

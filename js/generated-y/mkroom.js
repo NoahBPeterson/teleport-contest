@@ -87,7 +87,7 @@ const __sl16 = cptr.lit("room-mkroom");
 const __sl17 = cptr.lit("room-nroom");
 const __sl18 = cptr.lit("invalid_shop_shape: no squares inside door?");
 
-/** C ref: mkroom.c:42 — @param {CPtr} sroom @returns {CInt} */
+/** C ref: mkroom.c:42 — @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 function isbig(sroom) {
     let area = Math.imul(((((cptr.ldI16o(sroom, $mkroom_hx) - cptr.ldI16(sroom)) | 0) + 1) | 0), ((((cptr.ldI16o(sroom, $mkroom_hy) - cptr.ldI16o(sroom, $mkroom_ly)) | 0) + 1) | 0));
     return schar((area > 20));
@@ -234,7 +234,7 @@ function* mkshop() {
     cptr.st1o(sroom, $mkroom_needfill, NHM.FILL_NORMAL);
 }
 
-/** C ref: mkroom.c:220 — @param {CInt} strict @returns {CPtr} */
+/** C ref: mkroom.c:220 — @param {CInt} strict @returns {CPtr<struct mkroom>} */
 function pick_room(strict) {
     let sroom;
     let i = cptr.ldI32o(svn, $instance_globals_saved_n_nroom);
@@ -278,7 +278,7 @@ function* mk_zoo_thronemon(x, y) {
     }
 }
 
-/** C ref: mkroom.c:276 — @param {CPtr} sroom */
+/** C ref: mkroom.c:276 — @param {CPtr<struct mkroom>} sroom */
 export function* fill_zoo(sroom) {
     let mon;
     let sx;
@@ -424,7 +424,7 @@ export function* fill_zoo(sroom) {
     }
 }
 
-/** C ref: mkroom.c:456 — @param {CPtr} mm @param {CInt} revive_corpses @param {CInt} mm_flags */
+/** C ref: mkroom.c:456 — @param {CPtr<coord>} mm @param {CInt} revive_corpses @param {CInt} mm_flags */
 export function* mkundead(mm, revive_corpses, mm_flags) {
     let cnt = ((((((yield* level_difficulty()) + 1) | 0) / 10) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__sl3, 461, __sl8), rnd(5)) : rnd(5))) | 0;
     let mdat;
@@ -438,7 +438,7 @@ export function* mkundead(mm, revive_corpses, mm_flags) {
     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_graveyard, 1);
 }
 
-/** C ref: mkroom.c:478 @returns {CPtr} */
+/** C ref: mkroom.c:478 @returns {CPtr<struct permonst>} */
 function* morguemon() {
     let i = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2(100)) : rn2(100));
     let hd = (rng_log_enabled() ? (rng_log_set_caller(__sl3, 480, __sl9), rn2((yield* level_difficulty()))) : rn2((yield* level_difficulty())));
@@ -456,7 +456,7 @@ function* morguemon() {
     return ((i < 20) ? cptr.add(mons, NHC.PM_GHOST, 96) : ((i < 40) ? cptr.add(mons, NHC.PM_WRAITH, 96) : (yield* mkclass(NHC.S_ZOMBIE, 0))));
 }
 
-/** C ref: mkroom.c:502 @returns {CPtr} */
+/** C ref: mkroom.c:502 @returns {CPtr<struct permonst>} */
 export function* antholemon() {
     let mtyp;
     let indx;
@@ -515,7 +515,7 @@ function* mkswamp() {
 
 let __static_shrine_pos_buf = cptr.alloc(4); /** C ref: mkroom.c:579 — struct nhcoord (function-static) */
 
-/** C ref: mkroom.c:577 — @param {CInt} roomno @returns {CPtr} */
+/** C ref: mkroom.c:577 — @param {CInt} roomno @returns {CPtr<coord>} */
 function shrine_pos(roomno) {
     let delta;
     let troom = cptr.add(svr, (roomno - NHM.ROOMOFFSET) | 0, 224);
@@ -563,7 +563,7 @@ export function nexttodoor(sx, sy) {
     return 0;
 }
 
-/** C ref: mkroom.c:640 — @param {CPtr} sroom @returns {CInt} */
+/** C ref: mkroom.c:640 — @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 export function has_dnstairs(sroom) {
     let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (stway) {
@@ -574,7 +574,7 @@ export function has_dnstairs(sroom) {
     return 0;
 }
 
-/** C ref: mkroom.c:653 — @param {CPtr} sroom @returns {CInt} */
+/** C ref: mkroom.c:653 — @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 export function has_upstairs(sroom) {
     let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
     while (stway) {
@@ -585,17 +585,17 @@ export function has_upstairs(sroom) {
     return 0;
 }
 
-/** C ref: mkroom.c:666 — @param {CPtr} croom @returns {CInt} */
+/** C ref: mkroom.c:666 — @param {CPtr<struct mkroom>} croom @returns {CInt} */
 export function somex(croom) {
     return (((rng_log_enabled() ? (rng_log_set_caller(__sl3, 668, __sl12), rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0)) : rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0)) + (cptr.ldI16(croom))) | 0);
 }
 
-/** C ref: mkroom.c:672 — @param {CPtr} croom @returns {CInt} */
+/** C ref: mkroom.c:672 — @param {CPtr<struct mkroom>} croom @returns {CInt} */
 export function somey(croom) {
     return (((rng_log_enabled() ? (rng_log_set_caller(__sl3, 674, __sl13), rn2((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0)) : rn2((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0)) + (cptr.ldI16o(croom, $mkroom_ly))) | 0);
 }
 
-/** C ref: mkroom.c:678 — @param {CPtr} croom @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: mkroom.c:678 — @param {CPtr<struct mkroom>} croom @param {CInt} x @param {CInt} y @returns {CInt} */
 export function inside_room(croom, x, y) {
     if (cptr.ld1so(croom, $mkroom_irregular)) {
         let i = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(croom, svr) / 224n) + 3n))));
@@ -604,7 +604,7 @@ export function inside_room(croom, x, y) {
     return schar((x >= ((cptr.ldI16(croom) - 1) | 0) && x <= ((cptr.ldI16o(croom, $mkroom_hx) + 1) | 0) && y >= ((cptr.ldI16o(croom, $mkroom_ly) - 1) | 0) && y <= ((cptr.ldI16o(croom, $mkroom_hy) + 1) | 0) ? 1 : 0));
 }
 
-/** C ref: mkroom.c:694 — @param {CPtr} croom @param {CPtr} c @returns {CInt} */
+/** C ref: mkroom.c:694 — @param {CPtr<struct mkroom>} croom @param {CPtr<coord>} c @returns {CInt} */
 export function somexy(croom, c) {
     let try_cnt = 0;
     let i;
@@ -645,7 +645,7 @@ export function somexy(croom, c) {
     return 1;
 }
 
-/** C ref: mkroom.c:744 — @param {CPtr} croom @param {CPtr} c @returns {CInt} */
+/** C ref: mkroom.c:744 — @param {CPtr<struct mkroom>} croom @param {CPtr<coord>} c @returns {CInt} */
 export function somexyspace(croom, c) {
     let trycnt = 0;
     let okay;
@@ -655,7 +655,7 @@ export function somexyspace(croom, c) {
     return okay;
 }
 
-/** C ref: mkroom.c:765 — @param {CInt} type @returns {CPtr} */
+/** C ref: mkroom.c:765 — @param {CInt} type @returns {CPtr<struct mkroom>} */
 export function search_special(type) {
     let croom;
     for (croom = cptr.add(svr, 0, 224); cptr.ldI16o(croom, $mkroom_hx) >= 0; croom = cptr.add(croom, 1, 224))
@@ -667,7 +667,7 @@ export function search_special(type) {
     return null;
 }
 
-/** C ref: mkroom.c:783 @returns {CPtr} */
+/** C ref: mkroom.c:783 @returns {CPtr<struct permonst>} */
 export function* courtmon() {
     let i = ((rng_log_enabled() ? (rng_log_set_caller(__sl3, 785, __sl14), rn2(60)) : rn2(60)) + (rng_log_enabled() ? (rng_log_set_caller(__sl3, 785, __sl14), rn2(Math.imul(3, (yield* level_difficulty())))) : rn2(Math.imul(3, (yield* level_difficulty()))))) | 0;
     if (i > 100)
@@ -703,7 +703,7 @@ cptr.stI32o(squadprob, 20, 4);
 cptr.stI32o(squadprob, 24, NHC.PM_CAPTAIN);
 cptr.stI32o(squadprob, 28, 1);
 
-/** C ref: mkroom.c:817 @returns {CPtr} */
+/** C ref: mkroom.c:817 @returns {CPtr<struct permonst>} */
 function* squadmon() {
     let sel_prob;
     let i;
@@ -727,7 +727,7 @@ function* squadmon() {
         return null;
 }
 
-/** C ref: mkroom.c:844 — @param {CPtr} nhfp @param {CPtr} r */
+/** C ref: mkroom.c:844 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mkroom>} r */
 function* save_room(nhfp, r) {
     let i;
     (yield* sfo_mkroom(nhfp, r, __sl16));
@@ -736,7 +736,7 @@ function* save_room(nhfp, r) {
     }
 }
 
-/** C ref: mkroom.c:863 — @param {CPtr} nhfp */
+/** C ref: mkroom.c:863 — @param {CPtr<NHFILE>} nhfp */
 export function* save_rooms(nhfp) {
     let i;
     (yield* sfo_int(nhfp, cptr.add(svn, $instance_globals_saved_n_nroom), __sl17));
@@ -744,7 +744,7 @@ export function* save_rooms(nhfp) {
         (yield* save_room(nhfp, cptr.add(svr, i, 224)));
 }
 
-/** C ref: mkroom.c:875 — @param {CPtr} nhfp @param {CPtr} r */
+/** C ref: mkroom.c:875 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mkroom>} r */
 function* rest_room(nhfp, r) {
     let i;
     (yield* sfi_mkroom(nhfp, r, __sl16));
@@ -755,7 +755,7 @@ function* rest_room(nhfp, r) {
     }
 }
 
-/** C ref: mkroom.c:893 — @param {CPtr} nhfp */
+/** C ref: mkroom.c:893 — @param {CPtr<NHFILE>} nhfp */
 export function* rest_rooms(nhfp) {
     let i;
     (yield* sfi_int(nhfp, cptr.add(svn, $instance_globals_saved_n_nroom), __sl17));
@@ -888,7 +888,7 @@ export function cmap_to_type(sym) {
     return typ;
 }
 
-/** C ref: mkroom.c:1050 — @param {CPtr} sroom @returns {CInt} */
+/** C ref: mkroom.c:1050 — @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 function* invalid_shop_shape(sroom) {
     let x;
     let y;

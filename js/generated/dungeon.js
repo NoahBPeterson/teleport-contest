@@ -524,7 +524,7 @@ function dumpit() {
     return;
 }
 
-/** C ref: dungeon.c:149 — @param {CPtr} nhfp @param {CInt} perform_write @param {CInt} free_data */
+/** C ref: dungeon.c:149 — @param {CPtr<NHFILE>} nhfp @param {CInt} perform_write @param {CInt} free_data */
 export function save_dungeon(nhfp, perform_write, free_data) {
     let i;
     let count = cptr.box(0);
@@ -576,7 +576,7 @@ export function save_dungeon(nhfp, perform_write, free_data) {
     }
 }
 
-/** C ref: dungeon.c:211 — @param {CPtr} nhfp */
+/** C ref: dungeon.c:211 — @param {CPtr<NHFILE>} nhfp */
 export function restore_dungeon(nhfp) {
     let curr;
     let last;
@@ -626,7 +626,7 @@ export function restore_dungeon(nhfp) {
     }
 }
 
-/** C ref: dungeon.c:284 — @param {CPtr} s @returns {*} */
+/** C ref: dungeon.c:284 — @param {CPtr<char>} s @returns {*} */
 function dname_to_dnum(s) {
     let i;
     for (i = 0; i < cptr.ldI32(svn); i++)
@@ -636,7 +636,7 @@ function dname_to_dnum(s) {
     return 0;
 }
 
-/** C ref: dungeon.c:300 — @param {CPtr} s @returns {CPtr} */
+/** C ref: dungeon.c:300 — @param {CPtr<char>} s @returns {CPtr<s_level>} */
 export function find_level(s) {
     let curr;
     for (curr = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); curr; curr = cptr.ldPtr(curr))
@@ -645,7 +645,7 @@ export function find_level(s) {
     return curr;
 }
 
-/** C ref: dungeon.c:311 — @param {CPtr} s @param {CPtr} pd @returns {CInt} */
+/** C ref: dungeon.c:311 — @param {CPtr<char>} s @param {CPtr<struct proto_dungeon>} pd @returns {CInt} */
 function find_branch(s, pd) {
     let i;
     if (pd) {
@@ -667,7 +667,7 @@ function find_branch(s, pd) {
     return i;
 }
 
-/** C ref: dungeon.c:346 — @param {CPtr} s @param {CPtr} pd @returns {*} */
+/** C ref: dungeon.c:346 — @param {CPtr<char>} s @param {CPtr<struct proto_dungeon>} pd @returns {*} */
 function parent_dnum(s, pd) {
     let i;
     let pdnum;
@@ -679,7 +679,7 @@ function parent_dnum(s, pd) {
     return 0;
 }
 
-/** C ref: dungeon.c:380 — @param {CInt} dgn @param {CInt} base @param {CInt} randc @param {CInt} chain @param {CPtr} pd @param {CPtr} adjusted_base @returns {CInt} */
+/** C ref: dungeon.c:380 — @param {CInt} dgn @param {CInt} base @param {CInt} randc @param {CInt} chain @param {CPtr<struct proto_dungeon>} pd @param {CPtr<int>} adjusted_base @returns {CInt} */
 function level_range(dgn, base, randc, chain, pd, adjusted_base) {
     let lmax = cptr.ldI16o2(svd, dgn, 112, $dungeon_num_dunlevs);
     if (chain >= 0) {
@@ -702,7 +702,7 @@ function level_range(dgn, base, randc, chain, pd, adjusted_base) {
     return 1;
 }
 
-/** C ref: dungeon.c:415 — @param {CPtr} s @param {CPtr} pd @returns {*} */
+/** C ref: dungeon.c:415 — @param {CPtr<char>} s @param {CPtr<struct proto_dungeon>} pd @returns {*} */
 function parent_dlevel(s, pd) {
     let i;
     let j;
@@ -723,7 +723,7 @@ function parent_dlevel(s, pd) {
     return i16(((base.v + i) | 0));
 }
 
-/** C ref: dungeon.c:440 — @param {CPtr} tbr @returns {CInt} */
+/** C ref: dungeon.c:440 — @param {CPtr<struct tmpbranch>} tbr @returns {CInt} */
 function correct_branch_type(tbr) {
     switch (cptr.ldI32o(tbr, $tmpbranch_type)) {
         case NHM.TBR_STAIR:
@@ -739,7 +739,7 @@ function correct_branch_type(tbr) {
     return NHM.BR_STAIR;
 }
 
-/** C ref: dungeon.c:463 — @param {CPtr} new_branch @param {CInt} extract_first */
+/** C ref: dungeon.c:463 — @param {CPtr<branch>} new_branch @param {CInt} extract_first */
 export function insert_branch(new_branch, extract_first) {
     let curr;
     let prev;
@@ -777,7 +777,7 @@ export function insert_branch(new_branch, extract_first) {
 
 let __static_add_branch_branch_id = 0; /** C ref: dungeon.c:518 — int (function-static) */
 
-/** C ref: dungeon.c:514 — @param {CInt} dgn @param {CInt} child_entry_level @param {CPtr} pd @returns {CPtr} */
+/** C ref: dungeon.c:514 — @param {CInt} dgn @param {CInt} child_entry_level @param {CPtr<struct proto_dungeon>} pd @returns {CPtr<branch>} */
 function add_branch(dgn, child_entry_level, pd) {
     let branch_num;
     let new_branch;
@@ -796,7 +796,7 @@ function add_branch(dgn, child_entry_level, pd) {
     return new_branch;
 }
 
-/** C ref: dungeon.c:545 — @param {CPtr} new_lev */
+/** C ref: dungeon.c:545 — @param {CPtr<s_level>} new_lev */
 function add_level(new_lev) {
     let prev;
     let curr;
@@ -815,7 +815,7 @@ function add_level(new_lev) {
     }
 }
 
-/** C ref: dungeon.c:566 — @param {CInt} dgn @param {CInt} proto_index @param {CPtr} pd */
+/** C ref: dungeon.c:566 — @param {CInt} dgn @param {CInt} proto_index @param {CPtr<struct proto_dungeon>} pd */
 function init_level(dgn, proto_index, pd) {
     let new_level;
     let tlevel = cptr.add(cptr.add(pd, $proto_dungeon_tmplevel), proto_index, 40);
@@ -839,7 +839,7 @@ function init_level(dgn, proto_index, pd) {
     cptr.stPtr(new_level, null);
 }
 
-/** C ref: dungeon.c:598 — @param {CInt} idx @param {CPtr} map @param {CPtr} pd @returns {CInt} */
+/** C ref: dungeon.c:598 — @param {CInt} idx @param {CPtr<boolean>} map @param {CPtr<struct proto_dungeon>} pd @returns {CInt} */
 function possible_places(idx, map, pd) {
     let i;
     let start = cptr.box(0);
@@ -859,7 +859,7 @@ function possible_places(idx, map, pd) {
     return count;
 }
 
-/** C ref: dungeon.c:632 — @param {CPtr} map @param {CInt} nth @returns {*} */
+/** C ref: dungeon.c:632 — @param {CPtr<boolean>} map @param {CInt} nth @returns {*} */
 function pick_level(map, nth) {
     let i;
     for (i = 1; i <= NHM.MAXLEVEL; i++)
@@ -869,7 +869,7 @@ function pick_level(map, nth) {
     return 0;
 }
 
-/** C ref: dungeon.c:666 — @param {CInt} proto_index @param {CPtr} pd @returns {CInt} */
+/** C ref: dungeon.c:666 — @param {CInt} proto_index @param {CPtr<struct proto_dungeon>} pd @returns {CInt} */
 function place_level(proto_index, pd) {
     let map = new Uint8Array(33);
     let lev;
@@ -963,7 +963,7 @@ cptr.stI32o(__static_get_dgn_flags_flagstrs2i, 12, NHM.ROGUELIKE);
 cptr.stI32o(__static_get_dgn_flags_flagstrs2i, 16, NHM.UNCONNECTED);
 cptr.stI32o(__static_get_dgn_flags_flagstrs2i, 20, 0); /** C ref: dungeon.c:750 — int[6] (function-static) */
 
-/** C ref: dungeon.c:744 — @param {CPtr} L @returns {CInt} */
+/** C ref: dungeon.c:744 — @param {CPtr<lua_State>} L @returns {CInt} */
 function get_dgn_flags(L) {
     let dgn_flags = 0;
     lua_getfield(L, -1, __sl73);
@@ -1005,13 +1005,13 @@ cptr.stI32o(__static_get_dgn_align_dgnaligns2i, 12, 32);
 cptr.stI32o(__static_get_dgn_align_dgnaligns2i, 16, 16);
 cptr.stI32o(__static_get_dgn_align_dgnaligns2i, 20, NHM.D_ALIGN_NONE); /** C ref: dungeon.c:786 — int[6] (function-static) */
 
-/** C ref: dungeon.c:781 — @param {CPtr} L @returns {CInt} */
+/** C ref: dungeon.c:781 — @param {CPtr<lua_State>} L @returns {CInt} */
 function get_dgn_align(L) {
     let a = cptr.ldI32o(__static_get_dgn_align_dgnaligns2i, get_table_option(L, __sl81, __sl82, __static_get_dgn_align_dgnaligns), 4);
     return a;
 }
 
-/** C ref: dungeon.c:797 — @param {CPtr} L @param {CPtr} pd @param {CInt} dngidx */
+/** C ref: dungeon.c:797 — @param {CPtr<lua_State>} L @param {CPtr<struct proto_dungeon>} pd @param {CInt} dngidx */
 function init_dungeon_levels(L, pd, dngidx) {
     let lvl_name;
     let lvl_bonetag;
@@ -1115,7 +1115,7 @@ cptr.stI32o(__static_init_dungeon_branches_brtypes2i, 8, NHM.TBR_NO_DOWN);
 cptr.stI32o(__static_init_dungeon_branches_brtypes2i, 12, NHM.TBR_NO_UP);
 cptr.stI32o(__static_init_dungeon_branches_brtypes2i, 16, NHM.TBR_STAIR); /** C ref: dungeon.c:877 — int[5] (function-static) */
 
-/** C ref: dungeon.c:867 — @param {CPtr} L @param {CPtr} pd @param {CInt} dngidx */
+/** C ref: dungeon.c:867 — @param {CPtr<lua_State>} L @param {CPtr<struct proto_dungeon>} pd @param {CInt} dngidx */
 function init_dungeon_branches(L, pd, dngidx) {
     let br_name;
     let br_chain;
@@ -1181,7 +1181,7 @@ function init_dungeon_branches(L, pd, dngidx) {
         panic(__sl107);
 }
 
-/** C ref: dungeon.c:933 — @param {CPtr} pd @param {CInt} dngidx */
+/** C ref: dungeon.c:933 — @param {CPtr<struct proto_dungeon>} pd @param {CInt} dngidx */
 function init_dungeon_set_entry(pd, dngidx) {
     let dgn_entry = cptr.ldI32o2(pd, dngidx, 48, $tmpdungeon_entry_lev);
     if (dgn_entry < 0) {
@@ -1197,7 +1197,7 @@ function init_dungeon_set_entry(pd, dngidx) {
     }
 }
 
-/** C ref: dungeon.c:960 — @param {CPtr} pd @param {CInt} dngidx */
+/** C ref: dungeon.c:960 — @param {CPtr<struct proto_dungeon>} pd @param {CInt} dngidx */
 function init_dungeon_set_depth(pd, dngidx) {
     let br;
     let from_depth;
@@ -1213,7 +1213,7 @@ function init_dungeon_set_depth(pd, dngidx) {
     cptr.stI32o2(svd, dngidx, 112, $dungeon_depth_start, (((from_depth + (cptr.ldI32o(br, $branch_type) == NHM.BR_PORTAL ? 0 : (from_up ? -1 : 1))) | 0) - ((cptr.ldI16o2(svd, dngidx, 112, $dungeon_entry_lev) - 1) | 0)) | 0);
 }
 
-/** C ref: dungeon.c:997 — @param {CPtr} L @param {CPtr} pd @param {CInt} dngidx @returns {CInt} */
+/** C ref: dungeon.c:997 — @param {CPtr<lua_State>} L @param {CPtr<struct proto_dungeon>} pd @param {CInt} dngidx @returns {CInt} */
 function init_dungeon_dungeons(L, pd, dngidx) {
     let dgn_name;
     let dgn_bonetag;
@@ -1360,7 +1360,7 @@ function fixup_level_locations() {
     }
 }
 
-/** C ref: dungeon.c:1185 — @param {CPtr} pd */
+/** C ref: dungeon.c:1185 — @param {CPtr<struct proto_dungeon>} pd */
 function free_proto_dungeon(pd) {
     let i;
     for (i = 0; i < cptr.ldI32o(pd, $proto_dungeon_n_brs); i++) {
@@ -1446,12 +1446,12 @@ export function init_dungeons() {
     dumpit();
 }
 
-/** C ref: dungeon.c:1325 — @param {CPtr} lev @returns {*} */
+/** C ref: dungeon.c:1325 — @param {CPtr<d_level>} lev @returns {*} */
 export function dunlev(lev) {
     return cptr.ldI16o(lev, $d_level_dlevel);
 }
 
-/** C ref: dungeon.c:1332 — @param {CPtr} lev @returns {*} */
+/** C ref: dungeon.c:1332 — @param {CPtr<d_level>} lev @returns {*} */
 export function dunlevs_in_dungeon(lev) {
     return cptr.ldI16o2(svd, cptr.ldI16(lev), 112, $dungeon_num_dunlevs);
 }
@@ -1474,7 +1474,7 @@ export function deepest_lev_reached(noquest) {
     return ret;
 }
 
-/** C ref: dungeon.c:1376 — @param {CPtr} lev @returns {*} */
+/** C ref: dungeon.c:1376 — @param {CPtr<d_level>} lev @returns {*} */
 export function ledger_no(lev) {
     return i16(((cptr.ldI16o(lev, $d_level_dlevel) + cptr.ldI32o2(svd, cptr.ldI16(lev), 112, $dungeon_ledger_start)) | 0));
 }
@@ -1499,17 +1499,17 @@ export function ledger_to_dlev(ledgerno) {
     return i16(((ledgerno - cptr.ldI32o2(svd, ledger_to_dnum(ledgerno), 112, $dungeon_ledger_start)) | 0));
 }
 
-/** C ref: dungeon.c:1431 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1431 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function depth(lev) {
     return schar(((((cptr.ldI32o2(svd, cptr.ldI16(lev), 112, $dungeon_depth_start) + cptr.ldI16o(lev, $d_level_dlevel)) | 0) - 1) | 0));
 }
 
-/** C ref: dungeon.c:1439 — @param {CPtr} lev1 @param {CPtr} lev2 @returns {CInt} */
+/** C ref: dungeon.c:1439 — @param {CPtr<d_level>} lev1 @param {CPtr<d_level>} lev2 @returns {CInt} */
 export function on_level(lev1, lev2) {
     return schar((cptr.ldI16(lev1) == cptr.ldI16(lev2) && cptr.ldI16o(lev1, $d_level_dlevel) == cptr.ldI16o(lev2, $d_level_dlevel) ? 1 : 0));
 }
 
-/** C ref: dungeon.c:1448 — @param {CPtr} lev @returns {CPtr} */
+/** C ref: dungeon.c:1448 — @param {CPtr<d_level>} lev @returns {CPtr<s_level>} */
 export function Is_special(lev) {
     let levtmp;
     for (levtmp = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); levtmp; levtmp = cptr.ldPtr(levtmp))
@@ -1518,7 +1518,7 @@ export function Is_special(lev) {
     return null;
 }
 
-/** C ref: dungeon.c:1464 — @param {CPtr} lev @returns {CPtr} */
+/** C ref: dungeon.c:1464 — @param {CPtr<d_level>} lev @returns {CPtr<branch>} */
 export function Is_branchlev(lev) {
     let curr;
     for (curr = cptr.ldPtr(svb); curr; curr = cptr.ldPtr(curr)) {
@@ -1528,7 +1528,7 @@ export function Is_branchlev(lev) {
     return null;
 }
 
-/** C ref: dungeon.c:1477 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1477 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function builds_up(lev) {
     let dptr = cptr.add(svd, cptr.ldI16(lev), 112);
     let br;
@@ -1634,22 +1634,22 @@ export function u_on_rndspot(upflag) {
     switch_terrain();
 }
 
-/** C ref: dungeon.c:1643 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1643 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function Is_botlevel(lev) {
     return schar((cptr.ldI16o(lev, $d_level_dlevel) == cptr.ldI16o2(svd, cptr.ldI16(lev), 112, $dungeon_num_dunlevs)));
 }
 
-/** C ref: dungeon.c:1649 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1649 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function Can_dig_down(lev) {
     return schar((!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor) & 1) && !Is_botlevel(lev) && !Invocation_lev(lev) ? 1 : 0));
 }
 
-/** C ref: dungeon.c:1662 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1662 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function Can_fall_thru(lev) {
     return schar((Can_dig_down(lev) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) ? 1 : 0));
 }
 
-/** C ref: dungeon.c:1674 — @param {CInt} x @param {CInt} y @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1674 — @param {CInt} x @param {CInt} y @param {CPtr<d_level>} lev @returns {CInt} */
 export function Can_rise_up(x, y, lev) {
     let stway = stairway_find_special_dir(0);
     if ((cptr.ldI16((lev)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (cptr.ldI16((lev)) == sokoban_dnum()) || ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) && In_W_tower(x, y, lev)))
@@ -1657,21 +1657,21 @@ export function Can_rise_up(x, y, lev) {
     return schar((cptr.ldI16o(lev, $d_level_dlevel) > 1 || (cptr.ldI16o2(svd, cptr.ldI16(lev), 112, $dungeon_entry_lev) == 1 && ledger_no(lev) != 1 && stway && cptr.ld1so(stway, $stairway_up)) ? 1 : 0));
 }
 
-/** C ref: dungeon.c:1690 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1690 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function has_ceiling(lev) {
     if ((cptr.ldI16((lev)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))))
         return 0;
     return 1;
 }
 
-/** C ref: dungeon.c:1701 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1701 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function avoid_ceiling(lev) {
     if (In_quest(lev) || !has_ceiling(lev))
         return 1;
     return 0;
 }
 
-/** C ref: dungeon.c:1714 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: dungeon.c:1714 — @param {CInt} x @param {CInt} y @returns {CPtr<char>} */
 export function ceiling(x, y) {
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     let what;
@@ -1698,7 +1698,7 @@ export function ceiling(x, y) {
     return what;
 }
 
-/** C ref: dungeon.c:1750 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: dungeon.c:1750 — @param {CInt} x @param {CInt} y @returns {CPtr<char>} */
 export function surface(x, y) {
     let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);
     let levtyp = SURFACE_AT(x, y);
@@ -1732,7 +1732,7 @@ export function surface(x, y) {
         return __sl171;
 }
 
-/** C ref: dungeon.c:1802 — @param {CPtr} newlevel @param {CInt} levnum */
+/** C ref: dungeon.c:1802 — @param {CPtr<d_level>} newlevel @param {CInt} levnum */
 export function get_level(newlevel, levnum) {
     let br;
     let dgn = cptr.ldI16o(u, $you_uz);
@@ -1757,17 +1757,17 @@ export function get_level(newlevel, levnum) {
     cptr.stI16o(newlevel, $d_level_dlevel, i16(levnum));
 }
 
-/** C ref: dungeon.c:1849 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1849 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function In_quest(lev) {
     return schar((cptr.ldI16(lev) == quest_dnum()));
 }
 
-/** C ref: dungeon.c:1856 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1856 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function In_mines(lev) {
     return schar((cptr.ldI16(lev) == mines_dnum()));
 }
 
-/** C ref: dungeon.c:1870 — @param {CPtr} s @returns {CPtr} */
+/** C ref: dungeon.c:1870 — @param {CPtr<char>} s @returns {CPtr<branch>} */
 export function dungeon_branch(s) {
     let br;
     let dnum;
@@ -1780,24 +1780,24 @@ export function dungeon_branch(s) {
     return br;
 }
 
-/** C ref: dungeon.c:1897 — @param {CPtr} s @returns {CInt} */
+/** C ref: dungeon.c:1897 — @param {CPtr<char>} s @returns {CInt} */
 export function at_dgn_entrance(s) {
     let br;
     br = dungeon_branch(s);
     return schar((on_level(cptr.add(u, $you_uz), cptr.add(br, $branch_end1)) ? 1 : 0));
 }
 
-/** C ref: dungeon.c:1907 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1907 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function In_V_tower(lev) {
     return schar((cptr.ldI16(lev) == tower_dnum()));
 }
 
-/** C ref: dungeon.c:1914 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1914 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function On_W_tower_level(lev) {
     return schar(((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level)))) ? 1 : 0));
 }
 
-/** C ref: dungeon.c:1923 — @param {CInt} x @param {CInt} y @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1923 — @param {CInt} x @param {CInt} y @param {CPtr<d_level>} lev @returns {CInt} */
 export function In_W_tower(x, y, lev) {
     if (!On_W_tower_level(lev))
         return 0;
@@ -1808,12 +1808,12 @@ export function In_W_tower(x, y, lev) {
     return schar(((x) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy)) ? 1 : 0));
 }
 
-/** C ref: dungeon.c:1942 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1942 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function In_hell(lev) {
     return schar(((cptr.ldI32o2(svd, cptr.ldI16(lev), 112, $dungeon_flags + $d_flags_hellish) & 1)));
 }
 
-/** C ref: dungeon.c:1949 — @param {CPtr} lev */
+/** C ref: dungeon.c:1949 — @param {CPtr<d_level>} lev */
 export function find_hell(lev) {
     cptr.stI16(lev, cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level))));
     cptr.stI16o(lev, $d_level_dlevel, 1);
@@ -1826,18 +1826,18 @@ export function goto_hell(at_stairs, falling) {
     goto_level(lev, at_stairs, falling, 0);
 }
 
-/** C ref: dungeon.c:1967 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:1967 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function single_level_branch(lev) {
     return schar((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)) ? 1 : 0)));
 }
 
-/** C ref: dungeon.c:1978 — @param {CPtr} dest @param {CPtr} src */
+/** C ref: dungeon.c:1978 — @param {CPtr<d_level>} dest @param {CPtr<d_level>} src */
 export function assign_level(dest, src) {
     cptr.stI16(dest, cptr.ldI16(src));
     cptr.stI16o(dest, $d_level_dlevel, cptr.ldI16o(src, $d_level_dlevel));
 }
 
-/** C ref: dungeon.c:1986 — @param {CPtr} dest @param {CPtr} src @param {CInt} range */
+/** C ref: dungeon.c:1986 — @param {CPtr<d_level>} dest @param {CPtr<d_level>} src @param {CInt} range */
 export function assign_rnd_level(dest, src, range) {
     cptr.stI16(dest, cptr.ldI16(src));
     cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(src, $d_level_dlevel) + ((range > 0) ? (rng_log_enabled() ? (rng_log_set_caller(__sl0, 1989, __sl175), rnd(range)) : rnd(range)) : -(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1989, __sl175), rnd(-range)) : rnd(-range)))) | 0)));
@@ -1861,7 +1861,7 @@ export function induced_align(pct) {
     return Align2amask(al);
 }
 
-/** C ref: dungeon.c:2017 — @param {CPtr} lev @returns {CInt} */
+/** C ref: dungeon.c:2017 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function Invocation_lev(lev) {
     return schar((In_hell(lev) && cptr.ldI16o(lev, $d_level_dlevel) == ((cptr.ldI16o2(svd, cptr.ldI16(lev), 112, $dungeon_num_dunlevs) - 1) | 0) ? 1 : 0));
 }
@@ -1883,7 +1883,7 @@ export function level_difficulty() {
     return res;
 }
 
-/** C ref: dungeon.c:2098 — @param {CPtr} nam @returns {CInt} */
+/** C ref: dungeon.c:2098 — @param {CPtr<char>} nam @returns {CInt} */
 export function lev_by_name(nam) {
     let lev = 0;
     let slev = null;
@@ -1938,7 +1938,7 @@ export function lev_by_name(nam) {
     return lev;
 }
 
-/** C ref: dungeon.c:2175 — @param {CPtr} dptr @returns {CInt} */
+/** C ref: dungeon.c:2175 — @param {CPtr<struct dungeon>} dptr @returns {CInt} */
 function unplaced_floater(dptr) {
     let br;
     let idx = Number(BigInt.asIntN(32, (cptr.diff(dptr, svd) / 112n)));
@@ -1950,7 +1950,7 @@ function unplaced_floater(dptr) {
     return 0;
 }
 
-/** C ref: dungeon.c:2190 — @param {CPtr} lvl_p @param {CInt} unplaced @returns {CInt} */
+/** C ref: dungeon.c:2190 — @param {CPtr<d_level>} lvl_p @param {CInt} unplaced @returns {CInt} */
 function unreachable_level(lvl_p, unplaced) {
     let dummy;
     if (unplaced)
@@ -1962,7 +1962,7 @@ function unreachable_level(lvl_p, unplaced) {
     return 0;
 }
 
-/** C ref: dungeon.c:2204 — @param {CInt} win @param {CPtr} entry @param {CPtr} lchoices @param {CPtr} lvl_p @param {CInt} cannotreach */
+/** C ref: dungeon.c:2204 — @param {CInt} win @param {CPtr<char>} entry @param {CPtr<struct lchoice>} lchoices @param {CPtr<d_level>} lvl_p @param {CInt} cannotreach */
 function tport_menu(win, entry, lchoices, lvl_p, cannotreach) {
     let tmpbuf = new Uint8Array(256);
     let any = cptr.alloc(8);
@@ -1986,7 +1986,7 @@ function tport_menu(win, entry, lchoices, lvl_p, cannotreach) {
     return;
 }
 
-/** C ref: dungeon.c:2240 — @param {CInt} type @returns {CPtr} */
+/** C ref: dungeon.c:2240 — @param {CInt} type @returns {CPtr<char>} */
 function br_string(type) {
     switch (type) {
         case NHM.BR_PORTAL:
@@ -2001,12 +2001,12 @@ function br_string(type) {
     return __sl189;
 }
 
-/** C ref: dungeon.c:2256 — @param {CPtr} dlev @returns {CInt} */
+/** C ref: dungeon.c:2256 — @param {CPtr<d_level>} dlev @returns {CInt} */
 function chr_u_on_lvl(dlev) {
     return schar((cptr.ldI16o(u, $you_uz) == cptr.ldI16(dlev) && cptr.ldI16o(u, $you_uz + $d_level_dlevel) == cptr.ldI16o(dlev, $d_level_dlevel) ? 42 : 32));
 }
 
-/** C ref: dungeon.c:2263 — @param {CInt} win @param {CInt} dnum @param {CInt} lower_bound @param {CInt} upper_bound @param {CInt} bymenu @param {CPtr} lchoices_p */
+/** C ref: dungeon.c:2263 — @param {CInt} win @param {CInt} dnum @param {CInt} lower_bound @param {CInt} upper_bound @param {CInt} bymenu @param {CPtr<struct lchoice>} lchoices_p */
 function print_branch(win, dnum, lower_bound, upper_bound, bymenu, lchoices_p) {
     let br;
     let buf = new Uint8Array(256);
@@ -2021,7 +2021,7 @@ function print_branch(win, dnum, lower_bound, upper_bound, bymenu, lchoices_p) {
     }
 }
 
-/** C ref: dungeon.c:2290 — @param {CInt} bymenu @param {CPtr} rlev @param {CPtr} rdgn @returns {CInt} */
+/** C ref: dungeon.c:2290 — @param {CInt} bymenu @param {CPtr<schar>} rlev @param {CPtr<xint16>} rdgn @returns {CInt} */
 export function print_dungeon(bymenu, rlev, rdgn) {
     let i;
     let last_level;
@@ -2128,7 +2128,7 @@ export function print_dungeon(bymenu, rlev, rdgn) {
     return 0;
 }
 
-/** C ref: dungeon.c:2446 — @param {CPtr} source @param {CPtr} dest */
+/** C ref: dungeon.c:2446 — @param {CPtr<d_level>} source @param {CPtr<d_level>} dest */
 export function recbranch_mapseen(source, dest) {
     let mptr;
     let br;
@@ -2151,7 +2151,7 @@ export function recbranch_mapseen(source, dest) {
     }
 }
 
-/** C ref: dungeon.c:2478 — @param {CPtr} lev @returns {CPtr} */
+/** C ref: dungeon.c:2478 — @param {CPtr<d_level>} lev @returns {CPtr<char>} */
 function get_annotation(lev) {
     let mptr;
     if ((mptr = find_mapseen(lev)))
@@ -2166,7 +2166,7 @@ export function print_level_annotation() {
         You(__sl208, annotation);
 }
 
-/** C ref: dungeon.c:2500 — @param {CPtr} lev */
+/** C ref: dungeon.c:2500 — @param {CPtr<d_level>} lev */
 function query_annotation(lev) {
     let mptr;
     let nbuf = new Uint8Array(256);
@@ -2227,7 +2227,7 @@ export function free_exclusions() {
     cptr.stPtr(sve, null);
 }
 
-/** C ref: dungeon.c:2596 — @param {CPtr} nhfp */
+/** C ref: dungeon.c:2596 — @param {CPtr<NHFILE>} nhfp */
 export function save_exclusions(nhfp) {
     let ez;
     let nez = cptr.box(0);
@@ -2245,7 +2245,7 @@ export function save_exclusions(nhfp) {
     }
 }
 
-/** C ref: dungeon.c:2617 — @param {CPtr} nhfp */
+/** C ref: dungeon.c:2617 — @param {CPtr<NHFILE>} nhfp */
 export function load_exclusions(nhfp) {
     let ez;
     let nez = cptr.box(0);
@@ -2264,7 +2264,7 @@ export function load_exclusions(nhfp) {
     }
 }
 
-/** C ref: dungeon.c:2640 — @param {CPtr} lev @returns {CPtr} */
+/** C ref: dungeon.c:2640 — @param {CPtr<d_level>} lev @returns {CPtr<mapseen>} */
 function find_mapseen(lev) {
     let mptr;
     for (mptr = cptr.ldPtr(svm); mptr; mptr = cptr.ldPtr(mptr))
@@ -2273,7 +2273,7 @@ function find_mapseen(lev) {
     return mptr;
 }
 
-/** C ref: dungeon.c:2652 — @param {CPtr} s @returns {CPtr} */
+/** C ref: dungeon.c:2652 — @param {CPtr<char>} s @returns {CPtr<mapseen>} */
 function find_mapseen_by_str(s) {
     let mptr;
     for (mptr = cptr.ldPtr(svm); mptr; mptr = cptr.ldPtr(mptr))
@@ -2308,7 +2308,7 @@ export function rm_mapseen(ledger_num) {
     cptr.free(mptr);
 }
 
-/** C ref: dungeon.c:2695 — @param {CPtr} nhfp @param {CPtr} mptr */
+/** C ref: dungeon.c:2695 — @param {CPtr<NHFILE>} nhfp @param {CPtr<mapseen>} mptr */
 function save_mapseen(nhfp, mptr) {
     let curr;
     let i;
@@ -2330,7 +2330,7 @@ function save_mapseen(nhfp, mptr) {
     savecemetery(nhfp, cptr.add(mptr, $mapseen_final_resting_place));
 }
 
-/** C ref: dungeon.c:2721 — @param {CPtr} nhfp @returns {CPtr} */
+/** C ref: dungeon.c:2721 — @param {CPtr<NHFILE>} nhfp @returns {CPtr<mapseen>} */
 function load_mapseen(nhfp) {
     let i;
     let branchnum = cptr.box(0);
@@ -2363,7 +2363,7 @@ function load_mapseen(nhfp) {
     return load;
 }
 
-/** C ref: dungeon.c:2761 — @param {CInt} win @param {CPtr} statsfmt @param {CPtr} total_count @param {CPtr} total_size */
+/** C ref: dungeon.c:2761 — @param {CInt} win @param {CPtr<char>} statsfmt @param {CPtr<long>} total_count @param {CPtr<long>} total_size */
 export function overview_stats(win, statsfmt, total_count, total_size) {
     let buf = new Uint8Array(256);
     let hdrbuf = new Uint8Array(128);
@@ -2418,7 +2418,7 @@ export function remdun_mapseen(dnum) {
     }
 }
 
-/** C ref: dungeon.c:2835 — @param {CPtr} lev */
+/** C ref: dungeon.c:2835 — @param {CPtr<d_level>} lev */
 export function init_mapseen(lev) {
     let mptr;
     let init;
@@ -2444,7 +2444,7 @@ export function init_mapseen(lev) {
     }
 }
 
-/** C ref: dungeon.c:2880 — @param {CPtr} mptr @returns {CInt} */
+/** C ref: dungeon.c:2880 — @param {CPtr<mapseen>} mptr @returns {CInt} */
 function interest_mapseen(mptr) {
     if (on_level(cptr.add(u, $you_uz), cptr.add(mptr, $mapseen_lev)))
         return 1;
@@ -2482,7 +2482,7 @@ export function update_mapseen_for(x, y) {
     return cptr.ld1so3(svl, x, 21, y, 1, 0);
 }
 
-/** C ref: dungeon.c:2951 — @param {CPtr} mptr @param {CInt} x @param {CInt} y */
+/** C ref: dungeon.c:2951 — @param {CPtr<mapseen>} mptr @param {CInt} x @param {CInt} y */
 function count_feat_lastseentyp(mptr, x, y) {
     let count;
     let atmp;
@@ -2658,7 +2658,7 @@ export function recalc_mapseen() {
         }
 }
 
-/** C ref: dungeon.c:3267 — @param {CPtr} priest */
+/** C ref: dungeon.c:3267 — @param {CPtr<struct monst>} priest */
 export function mapseen_temple(priest) {
     let mptr = find_mapseen(cptr.add(u, $you_uz));
     if (!mptr)
@@ -2712,7 +2712,7 @@ export function show_overview(why, reason) {
     destroy_nhwindow()(win);
 }
 
-/** C ref: dungeon.c:3344 — @param {CInt} viewendgame @param {CInt} win @param {CInt} why @param {CInt} reason @param {CPtr} lastdun_p */
+/** C ref: dungeon.c:3344 — @param {CInt} viewendgame @param {CInt} win @param {CInt} why @param {CInt} reason @param {CPtr<int>} lastdun_p */
 function traverse_mapseenchn(viewendgame, win, why, reason, lastdun_p) {
     let mptr;
     let showheader;
@@ -2727,7 +2727,7 @@ function traverse_mapseenchn(viewendgame, win, why, reason, lastdun_p) {
     }
 }
 
-/** C ref: dungeon.c:3368 — @param {CInt} x @param {CPtr} obj @returns {CPtr} */
+/** C ref: dungeon.c:3368 — @param {CInt} x @param {CPtr<char>} obj @returns {CPtr<char>} */
 function seen_string(x, obj) {
     switch (x) {
         case 0:
@@ -2742,7 +2742,7 @@ function seen_string(x, obj) {
     return __sl238;
 }
 
-/** C ref: dungeon.c:3388 — @param {CPtr} br @returns {CPtr} */
+/** C ref: dungeon.c:3388 — @param {CPtr<branch>} br @returns {CPtr<char>} */
 function br_string2(br) {
     let closed_portal = schar((cptr.ldI16o(br, $branch_end2) == quest_dnum() && (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ? 1 : 0));
     switch (cptr.ldI32o(br, $branch_type)) {
@@ -2758,7 +2758,7 @@ function br_string2(br) {
     return __sl238;
 }
 
-/** C ref: dungeon.c:3410 — @param {CPtr} outbuf @param {CInt} indx @returns {CPtr} */
+/** C ref: dungeon.c:3410 — @param {CPtr<char>} outbuf @param {CInt} indx @returns {CPtr<char>} */
 export function endgamelevelname(outbuf, indx) {
     let planename = null;
     cptr.st1(outbuf, 0);
@@ -2786,7 +2786,7 @@ export function endgamelevelname(outbuf, indx) {
     return outbuf;
 }
 
-/** C ref: dungeon.c:3441 — @param {CInt} rtype @returns {CPtr} */
+/** C ref: dungeon.c:3441 — @param {CInt} rtype @returns {CPtr<char>} */
 function shop_string(rtype) {
     let shoptype = (rtype - NHC.SHOPBASE) | 0;
     let str = __sl251;
@@ -2800,7 +2800,7 @@ function shop_string(rtype) {
     return str;
 }
 
-/** C ref: dungeon.c:3460 — @param {CPtr} mptr @param {CPtr} outbuf @param {CLongLong} bsz @returns {CPtr} */
+/** C ref: dungeon.c:3460 — @param {CPtr<mapseen>} mptr @param {CPtr<char>} outbuf @param {CLongLong} bsz @returns {CPtr<char>} */
 function tunesuffix(mptr, outbuf, bsz) {
     cptr.st1(outbuf, 0);
     if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_castletune) & 1) | 0 && (cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) {
@@ -2814,7 +2814,7 @@ function tunesuffix(mptr, outbuf, bsz) {
     return outbuf;
 }
 
-/** C ref: dungeon.c:3516 — @param {CInt} win @param {CPtr} mptr @param {CInt} final @param {CInt} how @param {CInt} printdun */
+/** C ref: dungeon.c:3516 — @param {CInt} win @param {CPtr<mapseen>} mptr @param {CInt} final @param {CInt} how @param {CInt} printdun */
 function print_mapseen(win, mptr, final, how, printdun) {
     let buf = new Uint8Array(256);
     let tmpbuf = new Uint8Array(256);

@@ -301,7 +301,7 @@ const __sl148 = cptr.lit("gold hits the %s, then falls back on top of your %s.")
 const __sl149 = cptr.lit("Fortunately, you are wearing %s!");
 const __sl150 = cptr.lit("gold hits the %s.");
 
-/** C ref: dothrow.c:39 — @param {CInt} pm @param {CPtr} ammo @param {CPtr} launcher @returns {CInt} */
+/** C ref: dothrow.c:39 — @param {CInt} pm @param {CPtr<struct obj>} ammo @param {CPtr<struct obj>} launcher @returns {CInt} */
 export function multishot_class_bonus(pm, ammo, launcher) {
     let multishot = 0;
     let skill = cptr.ld1so2(objects, cptr.ldI16o(ammo, $obj_otyp), 120, $objclass_oc_subtyp);
@@ -337,7 +337,7 @@ export function multishot_class_bonus(pm, ammo, launcher) {
     return multishot;
 }
 
-/** C ref: dothrow.c:87 — @param {CPtr} obj @param {CInt} shotlimit @returns {CInt} */
+/** C ref: dothrow.c:87 — @param {CPtr<struct obj>} obj @param {CInt} shotlimit @returns {CInt} */
 function throw_obj(obj, shotlimit) {
     let otmp;
     let oldslot;
@@ -470,7 +470,7 @@ function throw_obj(obj, shotlimit) {
     return res;
 }
 
-/** C ref: dothrow.c:297 — @param {CPtr} shotlimit_p @returns {CInt} */
+/** C ref: dothrow.c:297 — @param {CPtr<int>} shotlimit_p @returns {CInt} */
 function ok_to_throw(shotlimit_p) {
     cptr.stI32(shotlimit_p, (Number(BigInt.asIntN(32, ((cptr.ldI64o(gc, $instance_globals_c_command_count)) < 0n ? 0n : ((cptr.ldI64o(gc, $instance_globals_c_command_count)) > 32767n ? 32767n : (cptr.ldI64o(gc, $instance_globals_c_command_count))))))));
     cptr.stI64o(gm, $instance_globals_m_multi, 0n);
@@ -486,7 +486,7 @@ function ok_to_throw(shotlimit_p) {
     return 1;
 }
 
-/** C ref: dothrow.c:317 — @param {CPtr} obj @returns {CInt} */
+/** C ref: dothrow.c:317 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function throw_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -567,7 +567,7 @@ function autoquiver() {
     return;
 }
 
-/** C ref: dothrow.c:447 — @param {CPtr} ammo @returns {CPtr} */
+/** C ref: dothrow.c:447 — @param {CPtr<struct obj>} ammo @returns {CPtr<struct obj>} */
 function find_launcher(ammo) {
     let otmp;
     let oX;
@@ -665,7 +665,7 @@ export function endmultishot(verbose) {
     }
 }
 
-/** C ref: dothrow.c:606 — @param {CPtr} obj @param {CInt} verbosely */
+/** C ref: dothrow.c:606 — @param {CPtr<struct obj>} obj @param {CInt} verbosely */
 export function hitfloor(obj, verbosely) {
     if (((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.AIR || (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) == NHC.CLOUD || ((cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) >= NHC.POOL && (cptr.ld1so3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DRAWBRIDGE_UP)) || (cptr.ldI32o(u, $you_uinwater) & 1) | 0 || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         dropy(obj);
@@ -702,7 +702,7 @@ export function hitfloor(obj, verbosely) {
     dropz(obj, 1);
 }
 
-/** C ref: dothrow.c:656 — @param {CPtr} src_cc @param {CPtr} dest_cc @param {CPtr} check_proc @param {CPtr} arg @returns {CInt} */
+/** C ref: dothrow.c:656 — @param {CPtr<coord>} src_cc @param {CPtr<coord>} dest_cc @param {CPtr} check_proc @param {CPtr} arg @returns {CInt} */
 export function walk_path(src_cc, dest_cc, check_proc, arg) {
     let err;
     let x;
@@ -922,7 +922,7 @@ export function hurtle_step(arg, x, y) {
     return 1;
 }
 
-/** C ref: dothrow.c:977 — @param {CPtr} mon @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: dothrow.c:977 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y @returns {CInt} */
 export function will_hurtle(mon, x, y) {
     if (!isok(x, y))
         return 0;
@@ -1019,7 +1019,7 @@ export function hurtle(dx, dy, range, verbose) {
     void walk_path(uc, cc, hurtle_step, range);
 }
 
-/** C ref: dothrow.c:1130 — @param {CPtr} mon @param {CInt} dx @param {CInt} dy @param {CInt} range */
+/** C ref: dothrow.c:1130 — @param {CPtr<struct monst>} mon @param {CInt} dx @param {CInt} dy @param {CInt} range */
 export function mhurtle(mon, dx, dy, range) {
     let mc = cptr.alloc(4);
     let cc = cptr.alloc(4);
@@ -1057,7 +1057,7 @@ export function mhurtle(mon, dx, dy, range) {
     return;
 }
 
-/** C ref: dothrow.c:1181 — @param {CPtr} obj @param {CInt} x @param {CInt} y @param {CInt} broken */
+/** C ref: dothrow.c:1181 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CInt} broken */
 function check_shop_obj(obj, x, y, broken) {
     let costly_xy;
     let shkp = shop_keeper(cptr.ld1so(u, $you_ushops));
@@ -1084,7 +1084,7 @@ function check_shop_obj(obj, x, y, broken) {
     }
 }
 
-/** C ref: dothrow.c:1220 — @param {CPtr} obj @returns {CInt} */
+/** C ref: dothrow.c:1220 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function harmless_missile(obj) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     switch (otyp) {
@@ -1112,7 +1112,7 @@ export function harmless_missile(obj) {
     return 0;
 }
 
-/** C ref: dothrow.c:1256 — @param {CPtr} obj @param {CInt} hitsroof @returns {CInt} */
+/** C ref: dothrow.c:1256 — @param {CPtr<struct obj>} obj @param {CInt} hitsroof @returns {CInt} */
 function toss_up(obj, hitsroof) {
     let action;
     let otyp = cptr.ldI16o(obj, $obj_otyp);
@@ -1247,12 +1247,12 @@ function toss_up(obj, hitsroof) {
     return 1;
 }
 
-/** C ref: dothrow.c:1430 — @param {CPtr} obj @returns {CInt} */
+/** C ref: dothrow.c:1430 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function throwing_weapon(obj) {
     return schar((is_missile(obj) || is_spear(obj) || (is_blade(obj) && !is_sword(obj) && (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_dir) & 7) | 0) & NHM.PIERCE)) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAR_HAMMER || cptr.ldI16o(obj, $obj_otyp) == NHC.AKLYS ? 1 : 0));
 }
 
-/** C ref: dothrow.c:1442 — @param {CPtr} obj */
+/** C ref: dothrow.c:1442 — @param {CPtr<struct obj>} obj */
 function sho_obj_return_to_u(obj) {
     if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && (cptr.ldI16o(gb, $instance_globals_b_bhitpos) != cptr.ldI16(u) || cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y) != cptr.ldI16o(u, $you_uy))) {
         let x = (cptr.ldI16o(gb, $instance_globals_b_bhitpos) - cptr.ldI32o(u, $you_dx)) | 0;
@@ -1275,7 +1275,7 @@ function throwit_return(clear_thrownobj) {
         cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
 }
 
-/** C ref: dothrow.c:1468 — @param {CPtr} obj */
+/** C ref: dothrow.c:1468 — @param {CPtr<struct obj>} obj */
 function swallowit(obj) {
     if (!cptr.eq(obj, uball.v)) {
         void mpickobj(cptr.ldPtro(u, $you_ustuck), obj);
@@ -1284,7 +1284,7 @@ function swallowit(obj) {
         throwit_return(1);
 }
 
-/** C ref: dothrow.c:1482 — @param {CPtr} obj @param {CPtr} mon @returns {CInt} */
+/** C ref: dothrow.c:1482 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mon @returns {CInt} */
 export function throwit_mon_hit(obj, mon) {
     if (mon) {
         let obj_gone;
@@ -1303,7 +1303,7 @@ export function throwit_mon_hit(obj, mon) {
     return 0;
 }
 
-/** C ref: dothrow.c:1510 — @param {CPtr} obj @param {CLongLong} wep_mask @param {CInt} twoweap @param {CPtr} oldslot */
+/** C ref: dothrow.c:1510 — @param {CPtr<struct obj>} obj @param {CLongLong} wep_mask @param {CInt} twoweap @param {CPtr<struct obj>} oldslot */
 export function throwit(obj, wep_mask, twoweap, oldslot) {
     obj = cptr.box(obj);
     let mon;
@@ -1543,7 +1543,7 @@ export function throwit(obj, wep_mask, twoweap, oldslot) {
     return;
 }
 
-/** C ref: dothrow.c:1855 — @param {CPtr} obj @param {CLongLong} wep_mask @param {CInt} twoweap @param {CPtr} oldslot @returns {CPtr} */
+/** C ref: dothrow.c:1855 — @param {CPtr<struct obj>} obj @param {CLongLong} wep_mask @param {CInt} twoweap @param {CPtr<struct obj>} oldslot @returns {CPtr<struct obj>} */
 function return_throw_to_inv(obj, wep_mask, twoweap, oldslot) {
     let otmp = null;
     if (cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit) || cptr.ldI32o(obj, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
@@ -1578,7 +1578,7 @@ function return_throw_to_inv(obj, wep_mask, twoweap, oldslot) {
     return obj;
 }
 
-/** C ref: dothrow.c:1913 — @param {CPtr} mon @param {CPtr} obj @param {CInt} mon_notices @returns {CInt} */
+/** C ref: dothrow.c:1913 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} mon_notices @returns {CInt} */
 export function omon_adj(mon, obj, mon_notices) {
     let tmp = 0;
     tmp = (tmp + ((cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) - NHM.MZ_MEDIUM) | 0)) | 0;
@@ -1608,7 +1608,7 @@ export function omon_adj(mon, obj, mon_notices) {
     return tmp;
 }
 
-/** C ref: dothrow.c:1951 — @param {CPtr} obj @param {CPtr} mon @param {CInt} maybe_wakeup */
+/** C ref: dothrow.c:1951 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mon @param {CInt} maybe_wakeup */
 function tmiss(obj, mon, maybe_wakeup) {
     let missile = mshot_xname(obj);
     if (!canseemon(mon) || ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) && (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER))
@@ -1620,7 +1620,7 @@ function tmiss(obj, mon, maybe_wakeup) {
     return;
 }
 
-/** C ref: dothrow.c:1976 — @param {CPtr} obj @returns {CInt} */
+/** C ref: dothrow.c:1976 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function should_mulch_missile(obj) {
     let broken;
     let chance;
@@ -1635,7 +1635,7 @@ export function should_mulch_missile(obj) {
     return broken;
 }
 
-/** C ref: dothrow.c:2011 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: dothrow.c:2011 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 export function thitmonst(mon, obj) {
     let tmp;
     let disttmp;
@@ -1836,7 +1836,7 @@ const __static_gem_accept_maybeluck = cptr.bytes(" hesitatingly"); /** C ref: do
 const __static_gem_accept_noluck = cptr.bytes(" graciously"); /** C ref: dothrow.c:2315 — char[12] (function-static) */
 const __static_gem_accept_addluck = cptr.bytes(" gratefully"); /** C ref: dothrow.c:2316 — char[12] (function-static) */
 
-/** C ref: dothrow.c:2309 — @param {CPtr} mon @param {CPtr} obj @returns {CInt} */
+/** C ref: dothrow.c:2309 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
 function gem_accept(mon, obj) {
     let buf = new Uint8Array(256);
     let is_buddy = schar((sgn(cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_maligntyp)) == sgn(cptr.ld1so(u, $you_ualign))));
@@ -1898,7 +1898,7 @@ function gem_accept(mon, obj) {
     return ret;
 }
 
-/** C ref: dothrow.c:2417 — @param {CPtr} obj @param {CInt} x @param {CInt} y @param {CUInt} breakflags @returns {CInt} */
+/** C ref: dothrow.c:2417 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CUInt} breakflags @returns {CInt} */
 export function hero_breaks(obj, x, y, breakflags) {
     let from_invent = schar((((breakflags & NHM.BRK_FROM_INV) >>> 0) != 0));
     let in_view = schar((Blind() ? 0 : (from_invent || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) ? 1 : 0)));
@@ -1911,7 +1911,7 @@ export function hero_breaks(obj, x, y, breakflags) {
     return breakobj(obj, x, y, 1, from_invent);
 }
 
-/** C ref: dothrow.c:2444 — @param {CPtr} obj @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: dothrow.c:2444 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @returns {CInt} */
 export function breaks(obj, x, y) {
     let in_view = schar((Blind() ? 0 : ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)));
     if (!breaktest(obj))
@@ -1920,7 +1920,7 @@ export function breaks(obj, x, y) {
     return breakobj(obj, x, y, 0, 0);
 }
 
-/** C ref: dothrow.c:2457 — @param {CPtr} obj @param {CInt} x @param {CInt} y */
+/** C ref: dothrow.c:2457 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 export function release_camera_demon(obj, x, y) {
     let mtmp;
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl6, 2460, __sl133), rn2(3)) : rn2(3)) && (mtmp = makemon(cptr.add(mons, (rng_log_enabled() ? (rng_log_set_caller(__sl6, 2461, __sl133), rn2(3)) : rn2(3)) ? NHC.PM_HOMUNCULUS : NHC.PM_IMP, 96), x, y, NHM.MM_NOMSG)) !== null) {
@@ -1931,7 +1931,7 @@ export function release_camera_demon(obj, x, y) {
     }
 }
 
-/** C ref: dothrow.c:2480 — @param {CPtr} obj @param {CInt} x @param {CInt} y @param {CInt} hero_caused @param {CInt} from_invent @returns {CInt} */
+/** C ref: dothrow.c:2480 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CInt} hero_caused @param {CInt} from_invent @returns {CInt} */
 export function breakobj(obj, x, y, hero_caused, from_invent) {
     let fracture = 0;
     let explosion = 0;
@@ -2002,7 +2002,7 @@ export function breakobj(obj, x, y, hero_caused, from_invent) {
     return 1;
 }
 
-/** C ref: dothrow.c:2582 — @param {CPtr} obj @returns {CInt} */
+/** C ref: dothrow.c:2582 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function breaktest(obj) {
     let nonbreakchance = 1;
     if (cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS && ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.GLASS)
@@ -2025,7 +2025,7 @@ export function breaktest(obj) {
     }
 }
 
-/** C ref: dothrow.c:2612 — @param {CPtr} obj @param {CInt} in_view */
+/** C ref: dothrow.c:2612 — @param {CPtr<struct obj>} obj @param {CInt} in_view */
 function breakmsg(obj, in_view) {
     let to_pieces;
     if (is_crackable(obj))
@@ -2065,7 +2065,7 @@ function breakmsg(obj, in_view) {
     }
 }
 
-/** C ref: dothrow.c:2656 — @param {CPtr} obj @returns {CInt} */
+/** C ref: dothrow.c:2656 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function throw_gold(obj) {
     obj = cptr.box(obj);
     let range;

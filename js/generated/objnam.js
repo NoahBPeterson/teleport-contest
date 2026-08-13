@@ -937,7 +937,7 @@ cptr.stPtro(Japanese_items, 192 + $Jitem_name, __sl12);
 cptr.stI32o(Japanese_items, 208, 0);
 cptr.stPtro(Japanese_items, 208 + $Jitem_name, __sl13);
 
-/** C ref: objnam.c:123 — @param {CPtr} s @param {CPtr} pref @returns {CPtr} */
+/** C ref: objnam.c:123 — @param {CPtr<char>} s @param {CPtr<char>} pref @returns {CPtr<char>} */
 function strprepend(s, pref) {
     let star_s = cptr.ld1s(s);
     let i = Number(BigInt.asIntN(32, cptr.strlen(pref)));
@@ -956,24 +956,24 @@ const obufs = (function () { const flat = new Uint8Array(12 * (256 * 1)); const 
 /** C ref: objnam.c:139 — int */
 let obufidx = 0;
 
-/** C ref: objnam.c:142 @returns {CPtr} */
+/** C ref: objnam.c:142 @returns {CPtr<char>} */
 function nextobuf() {
     obufidx = ((obufidx + 1) | 0) % 12;
     return cptr.decay(obufs[obufidx]);
 }
 
-/** C ref: objnam.c:150 — @param {CPtr} bufp */
+/** C ref: objnam.c:150 — @param {CPtr<char>} bufp */
 function releaseobuf(bufp) {
     if (cptr.cmp(bufp, cptr.decay(obufs[obufidx])) >= 0 && cptr.cmp(bufp, cptr.add(cptr.decay(obufs[obufidx]), 256n)) < 0)
         obufidx = ((((obufidx - 1) | 0) + 12) | 0) % 12;
 }
 
-/** C ref: objnam.c:167 — @param {CPtr} obuffer */
+/** C ref: objnam.c:167 — @param {CPtr<char>} obuffer */
 export function maybereleaseobuf(obuffer) {
     releaseobuf(obuffer);
 }
 
-/** C ref: objnam.c:201 — @param {CInt} otyp @returns {CPtr} */
+/** C ref: objnam.c:201 — @param {CInt} otyp @returns {CPtr<char>} */
 export function obj_typename(otyp) {
     let buf = nextobuf();
     let ocl = cptr.add(objects, otyp, 120);
@@ -1060,7 +1060,7 @@ export function obj_typename(otyp) {
     return buf;
 }
 
-/** C ref: objnam.c:298 — @param {CInt} otyp @returns {CPtr} */
+/** C ref: objnam.c:298 — @param {CInt} otyp @returns {CPtr<char>} */
 export function simple_typename(otyp) {
     let bufp;
     let pp;
@@ -1073,7 +1073,7 @@ export function simple_typename(otyp) {
     return bufp;
 }
 
-/** C ref: objnam.c:312 — @param {CInt} otyp @returns {CPtr} */
+/** C ref: objnam.c:312 — @param {CInt} otyp @returns {CPtr<char>} */
 export function safe_typename(otyp) {
     let save_nameknown;
     let res = null;
@@ -1090,7 +1090,7 @@ export function safe_typename(otyp) {
     return res;
 }
 
-/** C ref: objnam.c:333 — @param {CPtr} obj @returns {CInt} */
+/** C ref: objnam.c:333 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_is_pname(obj) {
     if (!cptr.ld1so(obj, $obj_oartifact) || !has_oname(obj))
         return 0;
@@ -1101,7 +1101,7 @@ export function obj_is_pname(obj) {
     return 1;
 }
 
-/** C ref: objnam.c:347 — @param {CPtr} obj @param {CPtr} func @returns {CPtr} */
+/** C ref: objnam.c:347 — @param {CPtr<struct obj>} obj @param {CPtr} func @returns {CPtr<char>} */
 export function distant_name(obj, func) {
     let str;
     let save_oid;
@@ -1123,7 +1123,7 @@ export function distant_name(obj, func) {
     return str;
 }
 
-/** C ref: objnam.c:414 — @param {CInt} juice @returns {CPtr} */
+/** C ref: objnam.c:414 — @param {CInt} juice @returns {CPtr<char>} */
 export function fruitname(juice) {
     let buf = nextobuf();
     let fruit_nam = strstri(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __sl34);
@@ -1135,7 +1135,7 @@ export function fruitname(juice) {
     return buf;
 }
 
-/** C ref: objnam.c:431 — @param {CInt} indx @returns {CPtr} */
+/** C ref: objnam.c:431 — @param {CInt} indx @returns {CPtr<struct fruit>} */
 export function fruit_from_indx(indx) {
     let f;
     for (f = cptr.ldPtro(gf, $instance_globals_f_ffruit); f; f = cptr.ldPtro(f, $fruit_nextf))
@@ -1144,7 +1144,7 @@ export function fruit_from_indx(indx) {
     return f;
 }
 
-/** C ref: objnam.c:443 — @param {CPtr} fname @param {CInt} exact @param {CPtr} highest_fid @returns {CPtr} */
+/** C ref: objnam.c:443 — @param {CPtr<char>} fname @param {CInt} exact @param {CPtr<int>} highest_fid @returns {CPtr<struct fruit>} */
 export function fruit_from_name(fname, exact, highest_fid) {
     let f;
     let tentativef;
@@ -1226,7 +1226,7 @@ export function reorder_fruit(forward) {
     }
 }
 
-/** C ref: objnam.c:558 — @param {CPtr} buf @param {CInt} siz @param {CPtr} pfx @param {CPtr} sfx */
+/** C ref: objnam.c:558 — @param {CPtr<char>} buf @param {CInt} siz @param {CPtr<char>} pfx @param {CPtr<char>} sfx */
 function xcalled(buf, siz, pfx, sfx) {
     let bufsiz = (((siz - 1) | 0) - Number(BigInt.asIntN(32, cptr.strlen(buf)))) | 0;
     let pfxlen = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(pfx) + 9n) - 1n))));
@@ -1235,14 +1235,14 @@ function xcalled(buf, siz, pfx, sfx) {
     void cptr.sprintf(eos(buf), __sl41, pfx, (bufsiz - pfxlen) | 0, sfx);
 }
 
-/** C ref: objnam.c:575 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:575 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function xname(obj) {
     return xname_flags(obj, NHM.CXN_NORMAL);
 }
 
 let __static_xname_flags_xname_full = 0; /** C ref: objnam.c:1016 — int (function-static) */
 
-/** C ref: objnam.c:581 — @param {CPtr} obj @param {CUInt} cxn_flags @returns {CPtr} */
+/** C ref: objnam.c:581 — @param {CPtr<struct obj>} obj @param {CUInt} cxn_flags @returns {CPtr<char>} */
 function xname_flags(obj, cxn_flags) {
     let buf, obufp, buf_end, buf_eos, bufspaceleft;
     let __go_nameit = false;
@@ -1600,7 +1600,7 @@ function xname_flags(obj, cxn_flags) {
     return buf;
 }
 
-/** C ref: objnam.c:1038 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:1038 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 function minimal_xname(obj) {
     let bufp;
     let bareobj = cptr.alloc(216);
@@ -1631,7 +1631,7 @@ function minimal_xname(obj) {
     return bufp;
 }
 
-/** C ref: objnam.c:1090 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:1090 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function mshot_xname(obj) {
     let tmpbuf = new Uint8Array(256);
     let onm = xname(obj);
@@ -1642,7 +1642,7 @@ export function mshot_xname(obj) {
     return onm;
 }
 
-/** C ref: objnam.c:1106 — @param {CPtr} obj @returns {CInt} */
+/** C ref: objnam.c:1106 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function the_unique_obj(obj) {
     let known = schar(((cptr.ldI32o(obj, $obj_known) & 1) | 0 || cptr.ldI32o(iflags, $instance_flags_override_ID) ? 1 : 0));
     if (!(cptr.ldI32o(obj, $obj_dknown) & 1) && !cptr.ldI32o(iflags, $instance_flags_override_ID))
@@ -1653,7 +1653,7 @@ export function the_unique_obj(obj) {
         return schar(((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_unique) & 1) | 0 && (known || cptr.ldI16o(obj, $obj_otyp) == NHC.AMULET_OF_YENDOR) ? 1 : 0));
 }
 
-/** C ref: objnam.c:1121 — @param {CPtr} ptr @returns {CInt} */
+/** C ref: objnam.c:1121 — @param {CPtr<struct permonst>} ptr @returns {CInt} */
 export function the_unique_pm(ptr) {
     let uniq;
     if (((cptr.ldU64o((ptr), $permonst_mflags2) & 524288n) != 0n))
@@ -1666,7 +1666,7 @@ export function the_unique_pm(ptr) {
     return uniq;
 }
 
-/** C ref: objnam.c:1143 — @param {CPtr} obj @param {CPtr} prefix */
+/** C ref: objnam.c:1143 — @param {CPtr<struct obj>} obj @param {CPtr<char>} prefix */
 function add_erosion_words(obj, prefix) {
     let iscrys = schar((cptr.ldI16o(obj, $obj_otyp) == NHC.CRYSKNIFE));
     let rknown;
@@ -1699,7 +1699,7 @@ function add_erosion_words(obj, prefix) {
         void cptr.strcat(prefix, iscrys ? __sl100 : ((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON) ? __sl101 : (is_corrodeable(obj) ? __sl102 : (is_flammable(obj) ? __sl103 : (is_crackable(obj) ? __sl104 : (is_rottable(obj) ? __sl105 : __sl13))))));
 }
 
-/** C ref: objnam.c:1195 — @param {CPtr} obj @returns {CInt} */
+/** C ref: objnam.c:1195 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function erosion_matters(obj) {
     switch (cptr.ld1so(obj, $obj_oclass)) {
         case NHC.TOOL_CLASS:
@@ -1717,7 +1717,7 @@ export function erosion_matters(obj) {
 
 let __static_doname_base_doname_full = 0; /** C ref: objnam.c:1735 — int (function-static) */
 
-/** C ref: objnam.c:1223 — @param {CPtr} obj @param {CUInt} doname_flags @returns {CPtr} */
+/** C ref: objnam.c:1223 — @param {CPtr<struct obj>} obj @param {CUInt} doname_flags @returns {CPtr<char>} */
 function doname_base(obj, doname_flags) {
     let ispoisoned, with_price, vague_quan, for_menu, known, dknown, cknown, bknown, lknown, fake_arti, force_the, prefix, tmpbuf, aname, omndx, bp, bp_eos = cptr.box(0), bp_end, bpspaceleft, itemcount, mlsh, suffix, timer, full_burn_time, turns_left, cxarg, cxstr, save_xnamep, cgend, mgend, twoweap_primary, tethered, hand_s, obufp, handsbuf, Qtyp, pricebuf, quotedprice, nochrg = cptr.box(0), price, offsetbp;
     let __pc = 0;
@@ -2196,22 +2196,22 @@ function doname_base(obj, doname_flags) {
     }
 }
 
-/** C ref: objnam.c:1754 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:1754 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function doname(obj) {
     return doname_base(obj, 0);
 }
 
-/** C ref: objnam.c:1761 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:1761 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function doname_with_price(obj) {
     return doname_base(obj, 1);
 }
 
-/** C ref: objnam.c:1768 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:1768 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function doname_vague_quan(obj) {
     return doname_base(obj, 2);
 }
 
-/** C ref: objnam.c:1787 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: objnam.c:1787 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function not_fully_identified(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
         return 0;
@@ -2227,7 +2227,7 @@ export function not_fully_identified(otmp) {
         return schar(is_damageable(otmp));
 }
 
-/** C ref: objnam.c:1824 — @param {CPtr} otmp @param {CPtr} adjective @param {CUInt} cxn_flags @returns {CPtr} */
+/** C ref: objnam.c:1824 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} adjective @param {CUInt} cxn_flags @returns {CPtr<char>} */
 export function corpse_xname(otmp, adjective, cxn_flags) {
     let nambuf;
     let omndx = cptr.ldI32o(otmp, $obj_corpsenm);
@@ -2291,21 +2291,21 @@ export function corpse_xname(otmp, adjective, cxn_flags) {
     return nambuf;
 }
 
-/** C ref: objnam.c:1924 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:1924 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function cxname(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE)
         return corpse_xname(obj, null, NHM.CXN_NORMAL);
     return xname(obj);
 }
 
-/** C ref: objnam.c:1933 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:1933 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function cxname_singular(obj) {
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE)
         return corpse_xname(obj, null, NHM.CXN_SINGULAR);
     return xname_flags(obj, NHM.CXN_SINGULAR);
 }
 
-/** C ref: objnam.c:1942 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:1942 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function killer_xname(obj) {
     let save_obj = cptr.alloc(216);
     let save_ocknown;
@@ -2348,7 +2348,7 @@ export function killer_xname(obj) {
     return buf;
 }
 
-/** C ref: objnam.c:2009 — @param {CPtr} obj @param {CPtr} func @param {CPtr} altfunc @param {CUInt} lenlimit @returns {CPtr} */
+/** C ref: objnam.c:2009 — @param {CPtr<struct obj>} obj @param {CPtr} func @param {CPtr} altfunc @param {CUInt} lenlimit @returns {CPtr<char>} */
 export function short_oname(obj, func, altfunc, lenlimit) {
     let save_obj = cptr.alloc(216);
     let unamebuf = new Uint8Array(12);
@@ -2409,7 +2409,7 @@ export function short_oname(obj, func, altfunc, lenlimit) {
     return outbuf;
 }
 
-/** C ref: objnam.c:2091 — @param {CPtr} otmp @param {CPtr} func @returns {CPtr} */
+/** C ref: objnam.c:2091 — @param {CPtr<struct obj>} otmp @param {CPtr} func @returns {CPtr<char>} */
 export function singular(otmp, func) {
     let savequan;
     let nam;
@@ -2422,7 +2422,7 @@ export function singular(otmp, func) {
     return nam;
 }
 
-/** C ref: objnam.c:2109 — @param {CPtr} outbuf @param {CPtr} str @returns {CPtr} */
+/** C ref: objnam.c:2109 — @param {CPtr<char>} outbuf @param {CPtr<char>} str @returns {CPtr<char>} */
 export function just_an(outbuf, str) {
     let c0;
     cptr.st1(outbuf, 0);
@@ -2440,7 +2440,7 @@ export function just_an(outbuf, str) {
     return outbuf;
 }
 
-/** C ref: objnam.c:2145 — @param {CPtr} str @returns {CPtr} */
+/** C ref: objnam.c:2145 — @param {CPtr<char>} str @returns {CPtr<char>} */
 export function an(str) {
     let buf = nextobuf();
     if (!str || !cptr.ld1s(str)) {
@@ -2451,14 +2451,14 @@ export function an(str) {
     return __builtin___strncat_chk(buf, str, BigInt(((255 - Strlen_(buf, __sl196, 2154)) >>> 0) >>> 0), __builtin_object_size(buf, 1));
 }
 
-/** C ref: objnam.c:2158 — @param {CPtr} str @returns {CPtr} */
+/** C ref: objnam.c:2158 — @param {CPtr<char>} str @returns {CPtr<char>} */
 export function An(str) {
     let tmp = an(str);
     cptr.st1(tmp, highc(cptr.ld1s(tmp)));
     return tmp;
 }
 
-/** C ref: objnam.c:2171 — @param {CPtr} str @returns {CPtr} */
+/** C ref: objnam.c:2171 — @param {CPtr<char>} str @returns {CPtr<char>} */
 export function the(str) {
     let aname;
     let buf = nextobuf();
@@ -2499,14 +2499,14 @@ export function the(str) {
     return __builtin___strncat_chk(buf, str, BigInt(((255 - Strlen_(buf, __sl200, 2230)) >>> 0) >>> 0), __builtin_object_size(buf, 1));
 }
 
-/** C ref: objnam.c:2234 — @param {CPtr} str @returns {CPtr} */
+/** C ref: objnam.c:2234 — @param {CPtr<char>} str @returns {CPtr<char>} */
 export function The(str) {
     let tmp = the(str);
     cptr.st1(tmp, highc(cptr.ld1s(tmp)));
     return tmp;
 }
 
-/** C ref: objnam.c:2244 — @param {CPtr} otmp @param {CPtr} verb @returns {CPtr} */
+/** C ref: objnam.c:2244 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} verb @returns {CPtr<char>} */
 export function aobjnam(otmp, verb) {
     let prefix = new Uint8Array(80);
     let bp = cxname(otmp);
@@ -2521,7 +2521,7 @@ export function aobjnam(otmp, verb) {
     return bp;
 }
 
-/** C ref: objnam.c:2262 — @param {CPtr} obj @param {CPtr} verb @returns {CPtr} */
+/** C ref: objnam.c:2262 — @param {CPtr<struct obj>} obj @param {CPtr<char>} verb @returns {CPtr<char>} */
 export function yobjnam(obj, verb) {
     let s = aobjnam(obj, verb);
     if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) || !obj_is_pname(obj) || cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
@@ -2532,14 +2532,14 @@ export function yobjnam(obj, verb) {
     return s;
 }
 
-/** C ref: objnam.c:2280 — @param {CPtr} obj @param {CPtr} verb @returns {CPtr} */
+/** C ref: objnam.c:2280 — @param {CPtr<struct obj>} obj @param {CPtr<char>} verb @returns {CPtr<char>} */
 export function Yobjnam2(obj, verb) {
     let s = yobjnam(obj, verb);
     cptr.st1(s, highc(cptr.ld1s(s)));
     return s;
 }
 
-/** C ref: objnam.c:2290 — @param {CPtr} otmp @param {CPtr} verb @returns {CPtr} */
+/** C ref: objnam.c:2290 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} verb @returns {CPtr<char>} */
 export function Tobjnam(otmp, verb) {
     let bp = The(xname(otmp));
     if (verb) {
@@ -2549,7 +2549,7 @@ export function Tobjnam(otmp, verb) {
     return bp;
 }
 
-/** C ref: objnam.c:2303 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2303 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function Doname2(obj) {
     let s = doname(obj);
     cptr.st1(s, highc(cptr.ld1s(s)));
@@ -2558,7 +2558,7 @@ export function Doname2(obj) {
 
 const __static_paydoname_and_contents = cptr.bytes(" and its contents"); /** C ref: objnam.c:2315 — char[18] (function-static) */
 
-/** C ref: objnam.c:2313 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2313 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function paydoname(obj) {
     let p;
     let save_cknown = (cptr.ldI32o(obj, $obj_cknown) & 1);
@@ -2591,7 +2591,7 @@ export function paydoname(obj) {
     return p;
 }
 
-/** C ref: objnam.c:2359 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2359 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function yname(obj) {
     let s = cxname(obj);
     if (!(cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) || !obj_is_pname(obj) || cptr.ld1so(obj, $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) {
@@ -2602,14 +2602,14 @@ export function yname(obj) {
     return s;
 }
 
-/** C ref: objnam.c:2378 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2378 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function Yname2(obj) {
     let s = yname(obj);
     cptr.st1(s, highc(cptr.ld1s(s)));
     return s;
 }
 
-/** C ref: objnam.c:2391 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2391 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function ysimple_name(obj) {
     let outbuf = nextobuf();
     let s = shk_your(outbuf, obj);
@@ -2617,14 +2617,14 @@ export function ysimple_name(obj) {
     return __builtin___strncat_chk(s, minimal_xname(obj), BigInt.asUintN(64, BigInt(space_left)), __builtin_object_size(s, 1));
 }
 
-/** C ref: objnam.c:2402 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2402 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function Ysimple_name2(obj) {
     let s = ysimple_name(obj);
     cptr.st1(s, highc(cptr.ld1s(s)));
     return s;
 }
 
-/** C ref: objnam.c:2428 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2428 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function simpleonames(obj) {
     let obufp;
     let simpleoname = minimal_xname(obj);
@@ -2635,7 +2635,7 @@ export function simpleonames(obj) {
     return simpleoname;
 }
 
-/** C ref: objnam.c:2446 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2446 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function ansimpleoname(obj) {
     let obufp;
     let simpleoname = simpleonames(obj);
@@ -2654,7 +2654,7 @@ export function ansimpleoname(obj) {
     return simpleoname;
 }
 
-/** C ref: objnam.c:2474 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2474 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function thesimpleoname(obj) {
     let obufp;
     let simpleoname = simpleonames(obj);
@@ -2664,7 +2664,7 @@ export function thesimpleoname(obj) {
     return simpleoname;
 }
 
-/** C ref: objnam.c:2490 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2490 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function actualoname(obj) {
     let res;
     cptr.stI32o(iflags, $instance_flags_override_ID, 1);
@@ -2673,7 +2673,7 @@ export function actualoname(obj) {
     return res;
 }
 
-/** C ref: objnam.c:2502 — @param {CPtr} obj @returns {CPtr} */
+/** C ref: objnam.c:2502 — @param {CPtr<struct obj>} obj @returns {CPtr<char>} */
 export function bare_artifactname(obj) {
     let outbuf;
     if (cptr.ld1so(obj, $obj_oartifact)) {
@@ -2706,7 +2706,7 @@ cptr.stPtro(wrp, 96, __sl213);
 /** C ref: objnam.c:2523 — char[13] */
 const wrpsym = [NHC.WAND_CLASS, NHC.RING_CLASS, NHC.POTION_CLASS, NHC.SCROLL_CLASS, NHC.GEM_CLASS, NHC.AMULET_CLASS, NHC.SPBOOK_CLASS, NHC.SPBOOK_CLASS, NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.TOOL_CLASS, NHC.FOOD_CLASS, NHC.FOOD_CLASS];
 
-/** C ref: objnam.c:2531 — @param {CPtr} otmp @param {CPtr} verb @returns {CPtr} */
+/** C ref: objnam.c:2531 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} verb @returns {CPtr<char>} */
 export function otense(otmp, verb) {
     let buf;
     if (!is_plural(otmp))
@@ -2731,7 +2731,7 @@ cptr.stPtro(special_subjs, 72, __sl223);
 cptr.stPtro(special_subjs, 80, __sl224);
 cptr.stPtro(special_subjs, 88, null);
 
-/** C ref: objnam.c:2563 — @param {CPtr} subj @param {CPtr} verb @returns {CPtr} */
+/** C ref: objnam.c:2563 — @param {CPtr<char>} subj @param {CPtr<char>} verb @returns {CPtr<char>} */
 export function vtense(subj, verb) {
     let buf = nextobuf();
     let bspot;
@@ -2875,7 +2875,7 @@ cptr.stPtro(as_is, 248, __sl308);
 cptr.stPtro(as_is, 256, __sl309);
 cptr.stPtro(as_is, 264, null);
 
-/** C ref: objnam.c:2708 — @param {CPtr} basestr @param {CPtr} endstring @param {CInt} to_plural @param {CPtr} alt_as_is @returns {CInt} */
+/** C ref: objnam.c:2708 — @param {CPtr<char>} basestr @param {CPtr<char>} endstring @param {CInt} to_plural @param {CPtr<char *>} alt_as_is @returns {CInt} */
 function singplur_lookup(basestr, endstring, to_plural, alt_as_is) {
     let sp;
     let same;
@@ -2951,7 +2951,7 @@ cptr.stPtro(__static_singplur_compound_compounds, 128, __sl328);
 cptr.stPtro(__static_singplur_compound_compounds, 136, null); /** C ref: objnam.c:2786 — char *[18] (function-static) */
 const __static_singplur_compound_compound_start = cptr.bytes(" -"); /** C ref: objnam.c:2796 — char[3] (function-static) */
 
-/** C ref: objnam.c:2783 — @param {CPtr} str @returns {CPtr} */
+/** C ref: objnam.c:2783 — @param {CPtr<char>} str @returns {CPtr<char>} */
 function singplur_compound(str) {
     let cmpd;
     let p;
@@ -2971,7 +2971,7 @@ cptr.stPtro(__static_makeplural_already_plural, 8, __sl364);
 cptr.stPtro(__static_makeplural_already_plural, 16, __sl365);
 cptr.stPtro(__static_makeplural_already_plural, 24, null); /** C ref: objnam.c:2905 — char *[4] (function-static) */
 
-/** C ref: objnam.c:2836 — @param {CPtr} oldstr @returns {CPtr} */
+/** C ref: objnam.c:2836 — @param {CPtr<char>} oldstr @returns {CPtr<char>} */
 export function makeplural(oldstr) {
     let spot;
     let lo_c;
@@ -3086,7 +3086,7 @@ export function makeplural(oldstr) {
     return str;
 }
 
-/** C ref: objnam.c:3037 — @param {CPtr} oldstr @returns {CPtr} */
+/** C ref: objnam.c:3037 — @param {CPtr<char>} oldstr @returns {CPtr<char>} */
 export function makesingular(oldstr) {
     let p;
     let bp;
@@ -3188,7 +3188,7 @@ cptr.stPtro(__static_ch_ksound_ch_k, 128, __sl408);
 cptr.stPtro(__static_ch_ksound_ch_k, 136, __sl409);
 cptr.stPtro(__static_ch_ksound_ch_k, 144, __sl410); /** C ref: objnam.c:3172 — char *[19] (function-static) */
 
-/** C ref: objnam.c:3168 — @param {CPtr} basestr @returns {CInt} */
+/** C ref: objnam.c:3168 — @param {CPtr<char>} basestr @returns {CInt} */
 function ch_ksound(basestr) {
     let i;
     let al;
@@ -3274,7 +3274,7 @@ cptr.stPtro(__static_badman_no_man, 224, __sl332);
 cptr.stPtro(__static_badman_no_man, 232, __sl474);
 cptr.stPtro(__static_badman_no_man, 240, __sl446); /** C ref: objnam.c:3207 — char *[31] (function-static) */
 
-/** C ref: objnam.c:3194 — @param {CPtr} basestr @param {CInt} to_plural @returns {CInt} */
+/** C ref: objnam.c:3194 — @param {CPtr<char>} basestr @param {CInt} to_plural @returns {CInt} */
 function badman(basestr, to_plural) {
     let i;
     let al;
@@ -3304,7 +3304,7 @@ function badman(basestr, to_plural) {
 const __static_wishymatch_detect_SP = cptr.bytes("detect "); /** C ref: objnam.c:3248 — char[8] (function-static) */
 const __static_wishymatch_SP_detection = cptr.bytes(" detection"); /** C ref: objnam.c:3249 — char[11] (function-static) */
 
-/** C ref: objnam.c:3243 — @param {CPtr} u_str @param {CPtr} o_str @param {CInt} retry_inverted @returns {CInt} */
+/** C ref: objnam.c:3243 — @param {CPtr<char>} u_str @param {CPtr<char>} o_str @param {CInt} retry_inverted @returns {CInt} */
 function wishymatch(u_str, o_str, retry_inverted) {
     let p;
     let buf = new Uint8Array(256);
@@ -3572,7 +3572,7 @@ function rnd_otyp_by_wpnskill(skill) {
     return otyp;
 }
 
-/** C ref: objnam.c:3455 — @param {CPtr} name @param {CInt} oclass @param {CInt} xtra_prob @returns {CInt} */
+/** C ref: objnam.c:3455 — @param {CPtr<char>} name @param {CInt} oclass @param {CInt} xtra_prob @returns {CInt} */
 function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
     let i;
     let n = 0;
@@ -3622,7 +3622,7 @@ export function shiny_obj(oclass) {
     return rnd_otyp_by_namedesc(__sl547, oclass, 0);
 }
 
-/** C ref: objnam.c:3539 — @param {CPtr} bp */
+/** C ref: objnam.c:3539 — @param {CPtr<char>} bp */
 function set_wallprop_from_str(bp) {
     let wall_prop = 0;
     if (cptr.strstr(bp, __sl548) || cptr.strstr(bp, __sl549))
@@ -3633,7 +3633,7 @@ function set_wallprop_from_str(bp) {
         cptr.stI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) | wall_prop);
 }
 
-/** C ref: objnam.c:3554 — @param {CPtr} d @returns {CPtr} */
+/** C ref: objnam.c:3554 — @param {CPtr<struct _readobjnam_data>} d @returns {CPtr<struct obj>} */
 function wizterrainwish(d) {
     let lev;
     let madeterrain = 0;
@@ -3901,12 +3901,12 @@ function wizterrainwish(d) {
     return null;
 }
 
-/** C ref: objnam.c:3920 — @param {CPtr} newtype @param {CInt} x @param {CInt} y */
+/** C ref: objnam.c:3920 — @param {CPtr<char>} newtype @param {CInt} x @param {CInt} y */
 function dbterrainmesg(newtype, x, y) {
     pline(__sl609, newtype, (cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.DRAWBRIDGE_UP) ? __sl610 : __sl611);
 }
 
-/** C ref: objnam.c:3933 — @param {CPtr} bp @param {CPtr} d */
+/** C ref: objnam.c:3933 — @param {CPtr<char>} bp @param {CPtr<struct _readobjnam_data>} d */
 function readobjnam_init(bp, d) {
     cptr.stPtr(d, null);
     cptr.stI32o(d, $_readobjnam_data_cnt, cptr.stI32o(d, $_readobjnam_data_spe, cptr.stI32o(d, $_readobjnam_data_spesgn, cptr.stI32o(d, $_readobjnam_data_typ, 0))));
@@ -3928,7 +3928,7 @@ function readobjnam_init(bp, d) {
     void __builtin___memset_chk(cptr.add(d, $_readobjnam_data_fruitbuf), 0, 256n, __builtin_object_size(cptr.add(d, $_readobjnam_data_fruitbuf), 0));
 }
 
-/** C ref: objnam.c:3966 — @param {CPtr} d @returns {CInt} */
+/** C ref: objnam.c:3966 — @param {CPtr<struct _readobjnam_data>} d @returns {CInt} */
 function readobjnam_preparse(d) {
     let save_bp = null;
     let more_l = 0;
@@ -4061,7 +4061,7 @@ function readobjnam_preparse(d) {
     return res;
 }
 
-/** C ref: objnam.c:4178 — @param {CPtr} d */
+/** C ref: objnam.c:4178 — @param {CPtr<struct _readobjnam_data>} d */
 function readobjnam_parse_charges(d) {
     if (cptr.strlen(cptr.ldPtro(d, $_readobjnam_data_bp)) > 1n && (cptr.stPtro(d, $_readobjnam_data_p, cptr.strrchr(cptr.ldPtro(d, $_readobjnam_data_bp), 40))) !== null) {
         let keeptrailingchars = 1;
@@ -4108,7 +4108,7 @@ function readobjnam_parse_charges(d) {
         cptr.stI32o(d, $_readobjnam_data_rechrg, 7);
 }
 
-/** C ref: objnam.c:4240 — @param {CPtr} d @returns {CInt} */
+/** C ref: objnam.c:4240 — @param {CPtr<struct _readobjnam_data>} d @returns {CInt} */
 function readobjnam_postparse1(d) {
     let i;
     if ((cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __sl89))) !== null) {
@@ -4345,7 +4345,7 @@ function readobjnam_postparse1(d) {
     return 0;
 }
 
-/** C ref: objnam.c:4666 — @param {CPtr} d @returns {CInt} */
+/** C ref: objnam.c:4666 — @param {CPtr<struct _readobjnam_data>} d @returns {CInt} */
 function readobjnam_postparse2(d) {
     let i;
     for (i = 0; i < 19; i++)
@@ -4393,7 +4393,7 @@ function readobjnam_postparse2(d) {
     return 0;
 }
 
-/** C ref: objnam.c:4727 — @param {CPtr} d @returns {CInt} */
+/** C ref: objnam.c:4727 — @param {CPtr<struct _readobjnam_data>} d @returns {CInt} */
 function readobjnam_postparse3(d) {
     let i;
     if (!cptr.ld1so(d, $_readobjnam_data_oclass) && cptr.ldPtro(d, $_readobjnam_data_actualn)) {
@@ -4512,7 +4512,7 @@ function readobjnam_postparse3(d) {
     return 0;
 }
 
-/** C ref: objnam.c:4910 — @param {CPtr} bp @param {CPtr} no_wish @returns {CPtr} */
+/** C ref: objnam.c:4910 — @param {CPtr<char>} bp @param {CPtr<struct obj>} no_wish @returns {CPtr<struct obj>} */
 export function readobjnam(bp, no_wish) {
     let d, rn1cnt, P, humanwere, aname, novelname, objtyp = cptr.box(0), nut;
     let __pc = 0;
@@ -4986,7 +4986,7 @@ export function rnd_class(first, last) {
     return (first == last) ? first : NHC.STRANGE_OBJECT;
 }
 
-/** C ref: objnam.c:5422 — @param {CInt} i @param {CPtr} ordinaryname @returns {CPtr} */
+/** C ref: objnam.c:5422 — @param {CInt} i @param {CPtr<char>} ordinaryname @returns {CPtr<char>} */
 export function Japanese_item_name(i, ordinaryname) {
     let j = Japanese_items;
     while (cptr.ldI32(j)) {
@@ -4997,7 +4997,7 @@ export function Japanese_item_name(i, ordinaryname) {
     return ordinaryname;
 }
 
-/** C ref: objnam.c:5435 — @param {CPtr} armor @returns {CPtr} */
+/** C ref: objnam.c:5435 — @param {CPtr<struct obj>} armor @returns {CPtr<char>} */
 export function armor_simple_name(armor) {
     let result = null;
     let armcat = cptr.ld1so2(objects, cptr.ldI16o(armor, $obj_otyp), 120, $objclass_oc_subtyp);
@@ -5031,7 +5031,7 @@ export function armor_simple_name(armor) {
     return result;
 }
 
-/** C ref: objnam.c:5471 — @param {CPtr} suit @returns {CPtr} */
+/** C ref: objnam.c:5471 — @param {CPtr<struct obj>} suit @returns {CPtr<char>} */
 export function suit_simple_name(suit) {
     let suitnm;
     let esuitp;
@@ -5050,7 +5050,7 @@ export function suit_simple_name(suit) {
     return __sl727;
 }
 
-/** C ref: objnam.c:5492 — @param {CPtr} cloak @returns {CPtr} */
+/** C ref: objnam.c:5492 — @param {CPtr<struct obj>} cloak @returns {CPtr<char>} */
 export function cloak_simple_name(cloak) {
     if (cloak) {
         switch (cptr.ldI16o(cloak, $obj_otyp)) {
@@ -5067,14 +5067,14 @@ export function cloak_simple_name(cloak) {
     return __sl493;
 }
 
-/** C ref: objnam.c:5513 — @param {CPtr} helmet @returns {CPtr} */
+/** C ref: objnam.c:5513 — @param {CPtr<struct obj>} helmet @returns {CPtr<char>} */
 export function helm_simple_name(helmet) {
     return !hard_helmet(helmet) ? __sl492 : __sl481;
 }
 
 const __static_gloves_simple_name_gauntlets = cptr.bytes("gauntlets"); /** C ref: objnam.c:5534 — char[10] (function-static) */
 
-/** C ref: objnam.c:5532 — @param {CPtr} gloves @returns {CPtr} */
+/** C ref: objnam.c:5532 — @param {CPtr<struct obj>} gloves @returns {CPtr<char>} */
 export function gloves_simple_name(gloves) {
     if (gloves && (cptr.ldI32o(gloves, $obj_dknown) & 1) | 0) {
         let otyp = cptr.ldI16o(gloves, $obj_otyp);
@@ -5089,7 +5089,7 @@ export function gloves_simple_name(gloves) {
 
 const __static_boots_simple_name_shoes = cptr.bytes("shoes"); /** C ref: objnam.c:5553 — char[6] (function-static) */
 
-/** C ref: objnam.c:5551 — @param {CPtr} boots @returns {CPtr} */
+/** C ref: objnam.c:5551 — @param {CPtr<struct obj>} boots @returns {CPtr<char>} */
 export function boots_simple_name(boots) {
     if (boots && (cptr.ldI32o(boots, $obj_dknown) & 1) | 0) {
         let otyp = cptr.ldI16o(boots, $obj_otyp);
@@ -5102,7 +5102,7 @@ export function boots_simple_name(boots) {
     return __sl281;
 }
 
-/** C ref: objnam.c:5570 — @param {CPtr} shield @returns {CPtr} */
+/** C ref: objnam.c:5570 — @param {CPtr<struct obj>} shield @returns {CPtr<char>} */
 export function shield_simple_name(shield) {
     if (shield) {
         if (cptr.ldI16o(shield, $obj_otyp) == NHC.SHIELD_OF_REFLECTION)
@@ -5111,12 +5111,12 @@ export function shield_simple_name(shield) {
     return __sl50;
 }
 
-/** C ref: objnam.c:5600 — @param {CPtr} shirt @returns {CPtr} */
+/** C ref: objnam.c:5600 — @param {CPtr<struct obj>} shirt @returns {CPtr<char>} */
 export function shirt_simple_name(shirt) {
     return __sl494;
 }
 
-/** C ref: objnam.c:5606 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: objnam.c:5606 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function mimic_obj_name(mtmp) {
     if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT) {
         if (cptr.ldI32o(mtmp, $monst_mappearance) == NHC.GOLD_PIECE)
@@ -5127,7 +5127,7 @@ export function mimic_obj_name(mtmp) {
     return __sl732;
 }
 
-/** C ref: objnam.c:5624 — @param {CPtr} qbuf @param {CPtr} qprefix @param {CPtr} qsuffix @param {CPtr} obj @param {CPtr} func @param {CPtr} altfunc @param {CPtr} lastR @returns {CPtr} */
+/** C ref: objnam.c:5624 — @param {CPtr<char>} qbuf @param {CPtr<char>} qprefix @param {CPtr<char>} qsuffix @param {CPtr<struct obj>} obj @param {CPtr} func @param {CPtr} altfunc @param {CPtr<char>} lastR @returns {CPtr<char>} */
 export function safe_qbuf(qbuf, qprefix, qsuffix, obj, func, altfunc, lastR) {
     let bufp;
     let endp;

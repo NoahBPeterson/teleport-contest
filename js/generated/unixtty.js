@@ -120,7 +120,7 @@ export function gettty() {
     settty_needed = 1;
 }
 
-/** C ref: unixtty.c:247 — @param {CPtr} s */
+/** C ref: unixtty.c:247 — @param {CPtr<char>} s */
 export function settty(s) {
     if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty))
         term_end_screen();
@@ -191,7 +191,7 @@ export function introff() {
     }
 }
 
-/** C ref: unixtty.c:489 — @param {CPtr} s */
+/** C ref: unixtty.c:489 — @param {CPtr<char>} s */
 export function error(s, ...__va) {
     let the_args;
     the_args = cptr.vaList(__va);

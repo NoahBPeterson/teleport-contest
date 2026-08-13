@@ -34,7 +34,7 @@ export function getnow() {
     return datetime.v;
 }
 
-/** C ref: calendar.c:47 @returns {CPtr} */
+/** C ref: calendar.c:47 @returns {CPtr<struct tm>} */
 function getlt() {
     let date = cptr.box(getnow());
     return localtime(date);
@@ -78,7 +78,7 @@ export function hhmmss(date) {
 
 const __static_yyyymmddhhmmss_datestr = new Uint8Array(15); /** C ref: calendar.c:104 — char[15] (function-static) */
 
-/** C ref: calendar.c:101 — @param {CLongLong} date @returns {CPtr} */
+/** C ref: calendar.c:101 — @param {CLongLong} date @returns {CPtr<char>} */
 export function yyyymmddhhmmss(date) {
     date = cptr.box(date);
     let datenum;
@@ -95,7 +95,7 @@ export function yyyymmddhhmmss(date) {
     return cptr.decay(__static_yyyymmddhhmmss_datestr);
 }
 
-/** C ref: calendar.c:126 — @param {CPtr} buf @returns {*} */
+/** C ref: calendar.c:126 — @param {CPtr<char>} buf @returns {*} */
 export function time_from_yyyymmddhhmmss(buf) {
     let k;
     let timeresult = 0n;

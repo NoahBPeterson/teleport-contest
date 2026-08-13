@@ -455,7 +455,7 @@ export function dodrop() {
     return result;
 }
 
-/** C ref: do.c:50 — @param {CPtr} otmp @param {CInt} rx @param {CInt} ry @param {CInt} pushing @returns {CInt} */
+/** C ref: do.c:50 — @param {CPtr<struct obj>} otmp @param {CInt} rx @param {CInt} ry @param {CInt} pushing @returns {CInt} */
 export function boulder_hits_pool(otmp, rx, ry, pushing) {
     if (!otmp || cptr.ldI16o(otmp, $obj_otyp) != NHC.BOULDER) {
         impossible(__sl1);
@@ -530,7 +530,7 @@ export function boulder_hits_pool(otmp, rx, ry, pushing) {
     return 0;
 }
 
-/** C ref: do.c:162 — @param {CPtr} obj @param {CInt} x @param {CInt} y @param {CPtr} verb @returns {CInt} */
+/** C ref: do.c:162 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @param {CPtr<char>} verb @returns {CInt} */
 export function flooreffects(obj, x, y, verb) {
     let t;
     let mtmp;
@@ -660,7 +660,7 @@ export function flooreffects(obj, x, y, verb) {
     return schar(res);
 }
 
-/** C ref: do.c:363 — @param {CPtr} obj */
+/** C ref: do.c:363 — @param {CPtr<struct obj>} obj */
 export function doaltarobj(obj) {
     if (Blind())
         return;
@@ -681,7 +681,7 @@ export function doaltarobj(obj) {
     }
 }
 
-/** C ref: do.c:395 — @param {CPtr} obj */
+/** C ref: do.c:395 — @param {CPtr<struct obj>} obj */
 export function trycall(obj) {
     if (!(cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_name_known) & 1) && !cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), 120, $objclass_oc_uname))
         docall(obj);
@@ -756,7 +756,7 @@ function teleport_sink() {
     return 0;
 }
 
-/** C ref: do.c:498 — @param {CPtr} obj */
+/** C ref: do.c:498 — @param {CPtr<struct obj>} obj */
 function dosinkring(obj) {
     let otmp;
     let otmp2;
@@ -906,7 +906,7 @@ function dosinkring(obj) {
         useup(obj);
 }
 
-/** C ref: do.c:665 — @param {CPtr} obj @param {CPtr} word @returns {CInt} */
+/** C ref: do.c:665 — @param {CPtr<struct obj>} obj @param {CPtr<char>} word @returns {CInt} */
 export function canletgo(obj, word) {
     if (cptr.ldI64o(obj, $obj_owornmask) & 983167n) {
         if (cptr.ld1s(word))
@@ -945,7 +945,7 @@ export function canletgo(obj, word) {
     return 1;
 }
 
-/** C ref: do.c:714 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do.c:714 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function drop(obj) {
     if (!obj)
         return NHM.ECMD_FAIL;
@@ -1004,7 +1004,7 @@ function drop(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: do.c:786 — @param {CPtr} obj */
+/** C ref: do.c:786 — @param {CPtr<struct obj>} obj */
 export function dropx(obj) {
     freeinv(obj);
     if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
@@ -1016,12 +1016,12 @@ export function dropx(obj) {
     dropy(obj);
 }
 
-/** C ref: do.c:800 — @param {CPtr} obj */
+/** C ref: do.c:800 — @param {CPtr<struct obj>} obj */
 export function dropy(obj) {
     dropz(obj, 0);
 }
 
-/** C ref: do.c:807 — @param {CPtr} obj @param {CInt} with_impact */
+/** C ref: do.c:807 — @param {CPtr<struct obj>} obj @param {CInt} with_impact */
 export function dropz(obj, with_impact) {
     if (cptr.eq(obj, uwep.v))
         setuwep(null);
@@ -1055,7 +1055,7 @@ export function dropz(obj, with_impact) {
     encumber_msg();
 }
 
-/** C ref: do.c:849 — @param {CPtr} obj @returns {CInt} */
+/** C ref: do.c:849 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function engulfer_digests_food(obj) {
     if ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) && (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || (cptr.ldI32o(obj, $obj_globby) & 1) | 0 || cptr.ldI16o(obj, $obj_otyp) == NHC.MEATBALL || cptr.ldI16o(obj, $obj_otyp) == NHC.ENORMOUS_MEATBALL || cptr.ldI16o(obj, $obj_otyp) == NHC.MEAT_RING || cptr.ldI16o(obj, $obj_otyp) == NHC.MEAT_STICK)) {
         let could_petrify = 0;
@@ -1088,7 +1088,7 @@ function engulfer_digests_food(obj) {
     return 0;
 }
 
-/** C ref: do.c:893 — @param {CPtr} obj */
+/** C ref: do.c:893 — @param {CPtr<struct obj>} obj */
 export function obj_no_longer_held(obj) {
     if (!obj) {
         return;
@@ -1128,7 +1128,7 @@ export function doddrop() {
     return result;
 }
 
-/** C ref: do.c:947 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: do.c:947 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function better_not_try_to_drop_that(otmp) {
     let buf = new Uint8Array(256);
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && !u_safe_from_fatal_corpse(otmp, NHC.st_all)) {
@@ -1138,7 +1138,7 @@ function better_not_try_to_drop_that(otmp) {
     return 0;
 }
 
-/** C ref: do.c:964 — @param {CPtr} otmp @param {CLongLong} cnt @returns {CInt} */
+/** C ref: do.c:964 — @param {CPtr<struct obj>} otmp @param {CLongLong} cnt @returns {CInt} */
 function menudrop_split(otmp, cnt) {
     if (cnt && cnt < cptr.ldI64o(otmp, $obj_quan)) {
         if (welded(otmp)) {
@@ -1232,7 +1232,7 @@ function menu_drop(retry) {
     return (n_dropped ? NHM.ECMD_TIME : NHM.ECMD_OK);
 }
 
-/** C ref: do.c:1110 — @param {CPtr} updn @returns {CInt} */
+/** C ref: do.c:1110 — @param {CPtr<char>} updn @returns {CInt} */
 function u_stuck_cannot_go(updn) {
     if (cptr.ldPtro(u, $you_ustuck)) {
         if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
@@ -1419,7 +1419,7 @@ export function doup() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: do.c:1348 @returns {CPtr} */
+/** C ref: do.c:1348 @returns {CPtr<NHFILE>} */
 function currentlevel_rewrite() {
     let nhfp;
     let whynot = new Uint8Array(256);
@@ -1450,7 +1450,7 @@ export function save_currentstate() {
     (cptr.stI32o(program_state, $sinfo_in_checkpoint, cptr.ldI32o(program_state, $sinfo_in_checkpoint) + -1)) - (-1);
 }
 
-/** C ref: do.c:1412 — @param {CPtr} mtmp */
+/** C ref: do.c:1412 — @param {CPtr<struct monst>} mtmp */
 export function u_collide_m(mtmp) {
     let cc = cptr.alloc(4);
     if (!mtmp || cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)) || !cptr.eq(mtmp, (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)))) {
@@ -1497,7 +1497,7 @@ function familiar_level_msg() {
         pline(__sl157, mesg);
 }
 
-/** C ref: do.c:1479 — @param {CPtr} newlevel @param {CInt} at_stairs @param {CInt} falling @param {CInt} portal */
+/** C ref: do.c:1479 — @param {CPtr<d_level>} newlevel @param {CInt} at_stairs @param {CInt} falling @param {CInt} portal */
 export function goto_level(newlevel, at_stairs, falling, portal) {
     let l_idx;
     let save_mode;
@@ -1876,7 +1876,7 @@ function final_level() {
     gain_guardian_angel();
 }
 
-/** C ref: do.c:2057 — @param {CPtr} tolev @param {CInt} utotype_flags @param {CPtr} pre_msg @param {CPtr} post_msg */
+/** C ref: do.c:2057 — @param {CPtr<d_level>} tolev @param {CInt} utotype_flags @param {CPtr<char>} pre_msg @param {CPtr<char>} post_msg */
 export function schedule_goto(tolev, utotype_flags, pre_msg, post_msg) {
     cptr.st1o(u, $you_utotype, uchar((utotype_flags | NHC.UTOTYPE_DEFERRED)));
     assign_level(cptr.add(u, $you_utolev), tolev);
@@ -1914,7 +1914,7 @@ export function deferred_goto() {
         cptr.free(cptr.ldPtro(gd, $instance_globals_d_dfr_post_msg)), cptr.stPtro(gd, $instance_globals_d_dfr_post_msg, null);
 }
 
-/** C ref: do.c:2111 — @param {CPtr} corpse @returns {CInt} */
+/** C ref: do.c:2111 — @param {CPtr<struct obj>} corpse @returns {CInt} */
 export function revive_corpse(corpse) {
     let mtmp;
     let mcarry;
@@ -2021,7 +2021,7 @@ export function revive_corpse(corpse) {
     return 0;
 }
 
-/** C ref: do.c:2251 — @param {CPtr} arg @param {CLongLong} timeout */
+/** C ref: do.c:2251 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function revive_mon(arg, timeout) {
     let body = cptr.ldPtr(arg);
     let mptr = cptr.add(mons, cptr.ldI32o(body, $obj_corpsenm), 96);
@@ -2059,7 +2059,7 @@ export function revive_mon(arg, timeout) {
     }
 }
 
-/** C ref: do.c:2299 — @param {CPtr} arg @param {CLongLong} timeout */
+/** C ref: do.c:2299 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function zombify_mon(arg, timeout) {
     let body = cptr.ldPtr(arg);
     let zmon = zombie_form(cptr.add(mons, cptr.ldI32o(body, $obj_corpsenm), 96));
@@ -2080,7 +2080,7 @@ function danger_uprops() {
     return schar((Stoned() || Slimed() || Strangled() || Sick() ? 1 : 0));
 }
 
-/** C ref: do.c:2325 — @param {CPtr} ucverb @param {CPtr} cmddesc @param {CPtr} act @param {CPtr} flagcounter @returns {CInt} */
+/** C ref: do.c:2325 — @param {CPtr<char>} ucverb @param {CPtr<char>} cmddesc @param {CPtr<char>} act @param {CPtr<int>} flagcounter @returns {CInt} */
 export function cmd_safety_prevention(ucverb, cmddesc, act, flagcounter) {
     if (cptr.ld1so(flags, $flag_safe_wait) && !cptr.ld1so(iflags, $instance_flags_menu_requested) && !cptr.ldI64o(gm, $instance_globals_m_multi)) {
         let buf = new Uint8Array(128);
@@ -2144,7 +2144,7 @@ export function dowipe() {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: do.c:2408 — @param {CPtr} for_what @param {CInt} by_steed */
+/** C ref: do.c:2408 — @param {CPtr<char>} for_what @param {CInt} by_steed */
 export function legs_in_no_shape(for_what, by_steed) {
     if (by_steed && cptr.ldPtro(u, $you_usteed)) {
         pline(__sl256, Monnam(cptr.ldPtro(u, $you_usteed)), for_what);

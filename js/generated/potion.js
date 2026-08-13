@@ -466,13 +466,13 @@ function itimeout_incr(old, incr) {
     return itimeout(BigInt.asIntN(64, (old & 16777215n) + BigInt(incr)));
 }
 
-/** C ref: potion.c:75 — @param {CPtr} which @param {CLongLong} val */
+/** C ref: potion.c:75 — @param {CPtr<long>} which @param {CLongLong} val */
 export function set_itimeout(which, val) {
     cptr.stI64(which, cptr.ldI64(which) & (-16777216n));
     cptr.stI64(which, cptr.ldI64(which) | itimeout(val));
 }
 
-/** C ref: potion.c:83 — @param {CPtr} which @param {CInt} incr */
+/** C ref: potion.c:83 — @param {CPtr<long>} which @param {CInt} incr */
 export function incr_itimeout(which, incr) {
     set_itimeout(which, itimeout_incr(cptr.ldI64(which), incr));
 }
@@ -513,7 +513,7 @@ export function make_stunned(xtime, talk) {
     set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STUNNED, 24), $prop_intrinsic), xtime);
 }
 
-/** C ref: potion.c:137 — @param {CLongLong} xtime @param {CPtr} cause @param {CInt} talk @param {CInt} type */
+/** C ref: potion.c:137 — @param {CLongLong} xtime @param {CPtr<char>} cause @param {CInt} talk @param {CInt} type */
 export function make_sick(xtime, cause, talk, type) {
     let kptr;
     let old = Sick();
@@ -553,7 +553,7 @@ export function make_sick(xtime, cause, talk, type) {
         dealloc_killer(kptr);
 }
 
-/** C ref: potion.c:195 — @param {CLongLong} xtime @param {CPtr} msg */
+/** C ref: potion.c:195 — @param {CLongLong} xtime @param {CPtr<char>} msg */
 export function make_slimed(xtime, msg) {
     let old = Slimed();
     set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLIMED, 24), $prop_intrinsic), xtime);
@@ -571,7 +571,7 @@ export function make_slimed(xtime, msg) {
     }
 }
 
-/** C ref: potion.c:222 — @param {CLongLong} xtime @param {CPtr} msg @param {CInt} killedby @param {CPtr} killername */
+/** C ref: potion.c:222 — @param {CLongLong} xtime @param {CPtr<char>} msg @param {CInt} killedby @param {CPtr<char>} killername */
 export function make_stoned(xtime, msg, killedby, killername) {
     let old = Stoned();
     set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STONED, 24), $prop_intrinsic), xtime);
@@ -777,7 +777,7 @@ function ghost_from_bottle() {
     cptr.stPtro(gn, $instance_globals_n_nomovemsg, __sl47);
 }
 
-/** C ref: potion.c:505 — @param {CPtr} obj @returns {CInt} */
+/** C ref: potion.c:505 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function drink_ok(obj) {
     if (!obj)
         return drink_ok_extra ? NHC.GETOBJ_EXCLUDE_NONINVENT : NHC.GETOBJ_EXCLUDE;
@@ -841,7 +841,7 @@ export function dodrink() {
     return dopotion(otmp);
 }
 
-/** C ref: potion.c:618 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: potion.c:618 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function dopotion(otmp) {
     let retval;
     cptr.stI32o(otmp, $obj_in_use, 1);
@@ -863,7 +863,7 @@ export function dopotion(otmp) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: potion.c:646 — @param {CPtr} otmp */
+/** C ref: potion.c:646 — @param {CPtr<struct obj>} otmp */
 function peffect_restore_ability(otmp) {
     (cptr.stI32o(gp, $instance_globals_p_potion_unkn, cptr.ldI32o(gp, $instance_globals_p_potion_unkn) + 1)) - (1);
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
@@ -894,7 +894,7 @@ function peffect_restore_ability(otmp) {
     }
 }
 
-/** C ref: potion.c:696 — @param {CPtr} otmp */
+/** C ref: potion.c:696 — @param {CPtr<struct obj>} otmp */
 function peffect_hallucination(otmp) {
     if (Halluc_resistance()) {
         (cptr.stI32o(gp, $instance_globals_p_potion_nothing, cptr.ldI32o(gp, $instance_globals_p_potion_nothing) + 1)) - (1);
@@ -912,7 +912,7 @@ function peffect_hallucination(otmp) {
     }
 }
 
-/** C ref: potion.c:717 — @param {CPtr} otmp */
+/** C ref: potion.c:717 — @param {CPtr<struct obj>} otmp */
 function peffect_water(otmp) {
     if (!(cptr.ldI32o(otmp, $obj_blessed) & 1) && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         pline(__sl69, hliquid(__sl70));
@@ -960,7 +960,7 @@ function peffect_water(otmp) {
     }
 }
 
-/** C ref: potion.c:771 — @param {CPtr} otmp */
+/** C ref: potion.c:771 — @param {CPtr<struct obj>} otmp */
 function peffect_booze(otmp) {
     (cptr.stI32o(gp, $instance_globals_p_potion_unkn, cptr.ldI32o(gp, $instance_globals_p_potion_unkn) + 1)) - (1);
     pline(__sl80, (cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 ? __sl81 : __sl82, Hallucination() ? __sl83 : __sl84);
@@ -979,7 +979,7 @@ function peffect_booze(otmp) {
     }
 }
 
-/** C ref: potion.c:795 — @param {CPtr} otmp */
+/** C ref: potion.c:795 — @param {CPtr<struct obj>} otmp */
 function peffect_enlightenment(otmp) {
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         (cptr.stI32o(gp, $instance_globals_p_potion_unkn, cptr.ldI32o(gp, $instance_globals_p_potion_unkn) + 1)) - (1);
@@ -994,7 +994,7 @@ function peffect_enlightenment(otmp) {
     }
 }
 
-/** C ref: potion.c:811 — @param {CPtr} otmp */
+/** C ref: potion.c:811 — @param {CPtr<struct obj>} otmp */
 function peffect_invisibility(otmp) {
     let is_spell = schar((cptr.ld1so(otmp, $obj_oclass) == NHC.SPBOOK_CLASS));
     if (is_spell && BInvis() && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.MUMMY_WRAPPING) {
@@ -1018,7 +1018,7 @@ function peffect_invisibility(otmp) {
     }
 }
 
-/** C ref: potion.c:841 — @param {CPtr} otmp */
+/** C ref: potion.c:841 — @param {CPtr<struct obj>} otmp */
 function peffect_see_invisible(otmp) {
     let msg = Invisible() && !Blind() ? 1 : 0;
     let permchance = (((10 - (HInvis() ? 3 : 0)) | 0) - (HSee_invisible() ? 6 : 0)) | 0;
@@ -1048,7 +1048,7 @@ function peffect_see_invisible(otmp) {
     }
 }
 
-/** C ref: potion.c:881 — @param {CPtr} otmp */
+/** C ref: potion.c:881 — @param {CPtr<struct obj>} otmp */
 function peffect_paralysis(otmp) {
     if (Free_action()) {
         You(__sl100);
@@ -1066,7 +1066,7 @@ function peffect_paralysis(otmp) {
     }
 }
 
-/** C ref: potion.c:901 — @param {CPtr} otmp */
+/** C ref: potion.c:901 — @param {CPtr<struct obj>} otmp */
 function peffect_sleeping(otmp) {
     if (Sleep_resistance() || Free_action()) {
         monstseesu(8n);
@@ -1078,7 +1078,7 @@ function peffect_sleeping(otmp) {
     }
 }
 
-/** C ref: potion.c:914 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: potion.c:914 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function peffect_monster_detection(otmp) {
     if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
         let i;
@@ -1117,7 +1117,7 @@ function peffect_monster_detection(otmp) {
     return 0;
 }
 
-/** C ref: potion.c:955 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: potion.c:955 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function peffect_object_detection(otmp) {
     if (object_detect(otmp, 0))
         return 1;
@@ -1125,7 +1125,7 @@ function peffect_object_detection(otmp) {
     return 0;
 }
 
-/** C ref: potion.c:964 — @param {CPtr} otmp */
+/** C ref: potion.c:964 — @param {CPtr<struct obj>} otmp */
 function peffect_sickness(otmp) {
     pline(__sl111);
     if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
@@ -1163,7 +1163,7 @@ function peffect_sickness(otmp) {
     }
 }
 
-/** C ref: potion.c:1014 — @param {CPtr} otmp */
+/** C ref: potion.c:1014 — @param {CPtr<struct obj>} otmp */
 function peffect_confusion(otmp) {
     if (!HConfusion()) {
         if (Hallucination()) {
@@ -1176,7 +1176,7 @@ function peffect_confusion(otmp) {
     make_confused(itimeout_incr(HConfusion(), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1025, __sl124), rn2(7)) : rn2(7)) + ((16 - Math.imul(8, bcsign(otmp))) | 0)) | 0)), 0);
 }
 
-/** C ref: potion.c:1030 — @param {CPtr} otmp */
+/** C ref: potion.c:1030 — @param {CPtr<struct obj>} otmp */
 function peffect_gain_ability(otmp) {
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         pline(__sl125);
@@ -1196,7 +1196,7 @@ function peffect_gain_ability(otmp) {
     }
 }
 
-/** C ref: potion.c:1052 — @param {CPtr} otmp */
+/** C ref: potion.c:1052 — @param {CPtr<struct obj>} otmp */
 function peffect_speed(otmp) {
     let is_speed = schar((cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_SPEED));
     if (is_speed && Wounded_legs() && !(cptr.ldI32o(otmp, $obj_cursed) & 1) && !cptr.ldPtro(u, $you_usteed)) {
@@ -1211,14 +1211,14 @@ function peffect_speed(otmp) {
     }
 }
 
-/** C ref: potion.c:1073 — @param {CPtr} otmp */
+/** C ref: potion.c:1073 — @param {CPtr<struct obj>} otmp */
 function peffect_blindness(otmp) {
     if (Blind() || ((HBlinded() || EBlinded()) && BBlinded()))
         (cptr.stI32o(gp, $instance_globals_p_potion_nothing, cptr.ldI32o(gp, $instance_globals_p_potion_nothing) + 1)) - (1);
     make_blinded(itimeout_incr(BlindedTimeout(), (((rng_log_enabled() ? (rng_log_set_caller(__sl55, 1078, __sl129), rn2(200)) : rn2(200)) + ((250 - Math.imul(125, bcsign(otmp))) | 0)) | 0)), schar((!Blind())));
 }
 
-/** C ref: potion.c:1083 — @param {CPtr} otmp */
+/** C ref: potion.c:1083 — @param {CPtr<struct obj>} otmp */
 function peffect_gain_level(otmp) {
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         let on_lvl_1 = schar((ledger_no(cptr.add(u, $you_uz)) == 1));
@@ -1248,14 +1248,14 @@ function peffect_gain_level(otmp) {
         cptr.stI64o(u, $you_uexp, rndexp(1));
 }
 
-/** C ref: potion.c:1119 — @param {CPtr} otmp */
+/** C ref: potion.c:1119 — @param {CPtr<struct obj>} otmp */
 function peffect_healing(otmp) {
     You_feel(__sl133);
     healup((8 + (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1122, __sl134), d(((4 + Math.imul(2, bcsign(otmp))) | 0), 4)) : d(((4 + Math.imul(2, bcsign(otmp))) | 0), 4))) | 0, !(cptr.ldI32o(otmp, $obj_cursed) & 1) ? 1 : 0, schar((!!(cptr.ldI32o(otmp, $obj_blessed) & 1))), schar((!(cptr.ldI32o(otmp, $obj_cursed) & 1))));
     exercise(NHC.A_CON, 1);
 }
 
-/** C ref: potion.c:1128 — @param {CPtr} otmp */
+/** C ref: potion.c:1128 — @param {CPtr<struct obj>} otmp */
 function peffect_extra_healing(otmp) {
     You_feel(__sl135);
     healup((16 + (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1131, __sl136), d(((4 + Math.imul(2, bcsign(otmp))) | 0), 8)) : d(((4 + Math.imul(2, bcsign(otmp))) | 0), 8))) | 0, (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? 5 : (!(cptr.ldI32o(otmp, $obj_cursed) & 1) ? 2 : 0), schar((!(cptr.ldI32o(otmp, $obj_cursed) & 1))), 1);
@@ -1266,7 +1266,7 @@ function peffect_extra_healing(otmp) {
         heal_legs(0);
 }
 
-/** C ref: potion.c:1144 — @param {CPtr} otmp */
+/** C ref: potion.c:1144 — @param {CPtr<struct obj>} otmp */
 function peffect_full_healing(otmp) {
     You_feel(__sl137);
     healup(400, (4 + Math.imul(4, bcsign(otmp))) | 0, schar((!(cptr.ldI32o(otmp, $obj_cursed) & 1))), 1);
@@ -1281,7 +1281,7 @@ function peffect_full_healing(otmp) {
         heal_legs(0);
 }
 
-/** C ref: potion.c:1165 — @param {CPtr} otmp */
+/** C ref: potion.c:1165 — @param {CPtr<struct obj>} otmp */
 function peffect_levitation(otmp) {
     if (!Levitation() && !BLevitation()) {
         set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, 24), $prop_intrinsic), 1n);
@@ -1312,7 +1312,7 @@ function peffect_levitation(otmp) {
     float_vs_flight();
 }
 
-/** C ref: potion.c:1224 — @param {CPtr} otmp */
+/** C ref: potion.c:1224 — @param {CPtr<struct obj>} otmp */
 function peffect_gain_energy(otmp) {
     let num;
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
@@ -1336,7 +1336,7 @@ function peffect_gain_energy(otmp) {
     exercise(NHC.A_WIS, 1);
 }
 
-/** C ref: potion.c:1260 — @param {CPtr} otmp */
+/** C ref: potion.c:1260 — @param {CPtr<struct obj>} otmp */
 function peffect_oil(otmp) {
     let good_for_you = 0;
     let vulnerable;
@@ -1358,7 +1358,7 @@ function peffect_oil(otmp) {
     exercise(NHC.A_WIS, good_for_you);
 }
 
-/** C ref: potion.c:1297 — @param {CPtr} otmp */
+/** C ref: potion.c:1297 — @param {CPtr<struct obj>} otmp */
 function peffect_acid(otmp) {
     if (Acid_resistance()) {
         pline(__sl150, Hallucination() ? __sl151 : __sl152);
@@ -1374,7 +1374,7 @@ function peffect_acid(otmp) {
     (cptr.stI32o(gp, $instance_globals_p_potion_unkn, cptr.ldI32o(gp, $instance_globals_p_potion_unkn) + 1)) - (1);
 }
 
-/** C ref: potion.c:1318 — @param {CPtr} otmp */
+/** C ref: potion.c:1318 — @param {CPtr<struct obj>} otmp */
 function peffect_polymorph(otmp) {
     You_feel(__sl159, Hallucination() ? __sl23 : __sl160);
     if (!Unchanging()) {
@@ -1388,7 +1388,7 @@ function peffect_polymorph(otmp) {
     }
 }
 
-/** C ref: potion.c:1333 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: potion.c:1333 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 export function peffects(otmp) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.POT_RESTORE_ABILITY:
@@ -1511,7 +1511,7 @@ export function healup(nhp, nxtra, curesick, cureblind) {
     return;
 }
 
-/** C ref: potion.c:1461 — @param {CPtr} obj @param {CPtr} txt */
+/** C ref: potion.c:1461 — @param {CPtr<struct obj>} obj @param {CPtr<char>} txt */
 export function strange_feeling(obj, txt) {
     if (cptr.ld1so(flags, $flag_beginner) || !txt)
         You(__sl58, Hallucination() ? __sl23 : __sl160);
@@ -1561,7 +1561,7 @@ cptr.stPtro(hbottlenames, 168, __sl191);
 cptr.stPtro(hbottlenames, 176, __sl192);
 cptr.stPtro(hbottlenames, 184, __sl193);
 
-/** C ref: potion.c:1488 @returns {CPtr} */
+/** C ref: potion.c:1488 @returns {CPtr<char>} */
 export function bottlename() {
     if (Hallucination())
         return cptr.ldPtro(hbottlenames, (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1491, __sl194), rn2(24)) : rn2(24)), 8);
@@ -1569,7 +1569,7 @@ export function bottlename() {
         return cptr.ldPtro(bottlenames, (rng_log_enabled() ? (rng_log_set_caller(__sl55, 1493, __sl194), rn2(7)) : rn2(7)), 8);
 }
 
-/** C ref: potion.c:1498 — @param {CPtr} potion @param {CPtr} targobj @param {CInt} useeit @param {CPtr} objphrase @returns {CInt} */
+/** C ref: potion.c:1498 — @param {CPtr<struct obj>} potion @param {CPtr<struct obj>} targobj @param {CInt} useeit @param {CPtr<char>} objphrase @returns {CInt} */
 function H2Opotion_dip(potion, targobj, useeit, objphrase) {
     let func = null;
     let glowcolor = null;
@@ -1635,7 +1635,7 @@ function H2Opotion_dip(potion, targobj, useeit, objphrase) {
     return res;
 }
 
-/** C ref: potion.c:1595 — @param {CPtr} obj @param {CInt} worsen @param {CInt} seeit */
+/** C ref: potion.c:1595 — @param {CPtr<struct obj>} obj @param {CInt} worsen @param {CInt} seeit */
 export function impact_arti_light(obj, worsen, seeit) {
     let otmp;
     if ((worsen ? (cptr.ldI32o(obj, $obj_cursed) & 1) | 0 : (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) || obj_resists(obj, 25, 75))
@@ -1650,7 +1650,7 @@ export function impact_arti_light(obj, worsen, seeit) {
     return;
 }
 
-/** C ref: potion.c:1625 — @param {CPtr} mon @param {CPtr} obj @param {CInt} how */
+/** C ref: potion.c:1625 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} how */
 export function potionhit(mon, obj, how) {
     let botlnam, isyou, distance, tx, ty, saddle, hit_saddle, your_fault, mnam, buf, dmg, saddle_glows, affected, useeit, angermon, cureblind, sawit, cursed_potion, btmp, shkp;
     let __pc = 0;
@@ -1985,7 +1985,7 @@ export function potionhit(mon, obj, how) {
     }
 }
 
-/** C ref: potion.c:1932 — @param {CPtr} obj */
+/** C ref: potion.c:1932 — @param {CPtr<struct obj>} obj */
 export function potionbreathe(obj) {
     let i;
     let ii;
@@ -2150,7 +2150,7 @@ export function potionbreathe(obj) {
     return;
 }
 
-/** C ref: potion.c:2122 — @param {CPtr} o1 @param {CPtr} o2 @returns {CInt} */
+/** C ref: potion.c:2122 — @param {CPtr<struct obj>} o1 @param {CPtr<struct obj>} o2 @returns {CInt} */
 function mixtype(o1, o2) {
     let o1typ = cptr.ldI16o(o1, $obj_otyp);
     let o2typ = cptr.ldI16o(o2, $obj_otyp);
@@ -2229,7 +2229,7 @@ function mixtype(o1, o2) {
     return NHC.STRANGE_OBJECT;
 }
 
-/** C ref: potion.c:2214 — @param {CPtr} obj @returns {CInt} */
+/** C ref: potion.c:2214 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function dip_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_DOWNPLAY;
@@ -2240,14 +2240,14 @@ function dip_ok(obj) {
     return NHC.GETOBJ_SUGGEST;
 }
 
-/** C ref: potion.c:2231 — @param {CPtr} obj @returns {CInt} */
+/** C ref: potion.c:2231 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function dip_hands_ok(obj) {
     if (!obj && (Glib() && can_reach_floor(0)))
         return NHC.GETOBJ_SUGGEST;
     return dip_ok(obj);
 }
 
-/** C ref: potion.c:2243 — @param {CPtr} potobj @param {CPtr} drop_fmt @param {CPtr} drop_arg @param {CPtr} hold_msg */
+/** C ref: potion.c:2243 — @param {CPtr<struct obj>} potobj @param {CPtr<char>} drop_fmt @param {CPtr<char>} drop_arg @param {CPtr<char>} hold_msg */
 function hold_potion(potobj, drop_fmt, drop_arg, hold_msg) {
     let cap = near_capacity();
     let save_pickup_burden = cptr.ldI32o(flags, $flag_pickup_burden);
@@ -2363,14 +2363,14 @@ export function dip_into() {
     return potion_dip(obj, potion);
 }
 
-/** C ref: potion.c:2408 — @param {CPtr} potion */
+/** C ref: potion.c:2408 — @param {CPtr<struct obj>} potion */
 function poof(potion) {
     if ((cptr.ldI32o(potion, $obj_dknown) & 1))
         trycall(potion);
     useup(potion);
 }
 
-/** C ref: potion.c:2417 — @param {CPtr} obj @param {CInt} dmg @returns {CInt} */
+/** C ref: potion.c:2417 — @param {CPtr<struct obj>} obj @param {CInt} dmg @returns {CInt} */
 function dip_potion_explosion(obj, dmg) {
     if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || cptr.ldI16o(obj, $obj_otyp) == NHC.POT_ACID || (cptr.ldI16o(obj, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0) || !(rng_log_enabled() ? (rng_log_set_caller(__sl55, 2421, __sl252), rn2((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ALCHEMY_SMOCK) ? 30 : 10)) : rn2((uarmc.v && cptr.ldI16o(uarmc.v, $obj_otyp) == NHC.ALCHEMY_SMOCK) ? 30 : 10))) {
         cptr.stI32o(obj, $obj_in_use, 1);
@@ -2386,7 +2386,7 @@ function dip_potion_explosion(obj, dmg) {
     return 0;
 }
 
-/** C ref: potion.c:2442 — @param {CPtr} obj @param {CPtr} potion @returns {CInt} */
+/** C ref: potion.c:2442 — @param {CPtr<struct obj>} obj @param {CPtr<struct obj>} potion @returns {CInt} */
 function potion_dip(obj, potion) {
     let singlepotion;
     let qbuf = new Uint8Array(128);
@@ -2640,7 +2640,7 @@ function potion_dip(obj, potion) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: potion.c:2796 — @param {CPtr} monp */
+/** C ref: potion.c:2796 — @param {CPtr<struct monst *>} monp */
 export function mongrantswish(monp) {
     let mon = cptr.ldPtr(monp);
     let mx = cptr.ldI16o(mon, $monst_mx);
@@ -2654,7 +2654,7 @@ export function mongrantswish(monp) {
     tmp_at(-7, 0);
 }
 
-/** C ref: potion.c:2815 — @param {CPtr} obj */
+/** C ref: potion.c:2815 — @param {CPtr<struct obj>} obj */
 export function djinni_from_bottle(obj) {
     let mtmp = cptr.box(0);
     let chance;
@@ -2703,7 +2703,7 @@ export function djinni_from_bottle(obj) {
     }
 }
 
-/** C ref: potion.c:2873 — @param {CPtr} mon @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: potion.c:2873 — @param {CPtr<struct monst>} mon @param {CPtr<struct monst>} mtmp @returns {CPtr<struct monst>} */
 export function split_mon(mon, mtmp) {
     let mtmp2;
     let reason = new Uint8Array(256);

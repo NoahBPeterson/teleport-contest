@@ -596,7 +596,7 @@ cptr.stPtro(enc_stat, 40, __sl5);
 
 const __static_get_strength_str_buf = new Uint8Array(32); /** C ref: botl.c:23 — char[32] (function-static) */
 
-/** C ref: botl.c:21 @returns {CPtr} */
+/** C ref: botl.c:21 @returns {CPtr<char>} */
 export function get_strength_str() {
     let st = (acurr(NHC.A_STR));
     if (st > 18) {
@@ -619,7 +619,7 @@ export function check_gold_symbol() {
 
 const __static_do_statusline1_newbot1 = new Uint8Array(256); /** C ref: botl.c:50 — char[256] (function-static) */
 
-/** C ref: botl.c:48 @returns {CPtr} */
+/** C ref: botl.c:48 @returns {CPtr<char>} */
 export function do_statusline1() {
     let nb;
     let i;
@@ -662,7 +662,7 @@ const __static_do_statusline2_tmmv = new Uint8Array(128); /** C ref: botl.c:108 
 const __static_do_statusline2_cond = new Uint8Array(128); /** C ref: botl.c:108 — char[128] (function-static) */
 const __static_do_statusline2_vers = new Uint8Array(128); /** C ref: botl.c:108 — char[128] (function-static) */
 
-/** C ref: botl.c:101 @returns {CPtr} */
+/** C ref: botl.c:101 @returns {CPtr<char>} */
 export function* do_statusline2() {
     let nb;
     let dln;
@@ -800,7 +800,7 @@ export function rank_to_xlev(rank) {
     return (rank < 1) ? 1 : ((rank < 2) ? 3 : ((rank < 8) ? (((Math.imul(rank, 4)) - 2) | 0) : 30));
 }
 
-/** C ref: botl.c:332 — @param {CInt} lev @param {CInt} monnum @param {CInt} female @returns {CPtr} */
+/** C ref: botl.c:332 — @param {CInt} lev @param {CInt} monnum @param {CInt} female @returns {CPtr<char>} */
 export function rank_of(lev, monnum, female) {
     let role;
     let i;
@@ -822,12 +822,12 @@ export function rank_of(lev, monnum, female) {
     return __sl44;
 }
 
-/** C ref: botl.c:361 @returns {CPtr} */
+/** C ref: botl.c:361 @returns {CPtr<char>} */
 function rank() {
     return rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), cptr.ld1so(flags, $flag_female));
 }
 
-/** C ref: botl.c:367 — @param {CPtr} str @param {CPtr} rank_indx @param {CPtr} title_length @returns {CInt} */
+/** C ref: botl.c:367 — @param {CPtr<char>} str @param {CPtr<int>} rank_indx @param {CPtr<int>} title_length @returns {CInt} */
 export function* title_to_mon(str, rank_indx, title_length) {
     let i;
     let j;
@@ -869,7 +869,7 @@ export function max_rank_sz() {
     return;
 }
 
-/** C ref: botl.c:441 — @param {CPtr} buf @param {CInt} dflgs @returns {CInt} */
+/** C ref: botl.c:441 — @param {CPtr<char>} buf @param {CInt} dflgs @returns {CInt} */
 export function describe_level(buf, dflgs) {
     let addspace = schar(((dflgs & 1) != 0));
     let addbranch = schar(((dflgs & 2) != 0));
@@ -900,7 +900,7 @@ export function describe_level(buf, dflgs) {
     return ret;
 }
 
-/** C ref: botl.c:481 — @param {CPtr} outbuf @returns {CPtr} */
+/** C ref: botl.c:481 — @param {CPtr<char>} outbuf @returns {CPtr<char>} */
 export function* weapon_status(outbuf) {
     let res = null;
     cptr.st1(outbuf, 0);
@@ -949,7 +949,7 @@ export function* weapon_status(outbuf) {
     return (cptr.eq(outbuf, res)) ? outbuf : cptr.strcpy(outbuf, res);
 }
 
-/** C ref: botl.c:559 — @param {CPtr} armbuf @returns {CPtr} */
+/** C ref: botl.c:559 — @param {CPtr<char>} armbuf @returns {CPtr<char>} */
 export function* armor_status(armbuf) {
     let n = (((((((((((!!uarmg.v + !!uarmc.v) | 0) + !!uarm.v) | 0) + !!uarmu.v) | 0) + !!uarmh.v) | 0) + !!uarmf.v) | 0) + !!uarms.v) | 0;
     if (n == 0) {
@@ -2062,7 +2062,7 @@ function* stat_update_time() {
     return;
 }
 
-/** C ref: botl.c:1303 — @param {CInt} idx @param {CPtr} addr @param {CInt} negated */
+/** C ref: botl.c:1303 — @param {CInt} idx @param {CPtr<boolean>} addr @param {CInt} negated */
 export function* condopt(idx, addr, negated) {
     let i;
     if ((idx < 0 || idx >= NHC.CONDITION_COUNT) || (addr && !cptr.eq(addr, cptr.add(cptr.add(condtests, idx, 24), $condtests_t_choice))))
@@ -2081,7 +2081,7 @@ export function* condopt(idx, addr, negated) {
     }
 }
 
-/** C ref: botl.c:1333 — @param {CPtr} vptr1 @param {CPtr} vptr2 @returns {CInt} */
+/** C ref: botl.c:1333 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function* cond_cmp(vptr1, vptr2) {
     let indx1 = cptr.ldI32(vptr1);
     let indx2 = cptr.ldI32(vptr2);
@@ -2092,14 +2092,14 @@ function* cond_cmp(vptr1, vptr2) {
     return (yield* strncmpi((cptr.ldPtro2(condtests, indx1, 24, $condtests_t_useroption)), (cptr.ldPtro2(condtests, indx2, 24, $condtests_t_useroption)), -1));
 }
 
-/** C ref: botl.c:1346 — @param {CPtr} vptr1 @param {CPtr} vptr2 @returns {CInt} */
+/** C ref: botl.c:1346 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function* menualpha_cmp(vptr1, vptr2) {
     let indx1 = cptr.ldI32(vptr1);
     let indx2 = cptr.ldI32(vptr2);
     return (yield* strncmpi((cptr.ldPtro2(condtests, indx1, 24, $condtests_t_useroption)), (cptr.ldPtro2(condtests, indx2, 24, $condtests_t_useroption)), -1));
 }
 
-/** C ref: botl.c:1354 — @param {CInt} negated @param {CPtr} opts @returns {CInt} */
+/** C ref: botl.c:1354 — @param {CInt} negated @param {CPtr<char>} opts @returns {CInt} */
 export function* parse_cond_option(negated, opts) {
     let i;
     let sl;
@@ -2189,7 +2189,7 @@ export function* cond_menu() {
     return changed;
 }
 
-/** C ref: botl.c:1460 — @param {CInt} indx @param {CPtr} outbuf @returns {CInt} */
+/** C ref: botl.c:1460 — @param {CInt} indx @param {CPtr<char>} outbuf @returns {CInt} */
 export function opt_next_cond(indx, outbuf) {
     cptr.st1(outbuf, 0);
     if (indx >= NHC.CONDITION_COUNT)
@@ -2203,7 +2203,7 @@ export function opt_next_cond(indx, outbuf) {
 let __static_eval_notify_windowport_field_oldrndencode = 0; /** C ref: botl.c:1498 — int (function-static) */
 let __static_eval_notify_windowport_field_oldgoldsym = 0; /** C ref: botl.c:1499 — unsigned char (function-static) */
 
-/** C ref: botl.c:1493 — @param {CInt} fld @param {CPtr} valsetlist @param {CInt} idx @returns {CInt} */
+/** C ref: botl.c:1493 — @param {CInt} fld @param {CPtr<boolean>} valsetlist @param {CInt} idx @returns {CInt} */
 function* eval_notify_windowport_field(fld, valsetlist, idx) {
     let pc;
     let chg;
@@ -2266,7 +2266,7 @@ function* eval_notify_windowport_field(fld, valsetlist, idx) {
     return updated;
 }
 
-/** C ref: botl.c:1621 — @param {CPtr} valsetlist @param {CInt} idx */
+/** C ref: botl.c:1621 — @param {CPtr<boolean>} valsetlist @param {CInt} idx */
 function* evaluate_and_notify_windowport(valsetlist, idx) {
     let i;
     let fld;
@@ -2363,7 +2363,7 @@ function* init_blstats() {
     __static_init_blstats_initalready = 1;
 }
 
-/** C ref: botl.c:1809 — @param {CPtr} bl1 @param {CPtr} bl2 @returns {CInt} */
+/** C ref: botl.c:1809 — @param {CPtr<struct istat_s>} bl1 @param {CPtr<struct istat_s>} bl2 @returns {CInt} */
 function* compare_blstats(bl1, bl2) {
     let a1;
     let a2;
@@ -2421,7 +2421,7 @@ function* compare_blstats(bl1, bl2) {
     return result;
 }
 
-/** C ref: botl.c:1886 — @param {CPtr} buf @param {CPtr} a @param {CInt} anytype @returns {CPtr} */
+/** C ref: botl.c:1886 — @param {CPtr<char>} buf @param {CPtr<anything>} a @param {CInt} anytype @returns {CPtr<char>} */
 function anything_to_s(buf, a, anytype) {
     if (!buf)
         return null;
@@ -2462,7 +2462,7 @@ function anything_to_s(buf, a, anytype) {
     return buf;
 }
 
-/** C ref: botl.c:1930 — @param {CPtr} a @param {CPtr} buf @param {CInt} anytype */
+/** C ref: botl.c:1930 — @param {CPtr<anything>} a @param {CPtr<char>} buf @param {CInt} anytype */
 function s_to_anything(a, buf, anytype) {
     if (!buf || !a)
         return;
@@ -2505,7 +2505,7 @@ function s_to_anything(a, buf, anytype) {
     return;
 }
 
-/** C ref: botl.c:1977 — @param {CPtr} bl @param {CPtr} maxbl @returns {CInt} */
+/** C ref: botl.c:1977 — @param {CPtr<struct istat_s>} bl @param {CPtr<struct istat_s>} maxbl @returns {CInt} */
 function* percentage(bl, maxbl) {
     let result = 0;
     let anytype;
@@ -2626,14 +2626,14 @@ export function stat_hunger_indx() {
     return uhs;
 }
 
-/** C ref: botl.c:2160 — @param {CInt} idx @returns {CPtr} */
+/** C ref: botl.c:2160 — @param {CInt} idx @returns {CPtr<char>} */
 export function bl_idx_to_fldname(idx) {
     if (idx >= 0 && idx < NHC.MAXBLSTATS)
         return cptr.ldPtro(initblstats, idx, 88);
     return null;
 }
 
-/** C ref: botl.c:2170 — @param {CPtr} inoutbuf */
+/** C ref: botl.c:2170 — @param {CPtr<char>} inoutbuf */
 export function repad_with_dashes(inoutbuf) {
     let p = eos(inoutbuf);
     while (cptr.cmp(p, cptr.add(inoutbuf, 2)) >= 0 && cptr.ld1so(p, -1) == 32 && cptr.ld1so(p, -2) == 32) {
@@ -2697,7 +2697,7 @@ const threshold_value = cptr.bytes("hilite_status threshold ");
 /** C ref: botl.c:2216 — char[17] */
 const is_out_of_range = cptr.bytes(" is out of range");
 
-/** C ref: botl.c:2221 — @param {CPtr} name @returns {*} */
+/** C ref: botl.c:2221 — @param {CPtr<char>} name @returns {*} */
 function* fldname_to_bl_indx(name) {
     let i;
     let nmatches = 0;
@@ -2727,7 +2727,7 @@ function* fldname_to_bl_indx(name) {
     return (nmatches == 1) ? fld : NHC.BL_FLUSH;
 }
 
-/** C ref: botl.c:2257 — @param {CPtr} bl_p @param {CLongLong} augmented_time @returns {CInt} */
+/** C ref: botl.c:2257 — @param {CPtr<struct istat_s>} bl_p @param {CLongLong} augmented_time @returns {CInt} */
 function hilite_reset_needed(bl_p, augmented_time) {
     if (cptr.ldI64o(gm, $instance_globals_m_multi))
         return 0;
@@ -2780,14 +2780,14 @@ export function reset_status_hilites() {
     cptr.st1o(disp, $display_hints_botlx, 1);
 }
 
-/** C ref: botl.c:2336 — @param {CPtr} hl_text @returns {CInt} */
+/** C ref: botl.c:2336 — @param {CPtr<char>} hl_text @returns {CInt} */
 function* noneoftheabove(hl_text) {
     if ((yield* fuzzymatch(hl_text, __sl321, __sl322, 1)) || (yield* fuzzymatch(hl_text, __sl323, __sl324, 1)) || (yield* fuzzymatch(hl_text, __sl325, __sl326, 1)))
         return 1;
     return 0;
 }
 
-/** C ref: botl.c:2364 — @param {CInt} idx @param {CInt} fldidx @param {CPtr} vp @param {CInt} chg @param {CInt} pc @param {CPtr} colorptr @returns {CPtr} */
+/** C ref: botl.c:2364 — @param {CInt} idx @param {CInt} fldidx @param {CPtr} vp @param {CInt} chg @param {CInt} pc @param {CPtr<int>} colorptr @returns {CPtr<struct hilite_s>} */
 function* get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
     let hl;
     let rule = null;
@@ -2941,7 +2941,7 @@ function* get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
     return rule;
 }
 
-/** C ref: botl.c:2576 — @param {CInt} idx @param {CPtr} coloridx @param {CPtr} attrib */
+/** C ref: botl.c:2576 — @param {CInt} idx @param {CPtr<int>} coloridx @param {CPtr<int>} attrib */
 function split_clridx(idx, coloridx, attrib) {
     if (coloridx)
         cptr.stI32(coloridx, idx & 255);
@@ -2949,7 +2949,7 @@ function split_clridx(idx, coloridx, attrib) {
         cptr.stI32(attrib, (idx >> 8) & 255);
 }
 
-/** C ref: botl.c:2593 — @param {CPtr} op @param {CInt} from_configfile @returns {CInt} */
+/** C ref: botl.c:2593 — @param {CPtr<char>} op @param {CInt} from_configfile @returns {CInt} */
 export function* parse_status_hl1(op, from_configfile) {
     let hsbuf = (function () { const flat = new Uint8Array(21 * (128 * 1)); const a = []; for (let r = 0; r < 21; r++) a.push(flat.subarray(r * (128 * 1), (r + 1) * (128 * 1))); a.buf = flat; return a; })();
     let rslt;
@@ -3004,7 +3004,7 @@ export function* parse_status_hl1(op, from_configfile) {
     return 1;
 }
 
-/** C ref: botl.c:2652 — @param {CPtr} str @returns {CInt} */
+/** C ref: botl.c:2652 — @param {CPtr<char>} str @returns {CInt} */
 function is_ltgt_percentnumber(str) {
     let s = str;
     if (cptr.ld1s(s) == 60 || cptr.ld1s(s) == 62)
@@ -3022,7 +3022,7 @@ function is_ltgt_percentnumber(str) {
     return schar((cptr.ld1s(s) == 0));
 }
 
-/** C ref: botl.c:2673 — @param {CPtr} str @returns {CInt} */
+/** C ref: botl.c:2673 — @param {CPtr<char>} str @returns {CInt} */
 function has_ltgt_percentnumber(str) {
     let s = str;
     while (cptr.ld1s(s)) {
@@ -3035,7 +3035,7 @@ function has_ltgt_percentnumber(str) {
 
 const __static_splitsubfields_subfields = cptr.alloc(16 * 8); /** C ref: botl.c:2691 — char *[16] (function-static) */
 
-/** C ref: botl.c:2688 — @param {CPtr} str @param {CPtr} sfarr @param {CInt} maxsf @returns {CInt} */
+/** C ref: botl.c:2688 — @param {CPtr<char>} str @param {CPtr<char **>} sfarr @param {CInt} maxsf @returns {CInt} */
 function splitsubfields(str, sfarr, maxsf) {
     let st = null;
     let sf = 0;
@@ -3069,7 +3069,7 @@ function splitsubfields(str, sfarr, maxsf) {
     return sf;
 }
 
-/** C ref: botl.c:2730 — @param {CPtr} str @param {CPtr} arr @param {CInt} arrmin @param {CInt} arrmax @param {CPtr} retidx @returns {CInt} */
+/** C ref: botl.c:2730 — @param {CPtr<char>} str @param {CPtr<char *>} arr @param {CInt} arrmin @param {CInt} arrmax @param {CPtr<int>} retidx @returns {CInt} */
 function* is_fld_arrayvalues(str, arr, arrmin, arrmax, retidx) {
     let i;
     for (i = arrmin; i < arrmax; i++)
@@ -3080,7 +3080,7 @@ function* is_fld_arrayvalues(str, arr, arrmin, arrmax, retidx) {
     return 0;
 }
 
-/** C ref: botl.c:2747 — @param {CPtr} querystr @param {CPtr} arr @param {CInt} arrmin @param {CInt} arrmax @returns {CInt} */
+/** C ref: botl.c:2747 — @param {CPtr<char>} querystr @param {CPtr<char *>} arr @param {CInt} arrmin @param {CInt} arrmax @returns {CInt} */
 function* query_arrayvalue(querystr, arr, arrmin, arrmax) {
     let i;
     let res;
@@ -3109,7 +3109,7 @@ function* query_arrayvalue(querystr, arr, arrmin, arrmax) {
     return ret;
 }
 
-/** C ref: botl.c:2784 — @param {CInt} fld @param {CPtr} hilite */
+/** C ref: botl.c:2784 — @param {CInt} fld @param {CPtr<struct hilite_s>} hilite */
 function* status_hilite_add_threshold(fld, hilite) {
     let new_hilite;
     let old_hilite;
@@ -3143,7 +3143,7 @@ cptr.stPtro(__static_parse_status_hl2_hutxt, 32, __sl355);
 cptr.stPtro(__static_parse_status_hl2_hutxt, 40, __sl356);
 cptr.stPtro(__static_parse_status_hl2_hutxt, 48, __sl357); /** C ref: botl.c:2819 — char *[7] (function-static) */
 
-/** C ref: botl.c:2814 — @param {CPtr} s @param {CInt} from_configfile @returns {CInt} */
+/** C ref: botl.c:2814 — @param {CPtr<char [128]>} s @param {CInt} from_configfile @returns {CInt} */
 function* parse_status_hl2(s, from_configfile) {
     let tmp;
     let how;
@@ -3386,7 +3386,7 @@ function* query_conditions() {
 
 const __static_conditionbitmask2str_buf = new Uint8Array(256); /** C ref: botl.c:3143 — char[256] (function-static) */
 
-/** C ref: botl.c:3141 — @param {CLongLong} ul @returns {CPtr} */
+/** C ref: botl.c:3141 — @param {CLongLong} ul @returns {CPtr<char>} */
 function conditionbitmask2str(ul) {
     let i;
     let first = 1;
@@ -3407,7 +3407,7 @@ function conditionbitmask2str(ul) {
     return cptr.decay(__static_conditionbitmask2str_buf);
 }
 
-/** C ref: botl.c:3171 — @param {CPtr} str @returns {CLongLong} */
+/** C ref: botl.c:3171 — @param {CPtr<char>} str @returns {CLongLong} */
 function* match_str2conditionbitmask(str) {
     let i;
     let nmatches = 0;
@@ -3437,7 +3437,7 @@ function* match_str2conditionbitmask(str) {
     return mask;
 }
 
-/** C ref: botl.c:3209 — @param {CPtr} str @returns {CLongLong} */
+/** C ref: botl.c:3209 — @param {CPtr<char>} str @returns {CLongLong} */
 function* str2conditionbitmask(str) {
     let conditions_bitmask = 0n;
     let subfields = cptr.box(0);
@@ -3457,7 +3457,7 @@ function* str2conditionbitmask(str) {
     return conditions_bitmask;
 }
 
-/** C ref: botl.c:3233 — @param {CPtr} s @param {CInt} sidx @returns {CInt} */
+/** C ref: botl.c:3233 — @param {CPtr<char [128]>} s @param {CInt} sidx @returns {CInt} */
 function* parse_condition(s, sidx) {
     let i;
     let coloridx = NHM.NO_COLOR;
@@ -3541,7 +3541,7 @@ export function clear_status_hilites() {
     }
 }
 
-/** C ref: botl.c:3369 — @param {CInt} attrib @param {CPtr} buf @param {CLongLong} bufsz @returns {CPtr} */
+/** C ref: botl.c:3369 — @param {CInt} attrib @param {CPtr<char>} buf @param {CLongLong} bufsz @returns {CPtr<char>} */
 function hlattr2attrname(attrib, buf, bufsz) {
     if (attrib && buf) {
         let attbuf = new Uint8Array(256);
@@ -3580,7 +3580,7 @@ let status_hilite_str = null;
 /** C ref: botl.c:3414 — int */
 let status_hilite_str_id = 0;
 
-/** C ref: botl.c:3417 — @param {CInt} fld @param {CPtr} hl @param {CLongLong} mask @param {CPtr} str */
+/** C ref: botl.c:3417 — @param {CInt} fld @param {CPtr<struct hilite_s>} hl @param {CLongLong} mask @param {CPtr<char>} str */
 function* status_hilite_linestr_add(fld, hl, mask, str) {
     let tmp;
     let nxt;
@@ -3722,7 +3722,7 @@ function* status_hilite_linestr_gather() {
 
 const __static_status_hilite2str_buf = new Uint8Array(256); /** C ref: botl.c:3592 — char[256] (function-static) */
 
-/** C ref: botl.c:3590 — @param {CPtr} hl @returns {CPtr} */
+/** C ref: botl.c:3590 — @param {CPtr<struct hilite_s>} hl @returns {CPtr<char>} */
 function* status_hilite2str(hl) {
     let clr = cptr.box(NHM.NO_COLOR);
     let attr = cptr.box(NHM.ATR_NONE);
@@ -3902,7 +3902,7 @@ function* status_hilite_menu_choose_behavior(fld) {
     return beh;
 }
 
-/** C ref: botl.c:3811 — @param {CInt} fld @param {CPtr} str @param {CInt} ltok @param {CInt} gtok @returns {CInt} */
+/** C ref: botl.c:3811 — @param {CInt} fld @param {CPtr<char>} str @param {CInt} ltok @param {CInt} gtok @returns {CInt} */
 function* status_hilite_menu_choose_updownboth(fld, str, ltok, gtok) {
     let res;
     let ret = NHC.NO_LTEQGT;
@@ -4412,7 +4412,7 @@ function* status_hilites_viewall() {
     (yield* Y.icall(destroy_nhwindow()(datawin)));
 }
 
-/** C ref: botl.c:4477 — @param {CPtr} sbuf */
+/** C ref: botl.c:4477 — @param {CPtr<strbuf_t>} sbuf */
 export function* all_options_statushilites(sbuf) {
     let hlstr;
     let buf = new Uint8Array(256);

@@ -32,14 +32,14 @@ const __sl12 = cptr.lit("yield");
 const __sl13 = cptr.lit("isyieldable");
 const __sl14 = cptr.lit("close");
 
-/** C ref: lcorolib.c:21 — @param {CPtr} L @returns {CPtr} */
+/** C ref: lcorolib.c:21 — @param {CPtr<lua_State>} L @returns {CPtr<lua_State>} */
 function getco(L) {
     let co = lua_tothread(L, 1);
     (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, 1, (__sl0)) ? 1 : 0));
     return co;
 }
 
-/** C ref: lcorolib.c:32 — @param {CPtr} L @param {CPtr} co @param {CInt} narg @returns {CInt} */
+/** C ref: lcorolib.c:32 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} co @param {CInt} narg @returns {CInt} */
 function auxresume(L, co, narg) {
     let status;
     let nres = cptr.box(0);
@@ -63,7 +63,7 @@ function auxresume(L, co, narg) {
     }
 }
 
-/** C ref: lcorolib.c:56 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:56 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_coresume(L) {
     let co = getco(L);
     let r;
@@ -79,7 +79,7 @@ function luaB_coresume(L) {
     }
 }
 
-/** C ref: lcorolib.c:73 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:73 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_auxwrap(L) {
     let co = lua_tothread(L, -1001001);
     let r = auxresume(L, co, lua_gettop(L));
@@ -100,7 +100,7 @@ function luaB_auxwrap(L) {
     return r;
 }
 
-/** C ref: lcorolib.c:95 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:95 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_cocreate(L) {
     let NL;
     luaL_checktype(L, 1, 6);
@@ -110,14 +110,14 @@ function luaB_cocreate(L) {
     return 1;
 }
 
-/** C ref: lcorolib.c:105 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:105 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_cowrap(L) {
     luaB_cocreate(L);
     lua_pushcclosure(L, luaB_auxwrap, 1);
     return 1;
 }
 
-/** C ref: lcorolib.c:112 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:112 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_yield(L) {
     return lua_yieldk(L, (lua_gettop(L)), 0n, null);
 }
@@ -129,7 +129,7 @@ cptr.stPtro(statname, 8, __sl4);
 cptr.stPtro(statname, 16, __sl5);
 cptr.stPtro(statname, 24, __sl6);
 
-/** C ref: lcorolib.c:127 — @param {CPtr} L @param {CPtr} co @returns {CInt} */
+/** C ref: lcorolib.c:127 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} co @returns {CInt} */
 function auxstatus(L, co) {
     if (cptr.eq(L, co))
         return 0;
@@ -153,28 +153,28 @@ function auxstatus(L, co) {
     }
 }
 
-/** C ref: lcorolib.c:149 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:149 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_costatus(L) {
     let co = getco(L);
     lua_pushstring(L, cptr.ldPtro(statname, auxstatus(L, co), 8));
     return 1;
 }
 
-/** C ref: lcorolib.c:156 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:156 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_yieldable(L) {
     let co = (lua_type(L, 1) == -1) ? L : getco(L);
     lua_pushboolean(L, lua_isyieldable(co));
     return 1;
 }
 
-/** C ref: lcorolib.c:163 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:163 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_corunning(L) {
     let ismain = lua_pushthread(L);
     lua_pushboolean(L, ismain);
     return 2;
 }
 
-/** C ref: lcorolib.c:170 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:170 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_close(L) {
     let co = getco(L);
     let status = auxstatus(L, co);
@@ -218,7 +218,7 @@ cptr.stPtro(co_funcs, 112 + $luaL_Reg_func, luaB_close);
 cptr.stPtro(co_funcs, 128, null);
 cptr.stPtro(co_funcs, 128 + $luaL_Reg_func, null);
 
-/** C ref: lcorolib.c:206 — @param {CPtr} L @returns {CInt} */
+/** C ref: lcorolib.c:206 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_coroutine(L) {
     (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, co_funcs, 0));
     return 1;

@@ -130,7 +130,7 @@ cptr.stPtr(zerosfoflprocs, null);
 export let zerosfiflprocs = cptr.alloc(552);
 cptr.stPtr(zerosfiflprocs, null);
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_arti_info @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct arti_info>} d_arti_info @param {CPtr<char>} myname */
 export function* sfo_arti_info(nhfp, d_arti_info, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 36n, 1, (yield* complex_dump(d_arti_info)));
@@ -144,7 +144,7 @@ export function* sfo_arti_info(nhfp, d_arti_info, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_arti_info @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct arti_info>} d_arti_info @param {CPtr<char>} myname */
 export function* sfi_arti_info(nhfp, d_arti_info, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn))(nhfp, d_arti_info, myname)));
@@ -164,7 +164,7 @@ export function* sfi_arti_info(nhfp, d_arti_info, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct nhrect>} d_nhrect @param {CPtr<char>} myname */
 export function* sfo_nhrect(nhfp, d_nhrect, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, (yield* complex_dump(d_nhrect)));
@@ -178,7 +178,7 @@ export function* sfo_nhrect(nhfp, d_nhrect, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhrect @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct nhrect>} d_nhrect @param {CPtr<char>} myname */
 export function* sfi_nhrect(nhfp, d_nhrect, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_nhrect))(nhfp, d_nhrect, myname)));
@@ -198,7 +198,7 @@ export function* sfi_nhrect(nhfp, d_nhrect, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct branch>} d_branch @param {CPtr<char>} myname */
 export function* sfo_branch(nhfp, d_branch, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 32n, 1, (yield* complex_dump(d_branch)));
@@ -212,7 +212,7 @@ export function* sfo_branch(nhfp, d_branch, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_branch @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct branch>} d_branch @param {CPtr<char>} myname */
 export function* sfi_branch(nhfp, d_branch, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_branch))(nhfp, d_branch, myname)));
@@ -232,7 +232,7 @@ export function* sfi_branch(nhfp, d_branch, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct bubble>} d_bubble @param {CPtr<char>} myname */
 export function* sfo_bubble(nhfp, d_bubble, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 40n, 1, (yield* complex_dump(d_bubble)));
@@ -246,7 +246,7 @@ export function* sfo_bubble(nhfp, d_bubble, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bubble @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct bubble>} d_bubble @param {CPtr<char>} myname */
 export function* sfi_bubble(nhfp, d_bubble, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_bubble))(nhfp, d_bubble, myname)));
@@ -266,7 +266,7 @@ export function* sfi_bubble(nhfp, d_bubble, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct cemetery>} d_cemetery @param {CPtr<char>} myname */
 export function* sfo_cemetery(nhfp, d_cemetery, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 184n, 1, (yield* complex_dump(d_cemetery)));
@@ -280,7 +280,7 @@ export function* sfo_cemetery(nhfp, d_cemetery, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_cemetery @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct cemetery>} d_cemetery @param {CPtr<char>} myname */
 export function* sfi_cemetery(nhfp, d_cemetery, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_cemetery))(nhfp, d_cemetery, myname)));
@@ -300,7 +300,7 @@ export function* sfi_cemetery(nhfp, d_cemetery, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct context_info>} d_context_info @param {CPtr<char>} myname */
 export function* sfo_context_info(nhfp, d_context_info, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 720n, 1, (yield* complex_dump(d_context_info)));
@@ -314,7 +314,7 @@ export function* sfo_context_info(nhfp, d_context_info, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_context_info @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct context_info>} d_context_info @param {CPtr<char>} myname */
 export function* sfi_context_info(nhfp, d_context_info, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_context_info))(nhfp, d_context_info, myname)));
@@ -334,7 +334,7 @@ export function* sfi_context_info(nhfp, d_context_info, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct nhcoord>} d_nhcoord @param {CPtr<char>} myname */
 export function* sfo_nhcoord(nhfp, d_nhcoord, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, (yield* complex_dump(d_nhcoord)));
@@ -348,7 +348,7 @@ export function* sfo_nhcoord(nhfp, d_nhcoord, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_nhcoord @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct nhcoord>} d_nhcoord @param {CPtr<char>} myname */
 export function* sfi_nhcoord(nhfp, d_nhcoord, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_nhcoord))(nhfp, d_nhcoord, myname)));
@@ -368,7 +368,7 @@ export function* sfi_nhcoord(nhfp, d_nhcoord, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct damage>} d_damage @param {CPtr<char>} myname */
 export function* sfo_damage(nhfp, d_damage, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 32n, 1, (yield* complex_dump(d_damage)));
@@ -382,7 +382,7 @@ export function* sfo_damage(nhfp, d_damage, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_damage @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct damage>} d_damage @param {CPtr<char>} myname */
 export function* sfi_damage(nhfp, d_damage, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_damage))(nhfp, d_damage, myname)));
@@ -402,7 +402,7 @@ export function* sfi_damage(nhfp, d_damage, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct dest_area>} d_dest_area @param {CPtr<char>} myname */
 export function* sfo_dest_area(nhfp, d_dest_area, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 16n, 1, (yield* complex_dump(d_dest_area)));
@@ -416,7 +416,7 @@ export function* sfo_dest_area(nhfp, d_dest_area, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dest_area @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct dest_area>} d_dest_area @param {CPtr<char>} myname */
 export function* sfi_dest_area(nhfp, d_dest_area, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_dest_area))(nhfp, d_dest_area, myname)));
@@ -436,7 +436,7 @@ export function* sfi_dest_area(nhfp, d_dest_area, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct dgn_topology>} d_dgn_topology @param {CPtr<char>} myname */
 export function* sfo_dgn_topology(nhfp, d_dgn_topology, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 114n, 1, (yield* complex_dump(d_dgn_topology)));
@@ -450,7 +450,7 @@ export function* sfo_dgn_topology(nhfp, d_dgn_topology, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dgn_topology @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct dgn_topology>} d_dgn_topology @param {CPtr<char>} myname */
 export function* sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_dgn_topology))(nhfp, d_dgn_topology, myname)));
@@ -470,7 +470,7 @@ export function* sfi_dgn_topology(nhfp, d_dgn_topology, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct dungeon>} d_dungeon @param {CPtr<char>} myname */
 export function* sfo_dungeon(nhfp, d_dungeon, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 112n, 1, (yield* complex_dump(d_dungeon)));
@@ -484,7 +484,7 @@ export function* sfo_dungeon(nhfp, d_dungeon, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_dungeon @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct dungeon>} d_dungeon @param {CPtr<char>} myname */
 export function* sfi_dungeon(nhfp, d_dungeon, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_dungeon))(nhfp, d_dungeon, myname)));
@@ -504,7 +504,7 @@ export function* sfi_dungeon(nhfp, d_dungeon, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct d_level>} d_d_level @param {CPtr<char>} myname */
 export function* sfo_d_level(nhfp, d_d_level, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, (yield* complex_dump(d_d_level)));
@@ -518,7 +518,7 @@ export function* sfo_d_level(nhfp, d_d_level, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_d_level @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct d_level>} d_d_level @param {CPtr<char>} myname */
 export function* sfi_d_level(nhfp, d_d_level, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_d_level))(nhfp, d_d_level, myname)));
@@ -538,7 +538,7 @@ export function* sfi_d_level(nhfp, d_d_level, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct ebones>} d_ebones @param {CPtr<char>} myname */
 export function* sfo_ebones(nhfp, d_ebones, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 36n, 1, (yield* complex_dump(d_ebones)));
@@ -552,7 +552,7 @@ export function* sfo_ebones(nhfp, d_ebones, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ebones @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct ebones>} d_ebones @param {CPtr<char>} myname */
 export function* sfi_ebones(nhfp, d_ebones, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_ebones))(nhfp, d_ebones, myname)));
@@ -572,7 +572,7 @@ export function* sfi_ebones(nhfp, d_ebones, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct edog>} d_edog @param {CPtr<char>} myname */
 export function* sfo_edog(nhfp, d_edog, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 64n, 1, (yield* complex_dump(d_edog)));
@@ -586,7 +586,7 @@ export function* sfo_edog(nhfp, d_edog, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_edog @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct edog>} d_edog @param {CPtr<char>} myname */
 export function* sfi_edog(nhfp, d_edog, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_edog))(nhfp, d_edog, myname)));
@@ -606,7 +606,7 @@ export function* sfi_edog(nhfp, d_edog, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct egd>} d_egd @param {CPtr<char>} myname */
 export function* sfo_egd(nhfp, d_egd, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 652n, 1, (yield* complex_dump(d_egd)));
@@ -620,7 +620,7 @@ export function* sfo_egd(nhfp, d_egd, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_egd @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct egd>} d_egd @param {CPtr<char>} myname */
 export function* sfi_egd(nhfp, d_egd, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_egd))(nhfp, d_egd, myname)));
@@ -640,7 +640,7 @@ export function* sfi_egd(nhfp, d_egd, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct emin>} d_emin @param {CPtr<char>} myname */
 export function* sfo_emin(nhfp, d_emin, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, (yield* complex_dump(d_emin)));
@@ -654,7 +654,7 @@ export function* sfo_emin(nhfp, d_emin, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_emin @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct emin>} d_emin @param {CPtr<char>} myname */
 export function* sfi_emin(nhfp, d_emin, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_emin))(nhfp, d_emin, myname)));
@@ -674,7 +674,7 @@ export function* sfi_emin(nhfp, d_emin, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct engr>} d_engr @param {CPtr<char>} myname */
 export function* sfo_engr(nhfp, d_engr, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 80n, 1, (yield* complex_dump(d_engr)));
@@ -688,7 +688,7 @@ export function* sfo_engr(nhfp, d_engr, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_engr @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct engr>} d_engr @param {CPtr<char>} myname */
 export function* sfi_engr(nhfp, d_engr, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_engr))(nhfp, d_engr, myname)));
@@ -708,7 +708,7 @@ export function* sfi_engr(nhfp, d_engr, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct epri>} d_epri @param {CPtr<char>} myname */
 export function* sfo_epri(nhfp, d_epri, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 56n, 1, (yield* complex_dump(d_epri)));
@@ -722,7 +722,7 @@ export function* sfo_epri(nhfp, d_epri, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_epri @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct epri>} d_epri @param {CPtr<char>} myname */
 export function* sfi_epri(nhfp, d_epri, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_epri))(nhfp, d_epri, myname)));
@@ -742,7 +742,7 @@ export function* sfi_epri(nhfp, d_epri, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct eshk>} d_eshk @param {CPtr<char>} myname */
 export function* sfo_eshk(nhfp, d_eshk, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 4960n, 1, (yield* complex_dump(d_eshk)));
@@ -756,7 +756,7 @@ export function* sfo_eshk(nhfp, d_eshk, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_eshk @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct eshk>} d_eshk @param {CPtr<char>} myname */
 export function* sfi_eshk(nhfp, d_eshk, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_eshk))(nhfp, d_eshk, myname)));
@@ -776,7 +776,7 @@ export function* sfi_eshk(nhfp, d_eshk, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct fe>} d_fe @param {CPtr<char>} myname */
 export function* sfo_fe(nhfp, d_fe, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 48n, 1, (yield* complex_dump(d_fe)));
@@ -790,7 +790,7 @@ export function* sfo_fe(nhfp, d_fe, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fe @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct fe>} d_fe @param {CPtr<char>} myname */
 export function* sfi_fe(nhfp, d_fe, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_fe))(nhfp, d_fe, myname)));
@@ -810,7 +810,7 @@ export function* sfi_fe(nhfp, d_fe, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct flag>} d_flag @param {CPtr<char>} myname */
 export function* sfo_flag(nhfp, d_flag, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 208n, 1, (yield* complex_dump(d_flag)));
@@ -824,7 +824,7 @@ export function* sfo_flag(nhfp, d_flag, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_flag @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct flag>} d_flag @param {CPtr<char>} myname */
 export function* sfi_flag(nhfp, d_flag, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_flag))(nhfp, d_flag, myname)));
@@ -844,7 +844,7 @@ export function* sfi_flag(nhfp, d_flag, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct fruit>} d_fruit @param {CPtr<char>} myname */
 export function* sfo_fruit(nhfp, d_fruit, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 48n, 1, (yield* complex_dump(d_fruit)));
@@ -858,7 +858,7 @@ export function* sfo_fruit(nhfp, d_fruit, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_fruit @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct fruit>} d_fruit @param {CPtr<char>} myname */
 export function* sfi_fruit(nhfp, d_fruit, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_fruit))(nhfp, d_fruit, myname)));
@@ -878,7 +878,7 @@ export function* sfi_fruit(nhfp, d_fruit, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct gamelog_line>} d_gamelog_line @param {CPtr<char>} myname */
 export function* sfo_gamelog_line(nhfp, d_gamelog_line, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 32n, 1, (yield* complex_dump(d_gamelog_line)));
@@ -892,7 +892,7 @@ export function* sfo_gamelog_line(nhfp, d_gamelog_line, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_gamelog_line @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct gamelog_line>} d_gamelog_line @param {CPtr<char>} myname */
 export function* sfi_gamelog_line(nhfp, d_gamelog_line, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_gamelog_line))(nhfp, d_gamelog_line, myname)));
@@ -912,7 +912,7 @@ export function* sfi_gamelog_line(nhfp, d_gamelog_line, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct kinfo>} d_kinfo @param {CPtr<char>} myname */
 export function* sfo_kinfo(nhfp, d_kinfo, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 272n, 1, (yield* complex_dump(d_kinfo)));
@@ -926,7 +926,7 @@ export function* sfo_kinfo(nhfp, d_kinfo, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_kinfo @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct kinfo>} d_kinfo @param {CPtr<char>} myname */
 export function* sfi_kinfo(nhfp, d_kinfo, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_kinfo))(nhfp, d_kinfo, myname)));
@@ -946,7 +946,7 @@ export function* sfi_kinfo(nhfp, d_kinfo, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct levelflags>} d_levelflags @param {CPtr<char>} myname */
 export function* sfo_levelflags(nhfp, d_levelflags, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 128n, 1, (yield* complex_dump(d_levelflags)));
@@ -960,7 +960,7 @@ export function* sfo_levelflags(nhfp, d_levelflags, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_levelflags @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct levelflags>} d_levelflags @param {CPtr<char>} myname */
 export function* sfi_levelflags(nhfp, d_levelflags, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_levelflags))(nhfp, d_levelflags, myname)));
@@ -980,7 +980,7 @@ export function* sfi_levelflags(nhfp, d_levelflags, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct ls_t>} d_ls_t @param {CPtr<char>} myname */
 export function* sfo_ls_t(nhfp, d_ls_t, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 32n, 1, (yield* complex_dump(d_ls_t)));
@@ -994,7 +994,7 @@ export function* sfo_ls_t(nhfp, d_ls_t, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ls_t @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct ls_t>} d_ls_t @param {CPtr<char>} myname */
 export function* sfi_ls_t(nhfp, d_ls_t, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_ls_t))(nhfp, d_ls_t, myname)));
@@ -1014,7 +1014,7 @@ export function* sfi_ls_t(nhfp, d_ls_t, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct linfo>} d_linfo @param {CPtr<char>} myname */
 export function* sfo_linfo(nhfp, d_linfo, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, (yield* complex_dump(d_linfo)));
@@ -1028,7 +1028,7 @@ export function* sfo_linfo(nhfp, d_linfo, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_linfo @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct linfo>} d_linfo @param {CPtr<char>} myname */
 export function* sfi_linfo(nhfp, d_linfo, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_linfo))(nhfp, d_linfo, myname)));
@@ -1048,7 +1048,7 @@ export function* sfi_linfo(nhfp, d_linfo, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mapseen_feat>} d_mapseen_feat @param {CPtr<char>} myname */
 export function* sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 52n, 1, (yield* complex_dump(d_mapseen_feat)));
@@ -1062,7 +1062,7 @@ export function* sfo_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_feat @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mapseen_feat>} d_mapseen_feat @param {CPtr<char>} myname */
 export function* sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_mapseen_feat))(nhfp, d_mapseen_feat, myname)));
@@ -1082,7 +1082,7 @@ export function* sfi_mapseen_feat(nhfp, d_mapseen_feat, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mapseen_flags>} d_mapseen_flags @param {CPtr<char>} myname */
 export function* sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 64n, 1, (yield* complex_dump(d_mapseen_flags)));
@@ -1096,7 +1096,7 @@ export function* sfo_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_flags @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mapseen_flags>} d_mapseen_flags @param {CPtr<char>} myname */
 export function* sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_mapseen_flags))(nhfp, d_mapseen_flags, myname)));
@@ -1116,7 +1116,7 @@ export function* sfi_mapseen_flags(nhfp, d_mapseen_flags, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mapseen_rooms>} d_mapseen_rooms @param {CPtr<char>} myname */
 export function* sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, (yield* complex_dump(d_mapseen_rooms)));
@@ -1130,7 +1130,7 @@ export function* sfo_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mapseen_rooms @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mapseen_rooms>} d_mapseen_rooms @param {CPtr<char>} myname */
 export function* sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_mapseen_rooms))(nhfp, d_mapseen_rooms, myname)));
@@ -1150,7 +1150,7 @@ export function* sfi_mapseen_rooms(nhfp, d_mapseen_rooms, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mkroom>} d_mkroom @param {CPtr<char>} myname */
 export function* sfo_mkroom(nhfp, d_mkroom, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 224n, 1, (yield* complex_dump(d_mkroom)));
@@ -1164,7 +1164,7 @@ export function* sfo_mkroom(nhfp, d_mkroom, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mkroom @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mkroom>} d_mkroom @param {CPtr<char>} myname */
 export function* sfi_mkroom(nhfp, d_mkroom, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_mkroom))(nhfp, d_mkroom, myname)));
@@ -1184,7 +1184,7 @@ export function* sfi_mkroom(nhfp, d_mkroom, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct monst>} d_monst @param {CPtr<char>} myname */
 export function* sfo_monst(nhfp, d_monst, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 320n, 1, (yield* complex_dump(d_monst)));
@@ -1198,7 +1198,7 @@ export function* sfo_monst(nhfp, d_monst, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_monst @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct monst>} d_monst @param {CPtr<char>} myname */
 export function* sfi_monst(nhfp, d_monst, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_monst))(nhfp, d_monst, myname)));
@@ -1218,7 +1218,7 @@ export function* sfi_monst(nhfp, d_monst, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mvitals>} d_mvitals @param {CPtr<char>} myname */
 export function* sfo_mvitals(nhfp, d_mvitals, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 12n, 1, (yield* complex_dump(d_mvitals)));
@@ -1232,7 +1232,7 @@ export function* sfo_mvitals(nhfp, d_mvitals, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_mvitals @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct mvitals>} d_mvitals @param {CPtr<char>} myname */
 export function* sfi_mvitals(nhfp, d_mvitals, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_mvitals))(nhfp, d_mvitals, myname)));
@@ -1252,7 +1252,7 @@ export function* sfi_mvitals(nhfp, d_mvitals, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct obj>} d_obj @param {CPtr<char>} myname */
 export function* sfo_obj(nhfp, d_obj, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 216n, 1, (yield* complex_dump(d_obj)));
@@ -1266,7 +1266,7 @@ export function* sfo_obj(nhfp, d_obj, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_obj @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct obj>} d_obj @param {CPtr<char>} myname */
 export function* sfi_obj(nhfp, d_obj, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_obj))(nhfp, d_obj, myname)));
@@ -1286,7 +1286,7 @@ export function* sfi_obj(nhfp, d_obj, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct objclass>} d_objclass @param {CPtr<char>} myname */
 export function* sfo_objclass(nhfp, d_objclass, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 120n, 1, (yield* complex_dump(d_objclass)));
@@ -1300,7 +1300,7 @@ export function* sfo_objclass(nhfp, d_objclass, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_objclass @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct objclass>} d_objclass @param {CPtr<char>} myname */
 export function* sfi_objclass(nhfp, d_objclass, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_objclass))(nhfp, d_objclass, myname)));
@@ -1320,7 +1320,7 @@ export function* sfi_objclass(nhfp, d_objclass, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct q_score>} d_q_score @param {CPtr<char>} myname */
 export function* sfo_q_score(nhfp, d_q_score, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 88n, 1, (yield* complex_dump(d_q_score)));
@@ -1334,7 +1334,7 @@ export function* sfo_q_score(nhfp, d_q_score, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_q_score @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct q_score>} d_q_score @param {CPtr<char>} myname */
 export function* sfi_q_score(nhfp, d_q_score, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_q_score))(nhfp, d_q_score, myname)));
@@ -1354,7 +1354,7 @@ export function* sfi_q_score(nhfp, d_q_score, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct rm>} d_rm @param {CPtr<char>} myname */
 export function* sfo_rm(nhfp, d_rm, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 36n, 1, (yield* complex_dump(d_rm)));
@@ -1368,7 +1368,7 @@ export function* sfo_rm(nhfp, d_rm, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_rm @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct rm>} d_rm @param {CPtr<char>} myname */
 export function* sfi_rm(nhfp, d_rm, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_rm))(nhfp, d_rm, myname)));
@@ -1388,7 +1388,7 @@ export function* sfi_rm(nhfp, d_rm, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct spell>} d_spell @param {CPtr<char>} myname */
 export function* sfo_spell(nhfp, d_spell, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, (yield* complex_dump(d_spell)));
@@ -1402,7 +1402,7 @@ export function* sfo_spell(nhfp, d_spell, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_spell @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct spell>} d_spell @param {CPtr<char>} myname */
 export function* sfi_spell(nhfp, d_spell, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_spell))(nhfp, d_spell, myname)));
@@ -1422,7 +1422,7 @@ export function* sfi_spell(nhfp, d_spell, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct stairway>} d_stairway @param {CPtr<char>} myname */
 export function* sfo_stairway(nhfp, d_stairway, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 24n, 1, (yield* complex_dump(d_stairway)));
@@ -1436,7 +1436,7 @@ export function* sfo_stairway(nhfp, d_stairway, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_stairway @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct stairway>} d_stairway @param {CPtr<char>} myname */
 export function* sfi_stairway(nhfp, d_stairway, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_stairway))(nhfp, d_stairway, myname)));
@@ -1456,7 +1456,7 @@ export function* sfi_stairway(nhfp, d_stairway, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct s_level>} d_s_level @param {CPtr<char>} myname */
 export function* sfo_s_level(nhfp, d_s_level, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 56n, 1, (yield* complex_dump(d_s_level)));
@@ -1470,7 +1470,7 @@ export function* sfo_s_level(nhfp, d_s_level, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_s_level @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct s_level>} d_s_level @param {CPtr<char>} myname */
 export function* sfi_s_level(nhfp, d_s_level, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_s_level))(nhfp, d_s_level, myname)));
@@ -1490,7 +1490,7 @@ export function* sfi_s_level(nhfp, d_s_level, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct trap>} d_trap @param {CPtr<char>} myname */
 export function* sfo_trap(nhfp, d_trap, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 40n, 1, (yield* complex_dump(d_trap)));
@@ -1504,7 +1504,7 @@ export function* sfo_trap(nhfp, d_trap, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_trap @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct trap>} d_trap @param {CPtr<char>} myname */
 export function* sfi_trap(nhfp, d_trap, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_trap))(nhfp, d_trap, myname)));
@@ -1524,7 +1524,7 @@ export function* sfi_trap(nhfp, d_trap, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct you>} d_you @param {CPtr<char>} myname */
 export function* sfo_you(nhfp, d_you, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 2864n, 1, (yield* complex_dump(d_you)));
@@ -1538,7 +1538,7 @@ export function* sfo_you(nhfp, d_you, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_you @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct you>} d_you @param {CPtr<char>} myname */
 export function* sfi_you(nhfp, d_you, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_you))(nhfp, d_you, myname)));
@@ -1558,7 +1558,7 @@ export function* sfi_you(nhfp, d_you, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<union any>} d_any @param {CPtr<char>} myname */
 export function* sfo_any(nhfp, d_any, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, (yield* complex_dump(d_any)));
@@ -1572,7 +1572,7 @@ export function* sfo_any(nhfp, d_any, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_any @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<union any>} d_any @param {CPtr<char>} myname */
 export function* sfi_any(nhfp, d_any, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_any))(nhfp, d_any, myname)));
@@ -1592,7 +1592,7 @@ export function* sfi_any(nhfp, d_any, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<aligntyp>} d_aligntyp @param {CPtr<char>} myname */
 export function* sfo_aligntyp(nhfp, d_aligntyp, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_aligntyp(d_aligntyp));
@@ -1606,7 +1606,7 @@ export function* sfo_aligntyp(nhfp, d_aligntyp, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_aligntyp @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<aligntyp>} d_aligntyp @param {CPtr<char>} myname */
 export function* sfi_aligntyp(nhfp, d_aligntyp, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_aligntyp))(nhfp, d_aligntyp, myname)));
@@ -1626,7 +1626,7 @@ export function* sfi_aligntyp(nhfp, d_aligntyp, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<boolean>} d_boolean @param {CPtr<char>} myname */
 export function* sfo_boolean(nhfp, d_boolean, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_boolean(d_boolean));
@@ -1640,7 +1640,7 @@ export function* sfo_boolean(nhfp, d_boolean, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_boolean @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<boolean>} d_boolean @param {CPtr<char>} myname */
 export function* sfi_boolean(nhfp, d_boolean, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_boolean))(nhfp, d_boolean, myname)));
@@ -1660,7 +1660,7 @@ export function* sfi_boolean(nhfp, d_boolean, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<coordxy>} d_coordxy @param {CPtr<char>} myname */
 export function* sfo_coordxy(nhfp, d_coordxy, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_int16(d_coordxy));
@@ -1674,7 +1674,7 @@ export function* sfo_coordxy(nhfp, d_coordxy, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_coordxy @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<coordxy>} d_coordxy @param {CPtr<char>} myname */
 export function* sfi_coordxy(nhfp, d_coordxy, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_coordxy))(nhfp, d_coordxy, myname)));
@@ -1694,7 +1694,7 @@ export function* sfi_coordxy(nhfp, d_coordxy, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<int>} d_int @param {CPtr<char>} myname */
 export function* sfo_int(nhfp, d_int, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, sfvalue_int(d_int));
@@ -1708,7 +1708,7 @@ export function* sfo_int(nhfp, d_int, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<int>} d_int @param {CPtr<char>} myname */
 export function* sfi_int(nhfp, d_int, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_int))(nhfp, d_int, myname)));
@@ -1728,7 +1728,7 @@ export function* sfi_int(nhfp, d_int, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<int16>} d_int16 @param {CPtr<char>} myname */
 export function* sfo_int16(nhfp, d_int16, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_int16(d_int16));
@@ -1742,7 +1742,7 @@ export function* sfo_int16(nhfp, d_int16, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int16 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<int16>} d_int16 @param {CPtr<char>} myname */
 export function* sfi_int16(nhfp, d_int16, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_int16))(nhfp, d_int16, myname)));
@@ -1762,7 +1762,7 @@ export function* sfi_int16(nhfp, d_int16, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<int32>} d_int32 @param {CPtr<char>} myname */
 export function* sfo_int32(nhfp, d_int32, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, sfvalue_int32(d_int32));
@@ -1776,7 +1776,7 @@ export function* sfo_int32(nhfp, d_int32, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int32 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<int32>} d_int32 @param {CPtr<char>} myname */
 export function* sfi_int32(nhfp, d_int32, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_int32))(nhfp, d_int32, myname)));
@@ -1796,7 +1796,7 @@ export function* sfi_int32(nhfp, d_int32, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<int64>} d_int64 @param {CPtr<char>} myname */
 export function* sfo_int64(nhfp, d_int64, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_int64(d_int64));
@@ -1810,7 +1810,7 @@ export function* sfo_int64(nhfp, d_int64, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_int64 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<int64>} d_int64 @param {CPtr<char>} myname */
 export function* sfi_int64(nhfp, d_int64, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_int64))(nhfp, d_int64, myname)));
@@ -1830,7 +1830,7 @@ export function* sfi_int64(nhfp, d_int64, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<long>} d_long @param {CPtr<char>} myname */
 export function* sfo_long(nhfp, d_long, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_long(d_long));
@@ -1844,7 +1844,7 @@ export function* sfo_long(nhfp, d_long, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_long @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<long>} d_long @param {CPtr<char>} myname */
 export function* sfi_long(nhfp, d_long, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_long))(nhfp, d_long, myname)));
@@ -1864,7 +1864,7 @@ export function* sfi_long(nhfp, d_long, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<schar>} d_schar @param {CPtr<char>} myname */
 export function* sfo_schar(nhfp, d_schar, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_schar(d_schar));
@@ -1878,7 +1878,7 @@ export function* sfo_schar(nhfp, d_schar, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_schar @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<schar>} d_schar @param {CPtr<char>} myname */
 export function* sfi_schar(nhfp, d_schar, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_schar))(nhfp, d_schar, myname)));
@@ -1898,7 +1898,7 @@ export function* sfi_schar(nhfp, d_schar, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<short>} d_short @param {CPtr<char>} myname */
 export function* sfo_short(nhfp, d_short, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_short(d_short));
@@ -1912,7 +1912,7 @@ export function* sfo_short(nhfp, d_short, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_short @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<short>} d_short @param {CPtr<char>} myname */
 export function* sfi_short(nhfp, d_short, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_short))(nhfp, d_short, myname)));
@@ -1932,7 +1932,7 @@ export function* sfi_short(nhfp, d_short, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<size_t>} d_size_t @param {CPtr<char>} myname */
 export function* sfo_size_t(nhfp, d_size_t, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_size_t(d_size_t));
@@ -1946,7 +1946,7 @@ export function* sfo_size_t(nhfp, d_size_t, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_size_t @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<size_t>} d_size_t @param {CPtr<char>} myname */
 export function* sfi_size_t(nhfp, d_size_t, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_size_t))(nhfp, d_size_t, myname)));
@@ -1966,7 +1966,7 @@ export function* sfi_size_t(nhfp, d_size_t, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<time_t>} d_time_t @param {CPtr<char>} myname */
 export function* sfo_time_t(nhfp, d_time_t, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_time_t(d_time_t));
@@ -1980,7 +1980,7 @@ export function* sfo_time_t(nhfp, d_time_t, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_time_t @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<time_t>} d_time_t @param {CPtr<char>} myname */
 export function* sfi_time_t(nhfp, d_time_t, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_time_t))(nhfp, d_time_t, myname)));
@@ -2000,7 +2000,7 @@ export function* sfi_time_t(nhfp, d_time_t, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uchar>} d_uchar @param {CPtr<char>} myname */
 export function* sfo_uchar(nhfp, d_uchar, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_uchar(d_uchar));
@@ -2014,7 +2014,7 @@ export function* sfo_uchar(nhfp, d_uchar, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uchar @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uchar>} d_uchar @param {CPtr<char>} myname */
 export function* sfi_uchar(nhfp, d_uchar, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_uchar))(nhfp, d_uchar, myname)));
@@ -2034,7 +2034,7 @@ export function* sfi_uchar(nhfp, d_uchar, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint16>} d_uint16 @param {CPtr<char>} myname */
 export function* sfo_uint16(nhfp, d_uint16, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_uint16(d_uint16));
@@ -2048,7 +2048,7 @@ export function* sfo_uint16(nhfp, d_uint16, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint16 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint16>} d_uint16 @param {CPtr<char>} myname */
 export function* sfi_uint16(nhfp, d_uint16, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_uint16))(nhfp, d_uint16, myname)));
@@ -2068,7 +2068,7 @@ export function* sfi_uint16(nhfp, d_uint16, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint32>} d_uint32 @param {CPtr<char>} myname */
 export function* sfo_uint32(nhfp, d_uint32, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, sfvalue_uint32(d_uint32));
@@ -2082,7 +2082,7 @@ export function* sfo_uint32(nhfp, d_uint32, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint32 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint32>} d_uint32 @param {CPtr<char>} myname */
 export function* sfi_uint32(nhfp, d_uint32, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_uint32))(nhfp, d_uint32, myname)));
@@ -2102,7 +2102,7 @@ export function* sfi_uint32(nhfp, d_uint32, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint64>} d_uint64 @param {CPtr<char>} myname */
 export function* sfo_uint64(nhfp, d_uint64, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_uint64(d_uint64));
@@ -2116,7 +2116,7 @@ export function* sfo_uint64(nhfp, d_uint64, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_uint64 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint64>} d_uint64 @param {CPtr<char>} myname */
 export function* sfi_uint64(nhfp, d_uint64, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_uint64))(nhfp, d_uint64, myname)));
@@ -2136,7 +2136,7 @@ export function* sfi_uint64(nhfp, d_uint64, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<ulong>} d_ulong @param {CPtr<char>} myname */
 export function* sfo_ulong(nhfp, d_ulong, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_ulong(d_ulong));
@@ -2150,7 +2150,7 @@ export function* sfo_ulong(nhfp, d_ulong, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ulong @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<ulong>} d_ulong @param {CPtr<char>} myname */
 export function* sfi_ulong(nhfp, d_ulong, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_ulong))(nhfp, d_ulong, myname)));
@@ -2170,7 +2170,7 @@ export function* sfi_ulong(nhfp, d_ulong, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<unsigned int>} d_unsigned @param {CPtr<char>} myname */
 export function* sfo_unsigned(nhfp, d_unsigned, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 4n, 1, sfvalue_unsigned(d_unsigned));
@@ -2184,7 +2184,7 @@ export function* sfo_unsigned(nhfp, d_unsigned, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_unsigned @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<unsigned int>} d_unsigned @param {CPtr<char>} myname */
 export function* sfi_unsigned(nhfp, d_unsigned, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_unsigned))(nhfp, d_unsigned, myname)));
@@ -2204,7 +2204,7 @@ export function* sfi_unsigned(nhfp, d_unsigned, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<ushort>} d_ushort @param {CPtr<char>} myname */
 export function* sfo_ushort(nhfp, d_ushort, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_ushort(d_ushort));
@@ -2218,7 +2218,7 @@ export function* sfo_ushort(nhfp, d_ushort, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_ushort @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<ushort>} d_ushort @param {CPtr<char>} myname */
 export function* sfi_ushort(nhfp, d_ushort, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_ushort))(nhfp, d_ushort, myname)));
@@ -2238,7 +2238,7 @@ export function* sfi_ushort(nhfp, d_ushort, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<xint16>} d_xint16 @param {CPtr<char>} myname */
 export function* sfo_xint16(nhfp, d_xint16, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 2n, 1, sfvalue_xint16(d_xint16));
@@ -2252,7 +2252,7 @@ export function* sfo_xint16(nhfp, d_xint16, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint16 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<xint16>} d_xint16 @param {CPtr<char>} myname */
 export function* sfi_xint16(nhfp, d_xint16, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_xint16))(nhfp, d_xint16, myname)));
@@ -2272,7 +2272,7 @@ export function* sfi_xint16(nhfp, d_xint16, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<xint8>} d_xint8 @param {CPtr<char>} myname */
 export function* sfo_xint8(nhfp, d_xint8, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_xint8(d_xint8));
@@ -2286,7 +2286,7 @@ export function* sfo_xint8(nhfp, d_xint8, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_xint8 @param {CPtr} myname */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<xint8>} d_xint8 @param {CPtr<char>} myname */
 export function* sfi_xint8(nhfp, d_xint8, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_xint8))(nhfp, d_xint8, myname)));
@@ -2306,7 +2306,7 @@ export function* sfi_xint8(nhfp, d_xint8, myname) {
     }
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bitfield @param {CPtr} myname @param {CInt} bfsz */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint8_t>} d_bitfield @param {CPtr<char>} myname @param {CInt} bfsz */
 export function* sfo_bitfield(nhfp, d_bitfield, myname, bfsz) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 1n, 1, sfvalue_bitfield(d_bitfield));
@@ -2322,7 +2322,7 @@ export function* sfo_bitfield(nhfp, d_bitfield, myname, bfsz) {
         sf_log(nhfp, myname, 1n, 1, sfvalue_bitfield(d_bitfield));
 }
 
-/** C ref: sfbase.c — @param {CPtr} nhfp @param {CPtr} d_bitfield @param {CPtr} myname @param {CInt} bfsz */
+/** C ref: sfbase.c — @param {CPtr<NHFILE>} nhfp @param {CPtr<uint8_t>} d_bitfield @param {CPtr<char>} myname @param {CInt} bfsz */
 export function* sfi_bitfield(nhfp, d_bitfield, myname, bfsz) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_bitfield))(nhfp, d_bitfield, myname, bfsz)));
@@ -2342,7 +2342,7 @@ export function* sfi_bitfield(nhfp, d_bitfield, myname, bfsz) {
     }
 }
 
-/** C ref: sfbase.c:249 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
+/** C ref: sfbase.c:249 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} d_char @param {CPtr<char>} myname @param {CInt} cnt */
 export function* sfo_char(nhfp, d_char, myname, cnt) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 1n, cnt, sfvalue_char(d_char, cnt));
@@ -2356,7 +2356,7 @@ export function* sfo_char(nhfp, d_char, myname, cnt) {
     }
 }
 
-/** C ref: sfbase.c:265 — @param {CPtr} nhfp @param {CPtr} d_char @param {CPtr} myname @param {CInt} cnt */
+/** C ref: sfbase.c:265 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} d_char @param {CPtr<char>} myname @param {CInt} cnt */
 export function* sfi_char(nhfp, d_char, myname, cnt) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_char))(nhfp, d_char, myname, cnt)));
@@ -2376,7 +2376,7 @@ export function* sfi_char(nhfp, d_char, myname, cnt) {
     }
 }
 
-/** C ref: sfbase.c:290 — @param {CPtr} nhfp @param {CPtr} d_genericptr @param {CPtr} myname */
+/** C ref: sfbase.c:290 — @param {CPtr<NHFILE>} nhfp @param {CPtr<void *>} d_genericptr @param {CPtr<char>} myname */
 export function* sfo_genericptr(nhfp, d_genericptr, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 8n, 1, sfvalue_genericptr(d_genericptr));
@@ -2390,7 +2390,7 @@ export function* sfo_genericptr(nhfp, d_genericptr, myname) {
     }
 }
 
-/** C ref: sfbase.c:306 — @param {CPtr} nhfp @param {CPtr} d_genericptr @param {CPtr} myname */
+/** C ref: sfbase.c:306 — @param {CPtr<NHFILE>} nhfp @param {CPtr<void *>} d_genericptr @param {CPtr<char>} myname */
 export function* sfi_genericptr(nhfp, d_genericptr, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_genericptr))(nhfp, d_genericptr, myname)));
@@ -2410,7 +2410,7 @@ export function* sfi_genericptr(nhfp, d_genericptr, myname) {
     }
 }
 
-/** C ref: sfbase.c:330 — @param {CPtr} nhfp @param {CPtr} d_version_info @param {CPtr} myname */
+/** C ref: sfbase.c:330 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct version_info>} d_version_info @param {CPtr<char>} myname */
 export function* sfo_version_info(nhfp, d_version_info, myname) {
     if (cptr.ldPtro(nhfp, $NHFILE_fplog))
         sf_log(nhfp, myname, 24n, 1, (yield* complex_dump(d_version_info)));
@@ -2424,7 +2424,7 @@ export function* sfo_version_info(nhfp, d_version_info, myname) {
     }
 }
 
-/** C ref: sfbase.c:348 — @param {CPtr} nhfp @param {CPtr} d_version_info @param {CPtr} myname */
+/** C ref: sfbase.c:348 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct version_info>} d_version_info @param {CPtr<char>} myname */
 export function* sfi_version_info(nhfp, d_version_info, myname) {
     if (cptr.ld1so(nhfp, $NHFILE_structlevel)) {
         (yield* Y.icall((cptr.ldPtro2(sfiprocs, cptr.ldI32o(nhfp, $NHFILE_fnidx), 552, $sf_structlevel_procs_fn + $sf_procs_sf_version_info))(nhfp, d_version_info, myname)));
@@ -2445,7 +2445,7 @@ export function* sfi_version_info(nhfp, d_version_info, myname) {
     }
 }
 
-/** C ref: sfbase.c:377 — @param {CPtr} nhfp @param {CPtr} t1 @param {CLongLong} sz @param {CInt} cnt @param {CPtr} txtvalue */
+/** C ref: sfbase.c:377 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} t1 @param {CLongLong} sz @param {CInt} cnt @param {CPtr<char>} txtvalue */
 export function sf_log(nhfp, t1, sz, cnt, txtvalue) {
     let fp = cptr.ldPtro(nhfp, $NHFILE_fplog);
     let iocount;
@@ -2459,7 +2459,7 @@ export function sf_log(nhfp, t1, sz, cnt, txtvalue) {
 
 const __static_sfvalue_char_buf = new Uint8Array(120); /** C ref: sfbase.c:409 — char[120] (function-static) */
 
-/** C ref: sfbase.c:406 — @param {CPtr} a @param {CInt} n @returns {CPtr} */
+/** C ref: sfbase.c:406 — @param {CPtr<char>} a @param {CInt} n @returns {CPtr<char>} */
 export function sfvalue_char(a, n) {
     let i;
     let cp;
@@ -2476,7 +2476,7 @@ export function sfvalue_char(a, n) {
 
 const __static_sfvalue_boolean_buf = new Uint8Array(20); /** C ref: sfbase.c:425 — char[20] (function-static) */
 
-/** C ref: sfbase.c:423 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:423 — @param {CPtr<boolean>} a @returns {CPtr<char>} */
 export function sfvalue_boolean(a) {
     nh_snprintf(__sl1, 428, cptr.decay(__static_sfvalue_boolean_buf), 20n, __sl2, (cptr.ld1s(a) == 0) ? __sl3 : __sl4);
     return cptr.decay(__static_sfvalue_boolean_buf);
@@ -2484,7 +2484,7 @@ export function sfvalue_boolean(a) {
 
 const __static_sfvalue_schar_buf = new Uint8Array(20); /** C ref: sfbase.c:434 — char[20] (function-static) */
 
-/** C ref: sfbase.c:432 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:432 — @param {CPtr<schar>} a @returns {CPtr<char>} */
 export function sfvalue_schar(a) {
     nh_snprintf(__sl5, 436, cptr.decay(__static_sfvalue_schar_buf), 20n, __sl6, cptr.ld1s(a));
     return cptr.decay(__static_sfvalue_schar_buf);
@@ -2492,7 +2492,7 @@ export function sfvalue_schar(a) {
 
 const __static_sfvalue_aligntyp_buf = new Uint8Array(20); /** C ref: sfbase.c:442 — char[20] (function-static) */
 
-/** C ref: sfbase.c:440 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:440 — @param {CPtr<aligntyp>} a @returns {CPtr<char>} */
 export function sfvalue_aligntyp(a) {
     nh_snprintf(__sl7, 444, cptr.decay(__static_sfvalue_aligntyp_buf), 20n, __sl6, cptr.ld1s(a));
     return cptr.decay(__static_sfvalue_aligntyp_buf);
@@ -2500,7 +2500,7 @@ export function sfvalue_aligntyp(a) {
 
 const __static_sfvalue_any_buf = new Uint8Array(20); /** C ref: sfbase.c:451 — char[20] (function-static) */
 
-/** C ref: sfbase.c:449 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:449 — @param {CPtr<anything>} a @returns {CPtr<char>} */
 export function sfvalue_any(a) {
     nh_snprintf(__sl8, 455, cptr.decay(__static_sfvalue_any_buf), 20n, __sl9, cptr.ldI64(a));
     return cptr.decay(__static_sfvalue_any_buf);
@@ -2508,7 +2508,7 @@ export function sfvalue_any(a) {
 
 const __static_sfvalue_genericptr_buf = new Uint8Array(20); /** C ref: sfbase.c:462 — char[20] (function-static) */
 
-/** C ref: sfbase.c:460 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:460 — @param {CPtr<void>} a @returns {CPtr<char>} */
 export function sfvalue_genericptr(a) {
     nh_snprintf(__sl10, 465, cptr.decay(__static_sfvalue_genericptr_buf), 20n, __sl2, (a === null) ? __sl11 : __sl12);
     return cptr.decay(__static_sfvalue_genericptr_buf);
@@ -2516,7 +2516,7 @@ export function sfvalue_genericptr(a) {
 
 const __static_sfvalue_int16_buf = new Uint8Array(20); /** C ref: sfbase.c:471 — char[20] (function-static) */
 
-/** C ref: sfbase.c:469 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:469 — @param {CPtr<int16>} a @returns {CPtr<char>} */
 export function sfvalue_int16(a) {
     nh_snprintf(__sl13, 473, cptr.decay(__static_sfvalue_int16_buf), 20n, __sl6, a);
     return cptr.decay(__static_sfvalue_int16_buf);
@@ -2524,7 +2524,7 @@ export function sfvalue_int16(a) {
 
 const __static_sfvalue_int32_buf = new Uint8Array(20); /** C ref: sfbase.c:479 — char[20] (function-static) */
 
-/** C ref: sfbase.c:477 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:477 — @param {CPtr<int32>} a @returns {CPtr<char>} */
 export function sfvalue_int32(a) {
     nh_snprintf(__sl14, 481, cptr.decay(__static_sfvalue_int32_buf), 20n, __sl6, a);
     return cptr.decay(__static_sfvalue_int32_buf);
@@ -2532,7 +2532,7 @@ export function sfvalue_int32(a) {
 
 const __static_sfvalue_int64_buf = new Uint8Array(20); /** C ref: sfbase.c:487 — char[20] (function-static) */
 
-/** C ref: sfbase.c:485 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:485 — @param {CPtr<int64>} a @returns {CPtr<char>} */
 export function sfvalue_int64(a) {
     nh_snprintf(__sl15, 488, cptr.decay(__static_sfvalue_int64_buf), 20n, __sl9, a);
     return cptr.decay(__static_sfvalue_int64_buf);
@@ -2540,7 +2540,7 @@ export function sfvalue_int64(a) {
 
 const __static_sfvalue_uchar_buf = new Uint8Array(20); /** C ref: sfbase.c:494 — char[20] (function-static) */
 
-/** C ref: sfbase.c:492 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:492 — @param {CPtr<uchar>} a @returns {CPtr<char>} */
 export function sfvalue_uchar(a) {
     let x;
     x = cptr.ld1u(a);
@@ -2550,7 +2550,7 @@ export function sfvalue_uchar(a) {
 
 const __static_sfvalue_uint16_buf = new Uint8Array(20); /** C ref: sfbase.c:504 — char[20] (function-static) */
 
-/** C ref: sfbase.c:502 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:502 — @param {CPtr<uint16>} a @returns {CPtr<char>} */
 export function sfvalue_uint16(a) {
     nh_snprintf(__sl18, 506, cptr.decay(__static_sfvalue_uint16_buf), 20n, __sl19, cptr.ldU16(a));
     return cptr.decay(__static_sfvalue_uint16_buf);
@@ -2558,7 +2558,7 @@ export function sfvalue_uint16(a) {
 
 const __static_sfvalue_uint32_buf = new Uint8Array(20); /** C ref: sfbase.c:512 — char[20] (function-static) */
 
-/** C ref: sfbase.c:510 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:510 — @param {CPtr<uint32>} a @returns {CPtr<char>} */
 export function sfvalue_uint32(a) {
     nh_snprintf(__sl20, 514, cptr.decay(__static_sfvalue_uint32_buf), 20n, __sl19, cptr.ldI32(a));
     return cptr.decay(__static_sfvalue_uint32_buf);
@@ -2566,7 +2566,7 @@ export function sfvalue_uint32(a) {
 
 const __static_sfvalue_uint64_buf = new Uint8Array(20); /** C ref: sfbase.c:520 — char[20] (function-static) */
 
-/** C ref: sfbase.c:518 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:518 — @param {CPtr<uint64>} a @returns {CPtr<char>} */
 export function sfvalue_uint64(a) {
     nh_snprintf(__sl21, 522, cptr.decay(__static_sfvalue_uint64_buf), 20n, __sl22, cptr.ldU64(a));
     return cptr.decay(__static_sfvalue_uint64_buf);
@@ -2574,7 +2574,7 @@ export function sfvalue_uint64(a) {
 
 const __static_sfvalue_size_t_buf = new Uint8Array(20); /** C ref: sfbase.c:528 — char[20] (function-static) */
 
-/** C ref: sfbase.c:526 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:526 — @param {CPtr<size_t>} a @returns {CPtr<char>} */
 export function sfvalue_size_t(a) {
     nh_snprintf(__sl23, 530, cptr.decay(__static_sfvalue_size_t_buf), 20n, __sl2, __sl24);
     return cptr.decay(__static_sfvalue_size_t_buf);
@@ -2582,7 +2582,7 @@ export function sfvalue_size_t(a) {
 
 const __static_sfvalue_time_t_buf = new Uint8Array(20); /** C ref: sfbase.c:536 — char[20] (function-static) */
 
-/** C ref: sfbase.c:534 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:534 — @param {CPtr<time_t>} a @returns {CPtr<char>} */
 export function sfvalue_time_t(a) {
     nh_snprintf(__sl25, 538, cptr.decay(__static_sfvalue_time_t_buf), 20n, __sl2, __sl24);
     return cptr.decay(__static_sfvalue_time_t_buf);
@@ -2590,7 +2590,7 @@ export function sfvalue_time_t(a) {
 
 const __static_sfvalue_short_buf = new Uint8Array(20); /** C ref: sfbase.c:544 — char[20] (function-static) */
 
-/** C ref: sfbase.c:542 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:542 — @param {CPtr<short>} a @returns {CPtr<char>} */
 export function sfvalue_short(a) {
     nh_snprintf(__sl26, 546, cptr.decay(__static_sfvalue_short_buf), 20n, __sl6, cptr.ldI16(a));
     return cptr.decay(__static_sfvalue_short_buf);
@@ -2598,7 +2598,7 @@ export function sfvalue_short(a) {
 
 const __static_sfvalue_ushort_buf = new Uint8Array(20); /** C ref: sfbase.c:552 — char[20] (function-static) */
 
-/** C ref: sfbase.c:550 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:550 — @param {CPtr<ushort>} a @returns {CPtr<char>} */
 export function sfvalue_ushort(a) {
     nh_snprintf(__sl27, 554, cptr.decay(__static_sfvalue_ushort_buf), 20n, __sl19, cptr.ldU16(a));
     return cptr.decay(__static_sfvalue_ushort_buf);
@@ -2606,7 +2606,7 @@ export function sfvalue_ushort(a) {
 
 const __static_sfvalue_int_buf = new Uint8Array(20); /** C ref: sfbase.c:560 — char[20] (function-static) */
 
-/** C ref: sfbase.c:558 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:558 — @param {CPtr<int>} a @returns {CPtr<char>} */
 export function sfvalue_int(a) {
     nh_snprintf(__sl28, 562, cptr.decay(__static_sfvalue_int_buf), 20n, __sl6, cptr.ldI32(a));
     return cptr.decay(__static_sfvalue_int_buf);
@@ -2614,7 +2614,7 @@ export function sfvalue_int(a) {
 
 const __static_sfvalue_unsigned_buf = new Uint8Array(20); /** C ref: sfbase.c:568 — char[20] (function-static) */
 
-/** C ref: sfbase.c:566 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:566 — @param {CPtr<unsigned int>} a @returns {CPtr<char>} */
 export function sfvalue_unsigned(a) {
     nh_snprintf(__sl29, 570, cptr.decay(__static_sfvalue_unsigned_buf), 20n, __sl19, cptr.ldI32(a));
     return cptr.decay(__static_sfvalue_unsigned_buf);
@@ -2622,7 +2622,7 @@ export function sfvalue_unsigned(a) {
 
 const __static_sfvalue_long_buf = new Uint8Array(20); /** C ref: sfbase.c:576 — char[20] (function-static) */
 
-/** C ref: sfbase.c:574 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:574 — @param {CPtr<long>} a @returns {CPtr<char>} */
 export function sfvalue_long(a) {
     nh_snprintf(__sl30, 578, cptr.decay(__static_sfvalue_long_buf), 20n, __sl31, cptr.ldI64(a));
     return cptr.decay(__static_sfvalue_long_buf);
@@ -2630,7 +2630,7 @@ export function sfvalue_long(a) {
 
 const __static_sfvalue_ulong_buf = new Uint8Array(20); /** C ref: sfbase.c:584 — char[20] (function-static) */
 
-/** C ref: sfbase.c:582 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:582 — @param {CPtr<ulong>} a @returns {CPtr<char>} */
 export function sfvalue_ulong(a) {
     nh_snprintf(__sl32, 586, cptr.decay(__static_sfvalue_ulong_buf), 20n, __sl33, cptr.ldU64(a));
     return cptr.decay(__static_sfvalue_ulong_buf);
@@ -2638,7 +2638,7 @@ export function sfvalue_ulong(a) {
 
 const __static_sfvalue_xint8_buf = new Uint8Array(20); /** C ref: sfbase.c:592 — char[20] (function-static) */
 
-/** C ref: sfbase.c:590 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:590 — @param {CPtr<xint8>} a @returns {CPtr<char>} */
 export function sfvalue_xint8(a) {
     nh_snprintf(__sl34, 594, cptr.decay(__static_sfvalue_xint8_buf), 20n, __sl6, cptr.ld1s(a));
     return cptr.decay(__static_sfvalue_xint8_buf);
@@ -2646,7 +2646,7 @@ export function sfvalue_xint8(a) {
 
 const __static_sfvalue_xint16_buf = new Uint8Array(20); /** C ref: sfbase.c:600 — char[20] (function-static) */
 
-/** C ref: sfbase.c:598 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:598 — @param {CPtr<xint16>} a @returns {CPtr<char>} */
 export function sfvalue_xint16(a) {
     nh_snprintf(__sl35, 603, cptr.decay(__static_sfvalue_xint16_buf), 20n, __sl6, cptr.ldI16(a));
     return cptr.decay(__static_sfvalue_xint16_buf);
@@ -2654,7 +2654,7 @@ export function sfvalue_xint16(a) {
 
 const __static_sfvalue_bitfield_buf = new Uint8Array(20); /** C ref: sfbase.c:610 — char[20] (function-static) */
 
-/** C ref: sfbase.c:608 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:608 — @param {CPtr<uint8>} a @returns {CPtr<char>} */
 export function sfvalue_bitfield(a) {
     nh_snprintf(__sl36, 612, cptr.decay(__static_sfvalue_bitfield_buf), 20n, __sl19, cptr.ld1u(a));
     return cptr.decay(__static_sfvalue_bitfield_buf);
@@ -2662,7 +2662,7 @@ export function sfvalue_bitfield(a) {
 
 const __static_bitfield_dump_buf = new Uint8Array(20); /** C ref: sfbase.c:619 — char[20] (function-static) */
 
-/** C ref: sfbase.c:617 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:617 — @param {CPtr<uint8>} a @returns {CPtr<char>} */
 export function bitfield_dump(a) {
     nh_snprintf(__sl37, 621, cptr.decay(__static_bitfield_dump_buf), 20n, __sl19, cptr.ld1u(a));
     return cptr.decay(__static_bitfield_dump_buf);
@@ -2670,7 +2670,7 @@ export function bitfield_dump(a) {
 
 const __static_complex_dump_buf = new Uint8Array(50); /** C ref: sfbase.c:629 — char[50] (function-static) */
 
-/** C ref: sfbase.c:625 — @param {CPtr} a @returns {CPtr} */
+/** C ref: sfbase.c:625 — @param {CPtr<uchar>} a @returns {CPtr<char>} */
 export function* complex_dump(a) {
     let i;
     let uc = a;
@@ -2693,307 +2693,307 @@ export function sf_init() {
     cptr.memcpy(cptr.add(sfiflprocs, NHC.exportascii, 552), zerosfiflprocs, 552);
 }
 
-/** C ref: sfbase.c:658 — @param {CInt} idx @param {CPtr} sfi @param {CPtr} sfo */
+/** C ref: sfbase.c:658 — @param {CInt} idx @param {CPtr<struct sf_structlevel_procs>} sfi @param {CPtr<struct sf_structlevel_procs>} sfo */
 export function sf_setprocs(idx, sfi, sfo) {
     cptr.memcpy(cptr.add(sfoprocs, idx, 552), sfo, 552);
     cptr.memcpy(cptr.add(sfiprocs, idx, 552), sfi, 552);
 }
 
-/** C ref: sfbase.c:664 — @param {CInt} idx @param {CPtr} flsfi @param {CPtr} flsfo */
+/** C ref: sfbase.c:664 — @param {CInt} idx @param {CPtr<struct sf_fieldlevel_procs>} flsfi @param {CPtr<struct sf_fieldlevel_procs>} flsfo */
 export function sf_setflprocs(idx, flsfi, flsfo) {
     cptr.memcpy(cptr.add(sfoflprocs, idx, 552), flsfo, 552);
     cptr.memcpy(cptr.add(sfiflprocs, idx, 552), flsfi, 552);
 }
 
-/** C ref: sfbase.c:748 — @param {CPtr} d_any */
+/** C ref: sfbase.c:748 — @param {CPtr<union any>} d_any */
 export function norm_ptrs_any(d_any) {
 }
 
-/** C ref: sfbase.c:752 — @param {CPtr} d_align */
+/** C ref: sfbase.c:752 — @param {CPtr<struct align>} d_align */
 export function norm_ptrs_align(d_align) {
 }
 
-/** C ref: sfbase.c:757 — @param {CPtr} d_arti_info */
+/** C ref: sfbase.c:757 — @param {CPtr<struct arti_info>} d_arti_info */
 export function norm_ptrs_arti_info(d_arti_info) {
 }
 
-/** C ref: sfbase.c:762 — @param {CPtr} d_attribs */
+/** C ref: sfbase.c:762 — @param {CPtr<struct attribs>} d_attribs */
 export function norm_ptrs_attribs(d_attribs) {
 }
 
-/** C ref: sfbase.c:767 — @param {CPtr} d_bill_x */
+/** C ref: sfbase.c:767 — @param {CPtr<struct bill_x>} d_bill_x */
 export function norm_ptrs_bill_x(d_bill_x) {
 }
 
-/** C ref: sfbase.c:772 — @param {CPtr} d_branch */
+/** C ref: sfbase.c:772 — @param {CPtr<struct branch>} d_branch */
 export function norm_ptrs_branch(d_branch) {
 }
 
-/** C ref: sfbase.c:777 — @param {CPtr} d_bubble */
+/** C ref: sfbase.c:777 — @param {CPtr<struct bubble>} d_bubble */
 export function norm_ptrs_bubble(d_bubble) {
 }
 
-/** C ref: sfbase.c:782 — @param {CPtr} d_cemetery */
+/** C ref: sfbase.c:782 — @param {CPtr<struct cemetery>} d_cemetery */
 export function norm_ptrs_cemetery(d_cemetery) {
 }
 
-/** C ref: sfbase.c:787 — @param {CPtr} d_context_info */
+/** C ref: sfbase.c:787 — @param {CPtr<struct context_info>} d_context_info */
 export function norm_ptrs_context_info(d_context_info) {
 }
 
-/** C ref: sfbase.c:792 — @param {CPtr} d_achievement_tracking */
+/** C ref: sfbase.c:792 — @param {CPtr<struct achievement_tracking>} d_achievement_tracking */
 export function norm_ptrs_achievement_tracking(d_achievement_tracking) {
 }
 
-/** C ref: sfbase.c:797 — @param {CPtr} d_book_info */
+/** C ref: sfbase.c:797 — @param {CPtr<struct book_info>} d_book_info */
 export function norm_ptrs_book_info(d_book_info) {
 }
 
-/** C ref: sfbase.c:802 — @param {CPtr} d_dig_info */
+/** C ref: sfbase.c:802 — @param {CPtr<struct dig_info>} d_dig_info */
 export function norm_ptrs_dig_info(d_dig_info) {
 }
 
-/** C ref: sfbase.c:807 — @param {CPtr} d_engrave_info */
+/** C ref: sfbase.c:807 — @param {CPtr<struct engrave_info>} d_engrave_info */
 export function norm_ptrs_engrave_info(d_engrave_info) {
 }
 
-/** C ref: sfbase.c:812 — @param {CPtr} d_obj_split */
+/** C ref: sfbase.c:812 — @param {CPtr<struct obj_split>} d_obj_split */
 export function norm_ptrs_obj_split(d_obj_split) {
 }
 
-/** C ref: sfbase.c:817 — @param {CPtr} d_polearm_info */
+/** C ref: sfbase.c:817 — @param {CPtr<struct polearm_info>} d_polearm_info */
 export function norm_ptrs_polearm_info(d_polearm_info) {
 }
 
-/** C ref: sfbase.c:822 — @param {CPtr} d_takeoff_info */
+/** C ref: sfbase.c:822 — @param {CPtr<struct takeoff_info>} d_takeoff_info */
 export function norm_ptrs_takeoff_info(d_takeoff_info) {
 }
 
-/** C ref: sfbase.c:827 — @param {CPtr} d_tin_info */
+/** C ref: sfbase.c:827 — @param {CPtr<struct tin_info>} d_tin_info */
 export function norm_ptrs_tin_info(d_tin_info) {
 }
 
-/** C ref: sfbase.c:832 — @param {CPtr} d_tribute_info */
+/** C ref: sfbase.c:832 — @param {CPtr<struct tribute_info>} d_tribute_info */
 export function norm_ptrs_tribute_info(d_tribute_info) {
 }
 
-/** C ref: sfbase.c:837 — @param {CPtr} d_victual_info */
+/** C ref: sfbase.c:837 — @param {CPtr<struct victual_info>} d_victual_info */
 export function norm_ptrs_victual_info(d_victual_info) {
 }
 
-/** C ref: sfbase.c:842 — @param {CPtr} d_warntype_info */
+/** C ref: sfbase.c:842 — @param {CPtr<struct warntype_info>} d_warntype_info */
 export function norm_ptrs_warntype_info(d_warntype_info) {
 }
 
-/** C ref: sfbase.c:847 — @param {CPtr} d_d_flags */
+/** C ref: sfbase.c:847 — @param {CPtr<struct d_flags>} d_d_flags */
 export function norm_ptrs_d_flags(d_d_flags) {
 }
 
-/** C ref: sfbase.c:852 — @param {CPtr} d_d_level */
+/** C ref: sfbase.c:852 — @param {CPtr<struct d_level>} d_d_level */
 export function norm_ptrs_d_level(d_d_level) {
 }
 
-/** C ref: sfbase.c:857 — @param {CPtr} d_damage */
+/** C ref: sfbase.c:857 — @param {CPtr<struct damage>} d_damage */
 export function norm_ptrs_damage(d_damage) {
 }
 
-/** C ref: sfbase.c:862 — @param {CPtr} d_dest_area */
+/** C ref: sfbase.c:862 — @param {CPtr<struct dest_area>} d_dest_area */
 export function norm_ptrs_dest_area(d_dest_area) {
 }
 
-/** C ref: sfbase.c:867 — @param {CPtr} d_dgn_topology */
+/** C ref: sfbase.c:867 — @param {CPtr<struct dgn_topology>} d_dgn_topology */
 export function norm_ptrs_dgn_topology(d_dgn_topology) {
 }
 
-/** C ref: sfbase.c:872 — @param {CPtr} d_dungeon */
+/** C ref: sfbase.c:872 — @param {CPtr<struct dungeon>} d_dungeon */
 export function norm_ptrs_dungeon(d_dungeon) {
 }
 
-/** C ref: sfbase.c:877 — @param {CPtr} d_ebones */
+/** C ref: sfbase.c:877 — @param {CPtr<struct ebones>} d_ebones */
 export function norm_ptrs_ebones(d_ebones) {
 }
 
-/** C ref: sfbase.c:882 — @param {CPtr} d_edog */
+/** C ref: sfbase.c:882 — @param {CPtr<struct edog>} d_edog */
 export function norm_ptrs_edog(d_edog) {
 }
 
-/** C ref: sfbase.c:887 — @param {CPtr} d_egd */
+/** C ref: sfbase.c:887 — @param {CPtr<struct egd>} d_egd */
 export function norm_ptrs_egd(d_egd) {
 }
 
-/** C ref: sfbase.c:892 — @param {CPtr} d_emin */
+/** C ref: sfbase.c:892 — @param {CPtr<struct emin>} d_emin */
 export function norm_ptrs_emin(d_emin) {
 }
 
-/** C ref: sfbase.c:897 — @param {CPtr} d_engr */
+/** C ref: sfbase.c:897 — @param {CPtr<struct engr>} d_engr */
 export function norm_ptrs_engr(d_engr) {
 }
 
-/** C ref: sfbase.c:902 — @param {CPtr} d_epri */
+/** C ref: sfbase.c:902 — @param {CPtr<struct epri>} d_epri */
 export function norm_ptrs_epri(d_epri) {
 }
 
-/** C ref: sfbase.c:907 — @param {CPtr} d_eshk */
+/** C ref: sfbase.c:907 — @param {CPtr<struct eshk>} d_eshk */
 export function norm_ptrs_eshk(d_eshk) {
 }
 
-/** C ref: sfbase.c:912 — @param {CPtr} d_fakecorridor */
+/** C ref: sfbase.c:912 — @param {CPtr<struct fakecorridor>} d_fakecorridor */
 export function norm_ptrs_fakecorridor(d_fakecorridor) {
 }
 
-/** C ref: sfbase.c:917 — @param {CPtr} d_fe */
+/** C ref: sfbase.c:917 — @param {CPtr<struct fe>} d_fe */
 export function norm_ptrs_fe(d_fe) {
 }
 
-/** C ref: sfbase.c:922 — @param {CPtr} d_flag */
+/** C ref: sfbase.c:922 — @param {CPtr<struct flag>} d_flag */
 export function norm_ptrs_flag(d_flag) {
 }
 
-/** C ref: sfbase.c:927 — @param {CPtr} d_fruit */
+/** C ref: sfbase.c:927 — @param {CPtr<struct fruit>} d_fruit */
 export function norm_ptrs_fruit(d_fruit) {
 }
 
-/** C ref: sfbase.c:932 — @param {CPtr} d_gamelog_line */
+/** C ref: sfbase.c:932 — @param {CPtr<struct gamelog_line>} d_gamelog_line */
 export function norm_ptrs_gamelog_line(d_gamelog_line) {
 }
 
-/** C ref: sfbase.c:937 — @param {CPtr} d_kinfo */
+/** C ref: sfbase.c:937 — @param {CPtr<struct kinfo>} d_kinfo */
 export function norm_ptrs_kinfo(d_kinfo) {
 }
 
-/** C ref: sfbase.c:942 — @param {CPtr} d_levelflags */
+/** C ref: sfbase.c:942 — @param {CPtr<struct levelflags>} d_levelflags */
 export function norm_ptrs_levelflags(d_levelflags) {
 }
 
-/** C ref: sfbase.c:947 — @param {CPtr} d_linfo */
+/** C ref: sfbase.c:947 — @param {CPtr<struct linfo>} d_linfo */
 export function norm_ptrs_linfo(d_linfo) {
 }
 
-/** C ref: sfbase.c:952 — @param {CPtr} d_ls_t */
+/** C ref: sfbase.c:952 — @param {CPtr<struct ls_t>} d_ls_t */
 export function norm_ptrs_ls_t(d_ls_t) {
 }
 
-/** C ref: sfbase.c:957 — @param {CPtr} d_mapseen_feat */
+/** C ref: sfbase.c:957 — @param {CPtr<struct mapseen_feat>} d_mapseen_feat */
 export function norm_ptrs_mapseen_feat(d_mapseen_feat) {
 }
 
-/** C ref: sfbase.c:962 — @param {CPtr} d_mapseen_flags */
+/** C ref: sfbase.c:962 — @param {CPtr<struct mapseen_flags>} d_mapseen_flags */
 export function norm_ptrs_mapseen_flags(d_mapseen_flags) {
 }
 
-/** C ref: sfbase.c:967 — @param {CPtr} d_mapseen_rooms */
+/** C ref: sfbase.c:967 — @param {CPtr<struct mapseen_rooms>} d_mapseen_rooms */
 export function norm_ptrs_mapseen_rooms(d_mapseen_rooms) {
 }
 
-/** C ref: sfbase.c:972 — @param {CPtr} d_mapseen */
+/** C ref: sfbase.c:972 — @param {CPtr<struct mapseen>} d_mapseen */
 export function norm_ptrs_mapseen(d_mapseen) {
 }
 
-/** C ref: sfbase.c:977 — @param {CPtr} d_mextra */
+/** C ref: sfbase.c:977 — @param {CPtr<struct mextra>} d_mextra */
 export function norm_ptrs_mextra(d_mextra) {
 }
 
-/** C ref: sfbase.c:982 — @param {CPtr} d_mkroom */
+/** C ref: sfbase.c:982 — @param {CPtr<struct mkroom>} d_mkroom */
 export function norm_ptrs_mkroom(d_mkroom) {
 }
 
-/** C ref: sfbase.c:987 — @param {CPtr} d_monst */
+/** C ref: sfbase.c:987 — @param {CPtr<struct monst>} d_monst */
 export function norm_ptrs_monst(d_monst) {
 }
 
-/** C ref: sfbase.c:992 — @param {CPtr} d_mvitals */
+/** C ref: sfbase.c:992 — @param {CPtr<struct mvitals>} d_mvitals */
 export function norm_ptrs_mvitals(d_mvitals) {
 }
 
-/** C ref: sfbase.c:997 — @param {CPtr} d_nhcoord */
+/** C ref: sfbase.c:997 — @param {CPtr<struct nhcoord>} d_nhcoord */
 export function norm_ptrs_nhcoord(d_nhcoord) {
 }
 
-/** C ref: sfbase.c:1002 — @param {CPtr} d_nhrect */
+/** C ref: sfbase.c:1002 — @param {CPtr<struct nhrect>} d_nhrect */
 export function norm_ptrs_nhrect(d_nhrect) {
 }
 
-/** C ref: sfbase.c:1007 — @param {CPtr} d_novel_tracking */
+/** C ref: sfbase.c:1007 — @param {CPtr<struct novel_tracking>} d_novel_tracking */
 export function norm_ptrs_novel_tracking(d_novel_tracking) {
 }
 
-/** C ref: sfbase.c:1012 — @param {CPtr} d_obj */
+/** C ref: sfbase.c:1012 — @param {CPtr<struct obj>} d_obj */
 export function norm_ptrs_obj(d_obj) {
 }
 
-/** C ref: sfbase.c:1017 — @param {CPtr} d_objclass */
+/** C ref: sfbase.c:1017 — @param {CPtr<struct objclass>} d_objclass */
 export function norm_ptrs_objclass(d_objclass) {
 }
 
-/** C ref: sfbase.c:1022 — @param {CPtr} d_oextra */
+/** C ref: sfbase.c:1022 — @param {CPtr<struct oextra>} d_oextra */
 export function norm_ptrs_oextra(d_oextra) {
 }
 
-/** C ref: sfbase.c:1027 — @param {CPtr} d_prop */
+/** C ref: sfbase.c:1027 — @param {CPtr<struct prop>} d_prop */
 export function norm_ptrs_prop(d_prop) {
 }
 
-/** C ref: sfbase.c:1032 — @param {CPtr} d_q_score */
+/** C ref: sfbase.c:1032 — @param {CPtr<struct q_score>} d_q_score */
 export function norm_ptrs_q_score(d_q_score) {
 }
 
-/** C ref: sfbase.c:1037 — @param {CPtr} d_rm */
+/** C ref: sfbase.c:1037 — @param {CPtr<struct rm>} d_rm */
 export function norm_ptrs_rm(d_rm) {
 }
 
-/** C ref: sfbase.c:1042 — @param {CPtr} d_s_level */
+/** C ref: sfbase.c:1042 — @param {CPtr<struct s_level>} d_s_level */
 export function norm_ptrs_s_level(d_s_level) {
 }
 
-/** C ref: sfbase.c:1047 — @param {CPtr} d_skills */
+/** C ref: sfbase.c:1047 — @param {CPtr<struct skills>} d_skills */
 export function norm_ptrs_skills(d_skills) {
 }
 
-/** C ref: sfbase.c:1052 — @param {CPtr} d_spell */
+/** C ref: sfbase.c:1052 — @param {CPtr<struct spell>} d_spell */
 export function norm_ptrs_spell(d_spell) {
 }
 
-/** C ref: sfbase.c:1057 — @param {CPtr} d_stairway */
+/** C ref: sfbase.c:1057 — @param {CPtr<struct stairway>} d_stairway */
 export function norm_ptrs_stairway(d_stairway) {
 }
 
-/** C ref: sfbase.c:1062 — @param {CPtr} d_trap */
+/** C ref: sfbase.c:1062 — @param {CPtr<struct trap>} d_trap */
 export function norm_ptrs_trap(d_trap) {
 }
 
-/** C ref: sfbase.c:1067 — @param {CPtr} d_u_conduct */
+/** C ref: sfbase.c:1067 — @param {CPtr<struct u_conduct>} d_u_conduct */
 export function norm_ptrs_u_conduct(d_u_conduct) {
 }
 
-/** C ref: sfbase.c:1072 — @param {CPtr} d_u_event */
+/** C ref: sfbase.c:1072 — @param {CPtr<struct u_event>} d_u_event */
 export function norm_ptrs_u_event(d_u_event) {
 }
 
-/** C ref: sfbase.c:1077 — @param {CPtr} d_u_have */
+/** C ref: sfbase.c:1077 — @param {CPtr<struct u_have>} d_u_have */
 export function norm_ptrs_u_have(d_u_have) {
 }
 
-/** C ref: sfbase.c:1082 — @param {CPtr} d_u_realtime */
+/** C ref: sfbase.c:1082 — @param {CPtr<struct u_realtime>} d_u_realtime */
 export function norm_ptrs_u_realtime(d_u_realtime) {
 }
 
-/** C ref: sfbase.c:1087 — @param {CPtr} d_u_roleplay */
+/** C ref: sfbase.c:1087 — @param {CPtr<struct u_roleplay>} d_u_roleplay */
 export function norm_ptrs_u_roleplay(d_u_roleplay) {
 }
 
-/** C ref: sfbase.c:1092 — @param {CPtr} d_version_info */
+/** C ref: sfbase.c:1092 — @param {CPtr<struct version_info>} d_version_info */
 export function norm_ptrs_version_info(d_version_info) {
 }
 
-/** C ref: sfbase.c:1097 — @param {CPtr} d_vlaunchinfo */
+/** C ref: sfbase.c:1097 — @param {CPtr<union vlaunchinfo>} d_vlaunchinfo */
 export function norm_ptrs_vlaunchinfo(d_vlaunchinfo) {
 }
 
-/** C ref: sfbase.c:1102 — @param {CPtr} d_vptrs */
+/** C ref: sfbase.c:1102 — @param {CPtr<union vptrs>} d_vptrs */
 export function norm_ptrs_vptrs(d_vptrs) {
 }
 
-/** C ref: sfbase.c:1107 — @param {CPtr} d_you */
+/** C ref: sfbase.c:1107 — @param {CPtr<struct you>} d_you */
 export function norm_ptrs_you(d_you) {
 }
 

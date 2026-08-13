@@ -380,7 +380,7 @@ export function* move_bc(before, control, ballx, bally, chainx, chainy) {
     }
 }
 
-/** C ref: ball.c:560 — @param {CInt} x @param {CInt} y @param {CPtr} bc_control @param {CPtr} ballx @param {CPtr} bally @param {CPtr} chainx @param {CPtr} chainy @param {CPtr} cause_delay @param {CInt} allow_drag @returns {CInt} */
+/** C ref: ball.c:560 — @param {CInt} x @param {CInt} y @param {CPtr<int>} bc_control @param {CPtr<coordxy>} ballx @param {CPtr<coordxy>} bally @param {CPtr<coordxy>} chainx @param {CPtr<coordxy>} chainy @param {CPtr<boolean>} cause_delay @param {CInt} allow_drag @returns {CInt} */
 export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_delay, allow_drag) {
     let t = null;
     let already_in_rock;

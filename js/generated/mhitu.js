@@ -429,7 +429,7 @@ const __sl287 = cptr.lit("%s is jolted with your electricity!");
 /** C ref: mhitu.c:9 — struct obj * */
 let mon_currwep = null;
 
-/** C ref: mhitu.c:29 — @param {CPtr} mtmp @param {CPtr} mattk */
+/** C ref: mhitu.c:29 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk */
 export function hitmsg(mtmp, mattk) {
     let compat;
     let verb = null;
@@ -475,7 +475,7 @@ export function hitmsg(mtmp, mattk) {
     cptr.stPtro(gh, $instance_globals_h_hitmsg_prev, mattk);
 }
 
-/** C ref: mhitu.c:85 — @param {CPtr} mtmp @param {CInt} nearmiss @param {CPtr} mattk */
+/** C ref: mhitu.c:85 — @param {CPtr<struct monst>} mtmp @param {CInt} nearmiss @param {CPtr<struct attack>} mattk */
 function missmu(mtmp, nearmiss, mattk) {
     cptr.stI32o(gh, $instance_globals_h_hitmsg_mid, 0);
     cptr.stPtro(gh, $instance_globals_h_hitmsg_prev, null);
@@ -488,7 +488,7 @@ function missmu(mtmp, nearmiss, mattk) {
     stop_occupation();
 }
 
-/** C ref: mhitu.c:105 — @param {CPtr} mwep @param {CInt} bash @returns {CPtr} */
+/** C ref: mhitu.c:105 — @param {CPtr<struct obj>} mwep @param {CInt} bash @returns {CPtr<char>} */
 export function mswings_verb(mwep, bash) {
     let verb;
     let otyp = cptr.ldI16o(mwep, $obj_otyp);
@@ -498,14 +498,14 @@ export function mswings_verb(mwep, bash) {
     return verb;
 }
 
-/** C ref: mhitu.c:130 — @param {CPtr} mtmp @param {CPtr} otemp @param {CInt} bash */
+/** C ref: mhitu.c:130 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otemp @param {CInt} bash */
 function mswings(mtmp, otemp, bash) {
     if (cptr.ld1so(flags, $flag_verbose) && !Blind() && mon_visible(mtmp)) {
         pline_mon(mtmp, __sl28, Monnam(mtmp), mswings_verb(otemp, bash), (cptr.ldI64o(otemp, $obj_quan) > 1n) ? __sl29 : __sl17, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), 48, $Gender_his)), xname(otemp));
     }
 }
 
-/** C ref: mhitu.c:145 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CPtr} */
+/** C ref: mhitu.c:145 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CPtr<char>} */
 export function mpoisons_subj(mtmp, mattk) {
     if (cptr.ld1u(mattk) == NHM.AT_WEAP) {
         let mwep = (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) ? uwep.v : (cptr.ldPtro((mtmp), $monst_mw));
@@ -525,7 +525,7 @@ export function u_slow_down() {
     exercise(NHC.A_DEX, 0);
 }
 
-/** C ref: mhitu.c:176 — @param {CPtr} mtmp @param {CPtr} mattk */
+/** C ref: mhitu.c:176 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk */
 function wildmiss(mtmp, mattk) {
     let compat;
     let Monst_name;
@@ -578,7 +578,7 @@ function wildmiss(mtmp, mattk) {
     }
 }
 
-/** C ref: mhitu.c:264 — @param {CPtr} mtmp @param {CPtr} mdat @param {CInt} message */
+/** C ref: mhitu.c:264 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct permonst>} mdat @param {CInt} message */
 export function expels(mtmp, mdat, message) {
     cptr.st1(disp, 1);
     if (message) {
@@ -617,7 +617,7 @@ export function expels(mtmp, mdat, message) {
     spoteffects(1);
 }
 
-/** C ref: mhitu.c:310 — @param {CPtr} magr @param {CPtr} mdef @param {CInt} indx @param {CPtr} prev_result @param {CPtr} alt_attk_buf @returns {CPtr} */
+/** C ref: mhitu.c:310 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} indx @param {CPtr<int>} prev_result @param {CPtr<struct attack>} alt_attk_buf @returns {CPtr<struct attack>} */
 export function getmattk(magr, mdef, indx, prev_result, alt_attk_buf) {
     let mptr = cptr.ldPtro(magr, $monst_data);
     let attk = cptr.add(cptr.add(mptr, $permonst_mattk), indx, 4);
@@ -686,7 +686,7 @@ export function getmattk(magr, mdef, indx, prev_result, alt_attk_buf) {
     return attk;
 }
 
-/** C ref: mhitu.c:448 — @param {CPtr} mtmp @param {CPtr} ranged @param {CPtr} range2 @param {CPtr} foundyou @param {CPtr} youseeit */
+/** C ref: mhitu.c:448 — @param {CPtr<struct monst>} mtmp @param {CPtr<boolean>} ranged @param {CPtr<boolean>} range2 @param {CPtr<boolean>} foundyou @param {CPtr<boolean>} youseeit */
 function calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit) {
     cptr.st1(ranged, schar((dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 3)));
     cptr.st1(range2, schar((!monnear(mtmp, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy)))));
@@ -696,7 +696,7 @@ function calc_mattacku_vars(mtmp, ranged, range2, foundyou, youseeit) {
     cptr.st1o(gn, $instance_globals_n_notonhead, 0);
 }
 
-/** C ref: mhitu.c:467 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mhitu.c:467 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mtrapped_in_pit(mtmp) {
     let ttmp = null;
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)))
@@ -708,7 +708,7 @@ export function mtrapped_in_pit(mtmp) {
     return 0;
 }
 
-/** C ref: mhitu.c:491 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mhitu.c:491 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function mattacku(mtmp) {
     let mattk;
     let alt_attk = cptr.alloc(4);
@@ -1025,7 +1025,7 @@ export function mattacku(mtmp) {
     return 0;
 }
 
-/** C ref: mhitu.c:956 — @param {CPtr} mtmp @param {CInt} youseeit */
+/** C ref: mhitu.c:956 — @param {CPtr<struct monst>} mtmp @param {CInt} youseeit */
 function summonmu(mtmp, youseeit) {
     let mdat = cptr.ldPtro(mtmp, $monst_data);
     if (((cptr.ldU64o((mdat), $permonst_mflags2) & 256n) != 0n)) {
@@ -1085,7 +1085,7 @@ function summonmu(mtmp, youseeit) {
     }
 }
 
-/** C ref: mhitu.c:1033 — @param {CPtr} mdat @returns {CInt} */
+/** C ref: mhitu.c:1033 — @param {CPtr<struct permonst>} mdat @returns {CInt} */
 export function diseasemu(mdat) {
     if ((cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, 24, $you_uprops) || defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE))) {
         You_feel(__sl98);
@@ -1096,7 +1096,7 @@ export function diseasemu(mdat) {
     }
 }
 
-/** C ref: mhitu.c:1047 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitu.c:1047 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function u_slip_free(mtmp, mattk) {
     let obj;
     if (cptr.ld1u(mattk) == NHM.AT_ENGL)
@@ -1118,7 +1118,7 @@ export function u_slip_free(mtmp, mattk) {
     return 0;
 }
 
-/** C ref: mhitu.c:1089 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mhitu.c:1089 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function magic_negation(mon) {
     let o;
     let wearmask;
@@ -1154,7 +1154,7 @@ export function magic_negation(mon) {
     return mc;
 }
 
-/** C ref: mhitu.c:1144 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitu.c:1144 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 function hitmu(mtmp, mattk) {
     let mdat = cptr.ldPtro(mtmp, $monst_data);
     let olduasmon = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
@@ -1250,7 +1250,7 @@ export function gulp_blnd_check() {
     return 0;
 }
 
-/** C ref: mhitu.c:1289 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitu.c:1289 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 function gulpmu(mtmp, mattk) {
     let t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     let tmp = (rng_log_enabled() ? (rng_log_set_caller(__sl22, 1292, __sl111), d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)))) : d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd))));
@@ -1476,7 +1476,7 @@ function gulpmu(mtmp, mattk) {
     return NHM.M_ATTK_HIT;
 }
 
-/** C ref: mhitu.c:1591 — @param {CPtr} mtmp @param {CPtr} mattk @param {CInt} ufound @returns {CInt} */
+/** C ref: mhitu.c:1591 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @param {CInt} ufound @returns {CInt} */
 function explmu(mtmp, mattk, ufound) {
     let kill_agr = 1;
     let not_affected;
@@ -1546,7 +1546,7 @@ cptr.stPtro(__static_gazemu_reactions, 40, __sl196);
 cptr.stPtro(__static_gazemu_reactions, 48, __sl197);
 cptr.stPtro(__static_gazemu_reactions, 56, __sl198); /** C ref: mhitu.c:1670 — char *[8] (function-static) */
 
-/** C ref: mhitu.c:1668 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitu.c:1668 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function gazemu(mtmp, mattk) {
     let react = -1;
     let is_medusa;
@@ -1701,7 +1701,7 @@ export function gazemu(mtmp, mattk) {
     return NHM.M_ATTK_MISS;
 }
 
-/** C ref: mhitu.c:1902 — @param {CPtr} mtmp @param {CInt} n */
+/** C ref: mhitu.c:1902 — @param {CPtr<struct monst>} mtmp @param {CInt} n */
 export function mdamageu(mtmp, n) {
     if (n < 0) {
         impossible(__sl199, n);
@@ -1725,7 +1725,7 @@ export function mdamageu(mtmp, n) {
     }
 }
 
-/** C ref: mhitu.c:1934 — @param {CPtr} magr @param {CPtr} mdef @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitu.c:1934 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function could_seduce(magr, mdef, mattk) {
     let pagr;
     let agrinvis;
@@ -1761,7 +1761,7 @@ export function could_seduce(magr, mdef, mattk) {
     return (genagr == ((1 - gendef) | 0)) ? 1 : ((cptr.ld1so(pagr, $permonst_mlet) == NHC.S_NYMPH) ? 2 : 0);
 }
 
-/** C ref: mhitu.c:1985 — @param {CPtr} mon @returns {CInt} */
+/** C ref: mhitu.c:1985 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function doseduce(mon) {
     let ring;
     let nring;
@@ -2016,7 +2016,7 @@ export function doseduce(mon) {
     return 1;
 }
 
-/** C ref: mhitu.c:2309 — @param {CPtr} mon @param {CPtr} seducer @param {CPtr} obj @param {CPtr} str */
+/** C ref: mhitu.c:2309 — @param {CPtr<struct monst>} mon @param {CPtr<char>} seducer @param {CPtr<struct obj>} obj @param {CPtr<char>} str */
 function mayberem(mon, seducer, obj, str) {
     let qbuf = new Uint8Array(128);
     if (!obj || !cptr.ldI64o(obj, $obj_owornmask))
@@ -2039,7 +2039,7 @@ function mayberem(mon, seducer, obj, str) {
     remove_worn_item(obj, 1);
 }
 
-/** C ref: mhitu.c:2355 — @param {CPtr} mtmp @param {CInt} tmp @returns {CInt} */
+/** C ref: mhitu.c:2355 — @param {CPtr<struct monst>} mtmp @param {CInt} tmp @returns {CInt} */
 function assess_dmg(mtmp, tmp) {
     if ((cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - tmp) | 0)) <= 0) {
         pline_mon(mtmp, __sl269, Monnam(mtmp));
@@ -2051,7 +2051,7 @@ function assess_dmg(mtmp, tmp) {
     return NHM.M_ATTK_HIT;
 }
 
-/** C ref: mhitu.c:2393 — @param {CPtr} mtmp @param {CInt} attkidx @returns {CInt} */
+/** C ref: mhitu.c:2393 — @param {CPtr<struct monst>} mtmp @param {CInt} attkidx @returns {CInt} */
 export function mon_avoiding_this_attack(mtmp, attkidx) {
     let ptr = cptr.ldPtro(mtmp, $monst_data);
     let typ = -1;
@@ -2060,7 +2060,7 @@ export function mon_avoiding_this_attack(mtmp, attkidx) {
     return 0;
 }
 
-/** C ref: mhitu.c:2413 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mhitu.c:2413 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function ranged_attk_available(mtmp) {
     let i;
     let typ = -1;
@@ -2072,7 +2072,7 @@ export function ranged_attk_available(mtmp) {
     return 0;
 }
 
-/** C ref: mhitu.c:2435 — @param {CPtr} olduasmon @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
+/** C ref: mhitu.c:2435 — @param {CPtr<struct permonst>} olduasmon @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 function passiveum(olduasmon, mtmp, mattk) {
     let i;
     let tmp;
@@ -2217,7 +2217,7 @@ function passiveum(olduasmon, mtmp, mattk) {
     return assess_dmg(mtmp, tmp);
 }
 
-/** C ref: mhitu.c:2616 @returns {CPtr} */
+/** C ref: mhitu.c:2616 @returns {CPtr<struct monst>} */
 export function cloneu() {
     let mon;
     let mndx = (cptr.ldI32o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_pmidx));

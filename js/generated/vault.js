@@ -177,7 +177,7 @@ const __sl81 = cptr.lit("%s remits your gold to the vault.");
 const __sl82 = cptr.lit("paygd");
 const __sl83 = cptr.lit("To Croesus: here's the gold recovered from %s the %s.");
 
-/** C ref: vault.c:23 — @param {CPtr} mtmp */
+/** C ref: vault.c:23 — @param {CPtr<struct monst>} mtmp */
 export function newegd(mtmp) {
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, newmextra());
@@ -188,7 +188,7 @@ export function newegd(mtmp) {
     }
 }
 
-/** C ref: vault.c:35 — @param {CPtr} mtmp */
+/** C ref: vault.c:35 — @param {CPtr<struct monst>} mtmp */
 export function free_egd(mtmp) {
     if (cptr.ldPtro(mtmp, $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd))) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)));
@@ -197,7 +197,7 @@ export function free_egd(mtmp) {
     cptr.stI32o(mtmp, $monst_isgd, 0);
 }
 
-/** C ref: vault.c:48 — @param {CPtr} grd @param {CInt} forceshow @returns {CInt} */
+/** C ref: vault.c:48 — @param {CPtr<struct monst>} grd @param {CInt} forceshow @returns {CInt} */
 function clear_fcorr(grd, forceshow) {
     let fcx;
     let fcy;
@@ -267,7 +267,7 @@ function blackout(x, y) {
         }
 }
 
-/** C ref: vault.c:144 — @param {CPtr} grd */
+/** C ref: vault.c:144 — @param {CPtr<struct monst>} grd */
 function restfakecorr(grd) {
     if (clear_fcorr(grd, 0)) {
         cptr.stI32o(grd, $monst_isgd, 0);
@@ -275,7 +275,7 @@ function restfakecorr(grd) {
     }
 }
 
-/** C ref: vault.c:155 — @param {CPtr} grd */
+/** C ref: vault.c:155 — @param {CPtr<struct monst>} grd */
 function parkguard(grd) {
     if (cptr.eq(grd, cptr.ldPtro(svc, $context_info_polearm)))
         cptr.stPtro(svc, $context_info_polearm, null);
@@ -289,7 +289,7 @@ function parkguard(grd) {
     cptr.stI16o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_ogy, cptr.ldI16o(grd, $monst_my));
 }
 
-/** C ref: vault.c:175 — @param {CPtr} grd @returns {CInt} */
+/** C ref: vault.c:175 — @param {CPtr<struct monst>} grd @returns {CInt} */
 export function grddead(grd) {
     let dispose = clear_fcorr(grd, 1);
     if (!dispose) {
@@ -303,7 +303,7 @@ export function grddead(grd) {
     return dispose;
 }
 
-/** C ref: vault.c:192 — @param {CPtr} grd @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: vault.c:192 — @param {CPtr<struct monst>} grd @param {CInt} x @param {CInt} y @returns {CInt} */
 function in_fcorridor(grd, x, y) {
     let fci;
     let egrd = (cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd));
@@ -313,7 +313,7 @@ function in_fcorridor(grd, x, y) {
     return 0;
 }
 
-/** C ref: vault.c:204 @returns {CPtr} */
+/** C ref: vault.c:204 @returns {CPtr<struct monst>} */
 export function findgd() {
     let mtmp;
     let mprev;
@@ -345,7 +345,7 @@ export function vault_summon_gd() {
         cptr.stI32o(u, $you_uinvault, 29);
 }
 
-/** C ref: vault.c:244 — @param {CPtr} array @returns {CInt} */
+/** C ref: vault.c:244 — @param {CPtr<char>} array @returns {CInt} */
 export function vault_occupied(array) {
     let ptr;
     for (ptr = array; cptr.ld1s(ptr); ptr = cptr.add(ptr, 1))
@@ -354,7 +354,7 @@ export function vault_occupied(array) {
     return 0;
 }
 
-/** C ref: vault.c:256 — @param {CPtr} grd */
+/** C ref: vault.c:256 — @param {CPtr<struct monst>} grd */
 export function uleftvault(grd) {
     if (!grd || !(cptr.ldI32o(grd, $monst_isgd) & 1) || (cptr.ldI32o((grd), $monst_mhp) < 1)) {
         impossible(__sl2);
@@ -371,7 +371,7 @@ export function uleftvault(grd) {
     }
 }
 
-/** C ref: vault.c:281 — @param {CPtr} guard @param {CPtr} rx @param {CPtr} ry @returns {CInt} */
+/** C ref: vault.c:281 — @param {CPtr<struct monst>} guard @param {CPtr<coordxy>} rx @param {CPtr<coordxy>} ry @returns {CInt} */
 function find_guard_dest(guard, rx, ry) {
     let x;
     let y;
@@ -665,7 +665,7 @@ export function invault() {
     }
 }
 
-/** C ref: vault.c:632 — @param {CPtr} gold @param {CInt} vroom */
+/** C ref: vault.c:632 — @param {CPtr<struct obj>} gold @param {CInt} vroom */
 function move_gold(gold, vroom) {
     let nx;
     let ny;
@@ -678,7 +678,7 @@ function move_gold(gold, vroom) {
     newsym(nx, ny);
 }
 
-/** C ref: vault.c:646 — @param {CPtr} grd */
+/** C ref: vault.c:646 — @param {CPtr<struct monst>} grd */
 function wallify_vault(grd) {
     let typ;
     let x;
@@ -750,7 +750,7 @@ function wallify_vault(grd) {
     }
 }
 
-/** C ref: vault.c:734 — @param {CPtr} grd @param {CInt} nx @param {CInt} ny */
+/** C ref: vault.c:734 — @param {CPtr<struct monst>} grd @param {CInt} nx @param {CInt} ny */
 function gd_mv_monaway(grd, nx, ny) {
     let mtmp = (cptr.ldPtro3(svl, nx, 168, ny, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     if (mtmp && !cptr.eq(mtmp, grd)) {
@@ -764,7 +764,7 @@ function gd_mv_monaway(grd, nx, ny) {
     }
 }
 
-/** C ref: vault.c:752 — @param {CPtr} grd @param {CInt} goldx @param {CInt} goldy */
+/** C ref: vault.c:752 — @param {CPtr<struct monst>} grd @param {CInt} goldx @param {CInt} goldy */
 function gd_pick_corridor_gold(grd, goldx, goldy) {
     let gold;
     let newcc = cptr.alloc(4);
@@ -829,7 +829,7 @@ function gd_pick_corridor_gold(grd, goldx, goldy) {
     return;
 }
 
-/** C ref: vault.c:836 — @param {CPtr} grd @param {CInt} semi_dead @param {CInt} disappear_msg_seen @returns {CInt} */
+/** C ref: vault.c:836 — @param {CPtr<struct monst>} grd @param {CInt} semi_dead @param {CInt} disappear_msg_seen @returns {CInt} */
 function gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
     let x;
     let y;
@@ -854,7 +854,7 @@ function gd_move_cleanup(grd, semi_dead, disappear_msg_seen) {
     return -2;
 }
 
-/** C ref: vault.c:869 — @param {CPtr} grd */
+/** C ref: vault.c:869 — @param {CPtr<struct monst>} grd */
 function gd_letknow(grd) {
     if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(grd, $monst_my), 8), cptr.ldI16o(grd, $monst_mx)) & NHM.IN_SIGHT) != 0) || !mon_visible(grd))
         You_hear(__sl52, m_carrying(grd, NHC.TIN_WHISTLE) ? __sl53 : __sl54);
@@ -862,7 +862,7 @@ function gd_letknow(grd) {
         You(um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 2) ? __sl55 : __sl56, x_monnam(grd, NHM.ARTICLE_A, __sl57, 0, 0));
 }
 
-/** C ref: vault.c:888 — @param {CPtr} grd @returns {CInt} */
+/** C ref: vault.c:888 — @param {CPtr<struct monst>} grd @returns {CInt} */
 export function gd_move(grd) {
     let x, y, nx, ny, m, n, ex, ey, dx, dy, ggx, ggy, fci, typ, crm, fcp, egrd, umoney, goldincorridor, u_in_vault, grd_in_vault, semi_dead, u_carry_gold, newspot, save_plnmsg, buf;
     let __pc = 0;

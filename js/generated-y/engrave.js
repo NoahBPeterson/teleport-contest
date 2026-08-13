@@ -304,7 +304,7 @@ const __sl193 = cptr.lit("blengr");
 
 /** C ref: engrave.c:9 — struct _doengrave_ctx { dengr, doblind, doknown, eow, jello, ptext, teleengr, zapwand, disprefresh, frosted, adding, ret, type, oetype, otmp, oep, buf, ebuf, fbuf, qbuf, post_engr_text, writer, everb, eloc, len } (memory model v0.5) */
 
-/** C ref: engrave.c:51 — @param {CPtr} outbuf @param {CPtr} pristine_copy @returns {CPtr} */
+/** C ref: engrave.c:51 — @param {CPtr<char>} outbuf @param {CPtr<char>} pristine_copy @returns {CPtr<char>} */
 export function* random_engraving(outbuf, pristine_copy) {
     let rumor;
     if (!(rng_log_enabled() ? (rng_log_set_caller(__sl0, 57, __sl1), rn2(4)) : rn2(4)) || !(rumor = (yield* getrumor(0, pristine_copy, 1))) || !cptr.ld1s(rumor))
@@ -415,7 +415,7 @@ cptr.stPtro(rubouts, 744, __sl19);
 cptr.st1o(rubouts, 752, 56);
 cptr.stPtro(rubouts, 760, __sl34);
 
-/** C ref: engrave.c:120 — @param {CPtr} engr @param {CInt} cnt @param {CUInt} seed */
+/** C ref: engrave.c:120 — @param {CPtr<char>} engr @param {CInt} cnt @param {CUInt} seed */
 export function wipeout_text(engr, cnt, seed) {
     let s;
     let i;
@@ -485,7 +485,7 @@ export function* cant_reach_floor(x, y, up, check_pit, wand_engraving) {
     (yield* pline(__sl37, wand_engraving ? __sl38 : __sl39, up ? (yield* ceiling(x, y)) : ((check_pit && can_reach_floor(0)) ? __sl40 : surface(x, y))));
 }
 
-/** C ref: engrave.c:231 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: engrave.c:231 — @param {CInt} x @param {CInt} y @returns {CPtr<struct engr>} */
 export function engr_at(x, y) {
     let ep = head_engr.v;
     while (ep) {
@@ -496,7 +496,7 @@ export function engr_at(x, y) {
     return null;
 }
 
-/** C ref: engrave.c:251 — @param {CPtr} s @param {CInt} x @param {CInt} y @param {CInt} strict @returns {CPtr} */
+/** C ref: engrave.c:251 — @param {CPtr<char>} s @param {CInt} x @param {CInt} y @param {CInt} strict @returns {CPtr<struct engr>} */
 export function* sengr_at(s, x, y, strict) {
     let ep = engr_at(x, y);
     if (ep && cptr.ld1so(ep, $engr_engr_type) != NHM.HEADSTONE && cptr.ldI64o(ep, $engr_engr_time) <= cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
@@ -543,7 +543,7 @@ export function* wipe_engr_at(x, y, cnt, magical) {
     }
 }
 
-/** C ref: engrave.c:297 — @param {CPtr} ep @returns {CInt} */
+/** C ref: engrave.c:297 — @param {CPtr<struct engr>} ep @returns {CInt} */
 export function engr_can_be_felt(ep) {
     let canfeel = 0;
     switch (cptr.ld1so(ep, $engr_engr_type)) {
@@ -633,7 +633,7 @@ export function* read_engr_at(x, y) {
     }
 }
 
-/** C ref: engrave.c:408 — @param {CInt} x @param {CInt} y @param {CPtr} s @param {CPtr} pristine_s @param {CLongLong} e_time @param {CInt} e_type */
+/** C ref: engrave.c:408 — @param {CInt} x @param {CInt} y @param {CPtr<char>} s @param {CPtr<char>} pristine_s @param {CLongLong} e_time @param {CInt} e_type */
 export function* make_engr_at(x, y, s, pristine_s, e_time, e_type) {
     let i;
     let ep;
@@ -684,7 +684,7 @@ export function* freehand() {
     return (!uwep.v || !(yield* welded(uwep.v)) || (!bimanual(uwep.v) && (!uarms.v || !(cptr.ldI32o(uarms.v, $obj_cursed) & 1))) ? 1 : 0);
 }
 
-/** C ref: engrave.c:481 — @param {CPtr} obj @returns {CInt} */
+/** C ref: engrave.c:481 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function stylus_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_SUGGEST;
@@ -728,7 +728,7 @@ function* u_can_engrave() {
     return 1;
 }
 
-/** C ref: engrave.c:545 — @param {CPtr} de */
+/** C ref: engrave.c:545 — @param {CPtr<struct _doengrave_ctx>} de */
 function doengrave_ctx_init(de) {
     cptr.st1(de, 0);
     cptr.st1o(de, $_doengrave_ctx_doblind, 0);
@@ -758,7 +758,7 @@ function doengrave_ctx_init(de) {
     cptr.st1o(de, $_doengrave_ctx_frosted, is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
 }
 
-/** C ref: engrave.c:583 — @param {CPtr} de */
+/** C ref: engrave.c:583 — @param {CPtr<struct _doengrave_ctx>} de */
 function* doengrave_sfx_item_WAN(de) {
     switch (cptr.ldI16o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_otyp)) {
         default:
@@ -875,7 +875,7 @@ function* doengrave_sfx_item_WAN(de) {
     }
 }
 
-/** C ref: engrave.c:742 — @param {CPtr} de @returns {CInt} */
+/** C ref: engrave.c:742 — @param {CPtr<struct _doengrave_ctx>} de @returns {CInt} */
 function* doengrave_sfx_item(de) {
     switch (cptr.ld1so(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_oclass)) {
         default:
@@ -990,7 +990,7 @@ function* doengrave_sfx_item(de) {
     return 1;
 }
 
-/** C ref: engrave.c:896 — @param {CPtr} de */
+/** C ref: engrave.c:896 — @param {CPtr<struct _doengrave_ctx>} de */
 function doengrave_ctx_verb(de) {
     switch (cptr.ldI32o(de, $_doengrave_ctx_type)) {
         default:
@@ -1431,7 +1431,7 @@ export function* engraving_sanity_check() {
     }
 }
 
-/** C ref: engrave.c:1551 — @param {CPtr} nhfp */
+/** C ref: engrave.c:1551 — @param {CPtr<NHFILE>} nhfp */
 export function* save_engravings(nhfp) {
     let ep;
     let ep2;
@@ -1462,7 +1462,7 @@ export function* save_engravings(nhfp) {
         head_engr.v = null;
 }
 
-/** C ref: engrave.c:1584 — @param {CPtr} nhfp */
+/** C ref: engrave.c:1584 — @param {CPtr<NHFILE>} nhfp */
 export function* rest_engravings(nhfp) {
     let ep;
     let lth = cptr.box(0);
@@ -1492,7 +1492,7 @@ export function* rest_engravings(nhfp) {
     }
 }
 
-/** C ref: engrave.c:1626 — @param {CPtr} hdrfmt @param {CPtr} hdrbuf @param {CPtr} count @param {CPtr} size */
+/** C ref: engrave.c:1626 — @param {CPtr<char>} hdrfmt @param {CPtr<char>} hdrbuf @param {CPtr<long>} count @param {CPtr<long>} size */
 export function engr_stats(hdrfmt, hdrbuf, count, size) {
     let ep;
     void cptr.sprintf(hdrbuf, hdrfmt, 80n);
@@ -1503,7 +1503,7 @@ export function engr_stats(hdrfmt, hdrbuf, count, size) {
     }
 }
 
-/** C ref: engrave.c:1645 — @param {CPtr} ep */
+/** C ref: engrave.c:1645 — @param {CPtr<struct engr>} ep */
 export function* del_engr(ep) {
     if (cptr.eq(ep, head_engr.v)) {
         head_engr.v = cptr.ldPtr(ep);
@@ -1522,7 +1522,7 @@ export function* del_engr(ep) {
     cptr.free((ep));
 }
 
-/** C ref: engrave.c:1667 — @param {CPtr} ep */
+/** C ref: engrave.c:1667 — @param {CPtr<struct engr>} ep */
 export function* rloc_engr(ep) {
     let tx;
     let ty;
@@ -1538,7 +1538,7 @@ export function* rloc_engr(ep) {
     (yield* newsym(i16(tx), i16(ty)));
 }
 
-/** C ref: engrave.c:1687 — @param {CInt} x @param {CInt} y @param {CPtr} str */
+/** C ref: engrave.c:1687 — @param {CInt} x @param {CInt} y @param {CPtr<char>} str */
 export function* make_grave(x, y, str) {
     let buf = new Uint8Array(256);
     if ((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM && cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) != NHC.GRAVE) || t_at(x, y))
@@ -1567,12 +1567,12 @@ export function* disturb_grave(x, y) {
     }
 }
 
-/** C ref: engrave.c:1724 — @param {CPtr} ep */
+/** C ref: engrave.c:1724 — @param {CPtr<struct engr>} ep */
 export function* see_engraving(ep) {
     (yield* newsym(cptr.ldI16o(ep, $engr_engr_x), cptr.ldI16o(ep, $engr_engr_y)));
 }
 
-/** C ref: engrave.c:1732 — @param {CPtr} ep */
+/** C ref: engrave.c:1732 — @param {CPtr<struct engr>} ep */
 export function* feel_engraving(ep) {
     if (engr_can_be_felt(ep)) {
         cptr.stI32o(ep, $engr_eread, 1);
@@ -1585,7 +1585,7 @@ export function* feel_engraving(ep) {
 /** C ref: engrave.c:1743 — char[9][21] */
 const blind_writing = [[68, 102, 109, 105, 98, 101, 34, 69, 123, 113, 101, 109, 114, 0, 0, 0, 0, 0, 0, 0, 0], [81, 103, 96, 122, 127, 33, 64, 113, 107, 113, 111, 103, 99, 0, 0, 0, 0, 0, 0, 0, 0], [73, 109, 115, 105, 98, 101, 34, 76, 97, 124, 109, 103, 36, 66, 127, 105, 108, 119, 103, 126, 0], [75, 109, 108, 102, 48, 76, 107, 104, 124, 127, 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [81, 103, 112, 122, 127, 111, 103, 104, 100, 113, 33, 79, 107, 109, 126, 114, 0, 0, 0, 0, 0], [76, 99, 118, 97, 113, 33, 72, 107, 123, 117, 103, 99, 36, 69, 101, 107, 107, 101, 0, 0, 0], [76, 103, 104, 107, 120, 104, 109, 118, 122, 117, 33, 79, 113, 122, 117, 111, 119, 0, 0, 0, 0], [68, 102, 109, 124, 120, 33, 80, 101, 102, 101, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [68, 102, 115, 105, 98, 101, 34, 86, 125, 99, 105, 118, 107, 102, 0, 0, 0, 0, 0, 0, 0]];
 
-/** C ref: engrave.c:1765 @returns {CPtr} */
+/** C ref: engrave.c:1765 @returns {CPtr<char>} */
 function blengr() {
     return cptr.decay(blind_writing[(rng_log_enabled() ? (rng_log_set_caller(__sl0, 1767, __sl193), rn2(blind_writing.length)) : rn2(blind_writing.length))]);
 }

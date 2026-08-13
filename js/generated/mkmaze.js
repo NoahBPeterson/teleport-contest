@@ -246,7 +246,7 @@ export function set_levltyp_lit(x, y, typ, lit) {
     return ret;
 }
 
-/** C ref: mkmaze.c:166 — @param {CPtr} locale @param {CInt} wall_there @param {CInt} dx @param {CInt} dy @returns {CInt} */
+/** C ref: mkmaze.c:166 — @param {CPtr<int [3]>} locale @param {CInt} wall_there @param {CInt} dx @param {CInt} dy @returns {CInt} */
 function extend_spine(locale, wall_there, dx, dy) {
     let spine;
     let nx;
@@ -393,7 +393,7 @@ function okay(x, y, dir) {
     return 1;
 }
 
-/** C ref: mkmaze.c:309 — @param {CPtr} cc */
+/** C ref: mkmaze.c:309 — @param {CPtr<coord>} cc */
 function maze0xy(cc) {
     cptr.stI16(cc, i16(((3 + Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 311, __sl5), rn2(((cptr.ldI32(gx) >> 1) - 1) | 0)) : rn2(((cptr.ldI32(gx) >> 1) - 1) | 0)))) | 0)));
     cptr.stI16o(cc, $coord_y, i16(((3 + Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__sl0, 312, __sl5), rn2(((cptr.ldI32(gy) >> 1) - 1) | 0)) : rn2(((cptr.ldI32(gy) >> 1) - 1) | 0)))) | 0)));
@@ -416,7 +416,7 @@ export function bad_location(x, y, nlx, nly, nhx, nhy) {
     return schar((occupied(x, y) || within_bounded_area(x, y, nlx, nly, nhx, nhy) || !((cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1) | 0) || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.ROOM || cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ) == NHC.AIR) ? 1 : 0));
 }
 
-/** C ref: mkmaze.c:356 — @param {CInt} lx @param {CInt} ly @param {CInt} hx @param {CInt} hy @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @param {CInt} rtype @param {CPtr} lev */
+/** C ref: mkmaze.c:356 — @param {CInt} lx @param {CInt} ly @param {CInt} hx @param {CInt} hy @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @param {CInt} rtype @param {CPtr<d_level>} lev */
 export function place_lregion(lx, ly, hx, hy, nlx, nly, nhx, nhy, rtype, lev) {
     let trycnt;
     let oneshot;
@@ -454,7 +454,7 @@ export function place_lregion(lx, ly, hx, hy, nlx, nly, nhx, nhy, rtype, lev) {
     impossible(__sl7, rtype);
 }
 
-/** C ref: mkmaze.c:413 — @param {CInt} x @param {CInt} y @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @param {CInt} rtype @param {CInt} oneshot @param {CPtr} lev @returns {CInt} */
+/** C ref: mkmaze.c:413 — @param {CInt} x @param {CInt} y @param {CInt} nlx @param {CInt} nly @param {CInt} nhx @param {CInt} nhy @param {CInt} rtype @param {CInt} oneshot @param {CPtr<d_level>} lev @returns {CInt} */
 function put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev) {
     let mtmp;
     if (bad_location(x, y, nlx, nly, nhx, nhy) || is_exclusion_zone(rtype, x, y)) {
@@ -668,7 +668,7 @@ export function fixup_special() {
     cptr.stI32o(gn, $instance_globals_n_num_lregions, 0);
 }
 
-/** C ref: mkmaze.c:707 — @param {CPtr} s */
+/** C ref: mkmaze.c:707 — @param {CPtr<char>} s */
 function check_ransacked(s) {
     cptr.st1o(gr, $instance_globals_r_ransacked, schar((cptr.ldI16o(u, $you_uz) == mines_dnum() && !strcmp(s, __sl9) ? 1 : 0)));
 }
@@ -678,7 +678,7 @@ const orcfruit = cptr.alloc(2 * 8);
 cptr.stPtro(orcfruit, 0, __sl10);
 cptr.stPtro(orcfruit, 8, __sl11);
 
-/** C ref: mkmaze.c:717 — @param {CPtr} mtmp @param {CLongLong} mflags */
+/** C ref: mkmaze.c:717 — @param {CPtr<struct monst>} mtmp @param {CLongLong} mflags */
 function migrate_orc(mtmp, mflags) {
     let nlev;
     let max_depth;
@@ -703,7 +703,7 @@ function migrate_orc(mtmp, mflags) {
     migrate_to_level(mtmp, ledger_no(dest), NHM.MIGR_RANDOM, null);
 }
 
-/** C ref: mkmaze.c:748 — @param {CPtr} mtmp */
+/** C ref: mkmaze.c:748 — @param {CPtr<struct monst>} mtmp */
 function shiny_orc_stuff(mtmp) {
     let gemprob;
     let goldprob;
@@ -734,7 +734,7 @@ function shiny_orc_stuff(mtmp) {
     }
 }
 
-/** C ref: mkmaze.c:780 — @param {CInt} otyp @param {CPtr} gang */
+/** C ref: mkmaze.c:780 — @param {CInt} otyp @param {CPtr<char>} gang */
 function migr_booty_item(otyp, gang) {
     let otmp;
     otmp = mksobj_migr_to_species(otyp, NHM.M2_ORC, 1, 0);
@@ -1052,7 +1052,7 @@ function populate_maze() {
         mktrap(0, NHM.MKTRAP_MAZEFLAG, null, null);
 }
 
-/** C ref: mkmaze.c:1127 — @param {CPtr} s */
+/** C ref: mkmaze.c:1127 — @param {CPtr<char>} s */
 export function makemaz(s) {
     let protofile = new Uint8Array(20);
     let sp = Is_special(cptr.add(u, $you_uz));
@@ -1189,7 +1189,7 @@ export function walkfrom(x, y, typ) {
     }
 }
 
-/** C ref: mkmaze.c:1316 — @param {CPtr} cc */
+/** C ref: mkmaze.c:1316 — @param {CPtr<coord>} cc */
 export function mazexy(cc) {
     let x;
     let y;
@@ -1215,7 +1215,7 @@ export function mazexy(cc) {
     return;
 }
 
-/** C ref: mkmaze.c:1353 — @param {CPtr} left @param {CPtr} top @param {CPtr} right @param {CPtr} bottom */
+/** C ref: mkmaze.c:1353 — @param {CPtr<coordxy>} left @param {CPtr<coordxy>} top @param {CPtr<coordxy>} right @param {CPtr<coordxy>} bottom */
 export function get_level_extends(left, top, right, bottom) {
     let x;
     let y;
@@ -1530,7 +1530,7 @@ export function water_friction() {
         pline(__sl42);
 }
 
-/** C ref: mkmaze.c:1723 — @param {CPtr} nhfp */
+/** C ref: mkmaze.c:1723 — @param {CPtr<NHFILE>} nhfp */
 export function save_waterlevel(nhfp) {
     let b;
     if (!cptr.ldPtro(svb, $instance_globals_saved_b_bbubbles))
@@ -1552,7 +1552,7 @@ export function save_waterlevel(nhfp) {
         unsetup_waterlevel();
 }
 
-/** C ref: mkmaze.c:1750 — @param {CPtr} nhfp */
+/** C ref: mkmaze.c:1750 — @param {CPtr<NHFILE>} nhfp */
 export function restore_waterlevel(nhfp) {
     let b = null;
     let btmp;
@@ -1709,7 +1709,7 @@ export function maybe_adjust_hero_bubble() {
     }
 }
 
-/** C ref: mkmaze.c:1952 — @param {CPtr} b @param {CInt} dx @param {CInt} dy @param {CInt} ini */
+/** C ref: mkmaze.c:1952 — @param {CPtr<struct bubble>} b @param {CInt} dx @param {CInt} dy @param {CInt} ini */
 function mv_bubble(b, dx, dy, ini) {
     let i;
     let j;

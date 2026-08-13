@@ -201,7 +201,7 @@ const __sl114 = cptr.lit("%s%s.");
 const __sl115 = cptr.lit("Flupp!  ");
 const __sl116 = cptr.lit("a ring shining in its midst.");
 
-/** C ref: fountain.c:21 — @param {CPtr} what */
+/** C ref: fountain.c:21 — @param {CPtr<char>} what */
 export function floating_above(what) {
     let umsg = __sl0;
     if (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)) {
@@ -318,7 +318,7 @@ function dofindgem() {
     exercise(NHC.A_WIS, 1);
 }
 
-/** C ref: fountain.c:179 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: fountain.c:179 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function watchman_warn_fountain(mtmp) {
     if (is_watch(cptr.ldPtro(mtmp, $monst_data)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
         if (!Deaf()) {
@@ -503,7 +503,7 @@ export function drinkfountain() {
 
 const __static_dipfountain_lady = cptr.bytes("Lady of the Lake"); /** C ref: fountain.c:409 — char[17] (function-static) */
 
-/** C ref: fountain.c:394 — @param {CPtr} obj */
+/** C ref: fountain.c:394 — @param {CPtr<struct obj>} obj */
 export function dipfountain(obj) {
     let er = NHM.ER_NOTHING;
     let is_hands = schar((cptr.eq(obj, hands_obj)));
@@ -775,7 +775,7 @@ export function drinksink() {
     }
 }
 
-/** C ref: fountain.c:716 — @param {CPtr} obj */
+/** C ref: fountain.c:716 — @param {CPtr<struct obj>} obj */
 export function dipsink(obj) {
     let try_call = 0;
     let not_looted_yet = schar(((((cptr.ldI32o3(svl, cptr.ldI16(u), 756, cptr.ldI16o(u, $you_uy), 36, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING) == 0));

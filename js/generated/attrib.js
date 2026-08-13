@@ -601,7 +601,7 @@ export function adjattrib(ndx, incr, msgflg) {
     return 1;
 }
 
-/** C ref: attrib.c:203 — @param {CPtr} otmp @param {CInt} incr @param {CInt} givemsg */
+/** C ref: attrib.c:203 — @param {CPtr<struct obj>} otmp @param {CInt} incr @param {CInt} givemsg */
 export function gainstr(otmp, incr, givemsg) {
     let num = incr;
     if (!num) {
@@ -615,7 +615,7 @@ export function gainstr(otmp, incr, givemsg) {
     void adjattrib(NHC.A_STR, (otmp && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0) ? -num : num, givemsg ? -1 : 1);
 }
 
-/** C ref: attrib.c:221 — @param {CInt} num @param {CPtr} knam @param {CInt} k_format */
+/** C ref: attrib.c:221 — @param {CInt} num @param {CPtr<char>} knam @param {CInt} k_format */
 export function losestr(num, knam, k_format) {
     let uhpmin = minuhpmax(1);
     let olduhpmax = cptr.ldI32o(u, $you_uhpmax);
@@ -653,7 +653,7 @@ export function losestr(num, knam, k_format) {
         void adjattrib(NHC.A_STR, -num, 1);
 }
 
-/** C ref: attrib.c:274 — @param {CInt} strloss @param {CInt} dmg @param {CPtr} knam @param {CInt} k_format */
+/** C ref: attrib.c:274 — @param {CInt} strloss @param {CInt} dmg @param {CPtr<char>} knam @param {CInt} k_format */
 export function poison_strdmg(strloss, dmg, knam, k_format) {
     losestr(strloss, knam, k_format);
     losehp(dmg, knam, k_format);
@@ -687,7 +687,7 @@ export function poisontell(typ, exclaim) {
     (func)(__sl60, msg_txt, exclaim ? 33 : 46);
 }
 
-/** C ref: attrib.c:317 — @param {CPtr} reason @param {CInt} typ @param {CPtr} pkiller @param {CInt} fatal @param {CInt} thrown_weapon */
+/** C ref: attrib.c:317 — @param {CPtr<char>} reason @param {CInt} typ @param {CPtr<char>} pkiller @param {CInt} fatal @param {CInt} thrown_weapon */
 export function poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
     let i;
     let loss;
@@ -1067,7 +1067,7 @@ export function vary_init_attr() {
         }
 }
 
-/** C ref: attrib.c:780 — @param {CPtr} ability */
+/** C ref: attrib.c:780 — @param {CPtr<long>} ability */
 function postadjabil(ability) {
     if (!cptr.ldI32o(u, $you_ulevel))
         return;
@@ -1075,7 +1075,7 @@ function postadjabil(ability) {
         see_monsters();
 }
 
-/** C ref: attrib.c:789 — @param {CInt} r @returns {CPtr} */
+/** C ref: attrib.c:789 — @param {CInt} r @returns {CPtr<struct innate>} */
 function role_abil(r) {
     let roleabils = cptr.alloc(14 * 16); cptr.stI16o(roleabils, 0, NHC.PM_ARCHEOLOGIST); cptr.stPtro(roleabils, 8, arc_abil); cptr.stI16o(roleabils, 16, NHC.PM_BARBARIAN); cptr.stPtro(roleabils, 24, bar_abil); cptr.stI16o(roleabils, 32, NHC.PM_CAVE_DWELLER); cptr.stPtro(roleabils, 40, cav_abil); cptr.stI16o(roleabils, 48, NHC.PM_HEALER); cptr.stPtro(roleabils, 56, hea_abil); cptr.stI16o(roleabils, 64, NHC.PM_KNIGHT); cptr.stPtro(roleabils, 72, kni_abil); cptr.stI16o(roleabils, 80, NHC.PM_MONK); cptr.stPtro(roleabils, 88, mon_abil); cptr.stI16o(roleabils, 96, NHC.PM_CLERIC); cptr.stPtro(roleabils, 104, pri_abil); cptr.stI16o(roleabils, 112, NHC.PM_RANGER); cptr.stPtro(roleabils, 120, ran_abil); cptr.stI16o(roleabils, 128, NHC.PM_ROGUE); cptr.stPtro(roleabils, 136, rog_abil); cptr.stI16o(roleabils, 144, NHC.PM_SAMURAI); cptr.stPtro(roleabils, 152, sam_abil); cptr.stI16o(roleabils, 160, NHC.PM_TOURIST); cptr.stPtro(roleabils, 168, tou_abil); cptr.stI16o(roleabils, 176, NHC.PM_VALKYRIE); cptr.stPtro(roleabils, 184, val_abil); cptr.stI16o(roleabils, 192, NHC.PM_WIZARD); cptr.stPtro(roleabils, 200, wiz_abil); cptr.stI16o(roleabils, 208, 0); cptr.stPtro(roleabils, 216, null);
     let i;
@@ -1084,7 +1084,7 @@ function role_abil(r) {
     return cptr.ldPtro2(roleabils, i, 16, 8);
 }
 
-/** C ref: attrib.c:818 — @param {CPtr} ability @param {CLongLong} frommask @returns {CPtr} */
+/** C ref: attrib.c:818 — @param {CPtr<long>} ability @param {CLongLong} frommask @returns {CPtr<struct innate>} */
 function check_innate_abil(ability, frommask) {
     let abil = null;
     if (frommask == 16777216n)
@@ -1117,7 +1117,7 @@ function check_innate_abil(ability, frommask) {
     return null;
 }
 
-/** C ref: attrib.c:864 — @param {CPtr} ability @returns {CInt} */
+/** C ref: attrib.c:864 — @param {CPtr<long>} ability @returns {CInt} */
 function innately(ability) {
     let iptr;
     if ((iptr = check_innate_abil(ability, 16777216n)) !== null)
@@ -1150,7 +1150,7 @@ export function is_innate(propidx) {
 const __static_from_what_buf = new Uint8Array(256); /** C ref: attrib.c:908 — char[256] (function-static) */
 const __static_from_what_because_of = cptr.bytes(" because of %s"); /** C ref: attrib.c:915 — char[15] (function-static) */
 
-/** C ref: attrib.c:905 — @param {CInt} propidx @returns {CPtr} */
+/** C ref: attrib.c:905 — @param {CInt} propidx @returns {CPtr<char>} */
 export function from_what(propidx) {
     cptr.st1o(cptr.decay(__static_from_what_buf), 0, 0, 1);
     if (wizard()) {

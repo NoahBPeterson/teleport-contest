@@ -19,7 +19,7 @@ const $TValue_tt_ = FLD.TValue_tt_, $global_State_GCdebt = FLD.global_State_GCde
 const __sl0 = cptr.lit("too many %s (limit is %d)");
 const __sl1 = cptr.lit("memory allocation error: block too big");
 
-/** C ref: lmem.c:97 — @param {CPtr} L @param {CPtr} block @param {CInt} nelems @param {CPtr} psize @param {CInt} size_elems @param {CInt} limit @param {CPtr} what @returns {CPtr} */
+/** C ref: lmem.c:97 — @param {CPtr<lua_State>} L @param {CPtr<void>} block @param {CInt} nelems @param {CPtr<int>} psize @param {CInt} size_elems @param {CInt} limit @param {CPtr<char>} what @returns {CPtr<void>} */
 export function luaM_growaux_(L, block, nelems, psize, size_elems, limit, what) {
     let newblock;
     let size = cptr.ldI32(psize);
@@ -40,7 +40,7 @@ export function luaM_growaux_(L, block, nelems, psize, size_elems, limit, what) 
     return newblock;
 }
 
-/** C ref: lmem.c:128 — @param {CPtr} L @param {CPtr} block @param {CPtr} size @param {CInt} final_n @param {CInt} size_elem @returns {CPtr} */
+/** C ref: lmem.c:128 — @param {CPtr<lua_State>} L @param {CPtr<void>} block @param {CPtr<int>} size @param {CInt} final_n @param {CInt} size_elem @returns {CPtr<void>} */
 export function luaM_shrinkvector_(L, block, size, final_n, size_elem) {
     let newblock;
     let oldsize = (BigInt.asUintN(64, BigInt(((Math.imul((cptr.ldI32(size)), size_elem))))));
@@ -51,12 +51,12 @@ export function luaM_shrinkvector_(L, block, size, final_n, size_elem) {
     return newblock;
 }
 
-/** C ref: lmem.c:142 — @param {CPtr} L */
+/** C ref: lmem.c:142 — @param {CPtr<lua_State>} L */
 export function luaM_toobig(L) {
     luaG_runerror(L, __sl1);
 }
 
-/** C ref: lmem.c:150 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize */
+/** C ref: lmem.c:150 — @param {CPtr<lua_State>} L @param {CPtr<void>} block @param {CLongLong} osize */
 export function luaM_free_(L, block, osize) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     (void 0);
@@ -64,7 +64,7 @@ export function luaM_free_(L, block, osize) {
     cptr.stI64o(g, $global_State_GCdebt, cptr.ldI64o(g, $global_State_GCdebt) - BigInt.asIntN(64, osize));
 }
 
-/** C ref: lmem.c:162 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
+/** C ref: lmem.c:162 — @param {CPtr<lua_State>} L @param {CPtr<void>} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr<void>} */
 function tryagain(L, block, osize, nsize) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     if (((((((cptr.ld1uo(((cptr.add(g, $global_State_nilvalue))), $TValue_tt_))) & 15)) == 0) && !cptr.ld1uo(g, $global_State_gcstopem))) {
@@ -74,7 +74,7 @@ function tryagain(L, block, osize, nsize) {
         return (null);
 }
 
-/** C ref: lmem.c:176 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
+/** C ref: lmem.c:176 — @param {CPtr<lua_State>} L @param {CPtr<void>} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr<void>} */
 export function luaM_realloc_(L, block, osize, nsize) {
     let newblock;
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -90,7 +90,7 @@ export function luaM_realloc_(L, block, osize, nsize) {
     return newblock;
 }
 
-/** C ref: lmem.c:192 — @param {CPtr} L @param {CPtr} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr} */
+/** C ref: lmem.c:192 — @param {CPtr<lua_State>} L @param {CPtr<void>} block @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr<void>} */
 export function luaM_saferealloc_(L, block, osize, nsize) {
     let newblock = luaM_realloc_(L, block, osize, nsize);
     if ((__builtin_expect(BigInt(((cptr.eq(newblock, (null)) && nsize > 0n ? 1 : 0) != 0)), 0n)))
@@ -98,7 +98,7 @@ export function luaM_saferealloc_(L, block, osize, nsize) {
     return newblock;
 }
 
-/** C ref: lmem.c:201 — @param {CPtr} L @param {CLongLong} size @param {CInt} tag @returns {CPtr} */
+/** C ref: lmem.c:201 — @param {CPtr<lua_State>} L @param {CLongLong} size @param {CInt} tag @returns {CPtr<void>} */
 export function luaM_malloc_(L, size, tag) {
     if (size == 0n)
         return (null);

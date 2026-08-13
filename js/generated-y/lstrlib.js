@@ -113,7 +113,7 @@ const __sl82 = cptr.lit("pack");
 const __sl83 = cptr.lit("packsize");
 const __sl84 = cptr.lit("unpack");
 
-/** C ref: lstrlib.c:55 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:55 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_len(L) {
     let l = cptr.box(0n);
     (yield* luaL_checklstring(L, 1, l));
@@ -133,7 +133,7 @@ function posrelatI(pos, len) {
         return BigInt.asUintN(64, BigInt.asUintN(64, len + BigInt.asUintN(64, pos)) + 1n);
 }
 
-/** C ref: lstrlib.c:87 — @param {CPtr} L @param {CInt} arg @param {CLongLong} def @param {CLongLong} len @returns {*} */
+/** C ref: lstrlib.c:87 — @param {CPtr<lua_State>} L @param {CInt} arg @param {CLongLong} def @param {CLongLong} len @returns {*} */
 function* getendpos(L, arg, def, len) {
     let pos = (yield* luaL_optinteger(L, arg, def));
     if (pos > BigInt.asIntN(64, len))
@@ -146,7 +146,7 @@ function* getendpos(L, arg, def, len) {
         return BigInt.asUintN(64, BigInt.asUintN(64, len + BigInt.asUintN(64, pos)) + 1n);
 }
 
-/** C ref: lstrlib.c:100 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:100 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_sub(L) {
     let l = cptr.box(0n);
     let s = (yield* luaL_checklstring(L, 1, l));
@@ -159,7 +159,7 @@ function* str_sub(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:112 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:112 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_reverse(L) {
     let l = cptr.box(0n);
     let i;
@@ -172,7 +172,7 @@ function* str_reverse(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:124 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:124 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_lower(L) {
     let l = cptr.box(0n);
     let i;
@@ -185,7 +185,7 @@ function* str_lower(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:137 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:137 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_upper(L) {
     let l = cptr.box(0n);
     let i;
@@ -198,7 +198,7 @@ function* str_upper(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:150 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:150 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_rep(L) {
     let l = cptr.box(0n);
     let lsep = cptr.box(0n);
@@ -227,7 +227,7 @@ function* str_rep(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:177 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:177 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_byte(L) {
     let l = cptr.box(0n);
     let s = (yield* luaL_checklstring(L, 1, l));
@@ -247,7 +247,7 @@ function* str_byte(L) {
     return n;
 }
 
-/** C ref: lstrlib.c:195 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:195 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_char(L) {
     let n = lua_gettop(L);
     let i;
@@ -264,7 +264,7 @@ function* str_char(L) {
 
 /** C ref: lstrlib.c:216 — struct str_Writer { init, B } (memory model v0.5) */
 
-/** C ref: lstrlib.c:222 — @param {CPtr} L @param {CPtr} b @param {CLongLong} size @param {CPtr} ud @returns {CInt} */
+/** C ref: lstrlib.c:222 — @param {CPtr<lua_State>} L @param {CPtr<void>} b @param {CLongLong} size @param {CPtr<void>} ud @returns {CInt} */
 function* writer(L, b, size, ud) {
     let state = ud;
     if (!cptr.ldI32(state)) {
@@ -275,7 +275,7 @@ function* writer(L, b, size, ud) {
     return 0;
 }
 
-/** C ref: lstrlib.c:233 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:233 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_dump(L) {
     let state = cptr.alloc(1064);
     let strip = lua_toboolean(L, 2);
@@ -288,7 +288,7 @@ function* str_dump(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:264 — @param {CPtr} L @param {CInt} arg @returns {CInt} */
+/** C ref: lstrlib.c:264 — @param {CPtr<lua_State>} L @param {CInt} arg @returns {CInt} */
 function* tonum(L, arg) {
     if (lua_type(L, arg) == 3) {
         (yield* lua_pushvalue(L, arg));
@@ -300,7 +300,7 @@ function* tonum(L, arg) {
     }
 }
 
-/** C ref: lstrlib.c:277 — @param {CPtr} L @param {CPtr} mtname */
+/** C ref: lstrlib.c:277 — @param {CPtr<lua_State>} L @param {CPtr<char>} mtname */
 function* trymt(L, mtname) {
     (yield* lua_settop(L, 2));
     if ((__builtin_expect(BigInt(((lua_type(L, 2) == 4 || !(yield* luaL_getmetafield(L, 2, mtname)) ? 1 : 0) != 0)), 0n)))
@@ -309,7 +309,7 @@ function* trymt(L, mtname) {
     (yield* lua_callk(L, 2, 1, 0n, null));
 }
 
-/** C ref: lstrlib.c:288 — @param {CPtr} L @param {CInt} op @param {CPtr} mtname @returns {CInt} */
+/** C ref: lstrlib.c:288 — @param {CPtr<lua_State>} L @param {CInt} op @param {CPtr<char>} mtname @returns {CInt} */
 function* arith(L, op, mtname) {
     if ((yield* tonum(L, 1)) && (yield* tonum(L, 2)))
         (yield* lua_arith(L, op));
@@ -318,42 +318,42 @@ function* arith(L, op, mtname) {
     return 1;
 }
 
-/** C ref: lstrlib.c:297 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:297 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* arith_add(L) {
     return (yield* arith(L, 0, __sl6));
 }
 
-/** C ref: lstrlib.c:301 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:301 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* arith_sub(L) {
     return (yield* arith(L, 1, __sl7));
 }
 
-/** C ref: lstrlib.c:305 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:305 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* arith_mul(L) {
     return (yield* arith(L, 2, __sl8));
 }
 
-/** C ref: lstrlib.c:309 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:309 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* arith_mod(L) {
     return (yield* arith(L, 3, __sl9));
 }
 
-/** C ref: lstrlib.c:313 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:313 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* arith_pow(L) {
     return (yield* arith(L, 4, __sl10));
 }
 
-/** C ref: lstrlib.c:317 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:317 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* arith_div(L) {
     return (yield* arith(L, 5, __sl11));
 }
 
-/** C ref: lstrlib.c:321 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:321 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* arith_idiv(L) {
     return (yield* arith(L, 6, __sl12));
 }
 
-/** C ref: lstrlib.c:325 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:325 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* arith_unm(L) {
     return (yield* arith(L, 12, __sl13));
 }
@@ -385,7 +385,7 @@ cptr.stPtro(stringmetamethods, 144 + $luaL_Reg_func, null);
 
 /** C ref: lstrlib.c:369 — typedef MatchState (type alias only, no runtime output) */
 
-/** C ref: lstrlib.c:386 — @param {CPtr} ms @param {CInt} l @returns {CInt} */
+/** C ref: lstrlib.c:386 — @param {CPtr<MatchState>} ms @param {CInt} l @returns {CInt} */
 function* check_capture(ms, l) {
     l = (l - 49) | 0;
     if ((__builtin_expect(BigInt(((l < 0 || l >= cptr.ld1uo(ms, $MatchState_level) || cptr.ldI64o2(ms, l, 16, $MatchState_capture + 8) == -1n ? 1 : 0) != 0)), 0n)))
@@ -393,7 +393,7 @@ function* check_capture(ms, l) {
     return l;
 }
 
-/** C ref: lstrlib.c:395 — @param {CPtr} ms @returns {CInt} */
+/** C ref: lstrlib.c:395 — @param {CPtr<MatchState>} ms @returns {CInt} */
 function* capture_to_close(ms) {
     let level = cptr.ld1uo(ms, $MatchState_level);
     for (level--; level >= 0; level--)
@@ -402,7 +402,7 @@ function* capture_to_close(ms) {
     return (yield* luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl16));
 }
 
-/** C ref: lstrlib.c:403 — @param {CPtr} ms @param {CPtr} p @returns {CPtr} */
+/** C ref: lstrlib.c:403 — @param {CPtr<MatchState>} ms @param {CPtr<char>} p @returns {CPtr<char>} */
 function* classend(ms, p) {
     switch (cptr.ld1s(cptr.postinc(() => p, (v) => { p = v; }))) {
         case 37:
@@ -473,7 +473,7 @@ function match_class(c, cl) {
     return (islower(cl) ? res : !res);
 }
 
-/** C ref: lstrlib.c:447 — @param {CInt} c @param {CPtr} p @param {CPtr} ec @returns {CInt} */
+/** C ref: lstrlib.c:447 — @param {CInt} c @param {CPtr<char>} p @param {CPtr<char>} ec @returns {CInt} */
 function* matchbracketclass(c, p, ec) {
     let sig = 1;
     if (cptr.ld1s((cptr.add(p, 1))) == 94) {
@@ -495,7 +495,7 @@ function* matchbracketclass(c, p, ec) {
     return !sig;
 }
 
-/** C ref: lstrlib.c:470 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @param {CPtr} ep @returns {CInt} */
+/** C ref: lstrlib.c:470 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CPtr<char>} p @param {CPtr<char>} ep @returns {CInt} */
 function* singlematch(ms, s, p, ep) {
     if (cptr.cmp(s, cptr.ldPtro(ms, $MatchState_src_end)) >= 0)
         return 0;
@@ -514,7 +514,7 @@ function* singlematch(ms, s, p, ep) {
     }
 }
 
-/** C ref: lstrlib.c:486 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @returns {CPtr} */
+/** C ref: lstrlib.c:486 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CPtr<char>} p @returns {CPtr<char>} */
 function* matchbalance(ms, s, p) {
     if ((__builtin_expect(BigInt(((cptr.cmp(p, cptr.add(cptr.ldPtro(ms, $MatchState_p_end), -(1))) >= 0) != 0)), 0n)))
         (yield* luaL_error(cptr.ldPtro(ms, $MatchState_L), __sl19));
@@ -535,7 +535,7 @@ function* matchbalance(ms, s, p) {
     return null;
 }
 
-/** C ref: lstrlib.c:506 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @param {CPtr} ep @returns {CPtr} */
+/** C ref: lstrlib.c:506 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CPtr<char>} p @param {CPtr<char>} ep @returns {CPtr<char>} */
 function* max_expand(ms, s, p, ep) {
     let i = 0n;
     while ((yield* singlematch(ms, cptr.add(s, i), p, ep)))
@@ -549,7 +549,7 @@ function* max_expand(ms, s, p, ep) {
     return null;
 }
 
-/** C ref: lstrlib.c:521 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @param {CPtr} ep @returns {CPtr} */
+/** C ref: lstrlib.c:521 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CPtr<char>} p @param {CPtr<char>} ep @returns {CPtr<char>} */
 function* min_expand(ms, s, p, ep) {
     for (; ; ) {
         let res = (yield* match(ms, s, cptr.add(ep, 1)));
@@ -562,7 +562,7 @@ function* min_expand(ms, s, p, ep) {
     }
 }
 
-/** C ref: lstrlib.c:534 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @param {CInt} what @returns {CPtr} */
+/** C ref: lstrlib.c:534 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CPtr<char>} p @param {CInt} what @returns {CPtr<char>} */
 function* start_capture(ms, s, p, what) {
     let res;
     let level = cptr.ld1uo(ms, $MatchState_level);
@@ -576,7 +576,7 @@ function* start_capture(ms, s, p, what) {
     return res;
 }
 
-/** C ref: lstrlib.c:548 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @returns {CPtr} */
+/** C ref: lstrlib.c:548 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CPtr<char>} p @returns {CPtr<char>} */
 function* end_capture(ms, s, p) {
     let l = (yield* capture_to_close(ms));
     let res;
@@ -586,7 +586,7 @@ function* end_capture(ms, s, p) {
     return res;
 }
 
-/** C ref: lstrlib.c:559 — @param {CPtr} ms @param {CPtr} s @param {CInt} l @returns {CPtr} */
+/** C ref: lstrlib.c:559 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CInt} l @returns {CPtr<char>} */
 function* match_capture(ms, s, l) {
     let len;
     l = (yield* check_capture(ms, l));
@@ -597,7 +597,7 @@ function* match_capture(ms, s, l) {
         return null;
 }
 
-/** C ref: lstrlib.c:570 — @param {CPtr} ms @param {CPtr} s @param {CPtr} p @returns {CPtr} */
+/** C ref: lstrlib.c:570 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CPtr<char>} p @returns {CPtr<char>} */
 function* match(ms, s, p) {
     let ep, previous, res;
     let __pc = 0;
@@ -830,7 +830,7 @@ function* match(ms, s, p) {
     }
 }
 
-/** C ref: lstrlib.c:673 — @param {CPtr} s1 @param {CLongLong} l1 @param {CPtr} s2 @param {CLongLong} l2 @returns {CPtr} */
+/** C ref: lstrlib.c:673 — @param {CPtr<char>} s1 @param {CLongLong} l1 @param {CPtr<char>} s2 @param {CLongLong} l2 @returns {CPtr<char>} */
 function lmemfind(s1, l1, s2, l2) {
     if (l2 == 0n)
         return s1;
@@ -853,7 +853,7 @@ function lmemfind(s1, l1, s2, l2) {
     }
 }
 
-/** C ref: lstrlib.c:702 — @param {CPtr} ms @param {CInt} i @param {CPtr} s @param {CPtr} e @param {CPtr} cap @returns {*} */
+/** C ref: lstrlib.c:702 — @param {CPtr<MatchState>} ms @param {CInt} i @param {CPtr<char>} s @param {CPtr<char>} e @param {CPtr<char *>} cap @returns {*} */
 function* get_onecapture(ms, i, s, e, cap) {
     if (i >= cptr.ld1uo(ms, $MatchState_level)) {
         if ((__builtin_expect(BigInt(((i != 0) != 0)), 0n)))
@@ -871,7 +871,7 @@ function* get_onecapture(ms, i, s, e, cap) {
     }
 }
 
-/** C ref: lstrlib.c:725 — @param {CPtr} ms @param {CInt} i @param {CPtr} s @param {CPtr} e */
+/** C ref: lstrlib.c:725 — @param {CPtr<MatchState>} ms @param {CInt} i @param {CPtr<char>} s @param {CPtr<char>} e */
 function* push_onecapture(ms, i, s, e) {
     let cap = cptr.box(0);
     let l = BigInt.asIntN(64, (yield* get_onecapture(ms, i, s, e, cap)));
@@ -879,7 +879,7 @@ function* push_onecapture(ms, i, s, e) {
         (yield* lua_pushlstring(cptr.ldPtro(ms, $MatchState_L), cap.v, BigInt.asUintN(64, l)));
 }
 
-/** C ref: lstrlib.c:735 — @param {CPtr} ms @param {CPtr} s @param {CPtr} e @returns {CInt} */
+/** C ref: lstrlib.c:735 — @param {CPtr<MatchState>} ms @param {CPtr<char>} s @param {CPtr<char>} e @returns {CInt} */
 function* push_captures(ms, s, e) {
     let i;
     let nlevels = (cptr.ld1uo(ms, $MatchState_level) == 0 && s) ? 1 : cptr.ld1uo(ms, $MatchState_level);
@@ -889,7 +889,7 @@ function* push_captures(ms, s, e) {
     return nlevels;
 }
 
-/** C ref: lstrlib.c:746 — @param {CPtr} p @param {CLongLong} l @returns {CInt} */
+/** C ref: lstrlib.c:746 — @param {CPtr<char>} p @param {CLongLong} l @returns {CInt} */
 function nospecials(p, l) {
     let upto = 0n;
     do {
@@ -900,7 +900,7 @@ function nospecials(p, l) {
     return 1;
 }
 
-/** C ref: lstrlib.c:757 — @param {CPtr} ms @param {CPtr} L @param {CPtr} s @param {CLongLong} ls @param {CPtr} p @param {CLongLong} lp */
+/** C ref: lstrlib.c:757 — @param {CPtr<MatchState>} ms @param {CPtr<lua_State>} L @param {CPtr<char>} s @param {CLongLong} ls @param {CPtr<char>} p @param {CLongLong} lp */
 function prepstate(ms, L, s, ls, p, lp) {
     cptr.stPtro(ms, $MatchState_L, L);
     cptr.stI32o(ms, $MatchState_matchdepth, 200);
@@ -909,13 +909,13 @@ function prepstate(ms, L, s, ls, p, lp) {
     cptr.stPtro(ms, $MatchState_p_end, cptr.add(p, lp));
 }
 
-/** C ref: lstrlib.c:767 — @param {CPtr} ms */
+/** C ref: lstrlib.c:767 — @param {CPtr<MatchState>} ms */
 function reprepstate(ms) {
     cptr.st1o(ms, $MatchState_level, 0);
     (void 0);
 }
 
-/** C ref: lstrlib.c:773 — @param {CPtr} L @param {CInt} find @returns {CInt} */
+/** C ref: lstrlib.c:773 — @param {CPtr<lua_State>} L @param {CInt} find @returns {CInt} */
 function* str_find_aux(L, find) {
     let ls = cptr.box(0n);
     let lp = cptr.box(0n);
@@ -959,12 +959,12 @@ function* str_find_aux(L, find) {
     return 1;
 }
 
-/** C ref: lstrlib.c:819 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:819 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_find(L) {
     return (yield* str_find_aux(L, 1));
 }
 
-/** C ref: lstrlib.c:824 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:824 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_match(L) {
     return (yield* str_find_aux(L, 0));
 }
@@ -973,7 +973,7 @@ function* str_match(L) {
 
 /** C ref: lstrlib.c:835 — typedef GMatchState (type alias only, no runtime output) */
 
-/** C ref: lstrlib.c:838 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:838 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* gmatch_aux(L) {
     let gm = lua_touserdata(L, -1001003);
     let src;
@@ -989,7 +989,7 @@ function* gmatch_aux(L) {
     return 0;
 }
 
-/** C ref: lstrlib.c:854 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:854 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* gmatch(L) {
     let ls = cptr.box(0n);
     let lp = cptr.box(0n);
@@ -1009,7 +1009,7 @@ function* gmatch(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:871 — @param {CPtr} ms @param {CPtr} b @param {CPtr} s @param {CPtr} e */
+/** C ref: lstrlib.c:871 — @param {CPtr<MatchState>} ms @param {CPtr<luaL_Buffer>} b @param {CPtr<char>} s @param {CPtr<char>} e */
 function* add_s(ms, b, s, e) {
     let l = cptr.box(0n);
     let L = cptr.ldPtro(ms, $MatchState_L);
@@ -1037,7 +1037,7 @@ function* add_s(ms, b, s, e) {
     (yield* luaL_addlstring(b, news, l.v));
 }
 
-/** C ref: lstrlib.c:906 — @param {CPtr} ms @param {CPtr} b @param {CPtr} s @param {CPtr} e @param {CInt} tr @returns {CInt} */
+/** C ref: lstrlib.c:906 — @param {CPtr<MatchState>} ms @param {CPtr<luaL_Buffer>} b @param {CPtr<char>} s @param {CPtr<char>} e @param {CInt} tr @returns {CInt} */
 function* add_value(ms, b, s, e, tr) {
     let L = cptr.ldPtro(ms, $MatchState_L);
     switch (tr) {
@@ -1073,7 +1073,7 @@ function* add_value(ms, b, s, e, tr) {
     }
 }
 
-/** C ref: lstrlib.c:942 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:942 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_gsub(L) {
     let srcl = cptr.box(0n);
     let lp = cptr.box(0n);
@@ -1118,7 +1118,7 @@ function* str_gsub(L) {
     return 2;
 }
 
-/** C ref: lstrlib.c:1122 — @param {CPtr} b @param {CPtr} s @param {CLongLong} len */
+/** C ref: lstrlib.c:1122 — @param {CPtr<luaL_Buffer>} b @param {CPtr<char>} s @param {CLongLong} len */
 function* addquoted(b, s, len) {
     (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || (yield* luaL_prepbuffsize((b), 1n)) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 34)));
     while (len--) {
@@ -1139,7 +1139,7 @@ function* addquoted(b, s, len) {
     (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || (yield* luaL_prepbuffsize((b), 1n)) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), 34)));
 }
 
-/** C ref: lstrlib.c:1151 — @param {CPtr} L @param {CPtr} buff @param {CDouble} n @returns {CInt} */
+/** C ref: lstrlib.c:1151 — @param {CPtr<lua_State>} L @param {CPtr<char>} buff @param {CDouble} n @returns {CInt} */
 function quotefloat(L, buff, n) {
     let s;
     if (n == __builtin_huge_val())
@@ -1161,7 +1161,7 @@ function quotefloat(L, buff, n) {
     return cptr.snprintf(buff, 120n, __sl34, s);
 }
 
-/** C ref: lstrlib.c:1175 — @param {CPtr} L @param {CPtr} b @param {CInt} arg */
+/** C ref: lstrlib.c:1175 — @param {CPtr<lua_State>} L @param {CPtr<luaL_Buffer>} b @param {CInt} arg */
 function* addliteral(L, b, arg) {
     switch (lua_type(L, arg)) {
         case 4:
@@ -1199,7 +1199,7 @@ function* addliteral(L, b, arg) {
     }
 }
 
-/** C ref: lstrlib.c:1210 — @param {CPtr} s @returns {CPtr} */
+/** C ref: lstrlib.c:1210 — @param {CPtr<char>} s @returns {CPtr<char>} */
 function get2digits(s) {
     if (isdigit((uchar((cptr.ld1s(s)))))) {
         s = cptr.add(s, 1);
@@ -1209,7 +1209,7 @@ function get2digits(s) {
     return s;
 }
 
-/** C ref: lstrlib.c:1225 — @param {CPtr} L @param {CPtr} form @param {CPtr} flags @param {CInt} precision */
+/** C ref: lstrlib.c:1225 — @param {CPtr<lua_State>} L @param {CPtr<char>} form @param {CPtr<char>} flags @param {CInt} precision */
 function* checkformat(L, form, flags, precision) {
     let spec = cptr.add(form, 1);
     spec = cptr.add(spec, strspn(spec, flags));
@@ -1224,7 +1224,7 @@ function* checkformat(L, form, flags, precision) {
         (yield* luaL_error(L, __sl38, form));
 }
 
-/** C ref: lstrlib.c:1245 — @param {CPtr} L @param {CPtr} strfrmt @param {CPtr} form @returns {CPtr} */
+/** C ref: lstrlib.c:1245 — @param {CPtr<lua_State>} L @param {CPtr<char>} strfrmt @param {CPtr<char>} form @returns {CPtr<char>} */
 function* getformat(L, strfrmt, form) {
     let len = strspn(strfrmt, __sl39);
     len++;
@@ -1236,7 +1236,7 @@ function* getformat(L, strfrmt, form) {
     return cptr.add(cptr.add(strfrmt, len), -(1));
 }
 
-/** C ref: lstrlib.c:1263 — @param {CPtr} form @param {CPtr} lenmod */
+/** C ref: lstrlib.c:1263 — @param {CPtr<char>} form @param {CPtr<char>} lenmod */
 function addlenmod(form, lenmod) {
     let l = cptr.strlen(form);
     let lm = cptr.strlen(lenmod);
@@ -1246,7 +1246,7 @@ function addlenmod(form, lenmod) {
     cptr.st1o(form, BigInt.asUintN(64, l + lm), 0);
 }
 
-/** C ref: lstrlib.c:1273 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:1273 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_format(L) {
     let top, arg, sfl = cptr.box(0), strfrmt, strfrmt_end, flags, b, form, maxitem, buff, nb, n, p, l = cptr.box(0), s;
     let __pc = 0;
@@ -1471,7 +1471,7 @@ function digit(c) {
     return 48 <= c && c <= 57 ? 1 : 0;
 }
 
-/** C ref: lstrlib.c:1449 — @param {CPtr} fmt @param {CInt} df @returns {CInt} */
+/** C ref: lstrlib.c:1449 — @param {CPtr<char *>} fmt @param {CInt} df @returns {CInt} */
 function* getnum(fmt, df) {
     if (!digit(cptr.ld1s(cptr.ldPtr(fmt))))
         return df;
@@ -1484,7 +1484,7 @@ function* getnum(fmt, df) {
     }
 }
 
-/** C ref: lstrlib.c:1466 — @param {CPtr} h @param {CPtr} fmt @param {CInt} df @returns {CInt} */
+/** C ref: lstrlib.c:1466 — @param {CPtr<Header>} h @param {CPtr<char *>} fmt @param {CInt} df @returns {CInt} */
 function* getnumlimit(h, fmt, df) {
     let sz = (yield* getnum(fmt, df));
     if ((__builtin_expect(BigInt(((sz > 16 || sz <= 0 ? 1 : 0) != 0)), 0n)))
@@ -1492,14 +1492,14 @@ function* getnumlimit(h, fmt, df) {
     return sz;
 }
 
-/** C ref: lstrlib.c:1478 — @param {CPtr} L @param {CPtr} h */
+/** C ref: lstrlib.c:1478 — @param {CPtr<lua_State>} L @param {CPtr<Header>} h */
 function initheader(L, h) {
     cptr.stPtr(h, L);
     cptr.stI32o(h, $Header_islittle, cptr.ld1s(nativeendian));
     cptr.stI32o(h, $Header_maxalign, 1);
 }
 
-/** C ref: lstrlib.c:1488 — @param {CPtr} h @param {CPtr} fmt @param {CPtr} size @returns {*} */
+/** C ref: lstrlib.c:1488 — @param {CPtr<Header>} h @param {CPtr<char *>} fmt @param {CPtr<int>} size @returns {*} */
 function* getoption(h, fmt, size) {
     let opt = cptr.ld1s((cptr.postinc(() => cptr.ldPtr(fmt), (v) => { cptr.stPtr(fmt, v); })));
     cptr.stI32(size, 0);
@@ -1584,7 +1584,7 @@ function* getoption(h, fmt, size) {
     return NHC.Knop;
 }
 
-/** C ref: lstrlib.c:1541 — @param {CPtr} h @param {CLongLong} totalsize @param {CPtr} fmt @param {CPtr} psize @param {CPtr} ntoalign @returns {*} */
+/** C ref: lstrlib.c:1541 — @param {CPtr<Header>} h @param {CLongLong} totalsize @param {CPtr<char *>} fmt @param {CPtr<int>} psize @param {CPtr<int>} ntoalign @returns {*} */
 function* getdetails(h, totalsize, fmt, psize, ntoalign) {
     let opt = (yield* getoption(h, fmt, psize));
     let align = cptr.box(cptr.ldI32(psize));
@@ -1604,7 +1604,7 @@ function* getdetails(h, totalsize, fmt, psize, ntoalign) {
     return opt;
 }
 
-/** C ref: lstrlib.c:1568 — @param {CPtr} b @param {CLongLong} n @param {CInt} islittle @param {CInt} size @param {CInt} neg */
+/** C ref: lstrlib.c:1568 — @param {CPtr<luaL_Buffer>} b @param {CLongLong} n @param {CInt} islittle @param {CInt} size @param {CInt} neg */
 function* packint(b, n, islittle, size, neg) {
     let buff = (yield* luaL_prepbuffsize(b, BigInt.asUintN(64, BigInt(size))));
     let i;
@@ -1620,7 +1620,7 @@ function* packint(b, n, islittle, size, neg) {
     (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((size)))));
 }
 
-/** C ref: lstrlib.c:1589 — @param {CPtr} dest @param {CPtr} src @param {CInt} size @param {CInt} islittle */
+/** C ref: lstrlib.c:1589 — @param {CPtr<char>} dest @param {CPtr<char>} src @param {CInt} size @param {CInt} islittle */
 function* copywithendian(dest, src, size, islittle) {
     if (islittle == cptr.ld1s(nativeendian))
         cptr.memcpy(dest, src, BigInt.asUintN(64, BigInt(size)));
@@ -1631,7 +1631,7 @@ function* copywithendian(dest, src, size, islittle) {
     }
 }
 
-/** C ref: lstrlib.c:1601 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:1601 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_pack(L) {
     let b = cptr.alloc(1056);
     let h = cptr.alloc(16);
@@ -1734,7 +1734,7 @@ function* str_pack(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:1700 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:1700 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_packsize(L) {
     let h = cptr.alloc(16);
     let fmt = cptr.box(((yield* luaL_checklstring(L, 1, null))));
@@ -1753,7 +1753,7 @@ function* str_packsize(L) {
     return 1;
 }
 
-/** C ref: lstrlib.c:1728 — @param {CPtr} L @param {CPtr} str @param {CInt} islittle @param {CInt} size @param {CInt} issigned @returns {*} */
+/** C ref: lstrlib.c:1728 — @param {CPtr<lua_State>} L @param {CPtr<char>} str @param {CInt} islittle @param {CInt} size @param {CInt} issigned @returns {*} */
 function* unpackint(L, str, islittle, size, issigned) {
     let res = 0n;
     let i;
@@ -1777,7 +1777,7 @@ function* unpackint(L, str, islittle, size, issigned) {
     return BigInt.asIntN(64, res);
 }
 
-/** C ref: lstrlib.c:1754 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:1754 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* str_unpack(L) {
     let h = cptr.alloc(16);
     let fmt = cptr.box(((yield* luaL_checklstring(L, 1, null))));
@@ -1896,7 +1896,7 @@ cptr.stPtro(strlib, 256 + $luaL_Reg_func, str_unpack);
 cptr.stPtro(strlib, 272, null);
 cptr.stPtro(strlib, 272 + $luaL_Reg_func, null);
 
-/** C ref: lstrlib.c:1852 — @param {CPtr} L */
+/** C ref: lstrlib.c:1852 — @param {CPtr<lua_State>} L */
 function* createmetatable(L) {
     (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 160n / 16n - 1n)))));
     (yield* luaL_setfuncs(L, stringmetamethods, 0));
@@ -1909,7 +1909,7 @@ function* createmetatable(L) {
     (yield* lua_settop(L, -2));
 }
 
-/** C ref: lstrlib.c:1869 — @param {CPtr} L @returns {CInt} */
+/** C ref: lstrlib.c:1869 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* luaopen_string(L) {
     ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 288n / 16n - 1n))))), (yield* luaL_setfuncs(L, strlib, 0)));
     (yield* createmetatable(L));

@@ -177,7 +177,7 @@ const __sl107 = cptr.lit("__metatable");
 
 /** C ref: nhlobj.c:8 — struct _lua_obj { state, obj } (memory model v0.5) */
 
-/** C ref: nhlobj.c:35 — @param {CPtr} L @param {CInt} indx @returns {CPtr} */
+/** C ref: nhlobj.c:35 — @param {CPtr<lua_State>} L @param {CInt} indx @returns {CPtr<struct _lua_obj>} */
 function* l_obj_check(L, indx) {
     let lo;
     (yield* luaL_checktype(L, indx, 7));
@@ -187,7 +187,7 @@ function* l_obj_check(L, indx) {
     return lo;
 }
 
-/** C ref: nhlobj.c:47 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:47 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_gc(L) {
     let obj;
     let otmp;
@@ -210,7 +210,7 @@ function* l_obj_gc(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:73 — @param {CPtr} L @param {CPtr} otmp @returns {CPtr} */
+/** C ref: nhlobj.c:73 — @param {CPtr<lua_State>} L @param {CPtr<struct obj>} otmp @returns {CPtr<struct _lua_obj>} */
 function* l_obj_push(L, otmp) {
     let lo = (yield* lua_newuserdatauv(L, 16n, 1));
     ((yield* lua_getfield(L, -1001000, (__sl0))));
@@ -222,12 +222,12 @@ function* l_obj_push(L, otmp) {
     return lo;
 }
 
-/** C ref: nhlobj.c:89 — @param {CPtr} L @param {CPtr} otmp */
+/** C ref: nhlobj.c:89 — @param {CPtr<lua_State>} L @param {CPtr<struct obj>} otmp */
 export function* nhl_push_obj(L, otmp) {
     void (yield* l_obj_push(L, otmp));
 }
 
-/** C ref: nhlobj.c:97 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:97 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_getcontents(L) {
     let lo = (yield* l_obj_check(L, 1));
     let obj = cptr.ldPtro(lo, $_lua_obj_obj);
@@ -237,7 +237,7 @@ function* l_obj_getcontents(L) {
     return 1;
 }
 
-/** C ref: nhlobj.c:114 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:114 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_add_to_container(L) {
     let lobox = (yield* l_obj_check(L, 1));
     let lo = (yield* l_obj_check(L, 2));
@@ -256,7 +256,7 @@ function* l_obj_add_to_container(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:142 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:142 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* nhl_obj_u_giveobj(L) {
     let lo = (yield* l_obj_check(L, 1));
     let otmp;
@@ -273,7 +273,7 @@ export function* nhl_obj_u_giveobj(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:171 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:171 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_objects_to_table(L) {
     let argc = lua_gettop(L);
     let otyp = -1;
@@ -327,7 +327,7 @@ function* l_obj_objects_to_table(L) {
     return 1;
 }
 
-/** C ref: nhlobj.c:247 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:247 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_to_table(L) {
     let lo = (yield* l_obj_check(L, 1));
     let obj = cptr.ldPtro(lo, $_lua_obj_obj);
@@ -402,7 +402,7 @@ function* l_obj_to_table(L) {
     return 1;
 }
 
-/** C ref: nhlobj.c:350 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:350 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_new_readobjnam(L) {
     let argc = lua_gettop(L);
     if (argc == 1 && lua_type(L, 1) == 4) {
@@ -434,7 +434,7 @@ function* l_obj_new_readobjnam(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:389 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:389 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_at(L) {
     let argc = lua_gettop(L);
     if (argc == 2) {
@@ -451,7 +451,7 @@ function* l_obj_at(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:413 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:413 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_placeobj(L) {
     let argc = lua_gettop(L);
     let lo = (yield* l_obj_check(L, 1));
@@ -471,7 +471,7 @@ function* l_obj_placeobj(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:445 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:445 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_nextobj(L) {
     let argc = lua_gettop(L);
     if (argc == 0) {
@@ -487,7 +487,7 @@ function* l_obj_nextobj(L) {
     return 1;
 }
 
-/** C ref: nhlobj.c:469 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:469 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_container(L) {
     let lo = (yield* l_obj_check(L, 1));
     if (lo && cptr.ldPtro(lo, $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro(lo, $_lua_obj_obj), $obj_where) == NHM.OBJ_CONTAINED)
@@ -497,14 +497,14 @@ function* l_obj_container(L) {
     return 1;
 }
 
-/** C ref: nhlobj.c:483 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:483 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_isnull(L) {
     let lo = (yield* l_obj_check(L, 1));
     (yield* lua_pushboolean(L, !((lo) && cptr.ldPtro((lo), $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE)));
     return 1;
 }
 
-/** C ref: nhlobj.c:496 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:496 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_timer_has(L) {
     let argc = lua_gettop(L);
     if (argc == 2) {
@@ -522,7 +522,7 @@ function* l_obj_timer_has(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:520 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:520 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_timer_peek(L) {
     let argc = lua_gettop(L);
     if (argc == 2) {
@@ -540,7 +540,7 @@ function* l_obj_timer_peek(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:547 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:547 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_timer_stop(L) {
     let argc = lua_gettop(L);
     if (argc == 1) {
@@ -563,7 +563,7 @@ function* l_obj_timer_stop(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:579 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:579 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_timer_start(L) {
     let argc = lua_gettop(L);
     if (argc == 3) {
@@ -580,7 +580,7 @@ function* l_obj_timer_start(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:603 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:603 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_obj_bury(L) {
     let argc = lua_gettop(L);
     let dealloced = cptr.box(0);
@@ -647,7 +647,7 @@ cptr.stPtro(l_obj_meta, 0 + $luaL_Reg_func, l_obj_gc);
 cptr.stPtro(l_obj_meta, 16, null);
 cptr.stPtro(l_obj_meta, 16 + $luaL_Reg_func, null);
 
-/** C ref: nhlobj.c:654 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlobj.c:654 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* l_obj_register(L) {
     ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 256n / 16n - 1n))))), (yield* luaL_setfuncs(L, l_obj_methods, 0)));
     (yield* luaL_newmetatable(L, __sl0));

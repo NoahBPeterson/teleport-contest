@@ -44,7 +44,7 @@ let absentkey = cptr.box(cptr.alloc(16));
 cptr.stPtr(absentkey.v, null);
 cptr.st1o(absentkey.v, $TValue_tt_, 32);
 
-/** C ref: ltable.c:108 — @param {CPtr} t @param {CLongLong} i @returns {CPtr} */
+/** C ref: ltable.c:108 — @param {CPtr<Table>} t @param {CLongLong} i @returns {CPtr<Node>} */
 function hashint(t, i) {
     let ui = (BigInt.asUintN(64, (i)));
     if (ui <= 2147483647n)
@@ -67,7 +67,7 @@ function l_hashfloat(n) {
     }
 }
 
-/** C ref: ltable.c:151 — @param {CPtr} t @param {CPtr} key @returns {CPtr} */
+/** C ref: ltable.c:151 — @param {CPtr<Table>} t @param {CPtr<TValue>} key @returns {CPtr<Node>} */
 function mainpositionTV(t, key) {
     switch ((((cptr.ld1uo((key), $TValue_tt_))) & 63)) {
         case 3:
@@ -112,7 +112,7 @@ function mainpositionTV(t, key) {
     }
 }
 
-/** C ref: ltable.c:189 — @param {CPtr} t @param {CPtr} nd @returns {CPtr} */
+/** C ref: ltable.c:189 — @param {CPtr<Table>} t @param {CPtr<Node>} nd @returns {CPtr<Node>} */
 function mainpositionfromnode(t, nd) {
     let key = cptr.alloc(16);
     {
@@ -126,7 +126,7 @@ function mainpositionfromnode(t, nd) {
     return mainpositionTV(t, key);
 }
 
-/** C ref: ltable.c:216 — @param {CPtr} k1 @param {CPtr} n2 @param {CInt} deadok @returns {CInt} */
+/** C ref: ltable.c:216 — @param {CPtr<TValue>} k1 @param {CPtr<Node>} n2 @param {CInt} deadok @returns {CInt} */
 function equalkey(k1, n2, deadok) {
     if (((cptr.ld1uo((k1), $TValue_tt_)) != (cptr.ld1uo((n2), $NodeKey_key_tt))) && !(deadok && ((cptr.ld1uo((n2), $NodeKey_key_tt)) == 11) && ((cptr.ld1uo((k1), $TValue_tt_)) & 64)))
         return 0;
@@ -150,7 +150,7 @@ function equalkey(k1, n2, deadok) {
     }
 }
 
-/** C ref: ltable.c:250 — @param {CPtr} t @returns {CUInt} */
+/** C ref: ltable.c:250 — @param {CPtr<Table>} t @returns {CUInt} */
 export function luaH_realasize(t) {
     if (((!(cptr.ld1uo((t), $Table_flags) & 128)) || ((((cptr.ldI32o((t), $Table_alimit)) & (((cptr.ldI32o((t), $Table_alimit)) - 1) >>> 0)) >>> 0) == 0)))
         return cptr.ldI32o(t, $Table_alimit);
@@ -167,19 +167,19 @@ export function luaH_realasize(t) {
     }
 }
 
-/** C ref: ltable.c:278 — @param {CPtr} t @returns {CInt} */
+/** C ref: ltable.c:278 — @param {CPtr<Table>} t @returns {CInt} */
 function ispow2realasize(t) {
     return (!(!(cptr.ld1uo((t), $Table_flags) & 128)) || ((((cptr.ldI32o(t, $Table_alimit)) & (((cptr.ldI32o(t, $Table_alimit)) - 1) >>> 0)) >>> 0) == 0) ? 1 : 0);
 }
 
-/** C ref: ltable.c:283 — @param {CPtr} t @returns {CUInt} */
+/** C ref: ltable.c:283 — @param {CPtr<Table>} t @returns {CUInt} */
 function setlimittosize(t) {
     cptr.stI32o(t, $Table_alimit, luaH_realasize(t));
     (cptr.st1o((t), $Table_flags, cptr.ld1uo((t), $Table_flags) & 127));
     return cptr.ldI32o(t, $Table_alimit);
 }
 
-/** C ref: ltable.c:299 — @param {CPtr} t @param {CPtr} key @param {CInt} deadok @returns {CPtr} */
+/** C ref: ltable.c:299 — @param {CPtr<Table>} t @param {CPtr<TValue>} key @param {CInt} deadok @returns {CPtr<TValue>} */
 function getgeneric(t, key, deadok) {
     let n = mainpositionTV(t, key);
     for (; ; ) {
@@ -202,7 +202,7 @@ function arrayindex(k) {
         return 0;
 }
 
-/** C ref: ltable.c:331 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @param {CUInt} asize @returns {CUInt} */
+/** C ref: ltable.c:331 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CPtr<TValue>} key @param {CUInt} asize @returns {CUInt} */
 function findindex(L, t, key, asize) {
     let i;
     if ((((((cptr.ld1uo(((key)), $TValue_tt_))) & 15)) == 0))
@@ -219,7 +219,7 @@ function findindex(L, t, key, asize) {
     }
 }
 
-/** C ref: ltable.c:349 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @returns {CInt} */
+/** C ref: ltable.c:349 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CPtr} key @returns {CInt} */
 export function luaH_next(L, t, key) {
     let asize = luaH_realasize(t);
     let i = findindex(L, t, ((key)), asize);
@@ -269,13 +269,13 @@ export function luaH_next(L, t, key) {
     return 0;
 }
 
-/** C ref: ltable.c:371 — @param {CPtr} L @param {CPtr} t */
+/** C ref: ltable.c:371 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t */
 function freehash(L, t) {
     if (!(cptr.eq(cptr.ldPtro((t), $Table_lastfree), (null))))
         luaM_free_(L, (cptr.ldPtro(t, $Table_node)), BigInt.asUintN(64, ((BigInt.asUintN(64, BigInt(((((1 << (cptr.ld1uo((t), $Table_lsizenode)))))))))) * 24n));
 }
 
-/** C ref: ltable.c:391 — @param {CPtr} nums @param {CPtr} pna @returns {CUInt} */
+/** C ref: ltable.c:391 — @param {CPtr<unsigned int>} nums @param {CPtr<unsigned int>} pna @returns {CUInt} */
 function computesizes(nums, pna) {
     let i;
     let twotoi;
@@ -294,7 +294,7 @@ function computesizes(nums, pna) {
     return optimal;
 }
 
-/** C ref: ltable.c:413 — @param {CLongLong} key @param {CPtr} nums @returns {CInt} */
+/** C ref: ltable.c:413 — @param {CLongLong} key @param {CPtr<unsigned int>} nums @returns {CInt} */
 function countint(key, nums) {
     let k = arrayindex(key);
     if (k != 0) {
@@ -304,7 +304,7 @@ function countint(key, nums) {
         return 0;
 }
 
-/** C ref: ltable.c:429 — @param {CPtr} t @param {CPtr} nums @returns {CUInt} */
+/** C ref: ltable.c:429 — @param {CPtr<Table>} t @param {CPtr<unsigned int>} nums @returns {CUInt} */
 function numusearray(t, nums) {
     let lg;
     let ttlg;
@@ -329,7 +329,7 @@ function numusearray(t, nums) {
     return ause;
 }
 
-/** C ref: ltable.c:456 — @param {CPtr} t @param {CPtr} nums @param {CPtr} pna @returns {CInt} */
+/** C ref: ltable.c:456 — @param {CPtr<Table>} t @param {CPtr<unsigned int>} nums @param {CPtr<unsigned int>} pna @returns {CInt} */
 function numusehash(t, nums, pna) {
     let totaluse = 0;
     let ause = 0;
@@ -346,7 +346,7 @@ function numusehash(t, nums, pna) {
     return totaluse;
 }
 
-/** C ref: ltable.c:480 — @param {CPtr} L @param {CPtr} t @param {CUInt} size */
+/** C ref: ltable.c:480 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CUInt} size */
 function setnodevector(L, t, size) {
     if (size == 0) {
         cptr.stPtro(t, $Table_node, (((dummynode_.v))));
@@ -370,7 +370,7 @@ function setnodevector(L, t, size) {
     }
 }
 
-/** C ref: ltable.c:508 — @param {CPtr} L @param {CPtr} ot @param {CPtr} t */
+/** C ref: ltable.c:508 — @param {CPtr<lua_State>} L @param {CPtr<Table>} ot @param {CPtr<Table>} t */
 function reinsert(L, ot, t) {
     let j;
     let size = ((1 << (cptr.ld1uo((ot), $Table_lsizenode))));
@@ -391,7 +391,7 @@ function reinsert(L, ot, t) {
     }
 }
 
-/** C ref: ltable.c:527 — @param {CPtr} t1 @param {CPtr} t2 */
+/** C ref: ltable.c:527 — @param {CPtr<Table>} t1 @param {CPtr<Table>} t2 */
 function exchangehashpart(t1, t2) {
     let lsizenode = cptr.ld1uo(t1, $Table_lsizenode);
     let node = cptr.ldPtro(t1, $Table_node);
@@ -404,7 +404,7 @@ function exchangehashpart(t1, t2) {
     cptr.stPtro(t2, $Table_lastfree, lastfree);
 }
 
-/** C ref: ltable.c:553 — @param {CPtr} L @param {CPtr} t @param {CUInt} newasize @param {CUInt} nhsize */
+/** C ref: ltable.c:553 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CUInt} newasize @param {CUInt} nhsize */
 export function luaH_resize(L, t, newasize, nhsize) {
     let i;
     let newt = cptr.alloc(56);
@@ -435,13 +435,13 @@ export function luaH_resize(L, t, newasize, nhsize) {
     freehash(L, newt);
 }
 
-/** C ref: ltable.c:590 — @param {CPtr} L @param {CPtr} t @param {CUInt} nasize */
+/** C ref: ltable.c:590 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CUInt} nasize */
 export function luaH_resizearray(L, t, nasize) {
     let nsize = ((cptr.eq(cptr.ldPtro((t), $Table_lastfree), (null))) ? 0 : ((1 << (cptr.ld1uo((t), $Table_lsizenode)))));
     luaH_resize(L, t, nasize, nsize >>> 0);
 }
 
-/** C ref: ltable.c:598 — @param {CPtr} L @param {CPtr} t @param {CPtr} ek */
+/** C ref: ltable.c:598 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CPtr<TValue>} ek */
 function rehash(L, t, ek) {
     let asize;
     let na = cptr.box(0);
@@ -461,7 +461,7 @@ function rehash(L, t, ek) {
     luaH_resize(L, t, asize, ((totaluse >>> 0) - na.v) >>> 0);
 }
 
-/** C ref: ltable.c:626 — @param {CPtr} L @returns {CPtr} */
+/** C ref: ltable.c:626 — @param {CPtr<lua_State>} L @returns {CPtr<Table>} */
 export function luaH_new(L) {
     let o = luaC_newobj(L, 5, 56n);
     let t = (((((o)))));
@@ -473,14 +473,14 @@ export function luaH_new(L) {
     return t;
 }
 
-/** C ref: ltable.c:638 — @param {CPtr} L @param {CPtr} t */
+/** C ref: ltable.c:638 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t */
 export function luaH_free(L, t) {
     freehash(L, t);
     luaM_free_(L, (cptr.ldPtro(t, $Table_array)), BigInt.asUintN(64, BigInt((luaH_realasize(t)) >>> 0) * 16n));
     luaM_free_(L, (t), 56n);
 }
 
-/** C ref: ltable.c:645 — @param {CPtr} t @returns {CPtr} */
+/** C ref: ltable.c:645 — @param {CPtr<Table>} t @returns {CPtr<Node>} */
 function getfreepos(t) {
     if (!(cptr.eq(cptr.ldPtro((t), $Table_lastfree), (null)))) {
         while (cptr.cmp(cptr.ldPtro(t, $Table_lastfree), cptr.ldPtro(t, $Table_node)) > 0) {
@@ -492,7 +492,7 @@ function getfreepos(t) {
     return null;
 }
 
-/** C ref: ltable.c:665 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @param {CPtr} value */
+/** C ref: ltable.c:665 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CPtr<TValue>} key @param {CPtr<TValue>} value */
 function luaH_newkey(L, t, key, value) {
     let mp;
     let aux = cptr.alloc(16);
@@ -565,7 +565,7 @@ function luaH_newkey(L, t, key, value) {
     ;
 }
 
-/** C ref: ltable.c:745 — @param {CPtr} t @param {CLongLong} key @returns {CPtr} */
+/** C ref: ltable.c:745 — @param {CPtr<Table>} t @param {CLongLong} key @returns {CPtr<TValue>} */
 export function luaH_getint(t, key) {
     let alimit = BigInt(cptr.ldI32o(t, $Table_alimit) >>> 0);
     if (BigInt.asUintN(64, (BigInt.asUintN(64, (key))) - 1n) < alimit)
@@ -589,7 +589,7 @@ export function luaH_getint(t, key) {
     }
 }
 
-/** C ref: ltable.c:773 — @param {CPtr} t @param {CPtr} key @returns {CPtr} */
+/** C ref: ltable.c:773 — @param {CPtr<Table>} t @param {CPtr<TString>} key @returns {CPtr<TValue>} */
 export function luaH_getshortstr(t, key) {
     let n = ((cptr.add(cptr.ldPtro((t), $Table_node), (((((((((cptr.ldI32o((key), $TString_hash))) & (((((1 << (cptr.ld1uo((t), $Table_lsizenode))))) - 1) | 0) >>> 0) >>> 0)) | 0)))), 24)));
     (void 0);
@@ -605,7 +605,7 @@ export function luaH_getshortstr(t, key) {
     }
 }
 
-/** C ref: ltable.c:789 — @param {CPtr} t @param {CPtr} key @returns {CPtr} */
+/** C ref: ltable.c:789 — @param {CPtr<Table>} t @param {CPtr<TString>} key @returns {CPtr<TValue>} */
 export function luaH_getstr(t, key) {
     if (cptr.ld1uo(key, $TString_tt) == 4)
         return luaH_getshortstr(t, key);
@@ -623,7 +623,7 @@ export function luaH_getstr(t, key) {
     }
 }
 
-/** C ref: ltable.c:803 — @param {CPtr} t @param {CPtr} key @returns {CPtr} */
+/** C ref: ltable.c:803 — @param {CPtr<Table>} t @param {CPtr<TValue>} key @returns {CPtr<TValue>} */
 export function luaH_get(t, key) {
     switch ((((cptr.ld1uo((key), $TValue_tt_))) & 63)) {
         case 4:
@@ -643,7 +643,7 @@ export function luaH_get(t, key) {
     }
 }
 
-/** C ref: ltable.c:826 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @param {CPtr} slot @param {CPtr} value */
+/** C ref: ltable.c:826 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CPtr<TValue>} key @param {CPtr<TValue>} slot @param {CPtr<TValue>} value */
 export function luaH_finishset(L, t, key, slot, value) {
     if (((cptr.ld1uo(((slot)), $TValue_tt_)) == 32))
         luaH_newkey(L, t, key, value);
@@ -658,13 +658,13 @@ export function luaH_finishset(L, t, key, slot, value) {
     ;
 }
 
-/** C ref: ltable.c:839 — @param {CPtr} L @param {CPtr} t @param {CPtr} key @param {CPtr} value */
+/** C ref: ltable.c:839 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CPtr<TValue>} key @param {CPtr<TValue>} value */
 export function luaH_set(L, t, key, value) {
     let slot = luaH_get(t, key);
     luaH_finishset(L, t, key, slot, value);
 }
 
-/** C ref: ltable.c:845 — @param {CPtr} L @param {CPtr} t @param {CLongLong} key @param {CPtr} value */
+/** C ref: ltable.c:845 — @param {CPtr<lua_State>} L @param {CPtr<Table>} t @param {CLongLong} key @param {CPtr<TValue>} value */
 export function luaH_setint(L, t, key, value) {
     let p = luaH_getint(t, key);
     if (((cptr.ld1uo(((p)), $TValue_tt_)) == 32)) {
@@ -687,7 +687,7 @@ export function luaH_setint(L, t, key, value) {
     ;
 }
 
-/** C ref: ltable.c:870 — @param {CPtr} t @param {CLongLong} j @returns {*} */
+/** C ref: ltable.c:870 — @param {CPtr<Table>} t @param {CLongLong} j @returns {*} */
 function hash_search(t, j) {
     let i;
     if (j == 0n)
@@ -714,7 +714,7 @@ function hash_search(t, j) {
     return i;
 }
 
-/** C ref: ltable.c:895 — @param {CPtr} array @param {CUInt} i @param {CUInt} j @returns {CUInt} */
+/** C ref: ltable.c:895 — @param {CPtr<TValue>} array @param {CUInt} i @param {CUInt} j @returns {CUInt} */
 function binsearch(array, i, j) {
     while ((j - i) >>> 0 > 1) {
         let m = u32div(((i + j) >>> 0), 2);
@@ -726,7 +726,7 @@ function binsearch(array, i, j) {
     return i;
 }
 
-/** C ref: ltable.c:938 — @param {CPtr} t @returns {*} */
+/** C ref: ltable.c:938 — @param {CPtr<Table>} t @returns {*} */
 export function luaH_getn(t) {
     let limit = cptr.ldI32o(t, $Table_alimit);
     if (limit > 0 && (((((cptr.ld1uo(((cptr.add(cptr.ldPtro(t, $Table_array), (limit - 1) >>> 0, 16))), $TValue_tt_))) & 15)) == 0)) {

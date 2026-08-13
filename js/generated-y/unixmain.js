@@ -111,7 +111,7 @@ const __sl44 = cptr.lit("r");
 const __sl45 = cptr.lit("sys_random_seed");
 const __sl46 = cptr.lit("falling back to weak seed");
 
-/** C ref: unixmain.c:58 — @param {CInt} argc @param {CPtr} argv @returns {CInt} */
+/** C ref: unixmain.c:58 — @param {CInt} argc @param {CPtr<char *>} argv @returns {CInt} */
 export function* main(argc, argv) {
     argc = cptr.box(argc);
     argv = cptr.box(argv);
@@ -245,7 +245,7 @@ export function* main(argc, argv) {
     }
 }
 
-/** C ref: unixmain.c:330 — @param {CInt} argc @param {CPtr} argv */
+/** C ref: unixmain.c:330 — @param {CInt} argc @param {CPtr<char *>} argv */
 function* process_options(argc, argv) {
     let arg;
     let origarg;
@@ -362,7 +362,7 @@ function* process_options(argc, argv) {
     return;
 }
 
-/** C ref: unixmain.c:491 — @param {CPtr} dir @param {CInt} wr */
+/** C ref: unixmain.c:491 — @param {CPtr<char>} dir @param {CInt} wr */
 export function* chdirx(dir, wr) {
     if (dir && strcmp(dir, __sl26)) {
     } else {
@@ -446,7 +446,7 @@ function* wd_message() {
         (yield* You(__sl35));
 }
 
-/** C ref: unixmain.c:682 — @param {CPtr} name */
+/** C ref: unixmain.c:682 — @param {CPtr<char>} name */
 export function* append_slash(name) {
     let ptr;
     if (!cptr.ld1s(name))
@@ -459,7 +459,7 @@ export function* append_slash(name) {
     return;
 }
 
-/** C ref: unixmain.c:697 — @param {CPtr} optstr @returns {CInt} */
+/** C ref: unixmain.c:697 — @param {CPtr<char>} optstr @returns {CInt} */
 export function check_user_string(optstr) {
     let pw;
     let pwlen;
@@ -496,7 +496,7 @@ export function check_user_string(optstr) {
 
 let __static_get_unix_pw_pw = null; /** C ref: unixmain.c:737 — struct passwd * (function-static) */
 
-/** C ref: unixmain.c:733 @returns {CPtr} */
+/** C ref: unixmain.c:733 @returns {CPtr<struct passwd>} */
 function get_unix_pw() {
     let user;
     let uid;
@@ -525,7 +525,7 @@ function get_unix_pw() {
 
 const __static_get_login_name_buf = new Uint8Array(256); /** C ref: unixmain.c:766 — char[256] (function-static) */
 
-/** C ref: unixmain.c:764 @returns {CPtr} */
+/** C ref: unixmain.c:764 @returns {CPtr<char>} */
 export function get_login_name() {
     let pw = get_unix_pw();
     cptr.st1o(cptr.decay(__static_get_login_name_buf), 0, 0, 1);
@@ -534,7 +534,7 @@ export function get_login_name() {
     return cptr.decay(__static_get_login_name_buf);
 }
 
-/** C ref: unixmain.c:780 — @param {CPtr} buf */
+/** C ref: unixmain.c:780 — @param {CPtr<char>} buf */
 export function* port_insert_pastebuf(buf) {
     let errarg;
     let len;

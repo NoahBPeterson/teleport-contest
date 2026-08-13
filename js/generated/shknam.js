@@ -1091,7 +1091,7 @@ cptr.stI32o(shtypes, 1344 + $shclass_iprobs + 40, 0);
 cptr.stI32o(shtypes, 1344 + $shclass_iprobs + 40 + $itp_itype, 0);
 cptr.stPtro(shtypes, 1344 + $shclass_shknms, null);
 
-/** C ref: shknam.c:380 — @param {CPtr} obj @param {CInt} otyp @returns {CInt} */
+/** C ref: shknam.c:380 — @param {CPtr<struct obj>} obj @param {CInt} otyp @returns {CInt} */
 function veggy_item(obj, otyp) {
     let corpsenm;
     let oclass;
@@ -1154,7 +1154,7 @@ function mkveggy_at(sx, sy) {
     return;
 }
 
-/** C ref: shknam.c:454 — @param {CPtr} shp @param {CInt} sx @param {CInt} sy @param {CInt} mkspecl */
+/** C ref: shknam.c:454 — @param {CPtr<struct shclass>} shp @param {CInt} sx @param {CInt} sy @param {CInt} mkspecl */
 function mkshobj_at(shp, sx, sy, mkspecl) {
     let mtmp;
     let ptr;
@@ -1177,7 +1177,7 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
     }
 }
 
-/** C ref: shknam.c:487 — @param {CPtr} shk @param {CPtr} nlp */
+/** C ref: shknam.c:487 — @param {CPtr<struct monst>} shk @param {CPtr<char *>} nlp */
 function nameshk(shk, nlp) {
     let i;
     let trycnt;
@@ -1236,7 +1236,7 @@ function nameshk(shk, nlp) {
     cptr.st1o2((cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)), 31, 1, $eshk_shknam, 0);
 }
 
-/** C ref: shknam.c:557 — @param {CPtr} mtmp */
+/** C ref: shknam.c:557 — @param {CPtr<struct monst>} mtmp */
 export function neweshk(mtmp) {
     if (!cptr.ldPtro(mtmp, $monst_mextra))
         cptr.stPtro(mtmp, $monst_mextra, newmextra());
@@ -1247,7 +1247,7 @@ export function neweshk(mtmp) {
     cptr.stPtro((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_bill_p, null);
 }
 
-/** C ref: shknam.c:569 — @param {CPtr} mtmp */
+/** C ref: shknam.c:569 — @param {CPtr<struct monst>} mtmp */
 export function free_eshk(mtmp) {
     if (cptr.ldPtro(mtmp, $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk))) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)));
@@ -1256,7 +1256,7 @@ export function free_eshk(mtmp) {
     cptr.stI32o(mtmp, $monst_isshk, 0);
 }
 
-/** C ref: shknam.c:582 — @param {CPtr} sroom @param {CPtr} sx @param {CPtr} sy @returns {CInt} */
+/** C ref: shknam.c:582 — @param {CPtr<struct mkroom>} sroom @param {CPtr<coordxy>} sx @param {CPtr<coordxy>} sy @returns {CInt} */
 function good_shopdoor(sroom, sx, sy) {
     let i;
     for (i = 0; i < cptr.ld1so(sroom, $mkroom_doorct); i++) {
@@ -1291,7 +1291,7 @@ function good_shopdoor(sroom, sx, sy) {
     return -1;
 }
 
-/** C ref: shknam.c:628 — @param {CPtr} shp @param {CPtr} sroom @returns {CInt} */
+/** C ref: shknam.c:628 — @param {CPtr<struct shclass>} shp @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 function shkinit(shp, sroom) {
     let sh;
     let sx = cptr.box(0);
@@ -1343,7 +1343,7 @@ function shkinit(shp, sroom) {
     return sh;
 }
 
-/** C ref: shknam.c:695 — @param {CPtr} sroom @param {CInt} rmno @param {CInt} sh @param {CInt} sx @param {CInt} sy @returns {CInt} */
+/** C ref: shknam.c:695 — @param {CPtr<struct mkroom>} sroom @param {CInt} rmno @param {CInt} sh @param {CInt} sx @param {CInt} sy @returns {CInt} */
 function stock_room_goodpos(sroom, rmno, sh, sx, sy) {
     if (cptr.ld1so(sroom, $mkroom_irregular)) {
         if ((cptr.ldI32o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_edge) & 1) | 0 || ((cptr.ldI32o3(svl, sx, 756, sy, 36, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno || distmin(i16(sx), i16(sy), cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, 4), cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, 4, $nhcoord_y)) <= 1)
@@ -1356,7 +1356,7 @@ function stock_room_goodpos(sroom, rmno, sh, sx, sy) {
     return 1;
 }
 
-/** C ref: shknam.c:718 — @param {CInt} shp_indx @param {CPtr} sroom */
+/** C ref: shknam.c:718 — @param {CInt} shp_indx @param {CPtr<struct mkroom>} sroom */
 export function stock_room(shp_indx, sroom) {
     let sx;
     let sy;
@@ -1417,7 +1417,7 @@ export function stock_room(shp_indx, sroom) {
     cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_has_shop, 1);
 }
 
-/** C ref: shknam.c:805 — @param {CPtr} shkp @param {CPtr} obj @returns {CInt} */
+/** C ref: shknam.c:805 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} obj @returns {CInt} */
 export function saleable(shkp, obj) {
     let i;
     let shp_indx = (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoptype) - NHC.SHOPBASE) | 0;
@@ -1444,14 +1444,14 @@ export function get_shop_item(type) {
     return cptr.ldI32o2(shp, i, 8, $shclass_iprobs + $itp_itype);
 }
 
-/** C ref: shknam.c:843 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: shknam.c:843 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function Shknam(mtmp) {
     let nam = shkname(mtmp);
     cptr.st1o(nam, 0, highc(cptr.ld1so(nam, 0)));
     return nam;
 }
 
-/** C ref: shknam.c:856 — @param {CPtr} mtmp @returns {CPtr} */
+/** C ref: shknam.c:856 — @param {CPtr<struct monst>} mtmp @returns {CPtr<char>} */
 export function shkname(mtmp) {
     let nam;
     let save_isshk = (cptr.ldI32o(mtmp, $monst_isshk) & 1);
@@ -1485,13 +1485,13 @@ export function shkname(mtmp) {
     return nam;
 }
 
-/** C ref: shknam.c:900 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: shknam.c:900 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function shkname_is_pname(mtmp) {
     let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
     return schar((cptr.ld1s(shknm) == 45 || cptr.ld1s(shknm) == 43 || cptr.ld1s(shknm) == 61 ? 1 : 0));
 }
 
-/** C ref: shknam.c:908 — @param {CPtr} shkp @param {CInt} override_hallucination @returns {CInt} */
+/** C ref: shknam.c:908 — @param {CPtr<struct monst>} shkp @param {CInt} override_hallucination @returns {CInt} */
 export function is_izchak(shkp, override_hallucination) {
     let shknm;
     if (Hallucination() && !override_hallucination)

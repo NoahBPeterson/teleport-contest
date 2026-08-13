@@ -101,7 +101,7 @@ const __sl61 = cptr.lit("__sub");
 const __sl62 = cptr.lit("__index");
 const __sl63 = cptr.lit("__metatable");
 
-/** C ref: nhlsel.c:58 — @param {CPtr} L @param {CInt} index @returns {CPtr} */
+/** C ref: nhlsel.c:58 — @param {CPtr<lua_State>} L @param {CInt} index @returns {CPtr<struct selectionvar>} */
 export function* l_selection_check(L, index) {
     let sel;
     (yield* luaL_checktype(L, index, 7));
@@ -111,7 +111,7 @@ export function* l_selection_check(L, index) {
     return sel;
 }
 
-/** C ref: nhlsel.c:70 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:70 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_gc(L) {
     let sel = (yield* l_selection_check(L, 1));
     if (sel)
@@ -119,7 +119,7 @@ function* l_selection_gc(L) {
     return 0;
 }
 
-/** C ref: nhlsel.c:94 — @param {CPtr} L @returns {CPtr} */
+/** C ref: nhlsel.c:94 — @param {CPtr<lua_State>} L @returns {CPtr<struct selectionvar>} */
 function* l_selection_push_new(L) {
     let tmp = (yield* selection_new());
     let sel = (yield* lua_newuserdatauv(L, 32n, 1));
@@ -131,7 +131,7 @@ function* l_selection_push_new(L) {
     return sel;
 }
 
-/** C ref: nhlsel.c:112 — @param {CPtr} L @param {CPtr} tmp */
+/** C ref: nhlsel.c:112 — @param {CPtr<lua_State>} L @param {CPtr<struct selectionvar>} tmp */
 export function* l_selection_push_copy(L, tmp) {
     let sel = (yield* lua_newuserdatauv(L, 32n, 1));
     ((yield* lua_getfield(L, -1001000, (__sl0))));
@@ -140,13 +140,13 @@ export function* l_selection_push_copy(L, tmp) {
     cptr.stPtro(sel, $selectionvar_map, (yield* dupstr(cptr.ldPtro(tmp, $selectionvar_map))));
 }
 
-/** C ref: nhlsel.c:127 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:127 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_new(L) {
     void (yield* l_selection_push_new(L));
     return 1;
 }
 
-/** C ref: nhlsel.c:136 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:136 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_clone(L) {
     let sel = (yield* l_selection_check(L, 1));
     let tmp;
@@ -159,7 +159,7 @@ function* l_selection_clone(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:159 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:159 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_setpoint(L) {
     let sel = null;
     let x = cptr.box(-1);
@@ -197,7 +197,7 @@ function* l_selection_setpoint(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:203 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:203 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_numpoints(L) {
     let sel = (yield* l_selection_check(L, 1));
     let x;
@@ -214,7 +214,7 @@ function* l_selection_numpoints(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:224 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:224 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_getpoint(L) {
     let sel = (yield* l_selection_check(L, 1));
     let x = cptr.box(0);
@@ -241,7 +241,7 @@ function* l_selection_getpoint(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:260 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:260 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_not(L) {
     let argc = lua_gettop(L);
     let sel;
@@ -260,7 +260,7 @@ function* l_selection_not(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:281 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:281 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_and(L) {
     let x;
     let y;
@@ -279,7 +279,7 @@ function* l_selection_and(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:306 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:306 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_or(L) {
     let x;
     let y;
@@ -299,7 +299,7 @@ function* l_selection_or(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:332 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:332 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_xor(L) {
     let x;
     let y;
@@ -319,7 +319,7 @@ function* l_selection_xor(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:361 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:361 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_sub(L) {
     let x;
     let y;
@@ -341,7 +341,7 @@ function* l_selection_sub(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:389 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:389 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_filter_percent(L) {
     let argc = lua_gettop(L);
     let sel = (yield* l_selection_check(L, 1));
@@ -354,7 +354,7 @@ function* l_selection_filter_percent(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:407 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:407 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_rndcoord(L) {
     let sel = (yield* l_selection_check(L, 1));
     let removeit = Number(BigInt.asIntN(32, (yield* luaL_optinteger(L, 2, 0n))));
@@ -378,7 +378,7 @@ function* l_selection_rndcoord(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:432 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:432 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_room(L) {
     let sel;
     let argc = lua_gettop(L);
@@ -393,7 +393,7 @@ function* l_selection_room(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:454 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:454 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_getbounds(L) {
     let sel = (yield* l_selection_check(L, 1));
     let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), 8);
@@ -407,7 +407,7 @@ function* l_selection_getbounds(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:476 — @param {CPtr} L @param {CPtr} sel @param {CPtr} x1 @param {CPtr} y1 @param {CPtr} x2 @param {CPtr} y2 @returns {CInt} */
+/** C ref: nhlsel.c:476 — @param {CPtr<lua_State>} L @param {CPtr<struct selectionvar *>} sel @param {CPtr<coordxy>} x1 @param {CPtr<coordxy>} y1 @param {CPtr<coordxy>} x2 @param {CPtr<coordxy>} y2 @returns {CInt} */
 function* params_sel_2coords(L, sel, x1, y1, x2, y2) {
     let argc = lua_gettop(L);
     if (argc == 4) {
@@ -434,7 +434,7 @@ function* params_sel_2coords(L, sel, x1, y1, x2, y2) {
     return 0;
 }
 
-/** C ref: nhlsel.c:509 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:509 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_line(L) {
     let sel = cptr.box(null);
     let x1 = cptr.box(0);
@@ -452,7 +452,7 @@ function* l_selection_line(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:531 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:531 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_rect(L) {
     let sel = cptr.box(null);
     let x1 = cptr.box(0);
@@ -473,7 +473,7 @@ function* l_selection_rect(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:559 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:559 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_fillrect(L) {
     let sel = cptr.box(null);
     let y;
@@ -498,7 +498,7 @@ function* l_selection_fillrect(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:591 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:591 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_randline(L) {
     let argc = lua_gettop(L);
     let sel;
@@ -550,7 +550,7 @@ cptr.stI32o(__static_l_selection_grow_growdirs2i, 16, NHM.W_EAST);
 cptr.stI32o(__static_l_selection_grow_growdirs2i, 20, NHM.W_SOUTH);
 cptr.stI32o(__static_l_selection_grow_growdirs2i, 24, 0); /** C ref: nhlsel.c:636 — int[7] (function-static) */
 
-/** C ref: nhlsel.c:631 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:631 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_grow(L) {
     let sel;
     let dir;
@@ -565,7 +565,7 @@ function* l_selection_grow(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:657 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:657 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_filter_mapchar(L) {
     let argc = lua_gettop(L);
     let sel = (yield* l_selection_check(L, 1));
@@ -584,7 +584,7 @@ function* l_selection_filter_mapchar(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:682 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:682 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_match(L) {
     let argc = lua_gettop(L);
     let sel = null;
@@ -613,7 +613,7 @@ function* l_selection_match(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:726 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:726 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_flood(L) {
     let argc = lua_gettop(L);
     let sel = null;
@@ -639,7 +639,7 @@ function* l_selection_flood(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:762 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:762 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_circle(L) {
     let argc = lua_gettop(L);
     let sel = null;
@@ -678,7 +678,7 @@ function* l_selection_circle(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:810 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:810 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_ellipse(L) {
     let argc = lua_gettop(L);
     let sel = null;
@@ -730,7 +730,7 @@ cptr.stI32o(__static_l_selection_gradient_gradtypes2i, 0, NHM.SEL_GRADIENT_RADIA
 cptr.stI32o(__static_l_selection_gradient_gradtypes2i, 4, NHM.SEL_GRADIENT_SQUARE);
 cptr.stI32o(__static_l_selection_gradient_gradtypes2i, 8, -1); /** C ref: nhlsel.c:877 — int[3] (function-static) */
 
-/** C ref: nhlsel.c:862 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:862 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_gradient(L) {
     let argc = lua_gettop(L);
     let sel = null;
@@ -767,7 +767,7 @@ function* l_selection_gradient(L) {
     return 1;
 }
 
-/** C ref: nhlsel.c:925 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:925 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_iterate(L) {
     let argc = lua_gettop(L);
     let sel = null;
@@ -800,7 +800,7 @@ function* l_selection_iterate(L) {
     return 0;
 }
 
-/** C ref: nhlsel.c:962 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:962 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_size_description(L) {
     let argc = lua_gettop(L);
     if (argc == 1) {
@@ -888,7 +888,7 @@ cptr.stPtro(l_selection_meta, 112 + $luaL_Reg_func, l_selection_sub);
 cptr.stPtro(l_selection_meta, 128, null);
 cptr.stPtro(l_selection_meta, 128 + $luaL_Reg_func, null);
 
-/** C ref: nhlsel.c:1025 — @param {CPtr} L @returns {CInt} */
+/** C ref: nhlsel.c:1025 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* l_selection_register(L) {
     ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 400n / 16n - 1n))))), (yield* luaL_setfuncs(L, l_selection_methods, 0)));
     (yield* luaL_newmetatable(L, __sl0));

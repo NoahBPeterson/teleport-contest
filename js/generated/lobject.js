@@ -46,7 +46,7 @@ export function luaO_ceillog2(x) {
     return (l + cptr.ld1uo(cptr.decay(__static_luaO_ceillog2_log_2), x, 1)) | 0;
 }
 
-/** C ref: lobject.c:53 — @param {CPtr} L @param {CInt} op @param {CLongLong} v1 @param {CLongLong} v2 @returns {*} */
+/** C ref: lobject.c:53 — @param {CPtr<lua_State>} L @param {CInt} op @param {CLongLong} v1 @param {CLongLong} v2 @returns {*} */
 function intarith(L, op, v1, v2) {
     switch (op) {
         case 0:
@@ -79,7 +79,7 @@ function intarith(L, op, v1, v2) {
     }
 }
 
-/** C ref: lobject.c:73 — @param {CPtr} L @param {CInt} op @param {CDouble} v1 @param {CDouble} v2 @returns {*} */
+/** C ref: lobject.c:73 — @param {CPtr<lua_State>} L @param {CInt} op @param {CDouble} v1 @param {CDouble} v2 @returns {*} */
 function numarith(L, op, v1, v2) {
     switch (op) {
         case 0:
@@ -104,7 +104,7 @@ function numarith(L, op, v1, v2) {
     }
 }
 
-/** C ref: lobject.c:89 — @param {CPtr} L @param {CInt} op @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} res @returns {CInt} */
+/** C ref: lobject.c:89 — @param {CPtr<lua_State>} L @param {CInt} op @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr<TValue>} res @returns {CInt} */
 export function luaO_rawarith(L, op, p1, p2, res) {
     switch (op) {
         case 7:
@@ -169,7 +169,7 @@ export function luaO_rawarith(L, op, p1, p2, res) {
     }
 }
 
-/** C ref: lobject.c:126 — @param {CPtr} L @param {CInt} op @param {CPtr} p1 @param {CPtr} p2 @param {CPtr} res */
+/** C ref: lobject.c:126 — @param {CPtr<lua_State>} L @param {CInt} op @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr} res */
 export function luaO_arith(L, op, p1, p2, res) {
     if (!luaO_rawarith(L, op, p1, p2, ((res)))) {
         luaT_trybinTM(L, p1, p2, res, (((((op - 0) | 0) + NHC.TM_ADD) | 0)));
@@ -184,7 +184,7 @@ export function luaO_hexavalue(c) {
         return (((((c) | 32) - 97) | 0) + 10) | 0;
 }
 
-/** C ref: lobject.c:141 — @param {CPtr} s @returns {CInt} */
+/** C ref: lobject.c:141 — @param {CPtr<char *>} s @returns {CInt} */
 function isneg(s) {
     if (cptr.ld1s(cptr.ldPtr(s)) == 45) {
         cptr.postinc(() => cptr.ldPtr(s), (v) => { cptr.stPtr(s, v); });
@@ -194,7 +194,7 @@ function isneg(s) {
     return 0;
 }
 
-/** C ref: lobject.c:228 — @param {CPtr} s @param {CPtr} result @param {CInt} mode @returns {CPtr} */
+/** C ref: lobject.c:228 — @param {CPtr<char>} s @param {CPtr<lua_Number>} result @param {CInt} mode @returns {CPtr<char>} */
 function l_str2dloc(s, result, mode) {
     let endptr = cptr.box(0);
     cptr.stF64(result, (mode == 120) ? strtod((s), (endptr)) : strtod((s), (endptr)));
@@ -205,7 +205,7 @@ function l_str2dloc(s, result, mode) {
     return (cptr.ld1s(endptr.v) == 0) ? endptr.v : null;
 }
 
-/** C ref: lobject.c:251 — @param {CPtr} s @param {CPtr} result @returns {CPtr} */
+/** C ref: lobject.c:251 — @param {CPtr<char>} s @param {CPtr<lua_Number>} result @returns {CPtr<char>} */
 function l_str2d(s, result) {
     let endptr;
     let pmode = strpbrk(s, __sl0);
@@ -227,7 +227,7 @@ function l_str2d(s, result) {
     return endptr;
 }
 
-/** C ref: lobject.c:276 — @param {CPtr} s @param {CPtr} result @returns {CPtr} */
+/** C ref: lobject.c:276 — @param {CPtr<char>} s @param {CPtr<lua_Integer>} result @returns {CPtr<char>} */
 function l_str2int(s, result) {
     s = cptr.box(s);
     let a = 0n;
@@ -261,7 +261,7 @@ function l_str2int(s, result) {
     }
 }
 
-/** C ref: lobject.c:308 — @param {CPtr} s @param {CPtr} o @returns {*} */
+/** C ref: lobject.c:308 — @param {CPtr<char>} s @param {CPtr<TValue>} o @returns {*} */
 export function luaO_str2num(s, o) {
     let i = cptr.box(0n);
     let n = cptr.box(0);
@@ -285,7 +285,7 @@ export function luaO_str2num(s, o) {
     return BigInt.asUintN(64, BigInt.asIntN(64, (cptr.diff(e, s)) + 1n));
 }
 
-/** C ref: lobject.c:323 — @param {CPtr} buff @param {CLongLong} x @returns {CInt} */
+/** C ref: lobject.c:323 — @param {CPtr<char>} buff @param {CLongLong} x @returns {CInt} */
 export function luaO_utf8esc(buff, x) {
     let n = 1;
     (void 0);
@@ -303,7 +303,7 @@ export function luaO_utf8esc(buff, x) {
     return n;
 }
 
-/** C ref: lobject.c:355 — @param {CPtr} obj @param {CPtr} buff @returns {CInt} */
+/** C ref: lobject.c:355 — @param {CPtr<TValue>} obj @param {CPtr<char>} buff @returns {CInt} */
 function tostringbuff(obj, buff) {
     let len;
     (void 0);
@@ -319,7 +319,7 @@ function tostringbuff(obj, buff) {
     return len;
 }
 
-/** C ref: lobject.c:374 — @param {CPtr} L @param {CPtr} obj */
+/** C ref: lobject.c:374 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} obj */
 export function luaO_tostring(L, obj) {
     let buff = new Uint8Array(44);
     let len = tostringbuff(obj, cptr.decay(buff));
@@ -337,7 +337,7 @@ export function luaO_tostring(L, obj) {
 
 /** C ref: lobject.c:402 — typedef BuffFS (type alias only, no runtime output) */
 
-/** C ref: lobject.c:414 — @param {CPtr} buff @param {CPtr} str @param {CLongLong} lstr */
+/** C ref: lobject.c:414 — @param {CPtr<BuffFS>} buff @param {CPtr<char>} str @param {CLongLong} lstr */
 function pushstr(buff, str, lstr) {
     let L = cptr.ldPtr(buff);
     {
@@ -355,13 +355,13 @@ function pushstr(buff, str, lstr) {
         luaV_concat(L, 2);
 }
 
-/** C ref: lobject.c:428 — @param {CPtr} buff */
+/** C ref: lobject.c:428 — @param {CPtr<BuffFS>} buff */
 function clearbuff(buff) {
     pushstr(buff, cptr.add(buff, $BuffFS_space), BigInt.asUintN(64, BigInt(cptr.ldI32o(buff, $BuffFS_blen))));
     cptr.stI32o(buff, $BuffFS_blen, 0);
 }
 
-/** C ref: lobject.c:438 — @param {CPtr} buff @param {CInt} sz @returns {CPtr} */
+/** C ref: lobject.c:438 — @param {CPtr<BuffFS>} buff @param {CInt} sz @returns {CPtr<char>} */
 function getbuff(buff, sz) {
     (void 0);
     (void 0);
@@ -370,7 +370,7 @@ function getbuff(buff, sz) {
     return cptr.add(cptr.add(buff, $BuffFS_space), cptr.ldI32o(buff, $BuffFS_blen));
 }
 
-/** C ref: lobject.c:453 — @param {CPtr} buff @param {CPtr} str @param {CLongLong} slen */
+/** C ref: lobject.c:453 — @param {CPtr<BuffFS>} buff @param {CPtr<char>} str @param {CLongLong} slen */
 function addstr2buff(buff, str, slen) {
     if (slen <= 199n) {
         let bf = getbuff(buff, (Number(BigInt.asIntN(32, ((slen))))));
@@ -382,14 +382,14 @@ function addstr2buff(buff, str, slen) {
     }
 }
 
-/** C ref: lobject.c:469 — @param {CPtr} buff @param {CPtr} num */
+/** C ref: lobject.c:469 — @param {CPtr<BuffFS>} buff @param {CPtr<TValue>} num */
 function addnum2buff(buff, num) {
     let numbuff = getbuff(buff, 44);
     let len = tostringbuff(num, numbuff);
     (cptr.stI32o((buff), $BuffFS_blen, (cptr.ldI32o((buff), $BuffFS_blen) + (len)) | 0));
 }
 
-/** C ref: lobject.c:480 — @param {CPtr} L @param {CPtr} fmt @param {CPtr} argp @returns {CPtr} */
+/** C ref: lobject.c:480 — @param {CPtr<lua_State>} L @param {CPtr<char>} fmt @param {CPtr} argp @returns {CPtr<char>} */
 export function luaO_pushvfstring(L, fmt, argp) {
     let buff = cptr.alloc(216);
     let e;
@@ -482,7 +482,7 @@ export function luaO_pushvfstring(L, fmt, argp) {
     return (cptr.add((((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))))))))))), $TString_contents));
 }
 
-/** C ref: lobject.c:549 — @param {CPtr} L @param {CPtr} fmt @returns {CPtr} */
+/** C ref: lobject.c:549 — @param {CPtr<lua_State>} L @param {CPtr<char>} fmt @returns {CPtr<char>} */
 export function luaO_pushfstring(L, fmt, ...__va) {
     let msg;
     let argp;
@@ -492,7 +492,7 @@ export function luaO_pushfstring(L, fmt, ...__va) {
     return msg;
 }
 
-/** C ref: lobject.c:567 — @param {CPtr} out @param {CPtr} source @param {CLongLong} srclen */
+/** C ref: lobject.c:567 — @param {CPtr<char>} out @param {CPtr<char>} source @param {CLongLong} srclen */
 export function luaO_chunkid(out, source, srclen) {
     let bufflen = 60n;
     if (cptr.ld1s(source) == 61) {

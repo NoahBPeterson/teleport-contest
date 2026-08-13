@@ -43,7 +43,7 @@ const $CClosure_nupvalues = FLD.CClosure_nupvalues, $GCObject_marked = FLD.GCObj
 const __sl0 = cptr.lit("?");
 const __sl1 = cptr.lit("variable '%s' got a non-closable value");
 
-/** C ref: lfunc.c:27 — @param {CPtr} L @param {CInt} nupvals @returns {CPtr} */
+/** C ref: lfunc.c:27 — @param {CPtr<lua_State>} L @param {CInt} nupvals @returns {CPtr<CClosure>} */
 export function* luaF_newCclosure(L, nupvals) {
     let o = (yield* luaC_newobj(L, 38, BigInt.asUintN(64, BigInt((((32) + Math.imul(16, (nupvals))) | 0)))));
     let c = (((((o)))));
@@ -51,7 +51,7 @@ export function* luaF_newCclosure(L, nupvals) {
     return c;
 }
 
-/** C ref: lfunc.c:35 — @param {CPtr} L @param {CInt} nupvals @returns {CPtr} */
+/** C ref: lfunc.c:35 — @param {CPtr<lua_State>} L @param {CInt} nupvals @returns {CPtr<LClosure>} */
 export function* luaF_newLclosure(L, nupvals) {
     let o = (yield* luaC_newobj(L, 6, BigInt.asUintN(64, BigInt((((32) + Math.imul(8, (nupvals))) | 0)))));
     let c = (((((o)))));
@@ -62,7 +62,7 @@ export function* luaF_newLclosure(L, nupvals) {
     return c;
 }
 
-/** C ref: lfunc.c:48 — @param {CPtr} L @param {CPtr} cl */
+/** C ref: lfunc.c:48 — @param {CPtr<lua_State>} L @param {CPtr<LClosure>} cl */
 export function* luaF_initupvals(L, cl) {
     let i;
     for (i = 0; i < cptr.ld1uo(cl, $LClosure_nupvalues); i++) {
@@ -75,7 +75,7 @@ export function* luaF_initupvals(L, cl) {
     }
 }
 
-/** C ref: lfunc.c:65 — @param {CPtr} L @param {CPtr} level @param {CPtr} prev @returns {CPtr} */
+/** C ref: lfunc.c:65 — @param {CPtr<lua_State>} L @param {CPtr} level @param {CPtr<UpVal *>} prev @returns {CPtr<UpVal>} */
 function* newupval(L, level, prev) {
     let o = (yield* luaC_newobj(L, 9, 40n));
     let uv = (((((o)))));
@@ -93,7 +93,7 @@ function* newupval(L, level, prev) {
     return uv;
 }
 
-/** C ref: lfunc.c:87 — @param {CPtr} L @param {CPtr} level @returns {CPtr} */
+/** C ref: lfunc.c:87 — @param {CPtr<lua_State>} L @param {CPtr} level @returns {CPtr<UpVal>} */
 export function* luaF_findupval(L, level) {
     let pp = cptr.add(L, $lua_State_openupval);
     let p;
@@ -107,7 +107,7 @@ export function* luaF_findupval(L, level) {
     return (yield* newupval(L, level, pp));
 }
 
-/** C ref: lfunc.c:107 — @param {CPtr} L @param {CPtr} obj @param {CPtr} err @param {CInt} yy */
+/** C ref: lfunc.c:107 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} obj @param {CPtr<TValue>} err @param {CInt} yy */
 function* callclosemethod(L, obj, err, yy) {
     let top = cptr.ldPtro(L, $lua_State_top);
     let tm = luaT_gettmbyobj(L, obj, NHC.TM_CLOSE);
@@ -145,7 +145,7 @@ function* callclosemethod(L, obj, err, yy) {
         (yield* luaD_callnoyield(L, top, 0));
 }
 
-/** C ref: lfunc.c:125 — @param {CPtr} L @param {CPtr} level */
+/** C ref: lfunc.c:125 — @param {CPtr<lua_State>} L @param {CPtr} level */
 function* checkclosemth(L, level) {
     let tm = luaT_gettmbyobj(L, ((level)), NHC.TM_CLOSE);
     if ((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) {
@@ -157,7 +157,7 @@ function* checkclosemth(L, level) {
     }
 }
 
-/** C ref: lfunc.c:143 — @param {CPtr} L @param {CPtr} level @param {CInt} status @param {CInt} yy */
+/** C ref: lfunc.c:143 — @param {CPtr<lua_State>} L @param {CPtr} level @param {CInt} status @param {CInt} yy */
 function* prepcallclosemth(L, level, status, yy) {
     let uv = ((level));
     let errobj;
@@ -170,7 +170,7 @@ function* prepcallclosemth(L, level, status, yy) {
     (yield* callclosemethod(L, uv, errobj, yy));
 }
 
-/** C ref: lfunc.c:168 — @param {CPtr} L @param {CPtr} level */
+/** C ref: lfunc.c:168 — @param {CPtr<lua_State>} L @param {CPtr} level */
 export function* luaF_newtbcupval(L, level) {
     (void 0);
     if ((((cptr.ld1uo(((((level)))), $TValue_tt_)) == 1) || (((((cptr.ld1uo(((((level)))), $TValue_tt_))) & 15)) == 0)))
@@ -184,7 +184,7 @@ export function* luaF_newtbcupval(L, level) {
     cptr.stPtro(L, $lua_State_tbclist, level);
 }
 
-/** C ref: lfunc.c:182 — @param {CPtr} uv */
+/** C ref: lfunc.c:182 — @param {CPtr<UpVal>} uv */
 export function luaF_unlinkupval(uv) {
     (void 0);
     cptr.stPtr(cptr.ldPtro(uv, $UpVal_u + 8), cptr.ldPtro(uv, $UpVal_u));
@@ -192,7 +192,7 @@ export function luaF_unlinkupval(uv) {
         cptr.stPtro(cptr.ldPtro(uv, $UpVal_u), $UpVal_u + 8, cptr.ldPtro(uv, $UpVal_u + 8));
 }
 
-/** C ref: lfunc.c:193 — @param {CPtr} L @param {CPtr} level */
+/** C ref: lfunc.c:193 — @param {CPtr<lua_State>} L @param {CPtr} level */
 export function luaF_closeupval(L, level) {
     let uv;
     let upl;
@@ -217,7 +217,7 @@ export function luaF_closeupval(L, level) {
     }
 }
 
-/** C ref: lfunc.c:213 — @param {CPtr} L */
+/** C ref: lfunc.c:213 — @param {CPtr<lua_State>} L */
 function poptbclist(L) {
     let tbc = cptr.ldPtro(L, $lua_State_tbclist);
     (void 0);
@@ -227,7 +227,7 @@ function poptbclist(L) {
     cptr.stPtro(L, $lua_State_tbclist, tbc);
 }
 
-/** C ref: lfunc.c:227 — @param {CPtr} L @param {CPtr} level @param {CInt} status @param {CInt} yy @returns {*} */
+/** C ref: lfunc.c:227 — @param {CPtr<lua_State>} L @param {CPtr} level @param {CInt} status @param {CInt} yy @returns {*} */
 export function* luaF_close(L, level, status, yy) {
     let levelrel = (cptr.diff((((level))), (((cptr.ldPtro(L, $lua_State_stack))))));
     luaF_closeupval(L, level);
@@ -240,7 +240,7 @@ export function* luaF_close(L, level, status, yy) {
     return level;
 }
 
-/** C ref: lfunc.c:240 — @param {CPtr} L @returns {CPtr} */
+/** C ref: lfunc.c:240 — @param {CPtr<lua_State>} L @returns {CPtr<Proto>} */
 export function* luaF_newproto(L) {
     let o = (yield* luaC_newobj(L, 10, 128n));
     let f = (((((o)))));
@@ -267,7 +267,7 @@ export function* luaF_newproto(L) {
     return f;
 }
 
-/** C ref: lfunc.c:267 — @param {CPtr} L @param {CPtr} f */
+/** C ref: lfunc.c:267 — @param {CPtr<lua_State>} L @param {CPtr<Proto>} f */
 export function* luaF_freeproto(L, f) {
     (yield* luaM_free_(L, (cptr.ldPtro(f, $Proto_code)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(f, $Proto_sizecode)))) * 4n)));
     (yield* luaM_free_(L, (cptr.ldPtro(f, $Proto_p)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(f, $Proto_sizep)))) * 8n)));
@@ -279,7 +279,7 @@ export function* luaF_freeproto(L, f) {
     (yield* luaM_free_(L, (f), 128n));
 }
 
-/** C ref: lfunc.c:283 — @param {CPtr} f @param {CInt} local_number @param {CInt} pc @returns {CPtr} */
+/** C ref: lfunc.c:283 — @param {CPtr<Proto>} f @param {CInt} local_number @param {CInt} pc @returns {CPtr<char>} */
 export function luaF_getlocalname(f, local_number, pc) {
     let i;
     for (i = 0; i < cptr.ldI32o(f, $Proto_sizelocvars) && cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, 16, $LocVar_startpc) <= pc; i++) {

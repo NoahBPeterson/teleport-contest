@@ -443,12 +443,12 @@ cptr.stPtro(hallublasts, 744, __sl103);
 cptr.stPtro(hallublasts, 752, __sl104);
 cptr.stPtro(hallublasts, 760, __sl105);
 
-/** C ref: mthrowu.c:52 @returns {CPtr} */
+/** C ref: mthrowu.c:52 @returns {CPtr<char>} */
 export function rnd_hallublast() {
     return cptr.ldPtro(hallublasts, (rng_log_enabled() ? (rng_log_set_caller(__sl106, 54, __sl107), rn2(96)) : rn2(96)), 8);
 }
 
-/** C ref: mthrowu.c:58 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mthrowu.c:58 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function m_has_launcher_and_ammo(mtmp) {
     let mwep = (cptr.ldPtro((mtmp), $monst_mw));
     if (mwep && is_launcher(mwep)) {
@@ -460,7 +460,7 @@ export function m_has_launcher_and_ammo(mtmp) {
     return 0;
 }
 
-/** C ref: mthrowu.c:75 — @param {CInt} tlev @param {CInt} dam @param {CPtr} objp @param {CPtr} name @returns {CInt} */
+/** C ref: mthrowu.c:75 — @param {CInt} tlev @param {CInt} dam @param {CPtr<struct obj *>} objp @param {CPtr<char>} name @returns {CInt} */
 export function thitu(tlev, dam, objp, name) {
     let obj = objp ? cptr.ldPtr(objp) : null;
     let onm;
@@ -524,7 +524,7 @@ export function thitu(tlev, dam, objp, name) {
     }
 }
 
-/** C ref: mthrowu.c:162 — @param {CPtr} obj @param {CInt} ohit @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: mthrowu.c:162 — @param {CPtr<struct obj>} obj @param {CInt} ohit @param {CInt} x @param {CInt} y @returns {CInt} */
 function drop_throw(obj, ohit, x, y) {
     let broken;
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CREAM_PIE || cptr.ld1so(obj, $obj_oclass) == NHC.VENOM_CLASS || (ohit && cptr.ldI16o(obj, $obj_otyp) == NHC.EGG)) {
@@ -553,7 +553,7 @@ function drop_throw(obj, ohit, x, y) {
     return broken;
 }
 
-/** C ref: mthrowu.c:201 — @param {CPtr} mtmp @param {CPtr} otmp @param {CPtr} mwep @returns {CInt} */
+/** C ref: mthrowu.c:201 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @param {CPtr<struct obj>} mwep @returns {CInt} */
 function monmulti(mtmp, otmp, mwep) {
     let multishot = 1;
     if (cptr.ldI64o(otmp, $obj_quan) > 1n && (is_ammo(otmp) ? matching_launcher(otmp, mwep) : cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS) && !(cptr.ldI32o(mtmp, $monst_mconf) & 1)) {
@@ -581,7 +581,7 @@ function monmulti(mtmp, otmp, mwep) {
     return multishot;
 }
 
-/** C ref: mthrowu.c:262 — @param {CPtr} mtmp @param {CPtr} otmp @param {CPtr} mwep */
+/** C ref: mthrowu.c:262 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @param {CPtr<struct obj>} mwep */
 function monshoot(mtmp, otmp, mwep) {
     let mtarg = cptr.ldPtro(gm, $instance_globals_m_mtarget);
     let dm = distmin(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), i16((mtarg ? cptr.ldI16o(mtarg, $monst_mx) : cptr.ldI16o(mtmp, $monst_mux))), i16((mtarg ? cptr.ldI16o(mtarg, $monst_my) : cptr.ldI16o(mtmp, $monst_muy))));
@@ -616,7 +616,7 @@ function monshoot(mtmp, otmp, mwep) {
     cptr.st1o(gm, $instance_globals_m_m_shot + $multishot_s, 0);
 }
 
-/** C ref: mthrowu.c:321 — @param {CPtr} mtmp @param {CPtr} otmp @param {CInt} range @param {CInt} verbose @returns {CInt} */
+/** C ref: mthrowu.c:321 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct obj>} otmp @param {CInt} range @param {CInt} verbose @returns {CInt} */
 export function ohitmon(mtmp, otmp, range, verbose) {
     let damage;
     let tmp;
@@ -750,7 +750,7 @@ export function ohitmon(mtmp, otmp, range, verbose) {
     return 0;
 }
 
-/** C ref: mthrowu.c:506 — @param {CPtr} gem @param {CPtr} mon @returns {CInt} */
+/** C ref: mthrowu.c:506 — @param {CPtr<struct obj>} gem @param {CPtr<struct monst>} mon @returns {CInt} */
 function ucatchgem(gem, mon) {
     if (cptr.ldI16o(gem, $obj_otyp) <= NHC.LAST_GLASS_GEM && is_unicorn(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         let gem_xname = xname(gem);
@@ -769,7 +769,7 @@ function ucatchgem(gem, mon) {
     return 0;
 }
 
-/** C ref: mthrowu.c:533 — @param {CPtr} otmp @returns {CInt} */
+/** C ref: mthrowu.c:533 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function u_catch_thrown_obj(otmp) {
     let catch_chance = (((100 - (acurr(NHC.A_DEX))) | 0) - (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE)) ? 20 : 0)) | 0;
     if (!Blind() && !HConfusion() && !HStun() && !Fumbling() && cptr.ld1so(otmp, $obj_oclass) != NHC.VENOM_CLASS && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) && freehand() && calc_capacity(cptr.ldI32o(otmp, $obj_owt) | 0) <= NHC.SLT_ENCUMBER && !(rng_log_enabled() ? (rng_log_set_caller(__sl106, 541, __sl161), rn2(catch_chance)) : rn2(catch_chance))) {
@@ -781,7 +781,7 @@ function u_catch_thrown_obj(otmp) {
     return 0;
 }
 
-/** C ref: mthrowu.c:572 — @param {CPtr} mon @param {CInt} x @param {CInt} y @param {CInt} dx @param {CInt} dy @param {CInt} range @param {CPtr} obj */
+/** C ref: mthrowu.c:572 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y @param {CInt} dx @param {CInt} dy @param {CInt} range @param {CPtr<struct obj>} obj */
 export function m_throw(mon, x, y, dx, dy, range, obj) {
     let mtmp;
     let singleobj = cptr.box(0);
@@ -973,7 +973,7 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
 
 let __static_return_from_mtoss_do_not_annoy = 0n; /** C ref: mthrowu.c:883 — long (function-static) */
 
-/** C ref: mthrowu.c:850 — @param {CPtr} magr @param {CPtr} otmp @param {CInt} tethered_weapon */
+/** C ref: mthrowu.c:850 — @param {CPtr<struct monst>} magr @param {CPtr<struct obj>} otmp @param {CInt} tethered_weapon */
 function return_from_mtoss(magr, otmp, tethered_weapon) {
     let impaired = schar(((cptr.ldI32o(magr, $monst_mconf) & 1) | 0 || (cptr.ldI32o(magr, $monst_mstun) & 1) | 0 || (cptr.ldI32o(magr, $monst_mblinded) & 127) | 0 ? 1 : 0));
     let notcaught = 0;
@@ -1074,7 +1074,7 @@ function return_from_mtoss(magr, otmp, tethered_weapon) {
         newsym(x, y);
 }
 
-/** C ref: mthrowu.c:969 — @param {CPtr} mtmp @param {CPtr} mtarg @returns {CInt} */
+/** C ref: mthrowu.c:969 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct monst>} mtarg @returns {CInt} */
 export function thrwmm(mtmp, mtarg) {
     let otmp;
     let mwep;
@@ -1109,7 +1109,7 @@ export function thrwmm(mtmp, mtarg) {
     return NHM.M_ATTK_MISS;
 }
 
-/** C ref: mthrowu.c:1016 — @param {CPtr} mtmp @param {CPtr} mattk @param {CPtr} mtarg @returns {CInt} */
+/** C ref: mthrowu.c:1016 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @param {CPtr<struct monst>} mtarg @returns {CInt} */
 export function spitmm(mtmp, mattk, mtarg) {
     let otmp;
     if ((cptr.ldI32o(mtmp, $monst_mcan) & 1)) {
@@ -1162,14 +1162,14 @@ export function spitmm(mtmp, mattk, mtarg) {
     return NHM.M_ATTK_MISS;
 }
 
-/** C ref: mthrowu.c:1083 — @param {CInt} typ @returns {CPtr} */
+/** C ref: mthrowu.c:1083 — @param {CInt} typ @returns {CPtr<char>} */
 function breathwep_name(typ) {
     if (Hallucination())
         return rnd_hallublast();
     return cptr.ldPtro(breathwep, (Math.abs(((typ) - NHM.AD_MAGM) | 0) % 10), 8);
 }
 
-/** C ref: mthrowu.c:1093 — @param {CPtr} mtmp @param {CPtr} mattk @param {CPtr} mtarg @returns {CInt} */
+/** C ref: mthrowu.c:1093 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @param {CPtr<struct monst>} mtarg @returns {CInt} */
 export function breamm(mtmp, mattk, mtarg) {
     let typ = get_atkdam_type(cptr.ld1uo(mattk, $attack_adtyp));
     let utarget = schar((cptr.eq(mtarg, cptr.add(gy, $instance_globals_y_youmonst))));
@@ -1212,13 +1212,13 @@ export function breamm(mtmp, mattk, mtarg) {
     return NHM.M_ATTK_HIT;
 }
 
-/** C ref: mthrowu.c:1154 — @param {CPtr} mon @param {CPtr} obj */
+/** C ref: mthrowu.c:1154 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj */
 export function m_useupall(mon, obj) {
     extract_from_minvent(mon, obj, 1, 0);
     obfree(obj, null);
 }
 
-/** C ref: mthrowu.c:1162 — @param {CPtr} mon @param {CPtr} obj */
+/** C ref: mthrowu.c:1162 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj */
 export function m_useup(mon, obj) {
     if (cptr.ldI64o(obj, $obj_quan) > 1n) {
         (cptr.stI64o(obj, $obj_quan, cptr.ldI64o(obj, $obj_quan) + -1n)) - (-1n);
@@ -1228,7 +1228,7 @@ export function m_useup(mon, obj) {
     }
 }
 
-/** C ref: mthrowu.c:1174 — @param {CPtr} mtmp */
+/** C ref: mthrowu.c:1174 — @param {CPtr<struct monst>} mtmp */
 export function thrwmu(mtmp) {
     let otmp = cptr.box(0);
     let mwep;
@@ -1285,12 +1285,12 @@ export function thrwmu(mtmp) {
     nomul(0);
 }
 
-/** C ref: mthrowu.c:1268 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
+/** C ref: mthrowu.c:1268 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function spitmu(mtmp, mattk) {
     return spitmm(mtmp, mattk, cptr.add(gy, $instance_globals_y_youmonst));
 }
 
-/** C ref: mthrowu.c:1275 — @param {CPtr} mtmp @param {CPtr} mattk @returns {CInt} */
+/** C ref: mthrowu.c:1275 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct attack>} mattk @returns {CInt} */
 export function breamu(mtmp, mattk) {
     return breamm(mtmp, mattk, cptr.add(gy, $instance_globals_y_youmonst));
 }
@@ -1352,7 +1352,7 @@ export function linedup(ax, ay, bx, by, boulderhandling) {
     return 0;
 }
 
-/** C ref: mthrowu.c:1376 — @param {CPtr} mtarg @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mthrowu.c:1376 — @param {CPtr<struct monst>} mtarg @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function m_lined_up(mtarg, mtmp) {
     let utarget = schar((cptr.eq(mtarg, cptr.add(gy, $instance_globals_y_youmonst))));
     let tx = i16((utarget ? cptr.ldI16o(mtmp, $monst_mux) : cptr.ldI16o(mtarg, $monst_mx)));
@@ -1363,12 +1363,12 @@ function m_lined_up(mtarg, mtmp) {
     return linedup(tx, ty, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), utarget ? (ignore_boulders ? 1 : 2) : 0);
 }
 
-/** C ref: mthrowu.c:1398 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: mthrowu.c:1398 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function lined_up(mtmp) {
     return schar((m_lined_up(cptr.add(gy, $instance_globals_y_youmonst), mtmp) ? 1 : 0));
 }
 
-/** C ref: mthrowu.c:1405 — @param {CPtr} mtmp @param {CInt} type @returns {CPtr} */
+/** C ref: mthrowu.c:1405 — @param {CPtr<struct monst>} mtmp @param {CInt} type @returns {CPtr<struct obj>} */
 export function m_carrying(mtmp, type) {
     let otmp;
     for (otmp = (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldPtro(gi, $instance_globals_i_invent) : cptr.ldPtro(mtmp, $monst_minvent); otmp; otmp = cptr.ldPtr(otmp))
@@ -1392,7 +1392,7 @@ cptr.stPtro(__static_hit_bars_barsounds, 24, __sl215);
 cptr.stPtro(__static_hit_bars_barsounds, 32, __sl216);
 cptr.stPtro(__static_hit_bars_barsounds, 40, __sl217); /** C ref: mthrowu.c:1453 — char *[6] (function-static) */
 
-/** C ref: mthrowu.c:1417 — @param {CPtr} objp @param {CInt} objx @param {CInt} objy @param {CInt} barsx @param {CInt} barsy @param {CUInt} breakflags */
+/** C ref: mthrowu.c:1417 — @param {CPtr<struct obj *>} objp @param {CInt} objx @param {CInt} objy @param {CInt} barsx @param {CInt} barsy @param {CUInt} breakflags */
 export function hit_bars(objp, objx, objy, barsx, barsy, breakflags) {
     let otmp = cptr.ldPtr(objp);
     let obj_type = cptr.ldI16o(otmp, $obj_otyp);
@@ -1435,7 +1435,7 @@ export function hit_bars(objp, objx, objy, barsx, barsy, breakflags) {
     }
 }
 
-/** C ref: mthrowu.c:1499 — @param {CPtr} obj_p @param {CInt} x @param {CInt} y @param {CInt} barsx @param {CInt} barsy @param {CInt} always_hit @param {CInt} whodidit @returns {CInt} */
+/** C ref: mthrowu.c:1499 — @param {CPtr<struct obj *>} obj_p @param {CInt} x @param {CInt} y @param {CInt} barsx @param {CInt} barsy @param {CInt} always_hit @param {CInt} whodidit @returns {CInt} */
 export function hits_bars(obj_p, x, y, barsx, barsy, always_hit, whodidit) {
     let otmp = cptr.ldPtr(obj_p);
     let obj_type = cptr.ldI16o(otmp, $obj_otyp);

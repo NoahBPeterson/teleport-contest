@@ -947,7 +947,7 @@ cptr.stPtro(blindgas, 24, __sl8);
 cptr.stPtro(blindgas, 32, __sl9);
 cptr.stPtro(blindgas, 40, __sl10);
 
-/** C ref: trap.c:88 — @param {CPtr} victim @returns {CInt} */
+/** C ref: trap.c:88 — @param {CPtr<struct monst>} victim @returns {CInt} */
 export function burnarmor(victim) {
     let item;
     let buf = new Uint8Array(256);
@@ -1033,7 +1033,7 @@ cptr.stPtro(__static_erode_obj_bythe, 16, __sl51);
 cptr.stPtro(__static_erode_obj_bythe, 24, __sl52);
 cptr.stPtro(__static_erode_obj_bythe, 32, __sl53); /** C ref: trap.c:180 — char *[5] (function-static) */
 
-/** C ref: trap.c:171 — @param {CPtr} otmp @param {CPtr} ostr @param {CInt} type @param {CInt} ef_flags @returns {CInt} */
+/** C ref: trap.c:171 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} ostr @param {CInt} type @param {CInt} ef_flags @returns {CInt} */
 export function erode_obj(otmp, ostr, type, ef_flags) {
     let vulnerable = 0;
     let is_primary = 1;
@@ -1160,7 +1160,7 @@ export function erode_obj(otmp, ostr, type, ef_flags) {
 
 const __static_grease_protect_txt = cptr.bytes("protected by the layer of grease!"); /** C ref: trap.c:365 — char[34] (function-static) */
 
-/** C ref: trap.c:360 — @param {CPtr} otmp @param {CPtr} ostr @param {CPtr} victim @returns {CInt} */
+/** C ref: trap.c:360 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} ostr @param {CPtr<struct monst>} victim @returns {CInt} */
 export function grease_protect(otmp, ostr, victim) {
     let vismon = schar((victim && (!cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) && canseemon(victim) ? 1 : 0));
     if (ostr) {
@@ -1206,7 +1206,7 @@ function mk_trap_statue(x, y) {
     mongone(mtmp);
 }
 
-/** C ref: trap.c:418 — @param {CPtr} lev @returns {CInt} */
+/** C ref: trap.c:418 — @param {CPtr<d_level>} lev @returns {CInt} */
 function dng_bottom(lev) {
     let bottom = dunlevs_in_dungeon(lev);
     if (In_quest(lev)) {
@@ -1220,7 +1220,7 @@ function dng_bottom(lev) {
     return bottom;
 }
 
-/** C ref: trap.c:442 — @param {CPtr} dst */
+/** C ref: trap.c:442 — @param {CPtr<d_level>} dst */
 function hole_destination(dst) {
     let bottom = dng_bottom(cptr.add(u, $you_uz));
     cptr.stI16(dst, cptr.ldI16o(u, $you_uz));
@@ -1234,7 +1234,7 @@ function hole_destination(dst) {
 
 let __static_maketrap_zero_vl = cptr.alloc(4); /** C ref: trap.c:458 — union vlaunchinfo (function-static) */
 
-/** C ref: trap.c:456 — @param {CInt} x @param {CInt} y @param {CInt} typ @returns {CPtr} */
+/** C ref: trap.c:456 — @param {CInt} x @param {CInt} y @param {CInt} typ @returns {CPtr<struct trap>} */
 export function maketrap(x, y, typ) {
     let oldplace;
     let was_ice;
@@ -1329,7 +1329,7 @@ export function maketrap(x, y, typ) {
     return ttmp;
 }
 
-/** C ref: trap.c:593 — @param {CPtr} dlev @returns {CPtr} */
+/** C ref: trap.c:593 — @param {CPtr<d_level>} dlev @returns {CPtr<d_level>} */
 export function clamp_hole_destination(dlev) {
     let bottom = dng_bottom(dlev);
     cptr.stI16o(dlev, $d_level_dlevel, i16(min(cptr.ldI16o(dlev, $d_level_dlevel), bottom)));
@@ -1406,7 +1406,7 @@ export function fall_through(td, ftflags) {
 
 const __static_animate_statue_historic_statue_is_gone = cptr.bytes("that the historic statue is now gone"); /** C ref: trap.c:734 — char[37] (function-static) */
 
-/** C ref: trap.c:726 — @param {CPtr} statue @param {CInt} x @param {CInt} y @param {CInt} cause @param {CPtr} fail_reason @returns {CPtr} */
+/** C ref: trap.c:726 — @param {CPtr<struct obj>} statue @param {CInt} x @param {CInt} y @param {CInt} cause @param {CPtr<int>} fail_reason @returns {CPtr<struct monst>} */
 export function animate_statue(statue, x, y, cause, fail_reason) {
     let mnum = cptr.box(cptr.ldI32o(statue, $obj_corpsenm));
     let mptr = cptr.add(mons, mnum.v, 96);
@@ -1514,7 +1514,7 @@ export function animate_statue(statue, x, y, cause, fail_reason) {
     return mon;
 }
 
-/** C ref: trap.c:908 — @param {CPtr} trap @param {CInt} x @param {CInt} y @param {CInt} shatter @returns {CPtr} */
+/** C ref: trap.c:908 — @param {CPtr<struct trap>} trap @param {CInt} x @param {CInt} y @param {CInt} shatter @returns {CPtr<struct monst>} */
 export function activate_statue_trap(trap, x, y, shatter) {
     let mtmp = null;
     let otmp = sobj_at(NHC.STATUE, x, y);
@@ -1530,7 +1530,7 @@ export function activate_statue_trap(trap, x, y, shatter) {
     return mtmp;
 }
 
-/** C ref: trap.c:939 — @param {CUInt} steed_mid @param {CPtr} objchn @param {CPtr} saddle @returns {CInt} */
+/** C ref: trap.c:939 — @param {CUInt} steed_mid @param {CPtr<struct obj>} objchn @param {CPtr<struct obj>} saddle @returns {CInt} */
 function keep_saddle_with_steedcorpse(steed_mid, objchn, saddle) {
     if (!saddle)
         return 0;
@@ -1555,7 +1555,7 @@ function keep_saddle_with_steedcorpse(steed_mid, objchn, saddle) {
     return 0;
 }
 
-/** C ref: trap.c:972 — @param {CPtr} mtmp @param {CInt} domsg @param {CPtr} trap @returns {CInt} */
+/** C ref: trap.c:972 — @param {CPtr<struct monst>} mtmp @param {CInt} domsg @param {CPtr<struct trap>} trap @returns {CInt} */
 function mu_maybe_destroy_web(mtmp, domsg, trap) {
     let isyou = schar((cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))));
     let mptr = cptr.ldPtro(mtmp, $monst_data);
@@ -1586,7 +1586,7 @@ function mu_maybe_destroy_web(mtmp, domsg, trap) {
     return 0;
 }
 
-/** C ref: trap.c:1018 — @param {CInt} otyp @param {CPtr} trap @returns {CPtr} */
+/** C ref: trap.c:1018 — @param {CInt} otyp @param {CPtr<struct trap>} trap @returns {CPtr<struct obj>} */
 function t_missile(otyp, trap) {
     let otmp = mksobj(otyp, 1, 0);
     cptr.stI64o(otmp, $obj_quan, 1n);
@@ -1641,20 +1641,20 @@ function floor_trigger(ttyp) {
     }
 }
 
-/** C ref: trap.c:1086 — @param {CPtr} mtmp @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1086 — @param {CPtr<struct monst>} mtmp @param {CUInt} trflags @returns {CInt} */
 function check_in_air(mtmp, trflags) {
     let is_you = schar(cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)));
     let plunged = schar((((trflags & 48) >>> 0) != 0));
     return schar((((trflags & NHM.HURTLING) >>> 0) != 0 || (is_you ? Levitation() : is_floater(cptr.ldPtro(mtmp, $monst_data))) || ((is_you ? Flying() : ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 1n) != 0n)) && !plunged) ? 1 : 0));
 }
 
-/** C ref: trap.c:1098 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: trap.c:1098 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function wearing_iron_shoes(mtmp) {
     let armf = which_armor(mtmp, 32n);
     return schar((armf && ((cptr.ldI32o2(objects, cptr.ldI16o(armf, $obj_otyp), 120, $objclass_oc_material) & 31) | 0) == NHC.IRON ? 1 : 0));
 }
 
-/** C ref: trap.c:1106 — @param {CPtr} mtmp @param {CPtr} ttmp @returns {CInt} */
+/** C ref: trap.c:1106 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} ttmp @returns {CInt} */
 export function m_harmless_trap(mtmp, ttmp) {
     let mdat = cptr.ldPtro(mtmp, $monst_data);
     if (!Sokoban() && floor_trigger((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) && check_in_air(mtmp, 0))
@@ -1730,7 +1730,7 @@ export function m_harmless_trap(mtmp, ttmp) {
     return 0;
 }
 
-/** C ref: trap.c:1190 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1190 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_arrow_trap(mtmp, trap, trflags) {
     let otmp = cptr.box(0);
     let dam;
@@ -1781,7 +1781,7 @@ function trapeffect_arrow_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:1251 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1251 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_dart_trap(mtmp, trap, trflags) {
     let otmp = cptr.box(0);
     let dam;
@@ -1840,7 +1840,7 @@ function trapeffect_dart_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:1324 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1324 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_rocktrap(mtmp, trap, trflags) {
     let otmp;
     let harmless = 0;
@@ -1901,7 +1901,7 @@ function trapeffect_rocktrap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:1403 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1403 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_sqky_board(mtmp, trap, trflags) {
     let tsnds = cptr.alloc(12 * 4); cptr.stI32o(tsnds, 0, NHC.se_squeak_C); cptr.stI32o(tsnds, 4, NHC.se_squeak_D_flat); cptr.stI32o(tsnds, 8, NHC.se_squeak_D); cptr.stI32o(tsnds, 12, NHC.se_squeak_E_flat); cptr.stI32o(tsnds, 16, NHC.se_squeak_E); cptr.stI32o(tsnds, 20, NHC.se_squeak_F); cptr.stI32o(tsnds, 24, NHC.se_squeak_F_sharp); cptr.stI32o(tsnds, 28, NHC.se_squeak_G); cptr.stI32o(tsnds, 32, NHC.se_squeak_G_sharp); cptr.stI32o(tsnds, 36, NHC.se_squeak_A); cptr.stI32o(tsnds, 40, NHC.se_squeak_B_flat); cptr.stI32o(tsnds, 44, NHC.se_squeak_B);
     let forcetrap = schar((((trflags & NHM.FORCETRAP) >>> 0) != 0 || ((trflags & NHM.FAILEDUNTRAP) >>> 0) != 0 || (Flying() && ((trflags & NHM.VIASITTING) >>> 0) != 0) ? 1 : 0));
@@ -1948,7 +1948,7 @@ function trapeffect_sqky_board(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:1479 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1479 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_bear_trap(mtmp, trap, trflags) {
     let is_you = schar(cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst)));
     let forcetrap = schar((((trflags & NHM.FORCETRAP) >>> 0) != 0 || ((trflags & NHM.FAILEDUNTRAP) >>> 0) != 0 || (is_you && ((trflags & NHM.VIASITTING) >>> 0) != 0) ? 1 : 0));
@@ -2010,7 +2010,7 @@ function trapeffect_bear_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:1563 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1563 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_slp_gas_trap(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         seetrap(trap);
@@ -2035,7 +2035,7 @@ function trapeffect_slp_gas_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:1595 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1595 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_rust_trap(mtmp, trap, trflags) {
     let otmp, nextobj, dam, in_sight, trapkilled, mptr, target;
     let __pc = 0;
@@ -2191,7 +2191,7 @@ function trapeffect_rust_trap(mtmp, trap, trflags) {
     }
 }
 
-/** C ref: trap.c:1730 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1730 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_fire_trap(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         seetrap(trap);
@@ -2271,7 +2271,7 @@ function trapeffect_fire_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:1825 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:1825 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_pit(mtmp, trap, trflags) {
     let ttype = (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0;
     let relevant_spikes = schar((ttype == NHC.SPIKED_PIT));
@@ -2394,7 +2394,7 @@ function trapeffect_pit(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2013 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2013 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_hole(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         if (!Can_fall_thru(cptr.add(u, $you_uz))) {
@@ -2437,7 +2437,7 @@ function trapeffect_hole(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2070 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2070 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_telep_trap(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         seetrap(trap);
@@ -2450,7 +2450,7 @@ function trapeffect_telep_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2088 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2088 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_level_telep(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         seetrap(trap);
@@ -2463,7 +2463,7 @@ function trapeffect_level_telep(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2106 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2106 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_web(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         let webmsgok = schar((((trflags & NHM.NOWEBMSG) >>> 0) == 0));
@@ -2592,7 +2592,7 @@ function trapeffect_web(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2279 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2279 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_statue_trap(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         void activate_statue_trap(trap, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0);
@@ -2601,7 +2601,7 @@ function trapeffect_statue_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2293 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2293 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_magic_trap(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         seetrap(trap);
@@ -2626,7 +2626,7 @@ function trapeffect_magic_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2323 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2323 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_anti_magic(mtmp, trap, trflags) {
     if (wearing_iron_shoes(mtmp)) {
         let shoes = which_armor(mtmp, 32n);
@@ -2712,7 +2712,7 @@ function trapeffect_anti_magic(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2453 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2453 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_poly_trap(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         let viasitting = schar((((trflags & NHM.VIASITTING) >>> 0) != 0));
@@ -2773,7 +2773,7 @@ function trapeffect_poly_trap(mtmp, trap, trflags) {
 
 let __static_trapeffect_landmine_recursive_mine = 0; /** C ref: trap.c:2568 — signed char (function-static) */
 
-/** C ref: trap.c:2528 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2528 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_landmine(mtmp, trap, trflags) {
     let damage = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 2533, __sl242), rnd(16)) : rnd(16));
     if (wearing_iron_shoes(mtmp))
@@ -2862,7 +2862,7 @@ function trapeffect_landmine(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2661 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2661 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_rolling_boulder_trap(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         let style = NHM.ROLL | ((cptr.ldI32o(trap, $trap_tseen) & 1) | 0 ? NHM.LAUNCH_KNOWN : 0);
@@ -2894,7 +2894,7 @@ function trapeffect_rolling_boulder_trap(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2710 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2710 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_magic_portal(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         feeltrap(trap);
@@ -2905,7 +2905,7 @@ function trapeffect_magic_portal(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2725 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2725 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_vibrating_square(mtmp, trap, trflags) {
     if (cptr.eq(mtmp, cptr.add(gy, $instance_globals_y_youmonst))) {
         feeltrap(trap);
@@ -2935,7 +2935,7 @@ function trapeffect_vibrating_square(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2783 — @param {CPtr} mon @param {CUInt} ttype @returns {CInt} */
+/** C ref: trap.c:2783 — @param {CPtr<struct monst>} mon @param {CUInt} ttype @returns {CInt} */
 export function immune_to_trap(mon, ttype) {
     let pm;
     let obj;
@@ -3047,7 +3047,7 @@ export function immune_to_trap(mon, ttype) {
     return NHC.TRAP_NOT_IMMUNE;
 }
 
-/** C ref: trap.c:2937 — @param {CPtr} mtmp @param {CPtr} trap @param {CUInt} trflags @returns {CInt} */
+/** C ref: trap.c:2937 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} trap @param {CUInt} trflags @returns {CInt} */
 function trapeffect_selector(mtmp, trap, trflags) {
     switch ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) {
         case NHC.ARROW_TRAP:
@@ -3100,7 +3100,7 @@ function trapeffect_selector(mtmp, trap, trflags) {
     return NHC.Trap_Effect_Finished;
 }
 
-/** C ref: trap.c:2996 — @param {CPtr} trap @param {CUInt} trflags */
+/** C ref: trap.c:2996 — @param {CPtr<struct trap>} trap @param {CUInt} trflags */
 export function dotrap(trap, trflags) {
     let ttype = (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0;
     let already_seen = schar((cptr.ldI32o(trap, $trap_tseen) & 1));
@@ -3149,7 +3149,7 @@ cptr.stPtro(__static_trapnote_tnnames, 80, __sl293);
 cptr.stPtro(__static_trapnote_tnnames, 88, __sl294); /** C ref: trap.c:3065 — char *[12] (function-static) */
 const __static_trapnote_tnbuf = new Uint8Array(12); /** C ref: trap.c:3070 — char[12] (function-static) */
 
-/** C ref: trap.c:3063 — @param {CPtr} trap @param {CInt} noprefix @returns {CPtr} */
+/** C ref: trap.c:3063 — @param {CPtr<struct trap>} trap @param {CInt} noprefix @returns {CPtr<char>} */
 function trapnote(trap, noprefix) {
     let tn;
     cptr.st1o(cptr.decay(__static_trapnote_tnbuf), 0, 0, 1);
@@ -3159,7 +3159,7 @@ function trapnote(trap, noprefix) {
     return cptr.strcat(cptr.decay(__static_trapnote_tnbuf), tn);
 }
 
-/** C ref: trap.c:3083 — @param {CPtr} ttmp @returns {CInt} */
+/** C ref: trap.c:3083 — @param {CPtr<struct trap>} ttmp @returns {CInt} */
 function choose_trapnote(ttmp) {
     let tavail = cptr.alloc(12 * 4);
     let tpick = cptr.alloc(12 * 4);
@@ -3177,7 +3177,7 @@ function choose_trapnote(ttmp) {
     return ((tcnt > 0) ? cptr.ldI32o(tpick, (rng_log_enabled() ? (rng_log_set_caller(__sl11, 3098, __sl295), rn2(tcnt)) : rn2(tcnt)), 4) : (rng_log_enabled() ? (rng_log_set_caller(__sl11, 3098, __sl295), rn2(12)) : rn2(12)));
 }
 
-/** C ref: trap.c:3102 — @param {CPtr} trap @param {CPtr} otmp @returns {CInt} */
+/** C ref: trap.c:3102 — @param {CPtr<struct trap>} trap @param {CPtr<struct obj>} otmp @returns {CInt} */
 function steedintrap(trap, otmp) {
     let steed = cptr.ldPtro(u, $you_usteed);
     let tt;
@@ -3238,7 +3238,7 @@ function steedintrap(trap, otmp) {
     return steedhit ? 1 : 0;
 }
 
-/** C ref: trap.c:3172 — @param {CPtr} trap */
+/** C ref: trap.c:3172 — @param {CPtr<struct trap>} trap */
 export function blow_up_landmine(trap) {
     let x = cptr.ldI16o(trap, $trap_tx);
     let y = cptr.ldI16o(trap, $trap_ty);
@@ -3280,7 +3280,7 @@ export function blow_up_landmine(trap) {
     spot_checks(x, y, old_typ);
 }
 
-/** C ref: trap.c:3222 — @param {CPtr} obj @param {CInt} x @param {CInt} y */
+/** C ref: trap.c:3222 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y */
 function launch_drop_spot(obj, x, y) {
     if (!obj) {
         cptr.stPtro(gl, $instance_globals_l_launchplace, null);
@@ -3577,7 +3577,7 @@ export function launch_obj(otyp, x1, y1, x2, y2, style) {
     }
 }
 
-/** C ref: trap.c:3578 — @param {CPtr} trap */
+/** C ref: trap.c:3578 — @param {CPtr<struct trap>} trap */
 export function seetrap(trap) {
     if (!(cptr.ldI32o(trap, $trap_tseen) & 1)) {
         cptr.stI32o(trap, $trap_tseen, 1);
@@ -3585,14 +3585,14 @@ export function seetrap(trap) {
     }
 }
 
-/** C ref: trap.c:3588 — @param {CPtr} trap */
+/** C ref: trap.c:3588 — @param {CPtr<struct trap>} trap */
 export function feeltrap(trap) {
     cptr.stI32o(trap, $trap_tseen, 1);
     map_trap(trap, 1);
     newsym(cptr.ldI16o(trap, $trap_tx), cptr.ldI16o(trap, $trap_ty));
 }
 
-/** C ref: trap.c:3599 — @param {CPtr} ttmp @param {CPtr} cc @returns {CInt} */
+/** C ref: trap.c:3599 — @param {CPtr<struct trap>} ttmp @param {CPtr<coord>} cc @returns {CInt} */
 function find_random_launch_coord(ttmp, cc) {
     let tmp;
     let success = 0;
@@ -3646,7 +3646,7 @@ function find_random_launch_coord(ttmp, cc) {
     return success;
 }
 
-/** C ref: trap.c:3659 — @param {CPtr} ttmp @param {CInt} x @param {CInt} y @param {CInt} otyp @param {CLongLong} ocount @returns {CInt} */
+/** C ref: trap.c:3659 — @param {CPtr<struct trap>} ttmp @param {CInt} x @param {CInt} y @param {CInt} otyp @param {CLongLong} ocount @returns {CInt} */
 function mkroll_launch(ttmp, x, y, otyp, ocount) {
     let otmp;
     let cc = cptr.alloc(4); cptr.stI16(cc, 0);
@@ -3673,7 +3673,7 @@ function mkroll_launch(ttmp, x, y, otyp, ocount) {
     return 1;
 }
 
-/** C ref: trap.c:3695 — @param {CPtr} cc @param {CInt} distance @param {CInt} dx @param {CInt} dy @returns {CInt} */
+/** C ref: trap.c:3695 — @param {CPtr<coord>} cc @param {CInt} distance @param {CInt} dx @param {CInt} dy @returns {CInt} */
 function isclearpath(cc, distance, dx, dy) {
     let t;
     let typ;
@@ -3697,12 +3697,12 @@ function isclearpath(cc, distance, dx, dy) {
     return 1;
 }
 
-/** C ref: trap.c:3726 — @param {CPtr} mtmp @returns {CInt} */
+/** C ref: trap.c:3726 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function m_easy_escape_pit(mtmp) {
     return schar((cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_PIT_FIEND, 96)) || cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msize) >= NHM.MZ_HUGE ? 1 : 0));
 }
 
-/** C ref: trap.c:3733 — @param {CPtr} mtmp @param {CUInt} mintrapflags @returns {CInt} */
+/** C ref: trap.c:3733 — @param {CPtr<struct monst>} mtmp @param {CUInt} mintrapflags @returns {CInt} */
 export function mintrap(mtmp, mintrapflags) {
     let trap = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
     let mptr = cptr.ldPtro(mtmp, $monst_data);
@@ -3781,7 +3781,7 @@ export function mintrap(mtmp, mintrapflags) {
     return trap_result;
 }
 
-/** C ref: trap.c:3844 — @param {CPtr} str */
+/** C ref: trap.c:3844 — @param {CPtr<char>} str */
 export function instapetrify(str) {
     if (Stone_resistance())
         return;
@@ -3794,7 +3794,7 @@ export function instapetrify(str) {
     done(NHC.STONING);
 }
 
-/** C ref: trap.c:3858 — @param {CPtr} mon @param {CInt} byplayer */
+/** C ref: trap.c:3858 — @param {CPtr<struct monst>} mon @param {CInt} byplayer */
 export function minstapetrify(mon, byplayer) {
     if (Resists_Elem(mon, NHC.STONE_RES))
         return;
@@ -3814,7 +3814,7 @@ export function minstapetrify(mon, byplayer) {
         monstone(mon);
 }
 
-/** C ref: trap.c:3883 — @param {CPtr} arg */
+/** C ref: trap.c:3883 — @param {CPtr<char>} arg */
 export function selftouch(arg) {
     let kbuf = new Uint8Array(256);
     let corpse_pmname;
@@ -3836,7 +3836,7 @@ export function selftouch(arg) {
     }
 }
 
-/** C ref: trap.c:3913 — @param {CPtr} mon @param {CPtr} arg @param {CInt} byplayer */
+/** C ref: trap.c:3913 — @param {CPtr<struct monst>} mon @param {CPtr<char>} arg @param {CInt} byplayer */
 export function mselftouch(mon, arg, byplayer) {
     let mwep = (cptr.ldPtro((mon), $monst_mw));
     if (mwep && cptr.ldI16o(mwep, $obj_otyp) == NHC.CORPSE && touch_petrifies(cptr.add(mons, cptr.ldI32o(mwep, $obj_corpsenm), 96)) && !Resists_Elem(mon, NHC.STONE_RES)) {
@@ -4048,7 +4048,7 @@ export function climb_pit() {
     }
 }
 
-/** C ref: trap.c:4233 — @param {CPtr} box */
+/** C ref: trap.c:4233 — @param {CPtr<struct obj>} box */
 function dofiretrap(box) {
     let see_it = schar((!Blind()));
     let orig_dmg;
@@ -4231,7 +4231,7 @@ function domagictrap() {
     }
 }
 
-/** C ref: trap.c:4455 — @param {CPtr} obj @param {CInt} force @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: trap.c:4455 — @param {CPtr<struct obj>} obj @param {CInt} force @param {CInt} x @param {CInt} y @returns {CInt} */
 export function fire_damage(obj, force, x, y) {
     let chance;
     let otmp;
@@ -4302,7 +4302,7 @@ export function fire_damage(obj, force, x, y) {
     return 0;
 }
 
-/** C ref: trap.c:4550 — @param {CPtr} chain @param {CInt} force @param {CInt} here @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: trap.c:4550 — @param {CPtr<struct obj>} chain @param {CInt} force @param {CInt} here @param {CInt} x @param {CInt} y @returns {CInt} */
 export function fire_damage_chain(chain, force, here, x, y) {
     let obj;
     let nobj;
@@ -4318,7 +4318,7 @@ export function fire_damage_chain(chain, force, here, x, y) {
     return num;
 }
 
-/** C ref: trap.c:4576 — @param {CPtr} obj @param {CInt} x @param {CInt} y @returns {CInt} */
+/** C ref: trap.c:4576 — @param {CPtr<struct obj>} obj @param {CInt} x @param {CInt} y @returns {CInt} */
 export function lava_damage(obj, x, y) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let ocls = cptr.ld1so(obj, $obj_oclass);
@@ -4341,7 +4341,7 @@ export function lava_damage(obj, x, y) {
     return fire_damage(obj, 1, x, y);
 }
 
-/** C ref: trap.c:4618 — @param {CPtr} obj */
+/** C ref: trap.c:4618 — @param {CPtr<struct obj>} obj */
 export function acid_damage(obj) {
     let victim;
     let vismon;
@@ -4369,7 +4369,7 @@ export function acid_damage(obj) {
         erode_obj(obj, null, NHM.ERODE_CORRODE, 5);
 }
 
-/** C ref: trap.c:4657 — @param {CPtr} obj @param {CInt} in_invent @param {CInt} described */
+/** C ref: trap.c:4657 — @param {CPtr<struct obj>} obj @param {CInt} in_invent @param {CInt} described */
 function pot_acid_damage(obj, in_invent, described) {
     let bufp;
     let one;
@@ -4398,7 +4398,7 @@ function pot_acid_damage(obj, in_invent, described) {
         update_inventory();
 }
 
-/** C ref: trap.c:4712 — @param {CPtr} obj @param {CPtr} ostr @param {CInt} force @returns {CInt} */
+/** C ref: trap.c:4712 — @param {CPtr<struct obj>} obj @param {CPtr<char>} ostr @param {CInt} force @returns {CInt} */
 export function water_damage(obj, ostr, force) {
     let in_invent = schar((obj && (cptr.ld1so((obj), $obj_where) == NHM.OBJ_INVENT) ? 1 : 0));
     let described = 0;
@@ -4506,7 +4506,7 @@ export function water_damage(obj, ostr, force) {
     return NHM.ER_NOTHING;
 }
 
-/** C ref: trap.c:4855 — @param {CPtr} obj @param {CInt} here */
+/** C ref: trap.c:4855 — @param {CPtr<struct obj>} obj @param {CInt} here */
 export function water_damage_chain(obj, here) {
     let otmp;
     let x = cptr.box(0);
@@ -4528,7 +4528,7 @@ export function water_damage_chain(obj, here) {
     cptr.memcpy(cptr.add(gb, $instance_globals_b_bhitpos), save_bhitpos, 4);
 }
 
-/** C ref: trap.c:4897 — @param {CPtr} lostsome @returns {CInt} */
+/** C ref: trap.c:4897 — @param {CPtr<boolean>} lostsome @returns {CInt} */
 function emergency_disrobe(lostsome) {
     let invc = inv_cnt(1);
     while (near_capacity() > (Punished() ? NHC.UNENCUMBERED : NHC.SLT_ENCUMBER)) {
@@ -4557,7 +4557,7 @@ function emergency_disrobe(lostsome) {
     return 1;
 }
 
-/** C ref: trap.c:4947 — @param {CPtr} x @param {CPtr} y @param {CPtr} mtmp @returns {CInt} */
+/** C ref: trap.c:4947 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function rnd_nextto_goodpos(x, y, mtmp) {
     let i;
     let j;
@@ -4819,7 +4819,7 @@ export function could_untrap(verbosely, check_floor) {
     return 1;
 }
 
-/** C ref: trap.c:5289 — @param {CPtr} ttmp @returns {CInt} */
+/** C ref: trap.c:5289 — @param {CPtr<struct trap>} ttmp @returns {CInt} */
 function untrap_prob(ttmp) {
     let chance = 3;
     if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.WEB) {
@@ -4855,7 +4855,7 @@ function untrap_prob(ttmp) {
     return (rng_log_enabled() ? (rng_log_set_caller(__sl11, 5336, __sl495), rn2(chance)) : rn2(chance));
 }
 
-/** C ref: trap.c:5341 — @param {CInt} otyp @param {CInt} cnt @param {CPtr} ttmp @param {CInt} bury_it */
+/** C ref: trap.c:5341 — @param {CInt} otyp @param {CInt} cnt @param {CPtr<struct trap>} ttmp @param {CInt} bury_it */
 export function cnv_trap_obj(otyp, cnt, ttmp, bury_it) {
     let otmp = mksobj(otyp, 1, 0);
     let mtmp;
@@ -4895,7 +4895,7 @@ export function into_vs_onto(traptype) {
     return 0;
 }
 
-/** C ref: trap.c:5393 — @param {CPtr} ttmp */
+/** C ref: trap.c:5393 — @param {CPtr<struct trap>} ttmp */
 function move_into_trap(ttmp) {
     let bc = cptr.box(0);
     let x = cptr.ldI16o(ttmp, $trap_tx);
@@ -4927,7 +4927,7 @@ function move_into_trap(ttmp) {
     }
 }
 
-/** C ref: trap.c:5441 — @param {CPtr} ttmp @param {CInt} force_failure @returns {CInt} */
+/** C ref: trap.c:5441 — @param {CPtr<struct trap>} ttmp @param {CInt} force_failure @returns {CInt} */
 function try_disarm(ttmp, force_failure) {
     let mtmp = (cptr.ldPtro3(svl, cptr.ldI16o(ttmp, $trap_tx), 168, cptr.ldI16o(ttmp, $trap_ty), 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
     let ttype = (cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0;
@@ -4989,7 +4989,7 @@ function try_disarm(ttmp, force_failure) {
     return 2;
 }
 
-/** C ref: trap.c:5530 — @param {CPtr} ttmp @param {CPtr} mtmp */
+/** C ref: trap.c:5530 — @param {CPtr<struct trap>} ttmp @param {CPtr<struct monst>} mtmp */
 function reward_untrap(ttmp, mtmp) {
     if (!(cptr.ldI32o(ttmp, $trap_madeby_u) & 1)) {
         if ((rng_log_enabled() ? (rng_log_set_caller(__sl11, 5533, __sl511), rnl(10)) : rnl(10)) < 8 && !(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && !helpless(mtmp) && !(cptr.ldI32o(mtmp, $monst_mfrozen) & 127) && !((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 65536n) != 0n) && !((cptr.ldU16o((cptr.ldPtro(mtmp, $monst_data)), $permonst_geno) & NHM.G_UNIQ) != 0) && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_HUMAN) {
@@ -5004,7 +5004,7 @@ function reward_untrap(ttmp, mtmp) {
     }
 }
 
-/** C ref: trap.c:5553 — @param {CPtr} ttmp @returns {CInt} */
+/** C ref: trap.c:5553 — @param {CPtr<struct trap>} ttmp @returns {CInt} */
 function disarm_holdingtrap(ttmp) {
     let mtmp;
     let which = cptr.ldPtro2(c_common_strings, (cptr.ldI32o(ttmp, $trap_madeby_u) & 1), 8, $c_common_strings_c_the_your);
@@ -5032,7 +5032,7 @@ function disarm_holdingtrap(ttmp) {
     return 1;
 }
 
-/** C ref: trap.c:5594 — @param {CPtr} ttmp @returns {CInt} */
+/** C ref: trap.c:5594 — @param {CPtr<struct trap>} ttmp @returns {CInt} */
 function disarm_landmine(ttmp) {
     let fails = try_disarm(ttmp, 0);
     if (fails < 2)
@@ -5042,7 +5042,7 @@ function disarm_landmine(ttmp) {
     return 1;
 }
 
-/** C ref: trap.c:5607 — @param {CPtr} obj @returns {CInt} */
+/** C ref: trap.c:5607 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function unsqueak_ok(obj) {
     if (!obj)
         return NHC.GETOBJ_EXCLUDE;
@@ -5055,7 +5055,7 @@ function unsqueak_ok(obj) {
     return NHC.GETOBJ_EXCLUDE;
 }
 
-/** C ref: trap.c:5630 — @param {CPtr} ttmp @returns {CInt} */
+/** C ref: trap.c:5630 — @param {CPtr<struct trap>} ttmp @returns {CInt} */
 function disarm_squeaky_board(ttmp) {
     let obj;
     let bad_tool;
@@ -5081,7 +5081,7 @@ function disarm_squeaky_board(ttmp) {
     return 1;
 }
 
-/** C ref: trap.c:5664 — @param {CPtr} ttmp @param {CInt} otyp @returns {CInt} */
+/** C ref: trap.c:5664 — @param {CPtr<struct trap>} ttmp @param {CInt} otyp @returns {CInt} */
 function disarm_shooting_trap(ttmp, otyp) {
     let fails = try_disarm(ttmp, 0);
     if (fails < 2)
@@ -5091,7 +5091,7 @@ function disarm_shooting_trap(ttmp, otyp) {
     return 1;
 }
 
-/** C ref: trap.c:5677 — @param {CPtr} mtmp @param {CPtr} ttmp @param {CInt} xtra_wt @param {CInt} stuff @returns {CInt} */
+/** C ref: trap.c:5677 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} ttmp @param {CInt} xtra_wt @param {CInt} stuff @returns {CInt} */
 function try_lift(mtmp, ttmp, xtra_wt, stuff) {
     if (calc_capacity(xtra_wt) >= NHC.HVY_ENCUMBER) {
         pline(__sl525, Monnam(mtmp), stuff ? __sl526 : __sl527);
@@ -5105,7 +5105,7 @@ function try_lift(mtmp, ttmp, xtra_wt, stuff) {
     return 1;
 }
 
-/** C ref: trap.c:5700 — @param {CPtr} mtmp @param {CPtr} ttmp @returns {CInt} */
+/** C ref: trap.c:5700 — @param {CPtr<struct monst>} mtmp @param {CPtr<struct trap>} ttmp @returns {CInt} */
 function help_monster_out(mtmp, ttmp) {
     let xtra_wt;
     let otmp;
@@ -5165,7 +5165,7 @@ function help_monster_out(mtmp, ttmp) {
     return 1;
 }
 
-/** C ref: trap.c:5794 — @param {CPtr} box @param {CInt} force @param {CInt} confused */
+/** C ref: trap.c:5794 — @param {CPtr<struct obj>} box @param {CInt} force @param {CInt} confused */
 function disarm_box(box, force, confused) {
     if ((cptr.ldI32o(box, $obj_otrapped) & 1)) {
         let ch = ((acurr(NHC.A_DEX)) + cptr.ldI32o(u, $you_ulevel)) | 0;
@@ -5187,7 +5187,7 @@ function disarm_box(box, force, confused) {
     }
 }
 
-/** C ref: trap.c:5821 — @param {CPtr} box @param {CInt} force @param {CInt} confused */
+/** C ref: trap.c:5821 — @param {CPtr<struct obj>} box @param {CInt} force @param {CInt} confused */
 function untrap_box(box, force, confused) {
     if (((cptr.ldI32o(box, $obj_otrapped) & 1) | 0 && (force || (!confused && (rng_log_enabled() ? (rng_log_set_caller(__sl11, 5827, __sl543), rn2((31 - cptr.ldI32o(u, $you_ulevel)) | 0)) : rn2((31 - cptr.ldI32o(u, $you_ulevel)) | 0)) < 10))) || (cptr.ldI32o(box, $obj_tknown) & 1) | 0 || (!force && confused && !(rng_log_enabled() ? (rng_log_set_caller(__sl11, 5829, __sl543), rn2(3)) : rn2(3)))) {
         if (!((cptr.ldI32o(box, $obj_tknown) & 1) | 0 && (cptr.ldI32o(box, $obj_dknown) & 1) | 0))
@@ -5205,7 +5205,7 @@ function untrap_box(box, force, confused) {
     }
 }
 
-/** C ref: trap.c:5848 — @param {CInt} force @param {CInt} rx @param {CInt} ry @param {CPtr} container @returns {CInt} */
+/** C ref: trap.c:5848 — @param {CInt} force @param {CInt} rx @param {CInt} ry @param {CPtr<struct obj>} container @returns {CInt} */
 export function untrap(force, rx, ry, container) {
     let otmp;
     let x;
@@ -5397,7 +5397,7 @@ export function untrap(force, rx, ry, container) {
     }
 }
 
-/** C ref: trap.c:6101 — @param {CPtr} mon @param {CPtr} noticed @returns {CInt} */
+/** C ref: trap.c:6101 — @param {CPtr<struct monst>} mon @param {CPtr<boolean>} noticed @returns {CInt} */
 export function openholdingtrap(mon, noticed) {
     let t;
     let tdummy = cptr.alloc(40);
@@ -5483,7 +5483,7 @@ export function openholdingtrap(mon, noticed) {
     return 1;
 }
 
-/** C ref: trap.c:6210 — @param {CPtr} mon @param {CPtr} noticed @returns {CInt} */
+/** C ref: trap.c:6210 — @param {CPtr<struct monst>} mon @param {CPtr<boolean>} noticed @returns {CInt} */
 export function closeholdingtrap(mon, noticed) {
     let t;
     let dotrapflags;
@@ -5514,7 +5514,7 @@ export function closeholdingtrap(mon, noticed) {
     return result;
 }
 
-/** C ref: trap.c:6252 — @param {CPtr} mon @param {CInt} trapdoor_only @param {CPtr} noticed @returns {CInt} */
+/** C ref: trap.c:6252 — @param {CPtr<struct monst>} mon @param {CInt} trapdoor_only @param {CPtr<boolean>} noticed @returns {CInt} */
 export function openfallingtrap(mon, trapdoor_only, noticed) {
     let t;
     let ishero = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
@@ -5542,7 +5542,7 @@ export function openfallingtrap(mon, trapdoor_only, noticed) {
     return result;
 }
 
-/** C ref: trap.c:6294 — @param {CPtr} obj @param {CInt} bodypart @param {CInt} disarm @returns {CInt} */
+/** C ref: trap.c:6294 — @param {CPtr<struct obj>} obj @param {CInt} bodypart @param {CInt} disarm @returns {CInt} */
 export function chest_trap(obj, bodypart, disarm) {
     let otmp = obj;
     let otmp2;
@@ -5715,7 +5715,7 @@ export function chest_trap(obj, bodypart, disarm) {
     return 0;
 }
 
-/** C ref: trap.c:6502 — @param {CInt} x @param {CInt} y @returns {CPtr} */
+/** C ref: trap.c:6502 — @param {CInt} x @param {CInt} y @returns {CPtr<struct trap>} */
 export function t_at(x, y) {
     let trap = cptr.ldPtr(gf);
     while (trap) {
@@ -5738,7 +5738,7 @@ export function count_traps(ttyp) {
     return ret;
 }
 
-/** C ref: trap.c:6531 — @param {CPtr} trap */
+/** C ref: trap.c:6531 — @param {CPtr<struct trap>} trap */
 export function deltrap(trap) {
     let ttmp;
     clear_conjoined_pits(trap);
@@ -5757,7 +5757,7 @@ export function deltrap(trap) {
     cptr.free((trap));
 }
 
-/** C ref: trap.c:6552 — @param {CPtr} trap2 @param {CPtr} trap1 @param {CInt} u_entering_trap2 @returns {CInt} */
+/** C ref: trap.c:6552 — @param {CPtr<struct trap>} trap2 @param {CPtr<struct trap>} trap1 @param {CInt} u_entering_trap2 @returns {CInt} */
 export function conjoined_pits(trap2, trap1, u_entering_trap2) {
     let dx;
     let dy;
@@ -5778,7 +5778,7 @@ export function conjoined_pits(trap2, trap1, u_entering_trap2) {
     return 0;
 }
 
-/** C ref: trap.c:6580 — @param {CPtr} trap */
+/** C ref: trap.c:6580 — @param {CPtr<struct trap>} trap */
 function clear_conjoined_pits(trap) {
     let diridx;
     let adjidx;
@@ -5800,7 +5800,7 @@ function clear_conjoined_pits(trap) {
     }
 }
 
-/** C ref: trap.c:6604 — @param {CPtr} adjtrap @returns {CInt} */
+/** C ref: trap.c:6604 — @param {CPtr<struct trap>} adjtrap @returns {CInt} */
 function adj_nonconjoined_pit(adjtrap) {
     let trap_with_u = t_at(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0));
     if (trap_with_u && adjtrap && cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT && is_pit((cptr.ldI32o(trap_with_u, $trap_ttyp) & 31)) && is_pit((cptr.ldI32o(adjtrap, $trap_ttyp) & 31))) {
@@ -5810,17 +5810,17 @@ function adj_nonconjoined_pit(adjtrap) {
     return 0;
 }
 
-/** C ref: trap.c:6648 — @param {CPtr} trap @returns {CInt} */
+/** C ref: trap.c:6648 — @param {CPtr<struct trap>} trap @returns {CInt} */
 export function uteetering_at_seen_pit(trap) {
     return schar((trap && is_pit((cptr.ldI32o(trap, $trap_ttyp) & 31)) && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && ((cptr.ldI16o(trap, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(trap, $trap_ty)) == cptr.ldI16o(u, $you_uy)) && !(cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) ? 1 : 0));
 }
 
-/** C ref: trap.c:6660 — @param {CPtr} trap @returns {CInt} */
+/** C ref: trap.c:6660 — @param {CPtr<struct trap>} trap @returns {CInt} */
 export function uescaped_shaft(trap) {
     return schar((trap && is_hole((cptr.ldI32o(trap, $trap_ttyp) & 31)) && (cptr.ldI32o(trap, $trap_tseen) & 1) | 0 && ((cptr.ldI16o(trap, $trap_tx)) == cptr.ldI16(u) && (cptr.ldI16o(trap, $trap_ty)) == cptr.ldI16o(u, $you_uy)) ? 1 : 0));
 }
 
-/** C ref: trap.c:6668 — @param {CPtr} ttmp @returns {CInt} */
+/** C ref: trap.c:6668 — @param {CPtr<struct trap>} ttmp @returns {CInt} */
 export function delfloortrap(ttmp) {
     if (ttmp && ((((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.SQKY_BOARD) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LANDMINE) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.FIRE_TRAP) || is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.TELEP_TRAP) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.LEVEL_TELEP) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.WEB) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_TRAP) || (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.ANTI_MAGIC))) {
         let mtmp;
@@ -5836,7 +5836,7 @@ export function delfloortrap(ttmp) {
     return 0;
 }
 
-/** C ref: trap.c:6694 — @param {CPtr} item @param {CInt} bodypart */
+/** C ref: trap.c:6694 — @param {CPtr<char>} item @param {CInt} bodypart */
 export function b_trapped(item, bodypart) {
     let lvl = level_difficulty();
     let dmg = (rng_log_enabled() ? (rng_log_set_caller(__sl11, 6697, __sl633), rnd((5 + (lvl < 5 ? lvl : (2 + ((lvl / 2) | 0)) | 0)) | 0)) : rnd((5 + (lvl < 5 ? lvl : (2 + ((lvl / 2) | 0)) | 0)) | 0));
@@ -5850,7 +5850,7 @@ export function b_trapped(item, bodypart) {
     make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(dmg)), 1);
 }
 
-/** C ref: trap.c:6711 — @param {CInt} tlev @param {CPtr} mon @param {CPtr} obj @param {CInt} d_override @param {CInt} nocorpse @returns {CInt} */
+/** C ref: trap.c:6711 — @param {CInt} tlev @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @param {CInt} d_override @param {CInt} nocorpse @returns {CInt} */
 function thitm(tlev, mon, obj, d_override, nocorpse) {
     let strike;
     let trapkilled = 0;
@@ -6159,7 +6159,7 @@ cptr.stPtro(__static_trapname_halu_trapnames, 480, __sl732);
 cptr.stPtro(__static_trapname_halu_trapnames, 488, __sl733); /** C ref: trap.c:7104 — char *[62] (function-static) */
 const __static_trapname_roletrap = new Uint8Array(33); /** C ref: trap.c:7130 — char[33] (function-static) */
 
-/** C ref: trap.c:7100 — @param {CInt} ttyp @param {CInt} override @returns {CPtr} */
+/** C ref: trap.c:7100 — @param {CInt} ttyp @param {CInt} override @returns {CPtr<char>} */
 export function trapname(ttyp, override) {
     if (Hallucination() && !override) {
         let total_names = (NHC.TRAPNUM + 62) | 0;
@@ -6179,7 +6179,7 @@ export function trapname(ttyp, override) {
     return cptr.ldPtro2(defsyms, ((((NHC.S_arrow_trap + (ttyp)) | 0) - 1) | 0), 24, $symdef_explanation);
 }
 
-/** C ref: trap.c:7161 — @param {CPtr} objchn */
+/** C ref: trap.c:7161 — @param {CPtr<struct obj>} objchn */
 export function ignite_items(objchn) {
     let obj;
     let nextobj;

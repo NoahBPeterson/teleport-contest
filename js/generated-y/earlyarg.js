@@ -1369,7 +1369,7 @@ export const ArgErrSilent = 0;
 export const ArgErrComplain = 8;
 export const ArgErr_mask = 8;
 
-/** C ref: earlyarg.c:71 — @param {CPtr} arg @param {CInt} lflags @param {CPtr} optname @param {CPtr} origarg @param {CPtr} argc_p @param {CPtr} argv_p @returns {CPtr} */
+/** C ref: earlyarg.c:71 — @param {CPtr<char>} arg @param {CInt} lflags @param {CPtr<char>} optname @param {CPtr<char>} origarg @param {CPtr<int>} argc_p @param {CPtr<char **>} argv_p @returns {CPtr<char>} */
 function* lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     let argc = cptr.ldI32(argc_p);
     let argv = cptr.ldPtr(argv_p);
@@ -1432,7 +1432,7 @@ function* lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     return p;
 }
 
-/** C ref: earlyarg.c:149 — @param {CInt} ndx @param {CPtr} ac_p @param {CPtr} av_p */
+/** C ref: earlyarg.c:149 — @param {CInt} ndx @param {CPtr<int>} ac_p @param {CPtr<char **>} av_p */
 function consume_arg(ndx, ac_p, av_p) {
     let gone;
     let av = cptr.ldPtr(av_p);
@@ -1447,7 +1447,7 @@ function consume_arg(ndx, ac_p, av_p) {
     cptr.stI32(ac_p, cptr.ldI32(ac_p) + -1);
 }
 
-/** C ref: earlyarg.c:166 — @param {CInt} ndx @param {CPtr} ac_p @param {CPtr} av_p */
+/** C ref: earlyarg.c:166 — @param {CInt} ndx @param {CPtr<int>} ac_p @param {CPtr<char **>} av_p */
 function consume_two_args(ndx, ac_p, av_p) {
     consume_arg(ndx, ac_p, av_p);
     cptr.stI32(ac_p, cptr.ldI32(ac_p) + 1);
@@ -1455,7 +1455,7 @@ function consume_two_args(ndx, ac_p, av_p) {
     cptr.stI32(ac_p, cptr.ldI32(ac_p) + -1);
 }
 
-/** C ref: earlyarg.c:180 — @param {CPtr} argc_p @param {CPtr} argv_p @param {CPtr} hackdir_p */
+/** C ref: earlyarg.c:180 — @param {CPtr<int>} argc_p @param {CPtr<char **>} argv_p @param {CPtr<char *>} hackdir_p */
 export function* early_options(argc_p, argv_p, hackdir_p) {
     let argv = cptr.box(0);
     let arg;
@@ -1567,7 +1567,7 @@ function* opt_terminate() {
     (yield* nh_terminate(0));
 }
 
-/** C ref: earlyarg.c:376 — @param {CPtr} hackdir */
+/** C ref: earlyarg.c:376 — @param {CPtr<char>} hackdir */
 function* opt_usage(hackdir) {
     (yield* chdirx(hackdir, 1));
     ;
@@ -1575,13 +1575,13 @@ function* opt_usage(hackdir) {
     (yield* opt_terminate());
 }
 
-/** C ref: earlyarg.c:391 — @param {CPtr} dir */
+/** C ref: earlyarg.c:391 — @param {CPtr<char>} dir */
 export function* after_opt_showpaths(dir) {
     (yield* chdirx(dir, 0));
     (yield* opt_terminate());
 }
 
-/** C ref: earlyarg.c:406 — @param {CInt} argc @param {CPtr} argv @param {CPtr} dir */
+/** C ref: earlyarg.c:406 — @param {CInt} argc @param {CPtr<char *>} argv @param {CPtr<char>} dir */
 function* scores_only(argc, argv, dir) {
     (yield* config_error_done());
     (yield* chdirx(dir, 0));
@@ -1595,7 +1595,7 @@ function* scores_only(argc, argv, dir) {
     (yield* nh_terminate(0));
 }
 
-/** C ref: earlyarg.c:450 — @param {CInt} argc @param {CPtr} argv @param {*} e_arg @returns {CInt} */
+/** C ref: earlyarg.c:450 — @param {CInt} argc @param {CPtr<char *>} argv @param {*} e_arg @returns {CInt} */
 export function* argcheck(argc, argv, e_arg) {
     let i;
     let idx;
@@ -1680,7 +1680,7 @@ export function* argcheck(argc, argv, e_arg) {
     return 0;
 }
 
-/** C ref: earlyarg.c:576 — @param {CPtr} opts */
+/** C ref: earlyarg.c:576 — @param {CPtr<char>} opts */
 function* debug_fields(opts) {
     let op;
     let negated = 0;

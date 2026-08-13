@@ -310,7 +310,7 @@ export function inven_inuse(quietly) {
     }
 }
 
-/** C ref: restore.c:130 — @param {CPtr} nhfp */
+/** C ref: restore.c:130 — @param {CPtr<NHFILE>} nhfp */
 function restlevchn(nhfp) {
     let cnt = cptr.box(0);
     let tmplev;
@@ -332,7 +332,7 @@ function restlevchn(nhfp) {
     }
 }
 
-/** C ref: restore.c:153 — @param {CPtr} nhfp */
+/** C ref: restore.c:153 — @param {CPtr<NHFILE>} nhfp */
 function restdamage(nhfp) {
     let dmgcount = cptr.box(0);
     let counter;
@@ -353,7 +353,7 @@ function restdamage(nhfp) {
     } while (--counter > 0);
 }
 
-/** C ref: restore.c:183 — @param {CPtr} nhfp @param {CPtr} otmp */
+/** C ref: restore.c:183 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct obj>} otmp */
 function restobj(nhfp, otmp) {
     let buflen = cptr.box(0);
     let omid = cptr.box(0);
@@ -389,7 +389,7 @@ function restobj(nhfp, otmp) {
     }
 }
 
-/** C ref: restore.c:231 — @param {CPtr} nhfp @param {CInt} frozen @returns {CPtr} */
+/** C ref: restore.c:231 — @param {CPtr<NHFILE>} nhfp @param {CInt} frozen @returns {CPtr<struct obj>} */
 function restobjchn(nhfp, frozen) {
     let otmp;
     let otmp2 = null;
@@ -442,7 +442,7 @@ function restobjchn(nhfp, frozen) {
     return first;
 }
 
-/** C ref: restore.c:307 — @param {CPtr} nhfp @param {CPtr} mtmp */
+/** C ref: restore.c:307 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct monst>} mtmp */
 function restmon(nhfp, mtmp) {
     let buflen = cptr.box(0);
     let mc = cptr.box(0);
@@ -503,7 +503,7 @@ function restmon(nhfp, mtmp) {
     }
 }
 
-/** C ref: restore.c:376 — @param {CPtr} nhfp @returns {CPtr} */
+/** C ref: restore.c:376 — @param {CPtr<NHFILE>} nhfp @returns {CPtr<struct monst>} */
 function restmonchn(nhfp) {
     let mtmp;
     let mtmp2 = null;
@@ -571,7 +571,7 @@ function restmonchn(nhfp) {
     return first;
 }
 
-/** C ref: restore.c:468 — @param {CPtr} nhfp @returns {CPtr} */
+/** C ref: restore.c:468 — @param {CPtr<NHFILE>} nhfp @returns {CPtr<struct fruit>} */
 function loadfruitchn(nhfp) {
     let flist;
     let fnext;
@@ -589,7 +589,7 @@ function loadfruitchn(nhfp) {
     return flist;
 }
 
-/** C ref: restore.c:487 — @param {CPtr} flist */
+/** C ref: restore.c:487 — @param {CPtr<struct fruit>} flist */
 function freefruitchn(flist) {
     let fnext;
     while (flist) {
@@ -599,7 +599,7 @@ function freefruitchn(flist) {
     }
 }
 
-/** C ref: restore.c:500 — @param {CPtr} otmp */
+/** C ref: restore.c:500 — @param {CPtr<struct obj>} otmp */
 function ghostfruit(otmp) {
     let oldf;
     for (oldf = cptr.ldPtro(go, $instance_globals_o_oldfruit); oldf; oldf = cptr.ldPtro(oldf, $fruit_nextf))
@@ -611,7 +611,7 @@ function ghostfruit(otmp) {
         cptr.st1o(otmp, $obj_spe, schar(fruitadd(oldf, null)));
 }
 
-/** C ref: restore.c:525 — @param {CPtr} nhfp @returns {CInt} */
+/** C ref: restore.c:525 — @param {CPtr<NHFILE>} nhfp @returns {CInt} */
 function restgamestate(nhfp) {
     let i;
     let newgameflags = cptr.alloc(208);
@@ -758,7 +758,7 @@ function restlevelfile(ltmp) {
     return 2;
 }
 
-/** C ref: restore.c:789 — @param {CPtr} nhfp @returns {CInt} */
+/** C ref: restore.c:789 — @param {CPtr<NHFILE>} nhfp @returns {CInt} */
 export function dorecover(nhfp) {
     let ltmp = cptr.box(0);
     let rtmp;
@@ -835,7 +835,7 @@ export function dorecover(nhfp) {
     return 1;
 }
 
-/** C ref: restore.c:955 — @param {CPtr} nhfp */
+/** C ref: restore.c:955 — @param {CPtr<NHFILE>} nhfp */
 function rest_stairs(nhfp) {
     let buflen = cptr.box(0);
     let stway = cptr.alloc(24); cptr.stI16(stway, 0);
@@ -857,7 +857,7 @@ function rest_stairs(nhfp) {
     }
 }
 
-/** C ref: restore.c:988 — @param {CPtr} nhfp @param {CPtr} cemeteryaddr */
+/** C ref: restore.c:988 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct cemetery *>} cemeteryaddr */
 export function restcemetery(nhfp, cemeteryaddr) {
     let bonesinfo;
     let bonesaddr;
@@ -887,7 +887,7 @@ export function restcemetery(nhfp, cemeteryaddr) {
     }
 }
 
-/** C ref: restore.c:1021 — @param {CPtr} nhfp */
+/** C ref: restore.c:1021 — @param {CPtr<NHFILE>} nhfp */
 function rest_levl(nhfp) {
     let c;
     let r;
@@ -898,7 +898,7 @@ function rest_levl(nhfp) {
     }
 }
 
-/** C ref: restore.c:1035 — @param {CPtr} reason */
+/** C ref: restore.c:1035 — @param {CPtr<char>} reason */
 export function trickery(reason) {
     pline(__sl66);
     pline(__sl67);
@@ -907,7 +907,7 @@ export function trickery(reason) {
     done(NHC.TRICKED);
 }
 
-/** C ref: restore.c:1046 — @param {CPtr} nhfp @param {CInt} pid @param {CInt} lev */
+/** C ref: restore.c:1046 — @param {CPtr<NHFILE>} nhfp @param {CInt} pid @param {CInt} lev */
 export function getlev(nhfp, pid, lev) {
     let trap;
     let mtmp;
@@ -1106,19 +1106,19 @@ export function rest_adjust_levelflags() {
     relative_time_to_moves(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until));
 }
 
-/** C ref: restore.c:1320 — @param {CPtr} timestamp */
+/** C ref: restore.c:1320 — @param {CPtr<long>} timestamp */
 export function moves_to_relative_time(timestamp) {
     let prevts = cptr.ldI64(timestamp);
     cptr.stI64(timestamp, BigInt.asIntN(64, prevts - cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
 }
 
-/** C ref: restore.c:1328 — @param {CPtr} timestamp */
+/** C ref: restore.c:1328 — @param {CPtr<long>} timestamp */
 export function relative_time_to_moves(timestamp) {
     let prevts = cptr.ldI64(timestamp);
     cptr.stI64(timestamp, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + prevts));
 }
 
-/** C ref: restore.c:1338 — @param {CPtr} nhfp @param {CPtr} outbuf @param {CInt} name_only */
+/** C ref: restore.c:1338 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} outbuf @param {CInt} name_only */
 export function get_plname_from_file(nhfp, outbuf, name_only) {
     let plbuf = new Uint8Array(49);
     let pltmpsiz = cptr.box(0);
@@ -1132,7 +1132,7 @@ export function get_plname_from_file(nhfp, outbuf, name_only) {
     return;
 }
 
-/** C ref: restore.c:1369 — @param {CPtr} nhfp */
+/** C ref: restore.c:1369 — @param {CPtr<NHFILE>} nhfp */
 function rest_bubbles(nhfp) {
     let bbubbly = cptr.box(0);
     bbubbly.v = 0;
@@ -1142,7 +1142,7 @@ function rest_bubbles(nhfp) {
         restore_waterlevel(nhfp);
 }
 
-/** C ref: restore.c:1390 — @param {CPtr} nhfp */
+/** C ref: restore.c:1390 — @param {CPtr<NHFILE>} nhfp */
 function restore_gamelog(nhfp) {
     let slen = cptr.box(0);
     let msg = new Uint8Array(512);
@@ -1161,7 +1161,7 @@ function restore_gamelog(nhfp) {
     }
 }
 
-/** C ref: restore.c:1415 — @param {CPtr} nhfp */
+/** C ref: restore.c:1415 — @param {CPtr<NHFILE>} nhfp */
 function restore_msghistory(nhfp) {
     let msgsize = cptr.box(0);
     let msgcount = 0;
@@ -1213,7 +1213,7 @@ function add_id_mapping(gid, nid) {
     (cptr.stI32o(gn, $instance_globals_n_n_ids_mapped, cptr.ldI32o(gn, $instance_globals_n_n_ids_mapped) + 1)) - (1);
 }
 
-/** C ref: restore.c:1484 — @param {CUInt} gid @param {CPtr} nidp @returns {CInt} */
+/** C ref: restore.c:1484 — @param {CUInt} gid @param {CPtr<unsigned int>} nidp @returns {CInt} */
 export function lookup_id_mapping(gid, nidp) {
     let i;
     let curr;

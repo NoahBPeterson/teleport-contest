@@ -44,13 +44,13 @@ const __sl2 = cptr.lit("opcodes");
 const __sl3 = cptr.lit("function or expression needs too many registers");
 const __sl4 = cptr.lit("constants");
 
-/** C ref: lcode.c:47 — @param {CPtr} ls @param {CPtr} msg */
+/** C ref: lcode.c:47 — @param {CPtr<LexState>} ls @param {CPtr<char>} msg */
 export function* luaK_semerror(ls, msg) {
     cptr.stI32o(ls, $LexState_t, 0);
     (yield* luaX_syntaxerror(ls, msg));
 }
 
-/** C ref: lcode.c:57 — @param {CPtr} e @param {CPtr} v @returns {CInt} */
+/** C ref: lcode.c:57 — @param {CPtr<expdesc>} e @param {CPtr<TValue>} v @returns {CInt} */
 function tonumeral(e, v) {
     if ((cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
         return 0;
@@ -76,13 +76,13 @@ function tonumeral(e, v) {
     }
 }
 
-/** C ref: lcode.c:75 — @param {CPtr} fs @param {CPtr} e @returns {CPtr} */
+/** C ref: lcode.c:75 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CPtr<TValue>} */
 function const2val(fs, e) {
     (void 0);
     return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), cptr.ldI32o(e, $expdesc_u), 24);
 }
 
-/** C ref: lcode.c:85 — @param {CPtr} fs @param {CPtr} e @param {CPtr} v @returns {CInt} */
+/** C ref: lcode.c:85 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CPtr<TValue>} v @returns {CInt} */
 export function luaK_exp2const(fs, e, v) {
     if ((cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
         return 0;
@@ -128,7 +128,7 @@ export function luaK_exp2const(fs, e, v) {
 
 let __static_previousinstruction_invalidinstruction = cptr.box(~0); /** C ref: lcode.c:118 — unsigned int (function-static, boxed) */
 
-/** C ref: lcode.c:117 — @param {CPtr} fs @returns {CPtr} */
+/** C ref: lcode.c:117 — @param {CPtr<FuncState>} fs @returns {CPtr<Instruction>} */
 function previousinstruction(fs) {
     if (cptr.ldI32o(fs, $FuncState_pc) > cptr.ldI32o(fs, $FuncState_lasttarget))
         return cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0, 4);
@@ -136,7 +136,7 @@ function previousinstruction(fs) {
         return ((__static_previousinstruction_invalidinstruction));
 }
 
-/** C ref: lcode.c:132 — @param {CPtr} fs @param {CInt} from @param {CInt} n */
+/** C ref: lcode.c:132 — @param {CPtr<FuncState>} fs @param {CInt} from @param {CInt} n */
 export function* luaK_nil(fs, from, n) {
     let l = (((from + n) | 0) - 1) | 0;
     let previous = previousinstruction(fs);
@@ -156,7 +156,7 @@ export function* luaK_nil(fs, from, n) {
     (yield* luaK_codeABCk(fs, NHC.OP_LOADNIL, from, (n - 1) | 0, 0, 0));
 }
 
-/** C ref: lcode.c:155 — @param {CPtr} fs @param {CInt} pc @returns {CInt} */
+/** C ref: lcode.c:155 — @param {CPtr<FuncState>} fs @param {CInt} pc @returns {CInt} */
 function getjump(fs, pc) {
     let offset = (((((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4)) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) - 16777215) | 0);
     if (offset == -1)
@@ -165,7 +165,7 @@ function getjump(fs, pc) {
         return (((pc + 1) | 0) + offset) | 0;
 }
 
-/** C ref: lcode.c:168 — @param {CPtr} fs @param {CInt} pc @param {CInt} dest */
+/** C ref: lcode.c:168 — @param {CPtr<FuncState>} fs @param {CInt} pc @param {CInt} dest */
 function* fixjump(fs, pc, dest) {
     let jmp = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
     let offset = (dest - ((pc + 1) | 0)) | 0;
@@ -176,7 +176,7 @@ function* fixjump(fs, pc, dest) {
     (cptr.stI32(jmp, (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 25) >>> 0)) << 7) >>> 0))) >>> 0) | (((((((((((offset) + 16777215) | 0)) >>> 0))) << 7) >>> 0) & (((~(((~0) << 25) >>> 0)) << 7) >>> 0)) >>> 0)) >>> 0)));
 }
 
-/** C ref: lcode.c:182 — @param {CPtr} fs @param {CPtr} l1 @param {CInt} l2 */
+/** C ref: lcode.c:182 — @param {CPtr<FuncState>} fs @param {CPtr<int>} l1 @param {CInt} l2 */
 export function* luaK_concat(fs, l1, l2) {
     if (l2 == -1)
         return;
@@ -191,12 +191,12 @@ export function* luaK_concat(fs, l1, l2) {
     }
 }
 
-/** C ref: lcode.c:200 — @param {CPtr} fs @returns {CInt} */
+/** C ref: lcode.c:200 — @param {CPtr<FuncState>} fs @returns {CInt} */
 export function* luaK_jump(fs) {
     return (yield* codesJ(fs, NHC.OP_JMP, -1, 0));
 }
 
-/** C ref: lcode.c:208 — @param {CPtr} fs @param {CInt} first @param {CInt} nret */
+/** C ref: lcode.c:208 — @param {CPtr<FuncState>} fs @param {CInt} first @param {CInt} nret */
 export function* luaK_ret(fs, first, nret) {
     let op;
     switch (nret) {
@@ -213,19 +213,19 @@ export function* luaK_ret(fs, first, nret) {
     (yield* luaK_codeABCk(fs, op, first, (nret + 1) | 0, 0, 0));
 }
 
-/** C ref: lcode.c:223 — @param {CPtr} fs @param {*} op @param {CInt} A @param {CInt} B @param {CInt} C @param {CInt} k @returns {CInt} */
+/** C ref: lcode.c:223 — @param {CPtr<FuncState>} fs @param {*} op @param {CInt} A @param {CInt} B @param {CInt} C @param {CInt} k @returns {CInt} */
 function* condjump(fs, op, A, B, C, k) {
     (yield* luaK_codeABCk(fs, op, A, B, C, k));
     return (yield* luaK_jump(fs));
 }
 
-/** C ref: lcode.c:233 — @param {CPtr} fs @returns {CInt} */
+/** C ref: lcode.c:233 — @param {CPtr<FuncState>} fs @returns {CInt} */
 export function luaK_getlabel(fs) {
     cptr.stI32o(fs, $FuncState_lasttarget, cptr.ldI32o(fs, $FuncState_pc));
     return cptr.ldI32o(fs, $FuncState_pc);
 }
 
-/** C ref: lcode.c:244 — @param {CPtr} fs @param {CInt} pc @returns {CPtr} */
+/** C ref: lcode.c:244 — @param {CPtr<FuncState>} fs @param {CInt} pc @returns {CPtr<Instruction>} */
 function getjumpcontrol(fs, pc) {
     let pi = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
     if (pc >= 1 && (cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(pi, -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 16))
@@ -234,7 +234,7 @@ function getjumpcontrol(fs, pc) {
         return pi;
 }
 
-/** C ref: lcode.c:260 — @param {CPtr} fs @param {CInt} node @param {CInt} reg @returns {CInt} */
+/** C ref: lcode.c:260 — @param {CPtr<FuncState>} fs @param {CInt} node @param {CInt} reg @returns {CInt} */
 function patchtestreg(fs, node, reg) {
     let i = getjumpcontrol(fs, node);
     if (((((((cptr.ldI32(i)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) != NHC.OP_TESTSET)
@@ -247,13 +247,13 @@ function patchtestreg(fs, node, reg) {
     return 1;
 }
 
-/** C ref: lcode.c:278 — @param {CPtr} fs @param {CInt} list */
+/** C ref: lcode.c:278 — @param {CPtr<FuncState>} fs @param {CInt} list */
 function removevalues(fs, list) {
     for (; list != -1; list = getjump(fs, list))
         patchtestreg(fs, list, 255);
 }
 
-/** C ref: lcode.c:289 — @param {CPtr} fs @param {CInt} list @param {CInt} vtarget @param {CInt} reg @param {CInt} dtarget */
+/** C ref: lcode.c:289 — @param {CPtr<FuncState>} fs @param {CInt} list @param {CInt} vtarget @param {CInt} reg @param {CInt} dtarget */
 function* patchlistaux(fs, list, vtarget, reg, dtarget) {
     while (list != -1) {
         let next = getjump(fs, list);
@@ -265,19 +265,19 @@ function* patchlistaux(fs, list, vtarget, reg, dtarget) {
     }
 }
 
-/** C ref: lcode.c:307 — @param {CPtr} fs @param {CInt} list @param {CInt} target */
+/** C ref: lcode.c:307 — @param {CPtr<FuncState>} fs @param {CInt} list @param {CInt} target */
 export function* luaK_patchlist(fs, list, target) {
     (void 0);
     (yield* patchlistaux(fs, list, target, 255, target));
 }
 
-/** C ref: lcode.c:313 — @param {CPtr} fs @param {CInt} list */
+/** C ref: lcode.c:313 — @param {CPtr<FuncState>} fs @param {CInt} list */
 export function* luaK_patchtohere(fs, list) {
     let hr = luaK_getlabel(fs);
     (yield* luaK_patchlist(fs, list, hr));
 }
 
-/** C ref: lcode.c:330 — @param {CPtr} fs @param {CPtr} f @param {CInt} line */
+/** C ref: lcode.c:330 — @param {CPtr<FuncState>} fs @param {CPtr<Proto>} f @param {CInt} line */
 function* savelineinfo(fs, f, line) {
     let linedif = (line - cptr.ldI32o(fs, $FuncState_previousline)) | 0;
     let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
@@ -293,7 +293,7 @@ function* savelineinfo(fs, f, line) {
     cptr.stI32o(fs, $FuncState_previousline, line);
 }
 
-/** C ref: lcode.c:354 — @param {CPtr} fs */
+/** C ref: lcode.c:354 — @param {CPtr<FuncState>} fs */
 function removelastlineinfo(fs) {
     let f = cptr.ldPtr(fs);
     let pc = (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
@@ -307,13 +307,13 @@ function removelastlineinfo(fs) {
     }
 }
 
-/** C ref: lcode.c:373 — @param {CPtr} fs */
+/** C ref: lcode.c:373 — @param {CPtr<FuncState>} fs */
 function removelastinstruction(fs) {
     removelastlineinfo(fs);
     (cptr.stI32o(fs, $FuncState_pc, cptr.ldI32o(fs, $FuncState_pc) + -1)) - (-1);
 }
 
-/** C ref: lcode.c:383 — @param {CPtr} fs @param {CUInt} i @returns {CInt} */
+/** C ref: lcode.c:383 — @param {CPtr<FuncState>} fs @param {CUInt} i @returns {CInt} */
 export function* luaK_code(fs, i) {
     let f = cptr.ldPtr(fs);
     (cptr.stPtro(f, $Proto_code, (((yield* luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_code), cptr.ldI32o(fs, $FuncState_pc), cptr.add(f, $Proto_sizecode), 4, 2147483647, __sl2))))));
@@ -322,21 +322,21 @@ export function* luaK_code(fs, i) {
     return (cptr.ldI32o(fs, $FuncState_pc) - 1) | 0;
 }
 
-/** C ref: lcode.c:398 — @param {CPtr} fs @param {*} o @param {CInt} a @param {CInt} b @param {CInt} c @param {CInt} k @returns {CInt} */
+/** C ref: lcode.c:398 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} a @param {CInt} b @param {CInt} c @param {CInt} k @returns {CInt} */
 export function* luaK_codeABCk(fs, o, a, b, c, k) {
     (void 0);
     (void 0);
     return (yield* luaK_code(fs, (((((((((o)) << 0) >>> 0) | ((((a) >>> 0) << 7) >>> 0)) >>> 0 | ((((b) >>> 0) << 16) >>> 0)) >>> 0 | ((((c) >>> 0) << 24) >>> 0)) >>> 0 | ((((k) >>> 0) << 15) >>> 0)) >>> 0)));
 }
 
-/** C ref: lcode.c:409 — @param {CPtr} fs @param {*} o @param {CInt} a @param {CUInt} bc @returns {CInt} */
+/** C ref: lcode.c:409 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} a @param {CUInt} bc @returns {CInt} */
 export function* luaK_codeABx(fs, o, a, bc) {
     (void 0);
     (void 0);
     return (yield* luaK_code(fs, (((((((o)) << 0) >>> 0) | ((((a) >>> 0) << 7) >>> 0)) >>> 0 | ((((bc)) << 15) >>> 0)) >>> 0)));
 }
 
-/** C ref: lcode.c:419 — @param {CPtr} fs @param {*} o @param {CInt} a @param {CInt} bc @returns {CInt} */
+/** C ref: lcode.c:419 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} a @param {CInt} bc @returns {CInt} */
 function* codeAsBx(fs, o, a, bc) {
     let b = ((bc + 65535) | 0) >>> 0;
     (void 0);
@@ -344,7 +344,7 @@ function* codeAsBx(fs, o, a, bc) {
     return (yield* luaK_code(fs, (((((((o)) << 0) >>> 0) | ((((a) >>> 0) << 7) >>> 0)) >>> 0 | ((((b)) << 15) >>> 0)) >>> 0)));
 }
 
-/** C ref: lcode.c:430 — @param {CPtr} fs @param {*} o @param {CInt} sj @param {CInt} k @returns {CInt} */
+/** C ref: lcode.c:430 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} sj @param {CInt} k @returns {CInt} */
 function* codesJ(fs, o, sj, k) {
     let j = ((sj + 16777215) | 0) >>> 0;
     (void 0);
@@ -352,13 +352,13 @@ function* codesJ(fs, o, sj, k) {
     return (yield* luaK_code(fs, (((((((o)) << 0) >>> 0) | ((((j)) << 7) >>> 0)) >>> 0 | ((((k) >>> 0) << 15) >>> 0)) >>> 0)));
 }
 
-/** C ref: lcode.c:441 — @param {CPtr} fs @param {CInt} a @returns {CInt} */
+/** C ref: lcode.c:441 — @param {CPtr<FuncState>} fs @param {CInt} a @returns {CInt} */
 function* codeextraarg(fs, a) {
     (void 0);
     return (yield* luaK_code(fs, (((((82) << 0) >>> 0) | ((((a) >>> 0) << 7) >>> 0)) >>> 0)));
 }
 
-/** C ref: lcode.c:452 — @param {CPtr} fs @param {CInt} reg @param {CInt} k @returns {CInt} */
+/** C ref: lcode.c:452 — @param {CPtr<FuncState>} fs @param {CInt} reg @param {CInt} k @returns {CInt} */
 function* luaK_codek(fs, reg, k) {
     if (k <= 131071)
         return (yield* luaK_codeABx(fs, NHC.OP_LOADK, reg, k >>> 0));
@@ -369,7 +369,7 @@ function* luaK_codek(fs, reg, k) {
     }
 }
 
-/** C ref: lcode.c:467 — @param {CPtr} fs @param {CInt} n */
+/** C ref: lcode.c:467 — @param {CPtr<FuncState>} fs @param {CInt} n */
 export function* luaK_checkstack(fs, n) {
     let newstack = (cptr.ld1uo(fs, $FuncState_freereg) + n) | 0;
     if (newstack > cptr.ld1uo(cptr.ldPtr(fs), $Proto_maxstacksize)) {
@@ -379,13 +379,13 @@ export function* luaK_checkstack(fs, n) {
     }
 }
 
-/** C ref: lcode.c:481 — @param {CPtr} fs @param {CInt} n */
+/** C ref: lcode.c:481 — @param {CPtr<FuncState>} fs @param {CInt} n */
 export function* luaK_reserveregs(fs, n) {
     (yield* luaK_checkstack(fs, n));
     cptr.st1o(fs, $FuncState_freereg, cptr.ld1uo(fs, $FuncState_freereg) + n);
 }
 
-/** C ref: lcode.c:492 — @param {CPtr} fs @param {CInt} reg */
+/** C ref: lcode.c:492 — @param {CPtr<FuncState>} fs @param {CInt} reg */
 function freereg(fs, reg) {
     if (reg >= luaY_nvarstack(fs)) {
         (cptr.st1o(fs, $FuncState_freereg, cptr.ld1uo(fs, $FuncState_freereg) + -1)) - (-1);
@@ -393,7 +393,7 @@ function freereg(fs, reg) {
     }
 }
 
-/** C ref: lcode.c:503 — @param {CPtr} fs @param {CInt} r1 @param {CInt} r2 */
+/** C ref: lcode.c:503 — @param {CPtr<FuncState>} fs @param {CInt} r1 @param {CInt} r2 */
 function freeregs(fs, r1, r2) {
     if (r1 > r2) {
         freereg(fs, r1);
@@ -404,20 +404,20 @@ function freeregs(fs, r1, r2) {
     }
 }
 
-/** C ref: lcode.c:518 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:518 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function freeexp(fs, e) {
     if (cptr.ldI32(e) == NHC.VNONRELOC)
         freereg(fs, cptr.ldI32o(e, $expdesc_u));
 }
 
-/** C ref: lcode.c:528 — @param {CPtr} fs @param {CPtr} e1 @param {CPtr} e2 */
+/** C ref: lcode.c:528 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function freeexps(fs, e1, e2) {
     let r1 = (cptr.ldI32(e1) == NHC.VNONRELOC) ? cptr.ldI32o(e1, $expdesc_u) : -1;
     let r2 = (cptr.ldI32(e2) == NHC.VNONRELOC) ? cptr.ldI32o(e2, $expdesc_u) : -1;
     freeregs(fs, r1, r2);
 }
 
-/** C ref: lcode.c:544 — @param {CPtr} fs @param {CPtr} key @param {CPtr} v @returns {CInt} */
+/** C ref: lcode.c:544 — @param {CPtr<FuncState>} fs @param {CPtr<TValue>} key @param {CPtr<TValue>} v @returns {CInt} */
 function* addk(fs, key, v) {
     let val = cptr.alloc(16);
     let L = cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L);
@@ -456,7 +456,7 @@ function* addk(fs, key, v) {
     return k;
 }
 
-/** C ref: lcode.c:576 — @param {CPtr} fs @param {CPtr} s @returns {CInt} */
+/** C ref: lcode.c:576 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} s @returns {CInt} */
 function* stringK(fs, s) {
     let o = cptr.alloc(16);
     {
@@ -470,7 +470,7 @@ function* stringK(fs, s) {
     return (yield* addk(fs, o, o));
 }
 
-/** C ref: lcode.c:586 — @param {CPtr} fs @param {CLongLong} n @returns {CInt} */
+/** C ref: lcode.c:586 — @param {CPtr<FuncState>} fs @param {CLongLong} n @returns {CInt} */
 function* luaK_intK(fs, n) {
     let o = cptr.alloc(16);
     {
@@ -482,7 +482,7 @@ function* luaK_intK(fs, n) {
     return (yield* addk(fs, o, o));
 }
 
-/** C ref: lcode.c:603 — @param {CPtr} fs @param {CDouble} r @returns {CInt} */
+/** C ref: lcode.c:603 — @param {CPtr<FuncState>} fs @param {CDouble} r @returns {CInt} */
 function* luaK_numberK(fs, r) {
     let o = cptr.alloc(16);
     let ik = cptr.box(0n);
@@ -510,21 +510,21 @@ function* luaK_numberK(fs, r) {
     }
 }
 
-/** C ref: lcode.c:626 — @param {CPtr} fs @returns {CInt} */
+/** C ref: lcode.c:626 — @param {CPtr<FuncState>} fs @returns {CInt} */
 function* boolF(fs) {
     let o = cptr.alloc(16);
     (cptr.st1o((o), $TValue_tt_, 1));
     return (yield* addk(fs, o, o));
 }
 
-/** C ref: lcode.c:636 — @param {CPtr} fs @returns {CInt} */
+/** C ref: lcode.c:636 — @param {CPtr<FuncState>} fs @returns {CInt} */
 function* boolT(fs) {
     let o = cptr.alloc(16);
     (cptr.st1o((o), $TValue_tt_, 17));
     return (yield* addk(fs, o, o));
 }
 
-/** C ref: lcode.c:646 — @param {CPtr} fs @returns {CInt} */
+/** C ref: lcode.c:646 — @param {CPtr<FuncState>} fs @returns {CInt} */
 function* nilK(fs) {
     let k = cptr.alloc(16);
     let v = cptr.alloc(16);
@@ -550,7 +550,7 @@ function fitsBx(i) {
     return (-65535n <= i && i <= 65536n ? 1 : 0);
 }
 
-/** C ref: lcode.c:673 — @param {CPtr} fs @param {CInt} reg @param {CLongLong} i */
+/** C ref: lcode.c:673 — @param {CPtr<FuncState>} fs @param {CInt} reg @param {CLongLong} i */
 export function* luaK_int(fs, reg, i) {
     if (fitsBx(i))
         (yield* codeAsBx(fs, NHC.OP_LOADI, reg, (Number(BigInt.asIntN(32, ((i)))))));
@@ -558,7 +558,7 @@ export function* luaK_int(fs, reg, i) {
         (yield* luaK_codek(fs, reg, (yield* luaK_intK(fs, i))));
 }
 
-/** C ref: lcode.c:681 — @param {CPtr} fs @param {CInt} reg @param {CDouble} f */
+/** C ref: lcode.c:681 — @param {CPtr<FuncState>} fs @param {CInt} reg @param {CDouble} f */
 function* luaK_float(fs, reg, f) {
     let fi = cptr.box(0n);
     if (luaV_flttointeger(f, fi, NHC.F2Ieq) && fitsBx(fi.v))
@@ -567,7 +567,7 @@ function* luaK_float(fs, reg, f) {
         (yield* luaK_codek(fs, reg, (yield* luaK_numberK(fs, f))));
 }
 
-/** C ref: lcode.c:693 — @param {CPtr} v @param {CPtr} e */
+/** C ref: lcode.c:693 — @param {CPtr<TValue>} v @param {CPtr<expdesc>} e */
 function const2exp(v, e) {
     switch ((((cptr.ld1uo((v), $TValue_tt_))) & 63)) {
         case 3:
@@ -597,7 +597,7 @@ function const2exp(v, e) {
     }
 }
 
-/** C ref: lcode.c:722 — @param {CPtr} fs @param {CPtr} e @param {CInt} nresults */
+/** C ref: lcode.c:722 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} nresults */
 export function* luaK_setreturns(fs, e, nresults) {
     let pc = cptr.add(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4);
     if (cptr.ldI32(e) == NHC.VCALL)
@@ -610,14 +610,14 @@ export function* luaK_setreturns(fs, e, nresults) {
     }
 }
 
-/** C ref: lcode.c:738 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:738 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function* str2K(fs, e) {
     (void 0);
     cptr.stI32o(e, $expdesc_u, (yield* stringK(fs, cptr.ldPtro(e, $expdesc_u))));
     cptr.stI32(e, NHC.VK);
 }
 
-/** C ref: lcode.c:755 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:755 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function luaK_setoneret(fs, e) {
     if (cptr.ldI32(e) == NHC.VCALL) {
         (void 0);
@@ -629,7 +629,7 @@ export function luaK_setoneret(fs, e) {
     }
 }
 
-/** C ref: lcode.c:773 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:773 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_dischargevars(fs, e) {
     switch (cptr.ldI32(e)) {
         case NHC.VCONST:
@@ -688,7 +688,7 @@ export function* luaK_dischargevars(fs, e) {
     }
 }
 
-/** C ref: lcode.c:827 — @param {CPtr} fs @param {CPtr} e @param {CInt} reg */
+/** C ref: lcode.c:827 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} reg */
 function* discharge2reg(fs, e, reg) {
     (yield* luaK_dischargevars(fs, e));
     switch (cptr.ldI32(e)) {
@@ -748,7 +748,7 @@ function* discharge2reg(fs, e, reg) {
     cptr.stI32(e, NHC.VNONRELOC);
 }
 
-/** C ref: lcode.c:882 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:882 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function* discharge2anyreg(fs, e) {
     if (cptr.ldI32(e) != NHC.VNONRELOC) {
         (yield* luaK_reserveregs(fs, 1));
@@ -756,13 +756,13 @@ function* discharge2anyreg(fs, e) {
     }
 }
 
-/** C ref: lcode.c:890 — @param {CPtr} fs @param {CInt} A @param {*} op @returns {CInt} */
+/** C ref: lcode.c:890 — @param {CPtr<FuncState>} fs @param {CInt} A @param {*} op @returns {CInt} */
 function* code_loadbool(fs, A, op) {
     luaK_getlabel(fs);
     return (yield* luaK_codeABCk(fs, op, A, 0, 0, 0));
 }
 
-/** C ref: lcode.c:900 — @param {CPtr} fs @param {CInt} list @returns {CInt} */
+/** C ref: lcode.c:900 — @param {CPtr<FuncState>} fs @param {CInt} list @returns {CInt} */
 function need_value(fs, list) {
     for (; list != -1; list = getjump(fs, list)) {
         let i = cptr.ldI32(getjumpcontrol(fs, list));
@@ -772,7 +772,7 @@ function need_value(fs, list) {
     return 0;
 }
 
-/** C ref: lcode.c:916 — @param {CPtr} fs @param {CPtr} e @param {CInt} reg */
+/** C ref: lcode.c:916 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} reg */
 function* exp2reg(fs, e, reg) {
     (yield* discharge2reg(fs, e, reg));
     if (cptr.ldI32(e) == NHC.VJMP)
@@ -796,7 +796,7 @@ function* exp2reg(fs, e, reg) {
     cptr.stI32(e, NHC.VNONRELOC);
 }
 
-/** C ref: lcode.c:944 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:944 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_exp2nextreg(fs, e) {
     (yield* luaK_dischargevars(fs, e));
     freeexp(fs, e);
@@ -804,7 +804,7 @@ export function* luaK_exp2nextreg(fs, e) {
     (yield* exp2reg(fs, e, (cptr.ld1uo(fs, $FuncState_freereg) - 1) | 0));
 }
 
-/** C ref: lcode.c:956 — @param {CPtr} fs @param {CPtr} e @returns {CInt} */
+/** C ref: lcode.c:956 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 export function* luaK_exp2anyreg(fs, e) {
     (yield* luaK_dischargevars(fs, e));
     if (cptr.ldI32(e) == NHC.VNONRELOC) {
@@ -819,13 +819,13 @@ export function* luaK_exp2anyreg(fs, e) {
     return cptr.ldI32o(e, $expdesc_u);
 }
 
-/** C ref: lcode.c:978 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:978 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_exp2anyregup(fs, e) {
     if (cptr.ldI32(e) != NHC.VUPVAL || (cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
         (yield* luaK_exp2anyreg(fs, e));
 }
 
-/** C ref: lcode.c:988 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:988 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_exp2val(fs, e) {
     if (cptr.ldI32(e) == NHC.VJMP || (cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)))
         (yield* luaK_exp2anyreg(fs, e));
@@ -833,7 +833,7 @@ export function* luaK_exp2val(fs, e) {
         (yield* luaK_dischargevars(fs, e));
 }
 
-/** C ref: lcode.c:1000 — @param {CPtr} fs @param {CPtr} e @returns {CInt} */
+/** C ref: lcode.c:1000 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 function* luaK_exp2K(fs, e) {
     if (!(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f))) {
         let info;
@@ -871,7 +871,7 @@ function* luaK_exp2K(fs, e) {
     return 0;
 }
 
-/** C ref: lcode.c:1030 — @param {CPtr} fs @param {CPtr} e @returns {CInt} */
+/** C ref: lcode.c:1030 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 function* exp2RK(fs, e) {
     if ((yield* luaK_exp2K(fs, e)))
         return 1;
@@ -881,13 +881,13 @@ function* exp2RK(fs, e) {
     }
 }
 
-/** C ref: lcode.c:1040 — @param {CPtr} fs @param {*} o @param {CInt} a @param {CInt} b @param {CPtr} ec */
+/** C ref: lcode.c:1040 — @param {CPtr<FuncState>} fs @param {*} o @param {CInt} a @param {CInt} b @param {CPtr<expdesc>} ec */
 function* codeABRK(fs, o, a, b, ec) {
     let k = (yield* exp2RK(fs, ec));
     (yield* luaK_codeABCk(fs, o, a, b, cptr.ldI32o(ec, $expdesc_u), k));
 }
 
-/** C ref: lcode.c:1050 — @param {CPtr} fs @param {CPtr} var @param {CPtr} ex */
+/** C ref: lcode.c:1050 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} var @param {CPtr<expdesc>} ex */
 export function* luaK_storevar(fs, var$, ex) {
     switch (cptr.ldI32(var$)) {
         case NHC.VLOCAL:
@@ -928,7 +928,7 @@ export function* luaK_storevar(fs, var$, ex) {
     freeexp(fs, ex);
 }
 
-/** C ref: lcode.c:1087 — @param {CPtr} fs @param {CPtr} e @param {CPtr} key */
+/** C ref: lcode.c:1087 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CPtr<expdesc>} key */
 export function* luaK_self(fs, e, key) {
     let ereg;
     (yield* luaK_exp2anyreg(fs, e));
@@ -941,14 +941,14 @@ export function* luaK_self(fs, e, key) {
     freeexp(fs, key);
 }
 
-/** C ref: lcode.c:1103 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:1103 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function negatecondition(fs, e) {
     let pc = getjumpcontrol(fs, cptr.ldI32o(e, $expdesc_u));
     (void 0);
     (cptr.stI32(pc, (((((cptr.ldI32(pc)) & (~(((~(((~0) << 1) >>> 0)) << 15) >>> 0))) >>> 0) | (((((((((((((((cptr.ldI32(pc)) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) ^ 1)) >>> 0) << 15) >>> 0) & (((~(((~0) << 1) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)));
 }
 
-/** C ref: lcode.c:1117 — @param {CPtr} fs @param {CPtr} e @param {CInt} cond @returns {CInt} */
+/** C ref: lcode.c:1117 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} cond @returns {CInt} */
 function* jumponcond(fs, e, cond) {
     if (cptr.ldI32(e) == NHC.VRELOC) {
         let ie = (cptr.ldI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4));
@@ -962,7 +962,7 @@ function* jumponcond(fs, e, cond) {
     return (yield* condjump(fs, NHC.OP_TESTSET, 255, cptr.ldI32o(e, $expdesc_u), 0, cond));
 }
 
-/** C ref: lcode.c:1135 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:1135 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_goiftrue(fs, e) {
     let pc;
     (yield* luaK_dischargevars(fs, e));
@@ -993,7 +993,7 @@ export function* luaK_goiftrue(fs, e) {
     cptr.stI32o(e, $expdesc_t, -1);
 }
 
-/** C ref: lcode.c:1162 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:1162 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 export function* luaK_goiffalse(fs, e) {
     let pc;
     (yield* luaK_dischargevars(fs, e));
@@ -1020,7 +1020,7 @@ export function* luaK_goiffalse(fs, e) {
     cptr.stI32o(e, $expdesc_f, -1);
 }
 
-/** C ref: lcode.c:1188 — @param {CPtr} fs @param {CPtr} e */
+/** C ref: lcode.c:1188 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e */
 function* codenot(fs, e) {
     switch (cptr.ldI32(e)) {
         case NHC.VNIL:
@@ -1064,27 +1064,27 @@ function* codenot(fs, e) {
     removevalues(fs, cptr.ldI32o(e, $expdesc_t));
 }
 
-/** C ref: lcode.c:1222 — @param {CPtr} fs @param {CPtr} e @returns {CInt} */
+/** C ref: lcode.c:1222 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @returns {CInt} */
 function isKstr(fs, e) {
     return (cptr.ldI32(e) == NHC.VK && !(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)) && cptr.ldI32o(e, $expdesc_u) <= 255 && ((cptr.ld1uo(((cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_k), cptr.ldI32o(e, $expdesc_u), 16))), $TValue_tt_)) == 68) ? 1 : 0);
 }
 
-/** C ref: lcode.c:1230 — @param {CPtr} e @returns {CInt} */
+/** C ref: lcode.c:1230 — @param {CPtr<expdesc>} e @returns {CInt} */
 function isKint(e) {
     return (cptr.ldI32(e) == NHC.VKINT && !(cptr.ldI32o((e), $expdesc_t) != cptr.ldI32o((e), $expdesc_f)) ? 1 : 0);
 }
 
-/** C ref: lcode.c:1239 — @param {CPtr} e @returns {CInt} */
+/** C ref: lcode.c:1239 — @param {CPtr<expdesc>} e @returns {CInt} */
 function isCint(e) {
     return isKint(e) && ((BigInt.asUintN(64, (cptr.ldI64o(e, $expdesc_u)))) <= 255n) ? 1 : 0;
 }
 
-/** C ref: lcode.c:1248 — @param {CPtr} e @returns {CInt} */
+/** C ref: lcode.c:1248 — @param {CPtr<expdesc>} e @returns {CInt} */
 function isSCint(e) {
     return isKint(e) && fitsC(cptr.ldI64o(e, $expdesc_u)) ? 1 : 0;
 }
 
-/** C ref: lcode.c:1257 — @param {CPtr} e @param {CPtr} pi @param {CPtr} isfloat @returns {CInt} */
+/** C ref: lcode.c:1257 — @param {CPtr<expdesc>} e @param {CPtr<int>} pi @param {CPtr<int>} isfloat @returns {CInt} */
 function isSCnumber(e, pi, isfloat) {
     let i = cptr.box(0n);
     if (cptr.ldI32(e) == NHC.VKINT)
@@ -1100,7 +1100,7 @@ function isSCnumber(e, pi, isfloat) {
         return 0;
 }
 
-/** C ref: lcode.c:1280 — @param {CPtr} fs @param {CPtr} t @param {CPtr} k */
+/** C ref: lcode.c:1280 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} t @param {CPtr<expdesc>} k */
 export function* luaK_indexed(fs, t, k) {
     if (cptr.ldI32(k) == NHC.VKSTR)
         (yield* str2K(fs, k));
@@ -1128,7 +1128,7 @@ export function* luaK_indexed(fs, t, k) {
     }
 }
 
-/** C ref: lcode.c:1318 — @param {CInt} op @param {CPtr} v1 @param {CPtr} v2 @returns {CInt} */
+/** C ref: lcode.c:1318 — @param {CInt} op @param {CPtr<TValue>} v1 @param {CPtr<TValue>} v2 @returns {CInt} */
 function validop(op, v1, v2) {
     switch (op) {
         case 7:
@@ -1150,7 +1150,7 @@ function validop(op, v1, v2) {
     }
 }
 
-/** C ref: lcode.c:1337 — @param {CPtr} fs @param {CInt} op @param {CPtr} e1 @param {CPtr} e2 @returns {CInt} */
+/** C ref: lcode.c:1337 — @param {CPtr<FuncState>} fs @param {CInt} op @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @returns {CInt} */
 function* constfolding(fs, op, e1, e2) {
     let v1 = cptr.alloc(16);
     let v2 = cptr.alloc(16);
@@ -1188,7 +1188,7 @@ function binopr2TM(opr) {
     return ((((((((opr))) - NHC.OPR_ADD) | 0) + NHC.TM_ADD) | 0));
 }
 
-/** C ref: lcode.c:1392 — @param {CPtr} fs @param {*} op @param {CPtr} e @param {CInt} line */
+/** C ref: lcode.c:1392 — @param {CPtr<FuncState>} fs @param {*} op @param {CPtr<expdesc>} e @param {CInt} line */
 function* codeunexpval(fs, op, e, line) {
     let r = (yield* luaK_exp2anyreg(fs, e));
     freeexp(fs, e);
@@ -1197,7 +1197,7 @@ function* codeunexpval(fs, op, e, line) {
     (yield* luaK_fixline(fs, line));
 }
 
-/** C ref: lcode.c:1407 — @param {CPtr} fs @param {CPtr} e1 @param {CPtr} e2 @param {*} op @param {CInt} v2 @param {CInt} flip @param {CInt} line @param {*} mmop @param {*} event */
+/** C ref: lcode.c:1407 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {*} op @param {CInt} v2 @param {CInt} flip @param {CInt} line @param {*} mmop @param {*} event */
 function* finishbinexpval(fs, e1, e2, op, v2, flip, line, mmop, event) {
     let v1 = (yield* luaK_exp2anyreg(fs, e1));
     let pc = (yield* luaK_codeABCk(fs, op, 0, v1, v2, 0));
@@ -1209,7 +1209,7 @@ function* finishbinexpval(fs, e1, e2, op, v2, flip, line, mmop, event) {
     (yield* luaK_fixline(fs, line));
 }
 
-/** C ref: lcode.c:1425 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
+/** C ref: lcode.c:1425 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 function* codebinexpval(fs, opr, e1, e2, line) {
     let op = binopr2op(opr, NHC.OPR_ADD, NHC.OP_ADD);
     let v2 = (yield* luaK_exp2anyreg(fs, e2));
@@ -1218,14 +1218,14 @@ function* codebinexpval(fs, opr, e1, e2, line) {
     (yield* finishbinexpval(fs, e1, e2, op, v2, 0, line, NHC.OP_MMBIN, binopr2TM(opr)));
 }
 
-/** C ref: lcode.c:1440 — @param {CPtr} fs @param {*} op @param {CPtr} e1 @param {CPtr} e2 @param {CInt} flip @param {CInt} line @param {*} event */
+/** C ref: lcode.c:1440 — @param {CPtr<FuncState>} fs @param {*} op @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} flip @param {CInt} line @param {*} event */
 function* codebini(fs, op, e1, e2, flip, line, event) {
     let v2 = ((((Number(BigInt.asIntN(32, ((cptr.ldI64o(e2, $expdesc_u))))))) + 127) | 0);
     (void 0);
     (yield* finishbinexpval(fs, e1, e2, op, v2, flip, line, NHC.OP_MMBINI, event));
 }
 
-/** C ref: lcode.c:1452 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} flip @param {CInt} line */
+/** C ref: lcode.c:1452 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} flip @param {CInt} line */
 function* codebinK(fs, opr, e1, e2, flip, line) {
     let event = binopr2TM(opr);
     let v2 = cptr.ldI32o(e2, $expdesc_u);
@@ -1233,7 +1233,7 @@ function* codebinK(fs, opr, e1, e2, flip, line) {
     (yield* finishbinexpval(fs, e1, e2, op, v2, flip, line, NHC.OP_MMBINK, event));
 }
 
-/** C ref: lcode.c:1464 — @param {CPtr} fs @param {CPtr} e1 @param {CPtr} e2 @param {*} op @param {CInt} line @param {*} event @returns {CInt} */
+/** C ref: lcode.c:1464 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {*} op @param {CInt} line @param {*} event @returns {CInt} */
 function* finishbinexpneg(fs, e1, e2, op, line, event) {
     if (!isKint(e2))
         return 0;
@@ -1250,21 +1250,21 @@ function* finishbinexpneg(fs, e1, e2, op, line, event) {
     }
 }
 
-/** C ref: lcode.c:1483 — @param {CPtr} e1 @param {CPtr} e2 */
+/** C ref: lcode.c:1483 — @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function swapexps(e1, e2) {
     let temp = cptr.alloc(24); cptr.memcpy(temp, e1, 24);
     cptr.memcpy(e1, e2, 24);
     cptr.memcpy(e2, temp, 24);
 }
 
-/** C ref: lcode.c:1491 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} flip @param {CInt} line */
+/** C ref: lcode.c:1491 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} flip @param {CInt} line */
 function* codebinNoK(fs, opr, e1, e2, flip, line) {
     if (flip)
         swapexps(e1, e2);
     (yield* codebinexpval(fs, opr, e1, e2, line));
 }
 
-/** C ref: lcode.c:1503 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} flip @param {CInt} line */
+/** C ref: lcode.c:1503 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} flip @param {CInt} line */
 function* codearith(fs, opr, e1, e2, flip, line) {
     if (tonumeral(e2, null) && (yield* luaK_exp2K(fs, e2)))
         (yield* codebinK(fs, opr, e1, e2, flip, line));
@@ -1272,7 +1272,7 @@ function* codearith(fs, opr, e1, e2, flip, line) {
         (yield* codebinNoK(fs, opr, e1, e2, flip, line));
 }
 
-/** C ref: lcode.c:1517 — @param {CPtr} fs @param {*} op @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
+/** C ref: lcode.c:1517 — @param {CPtr<FuncState>} fs @param {*} op @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 function* codecommutative(fs, op, e1, e2, line) {
     let flip = 0;
     if (tonumeral(e1, null)) {
@@ -1285,7 +1285,7 @@ function* codecommutative(fs, op, e1, e2, line) {
         (yield* codearith(fs, op, e1, e2, flip, line));
 }
 
-/** C ref: lcode.c:1535 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
+/** C ref: lcode.c:1535 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 function* codebitwise(fs, opr, e1, e2, line) {
     let flip = 0;
     if (cptr.ldI32(e1) == NHC.VKINT) {
@@ -1298,7 +1298,7 @@ function* codebitwise(fs, opr, e1, e2, line) {
         (yield* codebinNoK(fs, opr, e1, e2, flip, line));
 }
 
-/** C ref: lcode.c:1553 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 */
+/** C ref: lcode.c:1553 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function* codeorder(fs, opr, e1, e2) {
     let r1;
     let r2;
@@ -1323,7 +1323,7 @@ function* codeorder(fs, opr, e1, e2) {
     cptr.stI32(e1, NHC.VJMP);
 }
 
-/** C ref: lcode.c:1585 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 */
+/** C ref: lcode.c:1585 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 */
 function* codeeq(fs, opr, e1, e2) {
     let r1;
     let r2;
@@ -1356,7 +1356,7 @@ cptr.stI64o(__static_luaK_prefix_ef, $expdesc_u, 0n);
 cptr.stI32o(__static_luaK_prefix_ef, $expdesc_t, -1);
 cptr.stI32o(__static_luaK_prefix_ef, $expdesc_f, -1);
 
-/** C ref: lcode.c:1616 — @param {CPtr} fs @param {*} opr @param {CPtr} e @param {CInt} line */
+/** C ref: lcode.c:1616 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e @param {CInt} line */
 export function* luaK_prefix(fs, opr, e, line) {
     (yield* luaK_dischargevars(fs, e));
     switch (opr) {
@@ -1375,7 +1375,7 @@ export function* luaK_prefix(fs, opr, e, line) {
     }
 }
 
-/** C ref: lcode.c:1637 — @param {CPtr} fs @param {*} op @param {CPtr} v */
+/** C ref: lcode.c:1637 — @param {CPtr<FuncState>} fs @param {*} op @param {CPtr<expdesc>} v */
 export function* luaK_infix(fs, op, v) {
     (yield* luaK_dischargevars(fs, v));
     switch (op) {
@@ -1434,7 +1434,7 @@ export function* luaK_infix(fs, op, v) {
     }
 }
 
-/** C ref: lcode.c:1686 — @param {CPtr} fs @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
+/** C ref: lcode.c:1686 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 function* codeconcat(fs, e1, e2, line) {
     let ie2 = previousinstruction(fs);
     if (((((((cptr.ldI32(ie2)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) == NHC.OP_CONCAT) {
@@ -1450,7 +1450,7 @@ function* codeconcat(fs, e1, e2, line) {
     }
 }
 
-/** C ref: lcode.c:1706 — @param {CPtr} fs @param {*} opr @param {CPtr} e1 @param {CPtr} e2 @param {CInt} line */
+/** C ref: lcode.c:1706 — @param {CPtr<FuncState>} fs @param {*} opr @param {CPtr<expdesc>} e1 @param {CPtr<expdesc>} e2 @param {CInt} line */
 export function* luaK_posfix(fs, opr, e1, e2, line) {
     (yield* luaK_dischargevars(fs, e2));
     if (((opr) <= NHC.OPR_SHR) && (yield* constfolding(fs, ((opr + 0) >>> 0) | 0, e1, e2)))
@@ -1544,13 +1544,13 @@ export function* luaK_posfix(fs, opr, e1, e2, line) {
     }
 }
 
-/** C ref: lcode.c:1787 — @param {CPtr} fs @param {CInt} line */
+/** C ref: lcode.c:1787 — @param {CPtr<FuncState>} fs @param {CInt} line */
 export function* luaK_fixline(fs, line) {
     removelastlineinfo(fs);
     (yield* savelineinfo(fs, cptr.ldPtr(fs), line));
 }
 
-/** C ref: lcode.c:1793 — @param {CPtr} fs @param {CInt} pc @param {CInt} ra @param {CInt} asize @param {CInt} hsize */
+/** C ref: lcode.c:1793 — @param {CPtr<FuncState>} fs @param {CInt} pc @param {CInt} ra @param {CInt} asize @param {CInt} hsize */
 export function luaK_settablesize(fs, pc, ra, asize, hsize) {
     let inst = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
     let rb = (hsize != 0) ? (luaO_ceillog2(hsize >>> 0) + 1) | 0 : 0;
@@ -1561,7 +1561,7 @@ export function luaK_settablesize(fs, pc, ra, asize, hsize) {
     cptr.stI32((cptr.add(inst, 1, 4)), (((((82) << 0) >>> 0) | ((((extra) >>> 0) << 7) >>> 0)) >>> 0));
 }
 
-/** C ref: lcode.c:1811 — @param {CPtr} fs @param {CInt} base @param {CInt} nelems @param {CInt} tostore */
+/** C ref: lcode.c:1811 — @param {CPtr<FuncState>} fs @param {CInt} base @param {CInt} nelems @param {CInt} tostore */
 export function* luaK_setlist(fs, base, nelems, tostore) {
     (void 0);
     if (tostore == -1)
@@ -1577,7 +1577,7 @@ export function* luaK_setlist(fs, base, nelems, tostore) {
     cptr.st1o(fs, $FuncState_freereg, uchar(((base + 1) | 0)));
 }
 
-/** C ref: lcode.c:1830 — @param {CPtr} code @param {CInt} i @returns {CInt} */
+/** C ref: lcode.c:1830 — @param {CPtr<Instruction>} code @param {CInt} i @returns {CInt} */
 function finaltarget(code, i) {
     let count;
     for (count = 0; count < 100; count++) {
@@ -1590,7 +1590,7 @@ function finaltarget(code, i) {
     return i;
 }
 
-/** C ref: lcode.c:1847 — @param {CPtr} fs */
+/** C ref: lcode.c:1847 — @param {CPtr<FuncState>} fs */
 export function* luaK_finish(fs) {
     let i;
     let p = cptr.ldPtr(fs);

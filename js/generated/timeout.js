@@ -589,7 +589,7 @@ cptr.stPtro(propertynames, 1072 + $propname_prop_name, __sl67);
 cptr.stI32o(propertynames, 1088, 0);
 cptr.stPtro(propertynames, 1088 + $propname_prop_name, null);
 
-/** C ref: timeout.c:117 — @param {CInt} idx @param {CPtr} propertynum @returns {CPtr} */
+/** C ref: timeout.c:117 — @param {CInt} idx @param {CPtr<int>} propertynum @returns {CPtr<char>} */
 export function property_by_index(idx, propertynum) {
     if (!((idx) >= 0 && (idx) < ((69 - 1) | 0)))
         idx = (69 - 1) | 0;
@@ -864,7 +864,7 @@ export function burn_away_slime() {
     }
 }
 
-/** C ref: timeout.c:457 — @param {CPtr} kptr */
+/** C ref: timeout.c:457 — @param {CPtr<struct kinfo>} kptr */
 function slimed_to_death(kptr) {
     let save_mvflags;
     if (Upolyd() && cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_GREEN_SLIME, 96))) {
@@ -1245,7 +1245,7 @@ export function fall_asleep(how_long, wakeup_msg) {
     cptr.stPtro(gn, $instance_globals_n_nomovemsg, wakeup_msg ? __sl166 : cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again));
 }
 
-/** C ref: timeout.c:981 — @param {CPtr} egg @param {CLongLong} when */
+/** C ref: timeout.c:981 — @param {CPtr<struct obj>} egg @param {CLongLong} when */
 export function attach_egg_hatch_timeout(egg, when) {
     let i;
     void stop_timer(NHC.HATCH_EGG, obj_to_any(egg));
@@ -1261,12 +1261,12 @@ export function attach_egg_hatch_timeout(egg, when) {
     }
 }
 
-/** C ref: timeout.c:1009 — @param {CPtr} egg */
+/** C ref: timeout.c:1009 — @param {CPtr<struct obj>} egg */
 export function kill_egg(egg) {
     void stop_timer(NHC.HATCH_EGG, obj_to_any(egg));
 }
 
-/** C ref: timeout.c:1017 — @param {CPtr} arg @param {CLongLong} timeout */
+/** C ref: timeout.c:1017 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function hatch_egg(arg, timeout) {
     let egg;
     let mon;
@@ -1383,7 +1383,7 @@ export function learn_egg_type(mnum) {
     update_inventory();
 }
 
-/** C ref: timeout.c:1204 — @param {CPtr} figurine */
+/** C ref: timeout.c:1204 — @param {CPtr<struct obj>} figurine */
 export function attach_fig_transform_timeout(figurine) {
     let i;
     void stop_timer(NHC.FIG_TRANSFORM, obj_to_any(figurine));
@@ -1462,7 +1462,7 @@ function slip_or_trip() {
     }
 }
 
-/** C ref: timeout.c:1345 — @param {CPtr} obj @param {CPtr} tailer */
+/** C ref: timeout.c:1345 — @param {CPtr<struct obj>} obj @param {CPtr<char>} tailer */
 function see_lamp_flicker(obj, tailer) {
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_INVENT:
@@ -1475,7 +1475,7 @@ function see_lamp_flicker(obj, tailer) {
     }
 }
 
-/** C ref: timeout.c:1360 — @param {CPtr} obj */
+/** C ref: timeout.c:1360 — @param {CPtr<struct obj>} obj */
 function lantern_message(obj) {
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_INVENT:
@@ -1492,7 +1492,7 @@ function lantern_message(obj) {
     }
 }
 
-/** C ref: timeout.c:1383 — @param {CPtr} arg @param {CLongLong} timeout */
+/** C ref: timeout.c:1383 — @param {CPtr<anything>} arg @param {CLongLong} timeout */
 export function burn_object(arg, timeout) {
     let obj = cptr.ldPtr(arg);
     let canseeit;
@@ -1721,7 +1721,7 @@ export function burn_object(arg, timeout) {
         update_inventory();
 }
 
-/** C ref: timeout.c:1712 — @param {CPtr} obj @param {CInt} already_lit */
+/** C ref: timeout.c:1712 — @param {CPtr<struct obj>} obj @param {CInt} already_lit */
 export function begin_burn(obj, already_lit) {
     let radius = 3;
     let turns = 0n;
@@ -1797,7 +1797,7 @@ export function begin_burn(obj, already_lit) {
     }
 }
 
-/** C ref: timeout.c:1804 — @param {CPtr} obj @param {CInt} timer_attached */
+/** C ref: timeout.c:1804 — @param {CPtr<struct obj>} obj @param {CInt} timer_attached */
 export function end_burn(obj, timer_attached) {
     if (!(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
         impossible(__sl260, xname(obj));
@@ -1814,7 +1814,7 @@ export function end_burn(obj, timer_attached) {
         impossible(__sl261, xname(obj));
 }
 
-/** C ref: timeout.c:1828 — @param {CPtr} arg @param {CLongLong} expire_time */
+/** C ref: timeout.c:1828 — @param {CPtr<anything>} arg @param {CLongLong} expire_time */
 function cleanup_burn(arg, expire_time) {
     let obj = cptr.ldPtr(arg);
     if (!(cptr.ldI32o(obj, $obj_lamplit) & 1)) {
@@ -1902,7 +1902,7 @@ cptr.stPtro(timeout_funcs, 192, melt_ice_away);
 cptr.stPtro(timeout_funcs, 192 + $ttable_cleanup, null);
 cptr.stPtro(timeout_funcs, 192 + $ttable_name, __sl274);
 
-/** C ref: timeout.c:1995 — @param {CInt} kind @returns {CPtr} */
+/** C ref: timeout.c:1995 — @param {CInt} kind @returns {CPtr<char>} */
 function kind_name(kind) {
     switch (kind) {
         case NHC.TIMER_NONE:
@@ -1920,7 +1920,7 @@ function kind_name(kind) {
     return __sl281;
 }
 
-/** C ref: timeout.c:2014 — @param {CInt} win @param {CPtr} base */
+/** C ref: timeout.c:2014 — @param {CInt} win @param {CPtr<timer_element>} base */
 function print_queue(win, base) {
     let curr;
     let buf = new Uint8Array(256);
@@ -2083,7 +2083,7 @@ export function run_timers() {
     }
 }
 
-/** C ref: timeout.c:2247 — @param {CLongLong} when @param {CInt} kind @param {CInt} func_index @param {CPtr} arg @returns {CInt} */
+/** C ref: timeout.c:2247 — @param {CLongLong} when @param {CInt} kind @param {CInt} func_index @param {CPtr<anything>} arg @returns {CInt} */
 export function start_timer(when, kind, func_index, arg) {
     let gnu;
     let dup;
@@ -2113,7 +2113,7 @@ export function start_timer(when, kind, func_index, arg) {
     return 1;
 }
 
-/** C ref: timeout.c:2299 — @param {CInt} func_index @param {CPtr} arg @returns {CLongLong} */
+/** C ref: timeout.c:2299 — @param {CInt} func_index @param {CPtr<anything>} arg @returns {CLongLong} */
 export function stop_timer(func_index, arg) {
     let cleanup_func;
     let doomed;
@@ -2132,7 +2132,7 @@ export function stop_timer(func_index, arg) {
     return 0n;
 }
 
-/** C ref: timeout.c:2324 — @param {CInt} type @param {CPtr} arg @returns {CLongLong} */
+/** C ref: timeout.c:2324 — @param {CInt} type @param {CPtr<anything>} arg @returns {CLongLong} */
 export function peek_timer(type, arg) {
     let curr;
     for (curr = cptr.ldPtro(gt, $instance_globals_t_timer_base); curr; curr = cptr.ldPtr(curr)) {
@@ -2142,7 +2142,7 @@ export function peek_timer(type, arg) {
     return 0n;
 }
 
-/** C ref: timeout.c:2339 — @param {CPtr} src @param {CPtr} dest */
+/** C ref: timeout.c:2339 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function obj_move_timers(src, dest) {
     let count;
     let curr;
@@ -2157,7 +2157,7 @@ export function obj_move_timers(src, dest) {
     cptr.stI16o(src, $obj_timed, 0);
 }
 
-/** C ref: timeout.c:2359 — @param {CPtr} src @param {CPtr} dest */
+/** C ref: timeout.c:2359 — @param {CPtr<struct obj>} src @param {CPtr<struct obj>} dest */
 export function obj_split_timers(src, dest) {
     let curr;
     let next_timer = null;
@@ -2169,7 +2169,7 @@ export function obj_split_timers(src, dest) {
     }
 }
 
-/** C ref: timeout.c:2377 — @param {CPtr} obj */
+/** C ref: timeout.c:2377 — @param {CPtr<struct obj>} obj */
 export function obj_stop_timers(obj) {
     let cleanup_func;
     let curr;
@@ -2193,7 +2193,7 @@ export function obj_stop_timers(obj) {
     cptr.stI16o(obj, $obj_timed, 0);
 }
 
-/** C ref: timeout.c:2404 — @param {CPtr} object @param {CInt} timer_type @returns {CInt} */
+/** C ref: timeout.c:2404 — @param {CPtr<struct obj>} object @param {CInt} timer_type @returns {CInt} */
 export function obj_has_timer(object, timer_type) {
     let timeout = peek_timer(timer_type, obj_to_any(object));
     return schar((timeout != 0n));
@@ -2240,7 +2240,7 @@ export function spot_time_left(x, y, func_index) {
     return (expires > 0n) ? BigInt.asIntN(64, expires - cptr.ldI64o(svm, $instance_globals_saved_m_moves)) : 0n;
 }
 
-/** C ref: timeout.c:2467 — @param {CPtr} gnu */
+/** C ref: timeout.c:2467 — @param {CPtr<timer_element>} gnu */
 function insert_timer(gnu) {
     let curr;
     let prev;
@@ -2254,7 +2254,7 @@ function insert_timer(gnu) {
         cptr.stPtro(gt, $instance_globals_t_timer_base, gnu);
 }
 
-/** C ref: timeout.c:2483 — @param {CPtr} base @param {CInt} func_index @param {CPtr} arg @returns {CPtr} */
+/** C ref: timeout.c:2483 — @param {CPtr<timer_element *>} base @param {CInt} func_index @param {CPtr<anything>} arg @returns {CPtr<timer_element>} */
 function remove_timer(base, func_index, arg) {
     let prev;
     let curr;
@@ -2270,7 +2270,7 @@ function remove_timer(base, func_index, arg) {
     return curr;
 }
 
-/** C ref: timeout.c:2505 — @param {CPtr} nhfp @param {CPtr} timer */
+/** C ref: timeout.c:2505 — @param {CPtr<NHFILE>} nhfp @param {CPtr<timer_element>} timer */
 function write_timer(nhfp, timer) {
     let arg_save = cptr.alloc(8);
     cptr.memcpy(arg_save, cptr.add(cg, $const_globals_zeroany), 8);
@@ -2311,7 +2311,7 @@ function write_timer(nhfp, timer) {
     }
 }
 
-/** C ref: timeout.c:2560 — @param {CPtr} obj @returns {CInt} */
+/** C ref: timeout.c:2560 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_is_local(obj) {
     switch (cptr.ld1so(obj, $obj_where)) {
         case NHM.OBJ_INVENT:
@@ -2329,7 +2329,7 @@ export function obj_is_local(obj) {
     return 0;
 }
 
-/** C ref: timeout.c:2584 — @param {CPtr} mon @returns {CInt} */
+/** C ref: timeout.c:2584 — @param {CPtr<struct monst>} mon @returns {CInt} */
 function mon_is_local(mon) {
     let curr;
     for (curr = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); curr; curr = cptr.ldPtr(curr))
@@ -2341,7 +2341,7 @@ function mon_is_local(mon) {
     return 1;
 }
 
-/** C ref: timeout.c:2603 — @param {CPtr} timer @returns {CInt} */
+/** C ref: timeout.c:2603 — @param {CPtr<timer_element>} timer @returns {CInt} */
 function timer_is_local(timer) {
     switch (cptr.ldI16o(timer, $timer_element_kind)) {
         case NHC.TIMER_LEVEL:
@@ -2357,7 +2357,7 @@ function timer_is_local(timer) {
     return 0;
 }
 
-/** C ref: timeout.c:2627 — @param {CPtr} nhfp @param {CInt} range @param {CInt} write_it @returns {CInt} */
+/** C ref: timeout.c:2627 — @param {CPtr<NHFILE>} nhfp @param {CInt} range @param {CInt} write_it @returns {CInt} */
 function maybe_write_timer(nhfp, range, write_it) {
     let count = 0;
     let curr;
@@ -2379,7 +2379,7 @@ function maybe_write_timer(nhfp, range, write_it) {
     return count;
 }
 
-/** C ref: timeout.c:2668 — @param {CPtr} nhfp @param {CInt} range */
+/** C ref: timeout.c:2668 — @param {CPtr<NHFILE>} nhfp @param {CInt} range */
 export function save_timers(nhfp, range) {
     let curr;
     let prev;
@@ -2411,7 +2411,7 @@ export function save_timers(nhfp, range) {
     }
 }
 
-/** C ref: timeout.c:2707 — @param {CPtr} nhfp @param {CInt} range @param {CLongLong} adjust */
+/** C ref: timeout.c:2707 — @param {CPtr<NHFILE>} nhfp @param {CInt} range @param {CLongLong} adjust */
 export function restore_timers(nhfp, range, adjust) {
     let count = cptr.box(0);
     let curr;
@@ -2431,7 +2431,7 @@ export function restore_timers(nhfp, range, adjust) {
     }
 }
 
-/** C ref: timeout.c:2735 — @param {CPtr} hdrfmt @param {CPtr} hdrbuf @param {CPtr} count @param {CPtr} size */
+/** C ref: timeout.c:2735 — @param {CPtr<char>} hdrfmt @param {CPtr<char>} hdrbuf @param {CPtr<long>} count @param {CPtr<long>} size */
 export function timer_stats(hdrfmt, hdrbuf, count, size) {
     let te;
     void cptr.sprintf(hdrbuf, hdrfmt, 48n);

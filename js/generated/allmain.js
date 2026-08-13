@@ -231,7 +231,7 @@ const __sl54 = cptr.lit(",\"buc\":%d,\"known\":%d,\"dknown\":%d,\"bknown\":%d");
 const __sl55 = cptr.lit(",\"eroded\":%d,\"eroded2\":%d}");
 const __sl56 = cptr.lit("]}\n");
 
-/** C ref: allmain.c:33 — @param {CInt} argc @param {CPtr} argv */
+/** C ref: allmain.c:33 — @param {CInt} argc @param {CPtr<char *>} argv */
 export function early_init(argc, argv) {
     program_state_init();
     crashreport_init(argc, argv);
@@ -784,7 +784,7 @@ export function welcome(new_game) {
     }
 }
 
-/** C ref: allmain.c:976 — @param {CPtr} msg */
+/** C ref: allmain.c:976 — @param {CPtr<char>} msg */
 function interrupt_multi(msg) {
     if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n && !cptr.ld1so(svc, $context_info_travel) && !cptr.ldI32o(svc, $context_info_run)) {
         nomul(0);

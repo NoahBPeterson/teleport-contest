@@ -30,14 +30,14 @@ const $TString_contents = FLD.TString_contents, $TString_extra = FLD.TString_ext
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __sl0 = cptr.lit("not enough memory");
 
-/** C ref: lstring.c:34 — @param {CPtr} a @param {CPtr} b @returns {CInt} */
+/** C ref: lstring.c:34 — @param {CPtr<TString>} a @param {CPtr<TString>} b @returns {CInt} */
 export function luaS_eqlngstr(a, b) {
     let len = cptr.ldU64o(a, $TString_u);
     (void 0);
     return (cptr.eq(a, b)) || ((len == cptr.ldU64o(b, $TString_u)) && (memcmp((cptr.add((a), $TString_contents)), (cptr.add((b), $TString_contents)), len) == 0)) ? 1 : 0;
 }
 
-/** C ref: lstring.c:43 — @param {CPtr} str @param {CLongLong} l @param {CUInt} seed @returns {CUInt} */
+/** C ref: lstring.c:43 — @param {CPtr<char>} str @param {CLongLong} l @param {CUInt} seed @returns {CUInt} */
 export function luaS_hash(str, l, seed) {
     let h = (seed ^ (Number(BigInt.asUintN(32, ((l)))))) >>> 0;
     for (; l > 0n; l--)
@@ -45,7 +45,7 @@ export function luaS_hash(str, l, seed) {
     return h;
 }
 
-/** C ref: lstring.c:51 — @param {CPtr} ts @returns {CUInt} */
+/** C ref: lstring.c:51 — @param {CPtr<TString>} ts @returns {CUInt} */
 export function luaS_hashlongstr(ts) {
     (void 0);
     if (cptr.ld1uo(ts, $TString_extra) == 0) {
@@ -56,7 +56,7 @@ export function luaS_hashlongstr(ts) {
     return cptr.ldI32o(ts, $TString_hash);
 }
 
-/** C ref: lstring.c:62 — @param {CPtr} vect @param {CInt} osize @param {CInt} nsize */
+/** C ref: lstring.c:62 — @param {CPtr<TString *>} vect @param {CInt} osize @param {CInt} nsize */
 function tablerehash(vect, osize, nsize) {
     let i;
     for (i = osize; i < nsize; i++)
@@ -74,7 +74,7 @@ function tablerehash(vect, osize, nsize) {
     }
 }
 
-/** C ref: lstring.c:85 — @param {CPtr} L @param {CInt} nsize */
+/** C ref: lstring.c:85 — @param {CPtr<lua_State>} L @param {CInt} nsize */
 export function* luaS_resize(L, nsize) {
     let tb = cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt);
     let osize = cptr.ldI32o(tb, $stringtable_size);
@@ -93,7 +93,7 @@ export function* luaS_resize(L, nsize) {
     }
 }
 
-/** C ref: lstring.c:110 — @param {CPtr} g */
+/** C ref: lstring.c:110 — @param {CPtr<global_State>} g */
 export function luaS_clearcache(g) {
     let i;
     let j;
@@ -104,7 +104,7 @@ export function luaS_clearcache(g) {
         }
 }
 
-/** C ref: lstring.c:123 — @param {CPtr} L */
+/** C ref: lstring.c:123 — @param {CPtr<lua_State>} L */
 export function* luaS_init(L) {
     let g = (cptr.ldPtro(L, $lua_State_l_G));
     let i;
@@ -120,7 +120,7 @@ export function* luaS_init(L) {
             cptr.stPtro3(g, i, 16, j, 8, $global_State_strcache, cptr.ldPtro(g, $global_State_memerrmsg));
 }
 
-/** C ref: lstring.c:143 — @param {CPtr} L @param {CLongLong} l @param {CInt} tag @param {CUInt} h @returns {CPtr} */
+/** C ref: lstring.c:143 — @param {CPtr<lua_State>} L @param {CLongLong} l @param {CInt} tag @param {CUInt} h @returns {CPtr<TString>} */
 function* createstrobj(L, l, tag, h) {
     let ts;
     let o;
@@ -134,7 +134,7 @@ function* createstrobj(L, l, tag, h) {
     return ts;
 }
 
-/** C ref: lstring.c:157 — @param {CPtr} L @param {CLongLong} l @returns {CPtr} */
+/** C ref: lstring.c:157 — @param {CPtr<lua_State>} L @param {CLongLong} l @returns {CPtr<TString>} */
 export function* luaS_createlngstrobj(L, l) {
     let ts = (yield* createstrobj(L, l, 20, cptr.ldI32o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_seed)));
     cptr.stU64o(ts, $TString_u, l);
@@ -142,7 +142,7 @@ export function* luaS_createlngstrobj(L, l) {
     return ts;
 }
 
-/** C ref: lstring.c:165 — @param {CPtr} L @param {CPtr} ts */
+/** C ref: lstring.c:165 — @param {CPtr<lua_State>} L @param {CPtr<TString>} ts */
 export function luaS_remove(L, ts) {
     let tb = cptr.add((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt);
     let p = cptr.add(cptr.ldPtr(tb), ((((((((cptr.ldI32o(ts, $TString_hash)) & (((cptr.ldI32o(tb, $stringtable_size)) - 1) | 0) >>> 0) >>> 0)) | 0)))), 8);
@@ -152,7 +152,7 @@ export function luaS_remove(L, ts) {
     (cptr.stI32o(tb, $stringtable_nuse, cptr.ldI32o(tb, $stringtable_nuse) + -1)) - (-1);
 }
 
-/** C ref: lstring.c:175 — @param {CPtr} L @param {CPtr} tb */
+/** C ref: lstring.c:175 — @param {CPtr<lua_State>} L @param {CPtr<stringtable>} tb */
 function* growstrtab(L, tb) {
     if ((__builtin_expect(BigInt(((cptr.ldI32o(tb, $stringtable_nuse) == 2147483647) != 0)), 0n))) {
         (yield* luaC_fullgc(L, 1));
@@ -163,7 +163,7 @@ function* growstrtab(L, tb) {
         (yield* luaS_resize(L, Math.imul(cptr.ldI32o(tb, $stringtable_size), 2)));
 }
 
-/** C ref: lstring.c:189 — @param {CPtr} L @param {CPtr} str @param {CLongLong} l @returns {CPtr} */
+/** C ref: lstring.c:189 — @param {CPtr<lua_State>} L @param {CPtr<char>} str @param {CLongLong} l @returns {CPtr<TString>} */
 function* internshrstr(L, str, l) {
     let ts;
     let g = (cptr.ldPtro(L, $lua_State_l_G));
@@ -191,7 +191,7 @@ function* internshrstr(L, str, l) {
     return ts;
 }
 
-/** C ref: lstring.c:222 — @param {CPtr} L @param {CPtr} str @param {CLongLong} l @returns {CPtr} */
+/** C ref: lstring.c:222 — @param {CPtr<lua_State>} L @param {CPtr<char>} str @param {CLongLong} l @returns {CPtr<TString>} */
 export function* luaS_newlstr(L, str, l) {
     if (l <= 40n)
         return (yield* internshrstr(L, str, l));
@@ -205,7 +205,7 @@ export function* luaS_newlstr(L, str, l) {
     }
 }
 
-/** C ref: lstring.c:242 — @param {CPtr} L @param {CPtr} str @returns {CPtr} */
+/** C ref: lstring.c:242 — @param {CPtr<lua_State>} L @param {CPtr<char>} str @returns {CPtr<TString>} */
 export function* luaS_new(L, str) {
     let i = u32mod((Number(BigInt.asUintN(32, (cptr.addr((str)) & 4294967295n)))), 53);
     let j;
@@ -220,7 +220,7 @@ export function* luaS_new(L, str) {
     return cptr.ldPtro(p, 0, 8);
 }
 
-/** C ref: lstring.c:259 — @param {CPtr} L @param {CLongLong} s @param {CInt} nuvalue @returns {CPtr} */
+/** C ref: lstring.c:259 — @param {CPtr<lua_State>} L @param {CLongLong} s @param {CInt} nuvalue @returns {CPtr<Udata>} */
 export function* luaS_newudata(L, s, nuvalue) {
     let u;
     let i;
