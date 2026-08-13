@@ -9,12 +9,13 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, has_emin, helpless, is_rider, m_next2u } from './nhmacrofn.js';
+import { d_at, rn2_at } from './nhrng.js';
 import { Conflict, Deaf, Displaced, HProtection, Hallucination, Invis, Underwater } from './nhprop.js';
 import { makemon, mongets, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
 import { mfndpos, mon_allowflags, mongone, monnear, setmangry, wakeup } from './mon.js';
 import { flags, gb, gc, gi, gm, gn, gt, gv, program_state, svd, svl, svm, svr, u, xdir, ydir } from './decl.js';
-import { d, rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { dist2, online2, s_suffix, sgn, strncmpi } from './hacklib.js';
 import { m_break_boulder, m_move_aggress } from './monmove.js';
 import { place_monster } from './steed.js';
@@ -299,8 +300,8 @@ export function pri_move(priest) {
     temple = cptr.ld1so((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shroom);
     ggx = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos);
     ggy = cptr.ldI16o((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shrpos + $nhcoord_y);
-    ggx = i16(ggx + (((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 194, __s_pri_move), rn2(3)) : rn2(3)) + -1) | 0));
-    ggy = i16(ggy + (((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 195, __s_pri_move), rn2(3)) : rn2(3)) + -1) | 0));
+    ggx = i16(ggx + ((rn2_at(__s_priest_c, 194, __s_pri_move, 3) + -1) | 0));
+    ggy = i16(ggy + ((rn2_at(__s_priest_c, 195, __s_pri_move, 3) + -1) | 0));
     if (!(cptr.ldI32o(priest, $monst_mpeaceful) & 1) || (Conflict() && !resist_conflict(priest))) {
         if (monnear(priest, cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             if (Displaced())
@@ -327,7 +328,7 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
     let px = 0;
     let py = 0;
     let i;
-    let si = (rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 229, __s_priestini), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0)));
+    let si = rn2_at(__s_priest_c, 229, __s_priestini, ((NHC.N_DIRS_Z - 2) | 0));
     let prim = cptr.add(mons, sanctum ? NHC.PM_HIGH_CLERIC : NHC.PM_ALIGNED_CLERIC, $sizeof_permonst);
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
         px = (sx + cptr.ld1so(cptr.decay(xdir), (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)), 1)) | 0;
@@ -355,10 +356,10 @@ export function priestini(lvl, sroom, sx, sy, sanctum) {
         if (sanctum && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((priest), $monst_mextra), $mextra_epri)), $epri_shralign) == -128 && on_level(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level), cptr.add(u, $you_uz))) {
             void mongets(priest, NHC.AMULET_OF_YENDOR);
         }
-        for (cnt = (((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 265, __s_priestini), rn2(3)) : rn2(3)) + 2) | 0); cnt > 0; --cnt) {
+        for (cnt = ((rn2_at(__s_priest_c, 265, __s_priestini, 3) + 2) | 0); cnt > 0; --cnt) {
             void mpickobj(priest, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
         }
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 269, __s_priestini), rn2(2)) : rn2(2)) && (otmp = which_armor(priest, 2n)) !== null) {
+        if (rn2_at(__s_priest_c, 269, __s_priestini, 2) && (otmp = which_armor(priest, 2n)) !== null) {
             if (p_coaligned(priest))
                 uncurse(otmp);
             else
@@ -480,7 +481,7 @@ export function intemple(roomno) {
                 cptr.stI32o(priest, $monst_ispriest, 0);
             pline(__s_s_intones, canseemon(priest) ? Monnam(priest) : __s_a_nearby_voice);
             cptr.stI32o(priest, $monst_ispriest, save_priest);
-            cptr.stI64o(epri_p, $epri_intone_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 443, __s_intemple), d(10, 500)) : d(10, 500)))));
+            cptr.stI64o(epri_p, $epri_intone_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 443, __s_intemple, 10, 500))));
             cptr.stI64o(epri_p, $epri_enter_time, 0n);
         }
         msg1 = (msg2 = null);
@@ -502,7 +503,7 @@ export function intemple(roomno) {
             verbalize(__s_pct_s, msg1);
             if (msg2)
                 verbalize(__s_pct_s, msg2);
-            cptr.stI64o(epri_p, $epri_enter_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 471, __s_intemple), d(10, 100)) : d(10, 100)))));
+            cptr.stI64o(epri_p, $epri_enter_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 471, __s_intemple, 10, 100))));
         }
         if (!sanctum) {
             if (!shrined || !p_coaligned(priest) || cptr.ldI32o(u, $you_ualign + $align_record) <= -4) {
@@ -518,14 +519,14 @@ export function intemple(roomno) {
             }
             if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64(this_time) || cptr.ldI64(other_time) >= cptr.ldI64(this_time)) {
                 You(msg1, msg2);
-                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 491, __s_intemple), d(10, 20)) : d(10, 20)))));
+                cptr.stI64(this_time, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(d_at(__s_priest_c, 491, __s_intemple, 10, 20))));
                 if (cptr.ldI64(this_time) <= cptr.ldI64(other_time))
                     cptr.stI64(other_time, BigInt.asIntN(64, cptr.ldI64(this_time) - 1n));
             }
         }
         mapseen_temple(priest);
     } else {
-        switch ((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 504, __s_intemple), rn2(4)) : rn2(4))) {
+        switch (rn2_at(__s_priest_c, 504, __s_intemple, 4)) {
             case 0:
             You(__s_have_an_eerie_feeling);
             break;
@@ -538,7 +539,7 @@ export function intemple(roomno) {
             default:
             break;
         }
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 519, __s_intemple), rn2(5)) : rn2(5)) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
+        if (!rn2_at(__s_priest_c, 519, __s_intemple, 5) && (mtmp = makemon(cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
             let ngen = cptr.ld1uo2(svm, NHC.PM_GHOST, $sizeof_mvitals, $instance_globals_saved_m_mvitals);
             if (canspotmon(mtmp))
                 pline(__s_a_s_ghost_appears_next_to_you_c, ngen < 5 ? __s_n_enormous : __s_empty, ngen < 10 ? 33 : 46);
@@ -592,7 +593,7 @@ export function priest_talk(priest) {
         }
         cptr.stI32o(priest, $monst_mpeaceful, 0);
         ;
-        verbalize(__s_pct_s, cptr.ldPtro(__static_priest_talk_cranky_msg, (rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 599, __s_priest_talk), rn2(3)) : rn2(3)), 8));
+        verbalize(__s_pct_s, cptr.ldPtro(__static_priest_talk_cranky_msg, rn2_at(__s_priest_c, 599, __s_priest_talk, 3), 8));
         return;
     }
     if ((cptr.ldI32o(priest, $monst_mpeaceful) & 1) | 0 && cptr.ld1s(in_rooms(cptr.ldI16o(priest, $monst_mx), cptr.ldI16o(priest, $monst_my), NHC.TEMPLE)) && !has_shrine(priest)) {
@@ -617,7 +618,7 @@ export function priest_talk(priest) {
         return;
     } else {
         let offer;
-        let suggested = BigInt((Math.imul((cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0, ((((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 638, __s_priest_talk), rn2(101)) : rn2(101)) >>> 0) + ((150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0)) >>> 0)) >>> 0)) >>> 0) >>> 0);
+        let suggested = BigInt((Math.imul((cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0, (((rn2_at(__s_priest_c, 638, __s_priest_talk, 101) >>> 0) + ((150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0)) >>> 0)) >>> 0)) >>> 0) >>> 0);
         let quan = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) / (BigInt.asIntN(64, suggested * 3n));
         let buf = new Uint8Array(256);
         if (quan < 1n)
@@ -653,7 +654,7 @@ export function priest_talk(priest) {
                     adjalign(1);
             }
             verbalize(__s_i_bestow_upon_thee_a_blessing);
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, $sizeof_prop), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 680, __s_priest_talk), rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) : rn2(Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested)))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.CLAIRVOYANT, $sizeof_prop), $prop_intrinsic), Number(BigInt.asIntN(32, (BigInt.asIntN(64, BigInt(rn2_at(__s_priest_c, 680, __s_priest_talk, Number(BigInt.asIntN(32, (BigInt.asIntN(64, 500n * offer) / suggested))))) + (BigInt.asIntN(64, 500n * offer) / suggested))))));
         } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
             let orig_ublessed = cptr.ldI32o(u, $you_ublessed);
             if (!(HProtection() & 117440512n)) {
@@ -662,8 +663,8 @@ export function priest_talk(priest) {
             }
             for (; offer >= (BigInt.asIntN(64, 2n * suggested)); offer -= (BigInt.asIntN(64, 2n * suggested))) {
                 if (!cptr.ldI32o(u, $you_ublessed))
-                    cptr.stI32o(u, $you_ublessed, (((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 695, __s_priest_talk), rn2(3)) : rn2(3)) + 2) | 0));
-                else if (cptr.ldI32o(u, $you_ublessed) < 20 && (cptr.ldI32o(u, $you_ublessed) < 9 || !(rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 697, __s_priest_talk), rn2(cptr.ldI32o(u, $you_ublessed))) : rn2(cptr.ldI32o(u, $you_ublessed)))))
+                    cptr.stI32o(u, $you_ublessed, ((rn2_at(__s_priest_c, 695, __s_priest_talk, 3) + 2) | 0));
+                else if (cptr.ldI32o(u, $you_ublessed) < 20 && (cptr.ldI32o(u, $you_ublessed) < 9 || !rn2_at(__s_priest_c, 697, __s_priest_talk, cptr.ldI32o(u, $you_ublessed))))
                     (cptr.stI32o(u, $you_ublessed, cptr.ldI32o(u, $you_ublessed) + 1)) - (1);
             }
             ;
@@ -768,7 +769,7 @@ export function ghod_hitsu(priest) {
                 y = cptr.ldI16o(troom, $mkroom_ly);
             }
         } else {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 827, __s_ghod_hitsu), rn2(4)) : rn2(4))) {
+            switch (rn2_at(__s_priest_c, 827, __s_ghod_hitsu, 4)) {
                 case 0:
                 x = cptr.ldI16(u);
                 y = cptr.ldI16o(troom, $mkroom_ly);
@@ -790,7 +791,7 @@ export function ghod_hitsu(priest) {
         if (!linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1))
             return;
     }
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__s_priest_c, 850, __s_ghod_hitsu), rn2(3)) : rn2(3))) {
+    switch (rn2_at(__s_priest_c, 850, __s_ghod_hitsu, 3)) {
         case 0:
         pline(__s_s_roars_in_anger_thou_shalt_suffer, a_gname_at(ax, ay));
         break;

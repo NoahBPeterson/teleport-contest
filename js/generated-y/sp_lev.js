@@ -14,6 +14,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Align2amask, IS_DRAWBRIDGE, IS_LAVA, IS_POOL, IS_WALL, emits_light, glyph_is_cmap, is_floater, is_hole, is_pit, is_vampshifter, ismnum, likes_fire, max, min, pm_invisible, undestroyable_trap, vampshifted } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Protection_from_shape_changers, Punished } from './nhprop.js';
 import { cg, emptystr, gc, gd, gf, gi, gl, gm, gn, gr, gs, gt, gu, gx, gy, head_engr, iflags, svc, svd, sve, svi, svl, svm, svn, svr, u, uball, uchain } from './decl.js';
 import { alloc, dupstr } from './alloc.js';
@@ -27,7 +28,6 @@ import { delete_contents, obfree } from './shk.js';
 import { deltrap, maketrap, t_at } from './trap.js';
 import { del_engr, del_engr_at, engr_at, make_engr_at, make_grave } from './engrave.js';
 import { create_maze, fix_wall_spines, fixup_special, get_level_extends, pick_vibrasquare_location, set_levltyp, set_levltyp_lit, walkfrom, wallification } from './mkmaze.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { back_to_glyph, set_wall_state } from './display.js';
 import { placebc, unplacebc } from './ball.js';
 import { flip_worm_segs_horizontal, flip_worm_segs_vertical } from './worm.js';
@@ -60,6 +60,7 @@ import { simpleonames } from './objnam.js';
 import { begin_burn } from './timeout.js';
 import { bury_an_obj } from './dig.js';
 import { stock_room } from './shknam.js';
+import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { makeroguerooms } from './extralev.js';
 import { m_dowear } from './worn.js';
 import { lua_createtable, lua_getfield, lua_gettable, lua_gettop, lua_isnumber, lua_len, lua_pushinteger, lua_rotate, lua_setglobal, lua_settop, lua_tointegerx, lua_tolstring, lua_type, lua_typename } from './lapi.js';
@@ -835,7 +836,7 @@ function* lvlfill_swamp(fg, bg, lit) {
             if (cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == bg)
                 ++c;
             if (c == 3) {
-                switch ((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 410, __s_lvlfill_swamp), rn2(3)) : rn2(3))) {
+                switch (rn2_at(__s_sp_lev_c, 410, __s_lvlfill_swamp, 3)) {
                     case 0:
                     void (yield* set_levltyp_lit(i16(((x + 1) | 0)), i16(y), fg, lit));
                     break;
@@ -1352,9 +1353,9 @@ function flip_vault_guard(flp, grd, minx, miny, maxx, maxy) {
 /** C ref: sp_lev.c:967 — @param {CInt} flp @param {CInt} extras */
 export function* flip_level_rnd(flp, extras) {
     let c = 0;
-    if ((flp & 1) && (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 975, __s_flip_level_rnd), rn2(2)) : rn2(2)))
+    if ((flp & 1) && rn2_at(__s_sp_lev_c, 975, __s_flip_level_rnd, 2))
         c |= 1;
-    if ((flp & 2) && (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 977, __s_flip_level_rnd), rn2(2)) : rn2(2)))
+    if ((flp & 2) && rn2_at(__s_sp_lev_c, 977, __s_flip_level_rnd, 2))
         c |= 2;
     if (c)
         (yield* flip_level(c, extras));
@@ -1473,14 +1474,14 @@ cptr.stI32o(__static_rnddoor_state, 16, NHM.D_LOCKED); /** C ref: sp_lev.c:1150 
 
 /** C ref: sp_lev.c:1148 @returns {CInt} */
 function rnddoor() {
-    return cptr.ldI32o(__static_rnddoor_state, (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1152, __s_rnddoor), rn2(5)) : rn2(5)), 4);
+    return cptr.ldI32o(__static_rnddoor_state, rn2_at(__s_sp_lev_c, 1152, __s_rnddoor, 5), 4);
 }
 
 /** C ref: sp_lev.c:1159 @returns {CInt} */
 function rndtrap() {
     let rtrap;
     do {
-        rtrap = (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1164, __s_rndtrap), rnd(((NHC.TRAPNUM - 1) | 0))) : rnd(((NHC.TRAPNUM - 1) | 0)));
+        rtrap = rnd_at(__s_sp_lev_c, 1164, __s_rndtrap, ((NHC.TRAPNUM - 1) | 0));
         switch (rtrap) {
             case NHC.HOLE:
             case NHC.VIBRATING_SQUARE:
@@ -1536,8 +1537,8 @@ function* get_location(x, y, humidity, croom) {
                     cptr.stI16(x, cptr.ldI16(tmpc));
                     cptr.stI16(y, cptr.ldI16o(tmpc, $nhcoord_y));
                 } else {
-                    cptr.stI16(x, i16(((mx + (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1233, __s_get_location), rn2(sx)) : rn2(sx))) | 0)));
-                    cptr.stI16(y, i16(((my + (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1234, __s_get_location), rn2(sy)) : rn2(sy))) | 0)));
+                    cptr.stI16(x, i16(((mx + rn2_at(__s_sp_lev_c, 1233, __s_get_location, sx)) | 0)));
+                    cptr.stI16(y, i16(((my + rn2_at(__s_sp_lev_c, 1234, __s_get_location, sy)) | 0)));
                 }
                 if ((yield* is_ok_location(cptr.ldI16(x), cptr.ldI16(y), humidity)))
                     break;
@@ -1648,9 +1649,9 @@ function* get_room_loc(x, y, croom) {
             (yield* panic(__s_get_room_loc_can_t_find_a_place));
     } else {
         if (cptr.ldI16(x) < 0)
-            cptr.stI16(x, i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1372, __s_get_room_loc), rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0)) : rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0))));
+            cptr.stI16(x, i16(rn2_at(__s_sp_lev_c, 1372, __s_get_room_loc, (((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0)));
         if (cptr.ldI16(y) < 0)
-            cptr.stI16(y, i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1374, __s_get_room_loc), rn2((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0)) : rn2((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0))));
+            cptr.stI16(y, i16(rn2_at(__s_sp_lev_c, 1374, __s_get_room_loc, (((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0)));
         cptr.stI16(x, cptr.ldI16(x) + cptr.ldI16(croom));
         cptr.stI16(y, cptr.ldI16(y) + cptr.ldI16o(croom, $mkroom_ly));
     }
@@ -1727,7 +1728,7 @@ export function* check_room(lowx, ddx, lowy, ddy, vault) {
                             }
                         }
                     }
-                    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1455, __s_check_room), rn2(3)) : rn2(3)))
+                    if (!rn2_at(__s_sp_lev_c, 1455, __s_check_room, 3))
                         return 0;
                     if (cptr.ld1so(gi, $instance_globals_i_in_mk_themerooms))
                         return 0;
@@ -1809,8 +1810,8 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
             if (vault) {
                 dx.v = (dy.v = 1);
             } else {
-                dx.v = i16(((2 + (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1548, __s_create_room), rn2((((hx - lx) | 0) > 28) ? 12 : 8)) : rn2((((hx - lx) | 0) > 28) ? 12 : 8))) | 0));
-                dy.v = i16(((2 + (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1549, __s_create_room), rn2(4)) : rn2(4))) | 0));
+                dx.v = i16(((2 + rn2_at(__s_sp_lev_c, 1548, __s_create_room, (((hx - lx) | 0) > 28) ? 12 : 8)) | 0));
+                dy.v = i16(((2 + rn2_at(__s_sp_lev_c, 1549, __s_create_room, 4)) | 0));
                 if (Math.imul(dx.v, dy.v) > 50)
                     dy.v = i16(((50 / dx.v) | 0));
             }
@@ -1820,10 +1821,10 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
                 r1 = null;
                 continue;
             }
-            xabs.v = i16(((((lx + (lx > 0 ? xlim : 3)) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1560, __s_create_room), rn2((((((((hx - (lx > 0 ? lx : 3)) | 0) - dx.v) | 0) - xborder) | 0) + 1) | 0)) : rn2((((((((hx - (lx > 0 ? lx : 3)) | 0) - dx.v) | 0) - xborder) | 0) + 1) | 0))) | 0));
-            yabs.v = i16(((((ly + (ly > 0 ? ylim : 2)) | 0) + (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1562, __s_create_room), rn2((((((((hy - (ly > 0 ? ly : 2)) | 0) - dy.v) | 0) - yborder) | 0) + 1) | 0)) : rn2((((((((hy - (ly > 0 ? ly : 2)) | 0) - dy.v) | 0) - yborder) | 0) + 1) | 0))) | 0));
-            if (ly == 0 && hy >= 20 && (!cptr.ldI32o(svn, $instance_globals_saved_n_nroom) || !(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1564, __s_create_room), rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) : rn2(cptr.ldI32o(svn, $instance_globals_saved_n_nroom)))) && (((yabs.v + dy.v) | 0) > 10)) {
-                yabs.v = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1566, __s_create_room), rn2(3)) : rn2(3)) + 2) | 0));
+            xabs.v = i16(((((lx + (lx > 0 ? xlim : 3)) | 0) + rn2_at(__s_sp_lev_c, 1560, __s_create_room, (((((((hx - (lx > 0 ? lx : 3)) | 0) - dx.v) | 0) - xborder) | 0) + 1) | 0)) | 0));
+            yabs.v = i16(((((ly + (ly > 0 ? ylim : 2)) | 0) + rn2_at(__s_sp_lev_c, 1562, __s_create_room, (((((((hy - (ly > 0 ? ly : 2)) | 0) - dy.v) | 0) - yborder) | 0) + 1) | 0)) | 0));
+            if (ly == 0 && hy >= 20 && (!cptr.ldI32o(svn, $instance_globals_saved_n_nroom) || !rn2_at(__s_sp_lev_c, 1564, __s_create_room, cptr.ldI32o(svn, $instance_globals_saved_n_nroom))) && (((yabs.v + dy.v) | 0) > 10)) {
+                yabs.v = i16(((rn2_at(__s_sp_lev_c, 1566, __s_create_room, 3) + 2) | 0));
                 if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) < 4 && dy.v > 1)
                     dy.v--;
             }
@@ -1842,18 +1843,18 @@ export function* create_room(x, y, w, h, xal, yal, rtype, rlit) {
             let dx = cptr.box(0);
             let dy = cptr.box(0);
             if (xtmp < 0 && ytmp < 0) {
-                xtmp = (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1585, __s_create_room), rnd(5)) : rnd(5));
-                ytmp = (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1586, __s_create_room), rnd(5)) : rnd(5));
+                xtmp = rnd_at(__s_sp_lev_c, 1585, __s_create_room, 5);
+                ytmp = rnd_at(__s_sp_lev_c, 1586, __s_create_room, 5);
                 rndpos = 1;
             }
             if (wtmp < 0 || htmp < 0) {
-                wtmp = (((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1590, __s_create_room), rn2(15)) : rn2(15)) + 3) | 0);
-                htmp = (((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1591, __s_create_room), rn2(8)) : rn2(8)) + 2) | 0);
+                wtmp = ((rn2_at(__s_sp_lev_c, 1590, __s_create_room, 15) + 3) | 0);
+                htmp = ((rn2_at(__s_sp_lev_c, 1591, __s_create_room, 8) + 2) | 0);
             }
             if (xaltmp == -1)
-                xaltmp = (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1594, __s_create_room), rnd(3)) : rnd(3));
+                xaltmp = rnd_at(__s_sp_lev_c, 1594, __s_create_room, 3);
             if (yaltmp == -1)
-                yaltmp = (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1596, __s_create_room), rnd(3)) : rnd(3));
+                yaltmp = rnd_at(__s_sp_lev_c, 1596, __s_create_room, 3);
             xabs.v = i16((((((Math.imul(((xtmp - 1) | 0), NHM.COLNO)) / 5) | 0) + 1) | 0));
             yabs.v = i16((((((Math.imul(((ytmp - 1) | 0), NHM.ROWNO)) / 5) | 0) + 1) | 0));
             switch (xaltmp) {
@@ -1919,13 +1920,13 @@ function* create_subroom(proom, x, y, w, h, rtype, rlit) {
     if (width < 4 || height < 4)
         return 0;
     if (w == -1)
-        w = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1686, __s_create_subroom), rnd((width - 3) | 0)) : rnd((width - 3) | 0)));
+        w = i16(rnd_at(__s_sp_lev_c, 1686, __s_create_subroom, (width - 3) | 0));
     if (h == -1)
-        h = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1688, __s_create_subroom), rnd((height - 3) | 0)) : rnd((height - 3) | 0)));
+        h = i16(rnd_at(__s_sp_lev_c, 1688, __s_create_subroom, (height - 3) | 0));
     if (x == -1)
-        x = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1690, __s_create_subroom), rnd((width - w) | 0)) : rnd((width - w) | 0)));
+        x = i16(rnd_at(__s_sp_lev_c, 1690, __s_create_subroom, (width - w) | 0));
     if (y == -1)
-        y = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1692, __s_create_subroom), rnd((height - h) | 0)) : rnd((height - h) | 0)));
+        y = i16(rnd_at(__s_sp_lev_c, 1692, __s_create_subroom, (height - h) | 0));
     if (x == 1)
         x = 0;
     if (y == 1)
@@ -1947,40 +1948,40 @@ function* create_door(dd, broom) {
     let y = 0;
     let trycnt;
     if (cptr.ldI16o(dd, $room_door_secret) == -1)
-        cptr.stI16o(dd, $room_door_secret, i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1720, __s_create_door), rn2(2)) : rn2(2))));
+        cptr.stI16o(dd, $room_door_secret, i16(rn2_at(__s_sp_lev_c, 1720, __s_create_door, 2)));
     if (cptr.ldI16(dd) == -1)
         cptr.stI16(dd, 15);
     if (cptr.ldI16o(dd, $room_door_mask) == -1) {
         if (!cptr.ldI16o(dd, $room_door_secret)) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1728, __s_create_door), rn2(3)) : rn2(3))) {
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1729, __s_create_door), rn2(5)) : rn2(5)))
+            if (!rn2_at(__s_sp_lev_c, 1728, __s_create_door, 3)) {
+                if (!rn2_at(__s_sp_lev_c, 1729, __s_create_door, 5))
                     cptr.stI16o(dd, $room_door_mask, NHM.D_ISOPEN);
-                else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1731, __s_create_door), rn2(6)) : rn2(6)))
+                else if (!rn2_at(__s_sp_lev_c, 1731, __s_create_door, 6))
                     cptr.stI16o(dd, $room_door_mask, NHM.D_LOCKED);
                 else
                     cptr.stI16o(dd, $room_door_mask, NHM.D_CLOSED);
-                if (cptr.ldI16o(dd, $room_door_mask) != NHM.D_ISOPEN && !(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1735, __s_create_door), rn2(25)) : rn2(25)))
+                if (cptr.ldI16o(dd, $room_door_mask) != NHM.D_ISOPEN && !rn2_at(__s_sp_lev_c, 1735, __s_create_door, 25))
                     cptr.stI16o(dd, $room_door_mask, cptr.ldI16o(dd, $room_door_mask) | NHM.D_TRAPPED);
             } else
                 cptr.stI16o(dd, $room_door_mask, NHM.D_NODOOR);
         } else {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1740, __s_create_door), rn2(5)) : rn2(5)))
+            if (!rn2_at(__s_sp_lev_c, 1740, __s_create_door, 5))
                 cptr.stI16o(dd, $room_door_mask, NHM.D_LOCKED);
             else
                 cptr.stI16o(dd, $room_door_mask, NHM.D_CLOSED);
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1745, __s_create_door), rn2(20)) : rn2(20)))
+            if (!rn2_at(__s_sp_lev_c, 1745, __s_create_door, 20))
                 cptr.stI16o(dd, $room_door_mask, cptr.ldI16o(dd, $room_door_mask) | NHM.D_TRAPPED);
         }
     }
     for (trycnt = 0; trycnt < 100; ++trycnt) {
         let dwall = cptr.ldI16(dd);
         let dpos = cptr.ldI16o(dd, $room_door_pos);
-        switch ((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1754, __s_create_door), rn2(4)) : rn2(4))) {
+        switch (rn2_at(__s_sp_lev_c, 1754, __s_create_door, 4)) {
             case 0:
             if (!(dwall & NHM.W_NORTH))
                 continue;
             y = (cptr.ldI16o(broom, $mkroom_ly) - 1) | 0;
-            x = (cptr.ldI16(broom) + ((dpos == -1) ? (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1759, __s_create_door), rn2((((1 + cptr.ldI16o(broom, $mkroom_hx)) | 0) - cptr.ldI16(broom)) | 0)) : rn2((((1 + cptr.ldI16o(broom, $mkroom_hx)) | 0) - cptr.ldI16(broom)) | 0)) : dpos)) | 0;
+            x = (cptr.ldI16(broom) + ((dpos == -1) ? rn2_at(__s_sp_lev_c, 1759, __s_create_door, (((1 + cptr.ldI16o(broom, $mkroom_hx)) | 0) - cptr.ldI16(broom)) | 0) : dpos)) | 0;
             if (!isok(i16(x), i16(((y - 1) | 0))) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))
                 continue;
             break;
@@ -1988,7 +1989,7 @@ function* create_door(dd, broom) {
             if (!(dwall & NHM.W_SOUTH))
                 continue;
             y = (cptr.ldI16o(broom, $mkroom_hy) + 1) | 0;
-            x = (cptr.ldI16(broom) + ((dpos == -1) ? (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1768, __s_create_door), rn2((((1 + cptr.ldI16o(broom, $mkroom_hx)) | 0) - cptr.ldI16(broom)) | 0)) : rn2((((1 + cptr.ldI16o(broom, $mkroom_hx)) | 0) - cptr.ldI16(broom)) | 0)) : dpos)) | 0;
+            x = (cptr.ldI16(broom) + ((dpos == -1) ? rn2_at(__s_sp_lev_c, 1768, __s_create_door, (((1 + cptr.ldI16o(broom, $mkroom_hx)) | 0) - cptr.ldI16(broom)) | 0) : dpos)) | 0;
             if (!isok(i16(x), i16(((y + 1) | 0))) || ((cptr.ld1so3(svl, x, $sizeof_rm_x21, (y + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))
                 continue;
             break;
@@ -1996,7 +1997,7 @@ function* create_door(dd, broom) {
             if (!(dwall & NHM.W_WEST))
                 continue;
             x = (cptr.ldI16(broom) - 1) | 0;
-            y = (cptr.ldI16o(broom, $mkroom_ly) + ((dpos == -1) ? (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1777, __s_create_door), rn2((((1 + cptr.ldI16o(broom, $mkroom_hy)) | 0) - cptr.ldI16o(broom, $mkroom_ly)) | 0)) : rn2((((1 + cptr.ldI16o(broom, $mkroom_hy)) | 0) - cptr.ldI16o(broom, $mkroom_ly)) | 0)) : dpos)) | 0;
+            y = (cptr.ldI16o(broom, $mkroom_ly) + ((dpos == -1) ? rn2_at(__s_sp_lev_c, 1777, __s_create_door, (((1 + cptr.ldI16o(broom, $mkroom_hy)) | 0) - cptr.ldI16o(broom, $mkroom_ly)) | 0) : dpos)) | 0;
             if (!isok(i16(((x - 1) | 0)), i16(y)) || ((cptr.ld1so3(svl, (x - 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))
                 continue;
             break;
@@ -2004,7 +2005,7 @@ function* create_door(dd, broom) {
             if (!(dwall & NHM.W_EAST))
                 continue;
             x = (cptr.ldI16o(broom, $mkroom_hx) + 1) | 0;
-            y = (cptr.ldI16o(broom, $mkroom_ly) + ((dpos == -1) ? (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1786, __s_create_door), rn2((((1 + cptr.ldI16o(broom, $mkroom_hy)) | 0) - cptr.ldI16o(broom, $mkroom_ly)) | 0)) : rn2((((1 + cptr.ldI16o(broom, $mkroom_hy)) | 0) - cptr.ldI16o(broom, $mkroom_ly)) | 0)) : dpos)) | 0;
+            y = (cptr.ldI16o(broom, $mkroom_ly) + ((dpos == -1) ? rn2_at(__s_sp_lev_c, 1786, __s_create_door, (((1 + cptr.ldI16o(broom, $mkroom_hy)) | 0) - cptr.ldI16o(broom, $mkroom_ly)) | 0) : dpos)) | 0;
             if (!isok(i16(((x + 1) | 0)), i16(y)) || ((cptr.ld1so3(svl, (x + 1) | 0, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))
                 continue;
             break;
@@ -2057,7 +2058,7 @@ function* create_trap(t, croom) {
 /** C ref: sp_lev.c:1852 — @param {CInt} alignment @returns {CInt} */
 function noncoalignment(alignment) {
     let k;
-    k = (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1856, __s_noncoalignment), rn2(2)) : rn2(2));
+    k = rn2_at(__s_sp_lev_c, 1856, __s_noncoalignment, 2);
     if (!alignment)
         return (k ? -1 : 1);
     return (k ? -alignment : 0);
@@ -2135,7 +2136,7 @@ function* create_monster(m, croom) {
     } else {
         pm = (yield* mkclass(class$, NHM.G_NOGEN));
     }
-    if (In_mines(cptr.add(u, $you_uz)) && pm && ((cptr.ldU64o((pm), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_GNOME)) && (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 1960, __s_create_monster), rn2(3)) : rn2(3)))
+    if (In_mines(cptr.add(u, $you_uz)) && pm && ((cptr.ldU64o((pm), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) && ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_GNOME)) && rn2_at(__s_sp_lev_c, 1960, __s_create_monster, 3))
         pm = null;
     if (pm) {
         let loc = pm_to_humidity(pm);
@@ -2520,7 +2521,7 @@ function* create_altar(a, croom) {
     amask = sp_amask_to_amask(cptr.ldI32o(a, $altar_sp_amask));
     cptr.stI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, amask);
     if (cptr.ldI16o(a, $altar_shrine) < 0)
-        cptr.stI16o(a, $altar_shrine, i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2474, __s_create_altar), rn2(2)) : rn2(2))));
+        cptr.stI16o(a, $altar_shrine, i16(rn2_at(__s_sp_lev_c, 2474, __s_create_altar, 2)));
     if (!croom_is_temple || !cptr.ldI16o(a, $altar_shrine))
         return;
     if (cptr.ldI16o(a, $altar_shrine)) {
@@ -2619,7 +2620,7 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
     yy = (yy - dy) | 0;
     cct = 0;
     while (xx != tx || yy != ty) {
-        if (cct++ > 500 || (nxcor && !(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2585, __s_dig_corridor), rn2(35)) : rn2(35))))
+        if (cct++ > 500 || (nxcor && !rn2_at(__s_sp_lev_c, 2585, __s_dig_corridor, 35)))
             return 0;
         xx = (xx + dx) | 0;
         yy = (yy + dy) | 0;
@@ -2635,7 +2636,7 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
                 if (npoints)
                     (cptr.stI32(npoints, cptr.ldI32(npoints) + 1)) - (1);
                 cptr.st1o(crm, $rm_typ, ftyp);
-                if (nxcor && !(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2604, __s_dig_corridor), rn2(50)) : rn2(50)))
+                if (nxcor && !rn2_at(__s_sp_lev_c, 2604, __s_dig_corridor, 50))
                     void (yield* mksobj_at(NHC.BOULDER, i16(xx), i16(yy), 1, 0));
             }
         } else if (cptr.ld1so(crm, $rm_typ) != ftyp && cptr.ld1so(crm, $rm_typ) != NHC.SCORR) {
@@ -2643,9 +2644,9 @@ export function* dig_corridor(org, dest, npoints, nxcor, ftyp, btyp) {
         }
         dix = Math.abs((xx - tx) | 0);
         diy = Math.abs((yy - ty) | 0);
-        if ((dix > diy) && diy && !(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2616, __s_dig_corridor), rn2((((dix - diy) | 0) + 1) | 0)) : rn2((((dix - diy) | 0) + 1) | 0))) {
+        if ((dix > diy) && diy && !rn2_at(__s_sp_lev_c, 2616, __s_dig_corridor, (((dix - diy) | 0) + 1) | 0)) {
             dix = 0;
-        } else if ((diy > dix) && dix && !(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2618, __s_dig_corridor), rn2((((diy - dix) | 0) + 1) | 0)) : rn2((((diy - dix) | 0) + 1) | 0))) {
+        } else if ((diy > dix) && dix && !rn2_at(__s_sp_lev_c, 2618, __s_dig_corridor, (((diy - dix) | 0) + 1) | 0)) {
             diy = 0;
         }
         if (dy && dix > diy) {
@@ -2801,7 +2802,7 @@ export function* fill_special_room(croom) {
 function* build_room(r, mkr) {
     let okroom;
     let aroom;
-    let rtype = i16(((!cptr.ldI16o(r, $room_chance) || (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2811, __s_build_room), rn2(100)) : rn2(100)) < cptr.ldI16o(r, $room_chance)) ? cptr.ldI16o(r, $room_rtype) : NHC.OROOM));
+    let rtype = i16(((!cptr.ldI16o(r, $room_chance) || rn2_at(__s_sp_lev_c, 2811, __s_build_room, 100) < cptr.ldI16o(r, $room_chance)) ? cptr.ldI16o(r, $room_rtype) : NHC.OROOM));
     if (mkr) {
         aroom = cptr.add(cptr.ldPtro(gs, $instance_globals_s_subrooms), cptr.ldI32o(gn, $instance_globals_n_nsubroom), $sizeof_mkroom);
         okroom = (yield* create_subroom(mkr, cptr.ldI16o(r, $room_x), cptr.ldI16o(r, $room_y), cptr.ldI16o(r, $room_w), cptr.ldI16o(r, $room_h), rtype, cptr.ldI16o(r, $room_rlit)));
@@ -2882,8 +2883,8 @@ function* maze1xy(m, humidity) {
     let y;
     let tryct = 2000;
     do {
-        x = (((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2908, __s_maze1xy), rn2((cptr.ldI32(gx) - 3) | 0)) : rn2((cptr.ldI32(gx) - 3) | 0)) + 3) | 0);
-        y = (((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2909, __s_maze1xy), rn2((cptr.ldI32(gy) - 3) | 0)) : rn2((cptr.ldI32(gy) - 3) | 0)) + 3) | 0);
+        x = ((rn2_at(__s_sp_lev_c, 2908, __s_maze1xy, (cptr.ldI32(gx) - 3) | 0) + 3) | 0);
+        y = ((rn2_at(__s_sp_lev_c, 2909, __s_maze1xy, (cptr.ldI32(gy) - 3) | 0) + 3) | 0);
         if (--tryct < 0)
             break;
     } while (!(x % 2) || !(y % 2) || cptr.ld1so(cptr.decay(SpLev_Map[x]), y, 1) || !(yield* is_ok_location(i16(x), i16(y), humidity >>> 0)));
@@ -2906,30 +2907,30 @@ function* fill_empty_maze() {
                 mapcount--;
     if ((mapcount > ((mapcountmax / 10) | 0))) {
         mapfact = Number(BigInt.asIntN(32, ((BigInt.asIntN(64, BigInt(mapcount) * 100n)) / BigInt(mapcountmax))));
-        for (x = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2942, __s_fill_empty_maze), rnd(((Math.imul(20, mapfact)) / 100) | 0)) : rnd(((Math.imul(20, mapfact)) / 100) | 0))); x; x--) {
+        for (x = i16(rnd_at(__s_sp_lev_c, 2942, __s_fill_empty_maze, ((Math.imul(20, mapfact)) / 100) | 0)); x; x--) {
             (yield* maze1xy(mm, NHM.DRY));
-            void (yield* mkobj_at(schar(((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2944, __s_fill_empty_maze), rn2(2)) : rn2(2)) ? NHC.GEM_CLASS : NHC.RANDOM_CLASS)), cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1));
+            void (yield* mkobj_at(schar((rn2_at(__s_sp_lev_c, 2944, __s_fill_empty_maze, 2) ? NHC.GEM_CLASS : NHC.RANDOM_CLASS)), cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1));
         }
-        for (x = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2947, __s_fill_empty_maze), rnd(((Math.imul(12, mapfact)) / 100) | 0)) : rnd(((Math.imul(12, mapfact)) / 100) | 0))); x; x--) {
+        for (x = i16(rnd_at(__s_sp_lev_c, 2947, __s_fill_empty_maze, ((Math.imul(12, mapfact)) / 100) | 0)); x; x--) {
             let ttmp;
             (yield* maze1xy(mm, NHM.DRY));
             if ((ttmp = t_at(cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y))) !== null && (is_pit((cptr.ldI32o(ttmp, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(ttmp, $trap_ttyp) & 31))))
                 continue;
             void (yield* mksobj_at(NHC.BOULDER, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), 1, 0));
         }
-        for (x = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2956, __s_fill_empty_maze), rn2(2)) : rn2(2))); x; x--) {
+        for (x = i16(rn2_at(__s_sp_lev_c, 2956, __s_fill_empty_maze, 2)); x; x--) {
             (yield* maze1xy(mm, NHM.DRY));
             void (yield* makemon(cptr.add(mons, NHC.PM_MINOTAUR, $sizeof_permonst), cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), NHM.NO_MM_FLAGS));
         }
-        for (x = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2960, __s_fill_empty_maze), rnd(((Math.imul(12, mapfact)) / 100) | 0)) : rnd(((Math.imul(12, mapfact)) / 100) | 0))); x; x--) {
+        for (x = i16(rnd_at(__s_sp_lev_c, 2960, __s_fill_empty_maze, ((Math.imul(12, mapfact)) / 100) | 0)); x; x--) {
             (yield* maze1xy(mm, NHM.DRY));
             void (yield* makemon(null, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y), NHM.NO_MM_FLAGS));
         }
-        for (x = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2964, __s_fill_empty_maze), rn2(((Math.imul(15, mapfact)) / 100) | 0)) : rn2(((Math.imul(15, mapfact)) / 100) | 0))); x; x--) {
+        for (x = i16(rn2_at(__s_sp_lev_c, 2964, __s_fill_empty_maze, ((Math.imul(15, mapfact)) / 100) | 0)); x; x--) {
             (yield* maze1xy(mm, NHM.DRY));
             void (yield* mkgold(0n, cptr.ldI16(mm), cptr.ldI16o(mm, $nhcoord_y)));
         }
-        for (x = i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2968, __s_fill_empty_maze), rn2(((Math.imul(15, mapfact)) / 100) | 0)) : rn2(((Math.imul(15, mapfact)) / 100) | 0))); x; x--) {
+        for (x = i16(rn2_at(__s_sp_lev_c, 2968, __s_fill_empty_maze, ((Math.imul(15, mapfact)) / 100) | 0)); x; x--) {
             let trytrap;
             (yield* maze1xy(mm, NHM.DRY));
             trytrap = rndtrap();
@@ -2951,7 +2952,7 @@ function* splev_initlev(linit) {
         break;
         case NHC.LVLINIT_SOLIDFILL:
         if (cptr.ldI16o(linit, $lev_init_lit) == -1)
-            cptr.stI16o(linit, $lev_init_lit, i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 2992, __s_splev_initlev), rn2(2)) : rn2(2))));
+            cptr.stI16o(linit, $lev_init_lit, i16(rn2_at(__s_sp_lev_c, 2992, __s_splev_initlev, 2)));
         (yield* lvlfill_solid(cptr.ld1so(linit, $lev_init_filling), schar(cptr.ldI16o(linit, $lev_init_lit))));
         break;
         case NHC.LVLINIT_MAZEGRID:
@@ -2965,7 +2966,7 @@ function* splev_initlev(linit) {
         break;
         case NHC.LVLINIT_MINES:
         if (cptr.ldI16o(linit, $lev_init_lit) == -1)
-            cptr.stI16o(linit, $lev_init_lit, i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 3006, __s_splev_initlev), rn2(2)) : rn2(2))));
+            cptr.stI16o(linit, $lev_init_lit, i16(rn2_at(__s_sp_lev_c, 3006, __s_splev_initlev, 2)));
         if (cptr.ld1so(linit, $lev_init_filling) > -1)
             (yield* lvlfill_solid(cptr.ld1so(linit, $lev_init_filling), 0));
         cptr.st1o(linit, $lev_init_icedpools, icedpools);
@@ -2973,7 +2974,7 @@ function* splev_initlev(linit) {
         break;
         case NHC.LVLINIT_SWAMP:
         if (cptr.ldI16o(linit, $lev_init_lit) == -1)
-            cptr.stI16o(linit, $lev_init_lit, i16((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 3014, __s_splev_initlev), rn2(2)) : rn2(2))));
+            cptr.stI16o(linit, $lev_init_lit, i16(rn2_at(__s_sp_lev_c, 3014, __s_splev_initlev, 2)));
         (yield* lvlfill_swamp(cptr.ld1so(linit, $lev_init_fg), cptr.ld1so(linit, $lev_init_bg), schar(cptr.ldI16o(linit, $lev_init_lit))));
         break;
     }
@@ -3090,7 +3091,7 @@ function* find_montype(L, s, mgender) {
         if (((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 65536n) != 0n) || ((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 131072n) != 0n))
             mgend.v = ((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 131072n) != 0n) ? NHC.FEMALE : NHC.MALE;
         else
-            mgend.v = (mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 3156, __s_find_montype), rn2(2)) : rn2(2)));
+            mgend.v = (mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : rn2_at(__s_sp_lev_c, 3156, __s_find_montype, 2));
         if (mgender)
             cptr.stI32(mgender, mgend.v);
         return i;
@@ -3167,7 +3168,7 @@ export function* lspo_monster(L) {
         } else {
             cptr.stI16o(tmpmons, $monster_class, -1);
             cptr.stI16o(tmpmons, $monster_id, i16((yield* find_montype(L, paramstr, mgend))));
-            cptr.stI16o(tmpmons, $monster_female, i16(((mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 3256, __s_lspo_monster), rn2(2)) : rn2(2))))));
+            cptr.stI16o(tmpmons, $monster_female, i16(((mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : rn2_at(__s_sp_lev_c, 3256, __s_lspo_monster, 2)))));
         }
     } else if (argc == 2 && lua_type(L, 1) == 4 && lua_type(L, 2) == 5) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
@@ -3178,7 +3179,7 @@ export function* lspo_monster(L) {
         } else {
             cptr.stI16o(tmpmons, $monster_class, -1);
             cptr.stI16o(tmpmons, $monster_id, i16((yield* find_montype(L, paramstr, mgend))));
-            cptr.stI16o(tmpmons, $monster_female, i16(((mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 3271, __s_lspo_monster), rn2(2)) : rn2(2))))));
+            cptr.stI16o(tmpmons, $monster_female, i16(((mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : rn2_at(__s_sp_lev_c, 3271, __s_lspo_monster, 2)))));
         }
     } else if (argc == 3) {
         let paramstr = ((yield* luaL_checklstring(L, 1, null)));
@@ -3190,7 +3191,7 @@ export function* lspo_monster(L) {
         } else {
             cptr.stI16o(tmpmons, $monster_class, -1);
             cptr.stI16o(tmpmons, $monster_id, i16((yield* find_montype(L, paramstr, mgend))));
-            cptr.stI16o(tmpmons, $monster_female, i16(((mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 3287, __s_lspo_monster), rn2(2)) : rn2(2))))));
+            cptr.stI16o(tmpmons, $monster_female, i16(((mgend.v == NHC.FEMALE) ? NHC.FEMALE : ((mgend.v == NHC.MALE) ? NHC.MALE : rn2_at(__s_sp_lev_c, 3287, __s_lspo_monster, 2)))));
         }
     } else {
         let keep_default_invent = -1;
@@ -4313,7 +4314,7 @@ export function* lspo_gold(L) {
         gcoord = (BigInt.asIntN(64, ((gldx.v) & 255n) + (((gldy.v) & 255n) << 16n)));
     (yield* get_location_coord(x, y, NHM.DRY, cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), gcoord));
     if (amount < 0n)
-        amount = BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 4518, __s_lspo_gold), rnd(200)) : rnd(200)));
+        amount = BigInt(rnd_at(__s_sp_lev_c, 4518, __s_lspo_gold, 200));
     (yield* mkgold(amount, x.v, y.v));
     return 0;
 }
@@ -4372,7 +4373,7 @@ cptr.stI16o(__static_random_wdir_wdirs, 6, NHM.W_WEST); /** C ref: sp_lev.c:4580
 
 /** C ref: sp_lev.c:4578 @returns {*} */
 export function random_wdir() {
-    return cptr.ldI16o(__static_random_wdir_wdirs, (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 4581, __s_random_wdir), rn2(4)) : rn2(4)), 2);
+    return cptr.ldI16o(__static_random_wdir_wdirs, rn2_at(__s_sp_lev_c, 4581, __s_random_wdir, 4), 2);
 }
 
 /** C ref: sp_lev.c:4584 — signed char */
@@ -4519,7 +4520,7 @@ function* l_table_getset_feature_flag(L, x, y, name, flag) {
     let val = (yield* get_table_boolean_opt(L, name, -2));
     if (val != -2) {
         if (val == -1)
-            val = (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 4749, __s_l_table_getset_feature_flag), rn2(2)) : rn2(2));
+            val = rn2_at(__s_sp_lev_c, 4749, __s_l_table_getset_feature_flag, 2);
         if (val)
             cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | flag);
         else
@@ -4820,10 +4821,10 @@ export function* lspo_replace_terrain(L) {
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
             if (selection_getpoint(x, y, sel)) {
                 if (mf.v) {
-                    if ((yield* mapfrag_match(mf.v, x, y)) && ((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 5127, __s_lspo_replace_terrain), rn2(100)) : rn2(100))) < chance)
+                    if ((yield* mapfrag_match(mf.v, x, y)) && rn2_at(__s_sp_lev_c, 5127, __s_lspo_replace_terrain, 100) < chance)
                         void (yield* set_levltyp_lit(x, y, schar(totyp), schar(tolit)));
                 } else {
-                    if (((fromtyp == NHC.MATCH_WALL && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fromtyp) && (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 5132, __s_lspo_replace_terrain), rn2(100)) : rn2(100)) < chance)
+                    if (((fromtyp == NHC.MATCH_WALL && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fromtyp) && rn2_at(__s_sp_lev_c, 5132, __s_lspo_replace_terrain, 100) < chance)
                         void (yield* set_levltyp_lit(x, y, schar(totyp), schar(tolit)));
                 }
             }
@@ -4873,12 +4874,12 @@ function* generate_way_out_method(nx, ny, ov) {
             selection_free(ov3, 1);
             ov3 = (yield* selection_clone(ov2));
             while (selection_rndcoord(ov3, x, y, 1)) {
-                if ((yield* maketrap(x.v, y.v, (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 5198, __s_generate_way_out_method), rn2(2)) : rn2(2)) ? NHC.HOLE : NHC.TRAPDOOR)))
+                if ((yield* maketrap(x.v, y.v, rn2_at(__s_sp_lev_c, 5198, __s_generate_way_out_method, 2) ? NHC.HOLE : NHC.TRAPDOOR)))
                     break __lbl_gotitdone;
             }
         }
         if (selection_rndcoord(ov2, x, y, 0)) {
-            (yield* mksobj_at(cptr.ldI32o(__static_generate_way_out_method_escapeitems, (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 5205, __s_generate_way_out_method), rn2(6)) : rn2(6)), 4), x.v, y.v, 1, 0));
+            (yield* mksobj_at(cptr.ldI32o(__static_generate_way_out_method_escapeitems, rn2_at(__s_sp_lev_c, 5205, __s_generate_way_out_method, 6), 4), x.v, y.v, 1, 0));
             break __lbl_gotitdone;
         }
         res = 0;
@@ -5340,7 +5341,7 @@ export function* lspo_drawbridge(L) {
         return 0;
     }
     if (db_open == -1)
-        db_open = !(rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 5757, __s_lspo_drawbridge), rn2(2)) : rn2(2));
+        db_open = !rn2_at(__s_sp_lev_c, 5757, __s_lspo_drawbridge, 2);
     if (!(yield* create_drawbridge(x.v, y.v, dir, schar((db_open ? 1 : 0)))))
         (yield* impossible(__s_cannot_create_drawbridge));
     cptr.st1o(cptr.decay(SpLev_Map[x.v]), y.v, 1, 1);
@@ -5660,7 +5661,7 @@ export function* lspo_map(L) {
                         if (x.v < 1n)
                             x.v = 1n;
                     } else {
-                        x.v = BigInt(((1 + (rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 6154, __s_lspo_map), rn2((79 - cptr.ldI32(mf.v)) | 0)) : rn2((79 - cptr.ldI32(mf.v)) | 0))) | 0));
+                        x.v = BigInt(((1 + rn2_at(__s_sp_lev_c, 6154, __s_lspo_map, (79 - cptr.ldI32(mf.v)) | 0)) | 0));
                     }
                 }
                 if (oy == -1) {
@@ -5669,7 +5670,7 @@ export function* lspo_map(L) {
                         if (y.v < 1n)
                             y.v = 1n;
                     } else {
-                        y.v = BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_sp_lev_c, 6164, __s_lspo_map), rn2((NHM.ROWNO - cptr.ldI32o(mf.v, $mapfragment_hei)) | 0)) : rn2((NHM.ROWNO - cptr.ldI32o(mf.v, $mapfragment_hei)) | 0)));
+                        y.v = BigInt(rn2_at(__s_sp_lev_c, 6164, __s_lspo_map, (NHM.ROWNO - cptr.ldI32o(mf.v, $mapfragment_hei)) | 0));
                     }
                 }
             }

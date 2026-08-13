@@ -14,6 +14,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_candle, emits_light, touch_petrifies } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Acid_resistance, BInvis, Blind, Breathless, Deaf, Displaced, EFumbling, ELevitation, EPasses_walls, Fast, Fire_resistance, Flying, Fumbling, HConfusion, HDeaf, HFlying, HFumbling, HLevitation, HMagical_breathing, HPasses_walls, HSleepy, HStun, Hallucination, Invis, Levitation, Passes_walls, Poison_resistance, Protection_from_shape_changers, See_invisible, Sick, Sleep_resistance, Sleepy, Slimed, Stone_resistance, Stoned, Strangled, Unchanging, Upolyd, Very_fast, Vomiting, Warn_of_mon, Wounded_legs, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gb, gm, gn, gt, gu, gv, gy, iflags, svc, svd, svk, svl, svm, svq, svt, u, uamul, uarmf, uarmh, uswapwep, uwep } from './decl.js';
 import { eos, highc, ing_suffix, s_suffix, strstri, strsubst, upstart } from './hacklib.js';
@@ -24,7 +25,6 @@ import { stop_occupation } from './allmain.js';
 import { heal_legs, revive_mon, zombify_mon } from './do.js';
 import { incr_itimeout, make_blinded, make_confused, make_deaf, make_glib, make_hallucinated, make_sick, make_slimed, make_stoned, make_stunned, make_vomiting, set_itimeout } from './potion.js';
 import { acurr, adjattrib, exercise, stone_luck } from './attrib.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { big_to_little, cantvomit, little_to_big, locomotion, name_to_mon, pronoun_gender } from './mondata.js';
 import { body_part, polymon, rehumanize } from './polyself.js';
 import { Monnam, a_monnam, hcolor, m_monnam, rndmonnam, x_monnam } from './do_name.js';
@@ -53,6 +53,7 @@ import { container_weight, obj_extract_self, shrink_glob, weight } from './mkobj
 import { Shk_Your, find_oid, obfree } from './shk.js';
 import { which_armor } from './worn.js';
 import { dismount_steed } from './steed.js';
+import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { confdir, isok } from './cmd.js';
 import { hurtle } from './dothrow.js';
 import { artifact_light } from './artifact.js';
@@ -681,13 +682,13 @@ function* vomiting_dialogue() {
             txt = strsubst(cptr.strcpy(cptr.decay(buf), txt), __s_confused__2, __s_more_confused);
         break;
         case 6:
-        (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 215, __s_vomiting_dialogue), d(2, 4)) : d(2, 4)))), 0));
+        (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(d_at(__s_timeout_c, 215, __s_vomiting_dialogue, 2, 4))), 0));
         if (!Popeye(NHC.VOMITING))
             (yield* stop_occupation());
         // @FallThrough
         ;
         case 9:
-        (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 221, __s_vomiting_dialogue), d(2, 4)) : d(2, 4)))), 0));
+        (yield* make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(d_at(__s_timeout_c, 221, __s_vomiting_dialogue, 2, 4))), 0));
         if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
             nomul(0);
         break;
@@ -750,7 +751,7 @@ cptr.stPtro(choke_texts2, 32, __s_you_suffocate);
 function* choke_dialogue() {
     let i = (Strangled() & 16777215n);
     if (i > 0n && i <= BigInt(5)) {
-        if (Breathless() || !(rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 300, __s_choke_dialogue), rn2(50)) : rn2(50))) {
+        if (Breathless() || !rn2_at(__s_timeout_c, 300, __s_choke_dialogue, 50)) {
             (yield* urgent_pline(cptr.ldPtro(choke_texts2, BigInt.asIntN(64, BigInt(5) - i), 8), (yield* body_part(NHC.NECK))));
         } else {
             let str = cptr.ldPtro(choke_texts, BigInt.asIntN(64, BigInt(5) - i), 8);
@@ -996,7 +997,7 @@ export function* nh_timeout() {
         (yield* sleep_dialogue());
     if (cptr.ldI32o(u, $you_mtimedone) && !cptr.stI32o(u, $you_mtimedone, cptr.ldI32o(u, $you_mtimedone) + -1)) {
         if (Unchanging())
-            cptr.stI32o(u, $you_mtimedone, (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 643, __s_nh_timeout), rnd((Math.imul(100, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) + 1) | 0)) : rnd((Math.imul(100, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) + 1) | 0)));
+            cptr.stI32o(u, $you_mtimedone, rnd_at(__s_timeout_c, 643, __s_nh_timeout, (Math.imul(100, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlevel)) + 1) | 0));
         else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n))
             (yield* you_unwere(0));
         else
@@ -1040,7 +1041,7 @@ export function* nh_timeout() {
                 (yield* make_vomiting(0n, 1));
                 break;
                 case 17n:
-                if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0 && (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 696, __s_nh_timeout), rn2(100)) : rn2(100)) < (acurr(NHC.A_CON))) {
+                if ((((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) == 0 && rn2_at(__s_timeout_c, 696, __s_nh_timeout, 100) < (acurr(NHC.A_CON))) {
                     (yield* You(__s_have_recovered_from_your_illness));
                     (yield* make_sick(0n, null, 0, NHM.SICK_ALL));
                     (yield* exercise(NHC.A_CON, 0));
@@ -1124,12 +1125,12 @@ export function* nh_timeout() {
                 break;
                 case 27n:
                 if (unconscious() || Sleep_resistance()) {
-                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 786, __s_nh_timeout), rnd(100)) : rnd(100)));
+                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop), $prop_intrinsic), rnd_at(__s_timeout_c, 786, __s_nh_timeout, 100));
                 } else if (Sleepy()) {
                     (yield* You(__s_fall_asleep));
-                    sleeptime = (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 789, __s_nh_timeout), rnd(20)) : rnd(20));
+                    sleeptime = rnd_at(__s_timeout_c, 789, __s_nh_timeout, 20);
                     (yield* fall_asleep(-sleeptime, 1));
-                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop), $prop_intrinsic), (sleeptime + (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 791, __s_nh_timeout), rnd(100)) : rnd(100))) | 0);
+                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.SLEEPY, $sizeof_prop), $prop_intrinsic), (sleeptime + rnd_at(__s_timeout_c, 791, __s_nh_timeout, 100)) | 0);
                 }
                 break;
                 case 48n:
@@ -1224,7 +1225,7 @@ export function* nh_timeout() {
                 }
                 cptr.stI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FUMBLING, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-67108865n));
                 if (Fumbling())
-                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 924, __s_nh_timeout), rnd(20)) : rnd(20)));
+                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd_at(__s_timeout_c, 924, __s_nh_timeout, 20));
                 if (cptr.ld1so(iflags, $instance_flags_defer_decor)) {
                     (yield* deferred_decor(0));
                 }
@@ -1259,7 +1260,7 @@ export function* attach_egg_hatch_timeout(egg, when) {
     void (yield* stop_timer(NHC.HATCH_EGG, obj_to_any(egg)));
     if (!when) {
         for (i = 151; i <= NHM.MAX_EGG_HATCH_TIME; i++)
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 996, __s_attach_egg_hatch_timeout), rnd(i)) : rnd(i)) > 150) {
+            if (rnd_at(__s_timeout_c, 996, __s_attach_egg_hatch_timeout, i) > 150) {
                 when = BigInt(i);
                 break;
             }
@@ -1294,10 +1295,10 @@ export function* hatch_egg(arg, timeout) {
         return;
     mon = (mon2 = null);
     mnum = big_to_little(cptr.ldI32o(egg, $obj_corpsenm));
-    yours = schar((cptr.ld1so(egg, $obj_spe) || (!cptr.ld1so(flags, $flag_female) && (cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && !(rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1035, __s_hatch_egg), rn2(2)) : rn2(2))) ? 1 : 0));
+    yours = schar((cptr.ld1so(egg, $obj_spe) || (!cptr.ld1so(flags, $flag_female) && (cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT) && !rn2_at(__s_timeout_c, 1035, __s_hatch_egg, 2)) ? 1 : 0));
     silent = schar((timeout != cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
     if (get_obj_location(egg, x, y, 0)) {
-        hatchcount = (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1042, __s_hatch_egg), rnd(Number(BigInt.asIntN(32, cptr.ldI64o(egg, $obj_quan))))) : rnd(Number(BigInt.asIntN(32, cptr.ldI64o(egg, $obj_quan)))));
+        hatchcount = rnd_at(__s_timeout_c, 1042, __s_hatch_egg, Number(BigInt.asIntN(32, cptr.ldI64o(egg, $obj_quan))));
         cansee_hatchspot = schar((((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y.v, 8), x.v) & NHM.IN_SIGHT) != 0) && !silent ? 1 : 0));
         if (!(cptr.ldU16o2(mons, mnum, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) && !(cptr.ld1uo2(svm, mnum, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
             for (i = hatchcount; i > 0; i--) {
@@ -1369,7 +1370,7 @@ export function* hatch_egg(arg, timeout) {
         if (cansee_hatchspot && knows_egg)
             (yield* learn_egg_type(mnum));
         if (cptr.ldI64o(egg, $obj_quan) > 0n) {
-            (yield* attach_egg_hatch_timeout(egg, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1172, __s_hatch_egg), rnd(12)) : rnd(12)))));
+            (yield* attach_egg_hatch_timeout(egg, BigInt(rnd_at(__s_timeout_c, 1172, __s_hatch_egg, 12))));
             (yield* container_weight(egg));
         } else if ((cptr.ld1so((egg), $obj_where) == NHM.OBJ_INVENT)) {
             (yield* useup(egg));
@@ -1395,7 +1396,7 @@ export function* learn_egg_type(mnum) {
 export function* attach_fig_transform_timeout(figurine) {
     let i;
     void (yield* stop_timer(NHC.FIG_TRANSFORM, obj_to_any(figurine)));
-    i = ((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1214, __s_attach_fig_transform_timeout), rnd(9000)) : rnd(9000)) + 200) | 0;
+    i = (rnd_at(__s_timeout_c, 1214, __s_attach_fig_transform_timeout, 9000) + 200) | 0;
     void (yield* start_timer(BigInt(i), NHC.TIMER_OBJECT, NHC.FIG_TRANSFORM, obj_to_any(figurine)));
 }
 
@@ -1422,10 +1423,10 @@ function* slip_or_trip() {
             void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_tripping_over_s_corpse, (yield* an(cptr.ldPtro3(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
             (yield* instapetrify(cptr.add(svk, $kinfo_name)));
         }
-    } else if ((HFumbling() & 67108864n) || (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1262, __s_slip_or_trip), rn2(3)) : rn2(3)))) {
+    } else if ((HFumbling() & 67108864n) || (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !rn2_at(__s_timeout_c, 1262, __s_slip_or_trip, 3))) {
         let ice_only = schar((!(EFumbling() || (HFumbling() & -67108865n))));
-        (yield* pline(__s_s_s_s_the_ice, cptr.ldPtro(u, $you_usteed) ? upstart((yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0))) : __s_you, (yield* vtense(cptr.ldPtro(u, $you_usteed) ? __s_steed : __s_you__2, (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1273, __s_slip_or_trip), rn2(2)) : rn2(2)) ? __s_slip : __s_slide)), is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_on : __s_off));
-        if (!on_foot && ((saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) === null || !(cptr.ldI32o(saddle, $obj_cursed) & 1)) && (!ice_only || !(rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1284, __s_slip_or_trip), rn2(3)) : rn2(3)))) {
+        (yield* pline(__s_s_s_s_the_ice, cptr.ldPtro(u, $you_usteed) ? upstart((yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0))) : __s_you, (yield* vtense(cptr.ldPtro(u, $you_usteed) ? __s_steed : __s_you__2, rn2_at(__s_timeout_c, 1273, __s_slip_or_trip, 2) ? __s_slip : __s_slide)), is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_on : __s_off));
+        if (!on_foot && ((saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) === null || !(cptr.ldI32o(saddle, $obj_cursed) & 1)) && (!ice_only || !rn2_at(__s_timeout_c, 1284, __s_slip_or_trip, 3))) {
             (yield* You(__s_lose_your_balance));
             (yield* dismount_steed(NHC.DISMOUNT_FELL));
         } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1287, __s_slip_or_trip), rn2((10 + (acurr(NHC.A_DEX))) | 0)) : rn2((10 + (acurr(NHC.A_DEX))) | 0))) {
@@ -1436,7 +1437,7 @@ function* slip_or_trip() {
         }
     } else {
         if (on_foot) {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1302, __s_slip_or_trip), rn2(4)) : rn2(4))) {
+            switch (rn2_at(__s_timeout_c, 1302, __s_slip_or_trip, 4)) {
                 case 1:
                 (yield* You(__s_trip_over_your_own_s, Hallucination() ? __s_elbow : (yield* makeplural((yield* body_part(NHC.FOOT))))));
                 break;
@@ -1451,7 +1452,7 @@ function* slip_or_trip() {
                 break;
             }
         } else if ((saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n))) === null || !(cptr.ldI32o(saddle, $obj_cursed) & 1)) {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1323, __s_slip_or_trip), rn2(4)) : rn2(4))) {
+            switch (rn2_at(__s_timeout_c, 1323, __s_slip_or_trip, 4)) {
                 case 1:
                 (yield* Your(__s_s_slip_out_of_the_stirrups, (yield* makeplural((yield* body_part(NHC.FOOT))))));
                 break;
@@ -1844,17 +1845,17 @@ export function* do_storms() {
     let dirx;
     let diry;
     let count;
-    if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy) & 1) || (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1855, __s_do_storms), rn2(8)) : rn2(8)))
+    if (!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stormy) & 1) || rn2_at(__s_timeout_c, 1855, __s_do_storms, 8))
         return;
-    for (nstrike = (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1859, __s_do_storms), rnd(64)) : rnd(64)); nstrike <= 64; nstrike = Math.imul(nstrike, 2)) {
+    for (nstrike = rnd_at(__s_timeout_c, 1859, __s_do_storms, 64); nstrike <= 64; nstrike = Math.imul(nstrike, 2)) {
         count = 0;
         do {
-            x = (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1862, __s_do_storms), rnd(79)) : rnd(79));
-            y = (rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1863, __s_do_storms), rn2(NHM.ROWNO)) : rn2(NHM.ROWNO));
+            x = rnd_at(__s_timeout_c, 1862, __s_do_storms, 79);
+            y = rn2_at(__s_timeout_c, 1863, __s_do_storms, NHM.ROWNO);
         } while (++count < 100 && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.CLOUD);
         if (count < 100) {
-            dirx = ((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1867, __s_do_storms), rn2(3)) : rn2(3)) - 1) | 0;
-            diry = ((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1868, __s_do_storms), rn2(3)) : rn2(3)) - 1) | 0;
+            dirx = (rn2_at(__s_timeout_c, 1867, __s_do_storms, 3) - 1) | 0;
+            diry = (rn2_at(__s_timeout_c, 1868, __s_do_storms, 3) - 1) | 0;
             if (dirx != 0 || diry != 0) {
                 cptr.stPtro(gb, $instance_globals_b_buzzer, null);
                 (yield* buzz(((-10 - ((Math.abs(5) % 10))) | 0), 8, i16(x), i16(y), dirx, diry));
@@ -1864,7 +1865,7 @@ export function* do_storms() {
     if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CLOUD) {
         ;
         (yield* pline(__s_kaboom_boom_boom));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_timeout_c, 1882, __s_do_storms), rn2(20)) : rn2(20)) + 30) | 0));
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), ((rn2_at(__s_timeout_c, 1882, __s_do_storms, 20) + 30) | 0));
         cptr.st1(disp, 1);
         if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
             (yield* stop_occupation());

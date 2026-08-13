@@ -13,12 +13,12 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_container, bimanual, is_ammo, is_boots, is_cloak, is_gloves, is_graystone, is_helmet, is_launcher, is_missile, is_pole, is_shield, is_shirt, is_spear, is_suit, is_weptool } from './nhmacrofn.js';
+import { rn2_at, rnd_at, rne_at } from './nhrng.js';
 import { Race_switch, Role_switch, discover } from './nhprop.js';
 import { cg, flags, gi, gl, gn, gu, iflags, svb, svm, svs, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, ubirthday, uquiver, urealtime, uswapwep, uwep } from './decl.js';
 import { discover_object } from './o_init.js';
 import { obj_descr, objects } from './objects.js';
 import { is_art } from './artifact.js';
-import { rn2, rnd, rne, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { Japanese_item_name } from './objnam.js';
 import { inv_weight } from './hack.js';
 import { adjabil, adjattrib, init_attr, newhp, vary_init_attr } from './attrib.js';
@@ -1703,22 +1703,22 @@ function* u_init_role() {
     switch (Role_switch()) {
         case NHC.PM_ARCHEOLOGIST:
         (yield* ini_inv(Archeologist));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 654, __s_u_init_role), rn2(10)) : rn2(10)))
+        if (!rn2_at(__s_u_init_c, 654, __s_u_init_role, 10))
             (yield* ini_inv(Tinopener));
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 656, __s_u_init_role), rn2(4)) : rn2(4)))
+        else if (!rn2_at(__s_u_init_c, 656, __s_u_init_role, 4))
             (yield* ini_inv(Lamp));
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 658, __s_u_init_role), rn2(5)) : rn2(5)))
+        else if (!rn2_at(__s_u_init_c, 658, __s_u_init_role, 5))
             (yield* ini_inv(Magicmarker));
         (yield* knows_object(NHC.SACK, 0));
         (yield* knows_object(NHC.TOUCHSTONE, 0));
         break;
         case NHC.PM_BARBARIAN:
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 666, __s_u_init_role), rn2(100)) : rn2(100)) >= 50) {
+        if (rn2_at(__s_u_init_c, 666, __s_u_init_role, 100) >= 50) {
             (yield* ini_inv(Barbarian_0));
         } else {
             (yield* ini_inv(Barbarian_1));
         }
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 671, __s_u_init_role), rn2(6)) : rn2(6)))
+        if (!rn2_at(__s_u_init_c, 671, __s_u_init_role, 6))
             (yield* ini_inv(Lamp));
         (yield* knows_class(NHC.WEAPON_CLASS));
         (yield* knows_class(NHC.ARMOR_CLASS));
@@ -1727,9 +1727,9 @@ function* u_init_role() {
         (yield* ini_inv(Cave_man));
         break;
         case NHC.PM_HEALER:
-        cptr.stI64o(u, $you_umoney0, BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 680, __s_u_init_role), rn2(1000)) : rn2(1000)) + 1001) | 0)));
+        cptr.stI64o(u, $you_umoney0, BigInt(((rn2_at(__s_u_init_c, 680, __s_u_init_role, 1000) + 1001) | 0)));
         (yield* ini_inv(Healer));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 682, __s_u_init_role), rn2(25)) : rn2(25)))
+        if (!rn2_at(__s_u_init_c, 682, __s_u_init_role, 25))
             (yield* ini_inv(Lamp));
         (yield* knows_object(NHC.POT_FULL_HEALING, 0));
         break;
@@ -1742,10 +1742,10 @@ function* u_init_role() {
         case NHC.PM_MONK:
         {
             (yield* ini_inv(Monk));
-            (yield* ini_inv(cptr.ldPtro(__static_u_init_role_M_spell, ((rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 699, __s_u_init_role), rn2(90)) : rn2(90)) / 30) | 0, 8)));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 700, __s_u_init_role), rn2(4)) : rn2(4)))
+            (yield* ini_inv(cptr.ldPtro(__static_u_init_role_M_spell, (rn2_at(__s_u_init_c, 699, __s_u_init_role, 90) / 30) | 0, 8)));
+            if (!rn2_at(__s_u_init_c, 700, __s_u_init_role, 4))
                 (yield* ini_inv(Magicmarker));
-            else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 702, __s_u_init_role), rn2(10)) : rn2(10)))
+            else if (!rn2_at(__s_u_init_c, 702, __s_u_init_role, 10))
                 (yield* ini_inv(Lamp));
             (yield* knows_class(NHC.ARMOR_CLASS));
             (yield* knows_object(NHC.SHURIKEN, 0));
@@ -1753,9 +1753,9 @@ function* u_init_role() {
         }
         case NHC.PM_CLERIC:
         (yield* ini_inv(Priest));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 711, __s_u_init_role), rn2(5)) : rn2(5)))
+        if (!rn2_at(__s_u_init_c, 711, __s_u_init_role, 5))
             (yield* ini_inv(Magicmarker));
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 713, __s_u_init_role), rn2(10)) : rn2(10)))
+        else if (!rn2_at(__s_u_init_c, 713, __s_u_init_role, 10))
             (yield* ini_inv(Lamp));
         (yield* knows_object(NHC.POT_WATER, 1));
         break;
@@ -1766,14 +1766,14 @@ function* u_init_role() {
         case NHC.PM_ROGUE:
         cptr.stI64o(u, $you_umoney0, 0n);
         (yield* ini_inv(Rogue));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 731, __s_u_init_role), rn2(5)) : rn2(5)))
+        if (!rn2_at(__s_u_init_c, 731, __s_u_init_role, 5))
             (yield* ini_inv(Blindfold));
         (yield* knows_object(NHC.SACK, 0));
         (yield* knows_class(NHC.WEAPON_CLASS));
         break;
         case NHC.PM_SAMURAI:
         (yield* ini_inv(Samurai));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 740, __s_u_init_role), rn2(5)) : rn2(5)))
+        if (!rn2_at(__s_u_init_c, 740, __s_u_init_role, 5))
             (yield* ini_inv(Blindfold));
         (yield* knows_class(NHC.WEAPON_CLASS));
         (yield* knows_class(NHC.ARMOR_CLASS));
@@ -1785,27 +1785,27 @@ function* u_init_role() {
         }
         break;
         case NHC.PM_TOURIST:
-        cptr.stI64o(u, $you_umoney0, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 756, __s_u_init_role), rnd(1000)) : rnd(1000))));
+        cptr.stI64o(u, $you_umoney0, BigInt(rnd_at(__s_u_init_c, 756, __s_u_init_role, 1000)));
         (yield* ini_inv(Tourist));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 758, __s_u_init_role), rn2(25)) : rn2(25)))
+        if (!rn2_at(__s_u_init_c, 758, __s_u_init_role, 25))
             (yield* ini_inv(Tinopener));
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 760, __s_u_init_role), rn2(25)) : rn2(25)))
+        else if (!rn2_at(__s_u_init_c, 760, __s_u_init_role, 25))
             (yield* ini_inv(Leash));
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 762, __s_u_init_role), rn2(25)) : rn2(25)))
+        else if (!rn2_at(__s_u_init_c, 762, __s_u_init_role, 25))
             (yield* ini_inv(Towel));
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 764, __s_u_init_role), rn2(20)) : rn2(20)))
+        else if (!rn2_at(__s_u_init_c, 764, __s_u_init_role, 20))
             (yield* ini_inv(Magicmarker));
         break;
         case NHC.PM_VALKYRIE:
         (yield* ini_inv(Valkyrie));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 769, __s_u_init_role), rn2(6)) : rn2(6)))
+        if (!rn2_at(__s_u_init_c, 769, __s_u_init_role, 6))
             (yield* ini_inv(Lamp));
         (yield* knows_class(NHC.WEAPON_CLASS));
         (yield* knows_class(NHC.ARMOR_CLASS));
         break;
         case NHC.PM_WIZARD:
         (yield* ini_inv(Wizard));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 776, __s_u_init_role), rn2(5)) : rn2(5)))
+        if (!rn2_at(__s_u_init_c, 776, __s_u_init_role, 5))
             (yield* ini_inv(Blindfold));
         break;
         default:
@@ -1832,7 +1832,7 @@ function* u_init_race() {
         break;
         case NHC.PM_ELF:
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) {
-            let Instrument = cptr.alloc(2 * $sizeof_trobj); cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, (rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 810, __s_u_init_race), rn2(6)) : rn2(6)), 4))); cptr.st1o(Instrument, 0 + $trobj_trspe, 0); cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS); cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1); cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1); cptr.st1o(Instrument, 0 + $trobj_trbless, 0); cptr.stI16o(Instrument, 8, 0); cptr.st1o(Instrument, 8 + $trobj_trspe, 0); cptr.st1o(Instrument, 8 + $trobj_trclass, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0); cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
+            let Instrument = cptr.alloc(2 * $sizeof_trobj); cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, rn2_at(__s_u_init_c, 810, __s_u_init_race, 6), 4))); cptr.st1o(Instrument, 0 + $trobj_trspe, 0); cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS); cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1); cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1); cptr.st1o(Instrument, 0 + $trobj_trbless, 0); cptr.stI16o(Instrument, 8, 0); cptr.st1o(Instrument, 8 + $trobj_trspe, 0); cptr.st1o(Instrument, 8 + $trobj_trclass, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0); cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
             (yield* ini_inv(Instrument));
         }
         (yield* knows_object(NHC.ELVEN_SHORT_SWORD, 0));
@@ -1973,7 +1973,7 @@ export function* u_init_misc() {
     cptr.stI32o(u, $you_unblind_telepat_range, -1);
     if (cptr.ld1so(u, $you_uroleplay))
         cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-    cptr.stI32o(u, $you_uhandedness, ((rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 1028, __s_u_init_misc), rn2(10)) : rn2(10)) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
+    cptr.stI32o(u, $you_uhandedness, (rn2_at(__s_u_init_c, 1028, __s_u_init_misc, 10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
     max_rank_sz();
     return;
 }
@@ -2044,7 +2044,7 @@ function* restricted_spell_discipline(otyp) {
 function trquan(trop) {
     if (!cptr.ld1so(trop, $trobj_trquan_min))
         return 1n;
-    return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) + (rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 1110, __s_trquan), rn2((((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0)) : rn2((((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0))) | 0));
+    return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) + rn2_at(__s_u_init_c, 1110, __s_trquan, (((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0)) | 0));
 }
 
 /** C ref: u_init.c:1115 — @param {CInt} oclass @param {CInt} got_level1_spellbook @returns {CPtr<struct obj>} */
@@ -2111,10 +2111,10 @@ function* ini_inv_adjust_obj(trop, obj) {
         if (cptr.ld1so(trop, $trobj_trspe) != 127) {
             cptr.st1o(obj, $obj_spe, cptr.ld1so(trop, $trobj_trspe));
             if (cptr.ldI16(trop) == NHC.MAGIC_MARKER && cptr.ld1so(obj, $obj_spe) < 96)
-                cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + (rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 1233, __s_ini_inv_adjust_obj), rn2(4)) : rn2(4)));
+                cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + rn2_at(__s_u_init_c, 1233, __s_ini_inv_adjust_obj, 4));
         } else {
             if (cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_class) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1) | 0 && cptr.ld1so(obj, $obj_spe) <= 0)
-                cptr.st1o(obj, $obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__s_u_init_c, 1238, __s_ini_inv_adjust_obj), rne(3)) : rne(3))));
+                cptr.st1o(obj, $obj_spe, schar(rne_at(__s_u_init_c, 1238, __s_ini_inv_adjust_obj, 3)));
         }
         if (cptr.ld1so(trop, $trobj_trbless) != 2)
             cptr.stI32o(obj, $obj_blessed, cptr.ld1so(trop, $trobj_trbless));

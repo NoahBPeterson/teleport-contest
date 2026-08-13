@@ -13,8 +13,8 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { bimanual, canspotmon, min, touch_petrifies } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Adornment, Blind, Conflict, Flying, Levitation, Punished } from './nhprop.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { carry_obj_effects, count_unpaid, freeinv, g_at, stackobj } from './invent.js';
 import { disp, flags, ga, gi, gk, gm, gn, go, gs, gt, gv, gy, iflags, svl, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, uchain, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { add_to_minv, obj_extract_self, place_object, splitobj, unknow_object } from './mkobj.js';
@@ -171,17 +171,17 @@ export function somegold(lmoney) {
     if (igold < 50)
         ;
     else if (igold < 100)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 21, __s_somegold), rn2((((igold - 25) | 0) + 1) | 0)) : rn2((((igold - 25) | 0) + 1) | 0)) + 25) | 0);
+        igold = ((rn2_at(__s_steal_c, 21, __s_somegold, (((igold - 25) | 0) + 1) | 0) + 25) | 0);
     else if (igold < 500)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 23, __s_somegold), rn2((((igold - 50) | 0) + 1) | 0)) : rn2((((igold - 50) | 0) + 1) | 0)) + 50) | 0);
+        igold = ((rn2_at(__s_steal_c, 23, __s_somegold, (((igold - 50) | 0) + 1) | 0) + 50) | 0);
     else if (igold < 1000)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 25, __s_somegold), rn2((((igold - 100) | 0) + 1) | 0)) : rn2((((igold - 100) | 0) + 1) | 0)) + 100) | 0);
+        igold = ((rn2_at(__s_steal_c, 25, __s_somegold, (((igold - 100) | 0) + 1) | 0) + 100) | 0);
     else if (igold < 5000)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 27, __s_somegold), rn2((((igold - 500) | 0) + 1) | 0)) : rn2((((igold - 500) | 0) + 1) | 0)) + 500) | 0);
+        igold = ((rn2_at(__s_steal_c, 27, __s_somegold, (((igold - 500) | 0) + 1) | 0) + 500) | 0);
     else if (igold < 10000)
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 29, __s_somegold), rn2((((igold - 1000) | 0) + 1) | 0)) : rn2((((igold - 1000) | 0) + 1) | 0)) + 1000) | 0);
+        igold = ((rn2_at(__s_steal_c, 29, __s_somegold, (((igold - 1000) | 0) + 1) | 0) + 1000) | 0);
     else
-        igold = (((rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 31, __s_somegold), rn2((((igold - 5000) | 0) + 1) | 0)) : rn2((((igold - 5000) | 0) + 1) | 0)) + 5000) | 0);
+        igold = ((rn2_at(__s_steal_c, 31, __s_somegold, (((igold - 5000) | 0) + 1) | 0) + 5000) | 0);
     return BigInt(igold);
 }
 
@@ -204,7 +204,7 @@ export function* stealgold(mtmp) {
     while (fgold && cptr.ldI16o(fgold, $obj_otyp) != NHC.GOLD_PIECE)
         fgold = cptr.ldPtro(fgold, $obj_v);
     ygold = findgold(cptr.ldPtro(gi, $instance_globals_i_invent));
-    if (fgold && (!ygold || cptr.ldI64o(fgold, $obj_quan) > cptr.ldI64o(ygold, $obj_quan) || !(rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 73, __s_stealgold), rn2(5)) : rn2(5)))) {
+    if (fgold && (!ygold || cptr.ldI64o(fgold, $obj_quan) > cptr.ldI64o(ygold, $obj_quan) || !rn2_at(__s_steal_c, 73, __s_stealgold, 5))) {
         (yield* obj_extract_self(fgold));
         (yield* add_to_minv(mtmp, fgold));
         (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -222,7 +222,7 @@ export function* stealgold(mtmp) {
         if (!cptr.strncmp(what, __s_rear, 5n))
             what = cptr.add(what, 5);
         (yield* pline(__s_s_quickly_snatches_some_gold_from_s_s_s, (yield* Monnam(mtmp)), (Levitation() || Flying()) ? __s_beneath : __s_between, whose, what));
-        if (!ygold || !(rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 94, __s_stealgold), rn2(5)) : rn2(5))) {
+        if (!ygold || !rn2_at(__s_steal_c, 94, __s_stealgold, 5)) {
             if (!(yield* tele_restrict(mtmp)))
                 void (yield* rloc(mtmp, NHM.RLOC_MSG));
             (yield* monflee(mtmp, 0, 0, 0));
@@ -431,10 +431,10 @@ export function* steal(mtmp, objnambuf) {
         continue;
         }
         case 1 /* nothing_to_steal: */: {
-        if (Punished() && !monkey_business && (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 379, __s_steal), rn2(4)) : rn2(4))) {
+        if (Punished() && !monkey_business && rn2_at(__s_steal_c, 379, __s_steal, 4)) {
             (__builtin_expect(BigInt((!(!cptr.eq(uball.v, (null)) && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FLOOR))), 0n) ? __assert_rtn(__s_steal, __s_steal_c, 381, __s_uball_null_uball_where_obj_floor) : void 0);
             (yield* worn_item_removal(mtmp, uchain.v));
-        } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL && !monkey_business && !(rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 384, __s_steal), rn2(4)) : rn2(4))) {
+        } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL && !monkey_business && !rn2_at(__s_steal_c, 384, __s_steal, 4)) {
             (yield* pline(__s_s_takes_off_your_unseen_chain, cptr.decay(Monnambuf)));
             void (yield* openholdingtrap(cptr.add(gy, $instance_globals_y_youmonst), dummy));
         } else if (Blind()) {
@@ -495,7 +495,7 @@ export function* steal(mtmp, objnambuf) {
         { __pc = 1; continue; }
         }
         case 15: {
-        tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 421, __s_steal), rn2(tmp)) : rn2(tmp));
+        tmp = rn2_at(__s_steal_c, 421, __s_steal, tmp);
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if ((!uarm.v || !cptr.eq(otmp, uarmc.v)) && !cptr.eq(otmp, uskin.v) && cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS) {
                 tmp = (tmp - ((cptr.ldI64o(otmp, $obj_owornmask) & 983167n) ? 5 : 1)) | 0;
@@ -554,8 +554,8 @@ export function* steal(mtmp, objnambuf) {
         continue;
         }
         case 4 /* cant_take: */: {
-        (yield* pline(__s_s_tries_to_s_s_s_but_gives_up, cptr.decay(Monnambuf), cptr.ldPtro(__static_steal_how, (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 481, __s_steal), rn2(4)) : rn2(4)), 8), (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? __s_your__2 : __s_empty, (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? (yield* armor_simple_name(otmp)) : (yield* yname(otmp))));
-        return !(rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 488, __s_steal), rn2((((inv_cnt(0) / 5) | 0) + 2) | 0)) : rn2((((inv_cnt(0) / 5) | 0) + 2) | 0));
+        (yield* pline(__s_s_tries_to_s_s_s_but_gives_up, cptr.decay(Monnambuf), cptr.ldPtro(__static_steal_how, rn2_at(__s_steal_c, 481, __s_steal, 4), 8), (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? __s_your__2 : __s_empty, (cptr.ldI64o(otmp, $obj_owornmask) & 127n) ? (yield* armor_simple_name(otmp)) : (yield* yname(otmp))));
+        return !rn2_at(__s_steal_c, 488, __s_steal, (((inv_cnt(0) / 5) | 0) + 2) | 0);
         }
         case 23: {
         __pc = 21;
@@ -617,7 +617,7 @@ export function* steal(mtmp, objnambuf) {
         __pc = 42; continue;
         }
         case 41: {
-        if (armordelay >= 1 && !olddelay && (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 521, __s_steal), rn2(10)) : rn2(10))) { __pc = 44; continue; }
+        if (armordelay >= 1 && !olddelay && rn2_at(__s_steal_c, 521, __s_steal, 10)) { __pc = 44; continue; }
         __pc = 43; continue;
         }
         case 44: {
@@ -753,7 +753,7 @@ export function* stealamulet(mtmp) {
         if ((cptr.ld1so((obj), $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION))
             ++n, otmp = obj;
     if (n > 1) {
-        n = (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 702, __s_stealamulet), rnd(n)) : rnd(n));
+        n = rnd_at(__s_steal_c, 702, __s_stealamulet, n);
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
             if ((cptr.ld1so((otmp), $obj_oartifact) >= NHC.ART_ORB_OF_DETECTION) && !--n)
                 break;
@@ -775,7 +775,7 @@ export function* stealamulet(mtmp) {
             if (cptr.ldI16o(obj, $obj_otyp) == real || (cptr.ldI16o(obj, $obj_otyp) == fake && !(cptr.ldI32o(mtmp, $monst_iswiz) & 1)))
                 ++n, otmp = obj;
         if (n > 1) {
-            n = (rng_log_enabled() ? (rng_log_set_caller(__s_steal_c, 728, __s_stealamulet), rnd(n)) : rnd(n));
+            n = rnd_at(__s_steal_c, 728, __s_stealamulet, n);
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if ((cptr.ldI16o(otmp, $obj_otyp) == real || (cptr.ldI16o(otmp, $obj_otyp) == fake && !(cptr.ldI32o(mtmp, $monst_iswiz) & 1))) && !--n)
                     break;

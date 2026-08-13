@@ -14,6 +14,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, glyph_is_object, glyph_is_swallow, has_ebones, has_mgivenname, has_oname, helpless, is_mplayer, is_plural, is_rider, ismnum, m_next2u } from './nhmacrofn.js';
+import { rn2_at } from './nhrng.js';
 import { Blind, Deaf, EHalluc_resistance, Hallucination, Role_switch, See_invisible, Upolyd, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { newmextra } from './makemon.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
@@ -34,7 +35,7 @@ import { shkname } from './shknam.js';
 import { The, Ysimple_name2, an, ansimpleoname, bare_artifactname, just_an, makeplural, safe_qbuf, simpleonames, vtense, xname } from './objnam.js';
 import { artifact_exists, artifact_name, exist_artifact, restrict_name, set_artifact_intrinsic, undiscovered_artifact } from './artifact.js';
 import { wipeout_text } from './engrave.js';
-import { rn2, rn2_on_display_rng, rnd_on_display_rng, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2_on_display_rng, rnd_on_display_rng } from './rnd.js';
 import { body_part } from './polyself.js';
 import { untwoweapon } from './wield.js';
 import { alter_cost } from './shk.js';
@@ -960,7 +961,7 @@ cptr.stPtro(ghostnames, 264, __s_murphy);
 
 /** C ref: do_name.c:772 @returns {CPtr<char>} */
 export function rndghostname() {
-    return (rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 774, __s_rndghostname), rn2(7)) : rn2(7)) ? cptr.ldPtro(ghostnames, (rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 774, __s_rndghostname), rn2(34)) : rn2(34)), 8) : svp;
+    return rn2_at(__s_do_name_c, 774, __s_rndghostname, 7) ? cptr.ldPtro(ghostnames, rn2_at(__s_do_name_c, 774, __s_rndghostname, 34), 8) : svp;
 }
 
 /** C ref: do_name.c:827 — @param {CPtr<struct monst>} mtmp @param {CInt} article @param {CPtr<char>} adjective @param {CInt} suppress @param {CInt} called @returns {CPtr<char>} */
@@ -1003,7 +1004,7 @@ export function* x_monnam(mtmp, article, adjective, suppress, called) {
     cptr.st1o(buf, 0, 0);
     if (do_it) {
         let s_one = schar((((cptr.ldU64o((mdat), $permonst_mflags1) & 131072n) != 0n) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 262144n) != 0n) && !((cptr.ldU64o((mdat), $permonst_mflags1) & 65536n) != 0n) ? 1 : 0));
-        void cptr.strcpy(buf, !augment_it ? __s_it : ((!do_hallu ? s_one : !(rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 881, __s_x_monnam), rn2(2)) : rn2(2))) ? __s_someone : __s_something));
+        void cptr.strcpy(buf, !augment_it ? __s_it : ((!do_hallu ? s_one : !rn2_at(__s_do_name_c, 881, __s_x_monnam, 2)) ? __s_someone : __s_something));
         return buf;
     }
     if (((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) && !do_mappear) {
@@ -1380,7 +1381,7 @@ export function roguename() {
                 return cptr.add(i, 5);
             }
     }
-    return (rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1437, __s_roguename), rn2(3)) : rn2(3)) ? ((rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1437, __s_roguename), rn2(2)) : rn2(2)) ? __s_michael_toy : __s_kenneth_arnold) : __s_glenn_wichman;
+    return rn2_at(__s_do_name_c, 1437, __s_roguename, 3) ? (rn2_at(__s_do_name_c, 1437, __s_roguename, 2) ? __s_michael_toy : __s_kenneth_arnold) : __s_glenn_wichman;
 }
 
 /** C ref: do_name.c:1441 — char *[74] */
@@ -1467,7 +1468,7 @@ export function hcolor(colorpref) {
 
 /** C ref: do_name.c:1470 @returns {CPtr<char>} */
 export function rndcolor() {
-    let k = (rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1472, __s_rndcolor), rn2(NHM.CLR_MAX)) : rn2(NHM.CLR_MAX));
+    let k = rn2_at(__s_do_name_c, 1472, __s_rndcolor, NHM.CLR_MAX);
     return Hallucination() ? hcolor(null) : ((k == NHM.NO_COLOR) ? __s_colorless : cptr.ldPtro(c_obj_colors, k, 8));
 }
 
@@ -1583,13 +1584,13 @@ cptr.stPtro(__static_rndorcname_snd, 80, __s_hai); /** C ref: do_name.c:1541 —
 /** C ref: do_name.c:1538 — @param {CPtr<char>} s @returns {CPtr<char>} */
 export function rndorcname(s) {
     let i;
-    let iend = (((rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1543, __s_rndorcname), rn2(2)) : rn2(2)) + 3) | 0);
-    let vstart = (rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1543, __s_rndorcname), rn2(2)) : rn2(2));
+    let iend = ((rn2_at(__s_do_name_c, 1543, __s_rndorcname, 2) + 3) | 0);
+    let vstart = rn2_at(__s_do_name_c, 1543, __s_rndorcname, 2);
     if (s) {
         cptr.st1(s, 0);
         for (i = 0; i < iend; ++i) {
             vstart = (1 - vstart) | 0;
-            void cptr.sprintf(eos(s), __s_s_s__2, (i > 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1549, __s_rndorcname), rn2(30)) : rn2(30))) ? __s_dash : __s_empty, vstart ? cptr.ldPtro(__static_rndorcname_v, (rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1550, __s_rndorcname), rn2(4)) : rn2(4)), 8) : cptr.ldPtro(__static_rndorcname_snd, (rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1550, __s_rndorcname), rn2(11)) : rn2(11)), 8));
+            void cptr.sprintf(eos(s), __s_s_s__2, (i > 0 && !rn2_at(__s_do_name_c, 1549, __s_rndorcname, 30)) ? __s_dash : __s_empty, vstart ? cptr.ldPtro(__static_rndorcname_v, rn2_at(__s_do_name_c, 1550, __s_rndorcname, 4), 8) : cptr.ldPtro(__static_rndorcname_snd, rn2_at(__s_do_name_c, 1550, __s_rndorcname, 11), 8));
         }
     }
     return s;
@@ -1671,7 +1672,7 @@ cptr.stPtro(sir_Terry_novels, 320, __s_the_shepherd_s_crown);
 export function noveltitle(novidx) {
     let j;
     let k = 41;
-    j = (rng_log_enabled() ? (rng_log_set_caller(__s_do_name_c, 1615, __s_noveltitle), rn2(k)) : rn2(k));
+    j = rn2_at(__s_do_name_c, 1615, __s_noveltitle, k);
     if (novidx) {
         if (cptr.ldI32(novidx) == -1)
             cptr.stI32(novidx, j);

@@ -14,11 +14,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ismnum, max } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { BBlinded, BClairvoyant, BlindedTimeout, Blindfolded_only, EBlinded, EFast, Fixed_abil, Fumbling, HBlinded, HBlnd_resist, HClairvoyant, HConfusion, HFast, HRegeneration, HStun, Half_gas_damage, Hallucination, Poison_resistance, Race_switch, Role_switch, Sick, Upolyd, Very_fast, Vomiting, Wounded_legs, wizard } from './nhprop.js';
 import { c_common_strings, disp, flags, gi, gm, gu, gy, iflags, program_state, svc, svd, svk, svm, u, uarmc, uarmf, uarmg, uarmh, ublindf, uwep } from './decl.js';
 import { You, You_feel, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { body_part, uasmon_maxStr } from './polyself.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { encumber_msg } from './pickup.js';
 import { losehp, near_capacity } from './hack.js';
 import { copynchars, sgn, strncmpi, strstri } from './hacklib.js';
@@ -581,7 +581,7 @@ export function* adjattrib(ndx, incr, msgflg) {
         abonflg = schar(((cptr.ld1so2(u, ndx, 1, $you_abon)) < 0));
     } else {
         if ((cptr.ld1so2(u, ndx, 1, $you_acurr)) < (cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin))) {
-            decr = (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 166, __s_adjattrib), rn2(((((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) - (cptr.ld1so2(u, ndx, 1, $you_acurr))) | 0) + 1) | 0)) : rn2(((((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) - (cptr.ld1so2(u, ndx, 1, $you_acurr))) | 0) + 1) | 0));
+            decr = rn2_at(__s_attrib_c, 166, __s_adjattrib, ((((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) - (cptr.ld1so2(u, ndx, 1, $you_acurr))) | 0) + 1) | 0);
             cptr.st1o2(u, ndx, 1, $you_acurr, schar((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin))));
             cptr.st1o2(u, ndx, 1, $you_amax, cptr.ld1so2(u, ndx, 1, $you_amax) - decr);
             if ((cptr.ld1so2(u, ndx, 1, $you_amax)) < (cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)))
@@ -614,9 +614,9 @@ export function* gainstr(otmp, incr, givemsg) {
     let num = incr;
     if (!num) {
         if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) < 18)
-            num = ((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 209, __s_gainstr), rn2(4)) : rn2(4)) ? 1 : (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 209, __s_gainstr), rnd(6)) : rnd(6)));
+            num = (rn2_at(__s_attrib_c, 209, __s_gainstr, 4) ? 1 : rnd_at(__s_attrib_c, 209, __s_gainstr, 6));
         else if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) < 103)
-            num = (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 211, __s_gainstr), rnd(10)) : rnd(10));
+            num = rnd_at(__s_attrib_c, 211, __s_gainstr, 10);
         else
             num = 1;
     }
@@ -639,7 +639,7 @@ export function* losestr(num, knam, k_format) {
     while (ustr < (cptr.ldI16o2(gu, NHC.A_STR, 2, $instance_globals_u_urace + $Race_attrmin))) {
         ++ustr;
         --num;
-        amt = (((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 235, __s_losestr), rn2(4)) : rn2(4)) + 3) | 0);
+        amt = ((rn2_at(__s_attrib_c, 235, __s_losestr, 4) + 3) | 0);
         dmg = (dmg + amt) | 0;
     }
     if (dmg) {
@@ -719,9 +719,9 @@ export function* poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
     } else if (!(yield* strncmpi(pkiller, __s_the__2, 4)) || !(yield* strncmpi(pkiller, __s_an, 3)) || !(yield* strncmpi(pkiller, __s_a_sp, 2))) {
         kprefix = NHM.KILLED_BY;
     }
-    i = !fatal ? 1 : (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 362, __s_poisoned), rn2((fatal + (thrown_weapon ? 20 : 0)) | 0)) : rn2((fatal + (thrown_weapon ? 20 : 0)) | 0));
+    i = !fatal ? 1 : rn2_at(__s_attrib_c, 362, __s_poisoned, (fatal + (thrown_weapon ? 20 : 0)) | 0);
     if (i == 0 && typ != NHC.A_CHA) {
-        loss = (6 + (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 365, __s_poisoned), d(4, 6)) : d(4, 6))) | 0;
+        loss = (6 + d_at(__s_attrib_c, 365, __s_poisoned, 4, 6)) | 0;
         if (cptr.ldI32o(u, $you_uhp) <= loss) {
             cptr.stI32o(u, $you_uhp, -1);
             cptr.st1(disp, 1);
@@ -739,12 +739,12 @@ export function* poisoned(reason, typ, pkiller, fatal, thrown_weapon) {
         }
     } else if (i > 5) {
         let cloud = schar((!strcmp(reason, __s_gas_cloud)));
-        loss = thrown_weapon ? (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 388, __s_poisoned), rnd(6)) : rnd(6)) : (((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 388, __s_poisoned), rn2(10)) : rn2(10)) + 6) | 0);
+        loss = thrown_weapon ? rnd_at(__s_attrib_c, 388, __s_poisoned, 6) : ((rn2_at(__s_attrib_c, 388, __s_poisoned, 10) + 6) | 0);
         if ((blast || cloud) && Half_gas_damage())
             loss = (((loss + 1) | 0) / 2) | 0;
         (yield* losehp(loss, pkiller, schar(kprefix)));
     } else {
-        loss = (thrown_weapon || !fatal) ? 1 : (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 395, __s_poisoned), d(2, 2)) : d(2, 2));
+        loss = (thrown_weapon || !fatal) ? 1 : d_at(__s_attrib_c, 395, __s_poisoned, 2, 2);
         if ((yield* adjattrib(typ, -loss, 1)))
             (yield* poisontell(typ, 1));
     }
@@ -824,7 +824,7 @@ export function* exercise(i, inc_or_dec) {
     if (Upolyd() && i != NHC.A_WIS)
         return;
     if (Math.abs((cptr.ld1so2(u, i, 1, $you_aexe))) < 50) {
-        cptr.st1o2(u, i, 1, $you_aexe, cptr.ld1so2(u, i, 1, $you_aexe) + ((inc_or_dec) ? ((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 509, __s_exercise__2), rn2(19)) : rn2(19)) > (acurr(i))) : -(rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 509, __s_exercise__2), rn2(2)) : rn2(2))));
+        cptr.st1o2(u, i, 1, $you_aexe, cptr.ld1so2(u, i, 1, $you_aexe) + ((inc_or_dec) ? (rn2_at(__s_attrib_c, 509, __s_exercise__2, 19) > (acurr(i))) : -rn2_at(__s_attrib_c, 509, __s_exercise__2, 2)));
         {
             if ((yield* debugcore(__s_attrib_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -970,7 +970,7 @@ export function* exerchk() {
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 655, __s_exerchk), rn2(50)) : rn2(50)) > ((i != NHC.A_WIS) ? ((Math.imul(Math.abs(ax), 2) / 3) | 0) : Math.abs(ax)))
+                if (rn2_at(__s_attrib_c, 655, __s_exerchk, 50) > ((i != NHC.A_WIS) ? ((Math.imul(Math.abs(ax), 2) / 3) | 0) : Math.abs(ax)))
                     break __lbl_nextattrib;
                 {
                     if ((yield* debugcore(__s_attrib_c, 1))) {
@@ -993,7 +993,7 @@ export function* exerchk() {
             }
             cptr.st1o2(u, i, 1, $you_aexe, schar(Math.imul(((Math.abs(ax) / 2) | 0), mod_val)));
         }
-        cptr.stI64o(svc, $context_info_next_attrib_check, cptr.ldI64o(svc, $context_info_next_attrib_check) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 673, __s_exerchk), rn2(200)) : rn2(200)) + 800) | 0)));
+        cptr.stI64o(svc, $context_info_next_attrib_check, cptr.ldI64o(svc, $context_info_next_attrib_check) + BigInt(((rn2_at(__s_attrib_c, 673, __s_exerchk, 200) + 800) | 0)));
         {
             if ((yield* debugcore(__s_attrib_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -1007,7 +1007,7 @@ export function* exerchk() {
 /** C ref: attrib.c:682 @returns {CInt} */
 function rnd_attr() {
     let i;
-    let x = (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 684, __s_rnd_attr), rn2(100)) : rn2(100));
+    let x = rn2_at(__s_attrib_c, 684, __s_rnd_attr, 100);
     for (i = 0; i < NHC.A_MAX; ++i)
         if ((x = (x - cptr.ldI16o2(gu, i, 2, $instance_globals_u_urole + $Role_attrdist)) | 0) < 0)
             break;
@@ -1052,7 +1052,7 @@ export function redist_attr() {
         if (i == NHC.A_INT || i == NHC.A_WIS)
             continue;
         tmp = (cptr.ld1so2(u, i, 1, $you_amax));
-        cptr.st1o2(u, i, 1, $you_amax, cptr.ld1so2(u, i, 1, $you_amax) + (((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 749, __s_redist_attr), rn2(5)) : rn2(5)) - 2) | 0));
+        cptr.st1o2(u, i, 1, $you_amax, cptr.ld1so2(u, i, 1, $you_amax) + ((rn2_at(__s_attrib_c, 749, __s_redist_attr, 5) - 2) | 0));
         if ((cptr.ld1so2(u, i, 1, $you_amax)) > ((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmax)))
             cptr.st1o2(u, i, 1, $you_amax, schar(((i == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmax))));
         if ((cptr.ld1so2(u, i, 1, $you_amax)) < (cptr.ldI16o2(gu, i, 2, $instance_globals_u_urace + $Race_attrmin)))
@@ -1067,8 +1067,8 @@ export function redist_attr() {
 export function* vary_init_attr() {
     let i;
     for (i = 0; i < NHC.A_MAX; i++)
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 769, __s_vary_init_attr), rn2(20)) : rn2(20))) {
-            let xd = ((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 770, __s_vary_init_attr), rn2(7)) : rn2(7)) - 2) | 0;
+        if (!rn2_at(__s_attrib_c, 769, __s_vary_init_attr, 20)) {
+            let xd = (rn2_at(__s_attrib_c, 770, __s_vary_init_attr, 7) - 2) | 0;
             void (yield* adjattrib(i, xd, 1));
             if ((cptr.ld1so2(u, i, 1, $you_acurr)) < (cptr.ld1so2(u, i, 1, $you_amax)))
                 cptr.st1o2(u, i, 1, $you_amax, (cptr.ld1so2(u, i, 1, $you_acurr)));
@@ -1277,9 +1277,9 @@ export function newhp() {
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
         hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd) > 0)
-            hp = (hp + (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1088, __s_newhp), rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd)))) | 0;
+            hp = (hp + rnd_at(__s_attrib_c, 1088, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_inrnd))) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd) > 0)
-            hp = (hp + (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1090, __s_newhp), rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd)))) | 0;
+            hp = (hp + rnd_at(__s_attrib_c, 1090, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_inrnd))) | 0;
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) == 0n) {
             cptr.st1o(u, $you_ualign, cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_value));
             cptr.stI32o(u, $you_ualign + $align_record, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_initrecord));
@@ -1288,15 +1288,15 @@ export function newhp() {
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
             hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lofix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lofix)) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd) > 0)
-                hp = (hp + (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1101, __s_newhp), rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd)))) | 0;
+                hp = (hp + rnd_at(__s_attrib_c, 1101, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_lornd))) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd) > 0)
-                hp = (hp + (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1103, __s_newhp), rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd)))) | 0;
+                hp = (hp + rnd_at(__s_attrib_c, 1103, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_lornd))) | 0;
         } else {
             hp = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hifix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hifix)) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd) > 0)
-                hp = (hp + (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1107, __s_newhp), rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd)))) | 0;
+                hp = (hp + rnd_at(__s_attrib_c, 1107, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_hpadv + $RoleAdvance_hirnd))) | 0;
             if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd) > 0)
-                hp = (hp + (rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1109, __s_newhp), rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd)))) | 0;
+                hp = (hp + rnd_at(__s_attrib_c, 1109, __s_newhp, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hpadv + $RoleAdvance_hirnd))) | 0;
         }
         if ((acurr(NHC.A_CON)) <= 3)
             conplus = -2;
@@ -1462,8 +1462,8 @@ export function* uchangealign(newalign, reason) {
         if (reason == NHC.A_CG_HELM_ON) {
             adjalign(-7);
             (yield* Your(__s_mind_oscillates_s, Hallucination() ? __s_wildly : __s_briefly));
-            (yield* make_confused(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1346, __s_uchangealign), rn2(2)) : rn2(2)) + 3) | 0)), 0));
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || ((rng_log_enabled() ? (rng_log_set_caller(__s_attrib_c, 1347, __s_uchangealign), rn2(50)) : rn2(50)) >>> 0 < cptr.ldI32o(u, $you_ualign + $align_abuse)))
+            (yield* make_confused(BigInt(((rn2_at(__s_attrib_c, 1346, __s_uchangealign, 2) + 3) | 0)), 0));
+            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (rn2_at(__s_attrib_c, 1347, __s_uchangealign, 50) >>> 0 < cptr.ldI32o(u, $you_ualign + $align_abuse)))
                 (yield* summon_furies((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? 0 : 1));
             (yield* livelog_printf(512n, __s_used_a_helm_to_turn_s, cptr.ldPtro2(aligns, (1 - newalign) | 0, $sizeof_Align, $Align_adj)));
         } else if (reason == NHC.A_CG_HELM_OFF) {

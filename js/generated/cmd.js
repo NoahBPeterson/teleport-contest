@@ -9,6 +9,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_TREE, Is_container, canspotmon, glyph_is_cmap, has_mgivenname, is_mind_flayer, is_unicorn, is_vampshifter, webmaker } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch, nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
 import { add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs } from './windows.js';
 import { WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs, gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars, rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars, ynqchars, zdir } from './decl.js';
@@ -80,7 +81,7 @@ import { wiz_timeout_queue } from './timeout.js';
 import { doextversion, doversion } from './version.js';
 import { wiz_debug_cmd_bury } from './dig.js';
 import { dozap } from './zap.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d } from './rnd.js';
 import { On_stairs_dn, On_stairs_up, stairway_at } from './stairs.js';
 import { defsyms } from './drawing.js';
 import { which_armor } from './worn.js';
@@ -4256,9 +4257,9 @@ let __static_randomkey_last_c = 0; /** C ref: cmd.c:3520 — char (function-stat
 /** C ref: cmd.c:3517 @returns {CInt} */
 export function randomkey() {
     let c;
-    if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) && cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp && (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3525, __s_randomkey), rn2(5)) : rn2(5)))
+    if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) && cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp && rn2_at(__s_cmd_c, 3525, __s_randomkey, 5))
         return __static_randomkey_last_c;
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3528, __s_randomkey), rn2(16)) : rn2(16))) {
+    switch (rn2_at(__s_cmd_c, 3528, __s_randomkey, 16)) {
         default:
         c = 27;
         break;
@@ -4269,16 +4270,16 @@ export function randomkey() {
         case 2:
         case 3:
         case 4:
-        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3539, __s_randomkey), rn2(95)) : rn2(95)) + 32) | 0));
+        c = schar(((rn2_at(__s_cmd_c, 3539, __s_randomkey, 95) + 32) | 0));
         break;
         case 5:
-        c = schar(((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3542, __s_randomkey), rn2(2)) : rn2(2)) ? 9 : 32));
+        c = schar((rn2_at(__s_cmd_c, 3542, __s_randomkey, 2) ? 9 : 32));
         break;
         case 6:
-        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3545, __s_randomkey), rn2(26)) : rn2(26)) + 97) | 0));
+        c = schar(((rn2_at(__s_cmd_c, 3545, __s_randomkey, 26) + 97) | 0));
         break;
         case 7:
-        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3548, __s_randomkey), rn2(26)) : rn2(26)) + 65) | 0));
+        c = schar(((rn2_at(__s_cmd_c, 3548, __s_randomkey, 26) + 65) | 0));
         break;
         case 8:
         c = schar(cptr.ld1uo(extcmdlist, u32mod(__static_randomkey_i++, 171 >>> 0), $sizeof_ext_func_tab));
@@ -4290,16 +4291,16 @@ export function randomkey() {
         case 11:
         case 12:
         {
-            let d = (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3560, __s_randomkey), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0)));
-            let m = (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3561, __s_randomkey), rn2(7)) : rn2(7)) ? NHC.MV_WALK : (!(rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3561, __s_randomkey), rn2(3)) : rn2(3)) ? NHC.MV_RUSH : NHC.MV_RUN);
+            let d = rn2_at(__s_cmd_c, 3560, __s_randomkey, ((NHC.N_DIRS_Z - 2) | 0));
+            let m = rn2_at(__s_cmd_c, 3561, __s_randomkey, 7) ? NHC.MV_WALK : (!rn2_at(__s_cmd_c, 3561, __s_randomkey, 3) ? NHC.MV_RUSH : NHC.MV_RUN);
             c = cmd_from_dir(d, m);
         }
         break;
         case 13:
-        c = schar((((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3567, __s_randomkey), rn2(10)) : rn2(10)) + 48) | 0));
+        c = schar(((rn2_at(__s_cmd_c, 3567, __s_randomkey, 10) + 48) | 0));
         break;
         case 14:
-        c = schar((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3571, __s_randomkey), rnd(cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127)) : rnd(cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127)));
+        c = schar(rnd_at(__s_cmd_c, 3571, __s_randomkey, cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) ? 255 : 127));
         break;
     }
     if (cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp)
@@ -4327,7 +4328,7 @@ export function random_response(buf, sz) {
 
 /** C ref: cmd.c:3601 @returns {CInt} */
 export function rnd_extcmd_idx() {
-    return ((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3603, __s_rnd_extcmd_idx), rn2((extcmdlist_length + 1) | 0)) : rn2((extcmdlist_length + 1) | 0)) - 1) | 0;
+    return (rn2_at(__s_cmd_c, 3603, __s_rnd_extcmd_idx, (extcmdlist_length + 1) | 0) - 1) | 0;
 }
 
 /** C ref: cmd.c:3607 — @param {CInt} reset_cmdq */
@@ -4680,16 +4681,16 @@ export function getdir(s) {
             dirsym = readchar();
         } else {
             dirsym = yn_function((s && cptr.ld1s(s) != 94) ? s : __s_in_what_direction, null, 0, 0);
-            if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3996, __s_getdir), rn2(20)) : rn2(20))) {
-                switch ((rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3997, __s_getdir), rn2(20)) : rn2(20))) {
+            if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && rn2_at(__s_cmd_c, 3996, __s_getdir, 20)) {
+                switch (rn2_at(__s_cmd_c, 3997, __s_getdir, 20)) {
                     case 0:
-                    dirsym = cptr.ld1so2(gc, (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 3999, __s_getdir), rn2(2)) : rn2(2)) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys);
+                    dirsym = cptr.ld1so2(gc, rn2_at(__s_cmd_c, 3999, __s_getdir, 2) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys);
                     break;
                     case 1:
-                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 4002, __s_getdir), rn2(2)) : rn2(2)) ? NHC.DIR_DOWN : NHC.DIR_UP);
+                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), rn2_at(__s_cmd_c, 4002, __s_getdir, 2) ? NHC.DIR_DOWN : NHC.DIR_UP);
                     break;
                     default:
-                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 4005, __s_getdir), rn2(((NHC.N_DIRS_Z - 2) | 0))) : rn2(((NHC.N_DIRS_Z - 2) | 0))));
+                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), rn2_at(__s_cmd_c, 4005, __s_getdir, ((NHC.N_DIRS_Z - 2) | 0)));
                     break;
                 }
             }
@@ -4913,7 +4914,7 @@ function help_dir(sym, spkey, msg) {
 export function confdir(force_impairment) {
     if (force_impairment || u_maybe_impaired()) {
         let kmax = ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0) : ((NHC.N_DIRS_Z - 2) | 0);
-        let k = cptr.ld1so(cptr.decay(dirs_ord), (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 4304, __s_confdir), rn2(kmax)) : rn2(kmax)), 1);
+        let k = cptr.ld1so(cptr.decay(dirs_ord), rn2_at(__s_cmd_c, 4304, __s_confdir, kmax), 1);
         cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), k, 1));
         cptr.stI32o(u, $you_dy, cptr.ld1so(cptr.decay(ydir), k, 1));
     }
@@ -5814,13 +5815,13 @@ export function yn_function(query, resp, def, addcmdq) {
         else
             cmdq_clear(NHC.CQ_CANNED);
         addcmdq = 0;
-    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp && cptr.ld1s(resp) && (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 5513, __s_yn_function), rn2(20)) : rn2(20))) {
+    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp && cptr.ld1s(resp) && rn2_at(__s_cmd_c, 5513, __s_yn_function, 20)) {
         let ln = Number(BigInt.asIntN(32, cptr.strlen(resp)));
-        let ridx = (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 5514, __s_yn_function), rn2(ln)) : rn2(ln));
+        let ridx = rn2_at(__s_cmd_c, 5514, __s_yn_function, ln);
         res.v = cptr.ld1so(resp, ridx);
         if (res.v == 27) {
             if (ln > 1) {
-                ridx = (ridx == 0) ? ((1 + (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 5523, __s_yn_function), rn2((ln - 1) | 0)) : rn2((ln - 1) | 0))) | 0) : (rng_log_enabled() ? (rng_log_set_caller(__s_cmd_c, 5523, __s_yn_function), rn2(ridx)) : rn2(ridx));
+                ridx = (ridx == 0) ? ((1 + rn2_at(__s_cmd_c, 5523, __s_yn_function, (ln - 1) | 0)) | 0) : rn2_at(__s_cmd_c, 5523, __s_yn_function, ridx);
                 res.v = cptr.ld1so(resp, ridx);
             } else {
                 res.v = def;

@@ -13,11 +13,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_box, canspotmon, greatest_erosion, is_blade, is_door_mappear, is_pick, is_weptool } from './nhmacrofn.js';
+import { rn2_at, rnl_at } from './nhrng.js';
 import { BBlinded, Blind, Deaf, HBlinded, HConfusion, HStun, Levitation, Passes_walls, Protection_from_shape_changers, Underwater } from './nhprop.js';
 import { c_common_strings, cg, flags, gi, gm, go, gu, gv, gx, gy, svc, svd, svl, svm, u, uwep, ynchars, ynqchars } from './decl.js';
 import { There, You, You_cant, You_hear, impossible, pline, pline_The, set_msg_xy, verbalize } from './pline.js';
 import { acurr, acurrstr, exercise } from './attrib.js';
-import { rn2, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
 import { cmdq_add_dir, cmdq_add_ec, get_adjacent_loc, getdir, isok, set_occupation, yn_function } from './cmd.js';
 import { b_trapped, chest_trap, could_untrap, t_at, unconscious, untrap } from './trap.js';
 import { block_point, recalc_block_point, unblock_point, vision_recalc } from './vision.js';
@@ -311,7 +311,7 @@ function* picklock() {
         (yield* exercise(NHC.A_DEX, 1));
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 98, __s_picklock), rn2(100)) : rn2(100)) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
+    if (rn2_at(__s_lock_c, 98, __s_picklock, 100) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
         return 1;
     if ((!cptr.ldPtro(gx, $instance_globals_x_xlock) ? (cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), $obj_otrapped) & 1) | 0 : (((cptr.ldI32o(cptr.ldPtro(gx, $instance_globals_x_xlock), $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0) && cptr.ld1so(gx, $instance_globals_x_xlock + $xlock_s_magic_key)) {
         cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_chance, (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance) + 20) | 0);
@@ -383,7 +383,7 @@ export function* breakchestlock(box, destroyit) {
         (yield* pline(__s_in_fact_you_ve_totally_destroyed_s, (yield* the((yield* xname(box))))));
         while ((otmp = cptr.ldPtro(box, $obj_cobj)) !== null) {
             (yield* obj_extract_self(otmp));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 186, __s_breakchestlock), rn2(3)) : rn2(3)) || cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
+            if (!rn2_at(__s_lock_c, 186, __s_breakchestlock, 3) || cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
                 (yield* chest_shatter_msg(otmp));
                 if (costly)
                     loss += (yield* stolen_value(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), peaceful_shk, 1));
@@ -419,7 +419,7 @@ function* forcelock() {
         return ((cptr.stI32o(gx, $instance_globals_x_xlock + $xlock_s_usedtime, 0)));
     }
     if (cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp)) {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 229, __s_forcelock), rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) : rn2((1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0)) > ((992 - Math.imul(greatest_erosion(uwep.v), 10)) | 0) && !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) && !obj_resists(uwep.v, 0, 99)) {
+        if (rn2_at(__s_lock_c, 229, __s_forcelock, (1000 - cptr.ld1so(uwep.v, $obj_spe)) | 0) > ((992 - Math.imul(greatest_erosion(uwep.v), 10)) | 0) && !(cptr.ldI32o(uwep.v, $obj_cursed) & 1) && !obj_resists(uwep.v, 0, 99)) {
             (yield* pline(__s_sour_s_broke, (cptr.ldI64o(uwep.v, $obj_quan) > 1n) ? __s_one_of_y : __s_y, (yield* xname(uwep.v))));
             (yield* useup(uwep.v));
             (yield* You(__s_give_up_your_attempt_to_force_the_lock));
@@ -428,11 +428,11 @@ function* forcelock() {
         }
     } else
         (yield* wake_nearby(0));
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 244, __s_forcelock), rn2(100)) : rn2(100)) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
+    if (rn2_at(__s_lock_c, 244, __s_forcelock, 100) >= cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_chance))
         return 1;
     (yield* You(__s_succeed_in_forcing_the_lock));
     (yield* exercise(cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp) ? NHC.A_DEX : NHC.A_STR, 1));
-    (yield* breakchestlock(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), schar((!cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp) && !(rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 252, __s_forcelock), rn2(3)) : rn2(3)) ? 1 : 0))));
+    (yield* breakchestlock(cptr.ldPtro(gx, $instance_globals_x_xlock + $xlock_s_box), schar((!cptr.ldI32o(gx, $instance_globals_x_xlock + $xlock_s_picktyp) && !rn2_at(__s_lock_c, 252, __s_forcelock, 3) ? 1 : 0))));
     reset_pick();
     return 0;
 }
@@ -913,7 +913,7 @@ export function* doopen_indir(x, y) {
         (yield* pline(__s_you_re_too_small_to_pull_the_door_open));
         return res;
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 904, __s_doopen_indir), rnl(20)) : rnl(20)) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
+    if (rnl_at(__s_lock_c, 904, __s_doopen_indir, 20) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
         (yield* pline_The(__s_door_opens));
         if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
@@ -1029,7 +1029,7 @@ export function* doclose() {
             (yield* pline(__s_you_re_too_small_to_push_the_door_closed));
             return res;
         }
-        if (cptr.ldPtro(u, $you_usteed) || (rng_log_enabled() ? (rng_log_set_caller(__s_lock_c, 1039, __s_doclose), rn2(25)) : rn2(25)) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
+        if (cptr.ldPtro(u, $you_usteed) || rn2_at(__s_lock_c, 1039, __s_doclose, 25) < (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
             (yield* pline_The(__s_door_closes));
             cptr.stI32o(door, $rm_flags, NHM.D_CLOSED);
             (yield* feel_newsym(x, y));

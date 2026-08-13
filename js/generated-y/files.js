@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { rn2_at } from './nhrng.js';
 import { clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, mark_synch, putmsghistory, putstr, raw_print, wait_synch, wizard } from './nhprop.js';
 import { You_feel, impossible, pline, raw_printf } from './pline.js';
 import { alloc } from './alloc.js';
@@ -43,7 +44,6 @@ import { freedynamicdata } from './save.js';
 import { l_nhcore_done } from './nhlua.js';
 import { after_opt_showpaths } from './earlyarg.js';
 import { pmatch } from './strutil.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { aligns, genders } from './role.js';
 import { timet_to_seconds } from './allmain.js';
 
@@ -1508,13 +1508,13 @@ function choose_passage(passagecnt, oid) {
         } else {
             cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, Number(BigInt.asIntN(32, (30n / 1n))));
             for (idx = (i = 0); i < passagecnt; ++i, --range)
-                if (range > 0 && (rng_log_enabled() ? (rng_log_set_caller(__s_files_c, 3456, __s_choose_passage), rn2(range)) : rn2(range)) < limit) {
+                if (range > 0 && rn2_at(__s_files_c, 3456, __s_choose_passage, range) < limit) {
                     cptr.st1o2(svc, idx++, 1, $context_info_novel + $novel_tracking_pasg, schar(i16(((i + 1) | 0))));
                     --limit;
                 }
         }
     }
-    idx = (rng_log_enabled() ? (rng_log_set_caller(__s_files_c, 3463, __s_choose_passage), rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count))) : rn2(cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count)));
+    idx = rn2_at(__s_files_c, 3463, __s_choose_passage, cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count));
     res = cptr.ld1so2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg);
     cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, cptr.ld1so2(svc, cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) + -1), 1, $context_info_novel + $novel_tracking_pasg));
     return res;

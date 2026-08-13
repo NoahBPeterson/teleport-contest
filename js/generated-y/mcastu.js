@@ -13,12 +13,12 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { BZ_VALID_ADTYP, canspotmon, eyecount, ismnum, max, nonliving } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Antimagic, Blind, Blinded, Cold_resistance, Deaf, Detect_monsters, Displaced, Fire_resistance, Free_action, HConfusion, HStun, Half_physical_damage, Half_spell_damage, Hallucination, Invis, See_invisible, Shock_resistance, Upolyd } from './nhprop.js';
 import { canseemon, map_invisible, sensemon, shieldeff, tp_sensemon } from './display.js';
 import { c_common_strings, gb, gi, gm, gn, gt, gv, gy, iflags, svc, svk, svm, u } from './decl.js';
 import { Norep, You, You_feel, You_hear, Your, impossible, pline, pline_The, pline_mon, set_msg_xy, verbalize } from './pline.js';
 import { Mgender, Monnam, bogusmon, mon_nam, noit_Monnam, pmname } from './do_name.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { cvt_adtyp_to_mseenres, monstseesu, monstunseesu, pronoun_gender } from './mondata.js';
 import { debugcore } from './files.js';
 import { is_waterwall } from './dbridge.js';
@@ -38,6 +38,7 @@ import { aggravate, clonewiz, has_aggravatables, nasty } from './wizard.js';
 import { destroy_arm } from './do_wear.js';
 import { mon_adjust_speed, mon_set_minvis } from './worn.js';
 import { make_blinded, make_confused, make_stunned } from './potion.js';
+import { d, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { burnarmor, ignite_items, unconscious } from './trap.js';
 import { ureflects } from './muse.js';
 import { makemon, mkclass, set_malign } from './makemon.js';
@@ -307,7 +308,7 @@ function* cursetxt(mtmp, undirected) {
         else
             point_msg = __s_at_you_then_curses;
         (yield* pline_mon(mtmp, __s_s_points_s, (yield* Monnam(mtmp)), point_msg));
-    } else if ((!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 4n) || !(rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 81, __s_cursetxt), rn2(4)) : rn2(4)))) {
+    } else if ((!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 4n) || !rn2_at(__s_mcastu_c, 81, __s_cursetxt, 4))) {
         if (!Deaf())
             (yield* Norep(__s_you_hear_a_mumbled_curse));
     }
@@ -330,9 +331,9 @@ function* choose_monster_spell(mtmp, adtyp) {
     if (!list || len < 1)
         return NHC.MCAST_PSI_BOLT;
     maxlev = cptr.ldI32o(mcast_data, cptr.ldI32o(list, (len - 1) | 0, 4), $sizeof__mcast_data);
-    spellval = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 111, __s_choose_monster_spell), rn2(cptr.ld1uo(mtmp, $monst_m_lev))) : rn2(cptr.ld1uo(mtmp, $monst_m_lev)));
-    if (spellval > maxlev && (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 112, __s_choose_monster_spell), rn2(maxlev)) : rn2(maxlev)))
-        spellval = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 113, __s_choose_monster_spell), rn2(maxlev)) : rn2(maxlev));
+    spellval = rn2_at(__s_mcastu_c, 111, __s_choose_monster_spell, cptr.ld1uo(mtmp, $monst_m_lev));
+    if (spellval > maxlev && rn2_at(__s_mcastu_c, 112, __s_choose_monster_spell, maxlev))
+        spellval = rn2_at(__s_mcastu_c, 113, __s_choose_monster_spell, maxlev);
     for (i = (len - 1) | 0; i >= 0; i--)
         if (cptr.ldI32o(mcast_data, cptr.ldI32o(list, i, 4), $sizeof__mcast_data) <= spellval && !(yield* spell_would_be_useless(mtmp, cptr.ldI32o(list, i, 4))))
             return cptr.ldI32o(list, i, 4);
@@ -380,7 +381,7 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
         return NHM.M_ATTK_MISS;
     }
     nomul(0);
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 208, __s_castmu), rn2(Math.imul(ml, 10))) : rn2(Math.imul(ml, 10))) < ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ? 100 : 20)) {
+    if (rn2_at(__s_mcastu_c, 208, __s_castmu, Math.imul(ml, 10)) < ((cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0 ? 100 : 20)) {
         ;
         if (canseemon(mtmp) && !Deaf()) {
             set_msg_xy(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
@@ -398,9 +399,9 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
             return NHM.M_ATTK_MISS;
         }
     } else if (cptr.ld1uo(mattk, $attack_damd))
-        dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 241, __s_castmu), d((((((ml / 2) | 0) + cptr.ld1uo(mattk, $attack_damn)) | 0)), (cptr.ld1uo(mattk, $attack_damd)))) : d((((((ml / 2) | 0) + cptr.ld1uo(mattk, $attack_damn)) | 0)), (cptr.ld1uo(mattk, $attack_damd))));
+        dmg = d_at(__s_mcastu_c, 241, __s_castmu, (((((ml / 2) | 0) + cptr.ld1uo(mattk, $attack_damn)) | 0)), (cptr.ld1uo(mattk, $attack_damd)));
     else
-        dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 243, __s_castmu), d((((((ml / 2) | 0) + 1) | 0)), 6)) : d((((((ml / 2) | 0) + 1) | 0)), 6));
+        dmg = d_at(__s_mcastu_c, 243, __s_castmu, (((((ml / 2) | 0) + 1) | 0)), 6);
     if (Half_spell_damage())
         dmg = (((dmg + 1) | 0) / 2) | 0;
     ret = NHM.M_ATTK_HIT;
@@ -438,7 +439,7 @@ export function* castmu(mtmp, mattk, thinks_it_foundyou, foundyou) {
             monstseesu(1n);
             dmg = 0;
         } else {
-            dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 290, __s_castmu), d(((((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0) + 1) | 0), 6)) : d(((((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0) + 1) | 0), 6));
+            dmg = d_at(__s_mcastu_c, 290, __s_castmu, ((((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0) + 1) | 0), 6);
             monstunseesu(1n);
         }
         (yield* mon_spell_hits_spot(mtmp, NHM.AD_MAGM, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -459,7 +460,7 @@ function* m_cure_self(mtmp, dmg) {
     if (cptr.ldI32o(mtmp, $monst_mhp) < cptr.ldI32o(mtmp, $monst_mhpmax)) {
         if (canseemon(mtmp))
             (yield* pline_mon(mtmp, __s_s_looks_better, (yield* Monnam(mtmp))));
-        (yield* healmon(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 314, __s_m_cure_self), d(3, 6)) : d(3, 6)), 0));
+        (yield* healmon(mtmp, d_at(__s_mcastu_c, 314, __s_m_cure_self, 3, 6), 0));
         dmg = 0;
     }
     return dmg;
@@ -468,7 +469,7 @@ function* m_cure_self(mtmp, dmg) {
 /** C ref: mcastu.c:323 — @param {CPtr<struct monst>} mtmp */
 export function* touch_of_death(mtmp) {
     let kbuf = new Uint8Array(256);
-    let dmg = (50 + (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 326, __s_touch_of_death), d(8, 6)) : d(8, 6))) | 0;
+    let dmg = (50 + d_at(__s_mcastu_c, 326, __s_touch_of_death, 8, 6)) | 0;
     let drain = (dmg / 2) | 0;
     (yield* You_feel(__s_drained));
     void (yield* death_inflicted_by(cptr.decay(kbuf), __s_the_touch_of_death, mtmp));
@@ -512,7 +513,7 @@ function* mcast_death_touch(mtmp) {
     (yield* pline(__s_oh_no_s_s_using_the_touch_of_death, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he))));
     if (nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
         (yield* You(__s_seem_no_deader_than_before));
-    } else if (!Antimagic() && (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 394, __s_mcast_death_touch), rn2(cptr.ld1uo(mtmp, $monst_m_lev))) : rn2(cptr.ld1uo(mtmp, $monst_m_lev))) > 12) {
+    } else if (!Antimagic() && rn2_at(__s_mcastu_c, 394, __s_mcast_death_touch, cptr.ld1uo(mtmp, $monst_m_lev)) > 12) {
         if (Hallucination()) {
             (yield* You(__s_have_an_out_of_body_experience));
         } else {
@@ -584,7 +585,7 @@ function* mcast_weaken_you(mtmp, dmg) {
             dmg = 1;
         if (Half_spell_damage())
             dmg = (((dmg + 1) | 0) / 2) | 0;
-        (yield* losestr((rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 481, __s_mcast_weaken_you), rnd(dmg)) : rnd(dmg)), (yield* death_inflicted_by(cptr.decay(kbuf), __s_strength_loss, mtmp)), NHM.KILLED_BY));
+        (yield* losestr(rnd_at(__s_mcastu_c, 481, __s_mcast_weaken_you, dmg), (yield* death_inflicted_by(cptr.decay(kbuf), __s_strength_loss, mtmp)), NHM.KILLED_BY));
         cptr.st1o2(svk, 0, 1, $kinfo_name, 0);
         monstunseesu(1n);
     }
@@ -623,7 +624,7 @@ function* mcast_stun_you(dmg) {
 /** C ref: mcastu.c:523 — @param {CInt} dmg @returns {CInt} */
 function* mcast_geyser(dmg) {
     (yield* pline(__s_a_sudden_geyser_slams_into_you_from));
-    dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 529, __s_mcast_geyser), d(8, 6)) : d(8, 6));
+    dmg = d_at(__s_mcastu_c, 529, __s_mcast_geyser, 8, 6);
     if (Half_physical_damage())
         dmg = (((dmg + 1) | 0) / 2) | 0;
     return dmg;
@@ -633,7 +634,7 @@ function* mcast_geyser(dmg) {
 function* mcast_fire_pillar(mtmp, dmg) {
     let orig_dmg;
     (yield* pline(__s_a_pillar_of_fire_strikes_all_around_you));
-    orig_dmg = (dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 545, __s_mcast_fire_pillar), d(8, 6)) : d(8, 6)));
+    orig_dmg = (dmg = d_at(__s_mcastu_c, 545, __s_mcast_fire_pillar, 8, 6));
     if (Fire_resistance()) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         monstseesu(2n);
@@ -658,7 +659,7 @@ function* mcast_lightning(mtmp, dmg) {
     ;
     (yield* pline(__s_a_bolt_of_lightning_strikes_down_at_you));
     reflects = (yield* ureflects(__s_it_bounces_off_your_s_s, __s_empty));
-    orig_dmg = (dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 574, __s_mcast_lightning), d(8, 6)) : d(8, 6)));
+    orig_dmg = (dmg = d_at(__s_mcastu_c, 574, __s_mcast_lightning, 8, 6));
     if (reflects || Shock_resistance()) {
         (yield* shieldeff(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         dmg = 0;
@@ -675,7 +676,7 @@ function* mcast_lightning(mtmp, dmg) {
         dmg = (((dmg + 1) | 0) / 2) | 0;
     void (yield* destroy_items(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_ELEC, orig_dmg));
     (yield* mon_spell_hits_spot(mtmp, NHM.AD_ELEC, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-    void (yield* flashburn(BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 596, __s_mcast_lightning), rnd(100)) : rnd(100))), 1));
+    void (yield* flashburn(BigInt(rnd_at(__s_mcastu_c, 596, __s_mcast_lightning, 100)), 1));
     return dmg;
 }
 
@@ -735,7 +736,7 @@ function* mcast_insects(mtmp) {
     let fmt;
     let what;
     oldseen = monster_census(1);
-    quan = (cptr.ld1uo(mtmp, $monst_m_lev) < 2) ? 1 : (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 658, __s_mcast_insects), rnd((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0)) : rnd((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0));
+    quan = (cptr.ld1uo(mtmp, $monst_m_lev) < 2) ? 1 : rnd_at(__s_mcastu_c, 658, __s_mcast_insects, (cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0);
     if (quan < 3)
         quan = 3;
     for (i = 0; i <= quan; i++) {
@@ -957,11 +958,11 @@ function* spell_would_be_useless(mtmp, spellnum) {
     }
     switch (spellnum) {
         case NHC.MCAST_DEATH_TOUCH:
-        if ((Antimagic() || Hallucination()) && !(rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 934, __s_spell_would_be_useless), rn2(2)) : rn2(2)))
+        if ((Antimagic() || Hallucination()) && !rn2_at(__s_mcastu_c, 934, __s_spell_would_be_useless, 2))
             return 1;
         break;
         case NHC.MCAST_GEYSER:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 938, __s_spell_would_be_useless), rn2(5)) : rn2(5)))
+        if (!rn2_at(__s_mcastu_c, 938, __s_spell_would_be_useless, 5))
             return 1;
         break;
         case NHC.MCAST_CLONE_WIZ:
@@ -970,7 +971,7 @@ function* spell_would_be_useless(mtmp, spellnum) {
         break;
         case NHC.MCAST_AGGRAVATION:
         if (!(yield* has_aggravatables(mtmp)))
-            return schar(((rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 953, __s_spell_would_be_useless), rn2(100)) : rn2(100)) ? 1 : 0));
+            return schar((rn2_at(__s_mcastu_c, 953, __s_spell_would_be_useless, 100) ? 1 : 0));
         break;
         case NHC.MCAST_HASTE_SELF:
         if (((cptr.ldI32o(mtmp, $monst_permspeed) & 3) | 0) == NHM.MFAST)
@@ -1004,7 +1005,7 @@ export function* buzzmu(mtmp, mattk) {
         (yield* cursetxt(mtmp, 0));
         return NHM.M_ATTK_MISS;
     }
-    if (lined_up(mtmp) && (rng_log_enabled() ? (rng_log_set_caller(__s_mcastu_c, 1000, __s_buzzmu), rn2(3)) : rn2(3))) {
+    if (lined_up(mtmp) && rn2_at(__s_mcastu_c, 1000, __s_buzzmu, 3)) {
         nomul(0);
         if (canseemon(mtmp))
             (yield* pline_mon(mtmp, __s_s_zaps_you_with_a_s, (yield* Monnam(mtmp)), flash_str((Math.abs(((cptr.ld1uo(mattk, $attack_adtyp)) - NHM.AD_MAGM) | 0) % 10), 0)));

@@ -779,6 +779,47 @@ export const FIELD_PREFIX = '$';
 const FIELD_NAMES = process.env.C2JS_FIELDNAMES !== '0';
 const FIELD_STATS = { named: 0, unnamed: 0 };
 
+// ------------------------------------------- the rng-log instrumentation ----
+//
+// The recorder's `hack.h` redefines every PRNG entry point to log its caller:
+//
+//     #define rn2(x) (rng_log_enabled()                                    :1596
+//                     ? (rng_log_set_caller(__FILE__, __LINE__, __func__), rn2(x))
+//                     : rn2(x))
+//
+// so 2,717 sites in the port read
+//
+//     (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 146, __s_trapped_chest_at), rn2(20)) : rn2(20))
+//
+// where the C said `rn2(20)`. The instrumentation is the loudest thing on the
+// line and the least interesting: it is the same eleven tokens every time.
+//
+// It folds into one helper per macro — `rn2_at(file, line, func, x)` in
+// js/generated/nhrng.js — whose body is that ternary, once. THE LOG IS
+// SCORED: `getRngLog()` is what the judge reads, so the helper is written to
+// perform exactly the same three calls in exactly the same order, and the only
+// thing that changes is the spelling of the call site.
+//
+// What a call does change is WHEN the argument is evaluated: C ran it inside
+// the selected arm, i.e. after `rng_log_enabled()` and after
+// `rng_log_set_caller`; a call runs it before both. rngLogCall() therefore
+// admits a site only when the argument neither writes nor draws — the same
+// `macroFnArgSafe` evidence tier 1.12 hoists on. `rn2(rnd(3))` is the case
+// that must be refused and is: it would log its two draws against different
+// callers, and the log is the thing being scored.
+//
+// Note that the *number* of evaluations does not change. C spells the argument
+// twice, once per arm, and exactly one arm runs.
+//
+// C2JS_RNGFOLD=0 restores the inline ternary (the A/B baseline).
+const RNG_LOG_FOLD = process.env.C2JS_RNGFOLD !== '0';
+const RNG_LOG_MACROS = new Set(['rn2', 'rnd', 'rnl', 'rne', 'rnz', 'd']);
+const RNG_HELPER_SUFFIX = '_at';
+export const RNG_MODULE = './nhrng.js';
+/** macro name -> arity, for every helper any emitter folded to */
+export const RNG_HELPERS = new Map();
+const RNG_STATS = { seen: 0, folded: 0, refusedArg: 0, refusedArms: 0, refusedArity: 0 };
+
 // ------------------------------------- named element sizes and strides ----
 //
 // The 1.11 tier named field displacements and left the other integer in an
@@ -1050,6 +1091,8 @@ if (process.env.C2JS_READ_STATS) {
     + `string names:  ${STRING_STATS.named} literals named by their content, ${STRING_STATS.collided} needed a collision suffix\n`
     + `element sizes: ${SIZE_STATS.named} named, ${SIZE_STATS.stride} composed strides; ${SIZE_STATS.machine} are a pointer/scalar/enum width and get no name by design, `
     + `${SIZE_STATS.refused} record sizes refused by the equality audit\n`
+    + `rng-log fold:  ${RNG_STATS.folded} of ${RNG_STATS.seen} instrumented draws folded into ${RNG_HELPERS.size} helpers; refused `
+    + `${RNG_STATS.refusedArg} on an argument that writes or draws, ${RNG_STATS.refusedArms} because the two arms emitted differently, ${RNG_STATS.refusedArity} on arity\n`
     + `macro helpers: ${MACRO_FN_STATS.named} call sites over ${MACRO_HELPERS.size} helpers; refused `
     + `${MACRO_FN_STATS.refusedImpure} impure, ${MACRO_FN_STATS.refusedMismatch} on a body mismatch, `
     + `${MACRO_FN_STATS.refusedLocal} on a shadowing local\n`
@@ -1127,6 +1170,7 @@ export class Emitter {
     this.macroFnDefs = macroFnDefs instanceof Map ? macroFnDefs : new Map(macroFnDefs || []);
     this.pureFns = pureFns instanceof Set ? pureFns : new Set(pureFns || []);
     this.macroFnRefs = new Set(); // function-like helper names this file calls
+    this.rngRefs = new Set();     // nhrng.js helpers this file calls
     this.inMacroFn = false;       // capturing one: keep helpers leaves
     this.argSubst = null;         // node -> the parameter standing in for it
     this.symbolic = false; // inside a Phase-B symbolic re-emission (folding off)
@@ -2078,6 +2122,66 @@ export class Emitter {
   }
 
   /**
+   * The rng-log instrumentation, folded into one call. Returns null to leave
+   * the ternary inline. See the note above RNG_LOG_MACROS.
+   *
+   * Structural, on the AST, because the shape IS the macro: nothing else in
+   * NetHack tests `rng_log_enabled()`. The three refusals below are the whole
+   * safety argument, and all three are about the one thing a call changes —
+   * WHEN the argument runs.
+   */
+  rngLogCall(n) {
+    if (!RNG_LOG_FOLD) return null;
+    const peel = (x) => {
+      while (x && (x.kind === 'ParenExpr' || (x.kind === 'ImplicitCastExpr' && x.castKind !== 'FunctionToPointerDecay'))) x = (x.inner || [])[0];
+      return x;
+    };
+    const cond = peel(n.inner[0]);
+    if (!cond || cond.kind !== 'CallExpr' || this.calleeName(cond) !== 'rng_log_enabled') return null;
+    const comma = peel(n.inner[1]);
+    if (!comma || comma.kind !== 'BinaryOperator' || comma.opcode !== ',') return null;
+    const set = peel(comma.inner?.[0]);
+    if (!set || set.kind !== 'CallExpr' || this.calleeName(set) !== 'rng_log_set_caller') return null;
+    if ((set.inner || []).length !== 4) return null; // callee + (file, line, func)
+    const hot = peel(comma.inner?.[1]);
+    const cold = peel(n.inner[2]);
+    if (!hot || hot.kind !== 'CallExpr' || !cold || cold.kind !== 'CallExpr') return null;
+    const name = this.calleeName(hot);
+    if (!RNG_LOG_MACROS.has(name) || this.calleeName(cold) !== name) return null;
+    RNG_STATS.seen++;
+    const args = hot.inner.slice(1);
+    if (args.length !== cold.inner.length - 1) return null;
+    // A call evaluates its arguments BEFORE its body, so the helper runs the
+    // argument before `rng_log_enabled()` and before `rng_log_set_caller` —
+    // where C ran it after both. That is unobservable exactly when the
+    // argument neither writes nor draws: nothing the helper does between the
+    // two orderings is visible to a computation that only loads memory and
+    // calls provably pure functions. An argument that reaches the RNG is the
+    // case this must refuse, and does: `rn2(rnd(3))` would log its two calls
+    // against different callers.
+    for (const a of args) {
+      const s = this.macroFnArgSafe(a);
+      if (!s.safe) { RNG_STATS.refusedArg++; return null; }
+    }
+    // Emitted in the C's own order so the string table interns exactly what it
+    // interned before: the set_caller arguments, then the call's.
+    const setArgs = set.inner.slice(1).map((a) => this.emitExpr(a).code);
+    const hotArgs = args.map((a) => this.emitExpr(a).code);
+    const coldArgs = cold.inner.slice(1).map((a) => this.emitExpr(a).code);
+    // The audit: the two arms have to BE the same call. C's macro spells the
+    // argument twice and only one spelling runs; if the two emissions differ,
+    // this is not the shape it looks like and the ternary stays.
+    if (hotArgs.join('\0') !== coldArgs.join('\0')) { RNG_STATS.refusedArms++; return null; }
+    const prev = RNG_HELPERS.get(name);
+    if (prev !== undefined && prev !== args.length) { RNG_STATS.refusedArity++; return null; }
+    RNG_HELPERS.set(name, args.length);
+    RNG_STATS.folded++;
+    this.rngRefs.add(name + RNG_HELPER_SUFFIX);
+    return { code: `${name}${RNG_HELPER_SUFFIX}(${[...setArgs, ...hotArgs].join(', ')})`,
+      prec: PREC.atom, rep: 'val', rngAt: true };
+  }
+
+  /**
    * Substitute `glyph_is_trap(glyph)` for a whole function-like macro
    * expansion. Returns null to leave it inline.
    *
@@ -2297,6 +2401,8 @@ export class Emitter {
 
   expr_ParenExpr(n) {
     const inner = this.emitExpr(n.inner[0]);
+    // the rng-log macro body brings its own parens; a call needs none
+    if (inner.rngAt) return inner;
     const code = `(${inner.code})`;
     // parens are transparent to truth-testing, so carry the bare form across
     const boolRaw = inner.boolRaw && inner.boolRaw.code === inner.code
@@ -3258,6 +3364,8 @@ export class Emitter {
       const cs = this.foldConst(n.inner[0]);
       if (cs) return this.emitExpr(n.inner[cs.v !== 0n ? 1 : 2]);
     }
+    const rng = this.rngLogCall(n);
+    if (rng) return rng;
     const c = this.condExpr(n.inner[0]);
     const a = this.emitExpr(n.inner[1]);
     const b = this.emitExpr(n.inner[2]);

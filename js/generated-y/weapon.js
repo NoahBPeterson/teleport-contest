@@ -14,6 +14,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { bimanual, greatest_erosion, is_ammo, is_axe, is_graystone, is_pick, is_plural, is_spear, is_weptool, is_wet_towel, touch_petrifies } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Upolyd, create_nhwindow, destroy_nhwindow, end_menu, start_menu, wizard } from './nhprop.js';
 import { You, You_feel, Your, impossible, pline, pline_mon } from './pline.js';
 import { handle_tip } from './hack.js';
@@ -24,7 +25,6 @@ import { The, Tobjnam, Yname2, Yobjnam2, distant_name, doname, makeplural, makes
 import { Resists_Elem, attacktype, mon_hates_blessings, mon_hates_silver, pronoun_gender } from './mondata.js';
 import { is_pool } from './dbridge.js';
 import { artifact_light, is_art, shade_glare, spec_abon, spec_dbon, touch_artifact, undiscovered_artifact } from './artifact.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { mons } from './monst.js';
 import { bypass_obj, which_armor } from './worn.js';
 import { Monnam, mon_nam } from './do_name.js';
@@ -346,7 +346,7 @@ export function* dmgval(otmp, mon) {
         return 0;
     if ((cptr.ld1uo((ptr), $permonst_msize) >= NHM.MZ_LARGE)) {
         if (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wldam))
-            tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 227, __s_dmgval), rnd(cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wldam))) : rnd(cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wldam)));
+            tmp = rnd_at(__s_weapon_c, 227, __s_dmgval, cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wldam));
         switch (otyp) {
             case NHC.IRON_CHAIN:
             case NHC.CROSSBOW_BOLT:
@@ -360,27 +360,27 @@ export function* dmgval(otmp, mon) {
             case NHC.FLAIL:
             case NHC.RANSEUR:
             case NHC.VOULGE:
-            tmp = (tmp + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 242, __s_dmgval), rnd(4)) : rnd(4))) | 0;
+            tmp = (tmp + rnd_at(__s_weapon_c, 242, __s_dmgval, 4)) | 0;
             break;
             case NHC.ACID_VENOM:
             case NHC.HALBERD:
             case NHC.SPETUM:
-            tmp = (tmp + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 248, __s_dmgval), rnd(6)) : rnd(6))) | 0;
+            tmp = (tmp + rnd_at(__s_weapon_c, 248, __s_dmgval, 6)) | 0;
             break;
             case NHC.BATTLE_AXE:
             case NHC.BARDICHE:
             case NHC.TRIDENT:
-            tmp = (tmp + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 254, __s_dmgval), d(2, 4)) : d(2, 4))) | 0;
+            tmp = (tmp + d_at(__s_weapon_c, 254, __s_dmgval, 2, 4)) | 0;
             break;
             case NHC.TSURUGI:
             case NHC.DWARVISH_MATTOCK:
             case NHC.TWO_HANDED_SWORD:
-            tmp = (tmp + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 260, __s_dmgval), d(2, 6)) : d(2, 6))) | 0;
+            tmp = (tmp + d_at(__s_weapon_c, 260, __s_dmgval, 2, 6)) | 0;
             break;
         }
     } else {
         if (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wsdam))
-            tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 265, __s_dmgval), rnd(cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wsdam))) : rnd(cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wsdam)));
+            tmp = rnd_at(__s_weapon_c, 265, __s_dmgval, cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_wsdam));
         switch (otyp) {
             case NHC.IRON_CHAIN:
             case NHC.CROSSBOW_BOLT:
@@ -403,10 +403,10 @@ export function* dmgval(otmp, mon) {
             case NHC.ELVEN_BROADSWORD:
             case NHC.RUNESWORD:
             case NHC.VOULGE:
-            tmp = (tmp + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 289, __s_dmgval), rnd(4)) : rnd(4))) | 0;
+            tmp = (tmp + rnd_at(__s_weapon_c, 289, __s_dmgval, 4)) | 0;
             break;
             case NHC.ACID_VENOM:
-            tmp = (tmp + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 293, __s_dmgval), rnd(6)) : rnd(6))) | 0;
+            tmp = (tmp + rnd_at(__s_weapon_c, 293, __s_dmgval, 6)) | 0;
             break;
         }
     }
@@ -423,7 +423,7 @@ export function* dmgval(otmp, mon) {
         let wt = cptr.ldI32o2(objects, NHC.HEAVY_IRON_BALL, $sizeof_objclass, $objclass_oc_weight) | 0;
         if ((cptr.ldI32o(otmp, $obj_owt) | 0) > wt) {
             wt = ((((cptr.ldI32o(otmp, $obj_owt) | 0) - wt) | 0) / NHC.WT_IRON_BALL_INCR) | 0;
-            tmp = (tmp + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 316, __s_dmgval), rnd(Math.imul(4, wt))) : rnd(Math.imul(4, wt)))) | 0;
+            tmp = (tmp + rnd_at(__s_weapon_c, 316, __s_dmgval, Math.imul(4, wt))) | 0;
             if (tmp > 25)
                 tmp = 25;
         }
@@ -431,13 +431,13 @@ export function* dmgval(otmp, mon) {
     if (Is_weapon || cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.BALL_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.CHAIN_CLASS) {
         let bonus = 0;
         if ((cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 && mon_hates_blessings(mon))
-            bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 328, __s_dmgval), rnd(4)) : rnd(4))) | 0;
+            bonus = (bonus + rnd_at(__s_weapon_c, 328, __s_dmgval, 4)) | 0;
         if (is_axe(otmp) && (cptr.eq((ptr), cptr.add(mons, NHC.PM_WOOD_GOLEM, $sizeof_permonst))))
-            bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 330, __s_dmgval), rnd(4)) : rnd(4))) | 0;
+            bonus = (bonus + rnd_at(__s_weapon_c, 330, __s_dmgval, 4)) | 0;
         if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && mon_hates_silver(mon))
-            bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 332, __s_dmgval), rnd(20)) : rnd(20))) | 0;
+            bonus = (bonus + rnd_at(__s_weapon_c, 332, __s_dmgval, 20)) | 0;
         if (artifact_light(otmp) && (cptr.ldI32o(otmp, $obj_lamplit) & 1) | 0 && (cptr.eq((ptr), cptr.add(mons, NHC.PM_GREMLIN, $sizeof_permonst))))
-            bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 334, __s_dmgval), rnd(8)) : rnd(8))) | 0;
+            bonus = (bonus + rnd_at(__s_weapon_c, 334, __s_dmgval, 8)) | 0;
         if (bonus > 1 && cptr.ld1so(otmp, $obj_oartifact) && (yield* spec_dbon(otmp, mon, 25)) >= 25)
             bonus = (((bonus + 1) | 0) / 2) | 0;
         tmp = (tmp + bonus) | 0;
@@ -474,22 +474,22 @@ export function* special_dmgval(magr, mdef, armask, silverhit_p) {
     }
     if (obj) {
         if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && mon_hates_blessings(mdef))
-            bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 396, __s_special_dmgval), rnd(4)) : rnd(4))) | 0;
+            bonus = (bonus + rnd_at(__s_weapon_c, 396, __s_special_dmgval, 4)) | 0;
         if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && mon_hates_silver(mdef)) {
-            bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 403, __s_special_dmgval), rnd(20)) : rnd(20))) | 0;
+            bonus = (bonus + rnd_at(__s_weapon_c, 403, __s_special_dmgval, 20)) | 0;
             silverhit |= armask;
         }
     } else if ((left_ring || right_ring) && cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) {
         if (left_ring && uleft.v) {
             if (((cptr.ldI32o2(objects, cptr.ldI16o(uleft.v, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && mon_hates_silver(mdef)) {
-                bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 412, __s_special_dmgval), rnd(20)) : rnd(20))) | 0;
+                bonus = (bonus + rnd_at(__s_weapon_c, 412, __s_special_dmgval, 20)) | 0;
                 silverhit |= 131072n;
             }
         }
         if (right_ring && uright.v) {
             if (((cptr.ldI32o2(objects, cptr.ldI16o(uright.v, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && mon_hates_silver(mdef)) {
                 if (!(silverhit & 131072n))
-                    bonus = (bonus + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 422, __s_special_dmgval), rnd(20)) : rnd(20))) | 0;
+                    bonus = (bonus + rnd_at(__s_weapon_c, 422, __s_special_dmgval, 20)) | 0;
                 silverhit |= 262144n;
             }
         }
@@ -1292,7 +1292,7 @@ export function* drain_weapon_skill(n) {
     void __builtin___memset_chk(tmpskills, 0, 152n, __builtin_object_size(tmpskills, 0));
     while (--n >= 0) {
         if (cptr.ldI32o(u, $you_skills_advanced)) {
-            i = (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 1489, __s_drain_weapon_skill), rn2(cptr.ldI32o(u, $you_skills_advanced))) : rn2(cptr.ldI32o(u, $you_skills_advanced)));
+            i = rn2_at(__s_weapon_c, 1489, __s_drain_weapon_skill, cptr.ldI32o(u, $you_skills_advanced));
             skill = cptr.ldI16o2(u, i, 2, $you_skill_record);
             cptr.stI32o(tmpskills, skill, 1, 4);
             for (; i < ((cptr.ldI32o(u, $you_skills_advanced) - 1) | 0); i++) {
@@ -1306,7 +1306,7 @@ export function* drain_weapon_skill(n) {
             curradv = (Math.imul(Math.imul(((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills))), ((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)))), 20));
             prevadv = (Math.imul(Math.imul((((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1) | 0), (((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1) | 0)), 20));
             if ((cptr.ldU16o2(u, skill, $sizeof_skills, $you_weapon_skills + $skills_advance)) >= curradv)
-                cptr.stI16o2(u, skill, $sizeof_skills, $you_weapon_skills + $skills_advance, u16(((prevadv + (rng_log_enabled() ? (rng_log_set_caller(__s_weapon_c, 1505, __s_drain_weapon_skill), rn2((curradv - prevadv) | 0)) : rn2((curradv - prevadv) | 0))) | 0)));
+                cptr.stI16o2(u, skill, $sizeof_skills, $you_weapon_skills + $skills_advance, u16(((prevadv + rn2_at(__s_weapon_c, 1505, __s_drain_weapon_skill, (curradv - prevadv) | 0)) | 0)));
         }
     }
     for (skill = 0; skill < NHC.P_NUM_SKILLS; skill++)

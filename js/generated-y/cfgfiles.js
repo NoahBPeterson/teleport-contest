@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { rn2_at } from './nhrng.js';
 import { wait_synch } from './nhprop.js';
 import { pline, raw_printf } from './pline.js';
 import { flags, gc, gd, gn, go, gw, iflags, program_state, svp } from './decl.js';
@@ -22,7 +23,6 @@ import { strbuf_empty, strbuf_init } from './strutil.js';
 import { add_autopickup_exception, all_options_strbuf, allopt_array_init, assign_warnings, disregard_all_options, disregard_this_option, heed_all_options, heed_this_option, match_optname, msgtype_parse_add, nh_getenv, parsebindings, parseoptions, reset_duplicate_opt_detection } from './options.js';
 import { debugcore, do_deferred_showpaths, fqname } from './files.js';
 import { c_eos, eos, mungspaces, nh_snprintf, trimspaces } from './hacklib.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { alloc, dupstr } from './alloc.js';
 import { str2role } from './role.js';
 import { sysopt, sysopt_seduce_set } from './sys.js';
@@ -409,7 +409,7 @@ function choose_random_part(str, sep) {
             nsep++;
         str = cptr.add(str, 1);
     }
-    csep = (rng_log_enabled() ? (rng_log_set_caller(__s_cfgfiles_c, 480, __s_choose_random_part), rn2(nsep)) : rn2(nsep));
+    csep = rn2_at(__s_cfgfiles_c, 480, __s_choose_random_part, nsep);
     str = begin;
     while ((csep > 0) && cptr.ld1s(str)) {
         str = cptr.add(str, 1);

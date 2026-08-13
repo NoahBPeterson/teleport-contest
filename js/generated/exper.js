@@ -8,9 +8,9 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Amphibious, Role_switch, Upolyd } from './nhprop.js';
 import { disp, flags, gu, gy, svk, u } from './decl.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { acurr, adjabil, minuhpmax, newhp, setuhpmax } from './attrib.js';
 import { find_mac } from './worn.js';
 import { mons } from './monst.js';
@@ -100,9 +100,9 @@ export function newpw() {
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
         en = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__s_exper_c, 52, __s_newpw), rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd)))) | 0;
+            en = (en + rnd_at(__s_exper_c, 52, __s_newpw, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd))) | 0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd) > 0)
-            en = (en + (rng_log_enabled() ? (rng_log_set_caller(__s_exper_c, 54, __s_newpw), rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd))) : rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd)))) | 0;
+            en = (en + rnd_at(__s_exper_c, 54, __s_newpw, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd))) | 0;
     } else {
         enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
@@ -112,7 +112,7 @@ export function newpw() {
             enrnd = (enrnd + ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd)) | 0)) | 0;
             enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix)) | 0;
         }
-        en = enermod((((rng_log_enabled() ? (rng_log_set_caller(__s_exper_c, 64, __s_newpw), rn2(enrnd)) : rn2(enrnd)) + (enfix)) | 0));
+        en = enermod(((rn2_at(__s_exper_c, 64, __s_newpw, enrnd) + (enfix)) | 0));
     }
     if (en <= 0)
         en = 1;
@@ -333,7 +333,7 @@ export function rndexp(gaining) {
     diff = BigInt.asIntN(64, maxexp - minexp), factor = 1n;
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
-    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_exper_c, 388, __s_rndexp), rn2(Number(BigInt.asIntN(32, diff)))) : rn2(Number(BigInt.asIntN(32, diff)))))));
+    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt(rn2_at(__s_exper_c, 388, __s_rndexp, Number(BigInt.asIntN(32, diff))))));
     if (cptr.ldI32o(u, $you_ulevel) == NHM.MAXULEV && gaining) {
         result += (BigInt.asIntN(64, cptr.ldI64o(u, $you_uexp) - minexp));
         if (result < cptr.ldI64o(u, $you_uexp))

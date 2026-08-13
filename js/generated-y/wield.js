@@ -13,6 +13,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ammo_and_launcher, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_elven_weapon, is_launcher, is_missile, is_plural, is_pole, is_sword, is_weptool, is_wet_towel, pair_of, touch_petrifies } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Glib, Hallucination, Stone_resistance, URIGHTY, Upolyd } from './nhprop.js';
 import { c_color_names, disp, flags, gi, gm, gu, gy, hands_obj, svc, u, uarmg, uarms, uquiver, uswapwep, uwep, ynqchars } from './decl.js';
 import { setworn } from './worn.js';
@@ -35,7 +36,6 @@ import { inv_cnt } from './hack.js';
 import { yn_function } from './cmd.js';
 import { strstri } from './hacklib.js';
 import { dropx } from './do.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { acurr, exercise } from './attrib.js';
 import { hcolor } from './do_name.js';
 import { strange_feeling } from './potion.js';
@@ -716,7 +716,7 @@ export function* dotwoweapon() {
         (yield* You(__s_begin_two_weapon_combat));
         set_twoweap(1);
         (yield* update_inventory());
-        return ((rng_log_enabled() ? (rng_log_set_caller(__s_wield_c, 861, __s_dotwoweapon), rnd(20)) : rnd(20)) > (acurr(NHC.A_DEX))) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+        return (rnd_at(__s_wield_c, 861, __s_dotwoweapon, 20) > (acurr(NHC.A_DEX))) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
     return NHM.ECMD_OK;
 }
@@ -829,7 +829,7 @@ export function* chwepon(otmp, amount) {
             (yield* pline(__s_s_s, (yield* Yobjnam2(uwep.v, __s_faintly_glow)), color));
         return 1;
     }
-    if (((cptr.ld1so(uwep.v, $obj_spe) > 5 && amount >= 0) || (cptr.ld1so(uwep.v, $obj_spe) < -5 && amount < 0)) && (rng_log_enabled() ? (rng_log_set_caller(__s_wield_c, 1000, __s_chwepon), rn2(3)) : rn2(3))) {
+    if (((cptr.ld1so(uwep.v, $obj_spe) > 5 && amount >= 0) || (cptr.ld1so(uwep.v, $obj_spe) < -5 && amount < 0)) && rn2_at(__s_wield_c, 1000, __s_chwepon, 3)) {
         if (!Blind())
             (yield* pline(__s_s_s_for_a_while_and_then_s, (yield* Yobjnam2(uwep.v, __s_violently_glow)), color, (yield* otense(uwep.v, __s_evaporate))));
         else
@@ -855,7 +855,7 @@ export function* chwepon(otmp, amount) {
     if (is_art(uwep.v, NHC.ART_MAGICBANE) && cptr.ld1so(uwep.v, $obj_spe) >= 0) {
         (yield* Your(__s_right_s_sches, (yield* body_part(NHC.HAND)), (((amount > 1) && (cptr.ld1so(uwep.v, $obj_spe) > 1)) ? __s_flin : __s_it)));
     }
-    if ((cptr.ld1so(uwep.v, $obj_spe) > 5) && (is_elven_weapon(uwep.v) || cptr.ld1so(uwep.v, $obj_oartifact) || !(rng_log_enabled() ? (rng_log_set_caller(__s_wield_c, 1044, __s_chwepon), rn2(7)) : rn2(7))))
+    if ((cptr.ld1so(uwep.v, $obj_spe) > 5) && (is_elven_weapon(uwep.v) || cptr.ld1so(uwep.v, $obj_oartifact) || !rn2_at(__s_wield_c, 1044, __s_chwepon, 7)))
         (yield* pline(__s_s_unexpectedly, (yield* Yobjnam2(uwep.v, __s_suddenly_vibrate))));
     return 1;
 }

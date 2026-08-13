@@ -14,6 +14,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_POOL, IS_WALL, canspotmon } from './nhmacrofn.js';
+import { rn2_at } from './nhrng.js';
 import { Blind, Deaf, Invis, Punished, Strangled, U_AP_TYPE, Underwater, Upolyd } from './nhprop.js';
 import { makemon, newmextra, set_malign } from './makemon.js';
 import { alloc } from './alloc.js';
@@ -34,7 +35,6 @@ import { mon_track_clear } from './monmove.js';
 import { in_rooms, money_cnt, nomul, unmul } from './hack.js';
 import { um_dist } from './apply.js';
 import { Mgender, Monnam, Some_Monnam, noit_Monnam, noit_mon_nam, pmname, x_monnam } from './do_name.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { mons } from './monst.js';
 import { is_fainted, reset_faint } from './eat.js';
 import { currency, freeinv, g_at, sobj_at, stackobj } from './invent.js';
@@ -431,7 +431,7 @@ export function* invault() {
         return;
     }
     vgdeathcount = cptr.ld1uo2(svm, NHC.PM_GUARD, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died);
-    if (vgdeathcount < 2 || (vgdeathcount < 50 && !(rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 334, __s_invault), rn2(Math.imul(vgdeathcount, vgdeathcount))) : rn2(Math.imul(vgdeathcount, vgdeathcount)))))
+    if (vgdeathcount < 2 || (vgdeathcount < 50 && !rn2_at(__s_vault_c, 334, __s_invault, Math.imul(vgdeathcount, vgdeathcount))))
         cptr.stI32o(u, $you_uinvault, cptr.ldI32o(u, $you_uinvault) + 1);
     if (cptr.ldI32o(u, $you_uinvault) < NHM.VAULT_GUARD_TIME || (cptr.ldI32o(u, $you_uinvault) % 15) != 0)
         return;
@@ -680,8 +680,8 @@ function* move_gold(gold, vroom) {
     let ny;
     (yield* remove_object(gold));
     (yield* newsym(cptr.ldI16o(gold, $obj_ox), cptr.ldI16o(gold, $obj_oy)));
-    nx = i16(((cptr.ldI16o(svr, vroom, $sizeof_mkroom) + (rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 638, __s_move_gold), rn2(2)) : rn2(2))) | 0));
-    ny = i16(((cptr.ldI16o2(svr, vroom, $sizeof_mkroom, $mkroom_ly) + (rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 639, __s_move_gold), rn2(2)) : rn2(2))) | 0));
+    nx = i16(((cptr.ldI16o(svr, vroom, $sizeof_mkroom) + rn2_at(__s_vault_c, 638, __s_move_gold, 2)) | 0));
+    ny = i16(((cptr.ldI16o2(svr, vroom, $sizeof_mkroom, $mkroom_ly) + rn2_at(__s_vault_c, 639, __s_move_gold, 2)) | 0));
     (yield* place_object(gold, nx, ny));
     (yield* stackobj(gold));
     (yield* newsym(nx, ny));
@@ -1036,7 +1036,7 @@ export function* gd_move(grd) {
             return 0;
         }
         if (um_dist(cptr.ldI16o(grd, $monst_mx), cptr.ldI16o(grd, $monst_my), 1) || (cptr.ldI32o(egrd, $egd_gddone) & 1) | 0) {
-            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 1067, __s_gd_move), rn2(10)) : rn2(10)) && !Deaf() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !(cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
+            if (!(cptr.ldI32o(egrd, $egd_gddone) & 1) && !rn2_at(__s_vault_c, 1067, __s_gd_move, 10) && !Deaf() && !(cptr.ldI32o(u, $you_uswallow) & 1) && !(cptr.ldPtro(u, $you_ustuck) && !sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))) {
                 ;
                 (yield* verbalize(__s_move_along));
             }
@@ -1297,8 +1297,8 @@ export function* paygd(silently) {
             (yield* mnexto(grd, NHM.RLOC_NOMSG));
             if (!silently)
                 (yield* pline(__s_s_remits_your_gold_to_the_vault, (yield* Monnam(grd))));
-            gdx = (cptr.ldI16o(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), $sizeof_mkroom) + (rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 1229, __s_paygd), rn2(2)) : rn2(2))) | 0;
-            gdy = (cptr.ldI16o2(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), $sizeof_mkroom, $mkroom_ly) + (rng_log_enabled() ? (rng_log_set_caller(__s_vault_c, 1230, __s_paygd), rn2(2)) : rn2(2))) | 0;
+            gdx = (cptr.ldI16o(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), $sizeof_mkroom) + rn2_at(__s_vault_c, 1229, __s_paygd, 2)) | 0;
+            gdy = (cptr.ldI16o2(svr, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((grd), $monst_mextra), $mextra_egd)), $egd_vroom), $sizeof_mkroom, $mkroom_ly) + rn2_at(__s_vault_c, 1230, __s_paygd, 2)) | 0;
             void cptr.sprintf(cptr.decay(buf), __s_to_croesus_here_s_the_gold_recovered, svp, pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonster), $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
             (yield* make_grave(i16(gdx), i16(gdy), cptr.decay(buf)));
         }

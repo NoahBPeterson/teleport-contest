@@ -13,13 +13,13 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ceiling_hider, has_mgivenname, is_pit } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at, rnl_at } from './nhrng.js';
 import { Blind, Deaf, Flying, Fumbling, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation, Unchanging, Underwater, Upolyd, sokoban_dnum } from './nhprop.js';
 import { flash_str, resist, ubuzz, zapyourself } from './zap.js';
 import { monflee, onscary } from './monmove.js';
 import { c_common_strings, disp, flags, gc, gu, gv, gy, svc, svd, svl, svt, u, ynqchars } from './decl.js';
 import { dist2, highc, mungspaces } from './hacklib.js';
 import { sleep_monst, slept_monst } from './mhitm.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
 import { canseemon, newsym } from './display.js';
 import { Norep, You, You_cant, You_feel, You_hear, Your, impossible, pline, pline_The } from './pline.js';
 import { Amonnam, Monnam, a_monnam, mon_nam, x_monnam } from './do_name.js';
@@ -42,6 +42,7 @@ import { add_damage } from './shk.js';
 import { In_V_tower, on_level } from './dungeon.js';
 import { objects } from './objects.js';
 import { Tobjnam, Yname2, an, the, thesimpleoname, xname, yname } from './objnam.js';
+import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { getdir, isok, yn_function } from './cmd.js';
 import { genders } from './role.js';
 import { discover_object } from './o_init.js';
@@ -231,7 +232,7 @@ function* put_monsters_to_sleep(distance) {
     for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
         if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
             continue;
-        if (dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < distance && (yield* sleep_monst(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 93, __s_put_monsters_to_sleep), d(10, 10)) : d(10, 10)), NHC.TOOL_CLASS))) {
+        if (dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < distance && (yield* sleep_monst(mtmp, d_at(__s_music_c, 93, __s_put_monsters_to_sleep, 10, 10), NHC.TOOL_CLASS))) {
             cptr.stI32o(mtmp, $monst_msleeping, 1);
             (yield* slept_monst(mtmp));
         }
@@ -364,7 +365,7 @@ function* do_pit(x, y, tu_pit) {
             }
             (yield* mselftouch(mtmp, __s_falling, 1));
             if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
-                cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - (rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 276, __s_do_pit), rnd(m_already_trapped ? 4 : 6)) : rnd(m_already_trapped ? 4 : 6))) | 0);
+                cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - rnd_at(__s_music_c, 276, __s_do_pit, m_already_trapped ? 4 : 6)) | 0);
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                     if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
                         (yield* pline(__s_it_is_destroyed));
@@ -387,14 +388,14 @@ function* do_pit(x, y, tu_pit) {
             }
         } else if (!tu_pit || !cptr.ldI32o(u, $you_utrap) || cptr.ldI32o(u, $you_utraptype) != NHC.TT_PIT) {
             (yield* You(__s_fall_into_a_chasm));
-            set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 313, __s_do_pit), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
-            (yield* losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 314, __s_do_pit), rnd(6)) : rnd(6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 314, __s_do_pit), rnd(6)) : rnd(6)))), __s_fell_into_a_chasm, NHM.NO_KILLER_PREFIX));
+            set_utrap(((rn2_at(__s_music_c, 313, __s_do_pit, 6) + 2) | 0) >>> 0, NHC.TT_PIT);
+            (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_music_c, 314, __s_do_pit, 6) + 1) | 0) / 2) | 0) : rnd_at(__s_music_c, 314, __s_do_pit, 6)), __s_fell_into_a_chasm, NHM.NO_KILLER_PREFIX));
             (yield* selftouch(__s_falling_you));
         } else if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
-            let keepfooting = schar((!(Fumbling() && (rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 319, __s_do_pit), rn2(5)) : rn2(5))) && (!((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 320, __s_do_pit), rnl((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) ? 3 : 9)) : rnl((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) ? 3 : 9))) || (((acurr(NHC.A_DEX)) > 7) && (rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 321, __s_do_pit), rn2(5)) : rn2(5)))) ? 1 : 0));
+            let keepfooting = schar((!(Fumbling() && rn2_at(__s_music_c, 319, __s_do_pit, 5)) && (!rnl_at(__s_music_c, 320, __s_do_pit, (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ARCHEOLOGIST) ? 3 : 9) || (((acurr(NHC.A_DEX)) > 7) && rn2_at(__s_music_c, 321, __s_do_pit, 5))) ? 1 : 0));
             (yield* You(__s_are_jostled_around_violently));
-            set_utrap((((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 324, __s_do_pit), rn2(6)) : rn2(6)) + 2) | 0) >>> 0, NHC.TT_PIT);
-            (yield* losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 325, __s_do_pit), rnd(keepfooting ? 2 : 4)) : rnd(keepfooting ? 2 : 4))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 325, __s_do_pit), rnd(keepfooting ? 2 : 4)) : rnd(keepfooting ? 2 : 4)))), __s_hurt_in_a_chasm, NHM.NO_KILLER_PREFIX));
+            set_utrap(((rn2_at(__s_music_c, 324, __s_do_pit, 6) + 2) | 0) >>> 0, NHC.TT_PIT);
+            (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_music_c, 325, __s_do_pit, keepfooting ? 2 : 4) + 1) | 0) / 2) | 0) : rnd_at(__s_music_c, 325, __s_do_pit, keepfooting ? 2 : 4)), __s_hurt_in_a_chasm, NHM.NO_KILLER_PREFIX));
             if (keepfooting)
                 (yield* exercise(NHC.A_DEX, 1));
             else
@@ -451,7 +452,7 @@ function* do_earthquake(force) {
                 if ((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_NOTHING && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_MONSTER)
                     (yield* seemimic(mtmp));
             }
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 387, __s_do_earthquake), rn2((14 - force) | 0)) : rn2((14 - force) | 0)))
+            if (rn2_at(__s_music_c, 387, __s_do_earthquake, (14 - force) | 0))
                 continue;
             switch (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) {
                 case NHC.FOUNTAIN:
@@ -570,9 +571,9 @@ function* do_improvisation(instr) {
         mode |= 2;
     if (Hallucination())
         mode |= 4;
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 535, __s_do_improvisation), rn2(2)) : rn2(2))) {
+    if (!rn2_at(__s_music_c, 535, __s_do_improvisation, 2)) {
         if (mode == 3)
-            mode = !(rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 542, __s_do_improvisation), rn2(2)) : rn2(2)) ? 1 : 2;
+            mode = !rn2_at(__s_music_c, 542, __s_do_improvisation, 2) ? 1 : 2;
         if (mode & 4)
             mode = 4;
     }
@@ -642,7 +643,7 @@ function* do_improvisation(instr) {
                 (yield* pline(__s_a_s_blasts_out_of_the_horn, flash_str(type, 0)));
             ;
             cptr.stPtro(gc, $instance_globals_c_current_wand, instr);
-            (yield* ubuzz(((0 + (type)) | 0), (((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 634, __s_do_improvisation), rn2(6)) : rn2(6)) + 6) | 0)));
+            (yield* ubuzz(((0 + (type)) | 0), ((rn2_at(__s_music_c, 634, __s_do_improvisation, 6) + 6) | 0)));
             cptr.stPtro(gc, $instance_globals_c_current_wand, null);
         }
         (yield* discover_object((cptr.ldI16o(instr, $obj_otyp)), 1, 1, 1));
@@ -700,13 +701,13 @@ function* do_improvisation(instr) {
             if (!Deaf()) {
                 (yield* You(__s_beat_a_sdeafening_row, same_old_song.v ? __s_familiar__2 : __s_empty));
                 ;
-                incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), (((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 709, __s_do_improvisation), rn2(20)) : rn2(20)) + 30) | 0));
+                incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), ((rn2_at(__s_music_c, 709, __s_do_improvisation, 20) + 30) | 0));
             } else {
                 (yield* You(__s_pound_on_the_drum));
             }
             (yield* exercise(NHC.A_WIS, 0));
         } else {
-            (yield* You(__s_s_s__2, (rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 717, __s_do_improvisation), rn2(2)) : rn2(2)) ? __s_butcher : ((rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 717, __s_do_improvisation), rn2(2)) : rn2(2)) ? __s_manage : __s_pull_off), (yield* an(cptr.ldPtro(beats, (rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 718, __s_do_improvisation), rn2(8)) : rn2(8)), 8)))));
+            (yield* You(__s_s_s__2, rn2_at(__s_music_c, 717, __s_do_improvisation, 2) ? __s_butcher : (rn2_at(__s_music_c, 717, __s_do_improvisation, 2) ? __s_manage : __s_pull_off), (yield* an(cptr.ldPtro(beats, rn2_at(__s_music_c, 718, __s_do_improvisation, 8), 8)))));
             ;
         }
         (yield* awaken_monsters(Math.imul(cptr.ldI32o(u, $you_ulevel), (mundane ? 5 : 40))));
@@ -726,9 +727,9 @@ const __static_improvised_notes_notes = [65, 66, 67, 68, 69, 70, 71]; /** C ref:
 function improvised_notes(same_as_last_time) {
     if (!(Unchanging() && cptr.ld1so2(svc, 0, 1, $context_info_jingle) != 0)) {
         let i;
-        let notecount = (rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 742, __s_improvised_notes), rnd((Number(BigInt.asIntN(32, (6n / 1n))) - 1) | 0)) : rnd((Number(BigInt.asIntN(32, (6n / 1n))) - 1) | 0));
+        let notecount = rnd_at(__s_music_c, 742, __s_improvised_notes, (Number(BigInt.asIntN(32, (6n / 1n))) - 1) | 0);
         for (i = 0; i < notecount; ++i) {
-            cptr.st1o2(svc, i, 1, $context_info_jingle, cptr.ld1so(cptr.decay(__static_improvised_notes_notes), (rng_log_enabled() ? (rng_log_set_caller(__s_music_c, 745, __s_improvised_notes), rn2(__static_improvised_notes_notes.length)) : rn2(__static_improvised_notes_notes.length)), 1));
+            cptr.st1o2(svc, i, 1, $context_info_jingle, cptr.ld1so(cptr.decay(__static_improvised_notes_notes), rn2_at(__s_music_c, 745, __s_improvised_notes, __static_improvised_notes_notes.length), 1));
         }
         cptr.st1o2(svc, notecount, 1, $context_info_jingle, 0);
         cptr.st1(same_as_last_time, 0);

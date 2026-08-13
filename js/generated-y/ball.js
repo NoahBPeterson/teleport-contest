@@ -13,13 +13,13 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { is_hole, is_pit } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Half_physical_damage, Levitation, Luck, Punished } from './nhprop.js';
 import { flags, gi, gv, svd, svl, u, uarmh, uball, uchain, uquiver, uswapwep, uwep } from './decl.js';
 import { setuqwep, setuswapwep, setuwep, welded } from './wield.js';
 import { You, You_feel, Your, impossible, pline, pline_The } from './pline.js';
 import { freeinv } from './invent.js';
 import { encumber_msg } from './pickup.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { body_part } from './polyself.js';
 import { hard_helmet } from './do_wear.js';
 import { Yname2, otense, safe_typename, xname, yname } from './objnam.js';
@@ -136,10 +136,10 @@ export function* ballfall() {
     let gets_hit;
     if (!uball.v || (uball.v && (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (yield* welded(uball.v))))
         return;
-    gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 51, __s_ballfall), rn2(5)) : rn2(5)))) ? 1 : 0));
+    gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar(rn2_at(__s_ball_c, 51, __s_ballfall, 5))) ? 1 : 0));
     (yield* ballrelease(1));
     if (gets_hit) {
-        let dmg = (((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 54, __s_ballfall), rn2(7)) : rn2(7)) + 25) | 0);
+        let dmg = ((rn2_at(__s_ball_c, 54, __s_ballfall, 7) + 25) | 0);
         (yield* pline_The(__s_iron_ball_falls_on_your_s, (yield* body_part(NHC.HEAD))));
         if (uarmh.v) {
             if (hard_helmet(uarmh.v)) {
@@ -234,7 +234,7 @@ export function* unplacebc_and_covet_placebc() {
     if (bcrestriction) {
         (yield* impossible(__s_unplacebc_and_covet_placebc_denied));
     } else {
-        restriction = (bcrestriction = (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 229, __s_unplacebc_and_covet_placebc), rnd(400)) : rnd(400)));
+        restriction = (bcrestriction = rnd_at(__s_ball_c, 229, __s_unplacebc_and_covet_placebc, 400));
         (yield* unplacebc_core());
     }
     return restriction;
@@ -484,7 +484,7 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                             (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
                             break __lbl_drag;
                         }
-                    } else if (dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) < dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) || ((dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 706, __s_drag_ball), rn2(2)) : rn2(2)))) {
+                    } else if (dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) < dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) || ((dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && rn2_at(__s_ball_c, 706, __s_drag_ball, 2))) {
                         cptr.stI16(chainx, tempx);
                         cptr.stI16(chainy, tempy);
                     } else {
@@ -557,7 +557,7 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
             (yield* You(__s_are_jerked_back_by_the_iron_ball));
             if ((victim = (cptr.ldPtro3(svl, cptr.ldI16o(uchain.v, $obj_ox), 168, cptr.ldI16o(uchain.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
                 let tmp;
-                let dieroll = (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 800, __s_drag_ball), rnd(20)) : rnd(20));
+                let dieroll = rnd_at(__s_ball_c, 800, __s_drag_ball, 20);
                 tmp = (((-2 + Luck()) | 0) + find_mac(victim)) | 0;
                 tmp = (tmp + (yield* omon_adj(victim, uball.v, 1))) | 0;
                 if (tmp >= dieroll)
@@ -631,9 +631,9 @@ export function* drop_ball(x, y) {
                 (yield* pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), hliquid(__s_lava)));
                 break;
                 case NHC.TT_BEARTRAP:
-                side = (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 912, __s_drop_ball), rn2(3)) : rn2(3)) ? 131072n : 262144n;
+                side = rn2_at(__s_ball_c, 912, __s_drop_ball, 3) ? 131072n : 262144n;
                 (yield* pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), __s_bear_trap));
-                (yield* set_wounded_legs(side, (((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 914, __s_drop_ball), rn2(1000)) : rn2(1000)) + 500) | 0)));
+                (yield* set_wounded_legs(side, ((rn2_at(__s_ball_c, 914, __s_drop_ball, 1000) + 500) | 0)));
                 if (!cptr.ldPtro(u, $you_usteed)) {
                     (yield* Your(__s_s_s_is_severely_damaged, (side == 131072n) ? __s_left : __s_right, (yield* body_part(NHC.LEG))));
                     (yield* losehp(((Half_physical_damage()) ? 1 : 2), __s_leg_damage_from_being_pulled_out_of_a, NHM.KILLED_BY));
@@ -677,7 +677,7 @@ function* litter() {
     let capacity = weight_cap();
     for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
         nextobj = cptr.ldPtr(otmp);
-        if (!cptr.eq(otmp, uball.v) && (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 972, __s_litter), rnd(capacity)) : rnd(capacity)) <= (cptr.ldI32o(otmp, $obj_owt) | 0)) {
+        if (!cptr.eq(otmp, uball.v) && rnd_at(__s_ball_c, 972, __s_litter, capacity) <= (cptr.ldI32o(otmp, $obj_owt) | 0)) {
             if ((yield* canletgo(otmp, __s_empty))) {
                 (yield* You(__s_drop_s_and_s_s_down_the_stairs_with_you, (yield* yname(otmp)), (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_they, (yield* otense(otmp, __s_fall))));
                 (yield* setnotworn(otmp));
@@ -692,27 +692,27 @@ function* litter() {
 export function* drag_down() {
     let forward;
     let dragchance = 3;
-    forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (cptr.eq(uwep.v, uball.v) || !uwep.v || !(rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 999, __s_drag_down), rn2(3)) : rn2(3))) ? 1 : 0));
+    forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (cptr.eq(uwep.v, uball.v) || !uwep.v || !rn2_at(__s_ball_c, 999, __s_drag_down, 3)) ? 1 : 0));
     if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && !(yield* welded(uball.v)))
         (yield* You(__s_lose_your_grip_on_the_iron_ball));
     (yield* cls());
     if (forward) {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1008, __s_drag_down), rn2(6)) : rn2(6))) {
+        if (rn2_at(__s_ball_c, 1008, __s_drag_down, 6)) {
             (yield* pline_The(__s_iron_ball_drags_you_downstairs));
-            (yield* losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1010, __s_drag_down), rnd(6)) : rnd(6))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1010, __s_drag_down), rnd(6)) : rnd(6)))), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX));
+            (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_ball_c, 1010, __s_drag_down, 6) + 1) | 0) / 2) | 0) : rnd_at(__s_ball_c, 1010, __s_drag_down, 6)), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX));
             (yield* litter());
         }
     } else {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1015, __s_drag_down), rn2(2)) : rn2(2))) {
+        if (rn2_at(__s_ball_c, 1015, __s_drag_down, 2)) {
             ;
             (yield* pline_The(__s_iron_ball_smacks_into_you));
-            (yield* losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1018, __s_drag_down), rnd(20)) : rnd(20))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1018, __s_drag_down), rnd(20)) : rnd(20)))), __s_iron_ball_collision, NHM.KILLED_BY_AN));
+            (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_ball_c, 1018, __s_drag_down, 20) + 1) | 0) / 2) | 0) : rnd_at(__s_ball_c, 1018, __s_drag_down, 20)), __s_iron_ball_collision, NHM.KILLED_BY_AN));
             (yield* exercise(NHC.A_STR, 0));
             dragchance = uchar(dragchance - 2);
         }
-        if (dragchance >= (rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1023, __s_drag_down), rnd(6)) : rnd(6))) {
+        if (dragchance >= rnd_at(__s_ball_c, 1023, __s_drag_down, 6)) {
             (yield* pline_The(__s_iron_ball_drags_you_downstairs));
-            (yield* losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1025, __s_drag_down), rnd(3)) : rnd(3))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_ball_c, 1025, __s_drag_down), rnd(3)) : rnd(3)))), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX));
+            (yield* losehp(((Half_physical_damage()) ? ((((rnd_at(__s_ball_c, 1025, __s_drag_down, 3) + 1) | 0) / 2) | 0) : rnd_at(__s_ball_c, 1025, __s_drag_down, 3)), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX));
             (yield* exercise(NHC.A_STR, 0));
             (yield* litter());
         }

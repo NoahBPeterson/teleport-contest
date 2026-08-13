@@ -9,6 +9,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { m_next2u } from './nhmacrofn.js';
+import { rn2_at } from './nhrng.js';
 import { Blind, Blind_telepat, Deaf, display_nhwindow, nh_delay_output } from './nhprop.js';
 import { nh_getenv } from './options.js';
 import { alloc, dupstr } from './alloc.js';
@@ -19,7 +20,6 @@ import { enexto } from './teleport.js';
 import { dist2 } from './hacklib.js';
 import { isok } from './cmd.js';
 import { accessible } from './monmove.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { mons } from './monst.js';
 import { flush_screen, newsym } from './display.js';
 import { place_monster } from './steed.js';
@@ -197,7 +197,7 @@ function md_stop(stopp, startp) {
                 continue;
             if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
                 distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, $coord_y)));
-                if (min_distance < 0 || distance < min_distance || (distance == min_distance && (rng_log_enabled() ? (rng_log_set_caller(__s_mail_c, 261, __s_md_stop), rn2(2)) : rn2(2)))) {
+                if (min_distance < 0 || distance < min_distance || (distance == min_distance && rn2_at(__s_mail_c, 261, __s_md_stop, 2))) {
                     cptr.stI16(stopp, x);
                     cptr.stI16o(stopp, $coord_y, y);
                     min_distance = distance;
@@ -252,7 +252,7 @@ function md_rush(md, tx, ty) {
         if (!Deaf()) {
             ;
             if (mon)
-                verbalize(__s_pct_s, (cptr.ldPtro(mail_text, (rng_log_enabled() ? (rng_log_set_caller(__s_mail_c, 340, __s_md_rush), rn2(3)) : rn2(3)), 8)));
+                verbalize(__s_pct_s, (cptr.ldPtro(mail_text, rn2_at(__s_mail_c, 340, __s_md_rush, 3), 8)));
             else if (((fx) == cptr.ldI16(u) && (fy) == cptr.ldI16o(u, $you_uy)))
                 verbalize(__s_excuse_me);
         }

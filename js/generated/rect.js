@@ -7,9 +7,9 @@ import { i16 } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
 import { max, min } from './nhmacrofn.js';
+import { rn2_at } from './nhrng.js';
 import { alloc } from './alloc.js';
 import { panic } from './end.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { impossible } from './pline.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
@@ -93,7 +93,7 @@ export function get_rect(r) {
 
 /** C ref: rect.c:104 @returns {CPtr<NhRect>} */
 export function rnd_rect() {
-    return rect_cnt > 0 ? cptr.add(rect, (rng_log_enabled() ? (rng_log_set_caller(__s_rect_c, 106, __s_rnd_rect), rn2(rect_cnt)) : rn2(rect_cnt)), $sizeof_NhRect) : null;
+    return rect_cnt > 0 ? cptr.add(rect, rn2_at(__s_rect_c, 106, __s_rnd_rect, rect_cnt), $sizeof_NhRect) : null;
 }
 
 /** C ref: rect.c:116 — @param {CPtr<NhRect>} r1 @param {CPtr<NhRect>} r2 @param {CPtr<NhRect>} r3 @returns {CInt} */

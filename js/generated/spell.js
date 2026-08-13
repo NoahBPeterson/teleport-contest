@@ -9,9 +9,9 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_TREE, canspotmon, eyecount, is_metallic, is_vampshifter, is_whirly } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at, rnl_at } from './nhrng.js';
 import { Antimagic, BClairvoyant, Blind, BlindedTimeout, HConfusion, HStun, Half_physical_damage, Hallucination, Poison_resistance, Sick, Sleep_resistance, Slimed, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, nh_delay_output, start_menu, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
-import { d, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
 import { You, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
 import { tele } from './teleport.js';
 import { aggravate } from './wizard.js';
@@ -49,6 +49,7 @@ import { more_experienced, newexplevel } from './exper.js';
 import { cmdq_add_key, cmdq_pop, getdir, isok, set_occupation, yn_function } from './cmd.js';
 import { Resists_Elem, can_chant, defended, dmgtype_fromattack } from './mondata.js';
 import { freehand } from './engrave.js';
+import { rn2_on_display_rng } from './rnd.js';
 import { find_ac } from './do_wear.js';
 import { morehungry } from './eat.js';
 import { genders } from './role.js';
@@ -330,7 +331,7 @@ function cursed_book(bp) {
     let was_in_use;
     let lev = cptr.ld1so2(objects, cptr.ldI16o(bp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2);
     let dmg = 0;
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 136, __s_cursed_book), rn2(lev)) : rn2(lev))) {
+    switch (rn2_at(__s_spell_c, 136, __s_cursed_book, lev)) {
         case 0:
         You_feel(__s_a_wrenching_sensation);
         tele();
@@ -340,14 +341,14 @@ function cursed_book(bp) {
         aggravate();
         break;
         case 2:
-        make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 146, __s_cursed_book), rn2(100)) : rn2(100)) + 250) | 0))), 1);
+        make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2_at(__s_spell_c, 146, __s_cursed_book, 100) + 250) | 0))), 1);
         break;
         case 3:
         take_gold();
         break;
         case 4:
         pline(__s_these_runes_were_just_too_much_to);
-        make_confused(BigInt.asIntN(64, HConfusion() + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 153, __s_cursed_book), rn2(7)) : rn2(7)) + 16) | 0))), 0);
+        make_confused(BigInt.asIntN(64, HConfusion() + BigInt(((rn2_at(__s_spell_c, 153, __s_cursed_book, 7) + 16) | 0))), 0);
         break;
         case 5:
         pline_The(__s_book_was_coated_with_contact_poison);
@@ -357,7 +358,7 @@ function cursed_book(bp) {
         }
         was_in_use = schar((cptr.ldI32o(bp, $obj_in_use) & 1));
         cptr.stI32o(bp, $obj_in_use, 0);
-        poison_strdmg(Poison_resistance() ? (((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 164, __s_cursed_book), rn2(2)) : rn2(2)) + 1) | 0) : (((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 164, __s_cursed_book), rn2(4)) : rn2(4)) + 3) | 0), (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 165, __s_cursed_book), rnd(Poison_resistance() ? 6 : 10)) : rnd(Poison_resistance() ? 6 : 10)), __s_contact_poisoned_spellbook, NHM.KILLED_BY_AN);
+        poison_strdmg(Poison_resistance() ? ((rn2_at(__s_spell_c, 164, __s_cursed_book, 2) + 1) | 0) : ((rn2_at(__s_spell_c, 164, __s_cursed_book, 4) + 3) | 0), rnd_at(__s_spell_c, 165, __s_cursed_book, Poison_resistance() ? 6 : 10), __s_contact_poisoned_spellbook, NHM.KILLED_BY_AN);
         cptr.stI32o(bp, $obj_in_use, was_in_use);
         break;
         case 6:
@@ -366,7 +367,7 @@ function cursed_book(bp) {
             pline_The(__s_book_s_but_you_are_unharmed, cptr.decay(explodes));
         } else {
             pline(__s_as_you_read_the_book_it_s_in_your_s, cptr.decay(explodes), body_part(NHC.FACE));
-            dmg = (Math.imul(2, (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 176, __s_cursed_book), rnd(10)) : rnd(10))) + 5) | 0;
+            dmg = (Math.imul(2, rnd_at(__s_spell_c, 176, __s_cursed_book, 10)) + 5) | 0;
             losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_exploding_rune, NHM.KILLED_BY_AN);
         }
         return 1;
@@ -380,7 +381,7 @@ function cursed_book(bp) {
 /** C ref: spell.c:189 — @param {CPtr<struct obj>} spellbook @returns {CInt} */
 function confused_book(spellbook) {
     let gone = 0;
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 193, __s_confused_book), rn2(3)) : rn2(3)) && cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
+    if (!rn2_at(__s_spell_c, 193, __s_confused_book, 3) && cptr.ldI16o(spellbook, $obj_otyp) != NHC.SPE_BOOK_OF_THE_DEAD) {
         cptr.stI32o(spellbook, $obj_in_use, 1);
         pline(__s_being_confused_you_have_difficulties_in);
         display_nhwindow()(WIN_MESSAGE.v, 0);
@@ -470,7 +471,7 @@ function deadbook(book2) {
         __pc = 9; continue;
         }
         case 8: {
-        soon = (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 287, __s_deadbook), d(2, 6)) : d(2, 6)) >>> 0;
+        soon = d_at(__s_spell_c, 287, __s_deadbook, 2, 6) >>> 0;
         mkinvokearea();
         cptr.stI32o(u, $you_uevent + $u_event_invoked, 1);
         record_achievement(NHC.ACH_INVK);
@@ -501,7 +502,7 @@ function deadbook(book2) {
         }
         case 1 /* raise_dead: */: {
         You(__s_raised_the_dead);
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 311, __s_deadbook), rn2(3)) : rn2(3)) && ((mtmp = makemon(cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT)) !== null || (mtmp = makemon(cptr.add(mons, NHC.PM_NALFESHNEE, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT)) !== null)) {
+        if (!rn2_at(__s_spell_c, 311, __s_deadbook, 3) && ((mtmp = makemon(cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT)) !== null || (mtmp = makemon(cptr.add(mons, NHC.PM_NALFESHNEE, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MINVENT)) !== null)) {
             cptr.stI32o(mtmp, $monst_mpeaceful, 0);
             set_malign(mtmp);
         }
@@ -516,7 +517,7 @@ function deadbook(book2) {
         if ((cptr.ldI32o(book2, $obj_blessed) & 1)) {
             iter_mons(deadbook_pacify_undead);
         } else {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 327, __s_deadbook), rn2(3)) : rn2(3))) {
+            switch (rn2_at(__s_spell_c, 327, __s_deadbook, 3)) {
                 case 0:
                 Your(__s_ancestors_are_annoyed_with_you);
                 break;
@@ -555,7 +556,7 @@ function learn() {
     let costly = 1;
     let faded_to_blank = 0;
     let book = cptr.ldPtro(svc, $context_info_spbook);
-    if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES && (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 366, __s_learn), rn2(2)) : rn2(2)))
+    if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES && rn2_at(__s_spell_c, 366, __s_learn, 2))
         cptr.postinc1(cptr.add(svc, $context_info_spbook + $book_info_delay));
     if (HConfusion()) {
         void confused_book(book);
@@ -588,7 +589,7 @@ function learn() {
             pline(__s_this_spellbook_is_too_faint_to_be_read);
             cptr.stI16o(book, $obj_otyp, booktype = NHC.SPE_BLANK_PAPER);
             faded_to_blank = 1;
-            cptr.stI32o(book, $obj_usecount, (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 406, __s_learn), rn2(cptr.ldI32o(book, $obj_usecount))) : rn2(cptr.ldI32o(book, $obj_usecount))));
+            cptr.stI32o(book, $obj_usecount, rn2_at(__s_spell_c, 406, __s_learn, cptr.ldI32o(book, $obj_usecount)));
         } else {
             Your(__s_knowledge_of_s_is_s, cptr.decay(splname), cptr.ldI32o2(svs, i, $sizeof_spell, $spell_sp_know) ? __s_keener : __s_restored);
             (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20001));
@@ -600,7 +601,7 @@ function learn() {
             pline(__s_this_spellbook_is_too_faint_to_read);
             cptr.stI16o(book, $obj_otyp, booktype = NHC.SPE_BLANK_PAPER);
             faded_to_blank = 1;
-            cptr.stI32o(book, $obj_usecount, (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 424, __s_learn), rn2(cptr.ldI32o(book, $obj_usecount))) : rn2(cptr.ldI32o(book, $obj_usecount))));
+            cptr.stI32o(book, $obj_usecount, rn2_at(__s_spell_c, 424, __s_learn, cptr.ldI32o(book, $obj_usecount)));
         } else {
             cptr.stI16o(svs, i, booktype, $sizeof_spell);
             cptr.stI16o2(svs, i, $sizeof_spell, $spell_sp_lev, i16(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)));
@@ -640,15 +641,15 @@ export function study_book(spellbook) {
     let too_hard = 0;
     if (!confused && !Sleep_resistance() && objdescr_is(spellbook, __s_dull)) {
         let eyes;
-        let dullbook = ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 478, __s_study_book), rnd(25)) : rnd(25)) - (acurr(NHC.A_WIS))) | 0;
+        let dullbook = (rnd_at(__s_spell_c, 478, __s_study_book, 25) - (acurr(NHC.A_WIS))) | 0;
         if (cptr.ld1so(svc, $context_info_spbook + $book_info_delay) && cptr.eq(spellbook, cptr.ldPtro(svc, $context_info_spbook)))
-            dullbook = (dullbook - (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 482, __s_study_book), rnd(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) : rnd(cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)))) | 0;
+            dullbook = (dullbook - rnd_at(__s_spell_c, 482, __s_study_book, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))) | 0;
         if (dullbook > 0) {
             eyes = body_part(NHC.EYE);
             if (eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) > 1)
                 eyes = makeplural(eyes);
             pline(__s_this_book_is_so_dull_that_you_can_t, eyes);
-            dullbook = (dullbook + (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 490, __s_study_book), rnd(Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)))) : rnd(Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2))))) | 0;
+            dullbook = (dullbook + rnd_at(__s_spell_c, 490, __s_study_book, Math.imul(2, cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)))) | 0;
             fall_asleep(-dullbook, 1);
             return 1;
         }
@@ -720,7 +721,7 @@ export function study_book(spellbook) {
                         return 1;
                     }
                 }
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 599, __s_study_book), rnd(20)) : rnd(20)) > read_ability) {
+                if (rnd_at(__s_spell_c, 599, __s_study_book, 20) > read_ability) {
                     too_hard = 1;
                 }
             }
@@ -731,7 +732,7 @@ export function study_book(spellbook) {
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_reading_a_book);
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
             cptr.st1o(svc, $context_info_spbook + $book_info_delay, 0);
-            if (gone || !(rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 612, __s_study_book), rn2(3)) : rn2(3))) {
+            if (gone || !rn2_at(__s_spell_c, 612, __s_study_book, 3)) {
                 if (!gone)
                     pline_The(__s_spellbook_crumbles_to_dust);
                 trycall(spellbook);
@@ -1095,7 +1096,7 @@ function spell_backfire(spell) {
     let duration = BigInt((Math.imul(((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) + 1) | 0), 3)));
     let old_stun = (HStun() & 16777215n);
     let old_conf = (HConfusion() & 16777215n);
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1194, __s_spell_backfire), rn2(10)) : rn2(10))) {
+    switch (rn2_at(__s_spell_c, 1194, __s_spell_backfire, 10)) {
         case 0:
         case 1:
         case 2:
@@ -1134,7 +1135,7 @@ function spelleffects_check(spell, res, energy) {
         Your(__s_knowledge_of_this_spell_is_twisted);
         pline(__s_it_invokes_nightmarish_images_in_your);
         spell_backfire(spell);
-        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1255, __s_spelleffects_check), rnd(cptr.ldI32(energy))) : rnd(cptr.ldI32(energy)))) | 0);
+        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - rnd_at(__s_spell_c, 1255, __s_spelleffects_check, cptr.ldI32(energy))) | 0);
         if (cptr.ldI32o(u, $you_uen) < 0)
             cptr.stI32o(u, $you_uen, 0);
         cptr.st1(disp, 1);
@@ -1163,7 +1164,7 @@ function spelleffects_check(spell, res, energy) {
     }
     if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && cptr.ldI32o(u, $you_uen) >= cptr.ldI32(energy)) {
         You_feel(__s_the_amulet_draining_your_energy_away);
-        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1298, __s_spelleffects_check), rnd(Math.imul(2, cptr.ldI32(energy)))) : rnd(Math.imul(2, cptr.ldI32(energy))))) | 0);
+        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - rnd_at(__s_spell_c, 1298, __s_spelleffects_check, Math.imul(2, cptr.ldI32(energy)))) | 0);
         if (cptr.ldI32o(u, $you_uen) < 0)
             cptr.stI32o(u, $you_uen, 0);
         cptr.st1(disp, 1);
@@ -1203,7 +1204,7 @@ function spelleffects_check(spell, res, energy) {
         }
     }
     chance = percent_success(spell);
-    if (confused || ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1372, __s_spelleffects_check), rnd(100)) : rnd(100)) > chance)) {
+    if (confused || (rnd_at(__s_spell_c, 1372, __s_spelleffects_check, 100) > chance)) {
         You(__s_fail_to_cast_the_spell_correctly);
         cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) - ((cptr.ldI32(energy) / 2) | 0)) | 0);
         cptr.st1(disp, 1);
@@ -1244,7 +1245,7 @@ export function spelleffects(spell_otyp, atme, force) {
             if (throwspell()) {
                 cptr.stI16(cc, i16(cptr.ldI32o(u, $you_dx)));
                 cptr.stI16o(cc, $nhcoord_y, i16(cptr.ldI32o(u, $you_dy)));
-                n = ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1425, __s_spelleffects), rnd(8)) : rnd(8)) + 1) | 0;
+                n = (rnd_at(__s_spell_c, 1425, __s_spelleffects, 8) + 1) | 0;
                 while (n--) {
                     if (!cptr.ldI32o(u, $you_dx) && !cptr.ldI32o(u, $you_dy) && !cptr.ldI32o(u, $you_dz)) {
                         if ((damage = zapyourself(pseudo, 1)) != 0) {
@@ -1255,8 +1256,8 @@ export function spelleffects(spell_otyp, atme, force) {
                     } else {
                         explode(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy)), (((otyp - NHC.SPE_MAGIC_MISSILE) | 0) + 10) | 0, spell_damage_bonus((((cptr.ldI32o(u, $you_ulevel) / 2) | 0) + 1) | 0), 0, (otyp == NHC.SPE_CONE_OF_COLD) ? NHC.EXPL_FROSTY : NHC.EXPL_FIERY);
                     }
-                    cptr.stI32o(u, $you_dx, (((cptr.ldI16(cc) + (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1442, __s_spelleffects), rnd(3)) : rnd(3))) | 0) - 2) | 0);
-                    cptr.stI32o(u, $you_dy, (((cptr.ldI16o(cc, $nhcoord_y) + (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1443, __s_spelleffects), rnd(3)) : rnd(3))) | 0) - 2) | 0);
+                    cptr.stI32o(u, $you_dx, (((cptr.ldI16(cc) + rnd_at(__s_spell_c, 1442, __s_spelleffects, 3)) | 0) - 2) | 0);
+                    cptr.stI32o(u, $you_dy, (((cptr.ldI16o(cc, $nhcoord_y) + rnd_at(__s_spell_c, 1443, __s_spelleffects, 3)) | 0) - 2) | 0);
                     if (!isok(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy))) || !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI32o(u, $you_dy), 8), cptr.ldI32o(u, $you_dx)) & NHM.IN_SIGHT) != 0) || ((cptr.ld1so3(svl, cptr.ldI32o(u, $you_dx), $sizeof_rm_x21, cptr.ldI32o(u, $you_dy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
                         cptr.stI32o(u, $you_dx, cptr.ldI16(cc));
                         cptr.stI32o(u, $you_dy, cptr.ldI16o(cc, $nhcoord_y));
@@ -1513,16 +1514,16 @@ export function losespells() {
     for (n = 0; n < NHC.MAXSPELL; ++n)
         if (cptr.ldI16o(svs, n, $sizeof_spell) == NHM.NO_SPELL)
             break;
-    nzap = (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1777, __s_losespells), rn2((n + 1) | 0)) : rn2((n + 1) | 0));
+    nzap = rn2_at(__s_spell_c, 1777, __s_losespells, (n + 1) | 0);
     if (HConfusion()) {
-        i = (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1779, __s_losespells), rn2((n + 1) | 0)) : rn2((n + 1) | 0));
+        i = rn2_at(__s_spell_c, 1779, __s_losespells, (n + 1) | 0);
         if (i > nzap)
             nzap = i;
     }
-    if (nzap > 1 && !(rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1784, __s_losespells), rnl(7)) : rnl(7)))
-        nzap = (rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1785, __s_losespells), rnd(nzap)) : rnd(nzap));
+    if (nzap > 1 && !rnl_at(__s_spell_c, 1784, __s_losespells, 7))
+        nzap = rnd_at(__s_spell_c, 1785, __s_losespells, nzap);
     for (i = 0; nzap > 0; ++i) {
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_spell_c, 1814, __s_losespells), rn2((n - i) | 0)) : rn2((n - i) | 0)) < nzap) {
+        if (rn2_at(__s_spell_c, 1814, __s_losespells, (n - i) | 0) < nzap) {
             cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 0);
             exercise(NHC.A_WIS, 0);
             --nzap;

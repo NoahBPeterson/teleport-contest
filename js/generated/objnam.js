@@ -9,6 +9,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Align2amask, CAN_OVERWRITE_TERRAIN, IS_FURNITURE, IS_WALL, Is_box, Is_candle, Is_container, Is_dragon_mail, Is_dragon_scales, bimanual, has_oname, is_ammo, is_boots, is_corrodeable, is_crackable, is_damageable, is_gloves, is_missile, is_plural, is_poisonable, is_shield, is_weptool, is_wet_towel, ismnum } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, EHalluc_resistance, EWarn_of_mon, Flying, Glib, Levitation, Luck, URIGHTY, wizard } from './nhprop.js';
 import { impossible, pline } from './pline.js';
 import { copynchars, digit, dist2, eos, fuzzymatch, highc, letter, lowc, mungspaces, nh_snprintf, ordin, s_suffix, str_start_is, strcasecpy, strncmpi, strstri, strsubst, upstart } from './hacklib.js';
@@ -33,7 +34,6 @@ import { body_part } from './polyself.js';
 import { genders } from './role.js';
 import { append_price_quote, delete_contents, get_cost_of_shop_item, is_unpaid, obfree, record_price_quote, shk_your, unpaid_cost } from './shk.js';
 import { CapitalMon } from './rumors.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { deltrap, fire_damage_chain, maketrap, reset_utrap, t_at, trapname, water_damage_chain } from './trap.js';
 import { Can_fall_thru, on_level } from './dungeon.js';
 import { del_engr_at, make_grave } from './engrave.js';
@@ -48,6 +48,7 @@ import { docrt, feel_newsym } from './display.js';
 import { recalc_block_point } from './vision.js';
 import { name_to_mon, name_to_monplus } from './mondata.js';
 import { def_char_to_objclass } from './drawing.js';
+import { d } from './rnd.js';
 import { counter_were } from './were.js';
 import { can_be_hatched, dead_species, genus, zombie_form } from './mon.js';
 import { is_quest_artifact } from './questpgr.js';
@@ -3568,7 +3569,7 @@ function rnd_otyp_by_wpnskill(skill) {
             otyp = i16(i);
         }
     if (n > 0) {
-        n = (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 3444, __s_rnd_otyp_by_wpnskill), rn2(n)) : rn2(n));
+        n = rn2_at(__s_objnam_c, 3444, __s_rnd_otyp_by_wpnskill, n);
         for (i = cptr.ldI32o2(svb, NHC.WEAPON_CLASS, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS && cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == NHC.WEAPON_CLASS; i++)
             if (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_subtyp) == skill)
                 if (--n < 0)
@@ -3613,7 +3614,7 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
         }
     }
     if (n > 0 && maxprob) {
-        prob = (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 3522, __s_rnd_otyp_by_namedesc), rn2(maxprob)) : rn2(maxprob));
+        prob = rn2_at(__s_objnam_c, 3522, __s_rnd_otyp_by_namedesc, maxprob);
         for (i = 0; i < ((n - 1) | 0); i++)
             if ((prob = (prob - ((cptr.ldI16o2(objects, cptr.ldI16o(validobjs, i, 2), $sizeof_objclass, $objclass_oc_prob) + xtra_prob) | 0)) | 0) < 0)
                 break;
@@ -3764,7 +3765,7 @@ function wizterrainwish(d) {
         else if (!strncmpi(bp, __s_unaligned, 10))
             al = -128;
         else
-            al = schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 3702, __s_wizterrainwish), rn2(6)) : rn2(6)) ? -128 : (((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 3702, __s_wizterrainwish), rn2(3)) : rn2(3)) - 1) | 0)));
+            al = schar((!rn2_at(__s_objnam_c, 3702, __s_wizterrainwish, 6) ? -128 : ((rn2_at(__s_objnam_c, 3702, __s_wizterrainwish, 3) - 1) | 0)));
         cptr.stI32o(lev, $rm_flags, Align2amask(al));
         pline(__s_s_altar, An(align_str(al)));
         madeterrain = 1;
@@ -3976,9 +3977,9 @@ function readobjnam_preparse(d) {
             cptr.stI32o(d, $_readobjnam_data_islit, 0);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_moist, l = 6) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_wet, l = 4)) {
             if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_wet, 4))
-                cptr.stI32o(d, $_readobjnam_data_wetness, (3 + (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4025, __s_readobjnam_preparse), rn2(3)) : rn2(3))) | 0);
+                cptr.stI32o(d, $_readobjnam_data_wetness, (3 + rn2_at(__s_objnam_c, 4025, __s_readobjnam_preparse, 3)) | 0);
             else
-                cptr.stI32o(d, $_readobjnam_data_wetness, (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4027, __s_readobjnam_preparse), rnd(2)) : rnd(2)));
+                cptr.stI32o(d, $_readobjnam_data_wetness, rnd_at(__s_objnam_c, 4027, __s_readobjnam_preparse, 2));
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_unlabeled, l = 10) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_unlabelled, l = 11) || !strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_blank, l = 6)) {
             cptr.stI32o(d, $_readobjnam_data_unlabeled, 1);
         } else if (!strncmpi(cptr.ldPtro(d, $_readobjnam_data_bp), __s_poisoned, l = 9)) {
@@ -4170,7 +4171,7 @@ function readobjnam_postparse1(d) {
     if (!strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_glob), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(5)))), (__s_glob__2), -1)) || !strncmpi((cptr.ldPtro(d, $_readobjnam_data_bp)), (__s_globs), -1) || !(cptr.cmp((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6))), cptr.ldPtro(d, $_readobjnam_data_bp)) < 0 || strncmpi(((cptr.add(cptr.add(cptr.ldPtro(d, $_readobjnam_data_bp), i), -(6)))), (__s_globs__2), -1)) || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_glob_of))) !== null || (cptr.stPtro(d, $_readobjnam_data_p, strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_globs_of))) !== null) {
         cptr.stI32o(d, $_readobjnam_data_mntmp, name_to_mon(!cptr.ldPtro(d, $_readobjnam_data_p) ? cptr.ldPtro(d, $_readobjnam_data_bp) : (cptr.add(strstri(cptr.ldPtro(d, $_readobjnam_data_p), __s_of), 4)), null));
         if (cptr.ldI32o(d, $_readobjnam_data_mntmp) == NHC.NON_PM)
-            cptr.stI32o(d, $_readobjnam_data_mntmp, (((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4354, __s_readobjnam_postparse1), rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) : rn2(((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0))) + NHC.PM_GRAY_OOZE) | 0));
+            cptr.stI32o(d, $_readobjnam_data_mntmp, ((rn2_at(__s_objnam_c, 4354, __s_readobjnam_postparse1, ((NHC.PM_BLACK_PUDDING - NHC.PM_GRAY_OOZE) | 0)) + NHC.PM_GRAY_OOZE) | 0));
         if (cptr.ldI32o(d, $_readobjnam_data_cnt) < 2 && strstri(cptr.ldPtro(d, $_readobjnam_data_bp), __s_globs))
             cptr.stI32o(d, $_readobjnam_data_cnt, 2);
         void cptr.sprintf(cptr.add(d, $_readobjnam_data_globbuf), __s_glob_of_s, cptr.ldPtro3(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), $sizeof_permonst, NHC.NEUTRAL, 8, 0));
@@ -4380,7 +4381,7 @@ function readobjnam_postparse2(d) {
         else if (!strncmpi(s, __s_coloured, 9))
             s = cptr.add(s, 9);
         if (!strncmpi((s), (__s_glass__2), -1)) {
-            cptr.stI32o(d, $_readobjnam_data_typ, (NHC.FIRST_GLASS_GEM + (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4705, __s_readobjnam_postparse2), rn2(NHC.NUM_GLASS_GEMS)) : rn2(NHC.NUM_GLASS_GEMS))) | 0);
+            cptr.stI32o(d, $_readobjnam_data_typ, (NHC.FIRST_GLASS_GEM + rn2_at(__s_objnam_c, 4705, __s_readobjnam_postparse2, NHC.NUM_GLASS_GEMS)) | 0);
             if (cptr.ld1so2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), $sizeof_objclass, $objclass_oc_class) == NHC.GEM_CLASS)
                 return 2;
             else
@@ -4698,7 +4699,7 @@ export function readobjnam(bp, no_wish) {
         }
         case 4 /* any: */: {
         if (!cptr.ld1so(d, $_readobjnam_data_oclass))
-            cptr.st1o(d, $_readobjnam_data_oclass, cptr.ld1so(cptr.decay(wrpsym), (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 4996, __s_readobjnam), rn2(13)) : rn2(13)), 1));
+            cptr.st1o(d, $_readobjnam_data_oclass, cptr.ld1so(cptr.decay(wrpsym), rn2_at(__s_objnam_c, 4996, __s_readobjnam, 13), 1));
         __pc = 5;
         continue;
         }
@@ -4740,7 +4741,7 @@ export function readobjnam(bp, no_wish) {
             if (cptr.ldI32o(d, $_readobjnam_data_gsize) > 1)
                 cptr.stI32o(cptr.ldPtr(d), $obj_owt, (cptr.ldI32o(cptr.ldPtr(d), $obj_owt) + (Math.imul(((5 + Math.imul(((cptr.ldI32o(d, $_readobjnam_data_gsize) - 2) | 0), 10)) | 0) >>> 0, cptr.ldI32o(cptr.ldPtr(d), $obj_owt)) >>> 0)) | 0);
             if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 1) {
-                rn1cnt = (((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5059, __s_readobjnam), rn2(5)) : rn2(5)) + 2) | 0);
+                rn1cnt = ((rn2_at(__s_objnam_c, 5059, __s_readobjnam, 5) + 2) | 0);
                 if (rn1cnt > ((6 - cptr.ldI32o(d, $_readobjnam_data_gsize)) | 0))
                     rn1cnt = (6 - cptr.ldI32o(d, $_readobjnam_data_gsize)) | 0;
                 if (cptr.ldI32o(d, $_readobjnam_data_cnt) > rn1cnt && (!wizard() || cptr.ldI32o(program_state, $sinfo_wizkit_wishing) || yn_function(__s_override_glob_weight_limit, cptr.decay(ynchars), 110, 1) != 121))
@@ -4749,7 +4750,7 @@ export function readobjnam(bp, no_wish) {
             }
             cptr.stI32o(d, $_readobjnam_data_cnt, 0);
         } else if (cptr.ldI32o(d, $_readobjnam_data_cnt) > 0) {
-            if ((cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 && (wizard() || cptr.ldI32o(d, $_readobjnam_data_cnt) < (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5077, __s_readobjnam), rnd(6)) : rnd(6)) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 7 && Is_candle(cptr.ldPtr(d))) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 20 && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.ROCK || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.FLINT || is_missile(cptr.ldPtr(d)) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS && is_ammo(cptr.ldPtr(d)))))))
+            if ((cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 && (wizard() || cptr.ldI32o(d, $_readobjnam_data_cnt) < rnd_at(__s_objnam_c, 5077, __s_readobjnam, 6) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 7 && Is_candle(cptr.ldPtr(d))) || (cptr.ldI32o(d, $_readobjnam_data_cnt) <= 20 && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.ROCK || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.FLINT || is_missile(cptr.ldPtr(d)) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS && is_ammo(cptr.ldPtr(d)))))))
                 cptr.stI64o(cptr.ldPtr(d), $obj_quan, BigInt(cptr.ldI32o(d, $_readobjnam_data_cnt)));
         }
         if (cptr.ldI32o(d, $_readobjnam_data_islit) && (cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.OIL_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.MAGIC_LAMP || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.BRASS_LANTERN || Is_candle(cptr.ldPtr(d)) || cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.POT_OIL)) {
@@ -4762,7 +4763,7 @@ export function readobjnam(bp, no_wish) {
         } else if (wizard()) {
             ;
         } else if (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.ARMOR_CLASS || cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.WEAPON_CLASS || is_weptool(cptr.ldPtr(d)) || (cptr.ld1so(d, $_readobjnam_data_oclass) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI32o(d, $_readobjnam_data_typ), $sizeof_objclass, $objclass_oc_charged) & 1) | 0)) {
-            if (cptr.ldI32o(d, $_readobjnam_data_spe) > (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5102, __s_readobjnam), rnd(5)) : rnd(5)) && cptr.ldI32o(d, $_readobjnam_data_spe) > cptr.ld1so(cptr.ldPtr(d), $obj_spe))
+            if (cptr.ldI32o(d, $_readobjnam_data_spe) > rnd_at(__s_objnam_c, 5102, __s_readobjnam, 5) && cptr.ldI32o(d, $_readobjnam_data_spe) > cptr.ld1so(cptr.ldPtr(d), $obj_spe))
                 cptr.stI32o(d, $_readobjnam_data_spe, 0);
             if (cptr.ldI32o(d, $_readobjnam_data_spe) > 2 && Luck() < 0)
                 cptr.stI32o(d, $_readobjnam_data_spesgn, -1);
@@ -4810,7 +4811,7 @@ export function readobjnam(bp, no_wish) {
                 P = (ismnum(cptr.ldI32o(d, $_readobjnam_data_mntmp))) ? cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), $sizeof_permonst) : null;
                 cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((!P ? NHM.CORPSTAT_RANDOM : (((cptr.ldU64o((P), $permonst_mflags2) & 262144n) != 0n) ? NHM.CORPSTAT_NEUTER : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.FEMALE && !((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n)) ? NHM.CORPSTAT_FEMALE : ((cptr.ldI32o(d, $_readobjnam_data_mgend) == NHC.MALE && !((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_RANDOM))))));
                 if (P && cptr.ld1so(cptr.ldPtr(d), $obj_spe) == NHM.CORPSTAT_RANDOM)
-                    cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n) ? NHM.CORPSTAT_MALE : (((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n) ? NHM.CORPSTAT_FEMALE : ((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5163, __s_readobjnam), rn2(2)) : rn2(2)) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_FEMALE)))));
+                    cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((((cptr.ldU64o((P), $permonst_mflags2) & 65536n) != 0n) ? NHM.CORPSTAT_MALE : (((cptr.ldU64o((P), $permonst_mflags2) & 131072n) != 0n) ? NHM.CORPSTAT_FEMALE : (rn2_at(__s_objnam_c, 5163, __s_readobjnam, 2) ? NHM.CORPSTAT_MALE : NHM.CORPSTAT_FEMALE)))));
                 if (cptr.ldI32o(d, $_readobjnam_data_ishistoric) && cptr.ldI32o(d, $_readobjnam_data_typ) == NHC.STATUE)
                     cptr.st1o(cptr.ldPtr(d), $obj_spe, cptr.ld1so(cptr.ldPtr(d), $obj_spe) | NHM.CORPSTAT_HISTORIC);
                 break;
@@ -4824,7 +4825,7 @@ export function readobjnam(bp, no_wish) {
             break;
             case NHC.WAN_WISHING:
             if (!wizard()) {
-                cptr.st1o(cptr.ldPtr(d), $obj_spe, schar(((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5182, __s_readobjnam), rn2(10)) : rn2(10)) ? -1 : 0)));
+                cptr.st1o(cptr.ldPtr(d), $obj_spe, schar((rn2_at(__s_objnam_c, 5182, __s_readobjnam, 10) ? -1 : 0)));
                 break;
             }
             // @FallThrough
@@ -4852,7 +4853,7 @@ export function readobjnam(bp, no_wish) {
                     set_corpsenm(cptr.ldPtr(d), cptr.ldI32o(d, $_readobjnam_data_mntmp));
                 }
                 if (cptr.ld1so(d, $_readobjnam_data_zombify) && zombie_form(cptr.add(mons, cptr.ldI32o(d, $_readobjnam_data_mntmp), $sizeof_permonst))) {
-                    void start_timer(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5223, __s_readobjnam), rn2(5)) : rn2(5)) + 10) | 0)), NHC.TIMER_OBJECT, NHC.ZOMBIFY_MON, obj_to_any(cptr.ldPtr(d)));
+                    void start_timer(BigInt(((rn2_at(__s_objnam_c, 5223, __s_readobjnam, 5) + 10) | 0)), NHC.TIMER_OBJECT, NHC.ZOMBIFY_MON, obj_to_any(cptr.ldPtr(d)));
                 }
                 break;
                 case NHC.EGG:
@@ -4933,7 +4934,7 @@ export function readobjnam(bp, no_wish) {
             cptr.stI32o(cptr.ldPtr(d), $obj_greased, 1);
         if (cptr.ldI32o(d, $_readobjnam_data_isdiluted) && cptr.ld1so(cptr.ldPtr(d), $obj_oclass) == NHC.POTION_CLASS)
             cptr.stI32o(cptr.ldPtr(d), $obj_oeroded, (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) != NHC.POT_WATER) >>> 0);
-        if (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TIN && cptr.ldI32o(d, $_readobjnam_data_tvariety) >= 0 && ((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5343, __s_readobjnam), rn2(4)) : rn2(4)) || wizard()))
+        if (cptr.ldI16o(cptr.ldPtr(d), $obj_otyp) == NHC.TIN && cptr.ldI32o(d, $_readobjnam_data_tvariety) >= 0 && (rn2_at(__s_objnam_c, 5343, __s_readobjnam, 4) || wizard()))
             set_tin_variety(cptr.ldPtr(d), cptr.ldI32o(d, $_readobjnam_data_tvariety));
         if (cptr.ldPtro(d, $_readobjnam_data_name)) {
             aname = artifact_name(cptr.ldPtro(d, $_readobjnam_data_name), objtyp, 1);
@@ -4949,7 +4950,7 @@ export function readobjnam(bp, no_wish) {
         }
         if (permapoisoned(cptr.ldPtr(d)))
             cptr.stI32o(cptr.ldPtr(d), $obj_otrapped, 1);
-        if ((is_quest_artifact(cptr.ldPtr(d)) || (cptr.ld1so(cptr.ldPtr(d), $obj_oartifact) && (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5374, __s_readobjnam), rn2(nartifact_exist())) : rn2(nartifact_exist())) > 1)) && !wizard()) {
+        if ((is_quest_artifact(cptr.ldPtr(d)) || (cptr.ld1so(cptr.ldPtr(d), $obj_oartifact) && rn2_at(__s_objnam_c, 5374, __s_readobjnam, nartifact_exist()) > 1)) && !wizard()) {
             artifact_exists(cptr.ldPtr(d), safe_oname(cptr.ldPtr(d)), 0, NHM.ONAME_NO_FLAGS);
             obfree(cptr.ldPtr(d), null);
             cptr.stPtr(d, hands_obj);
@@ -4982,8 +4983,8 @@ export function rnd_class(first, last) {
         for (i = first; i <= last; i++)
             sum = (sum + cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0;
         if (!sum)
-            return (((rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5411, __s_rnd_class), rn2((((last - first) | 0) + 1) | 0)) : rn2((((last - first) | 0) + 1) | 0)) + (first)) | 0);
-        x = (rng_log_enabled() ? (rng_log_set_caller(__s_objnam_c, 5413, __s_rnd_class), rnd(sum)) : rnd(sum));
+            return ((rn2_at(__s_objnam_c, 5411, __s_rnd_class, (((last - first) | 0) + 1) | 0) + (first)) | 0);
+        x = rnd_at(__s_objnam_c, 5413, __s_rnd_class, sum);
         for (i = first; i <= last; i++)
             if ((x = (x - cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0) <= 0)
                 return i;

@@ -8,13 +8,13 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { rn2_at } from './nhrng.js';
 import { Hallucination, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { ledger_no, maxledgerno } from './dungeon.js';
 import { WIN_MESSAGE, cg, flags, go, gu, iflags, program_state, svb, svc, svd, u, ynchars } from './decl.js';
 import { obj_descr, objects } from './objects.js';
 import { You, impossible, pline, raw_printf } from './pline.js';
 import { add_menu, add_menu_heading, add_menu_str, select_menu, windowprocs } from './windows.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { panic } from './end.js';
 import { sfi_char, sfi_int, sfi_objclass, sfi_short, sfi_unsigned, sfo_char, sfo_int, sfo_objclass, sfo_short, sfo_unsigned } from './sfbase.js';
 import { Strlen_ } from './strutil.js';
@@ -159,13 +159,13 @@ function setgemprobs(dlev) {
 
 /** C ref: o_init.c:85 */
 function randomize_gem_colors() {
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_o_init_c, 89, __s_randomize_gem_colors), rn2(2)) : rn2(2))) {
+    if (rn2_at(__s_o_init_c, 89, __s_randomize_gem_colors, 2)) {
         cptr.stI16o2(objects, NHC.TURQUOISE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.TURQUOISE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color));
     }
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_o_init_c, 92, __s_randomize_gem_colors), rn2(2)) : rn2(2))) {
+    if (rn2_at(__s_o_init_c, 92, __s_randomize_gem_colors, 2)) {
         cptr.stI16o2(objects, NHC.AQUAMARINE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.AQUAMARINE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color));
     }
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__s_o_init_c, 95, __s_randomize_gem_colors), rn2(4)) : rn2(4))) {
+    switch (rn2_at(__s_o_init_c, 95, __s_randomize_gem_colors, 4)) {
         case 0:
         break;
         case 1:
@@ -196,7 +196,7 @@ function shuffle(o_low, o_high, domaterial) {
         if ((cptr.ldI32o2(objects, j, $sizeof_objclass, $objclass_oc_name_known) & 1))
             continue;
         do
-            i = (j + (rng_log_enabled() ? (rng_log_set_caller(__s_o_init_c, 129, __s_shuffle), rn2((((o_high - j) | 0) + 1) | 0)) : rn2((((o_high - j) | 0) + 1) | 0))) | 0;
+            i = (j + rn2_at(__s_o_init_c, 129, __s_shuffle, (((o_high - j) | 0) + 1) | 0)) | 0;
         while ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1));
         sw = cptr.ldI16o2(objects, j, $sizeof_objclass, $objclass_oc_descr_idx);
         cptr.stI16o2(objects, j, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_descr_idx));
@@ -261,7 +261,7 @@ export function init_objects() {
     }
     init_oclass_probs();
     shuffle_all();
-    cptr.stI32o2(objects, NHC.WAN_NOTHING, $sizeof_objclass, $objclass_oc_dir, ((rng_log_enabled() ? (rng_log_set_caller(__s_o_init_c, 234, __s_init_objects), rn2(2)) : rn2(2)) ? NHM.NODIR : NHM.IMMEDIATE) >>> 0);
+    cptr.stI32o2(objects, NHC.WAN_NOTHING, $sizeof_objclass, $objclass_oc_dir, (rn2_at(__s_o_init_c, 234, __s_init_objects, 2) ? NHM.NODIR : NHM.IMMEDIATE) >>> 0);
 }
 
 /** C ref: o_init.c:240 */

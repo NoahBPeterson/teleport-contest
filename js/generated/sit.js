@@ -9,13 +9,13 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_box, eggs_in_water, eyecount, likes_lava } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Acid_resistance, Antimagic, Blind, Blind_telepat, BlindedTimeout, Cold_resistance, Deaf, Drain_resistance, Fire_resistance, Flying, HAggravate_monster, HCold_resistance, HConfusion, HFast, HFire_resistance, HInvis, HPoison_resistance, HProtection, HSee_invisible, HStealth, HTelepat, HTeleportation, Half_physical_damage, Half_spell_damage, Hallucination, Levitation, Luck, See_invisible, Shock_resistance, Slimed, Underwater, Upolyd, wizard } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, gi, gv, gy, iflags, svd, svl, u, uarm, uarmf, uwep, ynchars } from './decl.js';
 import { remove_worn_item } from './steal.js';
 import { delobj, identify_pack, stackobj, update_inventory, useupf } from './invent.js';
 import { There, You, You_cant, You_feel, Your, impossible, pline, pline_The, verbalize } from './pline.js';
 import { In_V_tower, find_hell, on_level, surface } from './dungeon.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { getlin } from './windows.js';
 import { adjattrib, change_luck, exercise } from './attrib.js';
 import { losehp, money_cnt } from './hack.js';
@@ -241,8 +241,8 @@ function throne_sit_effect() {
     let tx = cptr.ldI16(u);
     let ty = cptr.ldI16o(u, $you_uy);
     let special_throne = schar((!!In_V_tower(cptr.add(u, $you_uz))));
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 45, __s_throne_sit_effect), rnd(6)) : rnd(6)) > 4) {
-        let effect = (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 46, __s_throne_sit_effect), rnd(13)) : rnd(13));
+    if (rnd_at(__s_sit_c, 45, __s_throne_sit_effect, 6) > 4) {
+        let effect = rnd_at(__s_sit_c, 46, __s_throne_sit_effect, 13);
         if (wizard() && !cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             let buf = new Uint8Array(256);
             let which;
@@ -262,15 +262,15 @@ function throne_sit_effect() {
         }
         switch (effect) {
             case 1:
-            void adjattrib((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 70, __s_throne_sit_effect), rn2(NHC.A_MAX)) : rn2(NHC.A_MAX)), -(((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 70, __s_throne_sit_effect), rn2(4)) : rn2(4)) + 3) | 0), 0);
-            losehp((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 71, __s_throne_sit_effect), rnd(10)) : rnd(10)), __s_cursed_throne, NHM.KILLED_BY_AN);
+            void adjattrib(rn2_at(__s_sit_c, 70, __s_throne_sit_effect, NHC.A_MAX), -((rn2_at(__s_sit_c, 70, __s_throne_sit_effect, 4) + 3) | 0), 0);
+            losehp(rnd_at(__s_sit_c, 71, __s_throne_sit_effect, 10), __s_cursed_throne, NHM.KILLED_BY_AN);
             break;
             case 2:
-            void adjattrib((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 74, __s_throne_sit_effect), rn2(NHC.A_MAX)) : rn2(NHC.A_MAX)), 1, 0);
+            void adjattrib(rn2_at(__s_sit_c, 74, __s_throne_sit_effect, NHC.A_MAX), 1, 0);
             break;
             case 3:
             pline(__s_a_s_electric_shock_shoots_through_your, (Shock_resistance()) ? __s_n : __s_massive);
-            losehp(Shock_resistance() ? (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 79, __s_throne_sit_effect), rnd(6)) : rnd(6)) : (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 79, __s_throne_sit_effect), rnd(30)) : rnd(30)), __s_electric_chair, NHM.KILLED_BY_AN);
+            losehp(Shock_resistance() ? rnd_at(__s_sit_c, 79, __s_throne_sit_effect, 6) : rnd_at(__s_sit_c, 79, __s_throne_sit_effect, 30), __s_electric_chair, NHM.KILLED_BY_AN);
             exercise(NHC.A_CON, 0);
             break;
             case 4:
@@ -296,7 +296,7 @@ function throne_sit_effect() {
             take_gold();
             break;
             case 6:
-            if (((cptr.ld1so(u, $you_uluck) + (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 106, __s_throne_sit_effect), rn2(5)) : rn2(5))) | 0) < 0) {
+            if (((cptr.ld1so(u, $you_uluck) + rn2_at(__s_sit_c, 106, __s_throne_sit_effect, 5)) | 0) < 0) {
                 You_feel(__s_your_luck_is_changing);
                 change_luck(1);
             } else
@@ -304,7 +304,7 @@ function throne_sit_effect() {
             break;
             case 7:
             {
-                let cnt = (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 114, __s_throne_sit_effect), rnd(10)) : rnd(10));
+                let cnt = rnd_at(__s_sit_c, 114, __s_throne_sit_effect, 10);
                 pline(__s_a_voice_echoes);
                 ;
                 verbalize(__s_thine_audience_hath_been_summoned_s, cptr.ld1so(flags, $flag_female) ? __s_dame : __s_sire);
@@ -323,8 +323,8 @@ function throne_sit_effect() {
             ;
             verbalize(__s_a_curse_upon_thee_for_sitting_upon_this);
             if (Luck() > 0) {
-                make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 140, __s_throne_sit_effect), rn2(100)) : rn2(100)) + 250) | 0))), 1);
-                change_luck(schar(((Luck() > 1) ? -(rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 141, __s_throne_sit_effect), rnd(2)) : rnd(2)) : -1)));
+                make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(((rn2_at(__s_sit_c, 140, __s_throne_sit_effect, 100) + 250) | 0))), 1);
+                change_luck(schar(((Luck() > 1) ? -rnd_at(__s_sit_c, 141, __s_throne_sit_effect, 2) : -1)));
             } else
                 rndcurse();
             break;
@@ -332,7 +332,7 @@ function throne_sit_effect() {
             if (Luck() < 0 || (HSee_invisible() & 117440512n)) {
                 if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_nommap) & 1)) {
                     pline(__s_a_terrible_drone_fills_your_head);
-                    make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 149, __s_throne_sit_effect), rnd(30)) : rnd(30)))), 0);
+                    make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(rnd_at(__s_sit_c, 149, __s_throne_sit_effect, 30))), 0);
                 } else {
                     pline(__s_an_image_forms_in_your_mind);
                     do_mapping();
@@ -373,12 +373,12 @@ function throne_sit_effect() {
             case 12:
             You(__s_are_granted_an_insight);
             if (cptr.ldPtro(gi, $instance_globals_i_invent)) {
-                identify_pack((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 198, __s_throne_sit_effect), rn2(5)) : rn2(5)), 0);
+                identify_pack(rn2_at(__s_sit_c, 198, __s_throne_sit_effect, 5), 0);
             }
             break;
             case 13:
             Your(__s_mind_turns_into_a_pretzel);
-            make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 203, __s_throne_sit_effect), rn2(7)) : rn2(7)) + 16) | 0))), 0);
+            make_confused(BigInt.asIntN(64, (HConfusion() & 16777215n) + BigInt(((rn2_at(__s_sit_c, 203, __s_throne_sit_effect, 7) + 16) | 0))), 0);
             break;
             default:
             impossible(__s_throne_effect);
@@ -390,7 +390,7 @@ function throne_sit_effect() {
         else
             You_feel(__s_somehow_out_of_place);
     }
-    if (!special_throne && !(rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 225, __s_throne_sit_effect), rn2(3)) : rn2(3)) && (!wizard() || yn_function(__s_analyze_throne, cptr.decay(ynchars), 110, 1) == 121)) {
+    if (!special_throne && !rn2_at(__s_sit_c, 225, __s_throne_sit_effect, 3) && (!wizard() || yn_function(__s_analyze_throne, cptr.decay(ynchars), 110, 1) == 121)) {
         cptr.st1o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM), cptr.stI32o3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
         map_background(tx, ty, 0);
         newsym_force(tx, ty);
@@ -428,7 +428,7 @@ function special_throne_effect(effect) {
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
                 if (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS)
                     cptr.stI32o(otmp, $obj_greased, 1);
-            make_glib((((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 277, __s_special_throne_effect), rn2(101)) : rn2(101)) + 100) | 0));
+            make_glib(((rn2_at(__s_sit_c, 277, __s_special_throne_effect, 101) + 100) | 0));
             update_inventory();
             break;
         }
@@ -479,7 +479,7 @@ function special_throne_effect(effect) {
         break;
         case 12:
         pline(__s_the_throne_is_covered_in_acid);
-        losehp(Acid_resistance() ? (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 339, __s_special_throne_effect), rnd(16)) : rnd(16)) : (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 339, __s_special_throne_effect), rnd(80)) : rnd(80)), __s_acidic_chair, NHM.KILLED_BY_AN);
+        losehp(Acid_resistance() ? rnd_at(__s_sit_c, 339, __s_special_throne_effect, 16) : rnd_at(__s_sit_c, 339, __s_special_throne_effect, 80), __s_acidic_chair, NHM.KILLED_BY_AN);
         exercise(NHC.A_CON, 0);
         break;
         case 13:
@@ -487,7 +487,7 @@ function special_throne_effect(effect) {
             let ability;
             pline(__s_as_you_sit_on_the_throne_your_body_and);
             for (ability = 0; ability < NHC.A_MAX; ++ability) {
-                adjattrib(ability, ((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 349, __s_special_throne_effect), rn2(5)) : rn2(5)) - 2) | 0, -1);
+                adjattrib(ability, (rn2_at(__s_sit_c, 349, __s_special_throne_effect, 5) - 2) | 0, -1);
             }
             break;
         }
@@ -592,20 +592,20 @@ export function dosit() {
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
                     if (trap && ((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT) {
                         You(__s_sit_down_on_a_spike_ouch);
-                        losehp(Half_physical_damage() ? (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 476, __s_dosit), rn2(2)) : rn2(2)) : 1, __s_sitting_on_an_iron_spike, NHM.KILLED_BY);
+                        losehp(Half_physical_damage() ? rn2_at(__s_sit_c, 476, __s_dosit, 2) : 1, __s_sitting_on_an_iron_spike, NHM.KILLED_BY);
                         exercise(NHC.A_STR, 0);
                     } else
                         You(__s_sit_down_in_the_pit);
-                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + ((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 481, __s_dosit), rn2(5)) : rn2(5)) >>> 0)) | 0);
+                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (rn2_at(__s_sit_c, 481, __s_dosit, 5) >>> 0)) | 0);
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_WEB) {
                     You(__s_sit_in_the_spider_web_and_get_entangled);
-                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + ((((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 484, __s_dosit), rn2(10)) : rn2(10)) + 5) | 0) >>> 0)) | 0);
+                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (((rn2_at(__s_sit_c, 484, __s_dosit, 10) + 5) | 0) >>> 0)) | 0);
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA) {
                     You(__s_sit_in_the_s, hliquid(__s_lava));
                     if (Slimed())
                         burn_away_slime();
-                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + ((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 490, __s_dosit), rnd(4)) : rnd(4)) >>> 0)) | 0);
-                    losehp((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 491, __s_dosit), d(2, 10)) : d(2, 10)), __s_sitting_in_lava, NHM.KILLED_BY);
+                    cptr.stI32o(u, $you_utrap, (cptr.ldI32o(u, $you_utrap) + (rnd_at(__s_sit_c, 490, __s_dosit, 4) >>> 0)) | 0);
+                    losehp(d_at(__s_sit_c, 491, __s_dosit, 2, 10), __s_sitting_in_lava, NHM.KILLED_BY);
                 } else if (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL) {
                     You_cant(__s_maneuver_to_sit);
                     (cptr.stI32o(u, $you_utrap, cptr.ldI32o(u, $you_utrap) + 1)) - (1);
@@ -641,7 +641,7 @@ export function dosit() {
                 return NHM.ECMD_TIME;
             }
             pline_The(__s_s_burns_you, hliquid(__s_lava));
-            losehp((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 548, __s_dosit), d(((Fire_resistance() ? 2 : 10)), 10)) : d(((Fire_resistance() ? 2 : 10)), 10)), __s_sitting_on_lava, NHM.KILLED_BY);
+            losehp(d_at(__s_sit_c, 548, __s_dosit, ((Fire_resistance() ? 2 : 10)), 10), __s_sitting_on_lava, NHM.KILLED_BY);
         } else if (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
             You(cptr.decay(__static_dosit_sit_message), cptr.ldPtro2(defsyms, NHC.S_ice, $sizeof_symdef, $symdef_explanation));
             if (!Cold_resistance())
@@ -665,9 +665,9 @@ export function dosit() {
                     dryup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1);
             }
         } else {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 521, __s_dosit), rn2(10)) : rn2(10)) && uarm.v)
+            if (!rn2_at(__s_sit_c, 521, __s_dosit, 10) && uarm.v)
                 void water_damage(uarm.v, __s_armor, 1);
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 523, __s_dosit), rn2(10)) : rn2(10)) && uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) != NHC.WATER_WALKING_BOOTS)
+            if (!rn2_at(__s_sit_c, 523, __s_dosit, 10) && uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) != NHC.WATER_WALKING_BOOTS)
                 void water_damage(uarm.v, __s_armor, 1);
         }
     }
@@ -682,7 +682,7 @@ export function rndcurse() {
     let cnt;
     let onum;
     let otmp;
-    if (is_art(uwep.v, NHC.ART_MAGICBANE) && (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 576, __s_rndcurse), rn2(20)) : rn2(20))) {
+    if (is_art(uwep.v, NHC.ART_MAGICBANE) && rn2_at(__s_sit_c, 576, __s_rndcurse, 20)) {
         You(cptr.decay(__static_rndcurse_mal_aura), __s_the_magic_absorbing_blade);
         return;
     }
@@ -695,10 +695,10 @@ export function rndcurse() {
             continue;
         nobj++;
     }
-    cnt = (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 593, __s_rndcurse), rnd((6 / (((((!!Antimagic()) + (!!Half_spell_damage())) | 0) + 1) | 0)) | 0)) : rnd((6 / (((((!!Antimagic()) + (!!Half_spell_damage())) | 0) + 1) | 0)) | 0));
+    cnt = rnd_at(__s_sit_c, 593, __s_rndcurse, (6 / (((((!!Antimagic()) + (!!Half_spell_damage())) | 0) + 1) | 0)) | 0);
     if (nobj) {
         for (; cnt > 0; cnt--) {
-            onum = (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 596, __s_rndcurse), rnd(nobj)) : rnd(nobj));
+            onum = rnd_at(__s_sit_c, 596, __s_rndcurse, nobj);
             for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp)) {
                 if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
                     continue;
@@ -707,7 +707,7 @@ export function rndcurse() {
             }
             if (!otmp || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)
                 continue;
-            if (cptr.ld1so(otmp, $obj_oartifact) && spec_ability(otmp, 4n) && (rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 610, __s_rndcurse), rn2(10)) : rn2(10)) < 8) {
+            if (cptr.ld1so(otmp, $obj_oartifact) && spec_ability(otmp, 4n) && rn2_at(__s_sit_c, 610, __s_rndcurse, 10) < 8) {
                 pline(__s_pct_s_bang, Tobjnam(otmp, __s_resist));
                 continue;
             }
@@ -718,7 +718,7 @@ export function rndcurse() {
         }
         update_inventory();
     }
-    if (cptr.ldPtro(u, $you_usteed) && !(rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 624, __s_rndcurse), rn2(4)) : rn2(4)) && (otmp = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) !== null && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
+    if (cptr.ldPtro(u, $you_usteed) && !rn2_at(__s_sit_c, 624, __s_rndcurse, 4) && (otmp = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) !== null && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
             unbless(otmp);
         else
@@ -735,7 +735,7 @@ export function rndcurse() {
 /** C ref: sit.c:644 @returns {CInt} */
 export function attrcurse() {
     let ret = 0;
-    switch ((rng_log_enabled() ? (rng_log_set_caller(__s_sit_c, 648, __s_attrcurse), rnd(11)) : rnd(11))) {
+    switch (rnd_at(__s_sit_c, 648, __s_attrcurse, 11)) {
         case 1:
         if (HFire_resistance() & 117440512n) {
             cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));

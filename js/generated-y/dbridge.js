@@ -13,6 +13,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_DRAWBRIDGE, canspotmon, helpless, is_floater, likes_lava } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Amphibious, Breathless, Deaf, Flying, Fumbling, HConfusion, HStun, Hallucination, Levitation, Passes_walls, Swimming, Underwater } from './nhprop.js';
 import { isok } from './cmd.js';
 import { gm, go, gv, gy, iflags, svc, svd, svk, svl, u } from './decl.js';
@@ -30,7 +31,6 @@ import { canseemon, newsym, sensemon } from './display.js';
 import { genders } from './role.js';
 import { pronoun_gender } from './mondata.js';
 import { is_fainted } from './eat.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { revive_nasty, spoteffects } from './hack.js';
 import { place_monster } from './steed.js';
 import { update_monster_region } from './region.js';
@@ -519,7 +519,7 @@ function* e_missed(etmp, chunks) {
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    return schar(((misses >= (rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 524, __s_e_missed), rnd(8)) : rnd(8))) ? 1 : 0));
+    return schar(((misses >= rnd_at(__s_dbridge_c, 524, __s_e_missed, 8)) ? 1 : 0));
 }
 
 /** C ref: dbridge.c:531 — @param {CPtr<struct entity>} etmp @returns {CInt} */
@@ -540,7 +540,7 @@ function* e_jumps(etmp) {
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    return schar(((tmp >= (rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 550, __s_e_jumps), rnd(10)) : rnd(10))) ? 1 : 0));
+    return schar(((tmp >= rnd_at(__s_dbridge_c, 550, __s_e_jumps, 10)) ? 1 : 0));
 }
 
 /** C ref: dbridge.c:554 — @param {CPtr<struct entity>} etmp */
@@ -972,8 +972,8 @@ export function* destroy_drawbridge(x, y) {
         (yield* deltrap(t));
     (yield* del_engr_at(x, y));
     (yield* del_engr_at(x2.v, y2.v));
-    for (i = (rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 949, __s_destroy_drawbridge), rn2(6)) : rn2(6)); i > 0; --i) {
-        otmp = (yield* mksobj_at(NHC.IRON_CHAIN, i16(((rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 953, __s_destroy_drawbridge), rn2(2)) : rn2(2)) ? x : x2.v)), i16(((rng_log_enabled() ? (rng_log_set_caller(__s_dbridge_c, 953, __s_destroy_drawbridge), rn2(2)) : rn2(2)) ? y : y2.v)), 1, 0));
+    for (i = rn2_at(__s_dbridge_c, 949, __s_destroy_drawbridge, 6); i > 0; --i) {
+        otmp = (yield* mksobj_at(NHC.IRON_CHAIN, i16((rn2_at(__s_dbridge_c, 953, __s_destroy_drawbridge, 2) ? x : x2.v)), i16((rn2_at(__s_dbridge_c, 953, __s_destroy_drawbridge, 2) ? y : y2.v)), 1, 0));
         void (yield* scatter(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy), 1, 6, otmp));
     }
     (yield* newsym(x, y));

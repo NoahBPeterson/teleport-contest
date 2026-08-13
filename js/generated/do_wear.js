@@ -9,6 +9,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ARM_BONUS, WrappingAllowed, bimanual, cant_drown, cantweararm, is_boots, is_cloak, is_corrodeable, is_crackable, is_damageable, is_flimsy, is_gloves, is_helmet, is_metallic, is_shield, is_shirt, is_suit, is_sword, touch_petrifies } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { BInvis, BLevitation, BStealth, Blind, Blind_telepat, Breathless, Detect_monsters, EInvis, ESleepy, EStealth, Fast, Flying, Glib, HFast, HFumbling, HInvis, HLevitation, HProtection, HSee_invisible, HSleepy, HStealth, Hallucination, Invis, Invisible, Levitation, ParanoidRemove, Protection_from_shape_changers, Punished, See_invisible, Slimed, Stone_resistance, Strangled, Swimming, ULEFTY, URIGHTY, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast } from './nhprop.js';
 import { c_color_names, c_common_strings, cg, disp, flags, ga, gi, gm, gn, gu, gw, gy, iflags, program_state, rightleftchars, svc, svd, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, uquiver, uright, uskin, uswapwep, uwep } from './decl.js';
 import { Tobjnam, Yname2, an, ansimpleoname, boots_simple_name, cloak_simple_name, corpse_xname, doname, erosion_matters, gloves_simple_name, helm_simple_name, killer_xname, makeplural, makesingular, obj_is_pname, otense, safe_typename, shield_simple_name, shirt_simple_name, simpleonames, suit_simple_name, the, thesimpleoname, vtense, xname, yname } from './objnam.js';
@@ -20,7 +21,6 @@ import { objects } from './objects.js';
 import { hcolor, hliquid, obj_pmname, x_monnam } from './do_name.js';
 import { nomul, spoteffects, unmul } from './hack.js';
 import { incr_itimeout, make_glib, make_hallucinated, make_slimed, self_invis_message, toggle_blindness } from './potion.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { drown, erode_obj, float_down, float_up, instapetrify, selftouch } from './trap.js';
 import { racial_exception, setnotworn, setworn, which_armor } from './worn.js';
 import { is_lava, is_pool, is_pool_or_lava } from './dbridge.js';
@@ -463,7 +463,7 @@ export function Boots_on() {
         break;
         case NHC.FUMBLE_BOOTS:
         if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 233, __s_boots_on), rnd(20)) : rnd(20)));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd_at(__s_do_wear_c, 233, __s_boots_on, 20));
         break;
         case NHC.LEVITATION_BOOTS:
         if (!oldprop && !HLevitation() && !(BLevitation() & 67108864n)) {
@@ -749,7 +749,7 @@ function Gloves_on() {
         break;
         case NHC.GAUNTLETS_OF_FUMBLING:
         if (!oldprop && !(HFumbling() & -16777216n))
-            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 586, __s_gloves_on), rnd(20)) : rnd(20)));
+            incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.FUMBLING, $sizeof_prop), $prop_intrinsic), rnd_at(__s_do_wear_c, 586, __s_gloves_on, 20));
         break;
         case NHC.GAUNTLETS_OF_POWER:
         discover_object((cptr.ldI16o(uarmg.v, $obj_otyp)), 1, 1, 1);
@@ -1096,7 +1096,7 @@ function Amulet_on(amul) {
         break;
         case NHC.AMULET_OF_RESTFUL_SLEEP:
         {
-            let newnap = BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 1048, __s_amulet_on), rnd(98)) : rnd(98))) + 2n);
+            let newnap = BigInt.asIntN(64, BigInt(rnd_at(__s_do_wear_c, 1048, __s_amulet_on, 98)) + 2n);
             let oldnap = (HSleepy() & 16777215n);
             if (newnap < oldnap || oldnap == 0n)
                 cptr.stI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic, (HSleepy() & -16777216n) | newnap);
@@ -2349,16 +2349,16 @@ export function some_armor(victim) {
     if (!otmph)
         otmph = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmu.v : which_armor(victim, 64n);
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmh.v : which_armor(victim, 4n);
-    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 2641, __s_some_armor__2), rn2(4)) : rn2(4))))
+    if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2641, __s_some_armor__2, 4)))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmg.v : which_armor(victim, 16n);
-    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 2644, __s_some_armor__2), rn2(4)) : rn2(4))))
+    if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2644, __s_some_armor__2, 4)))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarmf.v : which_armor(victim, 32n);
-    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 2647, __s_some_armor__2), rn2(4)) : rn2(4))))
+    if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2647, __s_some_armor__2, 4)))
         otmph = otmp;
     otmp = (cptr.eq(victim, cptr.add(gy, $instance_globals_y_youmonst))) ? uarms.v : which_armor(victim, 8n);
-    if (otmp && (!otmph || !(rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 2650, __s_some_armor__2), rn2(4)) : rn2(4))))
+    if (otmp && (!otmph || !rn2_at(__s_do_wear_c, 2650, __s_some_armor__2, 4)))
         otmph = otmp;
     return otmph;
 }
@@ -2832,7 +2832,7 @@ export function destroy_arm() {
     let otmp;
     let i;
     let idx = 0;
-    let hits = ((rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 3282, __s_destroy_arm), rn2(4)) : rn2(4)) + 1) | 0;
+    let hits = (rn2_at(__s_do_wear_c, 3282, __s_destroy_arm, 4) + 1) | 0;
     let ret = 0;
     if (uarm.v)
         cptr.stPtro(armors, idx++, uarm.v, 8);
@@ -2851,7 +2851,7 @@ export function destroy_arm() {
     if (!idx)
         return 0;
     for (i = 0; i < hits; i++) {
-        otmp = cptr.ldPtro(armors, (rng_log_enabled() ? (rng_log_set_caller(__s_do_wear_c, 3297, __s_destroy_arm), rn2(idx)) : rn2(idx)), 8);
+        otmp = cptr.ldPtro(armors, rn2_at(__s_do_wear_c, 3297, __s_destroy_arm, idx), 8);
         if (erosion_matters(otmp) && is_damageable(otmp) && !(cptr.ldI32o(otmp, $obj_oerodeproof) & 1)) {
             let erosion = obj_erode_type(otmp);
             if (erosion != -1) {

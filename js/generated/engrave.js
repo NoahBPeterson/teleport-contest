@@ -9,9 +9,10 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_AIR, SURFACE_AT, bimanual, cantwield, ceiling_hider, is_blade, is_boots, is_wet_towel, is_whirly, min } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Deaf, Flying, HConfusion, HStun, Hallucination, Levitation } from './nhprop.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { get_rnd_text, getrumor } from './rumors.js';
+import { rn2 } from './rnd.js';
 import { c_common_strings, flags, gi, gm, gn, gy, hands_obj, head_engr, iflags, svc, svd, svl, svm, u, uarms, ublindf, uwep, ynqchars } from './decl.js';
 import { attacktype, resists_blnd, sticks } from './mondata.js';
 import { ceiling, on_level, surface } from './dungeon.js';
@@ -305,7 +306,7 @@ const __s_blengr = cptr.lit("blengr");
 /** C ref: engrave.c:51 — @param {CPtr<char>} outbuf @param {CPtr<char>} pristine_copy @returns {CPtr<char>} */
 export function random_engraving(outbuf, pristine_copy) {
     let rumor;
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 57, __s_random_engraving), rn2(4)) : rn2(4)) || !(rumor = getrumor(0, pristine_copy, 1)) || !cptr.ld1s(rumor))
+    if (!rn2_at(__s_engrave_c, 57, __s_random_engraving, 4) || !(rumor = getrumor(0, pristine_copy, 1)) || !cptr.ld1s(rumor))
         void get_rnd_text(__s_engrave, pristine_copy, rn2, NHM.MD_PAD_RUMORS);
     void cptr.strcpy(outbuf, pristine_copy);
     wipeout_text(outbuf, Number(BigInt.asIntN(32, (cptr.strlen(outbuf) / 4n))), 0);
@@ -424,8 +425,8 @@ export function wipeout_text(engr, cnt, seed) {
     if (lth && cnt > 0) {
         while (cnt--) {
             if (!seed) {
-                nxt = (rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 134, __s_wipeout_text), rn2(lth | 0)) : rn2(lth | 0));
-                use_rubout = (rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 135, __s_wipeout_text), rn2(4)) : rn2(4));
+                nxt = rn2_at(__s_engrave_c, 134, __s_wipeout_text, lth | 0);
+                use_rubout = rn2_at(__s_engrave_c, 135, __s_wipeout_text, 4);
             } else {
                 nxt = u32mod(seed, lth) | 0;
                 seed = Math.imul(seed, 31), seed %= 255;
@@ -445,7 +446,7 @@ export function wipeout_text(engr, cnt, seed) {
                     if (cptr.ld1s(s) == cptr.ld1so(rubouts, i, 16)) {
                         let ln = Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro2(rubouts, i, 16, 8))));
                         if (!seed) {
-                            j = (rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 164, __s_wipeout_text), rn2(ln | 0)) : rn2(ln | 0));
+                            j = rn2_at(__s_engrave_c, 164, __s_wipeout_text, ln | 0);
                         } else {
                             seed = Math.imul(seed, 31), seed %= 255;
                             j = u32mod(seed, ln) | 0;
@@ -521,9 +522,9 @@ export function wipe_engr_at(x, y, cnt, magical) {
                 cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
             }
         }
-        if (cptr.ld1so(ep, $engr_engr_type) != NHM.BURN || is_ice(x, y) || (magical && !(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 278, __s_wipe_engr_at), rn2(2)) : rn2(2)))) {
+        if (cptr.ld1so(ep, $engr_engr_type) != NHM.BURN || is_ice(x, y) || (magical && !rn2_at(__s_engrave_c, 278, __s_wipe_engr_at, 2))) {
             if (cptr.ld1so(ep, $engr_engr_type) != NHM.DUST && cptr.ld1so(ep, $engr_engr_type) != NHM.ENGR_BLOOD) {
-                cnt = i16(((rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 280, __s_wipe_engr_at), rn2((1 + ((50 / ((cnt + 1) | 0)) | 0)) | 0)) : rn2((1 + ((50 / ((cnt + 1) | 0)) | 0)) | 0)) ? 0 : 1));
+                cnt = i16((rn2_at(__s_engrave_c, 280, __s_wipe_engr_at, (1 + ((50 / ((cnt + 1) | 0)) | 0)) | 0) ? 0 : 1));
                 {
                     if (debugcore(__s_engrave_c, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -665,7 +666,7 @@ export function make_engr_at(x, y, s, pristine_s, e_time, e_type) {
             exercise(NHC.A_WIS, 1);
     }
     cptr.stI64o(ep, $engr_engr_time, e_time);
-    cptr.st1o(ep, $engr_engr_type, schar(((e_type > 0) ? e_type : (rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 452, __s_make_engr_at), rnd(5)) : rnd(5)))));
+    cptr.st1o(ep, $engr_engr_type, schar(((e_type > 0) ? e_type : rnd_at(__s_engrave_c, 452, __s_make_engr_at, 5))));
     cptr.stI32o(ep, $engr_engr_szeach, smem);
     cptr.stI32o(ep, $engr_engr_alloc, Math.imul(smem, 3) >>> 0);
 }
@@ -912,7 +913,7 @@ function doengrave_sfx_item(de) {
         case NHC.WAND_CLASS:
         if (zappable(cptr.ldPtro(de, $_doengrave_ctx_otmp))) {
             check_unpaid(cptr.ldPtro(de, $_doengrave_ctx_otmp));
-            if ((cptr.ldI32o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_cursed) & 1) | 0 && !(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 794, __s_doengrave_sfx_item), rn2(NHM.WAND_BACKFIRE_CHANCE)) : rn2(NHM.WAND_BACKFIRE_CHANCE))) {
+            if ((cptr.ldI32o(cptr.ldPtro(de, $_doengrave_ctx_otmp), $obj_cursed) & 1) | 0 && !rn2_at(__s_engrave_c, 794, __s_doengrave_sfx_item, NHM.WAND_BACKFIRE_CHANCE)) {
                 wand_explode(cptr.ldPtro(de, $_doengrave_ctx_otmp), 0);
                 cptr.stI32o(de, $_doengrave_ctx_ret, NHM.ECMD_TIME);
                 return 0;
@@ -1197,8 +1198,8 @@ export function doengrave() {
         for (sp = cptr.add(de, $_doengrave_ctx_ebuf); cptr.ld1s(sp); sp = cptr.add(sp, 1)) {
             if (cptr.ld1s(sp) == 32)
                 continue;
-            if (((cptr.ldI32o(de, $_doengrave_ctx_type) == NHM.DUST || cptr.ldI32o(de, $_doengrave_ctx_type) == NHM.ENGR_BLOOD) && !(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1223, __s_doengrave), rn2(25)) : rn2(25))) || (Blind() && !(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1224, __s_doengrave), rn2(11)) : rn2(11))) || (HConfusion() && !(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1224, __s_doengrave), rn2(7)) : rn2(7))) || (HStun() && !(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1225, __s_doengrave), rn2(4)) : rn2(4))) || (Hallucination() && !(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1225, __s_doengrave), rn2(2)) : rn2(2))))
-                cptr.st1(sp, schar(((32 + (rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1226, __s_doengrave), rnd(94)) : rnd(94))) | 0)));
+            if (((cptr.ldI32o(de, $_doengrave_ctx_type) == NHM.DUST || cptr.ldI32o(de, $_doengrave_ctx_type) == NHM.ENGR_BLOOD) && !rn2_at(__s_engrave_c, 1223, __s_doengrave, 25)) || (Blind() && !rn2_at(__s_engrave_c, 1224, __s_doengrave, 11)) || (HConfusion() && !rn2_at(__s_engrave_c, 1224, __s_doengrave, 7)) || (HStun() && !rn2_at(__s_engrave_c, 1225, __s_doengrave, 4)) || (Hallucination() && !rn2_at(__s_engrave_c, 1225, __s_doengrave, 2)))
+                cptr.st1(sp, schar(((32 + rnd_at(__s_engrave_c, 1226, __s_doengrave, 94)) | 0)));
         }
         if (cptr.ld1so(de, $_doengrave_ctx_eow)) {
             del_engr(cptr.ldPtro(de, $_doengrave_ctx_oep));
@@ -1217,7 +1218,7 @@ export function doengrave() {
             pline(__s_pct_s, cptr.add(de, $_doengrave_ctx_post_engr_text));
         if (cptr.ld1so(de, $_doengrave_ctx_doblind) && !resists_blnd(cptr.add(gy, $instance_globals_y_youmonst))) {
             You(__s_are_blinded_by_the_flash);
-            make_blinded(BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1250, __s_doengrave), rnd(50)) : rnd(50))), 0);
+            make_blinded(BigInt(rnd_at(__s_engrave_c, 1250, __s_doengrave, 50)), 0);
             if (!Blind())
                 Your(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_vision_clears));
         }
@@ -1528,8 +1529,8 @@ export function rloc_engr(ep) {
     do {
         if (--tryct < 0)
             return;
-        tx = (((rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1674, __s_rloc_engr), rn2(77)) : rn2(77)) + 2) | 0);
-        ty = (rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1675, __s_rloc_engr), rn2(NHM.ROWNO)) : rn2(NHM.ROWNO));
+        tx = ((rn2_at(__s_engrave_c, 1674, __s_rloc_engr, 77) + 2) | 0);
+        ty = rn2_at(__s_engrave_c, 1675, __s_rloc_engr, NHM.ROWNO);
     } while (engr_at(i16(tx), i16(ty)) || !goodpos(i16(tx), i16(ty), null, 0));
     cptr.stI16o(ep, $engr_engr_x, i16(tx));
     cptr.stI16o(ep, $engr_engr_y, i16(ty));
@@ -1585,7 +1586,7 @@ const blind_writing = [[68, 102, 109, 105, 98, 101, 34, 69, 123, 113, 101, 109, 
 
 /** C ref: engrave.c:1765 @returns {CPtr<char>} */
 function blengr() {
-    return cptr.decay(blind_writing[(rng_log_enabled() ? (rng_log_set_caller(__s_engrave_c, 1767, __s_blengr), rn2(blind_writing.length)) : rn2(blind_writing.length))]);
+    return cptr.decay(blind_writing[rn2_at(__s_engrave_c, 1767, __s_blengr, blind_writing.length)]);
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---

@@ -13,6 +13,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_TREE, canspotmon, flaming, helpless, is_pole, is_rider, is_vampshifter, is_whirly, ismnum, slimeproof, touch_petrifies, troll_baned } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Antimagic, Blind, Conflict, Deaf, Passes_walls, Unchanging } from './nhprop.js';
 import { dist2, distmin, nh_snprintf, s_suffix, strNsubst, strncmpi, strsubst } from './hacklib.js';
 import { c_common_strings, flags, gb, gf, gl, gm, gn, gs, gv, gy, gz, iflags, svl, svm, u } from './decl.js';
@@ -23,7 +24,6 @@ import { Adjmonnam, Monnam, a_monnam, hliquid, mon_nam, mon_nam_too, noname_monn
 import { could_seduce, getmattk, mswings_verb, mtrapped_in_pit } from './mhitu.js';
 import { Resists_Elem, attacktype, defended, dmgtype, dmgtype_fromattack, mon_hates_silver, poly_when_stoned, pronoun_gender, resist_conflict, resists_blnd, resists_magm, stagger, sticks } from './mondata.js';
 import { closed_door, itsstuck } from './monmove.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { mons } from './monst.js';
 import { finish_meating } from './dogmove.js';
 import { find_mac, which_armor } from './worn.js';
@@ -287,7 +287,7 @@ export function* fightm(mtmp) {
         if (!cptr.eq(mon, mtmp) && !(cptr.ldI32o((mon), $monst_mhp) < 1)) {
             if (monnear(mtmp, cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
                 if (!(cptr.ldI32o(u, $you_uswallow) & 1) && (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))) {
-                    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 133, __s_fightm), rn2(4)) : rn2(4))) {
+                    if (!rn2_at(__s_mhitm_c, 133, __s_fightm, 4)) {
                         (yield* set_ustuck(null));
                         (yield* pline(__s_s_releases_you, (yield* Monnam(mtmp))));
                     } else
@@ -300,7 +300,7 @@ export function* fightm(mtmp) {
                     return 1;
                 if (has_u_swallowed)
                     return 0;
-                if ((result & 3) == NHM.M_ATTK_HIT && (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 157, __s_fightm), rn2(4)) : rn2(4)) && cptr.ldI16o(mon, $monst_movement) > (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 157, __s_fightm), rn2(NHM.NORMAL_SPEED)) : rn2(NHM.NORMAL_SPEED))) {
+                if ((result & 3) == NHM.M_ATTK_HIT && rn2_at(__s_mhitm_c, 157, __s_fightm, 4) && cptr.ldI16o(mon, $monst_movement) > rn2_at(__s_mhitm_c, 157, __s_fightm, NHM.NORMAL_SPEED)) {
                     if (cptr.ldI16o(mon, $monst_movement) > NHM.NORMAL_SPEED)
                         cptr.stI16o(mon, $monst_movement, cptr.ldI16o(mon, $monst_movement) - NHM.NORMAL_SPEED);
                     else
@@ -331,7 +331,7 @@ export function* mdisplacem(magr, mdef, quietly) {
     fx = cptr.ldI16o(magr, $monst_mx), fy = cptr.ldI16o(magr, $monst_my);
     if (!cptr.eq((cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), magr) || !cptr.eq((cptr.ldPtro3(svl, tx, 168, ty, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), mdef))
         return NHM.M_ATTK_MISS;
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 199, __s_mdisplacem), rn2(7)) : rn2(7)))
+    if (!rn2_at(__s_mhitm_c, 199, __s_mdisplacem, 7))
         return NHM.M_ATTK_MISS;
     if (cptr.eq(pa, cptr.add(mons, NHC.PM_GRID_BUG, $sizeof_permonst)) && cptr.ldI16o(magr, $monst_mx) != cptr.ldI16o(mdef, $monst_mx) && cptr.ldI16o(magr, $monst_my) != cptr.ldI16o(mdef, $monst_my))
         return NHM.M_ATTK_MISS;
@@ -484,7 +484,7 @@ export function* mattackm(magr, mdef) {
                 strike = 0;
                 break;
             }
-            dieroll = (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 441, __s_mattackm), rnd((20 + i) | 0)) : rnd((20 + i) | 0));
+            dieroll = rnd_at(__s_mhitm_c, 441, __s_mattackm, (20 + i) | 0);
             strike = (tmp > dieroll);
             if (mwep)
                 tmp = (tmp - (yield* hitval(mwep, mdef))) | 0;
@@ -545,7 +545,7 @@ export function* mattackm(magr, mdef) {
                 continue;
             if (((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (magr))))) {
                 strike = 0;
-            } else if ((strike = (tmp > (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 528, __s_mattackm), rnd((20 + i) | 0)) : rnd((20 + i) | 0)))) != 0) {
+            } else if ((strike = (tmp > rnd_at(__s_mhitm_c, 528, __s_mattackm, (20 + i) | 0))) != 0) {
                 if ((yield* failed_grab(magr, mdef, mattk)))
                     strike = 0;
                 else
@@ -722,7 +722,7 @@ function* gazemm(magr, mdef, mattk) {
         }
     } else if (archon) {
         (yield* mhitm_ad_blnd(magr, mattk, mdef, null));
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 798, __s_gazemm), rn2(2)) : rn2(2)))
+        if (rn2_at(__s_mhitm_c, 798, __s_gazemm, 2))
             cptr.stI32o(mdef, $monst_mstun, 1);
     }
     return (yield* mdamagem(magr, mdef, mattk, null, 0));
@@ -858,7 +858,7 @@ function* mdamagem(magr, mdef, mattk, mwep, dieroll) {
     let pa = cptr.ldPtro(magr, $monst_data);
     let pd = cptr.ldPtro(mdef, $monst_data);
     let mhm = cptr.alloc(20);
-    cptr.stI32(mhm, (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1025, __s_mdamagem), d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)))) : d((cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd)))));
+    cptr.stI32(mhm, d_at(__s_mhitm_c, 1025, __s_mdamagem, (cptr.ld1uo(mattk, $attack_damn)), (cptr.ld1uo(mattk, $attack_damd))));
     cptr.stI32o(mhm, $mhitm_data_hitflags, NHM.M_ATTK_MISS);
     cptr.st1o(mhm, $mhitm_data_permdmg, 0);
     cptr.stI32o(mhm, $mhitm_data_specialdmg, 0);
@@ -958,7 +958,7 @@ export function* mon_poly(magr, mdef, dmg) {
                 (yield* shieldeff_mon(mdef));
         } else if ((yield* resist(mdef, NHC.WAND_CLASS, 0, NHM.TELL))) {
             ;
-        } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1157, __s_mon_poly), rn2(25)) : rn2(25)) && cptr.ldI16o(mdef, $monst_cham) == NHC.NON_PM && ((cptr.ldI32o(mdef, $monst_mcan) & 1) | 0 || pm_to_cham((cptr.ldI32o((cptr.ldPtro(mdef, $monst_data)), $permonst_pmidx))) != NHC.NON_PM)) {
+        } else if (!rn2_at(__s_mhitm_c, 1157, __s_mon_poly, 25) && cptr.ldI16o(mdef, $monst_cham) == NHC.NON_PM && ((cptr.ldI32o(mdef, $monst_mcan) & 1) | 0 || pm_to_cham((cptr.ldI32o((cptr.ldPtro(mdef, $monst_data)), $permonst_pmidx))) != NHC.NON_PM)) {
             if (cptr.ld1so(gv, $instance_globals_v_vis))
                 (yield* pline(__s_s_shudders, cptr.decay(Before)));
             dmg = (dmg + ((((cptr.ldI32o(mdef, $monst_mhpmax) + 1) | 0) / 2) | 0)) | 0;
@@ -992,7 +992,7 @@ export function* mon_poly(magr, mdef, dmg) {
         }
     }
     if (!cptr.eq(cptr.ldPtro(mdef, $monst_data), oldform) && !cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)))
-        cptr.stI32o(magr, $monst_mspec_used, (cptr.ldI32o(magr, $monst_mspec_used) + (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1204, __s_mon_poly), rnd(2)) : rnd(2))) | 0);
+        cptr.stI32o(magr, $monst_mspec_used, (cptr.ldI32o(magr, $monst_mspec_used) + rnd_at(__s_mhitm_c, 1204, __s_mon_poly, 2)) | 0);
     return dmg;
 }
 
@@ -1048,7 +1048,7 @@ export function* rustm(mdef, obj) {
         dmgtyp = NHM.ERODE_BURN;
         chance = 6;
     }
-    if (dmgtyp != -1 && !(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1278, __s_rustm), rn2(chance)) : rn2(chance)))
+    if (dmgtyp != -1 && !rn2_at(__s_mhitm_c, 1278, __s_rustm, chance))
         void (yield* erode_obj(obj, null, dmgtyp, 5));
 }
 
@@ -1076,14 +1076,14 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
                 break;
         }
         if (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn))
-            tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1324, __s_passivemm), d((cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)))) : d((cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd))));
+            tmp = d_at(__s_mhitm_c, 1324, __s_passivemm, (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damn)), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)));
         else if (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd))
-            tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1326, __s_passivemm), d(((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)))) : d(((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd))));
+            tmp = d_at(__s_mhitm_c, 1326, __s_passivemm, ((cptr.ld1so(mddat, $permonst_mlevel) + 1) | 0), (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_damd)));
         else
             tmp = 0;
         switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
             case NHM.AD_ACID:
-            if (mhitb && !(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1333, __s_passivemm), rn2(2)) : rn2(2))) {
+            if (mhitb && !rn2_at(__s_mhitm_c, 1333, __s_passivemm, 2)) {
                 void cptr.strcpy(cptr.decay(buf), (yield* Monnam(magr)));
                 if (canseemon(magr))
                     (yield* pline(__s_s_is_splashed_by_s_s, cptr.decay(buf), (yield* s_suffix((yield* mon_nam(mdef)))), hliquid(__s_acid)));
@@ -1094,9 +1094,9 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
                 }
             } else
                 tmp = 0;
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1345, __s_passivemm), rn2(30)) : rn2(30)))
+            if (!rn2_at(__s_mhitm_c, 1345, __s_passivemm, 30))
                 (yield* erode_armor(magr, NHM.ERODE_CORRODE));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1347, __s_passivemm), rn2(6)) : rn2(6)))
+            if (!rn2_at(__s_mhitm_c, 1347, __s_passivemm, 6))
                 (yield* acid_damage((cptr.ldPtro((magr), $monst_mw))));
             break __lbl_assess_dmg;
             case NHM.AD_ENCH:
@@ -1109,13 +1109,13 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
         }
         if (mdead || (cptr.ldI32o(mdef, $monst_mcan) & 1) | 0)
             return (mdead | mhit);
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1363, __s_passivemm), rn2(3)) : rn2(3)))
+        if (rn2_at(__s_mhitm_c, 1363, __s_passivemm, 3))
             switch (cptr.ld1uo2(mddat, i, $sizeof_attack, $permonst_mattk + $attack_adtyp)) {
                 case NHM.AD_PLYS:
                 if (tmp > 127)
                     tmp = 127;
                 if (cptr.eq(mddat, cptr.add(mons, NHC.PM_FLOATING_EYE, $sizeof_permonst))) {
-                    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1369, __s_passivemm), rn2(4)) : rn2(4)))
+                    if (!rn2_at(__s_mhitm_c, 1369, __s_passivemm, 4))
                         tmp = 127;
                     if ((cptr.ldI32o(magr, $monst_mcansee) & 1) | 0 && ((cptr.ldU64o((madat), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mdef, $monst_mcansee) & 1) | 0 && (((cptr.ldU64o((madat), $permonst_mflags1) & 16777216n) != 0n) || !(cptr.ldI32o(mdef, $monst_minvis) & 1))) {
                         void cptr.strcpy(cptr.decay(buf), (yield* s_suffix((yield* Monnam(mdef)))));
@@ -1201,7 +1201,7 @@ function* passivemm(magr, mdef, mhitb, mdead, mwep) {
 /** C ref: mhitm.c:1461 — @param {CPtr<struct monst>} mon @param {CInt} givemsg */
 export function* xdrainenergym(mon, givemsg) {
     if (cptr.ldI32o(mon, $monst_mspec_used) < 20 && (attacktype(cptr.ldPtro(mon, $monst_data), NHM.AT_MAGC) || attacktype(cptr.ldPtro(mon, $monst_data), NHM.AT_BREA))) {
-        cptr.stI32o(mon, $monst_mspec_used, (cptr.ldI32o(mon, $monst_mspec_used) + (rng_log_enabled() ? (rng_log_set_caller(__s_mhitm_c, 1466, __s_xdrainenergym), d(2, 2)) : d(2, 2))) | 0);
+        cptr.stI32o(mon, $monst_mspec_used, (cptr.ldI32o(mon, $monst_mspec_used) + d_at(__s_mhitm_c, 1466, __s_xdrainenergym, 2, 2)) | 0);
         if (givemsg)
             (yield* pline_mon(mon, __s_s_seems_lethargic, (yield* Monnam(mon))));
     }

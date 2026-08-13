@@ -9,6 +9,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ismnum } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { BClairvoyant, Blind, Breathless, Clairvoyant, EMagical_breathing, Energy_regeneration, Fast, Glib, Half_physical_damage, Hallucination, Luck, Polymorph, Regeneration, Searching, Sleepy, Teleportation, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast, Warn_of_mon, Warning, cliparound, create_nhwindow, display_file, display_nhwindow, end_menu, get_nh_event, start_menu, wizard } from './nhprop.js';
 import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, a11y, decl_globals_init, disp, flags, gc, gd, gh, gi, gl, gm, go, gu, gv, gw, gy, iflags, nhcb_counts, nhcb_name, program_state, program_state_init, svc, svd, svl, svm, svp, u, urealtime } from './decl.js';
 import { crashreport_init } from './report.js';
@@ -20,7 +21,6 @@ import { cmdq_clear, dolookaround, end_of_input, enter_explore_mode, rhack } fro
 import { friday_13th, getnow, night, phase_of_the_moon } from './calendar.js';
 import { Norep, You, impossible, livelog_printf, nhassert_failed, pline, urgent_pline } from './pline.js';
 import { acurr, change_luck, exerchk } from './attrib.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { find_ac, glibr, set_wear } from './do_wear.js';
 import { encumber_msg, pickup, reset_justpicked } from './pickup.js';
 import { initrack, settrack } from './track.js';
@@ -44,6 +44,7 @@ import { do_storms, nh_timeout } from './timeout.js';
 import { any_visible_region, run_regions } from './region.js';
 import { tele } from './teleport.js';
 import { check_leash, next_to_u } from './apply.js';
+import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { polyself, rehumanize, set_uasmon, udeadinside, ugenocided } from './polyself.js';
 import { you_were } from './were.js';
 import { do_vicinity_map, dosearch0, warnreveal } from './detect.js';
@@ -262,11 +263,11 @@ function moveloop_preamble(resuming) {
     }
     if (!resuming) {
         cptr.stI32o(program_state, $sinfo_beyond_savefile_load, 1);
-        cptr.stI32o(svc, $context_info_rndencode, (rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 72, __s_moveloop_preamble), rnd(9000)) : rnd(9000)));
+        cptr.stI32o(svc, $context_info_rndencode, rnd_at(__s_allmain_c, 72, __s_moveloop_preamble, 9000));
         set_wear(null);
         reset_justpicked(cptr.ldPtro(gi, $instance_globals_i_invent));
         void pickup(1);
-        cptr.stI64o(svc, $context_info_seer_turn, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 79, __s_moveloop_preamble), rnd(30)) : rnd(30))));
+        cptr.stI64o(svc, $context_info_seer_turn, BigInt(rnd_at(__s_allmain_c, 79, __s_moveloop_preamble, 30)));
         cptr.stI16o(u, $you_umovement, NHM.NORMAL_SPEED);
         initrack();
     }
@@ -299,10 +300,10 @@ function u_calc_moveamt(wtcap) {
     } else {
         moveamt = cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mmove);
         if (Very_fast()) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 127, __s_u_calc_moveamt), rn2(3)) : rn2(3)) != 0)
+            if (rn2_at(__s_allmain_c, 127, __s_u_calc_moveamt, 3) != 0)
                 moveamt = (moveamt + NHM.NORMAL_SPEED) | 0;
         } else if (Fast()) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 131, __s_u_calc_moveamt), rn2(3)) : rn2(3)) == 0)
+            if (rn2_at(__s_allmain_c, 131, __s_u_calc_moveamt, 3) == 0)
                 moveamt = (moveamt + NHM.NORMAL_SPEED) | 0;
         }
     }
@@ -331,7 +332,7 @@ function u_calc_moveamt(wtcap) {
 
 /** C ref: allmain.c:162 */
 function maybe_generate_rnd_mon() {
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 166, __s_maybe_generate_rnd_mon), rn2((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 ? 25 : ((depth(cptr.add(u, $you_uz)) > depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))) ? 50 : 70))) : rn2((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 ? 25 : ((depth(cptr.add(u, $you_uz)) > depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))) ? 50 : 70))))
+    if (!rn2_at(__s_allmain_c, 166, __s_maybe_generate_rnd_mon, (cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 ? 25 : ((depth(cptr.add(u, $you_uz)) > depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))) ? 50 : 70)))
         void makemon(null, 0, 0, NHM.NO_MM_FLAGS);
 }
 
@@ -405,7 +406,7 @@ export function moveloop_core() {
                 }
                 regen_pw(mvl_wtcap);
                 if (!(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
-                    if (Teleportation() && !(rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 308, __s_moveloop_core), rn2(85)) : rn2(85))) {
+                    if (Teleportation() && !rn2_at(__s_allmain_c, 308, __s_moveloop_core, 85)) {
                         let old_ux = cptr.ldI16(u);
                         let old_uy = cptr.ldI16o(u, $you_uy);
                         tele();
@@ -419,7 +420,7 @@ export function moveloop_core() {
                     }
                     if ((mvl_change == 1 && !Polymorph()) || (mvl_change == 2 && cptr.ldI32o(u, $you_ulycn) == NHC.NON_PM))
                         mvl_change = 0;
-                    if (Polymorph() && !(rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 325, __s_moveloop_core), rn2(100)) : rn2(100)))
+                    if (Polymorph() && !rn2_at(__s_allmain_c, 325, __s_moveloop_core, 100))
                         mvl_change = 1;
                     else if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !Upolyd() && !(rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 328, __s_moveloop_core), rn2((80 - (Math.imul(20, night()))) | 0)) : rn2((80 - (Math.imul(20, night()))) | 0)))
                         mvl_change = 2;
@@ -451,13 +452,13 @@ export function moveloop_core() {
                 if ((cptr.ldI32o(u, $you_uhave) & 1))
                     amulet();
                 if (!(rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 360, __s_moveloop_core), rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)) : rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)))
-                    u_wipe_engr((rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 361, __s_moveloop_core), rnd(3)) : rnd(3)));
+                    u_wipe_engr(rnd_at(__s_allmain_c, 361, __s_moveloop_core, 3));
                 if ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 && !(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
                     if (cptr.ldI32o(u, $you_udg_cnt))
                         (cptr.stI32o(u, $you_udg_cnt, cptr.ldI32o(u, $you_udg_cnt) + -1)) - (-1);
                     if (!cptr.ldI32o(u, $you_udg_cnt)) {
                         intervene();
-                        cptr.stI32o(u, $you_udg_cnt, (((rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 367, __s_moveloop_core), rn2(200)) : rn2(200)) + 50) | 0) >>> 0);
+                        cptr.stI32o(u, $you_udg_cnt, ((rn2_at(__s_allmain_c, 367, __s_moveloop_core, 200) + 50) | 0) >>> 0);
                     }
                 }
                 if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))))
@@ -481,7 +482,7 @@ export function moveloop_core() {
         if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_seer_turn)) {
             if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) && !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !BClairvoyant())
                 do_vicinity_map(null);
-            cptr.stI64o(svc, $context_info_seer_turn, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 415, __s_moveloop_core), rn2(31)) : rn2(31)) + 15) | 0))));
+            cptr.stI64o(svc, $context_info_seer_turn, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(((rn2_at(__s_allmain_c, 415, __s_moveloop_core, 31) + 15) | 0))));
         }
         if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)
             sink_into_lava();
@@ -604,7 +605,7 @@ function regen_pw(wtcap) {
         let upper = ((((((acurr(NHC.A_WIS)) + (acurr(NHC.A_INT))) | 0) / 15) | 0) + 1) | 0;
         if (EMagical_breathing())
             upper = (upper + 2) | 0;
-        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + (((rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 612, __s_regen_pw), rn2(upper)) : rn2(upper)) + 1) | 0)) | 0);
+        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + ((rn2_at(__s_allmain_c, 612, __s_regen_pw, upper) + 1) | 0)) | 0);
         if (cptr.ldI32o(u, $you_uen) > cptr.ldI32o(u, $you_uenmax))
             cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uenmax));
         cptr.st1(disp, 1);
@@ -622,7 +623,7 @@ function regen_hp(wtcap) {
         if (cptr.ldI32o(u, $you_mh) < 1) {
             rehumanize();
         } else if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !Breathless()) {
-            if (cptr.ldI32o(u, $you_mh) > 1 && !Regeneration() && (rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 639, __s_regen_hp), rn2(cptr.ldI32o(u, $you_mh))) : rn2(cptr.ldI32o(u, $you_mh))) > (rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 639, __s_regen_hp), rn2(8)) : rn2(8)) && (!Half_physical_damage() || !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 2n)))
+            if (cptr.ldI32o(u, $you_mh) > 1 && !Regeneration() && rn2_at(__s_allmain_c, 639, __s_regen_hp, cptr.ldI32o(u, $you_mh)) > rn2_at(__s_allmain_c, 639, __s_regen_hp, 8) && (!Half_physical_damage() || !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 2n)))
                 heal = -1;
         } else if (cptr.ldI32o(u, $you_mh) < cptr.ldI32o(u, $you_mhmax)) {
             if ((Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))) || (encumbrance_ok && !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 20n)))
@@ -635,7 +636,7 @@ function regen_hp(wtcap) {
         }
     } else {
         if (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax) && (encumbrance_ok || (Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))))) {
-            heal = ((cptr.ldI32o(u, $you_ulevel) + (acurr(NHC.A_CON))) | 0) > (rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 659, __s_regen_hp), rn2(100)) : rn2(100));
+            heal = ((cptr.ldI32o(u, $you_ulevel) + (acurr(NHC.A_CON))) | 0) > rn2_at(__s_allmain_c, 659, __s_regen_hp, 100);
             if ((Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))))
                 heal = (heal + 1) | 0;
             if (Sleepy() && cptr.ldI64o(u, $you_usleep))

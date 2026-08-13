@@ -13,11 +13,12 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, wizard } from './nhprop.js';
 import { eos, lowc, xcrypt } from './hacklib.js';
 import { WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars } from './decl.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { There, You, impossible, nhassert_failed, pline, verbalize } from './pline.js';
+import { rn2 } from './rnd.js';
 import { exercise } from './attrib.js';
 import { windowprocs } from './windows.js';
 import { alloc, dupstr } from './alloc.js';
@@ -191,7 +192,7 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
                     return rumor_buf;
                 }
             }
-            switch (adjtruth = (truth + (rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 151, __s_getrumor), rn2(2)) : rn2(2))) | 0) {
+            switch (adjtruth = (truth + rn2_at(__s_rumors_c, 151, __s_getrumor, 2)) | 0) {
                 case 2:
                 case 1:
                 beginning = BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start));
@@ -460,7 +461,7 @@ export function* outrumor(truth, mechanism) {
         line = __s_nethack_rumors_file_closed_for;
     switch (mechanism) {
         case NHM.BY_ORACLE:
-        (yield* pline(__s_true_to_her_word_the_oracle_ssays, (!(rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 558, __s_outrumor), rn2(4)) : rn2(4)) ? __s_offhandedly : (!(rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 559, __s_outrumor), rn2(3)) : rn2(3)) ? __s_casually : ((rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 560, __s_outrumor), rn2(2)) : rn2(2)) ? __s_nonchalantly : __s_empty)))));
+        (yield* pline(__s_true_to_her_word_the_oracle_ssays, (!rn2_at(__s_rumors_c, 558, __s_outrumor, 4) ? __s_offhandedly : (!rn2_at(__s_rumors_c, 559, __s_outrumor, 3) ? __s_casually : (rn2_at(__s_rumors_c, 560, __s_outrumor, 2) ? __s_nonchalantly : __s_empty)))));
         ;
         (yield* verbalize(__s_pct_s, line));
         return;
@@ -552,7 +553,7 @@ export function* outoracle(special, delphi) {
             }
             if (cptr.ldI32(svo) <= 1 && !special)
                 break __lbl_close_oracles;
-            oracle_idx = special ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__s_rumors_c, 665, __s_outoracle), rnd(((cptr.ldI32(svo) | 0) - 1) | 0)) : rnd(((cptr.ldI32(svo) | 0) - 1) | 0));
+            oracle_idx = special ? 0 : rnd_at(__s_rumors_c, 665, __s_outoracle, ((cptr.ldI32(svo) | 0) - 1) | 0);
             void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, 8)), 0);
             if (!special)
                 cptr.stU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);

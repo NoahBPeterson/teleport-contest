@@ -8,9 +8,9 @@ import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { max } from './nhmacrofn.js';
+import { rn2_at } from './nhrng.js';
 import { alloc, dupstr } from './alloc.js';
 import { cg, gc, svl, svr } from './decl.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { match_maptyps, random_wdir } from './sp_lev.js';
 import { panic } from './end.js';
 import { isok } from './cmd.js';
@@ -225,7 +225,7 @@ export function selection_filter_percent(ov, percent) {
     selection_getbounds(ov, rect);
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
-            if (selection_getpoint(i16(x), i16(y), ov) && ((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 241, __s_selection_filter_percent), rn2(100)) : rn2(100)) < percent))
+            if (selection_getpoint(i16(x), i16(y), ov) && (rn2_at(__s_selvar_c, 241, __s_selection_filter_percent, 100) < percent))
                 selection_setpoint(i16(x), i16(y), ret, 1);
     return ret;
 }
@@ -249,7 +249,7 @@ export function selection_filter_mapchar(ov, typ, lit) {
                     selection_setpoint(i16(x), i16(y), ret, 1);
                     break;
                     case -1:
-                    selection_setpoint(i16(x), i16(y), ret, (rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 271, __s_selection_filter_mapchar), rn2(2)) : rn2(2)));
+                    selection_setpoint(i16(x), i16(y), ret, rn2_at(__s_selvar_c, 271, __s_selection_filter_mapchar, 2));
                     break;
                     case 0:
                     case 1:
@@ -274,7 +274,7 @@ export function selection_rndcoord(ov, x, y, removeit) {
             if (selection_getpoint(i16(dx), i16(dy), ov))
                 idx++;
     if (idx) {
-        c = (rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 302, __s_selection_rndcoord), rn2(idx)) : rn2(idx));
+        c = rn2_at(__s_selvar_c, 302, __s_selection_rndcoord, idx);
         for (dx = cptr.ldI16(rect); dx <= cptr.ldI16o(rect, $nhrect_hx); dx++)
             for (dy = cptr.ldI16o(rect, $nhrect_ly); dy <= cptr.ldI16o(rect, $nhrect_hy); dy++)
                 if (selection_getpoint(i16(dx), i16(dy), ov)) {
@@ -588,7 +588,7 @@ export function selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
             for (dx = 0n; dx < 80n; dx++)
                 for (dy = 0n; dy < 21n; dy++) {
                     let d0 = line_dist_coord(x, y, x2, y2, dx, dy);
-                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 600, __s_selection_do_gradient), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
+                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt(rn2_at(__s_selvar_c, 600, __s_selection_do_gradient, Number(BigInt.asIntN(32, dofs))))))
                         selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
                 }
             break;
@@ -603,7 +603,7 @@ export function selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
                     let d4 = line_dist_coord(x, y, x2, y2, dx, y2);
                     let d5 = line_dist_coord(x, y, x2, y2, dx, dy);
                     let d0 = ((d5) < (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))) ? (d5) : (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))));
-                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 616, __s_selection_do_gradient), rn2(Number(BigInt.asIntN(32, dofs)))) : rn2(Number(BigInt.asIntN(32, dofs)))))))
+                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt(rn2_at(__s_selvar_c, 616, __s_selection_do_gradient, Number(BigInt.asIntN(32, dofs))))))
                         selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
                 }
             break;
@@ -681,8 +681,8 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
         my = ((((y1 + y2) | 0) / 2) | 0);
     } else {
         do {
-            dx = ((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 704, __s_selection_do_randline), rn2(rough)) : rn2(rough)) - ((rough / 2) | 0)) | 0;
-            dy = ((rng_log_enabled() ? (rng_log_set_caller(__s_selvar_c, 705, __s_selection_do_randline), rn2(rough)) : rn2(rough)) - ((rough / 2) | 0)) | 0;
+            dx = (rn2_at(__s_selvar_c, 704, __s_selection_do_randline, rough) - ((rough / 2) | 0)) | 0;
+            dy = (rn2_at(__s_selvar_c, 705, __s_selection_do_randline, rough) - ((rough / 2) | 0)) | 0;
             mx = (((((x1 + x2) | 0) / 2) | 0) + dx) | 0;
             my = (((((y1 + y2) | 0) / 2) | 0) + dy) | 0;
         } while ((mx > 79 || mx < 0 || my < 0 || my > 20));

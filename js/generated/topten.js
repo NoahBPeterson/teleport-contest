@@ -8,6 +8,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Role_switch, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, putstr, raw_print, raw_print_bold, wizard } from './nhprop.js';
 import { flags, gh, gi, gm, gt, gu, iflags, program_state, svd, svk, svm, svp, u, ubirthday, urealtime } from './decl.js';
 import { impossible, raw_printf } from './pline.js';
@@ -27,7 +28,6 @@ import { alloc } from './alloc.js';
 import { yyyymmdd } from './calendar.js';
 import { fopen_datafile, lock_file, unlock_file } from './files.js';
 import { free_dungeons } from './save.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { set_corpsenm } from './mkobj.js';
 import { christen_monst, oname } from './do_name.js';
 import { canseemon } from './display.js';
@@ -1187,7 +1187,7 @@ export function get_rnd_toptenentry() {
         return null;
     }
     tt = __static_get_rnd_toptenentry_tt_buf;
-    rank = (rng_log_enabled() ? (rng_log_set_caller(__s_topten_c, 1395, __s_get_rnd_toptenentry), rnd(cptr.ldI32o(sysopt, $sysopt_s_tt_oname_maxrank))) : rnd(cptr.ldI32o(sysopt, $sysopt_s_tt_oname_maxrank)));
+    rank = rnd_at(__s_topten_c, 1395, __s_get_rnd_toptenentry, cptr.ldI32o(sysopt, $sysopt_s_tt_oname_maxrank));
     __lbl_pickentry: while (true) {
         for (i = rank; i; i--) {
             readentry(rfile, tt);
@@ -1226,10 +1226,10 @@ export function tt_oname(otmp) {
 
 /** C ref: topten.c:1445 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function tt_doppel(mon) {
-    let tt = (rng_log_enabled() ? (rng_log_set_caller(__s_topten_c, 1446, __s_tt_doppel), rn2(13)) : rn2(13)) ? get_rnd_toptenentry() : null;
+    let tt = rn2_at(__s_topten_c, 1446, __s_tt_doppel, 13) ? get_rnd_toptenentry() : null;
     let ret;
     if (!tt)
-        ret = (((rng_log_enabled() ? (rng_log_set_caller(__s_topten_c, 1450, __s_tt_doppel), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
+        ret = ((rn2_at(__s_topten_c, 1450, __s_tt_doppel, ((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
         if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 70)
             cptr.stI32o(mon, $monst_female, 1);

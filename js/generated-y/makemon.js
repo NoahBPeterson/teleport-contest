@@ -14,11 +14,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ARM_BONUS, Align2amask, IS_WALL, canspotmon, emits_light, has_edog, has_emin, has_mcorpsenm, has_mgivenname, is_bat, is_dprince, is_floater, is_lminion, is_mplayer, is_ndemon, is_placeholder, is_rider, is_sword, is_unicorn, is_whirly, nonliving } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Protection_from_shape_changers, quest_dnum, raw_print, sokoban_dnum, wizard } from './nhprop.js';
 import { c_common_strings, cg, flags, gi, gm, go, gs, gu, gv, iflags, svc, svd, svl, svm, svq, svr, u, uwep } from './decl.js';
 import { In_V_tower, In_hell, In_mines, In_quest, Is_special, depth, level_difficulty, on_level } from './dungeon.js';
 import { mons, monst_globals_init } from './monst.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { enexto, enexto_core, enexto_gpflags, goodpos } from './teleport.js';
 import { add_to_container, add_to_minv, bless, curse, discard_minvent, mkobj, mkobj_at, mksobj, next_ident, rndmonnum, set_corpsenm, weight } from './mkobj.js';
 import { findgold, mpickobj } from './steal.js';
@@ -30,6 +30,7 @@ import { Norep, impossible, pline, pline_mon, raw_printf, set_msg_xy } from './p
 import { an, makeplural, rnd_class, vtense } from './objnam.js';
 import { begin_burn, stop_timer } from './timeout.js';
 import { in_town, monst_to_any, obj_to_any } from './hack.js';
+import { d, rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { isok } from './cmd.js';
 import { alloc } from './alloc.js';
 import { dochugw, mon_track_clear, set_apparxy } from './monmove.js';
@@ -248,7 +249,7 @@ function wrong_elem_type(ptr) {
 /** C ref: makemon.c:79 — @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y @param {CInt} n @param {CUInt} mmflags */
 function* m_initgrp(mtmp, x, y, n, mmflags) {
     let mm = cptr.alloc(4);
-    let cnt = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 85, __s_m_initgrp), rnd(n)) : rnd(n));
+    let cnt = rnd_at(__s_makemon_c, 85, __s_m_initgrp, n);
     let mon;
     cnt = (cnt / ((cptr.ldI32o(u, $you_ulevel) < 3) ? 4 : ((cptr.ldI32o(u, $you_ulevel) < 5) ? 2 : 1))) | 0;
     if (!cnt)
@@ -273,7 +274,7 @@ function* m_initgrp(mtmp, x, y, n, mmflags) {
 function* m_initthrow(mtmp, otyp, oquan) {
     let otmp;
     otmp = (yield* mksobj(otyp, 1, 0));
-    cptr.stI64o(otmp, $obj_quan, BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 153, __s_m_initthrow), rn2(oquan)) : rn2(oquan)) + 3) | 0)));
+    cptr.stI64o(otmp, $obj_quan, BigInt(((rn2_at(__s_makemon_c, 153, __s_m_initthrow, oquan) + 3) | 0)));
     cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
     if (otyp == NHC.ORCISH_ARROW)
         cptr.stI32o(otmp, $obj_otrapped, 1);
@@ -292,10 +293,10 @@ function* m_initweap(mtmp) {
         return;
     switch (cptr.ld1so(ptr, $permonst_mlet)) {
         case NHC.S_GIANT:
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 181, __s_m_initweap), rn2(2)) : rn2(2)))
+        if (rn2_at(__s_makemon_c, 181, __s_m_initweap, 2))
             void (yield* mongets(mtmp, (mm != NHC.PM_ETTIN) ? NHC.BOULDER : NHC.CLUB));
-        if ((mm != NHC.PM_ETTIN) && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 183, __s_m_initweap), rn2(5)) : rn2(5)))
-            void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 184, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.TWO_HANDED_SWORD : NHC.BATTLE_AXE));
+        if ((mm != NHC.PM_ETTIN) && !rn2_at(__s_makemon_c, 183, __s_m_initweap, 5))
+            void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 184, __s_m_initweap, 2) ? NHC.TWO_HANDED_SWORD : NHC.BATTLE_AXE));
         break;
         case NHC.S_HUMAN:
         if (((cptr.ldU64o((ptr), $permonst_mflags2) & 512n) != 0n)) {
@@ -303,82 +304,82 @@ function* m_initweap(mtmp) {
             switch (mm) {
                 case NHC.PM_WATCHMAN:
                 case NHC.PM_SOLDIER:
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 192, __s_m_initweap), rn2(3)) : rn2(3))) {
+                if (!rn2_at(__s_makemon_c, 192, __s_m_initweap, 3)) {
                     do {
-                        w1 = (((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 197, __s_m_initweap), rn2(((((NHC.BEC_DE_CORBIN - NHC.PARTISAN) | 0) + 1) | 0))) : rn2(((((NHC.BEC_DE_CORBIN - NHC.PARTISAN) | 0) + 1) | 0))) + NHC.PARTISAN) | 0);
+                        w1 = ((rn2_at(__s_makemon_c, 197, __s_m_initweap, ((((NHC.BEC_DE_CORBIN - NHC.PARTISAN) | 0) + 1) | 0)) + NHC.PARTISAN) | 0);
                     } while (cptr.ld1so2(objects, w1, $sizeof_objclass, $objclass_oc_subtyp) != NHC.P_POLEARMS);
-                    w2 = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 199, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.DAGGER : NHC.KNIFE;
+                    w2 = rn2_at(__s_makemon_c, 199, __s_m_initweap, 2) ? NHC.DAGGER : NHC.KNIFE;
                 } else
-                    w1 = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 201, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.SPEAR : NHC.SHORT_SWORD;
+                    w1 = rn2_at(__s_makemon_c, 201, __s_m_initweap, 2) ? NHC.SPEAR : NHC.SHORT_SWORD;
                 break;
                 case NHC.PM_SERGEANT:
-                w1 = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 204, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.FLAIL : NHC.MACE;
+                w1 = rn2_at(__s_makemon_c, 204, __s_m_initweap, 2) ? NHC.FLAIL : NHC.MACE;
                 break;
                 case NHC.PM_LIEUTENANT:
-                w1 = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 207, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.BROADSWORD : NHC.LONG_SWORD;
+                w1 = rn2_at(__s_makemon_c, 207, __s_m_initweap, 2) ? NHC.BROADSWORD : NHC.LONG_SWORD;
                 break;
                 case NHC.PM_CAPTAIN:
                 case NHC.PM_WATCH_CAPTAIN:
-                w1 = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 211, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.LONG_SWORD : NHC.SILVER_SABER;
+                w1 = rn2_at(__s_makemon_c, 211, __s_m_initweap, 2) ? NHC.LONG_SWORD : NHC.SILVER_SABER;
                 break;
                 default:
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 214, __s_m_initweap), rn2(4)) : rn2(4)))
+                if (!rn2_at(__s_makemon_c, 214, __s_m_initweap, 4))
                     w1 = NHC.DAGGER;
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 216, __s_m_initweap), rn2(7)) : rn2(7)))
+                if (!rn2_at(__s_makemon_c, 216, __s_m_initweap, 7))
                     w2 = NHC.SPEAR;
                 break;
             }
             if (w1)
                 void (yield* mongets(mtmp, w1));
-            if (!w2 && w1 != NHC.DAGGER && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 222, __s_m_initweap), rn2(4)) : rn2(4)))
+            if (!w2 && w1 != NHC.DAGGER && !rn2_at(__s_makemon_c, 222, __s_m_initweap, 4))
                 w2 = NHC.KNIFE;
             if (w2)
                 void (yield* mongets(mtmp, w2));
         } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 16n) != 0n)) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 227, __s_m_initweap), rn2(2)) : rn2(2)))
-                void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 229, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.ELVEN_MITHRIL_COAT : NHC.ELVEN_CLOAK));
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 230, __s_m_initweap), rn2(2)) : rn2(2)))
+            if (rn2_at(__s_makemon_c, 227, __s_m_initweap, 2))
+                void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 229, __s_m_initweap, 2) ? NHC.ELVEN_MITHRIL_COAT : NHC.ELVEN_CLOAK));
+            if (rn2_at(__s_makemon_c, 230, __s_m_initweap, 2))
                 void (yield* mongets(mtmp, NHC.ELVEN_LEATHER_HELM));
-            else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 232, __s_m_initweap), rn2(4)) : rn2(4)))
+            else if (!rn2_at(__s_makemon_c, 232, __s_m_initweap, 4))
                 void (yield* mongets(mtmp, NHC.ELVEN_BOOTS));
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 234, __s_m_initweap), rn2(2)) : rn2(2)))
+            if (rn2_at(__s_makemon_c, 234, __s_m_initweap, 2))
                 void (yield* mongets(mtmp, NHC.ELVEN_DAGGER));
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 236, __s_m_initweap), rn2(3)) : rn2(3))) {
+            switch (rn2_at(__s_makemon_c, 236, __s_m_initweap, 3)) {
                 case 0:
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 238, __s_m_initweap), rn2(4)) : rn2(4)))
+                if (!rn2_at(__s_makemon_c, 238, __s_m_initweap, 4))
                     void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 240, __s_m_initweap), rn2(3)) : rn2(3)))
+                if (rn2_at(__s_makemon_c, 240, __s_m_initweap, 3))
                     void (yield* mongets(mtmp, NHC.ELVEN_SHORT_SWORD));
                 void (yield* mongets(mtmp, NHC.ELVEN_BOW));
                 (yield* m_initthrow(mtmp, NHC.ELVEN_ARROW, 12));
                 break;
                 case 1:
                 void (yield* mongets(mtmp, NHC.ELVEN_BROADSWORD));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 247, __s_m_initweap), rn2(2)) : rn2(2)))
+                if (rn2_at(__s_makemon_c, 247, __s_m_initweap, 2))
                     void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
                 break;
                 case 2:
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 251, __s_m_initweap), rn2(2)) : rn2(2))) {
+                if (rn2_at(__s_makemon_c, 251, __s_m_initweap, 2)) {
                     void (yield* mongets(mtmp, NHC.ELVEN_SPEAR));
                     void (yield* mongets(mtmp, NHC.ELVEN_SHIELD));
                 }
                 break;
             }
             if (mm == NHC.PM_ELVEN_MONARCH) {
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 258, __s_m_initweap), rn2(3)) : rn2(3)) || (cptr.ld1so(gi, $instance_globals_i_in_mklev) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))))
+                if (rn2_at(__s_makemon_c, 258, __s_m_initweap, 3) || (cptr.ld1so(gi, $instance_globals_i_in_mklev) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))))
                     void (yield* mongets(mtmp, NHC.PICK_AXE));
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 260, __s_m_initweap), rn2(50)) : rn2(50)))
+                if (!rn2_at(__s_makemon_c, 260, __s_m_initweap, 50))
                     void (yield* mongets(mtmp, NHC.CRYSTAL_BALL));
             }
         } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_PRIEST || (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) && (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER || cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS))) {
             otmp = (yield* mksobj(NHC.MACE, 0, 0));
-            cptr.st1o(otmp, $obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 266, __s_m_initweap), rnd(3)) : rnd(3))));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 267, __s_m_initweap), rn2(2)) : rn2(2)))
+            cptr.st1o(otmp, $obj_spe, schar(rnd_at(__s_makemon_c, 266, __s_m_initweap, 3)));
+            if (!rn2_at(__s_makemon_c, 267, __s_m_initweap, 2))
                 (yield* curse(otmp));
             void (yield* mpickobj(mtmp, otmp));
         } else if (mm == NHC.PM_NINJA) {
-            void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 271, __s_m_initweap), rn2(4)) : rn2(4)) ? NHC.SHURIKEN : NHC.DART));
-            void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 272, __s_m_initweap), rn2(4)) : rn2(4)) ? NHC.SHORT_SWORD : NHC.AXE));
+            void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 271, __s_m_initweap, 4) ? NHC.SHURIKEN : NHC.DART));
+            void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 272, __s_m_initweap, 4) ? NHC.SHORT_SWORD : NHC.AXE));
         } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_GUARDIAN) {
             switch (mm) {
                 case NHC.PM_STUDENT:
@@ -387,43 +388,43 @@ function* m_initweap(mtmp) {
                 case NHC.PM_ACOLYTE:
                 case NHC.PM_GUIDE:
                 case NHC.PM_APPRENTICE:
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 282, __s_m_initweap), rn2(2)) : rn2(2)))
-                    void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 283, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.DAGGER : NHC.KNIFE));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 284, __s_m_initweap), rn2(5)) : rn2(5)))
-                    void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 285, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.LEATHER_JACKET : NHC.LEATHER_CLOAK));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 287, __s_m_initweap), rn2(3)) : rn2(3)))
-                    void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 288, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.LOW_BOOTS : NHC.HIGH_BOOTS));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 289, __s_m_initweap), rn2(3)) : rn2(3)))
+                if (rn2_at(__s_makemon_c, 282, __s_m_initweap, 2))
+                    void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 283, __s_m_initweap, 3) ? NHC.DAGGER : NHC.KNIFE));
+                if (rn2_at(__s_makemon_c, 284, __s_m_initweap, 5))
+                    void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 285, __s_m_initweap, 3) ? NHC.LEATHER_JACKET : NHC.LEATHER_CLOAK));
+                if (rn2_at(__s_makemon_c, 287, __s_m_initweap, 3))
+                    void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 288, __s_m_initweap, 3) ? NHC.LOW_BOOTS : NHC.HIGH_BOOTS));
+                if (rn2_at(__s_makemon_c, 289, __s_m_initweap, 3))
                     void (yield* mongets(mtmp, NHC.POT_HEALING));
                 break;
                 case NHC.PM_CHIEFTAIN:
                 case NHC.PM_PAGE:
                 case NHC.PM_ROSHI:
                 case NHC.PM_WARRIOR:
-                void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 296, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.LONG_SWORD : NHC.SHORT_SWORD));
-                void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 297, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.CHAIN_MAIL : NHC.LEATHER_ARMOR));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 298, __s_m_initweap), rn2(2)) : rn2(2)))
-                    void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 299, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.LOW_BOOTS : NHC.HIGH_BOOTS));
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 300, __s_m_initweap), rn2(3)) : rn2(3)))
+                void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 296, __s_m_initweap, 3) ? NHC.LONG_SWORD : NHC.SHORT_SWORD));
+                void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 297, __s_m_initweap, 3) ? NHC.CHAIN_MAIL : NHC.LEATHER_ARMOR));
+                if (rn2_at(__s_makemon_c, 298, __s_m_initweap, 2))
+                    void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 299, __s_m_initweap, 2) ? NHC.LOW_BOOTS : NHC.HIGH_BOOTS));
+                if (!rn2_at(__s_makemon_c, 300, __s_m_initweap, 3))
                     void (yield* mongets(mtmp, NHC.LEATHER_CLOAK));
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 302, __s_m_initweap), rn2(3)) : rn2(3))) {
+                if (!rn2_at(__s_makemon_c, 302, __s_m_initweap, 3)) {
                     void (yield* mongets(mtmp, NHC.BOW));
                     (yield* m_initthrow(mtmp, NHC.ARROW, 12));
                 }
                 break;
                 case NHC.PM_HUNTER:
-                void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 308, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.SHORT_SWORD : NHC.DAGGER));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 309, __s_m_initweap), rn2(2)) : rn2(2)))
-                    void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 310, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.LEATHER_JACKET : NHC.LEATHER_ARMOR));
+                void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 308, __s_m_initweap, 3) ? NHC.SHORT_SWORD : NHC.DAGGER));
+                if (rn2_at(__s_makemon_c, 309, __s_m_initweap, 2))
+                    void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 310, __s_m_initweap, 2) ? NHC.LEATHER_JACKET : NHC.LEATHER_ARMOR));
                 void (yield* mongets(mtmp, NHC.BOW));
                 (yield* m_initthrow(mtmp, NHC.ARROW, 12));
                 break;
                 case NHC.PM_THUG:
                 void (yield* mongets(mtmp, NHC.CLUB));
-                void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 317, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.DAGGER : NHC.KNIFE));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 318, __s_m_initweap), rn2(2)) : rn2(2)))
+                void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 317, __s_m_initweap, 3) ? NHC.DAGGER : NHC.KNIFE));
+                if (rn2_at(__s_makemon_c, 318, __s_m_initweap, 2))
                     void (yield* mongets(mtmp, NHC.LEATHER_GLOVES));
-                void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 320, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.LEATHER_JACKET : NHC.LEATHER_ARMOR));
+                void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 320, __s_m_initweap, 2) ? NHC.LEATHER_JACKET : NHC.LEATHER_ARMOR));
                 break;
                 case NHC.PM_NEANDERTHAL:
                 void (yield* mongets(mtmp, NHC.CLUB));
@@ -434,18 +435,18 @@ function* m_initweap(mtmp) {
         break;
         case NHC.S_ANGEL:
         if (((cptr.ldU64o((ptr), $permonst_mflags1) & 131072n) != 0n)) {
-            let typ = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 333, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.LONG_SWORD : NHC.SILVER_MACE;
+            let typ = rn2_at(__s_makemon_c, 333, __s_m_initweap, 3) ? NHC.LONG_SWORD : NHC.SILVER_MACE;
             let nam = (typ == NHC.LONG_SWORD) ? __s_sunsword : __s_demonbane;
             otmp = (yield* mksobj(typ, 0, 0));
-            if ((!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 338, __s_m_initweap), rn2(20)) : rn2(20)) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n)) && sgn((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 ? cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), $emin_min_align) : cptr.ld1so(ptr, $permonst_maligntyp)) == NHM.A_LAWFUL)
+            if ((!rn2_at(__s_makemon_c, 338, __s_m_initweap, 20) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n)) && sgn((cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0 ? cptr.ld1so((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), $emin_min_align) : cptr.ld1so(ptr, $permonst_maligntyp)) == NHM.A_LAWFUL)
                 otmp = (yield* oname(otmp, nam, NHM.ONAME_RANDOM));
             (yield* bless(otmp));
             cptr.stI32o(otmp, $obj_oerodeproof, 1);
-            cptr.st1o(otmp, $obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 347, __s_m_initweap), rn2(4)) : rn2(4))));
+            cptr.st1o(otmp, $obj_spe, schar(rn2_at(__s_makemon_c, 347, __s_m_initweap, 4)));
             if (typ == NHC.SILVER_MACE)
                 cptr.st1o(otmp, $obj_spe, cptr.ld1so(otmp, $obj_spe) + 3);
             void (yield* mpickobj(mtmp, otmp));
-            otmp = (yield* mksobj(!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 352, __s_m_initweap), rn2(4)) : rn2(4)) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) ? NHC.SHIELD_OF_REFLECTION : NHC.LARGE_SHIELD, 0, 0));
+            otmp = (yield* mksobj(!rn2_at(__s_makemon_c, 352, __s_m_initweap, 4) || ((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) ? NHC.SHIELD_OF_REFLECTION : NHC.LARGE_SHIELD, 0, 0));
             cptr.stI32o(otmp, $obj_oerodeproof, 1);
             cptr.st1o(otmp, $obj_spe, 0);
             void (yield* mpickobj(mtmp, otmp));
@@ -453,7 +454,7 @@ function* m_initweap(mtmp) {
         break;
         case NHC.S_HUMANOID:
         if (mm == NHC.PM_HOBBIT) {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 364, __s_m_initweap), rn2(3)) : rn2(3))) {
+            switch (rn2_at(__s_makemon_c, 364, __s_m_initweap, 3)) {
                 case 0:
                 void (yield* mongets(mtmp, NHC.DAGGER));
                 break;
@@ -462,82 +463,82 @@ function* m_initweap(mtmp) {
                 break;
                 case 2:
                 void (yield* mongets(mtmp, NHC.SLING));
-                (yield* m_initthrow(mtmp, !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 373, __s_m_initweap), rn2(4)) : rn2(4)) ? NHC.FLINT : NHC.ROCK, 6));
+                (yield* m_initthrow(mtmp, !rn2_at(__s_makemon_c, 373, __s_m_initweap, 4) ? NHC.FLINT : NHC.ROCK, 6));
                 break;
             }
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 376, __s_m_initweap), rn2(10)) : rn2(10)))
+            if (!rn2_at(__s_makemon_c, 376, __s_m_initweap, 10))
                 void (yield* mongets(mtmp, NHC.ELVEN_MITHRIL_COAT));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 378, __s_m_initweap), rn2(10)) : rn2(10)))
+            if (!rn2_at(__s_makemon_c, 378, __s_m_initweap, 10))
                 void (yield* mongets(mtmp, NHC.DWARVISH_CLOAK));
         } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 32n) != 0n)) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 381, __s_m_initweap), rn2(7)) : rn2(7)))
+            if (rn2_at(__s_makemon_c, 381, __s_m_initweap, 7))
                 void (yield* mongets(mtmp, NHC.DWARVISH_CLOAK));
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 383, __s_m_initweap), rn2(7)) : rn2(7)))
+            if (rn2_at(__s_makemon_c, 383, __s_m_initweap, 7))
                 void (yield* mongets(mtmp, NHC.IRON_SHOES));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 385, __s_m_initweap), rn2(4)) : rn2(4))) {
+            if (!rn2_at(__s_makemon_c, 385, __s_m_initweap, 4)) {
                 void (yield* mongets(mtmp, NHC.DWARVISH_SHORT_SWORD));
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 388, __s_m_initweap), rn2(2)) : rn2(2)))
+                if (rn2_at(__s_makemon_c, 388, __s_m_initweap, 2))
                     void (yield* mongets(mtmp, NHC.DWARVISH_MATTOCK));
                 else {
-                    void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 391, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.AXE : NHC.DWARVISH_SPEAR));
+                    void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 391, __s_m_initweap, 2) ? NHC.AXE : NHC.DWARVISH_SPEAR));
                     void (yield* mongets(mtmp, NHC.DWARVISH_ROUNDSHIELD));
                 }
                 void (yield* mongets(mtmp, NHC.DWARVISH_IRON_HELM));
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 395, __s_m_initweap), rn2(3)) : rn2(3)))
+                if (!rn2_at(__s_makemon_c, 395, __s_m_initweap, 3))
                     void (yield* mongets(mtmp, NHC.DWARVISH_MITHRIL_COAT));
             } else {
-                void (yield* mongets(mtmp, !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 398, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.PICK_AXE : NHC.DAGGER));
+                void (yield* mongets(mtmp, !rn2_at(__s_makemon_c, 398, __s_m_initweap, 3) ? NHC.PICK_AXE : NHC.DAGGER));
             }
         }
         break;
         case NHC.S_KOP:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 405, __s_m_initweap), rn2(4)) : rn2(4)))
+        if (!rn2_at(__s_makemon_c, 405, __s_m_initweap, 4))
             (yield* m_initthrow(mtmp, NHC.CREAM_PIE, 2));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 407, __s_m_initweap), rn2(3)) : rn2(3)))
-            void (yield* mongets(mtmp, ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 408, __s_m_initweap), rn2(2)) : rn2(2))) ? NHC.CLUB : NHC.RUBBER_HOSE));
+        if (!rn2_at(__s_makemon_c, 407, __s_m_initweap, 3))
+            void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 408, __s_m_initweap, 2) ? NHC.CLUB : NHC.RUBBER_HOSE));
         break;
         case NHC.S_ORC:
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 411, __s_m_initweap), rn2(2)) : rn2(2)))
+        if (rn2_at(__s_makemon_c, 411, __s_m_initweap, 2))
             void (yield* mongets(mtmp, NHC.ORCISH_HELM));
-        switch ((mm != NHC.PM_ORC_CAPTAIN) ? mm : ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 414, __s_m_initweap), rn2(2)) : rn2(2)) ? NHC.PM_MORDOR_ORC : NHC.PM_URUK_HAI)) {
+        switch ((mm != NHC.PM_ORC_CAPTAIN) ? mm : (rn2_at(__s_makemon_c, 414, __s_m_initweap, 2) ? NHC.PM_MORDOR_ORC : NHC.PM_URUK_HAI)) {
             case NHC.PM_MORDOR_ORC:
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 416, __s_m_initweap), rn2(3)) : rn2(3)))
+            if (!rn2_at(__s_makemon_c, 416, __s_m_initweap, 3))
                 void (yield* mongets(mtmp, NHC.SCIMITAR));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 418, __s_m_initweap), rn2(3)) : rn2(3)))
+            if (!rn2_at(__s_makemon_c, 418, __s_m_initweap, 3))
                 void (yield* mongets(mtmp, NHC.ORCISH_SHIELD));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 420, __s_m_initweap), rn2(3)) : rn2(3)))
+            if (!rn2_at(__s_makemon_c, 420, __s_m_initweap, 3))
                 void (yield* mongets(mtmp, NHC.KNIFE));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 422, __s_m_initweap), rn2(3)) : rn2(3)))
+            if (!rn2_at(__s_makemon_c, 422, __s_m_initweap, 3))
                 void (yield* mongets(mtmp, NHC.ORCISH_CHAIN_MAIL));
             break;
             case NHC.PM_URUK_HAI:
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 426, __s_m_initweap), rn2(3)) : rn2(3)))
+            if (!rn2_at(__s_makemon_c, 426, __s_m_initweap, 3))
                 void (yield* mongets(mtmp, NHC.ORCISH_CLOAK));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 428, __s_m_initweap), rn2(3)) : rn2(3)))
+            if (!rn2_at(__s_makemon_c, 428, __s_m_initweap, 3))
                 void (yield* mongets(mtmp, NHC.ORCISH_SHORT_SWORD));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 430, __s_m_initweap), rn2(3)) : rn2(3)))
+            if (!rn2_at(__s_makemon_c, 430, __s_m_initweap, 3))
                 void (yield* mongets(mtmp, NHC.IRON_SHOES));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 432, __s_m_initweap), rn2(3)) : rn2(3))) {
+            if (!rn2_at(__s_makemon_c, 432, __s_m_initweap, 3)) {
                 void (yield* mongets(mtmp, NHC.ORCISH_BOW));
                 (yield* m_initthrow(mtmp, NHC.ORCISH_ARROW, 12));
             }
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 436, __s_m_initweap), rn2(3)) : rn2(3)))
+            if (!rn2_at(__s_makemon_c, 436, __s_m_initweap, 3))
                 void (yield* mongets(mtmp, NHC.URUK_HAI_SHIELD));
             break;
             default:
-            if (mm != NHC.PM_ORC_SHAMAN && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 440, __s_m_initweap), rn2(2)) : rn2(2)))
-                void (yield* mongets(mtmp, (mm == NHC.PM_GOBLIN || (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 441, __s_m_initweap), rn2(2)) : rn2(2)) == 0) ? NHC.ORCISH_DAGGER : NHC.SCIMITAR));
+            if (mm != NHC.PM_ORC_SHAMAN && rn2_at(__s_makemon_c, 440, __s_m_initweap, 2))
+                void (yield* mongets(mtmp, (mm == NHC.PM_GOBLIN || rn2_at(__s_makemon_c, 441, __s_m_initweap, 2) == 0) ? NHC.ORCISH_DAGGER : NHC.SCIMITAR));
         }
         break;
         case NHC.S_OGRE:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 447, __s_m_initweap), rn2(mm == NHC.PM_OGRE_TYRANT ? 3 : (mm == NHC.PM_OGRE_LEADER ? 6 : 12))) : rn2(mm == NHC.PM_OGRE_TYRANT ? 3 : (mm == NHC.PM_OGRE_LEADER ? 6 : 12))))
+        if (!rn2_at(__s_makemon_c, 447, __s_m_initweap, mm == NHC.PM_OGRE_TYRANT ? 3 : (mm == NHC.PM_OGRE_LEADER ? 6 : 12)))
             void (yield* mongets(mtmp, NHC.BATTLE_AXE));
         else
             void (yield* mongets(mtmp, NHC.CLUB));
         break;
         case NHC.S_TROLL:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 453, __s_m_initweap), rn2(2)) : rn2(2)))
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 454, __s_m_initweap), rn2(4)) : rn2(4))) {
+        if (!rn2_at(__s_makemon_c, 453, __s_m_initweap, 2))
+            switch (rn2_at(__s_makemon_c, 454, __s_m_initweap, 4)) {
                 case 0:
                 void (yield* mongets(mtmp, NHC.RANSEUR));
                 break;
@@ -553,11 +554,11 @@ function* m_initweap(mtmp) {
             }
         break;
         case NHC.S_KOBOLD:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 470, __s_m_initweap), rn2(4)) : rn2(4)))
+        if (!rn2_at(__s_makemon_c, 470, __s_m_initweap, 4))
             (yield* m_initthrow(mtmp, NHC.DART, 12));
         break;
         case NHC.S_CENTAUR:
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 475, __s_m_initweap), rn2(2)) : rn2(2))) {
+        if (rn2_at(__s_makemon_c, 475, __s_m_initweap, 2)) {
             if (cptr.eq(ptr, cptr.add(mons, NHC.PM_FOREST_CENTAUR, $sizeof_permonst))) {
                 void (yield* mongets(mtmp, NHC.BOW));
                 (yield* m_initthrow(mtmp, NHC.ARROW, 12));
@@ -572,14 +573,14 @@ function* m_initweap(mtmp) {
         void (yield* mongets(mtmp, NHC.LONG_SWORD));
         break;
         case NHC.S_ZOMBIE:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 490, __s_m_initweap), rn2(4)) : rn2(4)))
+        if (!rn2_at(__s_makemon_c, 490, __s_m_initweap, 4))
             void (yield* mongets(mtmp, NHC.LEATHER_ARMOR));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 492, __s_m_initweap), rn2(4)) : rn2(4)))
-            void (yield* mongets(mtmp, ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 493, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.KNIFE : NHC.SHORT_SWORD)));
+        if (!rn2_at(__s_makemon_c, 492, __s_m_initweap, 4))
+            void (yield* mongets(mtmp, (rn2_at(__s_makemon_c, 493, __s_m_initweap, 3) ? NHC.KNIFE : NHC.SHORT_SWORD)));
         break;
         case NHC.S_LIZARD:
         if (mm == NHC.PM_SALAMANDER)
-            void (yield* mongets(mtmp, ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 498, __s_m_initweap), rn2(7)) : rn2(7)) ? NHC.SPEAR : ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 498, __s_m_initweap), rn2(3)) : rn2(3)) ? NHC.TRIDENT : NHC.STILETTO))));
+            void (yield* mongets(mtmp, (rn2_at(__s_makemon_c, 498, __s_m_initweap, 7) ? NHC.SPEAR : (rn2_at(__s_makemon_c, 498, __s_m_initweap, 3) ? NHC.TRIDENT : NHC.STILETTO))));
         break;
         case NHC.S_DEMON:
         switch (mm) {
@@ -591,7 +592,7 @@ function* m_initweap(mtmp) {
             void (yield* mongets(mtmp, NHC.WAN_DEATH));
             break;
             case NHC.PM_HORNED_DEVIL:
-            void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 510, __s_m_initweap), rn2(4)) : rn2(4)) ? NHC.TRIDENT : NHC.BULLWHIP));
+            void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 510, __s_m_initweap, 4) ? NHC.TRIDENT : NHC.BULLWHIP));
             break;
             case NHC.PM_DISPATER:
             void (yield* mongets(mtmp, NHC.WAN_STRIKING));
@@ -606,7 +607,7 @@ function* m_initweap(mtmp) {
         ;
         default:
         bias = (((((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) + Math.imul(((cptr.ldU64o((ptr), $permonst_mflags2) & 2048n) != 0n), 2)) | 0) + ((cptr.ldU64o((ptr), $permonst_mflags2) & 33554432n) != 0n)) | 0;
-        switch ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 533, __s_m_initweap), rnd((14 - (Math.imul(2, bias))) | 0)) : rnd((14 - (Math.imul(2, bias))) | 0))) {
+        switch (rnd_at(__s_makemon_c, 533, __s_m_initweap, (14 - (Math.imul(2, bias))) | 0)) {
             case 1:
             if (((cptr.ldU64o((ptr), $permonst_mflags2) & 67108864n) != 0n))
                 void (yield* mongets(mtmp, NHC.BATTLE_AXE));
@@ -642,7 +643,7 @@ function* m_initweap(mtmp) {
         }
         break;
     }
-    if (cptr.ld1uo(mtmp, $monst_m_lev) > (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 570, __s_m_initweap), rn2(75)) : rn2(75)))
+    if (cptr.ld1uo(mtmp, $monst_m_lev) > rn2_at(__s_makemon_c, 570, __s_m_initweap, 75))
         void (yield* mongets(mtmp, (yield* rnd_offensive_item(mtmp))));
 }
 
@@ -694,12 +695,12 @@ function* m_initinv(mtmp) {
                 mac = 0;
                 break;
             }
-            if (mac < -1 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 639, __s_m_initinv), rn2(5)) : rn2(5)))
-                otmp = (yield* mongets(mtmp, ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 640, __s_m_initinv), rn2(5)) : rn2(5))) ? NHC.PLATE_MAIL : NHC.CRYSTAL_PLATE_MAIL));
-            else if (mac < 3 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 642, __s_m_initinv), rn2(5)) : rn2(5)))
-                otmp = (yield* mongets(mtmp, ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 643, __s_m_initinv), rn2(3)) : rn2(3))) ? NHC.SPLINT_MAIL : NHC.BANDED_MAIL));
-            else if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 644, __s_m_initinv), rn2(5)) : rn2(5)))
-                otmp = (yield* mongets(mtmp, ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 645, __s_m_initinv), rn2(3)) : rn2(3))) ? NHC.RING_MAIL : NHC.STUDDED_LEATHER_ARMOR));
+            if (mac < -1 && rn2_at(__s_makemon_c, 639, __s_m_initinv, 5))
+                otmp = (yield* mongets(mtmp, rn2_at(__s_makemon_c, 640, __s_m_initinv, 5) ? NHC.PLATE_MAIL : NHC.CRYSTAL_PLATE_MAIL));
+            else if (mac < 3 && rn2_at(__s_makemon_c, 642, __s_m_initinv, 5))
+                otmp = (yield* mongets(mtmp, rn2_at(__s_makemon_c, 643, __s_m_initinv, 3) ? NHC.SPLINT_MAIL : NHC.BANDED_MAIL));
+            else if (rn2_at(__s_makemon_c, 644, __s_m_initinv, 5))
+                otmp = (yield* mongets(mtmp, rn2_at(__s_makemon_c, 645, __s_m_initinv, 3) ? NHC.RING_MAIL : NHC.STUDDED_LEATHER_ARMOR));
             else
                 otmp = (yield* mongets(mtmp, NHC.LEATHER_ARMOR));
             if (otmp) {
@@ -707,36 +708,36 @@ function* m_initinv(mtmp) {
             }
             otmp = null;
             ;
-            if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 652, __s_m_initinv), rn2(3)) : rn2(3)))
+            if (mac < 10 && rn2_at(__s_makemon_c, 652, __s_m_initinv, 3))
                 otmp = (yield* mongets(mtmp, NHC.HELMET));
-            else if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 654, __s_m_initinv), rn2(2)) : rn2(2)))
+            else if (mac < 10 && rn2_at(__s_makemon_c, 654, __s_m_initinv, 2))
                 otmp = (yield* mongets(mtmp, NHC.DENTED_POT));
             if (otmp) {
                 mac = (mac + ARM_BONUS(otmp)) | 0;
             }
             otmp = null;
             ;
-            if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 659, __s_m_initinv), rn2(3)) : rn2(3)))
+            if (mac < 10 && rn2_at(__s_makemon_c, 659, __s_m_initinv, 3))
                 otmp = (yield* mongets(mtmp, NHC.SMALL_SHIELD));
-            else if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 661, __s_m_initinv), rn2(2)) : rn2(2)))
+            else if (mac < 10 && rn2_at(__s_makemon_c, 661, __s_m_initinv, 2))
                 otmp = (yield* mongets(mtmp, NHC.LARGE_SHIELD));
             if (otmp) {
                 mac = (mac + ARM_BONUS(otmp)) | 0;
             }
             otmp = null;
             ;
-            if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 666, __s_m_initinv), rn2(3)) : rn2(3)))
+            if (mac < 10 && rn2_at(__s_makemon_c, 666, __s_m_initinv, 3))
                 otmp = (yield* mongets(mtmp, NHC.LOW_BOOTS));
-            else if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 668, __s_m_initinv), rn2(2)) : rn2(2)))
+            else if (mac < 10 && rn2_at(__s_makemon_c, 668, __s_m_initinv, 2))
                 otmp = (yield* mongets(mtmp, NHC.HIGH_BOOTS));
             if (otmp) {
                 mac = (mac + ARM_BONUS(otmp)) | 0;
             }
             otmp = null;
             ;
-            if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 673, __s_m_initinv), rn2(3)) : rn2(3)))
+            if (mac < 10 && rn2_at(__s_makemon_c, 673, __s_m_initinv, 3))
                 otmp = (yield* mongets(mtmp, NHC.LEATHER_GLOVES));
-            else if (mac < 10 && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 675, __s_m_initinv), rn2(2)) : rn2(2)))
+            else if (mac < 10 && rn2_at(__s_makemon_c, 675, __s_m_initinv, 2))
                 otmp = (yield* mongets(mtmp, NHC.LEATHER_CLOAK));
             if (otmp) {
                 mac = (mac + ARM_BONUS(otmp)) | 0;
@@ -747,23 +748,23 @@ function* m_initinv(mtmp) {
             if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATCH_CAPTAIN, $sizeof_permonst))) {
                 ;
             } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_WATCHMAN, $sizeof_permonst))) {
-                if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 685, __s_m_initinv), rn2(3)) : rn2(3)))
+                if (rn2_at(__s_makemon_c, 685, __s_m_initinv, 3))
                     void (yield* mongets(mtmp, NHC.TIN_WHISTLE));
             } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_GUARD, $sizeof_permonst))) {
                 otmp = (yield* mksobj(NHC.TIN_WHISTLE, 1, 0));
                 (yield* curse(otmp));
                 void (yield* mpickobj(mtmp, otmp));
             } else {
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 695, __s_m_initinv), rn2(3)) : rn2(3)))
+                if (!rn2_at(__s_makemon_c, 695, __s_m_initinv, 3))
                     void (yield* mongets(mtmp, NHC.K_RATION));
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 697, __s_m_initinv), rn2(2)) : rn2(2)))
+                if (!rn2_at(__s_makemon_c, 697, __s_m_initinv, 2))
                     void (yield* mongets(mtmp, NHC.C_RATION));
-                if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_SOLDIER, $sizeof_permonst)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 699, __s_m_initinv), rn2(3)) : rn2(3)))
+                if (!cptr.eq(ptr, cptr.add(mons, NHC.PM_SOLDIER, $sizeof_permonst)) && !rn2_at(__s_makemon_c, 699, __s_m_initinv, 3))
                     void (yield* mongets(mtmp, NHC.BUGLE));
             }
         } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_SHOPKEEPER, $sizeof_permonst))) {
             void (yield* mongets(mtmp, NHC.SKELETON_KEY));
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 704, __s_m_initinv), rn2(4)) : rn2(4))) {
+            switch (rn2_at(__s_makemon_c, 704, __s_m_initinv, 4)) {
                 case 0:
                 void (yield* mongets(mtmp, NHC.WAN_MAGIC_MISSILE));
                 // @FallThrough
@@ -780,27 +781,27 @@ function* m_initinv(mtmp) {
                 void (yield* mongets(mtmp, NHC.WAN_STRIKING));
             }
         } else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_PRIEST || (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) && (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER || cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS))) {
-            void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 723, __s_m_initinv), rn2(7)) : rn2(7)) ? NHC.ROBE : ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 724, __s_m_initinv), rn2(3)) : rn2(3)) ? NHC.CLOAK_OF_PROTECTION : NHC.CLOAK_OF_MAGIC_RESISTANCE)));
+            void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 723, __s_m_initinv, 7) ? NHC.ROBE : (rn2_at(__s_makemon_c, 724, __s_m_initinv, 3) ? NHC.CLOAK_OF_PROTECTION : NHC.CLOAK_OF_MAGIC_RESISTANCE)));
             void (yield* mongets(mtmp, NHC.SMALL_SHIELD));
-            (yield* mkmonmoney(mtmp, BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 727, __s_m_initinv), rn2(10)) : rn2(10)) + 20) | 0))));
+            (yield* mkmonmoney(mtmp, BigInt(((rn2_at(__s_makemon_c, 727, __s_m_initinv, 10) + 20) | 0))));
         } else if ((cptr.ld1so(ptr, $permonst_mlet) == NHC.S_HUMAN && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) && (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_LEADER || cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS))) {
-            void (yield* mongets(mtmp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 729, __s_m_initinv), rn2(11)) : rn2(11)) ? NHC.ROBE : NHC.CLOAK_OF_MAGIC_RESISTANCE));
+            void (yield* mongets(mtmp, rn2_at(__s_makemon_c, 729, __s_m_initinv, 11) ? NHC.ROBE : NHC.CLOAK_OF_MAGIC_RESISTANCE));
         }
         break;
         case NHC.S_NYMPH:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 733, __s_m_initinv), rn2(2)) : rn2(2)))
+        if (!rn2_at(__s_makemon_c, 733, __s_m_initinv, 2))
             void (yield* mongets(mtmp, NHC.MIRROR));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 735, __s_m_initinv), rn2(2)) : rn2(2)))
+        if (!rn2_at(__s_makemon_c, 735, __s_m_initinv, 2))
             void (yield* mongets(mtmp, NHC.POT_OBJECT_DETECTION));
         break;
         case NHC.S_GIANT:
         if (cptr.eq(ptr, cptr.add(mons, NHC.PM_MINOTAUR, $sizeof_permonst))) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 740, __s_m_initinv), rn2(8)) : rn2(8)) || (cptr.ld1so(gi, $instance_globals_i_in_mklev) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))))
+            if (!rn2_at(__s_makemon_c, 740, __s_m_initinv, 8) || (cptr.ld1so(gi, $instance_globals_i_in_mklev) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))))
                 void (yield* mongets(mtmp, NHC.WAN_DIGGING));
         } else if (((cptr.ldU64o((ptr), $permonst_mflags2) & 8192n) != 0n)) {
-            for (cnt = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 743, __s_m_initinv), rn2(((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0))) : rn2(((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0))); cnt; cnt--) {
+            for (cnt = rn2_at(__s_makemon_c, 743, __s_m_initinv, ((cptr.ld1uo(mtmp, $monst_m_lev) / 2) | 0)); cnt; cnt--) {
                 otmp = (yield* mksobj(rnd_class(NHC.DILITHIUM_CRYSTAL, ((NHC.LUCKSTONE - 1) | 0)), 0, 0));
-                cptr.stI64o(otmp, $obj_quan, BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 746, __s_m_initinv), rn2(2)) : rn2(2)) + 3) | 0)));
+                cptr.stI64o(otmp, $obj_quan, BigInt(((rn2_at(__s_makemon_c, 746, __s_m_initinv, 2) + 3) | 0)));
                 cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
                 void (yield* mpickobj(mtmp, otmp));
             }
@@ -814,23 +815,23 @@ function* m_initinv(mtmp) {
         }
         break;
         case NHC.S_LICH:
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 760, __s_m_initinv), rn2(13)) : rn2(13)))
-            void (yield* mongets(mtmp, ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 761, __s_m_initinv), rn2(7)) : rn2(7)) ? NHC.ATHAME : NHC.WAN_NOTHING)));
-        else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ARCH_LICH, $sizeof_permonst)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 762, __s_m_initinv), rn2(3)) : rn2(3))) {
-            otmp = (yield* mksobj((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 763, __s_m_initinv), rn2(3)) : rn2(3)) ? NHC.ATHAME : NHC.QUARTERSTAFF, 1, schar(((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 764, __s_m_initinv), rn2(13)) : rn2(13)) ? 0 : 1))));
+        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_MASTER_LICH, $sizeof_permonst)) && !rn2_at(__s_makemon_c, 760, __s_m_initinv, 13))
+            void (yield* mongets(mtmp, (rn2_at(__s_makemon_c, 761, __s_m_initinv, 7) ? NHC.ATHAME : NHC.WAN_NOTHING)));
+        else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ARCH_LICH, $sizeof_permonst)) && !rn2_at(__s_makemon_c, 762, __s_m_initinv, 3)) {
+            otmp = (yield* mksobj(rn2_at(__s_makemon_c, 763, __s_m_initinv, 3) ? NHC.ATHAME : NHC.QUARTERSTAFF, 1, schar((rn2_at(__s_makemon_c, 764, __s_m_initinv, 13) ? 0 : 1))));
             if (cptr.ld1so(otmp, $obj_spe) < 2)
-                cptr.st1o(otmp, $obj_spe, schar((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 766, __s_m_initinv), rnd(3)) : rnd(3))));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 767, __s_m_initinv), rn2(4)) : rn2(4)))
+                cptr.st1o(otmp, $obj_spe, schar(rnd_at(__s_makemon_c, 766, __s_m_initinv, 3)));
+            if (!rn2_at(__s_makemon_c, 767, __s_m_initinv, 4))
                 cptr.stI32o(otmp, $obj_oerodeproof, 1);
             void (yield* mpickobj(mtmp, otmp));
         }
         break;
         case NHC.S_MUMMY:
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 773, __s_m_initinv), rn2(7)) : rn2(7)))
+        if (rn2_at(__s_makemon_c, 773, __s_m_initinv, 7))
             void (yield* mongets(mtmp, NHC.MUMMY_WRAPPING));
         break;
         case NHC.S_QUANTMECH:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 777, __s_m_initinv), rn2(20)) : rn2(20)) && cptr.eq(ptr, cptr.add(mons, NHC.PM_QUANTUM_MECHANIC, $sizeof_permonst))) {
+        if (!rn2_at(__s_makemon_c, 777, __s_m_initinv, 20) && cptr.eq(ptr, cptr.add(mons, NHC.PM_QUANTUM_MECHANIC, $sizeof_permonst))) {
             let catcorpse;
             otmp = (yield* mksobj(NHC.LARGE_BOX, 0, 0));
             if ((catcorpse = (yield* mksobj(NHC.CORPSE, 1, 0))) !== null) {
@@ -847,7 +848,7 @@ function* m_initinv(mtmp) {
         (yield* mkmonmoney(mtmp, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 797, __s_m_initinv), d(((yield* level_difficulty())), 30)) : d(((yield* level_difficulty())), 30)))));
         break;
         case NHC.S_DEMON:
-        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ICE_DEVIL, $sizeof_permonst)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 802, __s_m_initinv), rn2(4)) : rn2(4))) {
+        if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ICE_DEVIL, $sizeof_permonst)) && !rn2_at(__s_makemon_c, 802, __s_m_initinv, 4)) {
             void (yield* mongets(mtmp, NHC.SPEAR));
         } else if (cptr.eq(ptr, cptr.add(mons, NHC.PM_ASMODEUS, $sizeof_permonst))) {
             void (yield* mongets(mtmp, NHC.WAN_COLD));
@@ -855,8 +856,8 @@ function* m_initinv(mtmp) {
         }
         break;
         case NHC.S_GNOME:
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 810, __s_m_initinv), rn2((In_mines(cptr.add(u, $you_uz)) && cptr.ld1so(gi, $instance_globals_i_in_mklev)) ? 20 : 60)) : rn2((In_mines(cptr.add(u, $you_uz)) && cptr.ld1so(gi, $instance_globals_i_in_mklev)) ? 20 : 60))) {
-            otmp = (yield* mksobj((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 811, __s_m_initinv), rn2(4)) : rn2(4)) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, 1, 0));
+        if (!rn2_at(__s_makemon_c, 810, __s_m_initinv, (In_mines(cptr.add(u, $you_uz)) && cptr.ld1so(gi, $instance_globals_i_in_mklev)) ? 20 : 60)) {
+            otmp = (yield* mksobj(rn2_at(__s_makemon_c, 811, __s_m_initinv, 4) ? NHC.TALLOW_CANDLE : NHC.WAX_CANDLE, 1, 0));
             cptr.stI64o(otmp, $obj_quan, 1n);
             cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
             if (!(yield* mpickobj(mtmp, otmp)) && !(cptr.ldI32o3(svl, cptr.ldI16o(mtmp, $monst_mx), $sizeof_rm_x21, cptr.ldI16o(mtmp, $monst_my), $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1))
@@ -866,13 +867,13 @@ function* m_initinv(mtmp) {
         default:
         break;
     }
-    if (cptr.eq(ptr, cptr.add(mons, NHC.PM_SOLDIER, $sizeof_permonst)) && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 823, __s_m_initinv), rn2(13)) : rn2(13)))
+    if (cptr.eq(ptr, cptr.add(mons, NHC.PM_SOLDIER, $sizeof_permonst)) && rn2_at(__s_makemon_c, 823, __s_m_initinv, 13))
         return;
-    if (cptr.ld1uo(mtmp, $monst_m_lev) > (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 826, __s_m_initinv), rn2(50)) : rn2(50)))
+    if (cptr.ld1uo(mtmp, $monst_m_lev) > rn2_at(__s_makemon_c, 826, __s_m_initinv, 50))
         void (yield* mongets(mtmp, (yield* rnd_defensive_item(mtmp))));
-    if (cptr.ld1uo(mtmp, $monst_m_lev) > (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 828, __s_m_initinv), rn2(100)) : rn2(100)))
+    if (cptr.ld1uo(mtmp, $monst_m_lev) > rn2_at(__s_makemon_c, 828, __s_m_initinv, 100))
         void (yield* mongets(mtmp, rnd_misc_item(mtmp)));
-    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 268435456n) != 0n) && !findgold(cptr.ldPtro(mtmp, $monst_minvent)) && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 830, __s_m_initinv), rn2(5)) : rn2(5)))
+    if (((cptr.ldU64o((ptr), $permonst_mflags2) & 268435456n) != 0n) && !findgold(cptr.ldPtro(mtmp, $monst_minvent)) && !rn2_at(__s_makemon_c, 830, __s_m_initinv, 5))
         (yield* mkmonmoney(mtmp, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 832, __s_m_initinv), d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10))) : d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10))))));
 }
 
@@ -927,9 +928,9 @@ export function* clone_mon(mon, x, y) {
     }
     if (!cptr.ld1so(svc, $context_info_mon_moving) && (cptr.ldI32o(mon, $monst_mpeaceful) & 1) | 0) {
         if (cptr.ld1so(mon, $monst_mtame))
-            cptr.st1o(m2, $monst_mtame, schar(((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 912, __s_clone_mon), rn2((((2 + cptr.ld1so(u, $you_uluck)) | 0) > 2 ? ((2 + cptr.ld1so(u, $you_uluck)) | 0) : 2))) : rn2((((2 + cptr.ld1so(u, $you_uluck)) | 0) > 2 ? ((2 + cptr.ld1so(u, $you_uluck)) | 0) : 2))) ? cptr.ld1so(mon, $monst_mtame) : 0)));
+            cptr.st1o(m2, $monst_mtame, schar((rn2_at(__s_makemon_c, 912, __s_clone_mon, (((2 + cptr.ld1so(u, $you_uluck)) | 0) > 2 ? ((2 + cptr.ld1so(u, $you_uluck)) | 0) : 2)) ? cptr.ld1so(mon, $monst_mtame) : 0)));
         else if ((cptr.ldI32o(mon, $monst_mpeaceful) & 1))
-            cptr.stI32o(m2, $monst_mpeaceful, ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 914, __s_clone_mon), rn2((((2 + cptr.ld1so(u, $you_uluck)) | 0) > 2 ? ((2 + cptr.ld1so(u, $you_uluck)) | 0) : 2))) : rn2((((2 + cptr.ld1so(u, $you_uluck)) | 0) > 2 ? ((2 + cptr.ld1so(u, $you_uluck)) | 0) : 2))) ? 1 : 0) >>> 0);
+            cptr.stI32o(m2, $monst_mpeaceful, (rn2_at(__s_makemon_c, 914, __s_clone_mon, (((2 + cptr.ld1so(u, $you_uluck)) | 0) > 2 ? ((2 + cptr.ld1so(u, $you_uluck)) | 0) : 2)) ? 1 : 0) >>> 0);
     }
     if ((cptr.ldI32o(m2, $monst_isminion) & 1)) {
         let atyp;
@@ -979,15 +980,15 @@ export function* propagate(mndx, tally, ghostly) {
 /** C ref: makemon.c:986 — @param {CPtr<struct monst>} mon @returns {CInt} */
 export function monhp_per_lvl(mon) {
     let ptr = cptr.ldPtro(mon, $monst_data);
-    let hp = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 989, __s_monhp_per_lvl), rnd(8)) : rnd(8));
+    let hp = rnd_at(__s_makemon_c, 989, __s_monhp_per_lvl, 8);
     if ((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM)) {
         hp = (golemhp((cptr.ldI32o((ptr), $permonst_pmidx))) / cptr.ld1so(ptr, $permonst_mlevel)) | 0;
     } else if (cptr.ld1so(ptr, $permonst_mlevel) > 49) {
-        hp = (4 + (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 997, __s_monhp_per_lvl), rnd(4)) : rnd(4))) | 0;
+        hp = (4 + rnd_at(__s_makemon_c, 997, __s_monhp_per_lvl, 4)) | 0;
     } else if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_DRAGON && (cptr.ldI32o((ptr), $permonst_pmidx)) >= NHC.PM_GRAY_DRAGON) {
-        hp = (4 + (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1001, __s_monhp_per_lvl), rn2(5)) : rn2(5))) | 0;
+        hp = (4 + rn2_at(__s_makemon_c, 1001, __s_monhp_per_lvl, 5)) | 0;
     } else if (!cptr.ld1uo(mon, $monst_m_lev)) {
-        hp = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1004, __s_monhp_per_lvl), rnd(4)) : rnd(4));
+        hp = rnd_at(__s_makemon_c, 1004, __s_monhp_per_lvl, 4);
     }
     return hp;
 }
@@ -1001,19 +1002,19 @@ export function* newmonhp(mon, mndx) {
         cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, golemhp(mndx)));
     } else if (is_rider(ptr)) {
         basehp = 10;
-        cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1024, __s_newmonhp), d((basehp), 8)) : d((basehp), 8))));
+        cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, d_at(__s_makemon_c, 1024, __s_newmonhp, (basehp), 8)));
     } else if (cptr.ld1so(ptr, $permonst_mlevel) > 49) {
         cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, Math.imul(2, ((cptr.ld1so(ptr, $permonst_mlevel) - 6) | 0))));
         cptr.st1o(mon, $monst_m_lev, uchar(((cptr.ldI32o(mon, $monst_mhp) / 4) | 0)));
     } else if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_DRAGON && mndx >= NHC.PM_GRAY_DRAGON) {
         basehp = cptr.ld1uo(mon, $monst_m_lev);
-        cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (Math.imul(8, basehp)) : ((Math.imul(4, basehp) + (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1036, __s_newmonhp), d((basehp), 4)) : d((basehp), 4))) | 0)));
+        cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) ? (Math.imul(8, basehp)) : ((Math.imul(4, basehp) + d_at(__s_makemon_c, 1036, __s_newmonhp, (basehp), 4)) | 0)));
     } else if (!cptr.ld1uo(mon, $monst_m_lev)) {
         basehp = 1;
-        cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1039, __s_newmonhp), rnd(4)) : rnd(4))));
+        cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, rnd_at(__s_makemon_c, 1039, __s_newmonhp, 4)));
     } else {
         basehp = cptr.ld1uo(mon, $monst_m_lev);
-        cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1042, __s_newmonhp), d((basehp), 8)) : d((basehp), 8))));
+        cptr.stI32o(mon, $monst_mhpmax, cptr.stI32o(mon, $monst_mhp, d_at(__s_makemon_c, 1042, __s_newmonhp, (basehp), 8)));
         if (is_home_elemental(ptr))
             cptr.stI32o(mon, $monst_mhpmax, (cptr.stI32o(mon, $monst_mhp, Math.imul(cptr.ldI32o(mon, $monst_mhp), 3))));
     }
@@ -1049,8 +1050,8 @@ function* makemon_rnd_goodpos(mon, gpflags, cc) {
     let good;
     gpflags = Number(BigInt.asUintN(32, BigInt(gpflags >>> 0) | 16777216n));
     do {
-        nx = i16((((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1087, __s_makemon_rnd_goodpos), rn2(77)) : rn2(77)) + 2) | 0));
-        ny = i16((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1088, __s_makemon_rnd_goodpos), rn2(NHM.ROWNO)) : rn2(NHM.ROWNO)));
+        nx = i16(((rn2_at(__s_makemon_c, 1087, __s_makemon_rnd_goodpos, 77) + 2) | 0));
+        ny = i16(rn2_at(__s_makemon_c, 1088, __s_makemon_rnd_goodpos, NHM.ROWNO));
         good = schar(((!cptr.ld1so(gi, $instance_globals_i_in_mklev) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), ny, 8), nx) & NHM.IN_SIGHT) != 0)) ? 0 : (yield* goodpos(nx, ny, mon, gpflags))));
     } while ((++tryct < 50) && !good);
     if (!good) {
@@ -1078,7 +1079,7 @@ function* makemon_rnd_goodpos(mon, gpflags, cc) {
             if (bl == 0 && (!mon || cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mmove))) {
                 let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
                 while (stway) {
-                    if (cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1119, __s_makemon_rnd_goodpos), rn2(2)) : rn2(2))) {
+                    if (cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) && !rn2_at(__s_makemon_c, 1119, __s_makemon_rnd_goodpos, 2)) {
                         nx = cptr.ldI16(stway);
                         ny = cptr.ldI16o(stway, $stairway_sy);
                         break;
@@ -1208,7 +1209,7 @@ export function* makemon(ptr, x, y, mmflags) {
     else if (cptr.ld1uo(ptr, $permonst_msound) == NHC.MS_NEMESIS && (yield* quest_info(NHC.MS_NEMESIS)) == mndx)
         cptr.stI32o(mtmp, $monst_female, (cptr.ldI32o(svq, $q_score_nemgend) & 3));
     else
-        cptr.stI32o(mtmp, $monst_female, (femaleok ? (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1279, __s_makemon), rn2(2)) : rn2(2)) : 0) >>> 0);
+        cptr.stI32o(mtmp, $monst_female, (femaleok ? rn2_at(__s_makemon_c, 1279, __s_makemon, 2) : 0) >>> 0);
     if ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) && !((cptr.ldU64o((ptr), $permonst_mflags1) & 65536n) != 0n)) {
         mon_learns_traps(mtmp, NHC.PIT);
         mon_learns_traps(mtmp, NHC.HOLE);
@@ -1255,7 +1256,7 @@ export function* makemon(ptr, x, y, mmflags) {
         break;
         case NHC.S_JABBERWOCK:
         case NHC.S_NYMPH:
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1332, __s_makemon), rn2(5)) : rn2(5)) && !(cptr.ldI32o(u, $you_uhave) & 1))
+        if (rn2_at(__s_makemon_c, 1332, __s_makemon, 5) && !(cptr.ldI32o(u, $you_uhave) & 1))
             cptr.stI32o(mtmp, $monst_msleeping, 1);
         break;
         case NHC.S_ORC:
@@ -1298,7 +1299,7 @@ export function* makemon(ptr, x, y, mmflags) {
     if (mitem != NHC.STRANGE_OBJECT && allow_minvent)
         void (yield* mongets(mtmp, mitem));
     if (cptr.ld1so(gi, $instance_globals_i_in_mklev)) {
-        if ((is_ndemon(ptr) || mndx == NHC.PM_WUMPUS || mndx == NHC.PM_LONG_WORM || mndx == NHC.PM_GIANT_EEL) && !(cptr.ldI32o(u, $you_uhave) & 1) && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1389, __s_makemon), rn2(5)) : rn2(5)))
+        if ((is_ndemon(ptr) || mndx == NHC.PM_WUMPUS || mndx == NHC.PM_LONG_WORM || mndx == NHC.PM_GIANT_EEL) && !(cptr.ldI32o(u, $you_uhave) & 1) && rn2_at(__s_makemon_c, 1389, __s_makemon, 5))
             cptr.stI32o(mtmp, $monst_msleeping, 1);
     } else {
         if (byyou) {
@@ -1315,25 +1316,25 @@ export function* makemon(ptr, x, y, mmflags) {
     if (mndx == NHC.PM_RAVEN && uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.BEC_DE_CORBIN)
         cptr.stI32o(mtmp, $monst_mpeaceful, 1);
     if (mndx == NHC.PM_LONG_WORM && ((cptr.stI32o(mtmp, $monst_wormno, get_wormno() >>> 0)) | 0) != 0) {
-        (yield* initworm(mtmp, allowtail ? (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1406, __s_makemon), rn2(5)) : rn2(5)) : 0));
+        (yield* initworm(mtmp, allowtail ? rn2_at(__s_makemon_c, 1406, __s_makemon, 5) : 0));
         if (count_wsegs(mtmp))
             (yield* place_worm_tail_randomly(mtmp, x, y));
     }
-    if ((mndx == NHC.PM_ALIGNED_CLERIC || mndx == NHC.PM_HIGH_CLERIC) ? !(BigInt(mmflags >>> 0) & 1280n) : (mndx == NHC.PM_ANGEL && !(BigInt(mmflags >>> 0) & 1024n) && !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1416, __s_makemon), rn2(3)) : rn2(3)) ? 1 : 0)) {
+    if ((mndx == NHC.PM_ALIGNED_CLERIC || mndx == NHC.PM_HIGH_CLERIC) ? !(BigInt(mmflags >>> 0) & 1280n) : (mndx == NHC.PM_ANGEL && !(BigInt(mmflags >>> 0) & 1024n) && !rn2_at(__s_makemon_c, 1416, __s_makemon, 3) ? 1 : 0)) {
         let eminp;
         (yield* newemin(mtmp));
         eminp = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin));
         cptr.stI32o(mtmp, $monst_isminion, 1);
-        cptr.st1o(eminp, $emin_min_align, schar((((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1423, __s_makemon), rn2(3)) : rn2(3)) - 1) | 0)));
-        cptr.st1o(eminp, $emin_renegade, schar(((BigInt(mmflags >>> 0) & 32n) ? 1 : !(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1424, __s_makemon), rn2(3)) : rn2(3)))));
+        cptr.st1o(eminp, $emin_min_align, schar(((rn2_at(__s_makemon_c, 1423, __s_makemon, 3) - 1) | 0)));
+        cptr.st1o(eminp, $emin_renegade, schar(((BigInt(mmflags >>> 0) & 32n) ? 1 : !rn2_at(__s_makemon_c, 1424, __s_makemon, 3))));
         cptr.stI32o(mtmp, $monst_mpeaceful, ((cptr.ld1so(eminp, $emin_min_align) == cptr.ld1so(u, $you_ualign)) ? !cptr.ld1so(eminp, $emin_renegade) : cptr.ld1so(eminp, $emin_renegade)) >>> 0);
     }
     set_malign(mtmp);
     if (anymon && !(BigInt(mmflags >>> 0) & 8192n)) {
-        if ((cptr.ldU16o(ptr, $permonst_geno) & NHM.G_SGROUP) && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1431, __s_makemon), rn2(2)) : rn2(2))) {
+        if ((cptr.ldU16o(ptr, $permonst_geno) & NHM.G_SGROUP) && rn2_at(__s_makemon_c, 1431, __s_makemon, 2)) {
             (yield* m_initgrp(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 3, mmflags));
         } else if (cptr.ldU16o(ptr, $permonst_geno) & NHM.G_LGROUP) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1434, __s_makemon), rn2(3)) : rn2(3)))
+            if (rn2_at(__s_makemon_c, 1434, __s_makemon, 3))
                 (yield* m_initgrp(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 10, mmflags));
             else
                 (yield* m_initgrp(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 3, mmflags));
@@ -1344,7 +1345,7 @@ export function* makemon(ptr, x, y, mmflags) {
             (yield* m_initweap(mtmp));
         (yield* m_initinv(mtmp));
         (yield* m_dowear(mtmp, 1));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1447, __s_makemon), rn2(100)) : rn2(100)) && ((cptr.ldU64o((ptr), $permonst_mflags2) & 4194304n) != 0n) && can_saddle(mtmp) && !(yield* which_armor(mtmp, 1048576n))) {
+        if (!rn2_at(__s_makemon_c, 1447, __s_makemon, 100) && ((cptr.ldU64o((ptr), $permonst_mflags2) & 4194304n) != 0n) && can_saddle(mtmp) && !(yield* which_armor(mtmp, 1048576n))) {
             (yield* put_saddle_on_mon(null, mtmp));
         }
     } else {
@@ -1497,7 +1498,7 @@ export function* rndmonst_adj(minadj, maxadj) {
     let maxmlev;
     let elemlevel;
     let upper;
-    if (cptr.ldI16o(u, $you_uz) == quest_dnum() && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1666, __s_rndmonst_adj), rn2(7)) : rn2(7)) && (ptr = (yield* qt_montype())) !== null)
+    if (cptr.ldI16o(u, $you_uz) == quest_dnum() && rn2_at(__s_makemon_c, 1666, __s_rndmonst_adj, 7) && (ptr = (yield* qt_montype())) !== null)
         return ptr;
     zlevel = (yield* level_difficulty());
     minmlev = ((((zlevel) / 6) | 0) + minadj) | 0;
@@ -1526,7 +1527,7 @@ export function* rndmonst_adj(minadj, maxadj) {
         }
         if (weight > 0) {
             totalweight = (totalweight + weight) | 0;
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1716, __s_rndmonst_adj), rn2(totalweight)) : rn2(totalweight)) < weight)
+            if (rn2_at(__s_makemon_c, 1716, __s_rndmonst_adj, totalweight) < weight)
                 selected_mndx = mndx;
         }
     }
@@ -1660,11 +1661,11 @@ export function* mkclass_aligned(class$, spc, atyp) {
         if (atyp != -128 && sgn(cptr.ld1so2(mons, (cptr.ldI32o(mongen_order, last, 4)), $sizeof_permonst, $permonst_maligntyp)) != sgn(atyp))
             continue;
         gn_mask = 4608;
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1934, __s_mkclass_aligned), rn2(9)) : rn2(9)) || class$ == NHC.S_LICH)
+        if (rn2_at(__s_makemon_c, 1934, __s_mkclass_aligned, 9) || class$ == NHC.S_LICH)
             gn_mask |= (gehennom ? NHM.G_NOHELL : NHM.G_HELL) >>> 0;
         gn_mask &= (~spc) >>> 0;
         if (mk_gen_ok((cptr.ldI32o(mongen_order, last, 4)), mv_mask, gn_mask)) {
-            if (num && (cptr.ld1uo2(mons, (cptr.ldI32o(mongen_order, last, 4)), $sizeof_permonst, $permonst_difficulty) > maxmlev) && cptr.ld1uo2(mons, (cptr.ldI32o(mongen_order, last, 4)), $sizeof_permonst, $permonst_difficulty) > cptr.ld1uo2(mons, (cptr.ldI32o(mongen_order, (last - 1) | 0, 4)), $sizeof_permonst, $permonst_difficulty) && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1946, __s_mkclass_aligned), rn2(2)) : rn2(2)))
+            if (num && (cptr.ld1uo2(mons, (cptr.ldI32o(mongen_order, last, 4)), $sizeof_permonst, $permonst_difficulty) > maxmlev) && cptr.ld1uo2(mons, (cptr.ldI32o(mongen_order, last, 4)), $sizeof_permonst, $permonst_difficulty) > cptr.ld1uo2(mons, (cptr.ldI32o(mongen_order, (last - 1) | 0, 4)), $sizeof_permonst, $permonst_difficulty) && rn2_at(__s_makemon_c, 1946, __s_mkclass_aligned, 2))
                 break;
             if ((k = (cptr.ldU16o2(mons, (cptr.ldI32o(mongen_order, last, 4)), $sizeof_permonst, $permonst_geno) & NHM.G_FREQ)) > 0 || (k = (zero_freq_for_entire_class ? 1 : 0)) > 0) {
                 cptr.stI32o(nums, (cptr.ldI32o(mongen_order, last, 4)), (((k + 1) | 0) - ((yield* adj_lev(cptr.add(mons, (cptr.ldI32o(mongen_order, last, 4)), $sizeof_permonst))) > (Math.imul(cptr.ldI32o(u, $you_ulevel), 2)))) | 0, 4);
@@ -1674,7 +1675,7 @@ export function* mkclass_aligned(class$, spc, atyp) {
     }
     if (!num)
         return null;
-    for (num = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1969, __s_mkclass_aligned), rnd(num)) : rnd(num)); first < last; first++)
+    for (num = rnd_at(__s_makemon_c, 1969, __s_mkclass_aligned, num); first < last; first++)
         if ((num = (num - cptr.ldI32o(nums, (cptr.ldI32o(mongen_order, first, 4)), 4)) | 0) <= 0)
             break;
     return cptr.ldI32o(nums, (cptr.ldI32o(mongen_order, first, 4)), 4) ? cptr.add(mons, (cptr.ldI32o(mongen_order, first, 4)), $sizeof_permonst) : null;
@@ -1692,14 +1693,14 @@ export function mkclass_poly(class$) {
     if (first == NHC.SPECIAL_PM)
         return NHC.NON_PM;
     gmask = 4608;
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 1997, __s_mkclass_poly), rn2(9)) : rn2(9)) || class$ == NHC.S_LICH)
+    if (rn2_at(__s_makemon_c, 1997, __s_mkclass_poly, 9) || class$ == NHC.S_LICH)
         gmask |= (In_hell(cptr.add(u, $you_uz)) ? NHM.G_NOHELL : NHM.G_HELL) >>> 0;
     for (last = first; last < NHC.SPECIAL_PM && cptr.ld1so2(mons, last, $sizeof_permonst, $permonst_mlet) == class$; last++)
         if (mk_gen_ok(last, NHM.G_GENOD, gmask))
             num = (num + (cptr.ldU16o2(mons, last, $sizeof_permonst, $permonst_geno) & NHM.G_FREQ)) | 0;
     if (!num)
         return NHC.NON_PM;
-    for (num = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2006, __s_mkclass_poly), rnd(num)) : rnd(num)); num > 0; first++)
+    for (num = rnd_at(__s_makemon_c, 2006, __s_mkclass_poly, num); num > 0; first++)
         if (mk_gen_ok(first, NHM.G_GENOD, gmask))
             num = (num - (cptr.ldU16o2(mons, first, $sizeof_permonst, $permonst_geno) & NHM.G_FREQ)) | 0;
     first--;
@@ -1757,12 +1758,12 @@ export function* grow_up(mtmp, victim) {
         lev_limit = (Math.imul(3, cptr.ld1so(ptr, $permonst_mlevel)) / 2) | 0;
         if (oldtype != newtype && cptr.ld1so2(mons, newtype, $sizeof_permonst, $permonst_mlevel) > lev_limit)
             lev_limit = cptr.ld1so2(mons, newtype, $sizeof_permonst, $permonst_mlevel);
-        max_increase = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2095, __s_grow_up), rnd((cptr.ld1uo(victim, $monst_m_lev) + 1) | 0)) : rnd((cptr.ld1uo(victim, $monst_m_lev) + 1) | 0));
+        max_increase = rnd_at(__s_makemon_c, 2095, __s_grow_up, (cptr.ld1uo(victim, $monst_m_lev) + 1) | 0);
         if (((cptr.ldI32o(mtmp, $monst_mhpmax) + max_increase) | 0) > ((hp_threshold + 1) | 0))
             max_increase = (((((hp_threshold + 1) | 0) - cptr.ldI32o(mtmp, $monst_mhpmax)) | 0) > 0 ? ((((hp_threshold + 1) | 0) - cptr.ldI32o(mtmp, $monst_mhpmax)) | 0) : 0);
-        cur_increase = (max_increase > 1) ? (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2098, __s_grow_up), rn2(max_increase)) : rn2(max_increase)) : 0;
+        cur_increase = (max_increase > 1) ? rn2_at(__s_makemon_c, 2098, __s_grow_up, max_increase) : 0;
     } else {
-        max_increase = (cur_increase = (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2103, __s_grow_up), rnd(8)) : rnd(8)));
+        max_increase = (cur_increase = rnd_at(__s_makemon_c, 2103, __s_grow_up, 8));
         hp_threshold = 0;
         lev_limit = 50;
     }
@@ -1828,7 +1829,7 @@ export function* mongets(mtmp, otyp) {
             cptr.stI32o(otmp, $obj_oerodeproof, 1);
             cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
         } else if (is_mplayer(cptr.ldPtro(mtmp, $monst_data)) && is_sword(otmp)) {
-            cptr.st1o(otmp, $obj_spe, schar(((3 + (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2201, __s_mongets), rn2(4)) : rn2(4))) | 0)));
+            cptr.st1o(otmp, $obj_spe, schar(((3 + rn2_at(__s_makemon_c, 2201, __s_mongets, 4)) | 0)));
         }
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
             cptr.st1o(otmp, $obj_spe, 0);
@@ -1908,7 +1909,7 @@ export function peace_minded(ptr) {
         return 0;
     if (((cptr.ldU64o((ptr), $permonst_mflags2) & 4096n) != 0n))
         return schar((cptr.ldI32o(u, $you_ualign + $align_record) >= 0));
-    return schar((!!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2306, __s_peace_minded), rn2((16 + (cptr.ldI32o(u, $you_ualign + $align_record) < -15 ? -15 : cptr.ldI32o(u, $you_ualign + $align_record))) | 0)) : rn2((16 + (cptr.ldI32o(u, $you_ualign + $align_record) < -15 ? -15 : cptr.ldI32o(u, $you_ualign + $align_record))) | 0)) && !!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2307, __s_peace_minded), rn2((2 + Math.abs(mal)) | 0)) : rn2((2 + Math.abs(mal)) | 0)) ? 1 : 0));
+    return schar((!!rn2_at(__s_makemon_c, 2306, __s_peace_minded, (16 + (cptr.ldI32o(u, $you_ualign + $align_record) < -15 ? -15 : cptr.ldI32o(u, $you_ualign + $align_record))) | 0) && !!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2307, __s_peace_minded), rn2((2 + Math.abs(mal)) | 0)) : rn2((2 + Math.abs(mal)) | 0)) ? 1 : 0));
 }
 
 /** C ref: makemon.c:2321 — @param {CPtr<struct monst>} mtmp */
@@ -2006,7 +2007,7 @@ export function* set_mimic_sym(mtmp) {
                 appear = ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_hwall : NHC.S_hcdoor) >>> 0;
             else
                 appear = ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.S_vwall : NHC.S_vcdoor) >>> 0;
-        } else if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1) | 0 && !(In_mines(cptr.add(u, $you_uz)) && in_town(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && !(cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2441, __s_set_mimic_sym), rn2(2)) : rn2(2))) {
+        } else if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev) & 1) | 0 && !(In_mines(cptr.add(u, $you_uz)) && in_town(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && !(cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) && rn2_at(__s_makemon_c, 2441, __s_set_mimic_sym, 2)) {
             ap_type = NHC.M_AP_OBJECT;
             appear = NHC.STATUE;
         } else if (roomno < 0 && !t_at(i16(mx), i16(my))) {
@@ -2016,7 +2017,7 @@ export function* set_mimic_sym(mtmp) {
             ap_type = NHC.M_AP_OBJECT;
             appear = NHC.GOLD_PIECE;
         } else if (rt == NHC.DELPHI) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2451, __s_set_mimic_sym), rn2(2)) : rn2(2))) {
+            if (rn2_at(__s_makemon_c, 2451, __s_set_mimic_sym, 2)) {
                 ap_type = NHC.M_AP_OBJECT;
                 appear = NHC.STATUE;
             } else {
@@ -2027,7 +2028,7 @@ export function* set_mimic_sym(mtmp) {
             ap_type = NHC.M_AP_FURNITURE;
             appear = NHC.S_altar;
         } else if (rt >= NHC.SHOPBASE) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2468, __s_set_mimic_sym), rn2(10)) : rn2(10)) >= depth(cptr.add(u, $you_uz))) {
+            if (rn2_at(__s_makemon_c, 2468, __s_set_mimic_sym, 10) >= depth(cptr.add(u, $you_uz))) {
                 s_sym = NHC.S_MIMIC_DEF;
                 { __go_assign_sym = true; break __skip_assign_sym; }
             }
@@ -2037,21 +2038,21 @@ export function* set_mimic_sym(mtmp) {
                 appear = (-s_sym) >>> 0;
             } else if (rt == NHC.FODDERSHOP && s_sym > NHC.MAXOCLASSES) {
                 ap_type = NHC.M_AP_OBJECT;
-                appear = ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2481, __s_set_mimic_sym), rn2(2)) : rn2(2)) ? NHC.LUMP_OF_ROYAL_JELLY : NHC.SLIME_MOLD) >>> 0;
+                appear = (rn2_at(__s_makemon_c, 2481, __s_set_mimic_sym, 2) ? NHC.LUMP_OF_ROYAL_JELLY : NHC.SLIME_MOLD) >>> 0;
             } else {
                 if (s_sym == NHC.RANDOM_CLASS || s_sym >= NHC.MAXOCLASSES)
-                    s_sym = cptr.ld1so(cptr.decay(syms), ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2484, __s_set_mimic_sym), rn2((syms.length - 2) | 0)) : rn2((syms.length - 2) | 0)) + 2) | 0, 1);
+                    s_sym = cptr.ld1so(cptr.decay(syms), (rn2_at(__s_makemon_c, 2484, __s_set_mimic_sym, (syms.length - 2) | 0) + 2) | 0, 1);
                 { __go_assign_sym = true; break __skip_assign_sym; }
             }
         } else {
-            s_sym = cptr.ld1so(cptr.decay(syms), (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2488, __s_set_mimic_sym), rn2(syms.length)) : rn2(syms.length)), 1);
+            s_sym = cptr.ld1so(cptr.decay(syms), rn2_at(__s_makemon_c, 2488, __s_set_mimic_sym, syms.length), 1);
             __go_assign_sym = true; break __skip_assign_sym;
         }
     }
     if (__go_assign_sym) {
         if (s_sym == NHC.MAXOCLASSES) {
             ap_type = NHC.M_AP_FURNITURE;
-            appear = cptr.ldI32o(__static_set_mimic_sym_furnsyms, (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2497, __s_set_mimic_sym), rn2(8)) : rn2(8)), 4) >>> 0;
+            appear = cptr.ldI32o(__static_set_mimic_sym_furnsyms, rn2_at(__s_makemon_c, 2497, __s_set_mimic_sym, 8), 4) >>> 0;
         } else {
             ap_type = NHC.M_AP_OBJECT;
             if (s_sym == NHC.S_MIMIC_DEF) {
@@ -2071,7 +2072,7 @@ export function* set_mimic_sym(mtmp) {
         let mndx = (yield* rndmonnum());
         let nocorpse_ndx = (cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_NOCORPSE) != 0;
         if (appear == NHC.CORPSE && nocorpse_ndx)
-            mndx = (((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2522, __s_set_mimic_sym), rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) : rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0))) + NHC.PM_ARCHEOLOGIST) | 0);
+            mndx = ((rn2_at(__s_makemon_c, 2522, __s_set_mimic_sym, ((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
         else if ((appear == NHC.EGG && !can_be_hatched(mndx)) || (appear == NHC.TIN && nocorpse_ndx))
             mndx = NHC.NON_PM;
         (yield* newmcorpsenm(mtmp));
@@ -2081,9 +2082,9 @@ export function* set_mimic_sym(mtmp) {
         cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, cptr.ldI32o(svc, $context_info_current_fruit));
         cptr.st1o(flags, $flag_made_fruit, 1);
     } else if (ap_type == NHC.M_AP_FURNITURE && appear == NHC.S_altar) {
-        let algn = ((rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2539, __s_set_mimic_sym), rn2(3)) : rn2(3)) - 1) | 0;
+        let algn = (rn2_at(__s_makemon_c, 2539, __s_set_mimic_sym, 3) - 1) | 0;
         (yield* newmcorpsenm(mtmp));
-        cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, ((In_hell(cptr.add(u, $you_uz)) && (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2542, __s_set_mimic_sym), rn2(3)) : rn2(3))) ? NHM.AM_NONE : Align2amask(algn)) | 0);
+        cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, ((In_hell(cptr.add(u, $you_uz)) && rn2_at(__s_makemon_c, 2542, __s_set_mimic_sym, 3)) ? NHM.AM_NONE : Align2amask(algn)) | 0);
     } else if (has_mcorpsenm(mtmp)) {
         cptr.stI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);
     }
@@ -2107,8 +2108,8 @@ export function* bagotricks(bag, tipping, seencount) {
         let creatcnt = 1;
         let seecount = 0;
         (yield* consume_obj_charge(bag, schar((!tipping))));
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2577, __s_bagotricks), rn2(23)) : rn2(23)))
-            creatcnt = (creatcnt + (rng_log_enabled() ? (rng_log_set_caller(__s_makemon_c, 2578, __s_bagotricks), rnd(7)) : rnd(7))) | 0;
+        if (!rn2_at(__s_makemon_c, 2577, __s_bagotricks, 23))
+            creatcnt = (creatcnt + rnd_at(__s_makemon_c, 2578, __s_bagotricks, 7)) | 0;
         do {
             mtmp = (yield* makemon(null, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.NO_MM_FLAGS));
             if (mtmp) {

@@ -9,6 +9,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { has_ebones, has_mgivenname, has_omonst, has_oname, is_Vlad, ismnum } from './nhmacrofn.js';
+import { rn2_at } from './nhrng.js';
 import { Punished, Role_switch, URIGHTY, discover, wizard } from './nhprop.js';
 import { In_hell, Is_botlevel, Is_branchlev, Is_special, assign_level, depth, dunlevs_in_dungeon, ledger_no, maxledgerno, on_level } from './dungeon.js';
 import { flags, gb, gf, gi, gs, gu, iflags, program_state, svc, svd, svl, svn, svp, svr, u, uball, ynchars } from './decl.js';
@@ -27,7 +28,6 @@ import { end_burn } from './timeout.js';
 import { windowprocs } from './windows.js';
 import { isok, yn_function } from './cmd.js';
 import { attacktype, give_u_to_m_resistances } from './mondata.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { can_carry, dmonsfree, iter_mons, mongone } from './mon.js';
 import { obj_no_longer_held } from './do.js';
 import { obj_is_burning } from './light.js';
@@ -286,7 +286,7 @@ function give_to_nearby_mon(otmp, x, y) {
             if (!(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 268435456n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 1073741824n) != 0n || attacktype(cptr.ldPtro(mtmp, $monst_data), NHM.AT_WEAP)) || ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2147483648n) != 0n)))
                 continue;
             nmon++;
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 247, __s_give_to_nearby_mon), rn2(nmon)) : rn2(nmon)))
+            if (!rn2_at(__s_bones_c, 247, __s_give_to_nearby_mon, nmon))
                 selected = mtmp;
         }
     }
@@ -309,13 +309,13 @@ export function drop_upon_death(mtmp, cont, x, y) {
         cptr.stI64o(otmp, $obj_owornmask, 0n);
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD)
             goodfruit(cptr.ld1so(otmp, $obj_spe));
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 290, __s_drop_upon_death), rn2(5)) : rn2(5)))
+        if (rn2_at(__s_bones_c, 290, __s_drop_upon_death, 5))
             curse(otmp);
         if (mtmp)
             void add_to_minv(mtmp, otmp);
         else if (cont)
             void add_to_container(cont, otmp);
-        else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 296, __s_drop_upon_death), rn2(8)) : rn2(8)))
+        else if (!rn2_at(__s_bones_c, 296, __s_drop_upon_death, 8))
             give_to_nearby_mon(otmp, x, y);
         else
             place_object(otmp, x, y);
@@ -368,7 +368,7 @@ export function can_make_bones() {
             if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.MAGIC_PORTAL)
                 return 0;
     }
-    if (depth(cptr.add(u, $you_uz)) <= 0 || (!(rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 377, __s_can_make_bones), rn2((1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0)) : rn2((1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0)) && !wizard()))
+    if (depth(cptr.add(u, $you_uz)) <= 0 || (!rn2_at(__s_bones_c, 377, __s_can_make_bones, (1 + (depth(cptr.add(u, $you_uz)) >> 2)) | 0) && !wizard()))
         return 0;
     if (discover())
         return 0;
@@ -555,7 +555,7 @@ export function getbones() {
         return 0;
     if (!cptr.ld1so(flags, $flag_bones))
         return 0;
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_bones_c, 645, __s_getbones), rn2(3)) : rn2(3)) && !wizard())
+    if (rn2_at(__s_bones_c, 645, __s_getbones, 3) && !wizard())
         return 0;
     if (no_bones_level(cptr.add(u, $you_uz)))
         return 0;

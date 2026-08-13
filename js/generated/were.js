@@ -9,9 +9,10 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { helpless } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Deaf, HStun, Hallucination, Polymorph_control, Protection_from_shape_changers, Unchanging } from './nhprop.js';
 import { flags, gm, gw, gy, svc, u } from './decl.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { night } from './calendar.js';
 import { canseemon, newsym } from './display.js';
 import { You_feel, You_hear, impossible, pline } from './pline.js';
@@ -92,7 +93,7 @@ export function were_change(mon) {
                 }
             }
         }
-    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 41, __s_were_change), rn2(30)) : rn2(30)) || Protection_from_shape_changers()) {
+    } else if (!rn2_at(__s_were_c, 41, __s_were_change, 30) || Protection_from_shape_changers()) {
         new_were(mon);
         (cptr.stI64o(gw, $instance_globals_w_were_changes, cptr.ldI64o(gw, $instance_globals_w_were_changes) + 1n)) - (1n);
     }
@@ -166,7 +167,7 @@ export function new_were(mon) {
     mon_break_armor(mon, 0);
     possibly_unwield(mon, 0);
     if (cptr.ld1so(svc, $context_info_mon_moving) && !(cptr.ldI32o(mon, $monst_mpeaceful) & 1) && onscary(cptr.ldI16o(mon, $monst_mux), cptr.ldI16o(mon, $monst_muy), mon) && monnear(mon, cptr.ldI16o(mon, $monst_mux), cptr.ldI16o(mon, $monst_muy)))
-        monflee(mon, (((rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 137, __s_new_were), rn2(9)) : rn2(9)) + 2) | 0), 1, 1);
+        monflee(mon, ((rn2_at(__s_were_c, 137, __s_new_were, 9) + 2) | 0), 1, 1);
 }
 
 /** C ref: were.c:142 — @param {CPtr<struct permonst>} ptr @param {CInt} yours @param {CPtr<int>} visible @param {CPtr<char>} genbuf @returns {CInt} */
@@ -179,23 +180,23 @@ export function were_summon(ptr, yours, visible, genbuf) {
     cptr.stI32(visible, 0);
     if (Protection_from_shape_changers() && !yours)
         return 0;
-    for (i = (rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 155, __s_were_summon), rnd(5)) : rnd(5)); i > 0; i--) {
+    for (i = rnd_at(__s_were_c, 155, __s_were_summon, 5); i > 0; i--) {
         switch (pm) {
             case NHC.PM_WERERAT:
             case NHC.PM_HUMAN_WERERAT:
-            typ = (rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 159, __s_were_summon), rn2(3)) : rn2(3)) ? NHC.PM_SEWER_RAT : ((rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 160, __s_were_summon), rn2(3)) : rn2(3)) ? NHC.PM_GIANT_RAT : NHC.PM_RABID_RAT);
+            typ = rn2_at(__s_were_c, 159, __s_were_summon, 3) ? NHC.PM_SEWER_RAT : (rn2_at(__s_were_c, 160, __s_were_summon, 3) ? NHC.PM_GIANT_RAT : NHC.PM_RABID_RAT);
             if (genbuf)
                 void cptr.strcpy(genbuf, __s_rat);
             break;
             case NHC.PM_WEREJACKAL:
             case NHC.PM_HUMAN_WEREJACKAL:
-            typ = (rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 166, __s_were_summon), rn2(7)) : rn2(7)) ? NHC.PM_JACKAL : ((rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 166, __s_were_summon), rn2(3)) : rn2(3)) ? NHC.PM_COYOTE : NHC.PM_FOX);
+            typ = rn2_at(__s_were_c, 166, __s_were_summon, 7) ? NHC.PM_JACKAL : (rn2_at(__s_were_c, 166, __s_were_summon, 3) ? NHC.PM_COYOTE : NHC.PM_FOX);
             if (genbuf)
                 void cptr.strcpy(genbuf, __s_jackal);
             break;
             case NHC.PM_WEREWOLF:
             case NHC.PM_HUMAN_WEREWOLF:
-            typ = (rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 172, __s_were_summon), rn2(5)) : rn2(5)) ? NHC.PM_WOLF : ((rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 172, __s_were_summon), rn2(2)) : rn2(2)) ? NHC.PM_WARG : NHC.PM_WINTER_WOLF);
+            typ = rn2_at(__s_were_c, 172, __s_were_summon, 5) ? NHC.PM_WOLF : (rn2_at(__s_were_c, 172, __s_were_summon, 2) ? NHC.PM_WARG : NHC.PM_WINTER_WOLF);
             if (genbuf)
                 void cptr.strcpy(genbuf, __s_wolf);
             break;
@@ -241,7 +242,7 @@ export function you_unwere(purify) {
     if (!Unchanging() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n) && !monster_nearby() && (!controllable_poly || !paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_WERECHANGE) >>> 0) != 0)), __s_remain_in_beast_form)))
         rehumanize();
     else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n) && !cptr.ldI32o(u, $you_mtimedone))
-        cptr.stI32o(u, $you_mtimedone, (((rng_log_enabled() ? (rng_log_set_caller(__s_were_c, 227, __s_you_unwere), rn2(200)) : rn2(200)) + 200) | 0));
+        cptr.stI32o(u, $you_mtimedone, ((rn2_at(__s_were_c, 227, __s_you_unwere, 200) + 200) | 0));
 }
 
 /** C ref: were.c:232 — @param {CInt} which */

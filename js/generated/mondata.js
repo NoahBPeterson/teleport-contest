@@ -9,6 +9,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { DISTANCE_ATTK_TYPE, Is_dragon_armor, canspotmon, completelyburns, completelyrots, is_floater, is_longworm, is_mind_flayer, is_rider, is_unicorn, is_vampshifter, is_weptool, is_whirly, m_cansee, mon_perma_blind, mon_resistancebits } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Blnd_resist, EBlinded, Hallucination, Invis, Strangled, Underwater, Upolyd } from './nhprop.js';
 import { cg, gi, gm, gu, gv, gy, svl, svm, u, uarm, ublindf, uwep } from './decl.js';
 import { mons } from './monst.js';
@@ -23,7 +24,6 @@ import { dist2, highc, strncmpi, strstri } from './hacklib.js';
 import { title_to_mon } from './botl.js';
 import { def_char_to_monclass, def_monsyms } from './drawing.js';
 import { makesingular } from './objnam.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { canseemon, sensemon } from './display.js';
 import { mon_has_amulet } from './wizard.js';
 import { is_fshk } from './shk.js';
@@ -1126,7 +1126,7 @@ export function pronoun_gender(mtmp, pg_flags) {
     let override_vis = schar((((pg_flags & NHM.PRONOUN_NO_IT) >>> 0) ? 1 : 0));
     let hallu_rand = schar((((pg_flags & NHM.PRONOUN_HALLU) >>> 0) ? 1 : 0));
     if (hallu_rand && Hallucination())
-        return (rng_log_enabled() ? (rng_log_set_caller(__s_mondata_c, 1200, __s_pronoun_gender), rn2(4)) : rn2(4));
+        return rn2_at(__s_mondata_c, 1200, __s_pronoun_gender, 4);
     if (!override_vis && !canspotmon(mtmp))
         return 2;
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 262144n) != 0n))
@@ -1562,7 +1562,7 @@ export function give_u_to_m_resistances(mtmp) {
 /** C ref: mondata.c:1607 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function resist_conflict(mtmp) {
     let resist_chance = (19 < ((((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) + cptr.ldI32o(u, $you_ulevel)) | 0)) ? 19 : ((((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) + cptr.ldI32o(u, $you_ulevel)) | 0)));
-    return schar(((rng_log_enabled() ? (rng_log_set_caller(__s_mondata_c, 1612, __s_resist_conflict), rnd(20)) : rnd(20)) > resist_chance));
+    return schar((rnd_at(__s_mondata_c, 1612, __s_resist_conflict, 20) > resist_chance));
 }
 
 /** C ref: mondata.c:1617 — @param {CPtr<struct monst>} mtmp @param {CInt} ttyp @returns {CInt} */
@@ -1615,7 +1615,7 @@ cptr.stI32o(__static_get_atkdam_type_rnd_breath_typ, 28, NHM.AD_ACID); /** C ref
 /** C ref: mondata.c:1660 — @param {CInt} adtyp @returns {CInt} */
 export function get_atkdam_type(adtyp) {
     if (adtyp == NHM.AD_RBRE) {
-        return cptr.ldI32o(__static_get_atkdam_type_rnd_breath_typ, (rng_log_enabled() ? (rng_log_set_caller(__s_mondata_c, 1666, __s_get_atkdam_type), rn2(8)) : rn2(8)), 4);
+        return cptr.ldI32o(__static_get_atkdam_type_rnd_breath_typ, rn2_at(__s_mondata_c, 1666, __s_get_atkdam_type, 8), 4);
     }
     return adtyp;
 }

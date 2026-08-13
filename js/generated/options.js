@@ -9,6 +9,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { SET__IS_VALUE_VALID } from './nhmacrofn.js';
+import { rnd_at } from './nhrng.js';
 import { FEATURE_NOTICE_VER_MAJ, FEATURE_NOTICE_VER_MIN, FEATURE_NOTICE_VER_PATCH, create_nhwindow, destroy_nhwindow, discover, display_file, display_nhwindow, end_menu, number_pad, preference_update, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
 import { WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs, gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u } from './decl.js';
 import { do_deferred_showpaths, nh_basename, read_sym_file } from './files.js';
@@ -40,7 +41,7 @@ import { reassign, update_inventory } from './invent.js';
 import { vision_recalc } from './vision.js';
 import { Strlen_, strbuf_append, strbuf_init } from './strutil.js';
 import { sf_init } from './sfbase.js';
-import { init_random, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { init_random, rn2, rn2_on_display_rng } from './rnd.js';
 import { regex_compile, regex_error_desc, regex_free, regex_init, regex_match } from './posixregex.js';
 import { name_to_mon } from './mondata.js';
 import { reset_customsymbols } from './utf8map.js';
@@ -11648,7 +11649,7 @@ export function fruitadd(str, replace_fruit) {
         if (f)
             break __lbl_nonew;
         if (highest_fruit_id.v >= 127)
-            return (rng_log_enabled() ? (rng_log_set_caller(__s_options_c, 8273, __s_fruitadd), rnd(127)) : rnd(127));
+            return rnd_at(__s_options_c, 8273, __s_fruitadd, 127);
         f = alloc(48);
         void __builtin___memset_chk(f, 0, 48n, __builtin_object_size(f, 0));
         copynchars(f, cptr.ld1s(cptr.decay(altname)) ? cptr.decay(altname) : str, 31);

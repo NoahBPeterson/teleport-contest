@@ -13,6 +13,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, cant_drown, greatest_erosion, grounded, has_mgivenname, helpless, is_floater, is_metallic, is_pole, is_whirly, likes_lava, touch_petrifies } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, Blind_telepat, Flying, Fumbling, Glib, HConfusion, HStun, HWounded_legs, Half_physical_damage, Hallucination, Lev_at_will, Levitation, Punished, Stealth, Stone_resistance, Underwater, Upolyd, Wounded_legs, wizard } from './nhprop.js';
 import { You, You_cant, Your, impossible, pline } from './pline.js';
 import { Mgender, Monnam, YMonnam, a_monnam, hliquid, minimal_monnam, mon_nam, monverbself, pmname, x_monnam, y_monnam } from './do_name.js';
@@ -28,7 +29,6 @@ import { an } from './objnam.js';
 import { float_down, instapetrify, mintrap, sokoban_guilt, t_at, trapname } from './trap.js';
 import { acurr, adjalign, exercise } from './attrib.js';
 import { objdescr_is } from './o_init.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { mpickobj, remove_worn_item } from './steal.js';
 import { freeinv, fully_identify_obj, sobj_at } from './invent.js';
 import { mksobj } from './mkobj.js';
@@ -267,7 +267,7 @@ export function* use_saddle(otmp) {
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
         chance = (chance - 50) | 0;
     (yield* maybewakesteed(mtmp));
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 129, __s_use_saddle), rn2(100)) : rn2(100)) < chance) {
+    if (rn2_at(__s_steed_c, 129, __s_use_saddle, 100) < chance) {
         (yield* You(__s_put_the_saddle_on_s, (yield* mon_nam(mtmp))));
         if (cptr.ldI64o(otmp, $obj_owornmask))
             (yield* remove_worn_item(otmp, 0));
@@ -409,14 +409,14 @@ export function* mount_steed(mtmp, force) {
         (yield* Your(__s_s_armor_is_too_stiff_to_be_able_to, (cptr.ldI32o(uarm.v, $obj_oeroded) & 3) | 0 ? __s_rusty : __s_corroded, (yield* mon_nam(mtmp))));
         return 0;
     }
-    if (!force && (HConfusion() || Fumbling() || Glib() || Wounded_legs() || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 || (cptr.ldI32o(otmp, $obj_greased) & 1) | 0 || (((cptr.ldI32o(u, $you_ulevel) + cptr.ld1so(mtmp, $monst_mtame)) | 0) < (rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 341, __s_mount_steed), rnd(20)) : rnd(20))))) {
+    if (!force && (HConfusion() || Fumbling() || Glib() || Wounded_legs() || (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 || (cptr.ldI32o(otmp, $obj_greased) & 1) | 0 || (((cptr.ldI32o(u, $you_ulevel) + cptr.ld1so(mtmp, $monst_mtame)) | 0) < rnd_at(__s_steed_c, 341, __s_mount_steed, 20)))) {
         if (Levitation()) {
             (yield* pline(__s_s_slips_away_from_you, (yield* Monnam(mtmp))));
             return 0;
         }
         (yield* You(__s_slip_while_trying_to_get_on_s, (yield* mon_nam(mtmp))));
         void cptr.sprintf(cptr.decay(buf), __s_slipped_while_mounting_s, (yield* x_monnam(mtmp, NHM.ARTICLE_A, null, 7, 1)));
-        (yield* losehp(((Half_physical_damage()) ? ((((((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 354, __s_mount_steed), rn2(5)) : rn2(5)) + 10) | 0)) + 1) | 0) / 2) | 0) : ((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 354, __s_mount_steed), rn2(5)) : rn2(5)) + 10) | 0))), cptr.decay(buf), NHM.NO_KILLER_PREFIX));
+        (yield* losehp(((Half_physical_damage()) ? (((((((rn2_at(__s_steed_c, 354, __s_mount_steed, 5) + 10) | 0)) + 1) | 0) / 2) | 0) : (((rn2_at(__s_steed_c, 354, __s_mount_steed, 5) + 10) | 0))), cptr.decay(buf), NHM.NO_KILLER_PREFIX));
         return 0;
     }
     (yield* maybewakesteed(mtmp));
@@ -461,7 +461,7 @@ export function* kick_steed() {
     if (helpless(cptr.ldPtro(u, $you_usteed))) {
         void cptr.strcpy(cptr.decay(He), (cptr.ldPtro2(genders, pronoun_gender(cptr.ldPtro(u, $you_usteed), NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he)));
         cptr.st1(cptr.decay(He), highc(cptr.ld1s(cptr.decay(He))));
-        if (((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1) | 0 || (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen) & 127) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 415, __s_kick_steed), rn2(2)) : rn2(2))) {
+        if (((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1) | 0 || (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen) & 127) | 0) && !rn2_at(__s_steed_c, 415, __s_kick_steed, 2)) {
             if ((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mcanmove) & 1))
                 cptr.stI32o(cptr.ldPtro(u, $you_usteed), $monst_msleeping, 0);
             else if (((cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mfrozen) & 127) | 0) > 2)
@@ -482,13 +482,13 @@ export function* kick_steed() {
         (cptr.st1o(cptr.ldPtro(u, $you_usteed), $monst_mtame, cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) + -1)) - (-1);
     if (!cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) && (cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_mleashed) & 1) | 0)
         (yield* m_unleash(cptr.ldPtro(u, $you_usteed), 1));
-    if (!cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) || (((cptr.ldI32o(u, $you_ulevel) + cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame)) | 0) < (rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 441, __s_kick_steed), rnd(20)) : rnd(20)))) {
+    if (!cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) || (((cptr.ldI32o(u, $you_ulevel) + cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame)) | 0) < rnd_at(__s_steed_c, 441, __s_kick_steed, 20))) {
         (yield* newsym(cptr.ldI16o(cptr.ldPtro(u, $you_usteed), $monst_mx), cptr.ldI16o(cptr.ldPtro(u, $you_usteed), $monst_my)));
         (yield* dismount_steed(NHC.DISMOUNT_THROWN));
         return;
     }
     (yield* pline(__s_s_gallops, (yield* Monnam(cptr.ldPtro(u, $you_usteed)))));
-    cptr.stI64o(u, $you_ugallop, cptr.ldI64o(u, $you_ugallop) + BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 448, __s_kick_steed), rn2(20)) : rn2(20)) + 30) | 0)));
+    cptr.stI64o(u, $you_ugallop, cptr.ldI64o(u, $you_ugallop) + BigInt(((rn2_at(__s_steed_c, 448, __s_kick_steed, 20) + 30) | 0)));
     return;
 }
 
@@ -518,7 +518,7 @@ function* landing_spot(spot, reason, forceit) {
     if (reason == NHC.DISMOUNT_KNOCKED && j != NHC.DIR_ERR) {
         best_j = j;
         cptr.stI16o(cptr.decay(try$), 0, i16(cptr.ldI32o(u, $you_dx)), $sizeof_coord), cptr.stI16o2(cptr.decay(try$), 0, $sizeof_coord, $nhcoord_y, i16(cptr.ldI32o(u, $you_dy)));
-        i = (rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 480, __s_landing_spot), rn2(2)) : rn2(2));
+        i = rn2_at(__s_steed_c, 480, __s_landing_spot, 2);
         clockwise_j = ((((j) + 1) | 0) % ((NHC.N_DIRS_Z - 2) | 0));
         dirtocoord(cc, clockwise_j);
         cptr.stI16o(cptr.decay(try$), (1 + i) | 0, cptr.ldI16(cc), $sizeof_coord), cptr.stI16o2(cptr.decay(try$), (1 + i) | 0, $sizeof_coord, $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
@@ -556,7 +556,7 @@ function* landing_spot(spot, reason, forceit) {
             if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), i16(((x - cptr.ldI16(u)) | 0)), i16(((y - cptr.ldI16o(u, $you_uy)) | 0)), NHM.TEST_MOVE))) {
                 ++viable;
                 distance = dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-                if (min_distance < 0 || ((best_j == -1) ? (distance < min_distance) : (j < 3)) || (distance == min_distance && !(rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 543, __s_landing_spot), rn2(viable)) : rn2(viable)))) {
+                if (min_distance < 0 || ((best_j == -1) ? (distance < min_distance) : (j < 3)) || (distance == min_distance && !rn2_at(__s_steed_c, 543, __s_landing_spot, viable))) {
                     kn_trap = schar((i == 0 && ((t = t_at(x, y)) !== null && (cptr.ldI32o(t, $trap_tseen) & 1) | 0 && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) != NHC.VIBRATING_SQUARE) ? 1 : 0));
                     boulder = schar((i <= 1 && (sobj_at(NHC.BOULDER, x, y) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 134217728n) != 0n)) ? 1 : 0));
                     if (!kn_trap && !boulder) {
@@ -608,8 +608,8 @@ export function* dismount_steed(reason) {
         if (!have_spot)
             have_spot = (yield* landing_spot(cc, reason, 1));
         if (!ulev && !ufly) {
-            (yield* losehp(((Half_physical_damage()) ? ((((((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 612, __s_dismount_steed), rn2(10)) : rn2(10)) + 10) | 0)) + 1) | 0) / 2) | 0) : ((((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 612, __s_dismount_steed), rn2(10)) : rn2(10)) + 10) | 0))), __s_riding_accident, NHM.KILLED_BY_AN));
-            (yield* set_wounded_legs(393216n, (Number(BigInt.asIntN(32, HWounded_legs())) + (((rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 614, __s_dismount_steed), rn2(5)) : rn2(5)) + 5) | 0)) | 0));
+            (yield* losehp(((Half_physical_damage()) ? (((((((rn2_at(__s_steed_c, 612, __s_dismount_steed, 10) + 10) | 0)) + 1) | 0) / 2) | 0) : (((rn2_at(__s_steed_c, 612, __s_dismount_steed, 10) + 10) | 0))), __s_riding_accident, NHM.KILLED_BY_AN));
+            (yield* set_wounded_legs(393216n, (Number(BigInt.asIntN(32, HWounded_legs())) + ((rn2_at(__s_steed_c, 614, __s_dismount_steed, 5) + 5) | 0)) | 0));
             repair_leg_damage = 0;
         }
         break;
@@ -730,7 +730,7 @@ function* maybewakesteed(steed) {
     cptr.stI32o(steed, $monst_msleeping, 0);
     if (frozen) {
         frozen = (((frozen + 1) | 0) / 2) | 0;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_steed_c, 836, __s_maybewakesteed), rn2(frozen)) : rn2(frozen))) {
+        if (!rn2_at(__s_steed_c, 836, __s_maybewakesteed, frozen)) {
             cptr.stI32o(steed, $monst_mfrozen, 0);
             cptr.stI32o(steed, $monst_mcanmove, 1);
         } else {

@@ -14,6 +14,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_FURNITURE, IS_LAVA, IS_POOL, Is_box, Is_candle, Is_container, Is_mbag, SURFACE_AT, SchroedingersBox, age_is_relative, canspotmon, has_omonst, is_pick, is_pit, is_rider, min, obj_is_generic, touch_petrifies } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Blind, HConfusion, HFumbling, HStun, Half_physical_damage, Hallucination, ParanoidAutoAll, Stone_resistance, Underwater, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
 import { Norep, There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The, urgent_pline, verbalize } from './pline.js';
 import { Doname2, The, Tobjnam, Yname2, Ysimple_name2, an, ansimpleoname, corpse_xname, doname, doname_with_price, killer_xname, makesingular, otense, safe_qbuf, the, thesimpleoname, vtense, xname, yname, ysimple_name } from './objnam.js';
@@ -39,7 +40,7 @@ import { hideunder } from './mon.js';
 import { regex_match } from './posixregex.js';
 import { Shk_Your, addtobill, check_unpaid_usage, costly_spot, obfree, pick_pick, remote_burglary, sellobj, sellobj_state, shop_keeper, stolen_value, subfrombill } from './shk.js';
 import { alloc } from './alloc.js';
-import { d, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2_on_display_rng } from './rnd.js';
 import { objects } from './objects.js';
 import { debugcore } from './files.js';
 import { container_contents, panic } from './end.js';
@@ -1873,7 +1874,7 @@ function* do_loot_cont(cobjp, cindex, ccount) {
         let tmp;
         (yield* You(__s_carefully_open_s, (yield* the((yield* xname(cobj))))));
         (yield* pline(__s_it_develops_a_huge_set_of_teeth_and));
-        tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2155, __s_do_loot_cont), rnd(10)) : rnd(10));
+        tmp = rnd_at(__s_pickup_c, 2155, __s_do_loot_cont, 10);
         (yield* losehp(((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp)), __s_carnivorous_bag, NHM.KILLED_BY_AN));
         (yield* discover_object(NHC.BAG_OF_TRICKS, 1, 1, 1));
         cptr.st1o(ga, $instance_globals_a_abort_looting, 1);
@@ -1916,9 +1917,9 @@ function* doloot_core() {
             return NHM.ECMD_OK;
         }
         if (HConfusion()) {
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2203, __s_doloot_core), rn2(6)) : rn2(6)) && (yield* reverse_loot()))
+            if (rn2_at(__s_pickup_c, 2203, __s_doloot_core, 6) && (yield* reverse_loot()))
                 return NHM.ECMD_TIME;
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2205, __s_doloot_core), rn2(2)) : rn2(2))) {
+            if (rn2_at(__s_pickup_c, 2205, __s_doloot_core, 2)) {
                 (yield* pline(__s_being_confused_you_find_nothing_to_loot));
                 return NHM.ECMD_TIME;
             }
@@ -2063,9 +2064,9 @@ function* reverse_loot() {
     let n;
     let x = cptr.ldI16(u);
     let y = cptr.ldI16o(u, $you_uy);
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2357, __s_reverse_loot), rn2(3)) : rn2(3))) {
+    if (!rn2_at(__s_pickup_c, 2357, __s_reverse_loot, 3)) {
         for (n = inv_cnt(1), otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; --n, otmp = cptr.ldPtr(otmp))
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2361, __s_reverse_loot), rn2((n + 1) | 0)) : rn2((n + 1) | 0))) {
+            if (!rn2_at(__s_pickup_c, 2361, __s_reverse_loot, (n + 1) | 0)) {
                 (yield* prinv(__s_you_find_old_loot, otmp, 0n));
                 return 1;
             }
@@ -2073,7 +2074,7 @@ function* reverse_loot() {
     }
     for (goldob = cptr.ldPtro(gi, $instance_globals_i_invent); goldob; goldob = cptr.ldPtr(goldob))
         if (cptr.ld1so(goldob, $obj_oclass) == NHC.COIN_CLASS) {
-            contribution = (BigInt.asIntN(64, BigInt.asIntN(64, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2371, __s_reverse_loot), rnd(5)) : rnd(5))) * cptr.ldI64o(goldob, $obj_quan)) + 4n)) / 5n;
+            contribution = (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(rnd_at(__s_pickup_c, 2371, __s_reverse_loot, 5)) * cptr.ldI64o(goldob, $obj_quan)) + 4n)) / 5n;
             if (contribution < cptr.ldI64o(goldob, $obj_quan))
                 goldob = (yield* splitobj(goldob, contribution));
             break;
@@ -2111,7 +2112,7 @@ function* reverse_loot() {
             (yield* freeinv(goldob));
             (yield* add_to_minv(mon, goldob));
             (yield* pline(__s_the_exchequer_accepts_your_contribution));
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2418, __s_reverse_loot), rn2(10)) : rn2(10)))
+            if (!rn2_at(__s_pickup_c, 2418, __s_reverse_loot, 10))
                 cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.T_LOOTED);
         } else {
             (yield* You(__s_drop_s, (yield* doname(goldob))));
@@ -2145,7 +2146,7 @@ export function* loot_mon(mtmp, passed_info, prev_loot) {
                 (yield* You(__s_take_s_off_of_s, (yield* thesimpleoname(otmp)), (yield* mon_nam(mtmp))));
             otmp = (yield* hold_another_object(otmp, __s_you_drop_s, (yield* doname(otmp)), null));
             (void (otmp));
-            timepassed = (rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2467, __s_loot_mon), rnd(3)) : rnd(3));
+            timepassed = rnd_at(__s_pickup_c, 2467, __s_loot_mon, 3);
             if (prev_loot)
                 cptr.st1(prev_loot, 1);
         } else if (c == 113) {
@@ -2163,7 +2164,7 @@ export function* loot_mon(mtmp, passed_info, prev_loot) {
 function mbag_explodes(obj, depthin) {
     if ((cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION || cptr.ldI16o(obj, $obj_otyp) == NHC.BAG_OF_TRICKS) && cptr.ld1so(obj, $obj_spe) <= 0)
         return 0;
-    if ((Is_mbag(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION) && ((rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2497, __s_mbag_explodes), rn2(1 << (depthin > 7 ? 7 : depthin))) : rn2(1 << (depthin > 7 ? 7 : depthin))) <= depthin))
+    if ((Is_mbag(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.WAN_CANCELLATION) && (rn2_at(__s_pickup_c, 2497, __s_mbag_explodes, 1 << (depthin > 7 ? 7 : depthin)) <= depthin))
         return 1;
     else if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
         let otmp;
@@ -2176,7 +2177,7 @@ function mbag_explodes(obj, depthin) {
 
 /** C ref: pickup.c:2510 @returns {CInt} */
 function is_boh_item_gone() {
-    return schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2512, __s_is_boh_item_gone), rn2(13)) : rn2(13))));
+    return schar((!rn2_at(__s_pickup_c, 2512, __s_is_boh_item_gone, 13)));
 }
 
 /** C ref: pickup.c:2518 — @param {CPtr<struct obj>} boh @param {CInt} on_floor */
@@ -2307,7 +2308,7 @@ function* in_container(obj) {
             (yield* useupf(cptr.ldPtro(gc, $instance_globals_c_current_container), cptr.ldI64o(cptr.ldPtro(gc, $instance_globals_c_current_container), $obj_quan)));
         else
             (yield* panic(__s_in_container_bag_not_found));
-        (yield* losehp((rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2692, __s_in_container), d(6, 6)) : d(6, 6)), __s_magical_explosion, NHM.KILLED_BY_AN));
+        (yield* losehp(d_at(__s_pickup_c, 2692, __s_in_container, 6, 6), __s_magical_explosion, NHM.KILLED_BY_AN));
         cptr.stPtro(gc, $instance_globals_c_current_container, null);
     }
     if (cptr.ldPtro(gc, $instance_globals_c_current_container)) {
@@ -2408,7 +2409,7 @@ export function* observe_quantum_cat(box, makecat, givemsg) {
     let livecat = null;
     let ox = cptr.box(0);
     let oy = cptr.box(0);
-    let itsalive = schar((!(rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 2832, __s_observe_quantum_cat), rn2(2)) : rn2(2))));
+    let itsalive = schar((!rn2_at(__s_pickup_c, 2832, __s_observe_quantum_cat, 2)));
     if (get_obj_location(box, ox, oy, 0))
         cptr.stI16o(box, $obj_ox, ox.v), cptr.stI16o(box, $obj_oy, oy.v);
     deadcat = cptr.ldPtro(box, $obj_cobj);
@@ -3096,7 +3097,7 @@ function* tipcontainer(box) {
                         (yield* useupf(targetbox, cptr.ldI64o(targetbox, $obj_quan)));
                     targetbox = null;
                     nobj = null;
-                    (yield* losehp((rng_log_enabled() ? (rng_log_set_caller(__s_pickup_c, 3803, __s_tipcontainer), d(6, 6)) : d(6, 6)), __s_magical_explosion, NHM.KILLED_BY_AN));
+                    (yield* losehp(d_at(__s_pickup_c, 3803, __s_tipcontainer, 6, 6), __s_magical_explosion, NHM.KILLED_BY_AN));
                 } else {
                     void (yield* add_to_container(targetbox, otmp));
                 }

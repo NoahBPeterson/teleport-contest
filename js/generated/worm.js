@@ -9,11 +9,11 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, has_mcorpsenm, max } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Hallucination } from './nhprop.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { gv, svc, svl, svm, u } from './decl.js';
 import { canseemon, newsym, sensemon, show_glyph } from './display.js';
-import { d, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { mcalcmove } from './mon.js';
 import { You, impossible, pline } from './pline.js';
 import { mons } from './monst.js';
@@ -21,6 +21,7 @@ import { dist2, distmin, s_suffix } from './hacklib.js';
 import { mattacku } from './mhitu.js';
 import { clone_mon } from './makemon.js';
 import { Monnam, mon_nam } from './do_name.js';
+import { rn2_on_display_rng } from './rnd.js';
 import { sfi_int, sfi_int16, sfi_long, sfo_int, sfo_int16, sfo_long } from './sfbase.js';
 import { isok } from './cmd.js';
 import { rnd_nextto_goodpos } from './trap.js';
@@ -156,10 +157,10 @@ export function worm_move(worm) {
         let prev_mhp;
         let wsegs = count_wsegs(worm);
         if (!cptr.ldI64o(wgrowtime, wnum, 8)) {
-            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_worm_c, 224, __s_worm_move), rnd(5)) : rnd(5)))), 8);
+            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnd_at(__s_worm_c, 224, __s_worm_move, 5))), 8);
         } else {
             let mmove = mcalcmove(worm, 0);
-            let incr = (((rng_log_enabled() ? (rng_log_set_caller(__s_worm_c, 233, __s_worm_move), rn2(10)) : rn2(10)) + 2) | 0);
+            let incr = ((rn2_at(__s_worm_c, 233, __s_worm_move, 10) + 2) | 0);
             incr = ((Math.imul(incr, NHM.NORMAL_SPEED)) / ((mmove) > 1 ? (mmove) : 1)) | 0;
             cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(incr)), 8);
         }
@@ -174,7 +175,7 @@ export function worm_move(worm) {
         if (whplimit > NHM.MHPMAX)
             whplimit = NHM.MHPMAX;
         prev_mhp = cptr.ldI32o(worm, $monst_mhp);
-        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) + (rng_log_enabled() ? (rng_log_set_caller(__s_worm_c, 257, __s_worm_move), d(2, 2)) : d(2, 2))) | 0);
+        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) + d_at(__s_worm_c, 257, __s_worm_move, 2, 2)) | 0);
         whpcap = max(whplimit, cptr.ldI32o(worm, $monst_mhpmax));
         if (cptr.ldI32o(worm, $monst_mhp) < whpcap) {
             if (cptr.ldI32o(worm, $monst_mhp) > whplimit)
@@ -194,7 +195,7 @@ export function worm_move(worm) {
 export function worm_nomove(worm) {
     shrink_worm((cptr.ldI32o(worm, $monst_wormno) & 31) | 0);
     if (cptr.ldI32o(worm, $monst_mhp) > count_wsegs(worm)) {
-        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) - (rng_log_enabled() ? (rng_log_set_caller(__s_worm_c, 293, __s_worm_nomove), d(2, 2)) : d(2, 2))) | 0);
+        cptr.stI32o(worm, $monst_mhp, (cptr.ldI32o(worm, $monst_mhp) - d_at(__s_worm_c, 293, __s_worm_nomove, 2, 2)) | 0);
         if (cptr.ldI32o(worm, $monst_mhp) < 1)
             cptr.stI32o(worm, $monst_mhp, 1);
     }
@@ -236,7 +237,7 @@ export function cutworm(worm, x, y, cuttier) {
         return;
     if (x == cptr.ldI16o(worm, $monst_mx) && y == cptr.ldI16o(worm, $monst_my))
         return;
-    cut_chance = (rng_log_enabled() ? (rng_log_set_caller(__s_worm_c, 388, __s_cutworm), rnd(20)) : rnd(20));
+    cut_chance = rnd_at(__s_worm_c, 388, __s_cutworm, 20);
     if (cuttier)
         cut_chance = (cut_chance + 10) | 0;
     if (cut_chance < 17)
@@ -257,7 +258,7 @@ export function cutworm(worm, x, y, cuttier) {
     cptr.stPtro(wtails, wnum, cptr.ldPtr(curr), 8);
     cptr.stPtr(curr, null);
     new_worm = null;
-    new_wnum = (cptr.ld1uo(worm, $monst_m_lev) >= 3 && !(rng_log_enabled() ? (rng_log_set_caller(__s_worm_c, 427, __s_cutworm), rn2(3)) : rn2(3))) ? get_wormno() : 0;
+    new_wnum = (cptr.ld1uo(worm, $monst_m_lev) >= 3 && !rn2_at(__s_worm_c, 427, __s_cutworm, 3)) ? get_wormno() : 0;
     if (new_wnum) {
         cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
         new_worm = clone_mon(worm, x, y);
@@ -278,8 +279,8 @@ export function cutworm(worm, x, y, cuttier) {
     cptr.stI32o(new_worm, $monst_mcloned, 0);
     cptr.st1o(worm, $monst_m_lev, uchar((((cptr.ld1uo(worm, $monst_m_lev) - 2) >>> 0) > 3 ? ((cptr.ld1uo(worm, $monst_m_lev) - 2) >>> 0) : 3)));
     cptr.st1o(new_worm, $monst_m_lev, cptr.ld1uo(worm, $monst_m_lev));
-    cptr.stI32o(new_worm, $monst_mhpmax, cptr.stI32o(new_worm, $monst_mhp, (rng_log_enabled() ? (rng_log_set_caller(__s_worm_c, 461, __s_cutworm), d((cptr.ld1uo(new_worm, $monst_m_lev)), 8)) : d((cptr.ld1uo(new_worm, $monst_m_lev)), 8))));
-    cptr.stI32o(worm, $monst_mhpmax, (rng_log_enabled() ? (rng_log_set_caller(__s_worm_c, 462, __s_cutworm), d((cptr.ld1uo(worm, $monst_m_lev)), 8)) : d((cptr.ld1uo(worm, $monst_m_lev)), 8)));
+    cptr.stI32o(new_worm, $monst_mhpmax, cptr.stI32o(new_worm, $monst_mhp, d_at(__s_worm_c, 461, __s_cutworm, (cptr.ld1uo(new_worm, $monst_m_lev)), 8)));
+    cptr.stI32o(worm, $monst_mhpmax, d_at(__s_worm_c, 462, __s_cutworm, (cptr.ld1uo(worm, $monst_m_lev)), 8));
     if (cptr.ldI32o(worm, $monst_mhpmax) < cptr.ldI32o(worm, $monst_mhp))
         cptr.stI32o(worm, $monst_mhp, cptr.ldI32o(worm, $monst_mhpmax));
     cptr.stPtro(wtails, new_wnum, new_tail, 8);

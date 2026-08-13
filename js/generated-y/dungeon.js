@@ -14,6 +14,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Align2amask, Amask2msa, IS_AIR, IS_WALL, Msa2amask, SURFACE_AT } from './nhmacrofn.js';
+import { rn2_at, rnd_at } from './nhrng.js';
 import { Blind, EAggravate_monster, Flying, Hallucination, Levitation, Sokoban, Underwater, Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, tutorial_dnum, wizard } from './nhprop.js';
 import { debugcore } from './files.js';
 import { WIN_MAP, cg, emptystr, flags, gf, gu, iflags, svb, svd, sve, svi, svl, svm, svn, svq, svr, svs, svt, svu, u, vowels } from './decl.js';
@@ -22,7 +23,6 @@ import { savecemetery } from './save.js';
 import { alloc, dupstr } from './alloc.js';
 import { done, panic } from './end.js';
 import { eos, highc, mungspaces, nh_snprintf, strncmpi, strstri, strsubst, trimspaces } from './hacklib.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { You, impossible, pline } from './pline.js';
 import { lua_getfield, lua_getglobal, lua_gettable, lua_gettop, lua_len, lua_next, lua_pushinteger, lua_pushnil, lua_settop, lua_tointegerx, lua_type } from './lapi.js';
 import { luaL_checkoption } from './lauxlib.js';
@@ -723,7 +723,7 @@ function* parent_dlevel(s, pd) {
     let curr;
     i = (yield* find_branch(s, pd));
     num = (yield* level_range(i16(dnum), cptr.ldI16o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_lev), cptr.ldI16o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_lev + $couple_rand), cptr.ldI32o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_chain), pd, base));
-    i = (j = (rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 426, __s_parent_dlevel), rn2(num)) : rn2(num)));
+    i = (j = rn2_at(__s_dungeon_c, 426, __s_parent_dlevel, num));
     do {
         if (++i >= num)
             i = 0;
@@ -831,7 +831,7 @@ function* init_level(dgn, proto_index, pd) {
     let new_level;
     let tlevel = cptr.add(cptr.add(pd, $proto_dungeon_tmplevel), proto_index, $sizeof_tmplevel);
     cptr.stPtro2(pd, proto_index, 8, $proto_dungeon_final_lev, null);
-    if (!wizard() && cptr.ldI32o(tlevel, $tmplevel_chance) <= (rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 572, __s_init_level), rn2(100)) : rn2(100)))
+    if (!wizard() && cptr.ldI32o(tlevel, $tmplevel_chance) <= rn2_at(__s_dungeon_c, 572, __s_init_level, 100))
         return;
     cptr.stPtro2(pd, proto_index, 8, $proto_dungeon_final_lev, new_level = (yield* alloc(56)));
     void __builtin___memset_chk(new_level, 0, 56n, __builtin_object_size(new_level, 0));
@@ -892,7 +892,7 @@ function* place_level(proto_index, pd) {
         return (yield* place_level((proto_index + 1) | 0, pd));
     npossible = (yield* possible_places(proto_index, cptr.decay(map), pd));
     for (; npossible; --npossible) {
-        cptr.stI16o(lev, $s_level_dlevel + $d_level_dlevel, (yield* pick_level(cptr.decay(map), (rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 687, __s_place_level), rn2(npossible)) : rn2(npossible)))));
+        cptr.stI16o(lev, $s_level_dlevel + $d_level_dlevel, (yield* pick_level(cptr.decay(map), rn2_at(__s_dungeon_c, 687, __s_place_level, npossible))));
         if ((yield* place_level((proto_index + 1) | 0, pd)))
             return 1;
         cptr.st1o(cptr.decay(map), cptr.ldI16o(lev, $s_level_dlevel + $d_level_dlevel), 0, 1);
@@ -1255,7 +1255,7 @@ function* init_dungeon_dungeons(L, pd, dngidx) {
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    if (!wizard() && dgn_chance && (dgn_chance <= (rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 1022, __s_init_dungeon_dungeons), rn2(100)) : rn2(100)))) {
+    if (!wizard() && dgn_chance && (dgn_chance <= rn2_at(__s_dungeon_c, 1022, __s_init_dungeon_dungeons, 100))) {
         {
             if ((yield* debugcore(__s_dungeon_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -1301,7 +1301,7 @@ function* init_dungeon_dungeons(L, pd, dngidx) {
     cptr.free(dgn_bonetag);
     cptr.free(dgn_themerms);
     if (dgn_range)
-        cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs, i16((((rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 1074, __s_init_dungeon_dungeons), rn2(dgn_range)) : rn2(dgn_range)) + (dgn_base)) | 0)));
+        cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs, i16(((rn2_at(__s_dungeon_c, 1074, __s_init_dungeon_dungeons, dgn_range) + (dgn_base)) | 0)));
     else
         cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs, i16(dgn_base));
     if (!dngidx) {
@@ -1332,7 +1332,7 @@ function* init_dungeon_dungeons(L, pd, dngidx) {
 function init_castle_tune() {
     let i;
     for (i = 0; i < 5; i++)
-        cptr.st1o(svt, i, schar(((65 + (rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 1116, __s_init_castle_tune), rn2(7)) : rn2(7))) | 0)), 1);
+        cptr.st1o(svt, i, schar(((65 + rn2_at(__s_dungeon_c, 1116, __s_init_castle_tune, 7)) | 0)), 1);
     cptr.st1o(svt, 5, 0, 1);
 }
 
@@ -1851,7 +1851,7 @@ export function assign_level(dest, src) {
 /** C ref: dungeon.c:1986 — @param {CPtr<d_level>} dest @param {CPtr<d_level>} src @param {CInt} range */
 export function assign_rnd_level(dest, src, range) {
     cptr.stI16(dest, cptr.ldI16(src));
-    cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(src, $d_level_dlevel) + ((range > 0) ? (rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 1989, __s_assign_rnd_level), rnd(range)) : rnd(range)) : -(rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 1989, __s_assign_rnd_level), rnd(-range)) : rnd(-range)))) | 0)));
+    cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(src, $d_level_dlevel) + ((range > 0) ? rnd_at(__s_dungeon_c, 1989, __s_assign_rnd_level, range) : -rnd_at(__s_dungeon_c, 1989, __s_assign_rnd_level, -range))) | 0)));
     if (cptr.ldI16o(dest, $d_level_dlevel) > dunlevs_in_dungeon(dest))
         cptr.stI16o(dest, $d_level_dlevel, dunlevs_in_dungeon(dest));
     else if (cptr.ldI16o(dest, $d_level_dlevel) < 1)
@@ -1863,12 +1863,12 @@ export function induced_align(pct) {
     let lev = Is_special(cptr.add(u, $you_uz));
     let al;
     if (lev && (cptr.ldI32o(lev, $s_level_flags + $d_flags_align) & 7) | 0)
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 2005, __s_induced_align), rn2(100)) : rn2(100)) < pct)
+        if (rn2_at(__s_dungeon_c, 2005, __s_induced_align, 100) < pct)
             return (cptr.ldI32o(lev, $s_level_flags + $d_flags_align) & 7);
     if ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_flags + $d_flags_align) & 7))
-        if ((rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 2009, __s_induced_align), rn2(100)) : rn2(100)) < pct)
+        if (rn2_at(__s_dungeon_c, 2009, __s_induced_align, 100) < pct)
             return (cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_flags + $d_flags_align) & 7);
-    al = schar((((rng_log_enabled() ? (rng_log_set_caller(__s_dungeon_c, 2012, __s_induced_align), rn2(3)) : rn2(3)) - 1) | 0));
+    al = schar(((rn2_at(__s_dungeon_c, 2012, __s_induced_align, 3) - 1) | 0));
     return Align2amask(al);
 }
 

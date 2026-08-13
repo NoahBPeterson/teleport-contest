@@ -14,6 +14,7 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, cantwield, flesh_petrifies, is_metallic, is_rider, ismnum, ofood, slimeproof, telepathic, vegan, vegetarian } from './nhmacrofn.js';
+import { d_at, rn2_at, rnd_at } from './nhrng.js';
 import { Acid_resistance, BInvis, Blind, BlindedTimeout, Breathless, Deaf, Displaced, EConflict, EInvis, EProtection, ERegeneration, ESee_invisible, Fixed_abil, Flying, Glib, HCold_resistance, HConflict, HConfusion, HDisint_resistance, HFast, HFire_resistance, HHallucination, HInvis, HPoison_resistance, HRegeneration, HShock_resistance, HSleep_resistance, HSleepy, HStun, HTelepat, HTeleport_control, HTeleportation, Hallucination, Hunger, Invis, Levitation, Lifesaved, Poison_resistance, See_invisible, Sick, Sleep_resistance, Slimed, Slow_digestion, Stone_resistance, Stoned, Strangled, U_AP_TYPE, Ugender, Unchanging, Upolyd, Vomiting, display_nhwindow } from './nhprop.js';
 import { objects } from './objects.js';
 import { WIN_MAP, c_color_names, c_common_strings, disp, flags, ga, gc, ge, gf, gm, gn, go, gu, gy, hands_obj, iflags, sa_victual, svc, svd, svk, svl, svm, u, uamul, uball, uchain, uleft, uquiver, uright, uswapwep, uwep, ynchars, ynqchars } from './decl.js';
@@ -26,7 +27,6 @@ import { alloc, dupstr, fmt_ptr } from './alloc.js';
 import { Tobjnam, an, ansimpleoname, corpse_xname, doname, killer_xname, makeplural, obj_is_pname, otense, safe_qbuf, singular, the, the_unique_pm, thesimpleoname, xname, yobjnam } from './objnam.js';
 import { acurr, acurrstr, adjalign, adjattrib, change_luck, exercise, gainstr, poison_strdmg, setuhpmax } from './attrib.js';
 import { You, You_cant, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The, verbalize } from './pline.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { delayed_killer, done } from './end.js';
 import { debugcore } from './files.js';
 import { addinv_nomerge, carrying, feel_cockatrice, freeinv, g_at, getobj, obj_here, stackobj, useup, useupall, useupf, will_feel_cockatrice } from './invent.js';
@@ -52,6 +52,7 @@ import { b_trapped, deltrap, float_up, reset_utrap, selftouch, t_at, unconscious
 import { discover_object, objdescr_is, observe_object } from './o_init.js';
 import { paranoid_query, set_occupation, yn_function } from './cmd.js';
 import { can_reach_floor } from './engrave.js';
+import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { on_level, surface } from './dungeon.js';
 import { monflee } from './monmove.js';
 import { explode } from './explode.js';
@@ -767,7 +768,7 @@ function* choke(food) {
         (yield* You_feel(__s_like_a_glutton));
     }
     (yield* exercise(NHC.A_CON, 0));
-    if (Breathless() || Hunger() || (!Strangled() && !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 258, __s_choke), rn2(20)) : rn2(20)))) {
+    if (Breathless() || Hunger() || (!Strangled() && !rn2_at(__s_eat_c, 258, __s_choke, 20))) {
         if (food && cptr.ldI16o(food, $obj_otyp) == NHC.AMULET_OF_STRANGULATION) {
             (yield* You(__s_choke_but_recover_your_composure));
             return;
@@ -1037,7 +1038,7 @@ export function* eat_brains(magr, mdef, visflag, dmg_p) {
     let pd = cptr.ldPtro(mdef, $monst_data);
     let give_nutrit = 0;
     let result = NHM.M_ATTK_HIT;
-    let xtra_dmg = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 611, __s_eat_brains), rnd(10)) : rnd(10));
+    let xtra_dmg = rnd_at(__s_eat_c, 611, __s_eat_brains, 10);
     if (!cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)) && (cptr.ldI32o((magr), $monst_mhp) < 1)) {
         return NHM.M_ATTK_AGR_DIED;
     }
@@ -1083,9 +1084,9 @@ export function* eat_brains(magr, mdef, visflag, dmg_p) {
             (yield* exercise(NHC.A_WIS, 0));
             cptr.stI32(dmg_p, (cptr.ldI32(dmg_p) + xtra_dmg) | 0);
         } else {
-            (yield* morehungry(-(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 678, __s_eat_brains), rnd(30)) : rnd(30))));
+            (yield* morehungry(-rnd_at(__s_eat_c, 678, __s_eat_brains, 30)));
             if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) < (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax))) {
-                cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr) + (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 681, __s_eat_brains), rnd(4)) : rnd(4)));
+                cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr) + rnd_at(__s_eat_c, 681, __s_eat_brains, 4));
                 if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) > (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax)))
                     cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax)));
                 cptr.st1(disp, 1);
@@ -1131,7 +1132,7 @@ export function* eat_brains(magr, mdef, visflag, dmg_p) {
         }
     }
     if (give_nutrit && cptr.ld1so(magr, $monst_mtame) && !(cptr.ldI32o(magr, $monst_isminion) & 1)) {
-        cptr.stI64o((cptr.ldPtro(cptr.ldPtro((magr), $monst_mextra), $mextra_edog)), $edog_hungrytime, cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((magr), $monst_mextra), $mextra_edog)), $edog_hungrytime) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 749, __s_eat_brains), rnd(60)) : rnd(60))));
+        cptr.stI64o((cptr.ldPtro(cptr.ldPtro((magr), $monst_mextra), $mextra_edog)), $edog_hungrytime, cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((magr), $monst_mextra), $mextra_edog)), $edog_hungrytime) + BigInt(rnd_at(__s_eat_c, 749, __s_eat_brains, 60)));
         cptr.stI32o(magr, $monst_mconf, 0);
     }
     return result;
@@ -1152,7 +1153,7 @@ function* maybe_cannibal(pm, allowmsg) {
             (yield* You(__s_cannibal_you_will_regret_this));
         }
         cptr.stI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-        change_luck(schar((-(((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 784, __s_maybe_cannibal), rn2(4)) : rn2(4)) + 2) | 0))));
+        change_luck(schar((-((rn2_at(__s_eat_c, 784, __s_maybe_cannibal, 4) + 2) | 0))));
         return 1;
     }
     return 0;
@@ -1386,7 +1387,7 @@ export function should_givit(type, ptr) {
     let chance;
     switch (type) {
         case NHC.POISON_RES:
-        if ((cptr.eq(ptr, cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_SCORPION, $sizeof_permonst))) && !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 969, __s_should_givit), rn2(4)) : rn2(4)))
+        if ((cptr.eq(ptr, cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_SCORPION, $sizeof_permonst))) && !rn2_at(__s_eat_c, 969, __s_should_givit, 4))
             chance = 1;
         else
             chance = 15;
@@ -1404,13 +1405,13 @@ export function should_givit(type, ptr) {
         chance = 15;
         break;
     }
-    return schar((cptr.ld1so(ptr, $permonst_mlevel) > (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 988, __s_should_givit), rn2(chance)) : rn2(chance))));
+    return schar((cptr.ld1so(ptr, $permonst_mlevel) > rn2_at(__s_eat_c, 988, __s_should_givit, chance)));
 }
 
 /** C ref: eat.c:992 — @param {CInt} type @param {CPtr<struct permonst>} ptr @returns {CInt} */
 function temp_givit(type, ptr) {
     let chance = (type == NHC.STONE_RES) ? 6 : ((type == NHC.ACID_RES) ? 3 : 0);
-    return schar((chance ? (cptr.ld1so(ptr, $permonst_mlevel) > (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 996, __s_temp_givit), rn2(chance)) : rn2(chance))) : 0));
+    return schar((chance ? (cptr.ld1so(ptr, $permonst_mlevel) > rn2_at(__s_eat_c, 996, __s_temp_givit, chance)) : 0));
 }
 
 /** C ref: eat.c:1003 — @param {CInt} type @param {CPtr<struct permonst>} ptr */
@@ -1557,7 +1558,7 @@ function* givit(type, ptr) {
         }
         if (!Acid_resistance())
             (yield* You_feel(__s_pct_s_dot, Hallucination() ? __s_secure_from_flashbacks : __s_less_concerned_about_being_harmed_by));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.ACID_RES, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1087, __s_givit), d(3, 6)) : d(3, 6)));
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.ACID_RES, $sizeof_prop), $prop_intrinsic), d_at(__s_eat_c, 1087, __s_givit, 3, 6));
         break;
         case NHC.STONE_RES:
         {
@@ -1569,7 +1570,7 @@ function* givit(type, ptr) {
         }
         if (!Stone_resistance())
             (yield* You_feel(__s_pct_s_dot, Hallucination() ? __s_unusually_limber : __s_less_concerned_about_becoming_petrified));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STONE_RES, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1094, __s_givit), d(3, 6)) : d(3, 6)));
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STONE_RES, $sizeof_prop), $prop_intrinsic), d_at(__s_eat_c, 1094, __s_givit, 3, 6));
         break;
         default:
         {
@@ -1585,11 +1586,11 @@ function* givit(type, ptr) {
 
 /** C ref: eat.c:1103 */
 function* eye_of_newt_buzz() {
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1106, __s_eye_of_newt_buzz), rn2(3)) : rn2(3)) || Math.imul(3, cptr.ldI32o(u, $you_uen)) <= Math.imul(2, cptr.ldI32o(u, $you_uenmax))) {
+    if (rn2_at(__s_eat_c, 1106, __s_eye_of_newt_buzz, 3) || Math.imul(3, cptr.ldI32o(u, $you_uen)) <= Math.imul(2, cptr.ldI32o(u, $you_uenmax))) {
         let old_uen = cptr.ldI32o(u, $you_uen);
-        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1109, __s_eye_of_newt_buzz), rnd(3)) : rnd(3))) | 0);
+        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + rnd_at(__s_eat_c, 1109, __s_eye_of_newt_buzz, 3)) | 0);
         if (cptr.ldI32o(u, $you_uen) > cptr.ldI32o(u, $you_uenmax)) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1111, __s_eye_of_newt_buzz), rn2(3)) : rn2(3))) {
+            if (!rn2_at(__s_eat_c, 1111, __s_eye_of_newt_buzz, 3)) {
                 (cptr.stI32o(u, $you_uenmax, cptr.ldI32o(u, $you_uenmax) + 1)) - (1);
                 if (cptr.ldI32o(u, $you_uenmax) > cptr.ldI32o(u, $you_uenpeak))
                     cptr.stI32o(u, $you_uenpeak, cptr.ldI32o(u, $you_uenmax));
@@ -1634,7 +1635,7 @@ function* cpostfx(pm) {
         break;
         case NHC.PM_STALKER:
         if (!Invis()) {
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INVIS, $sizeof_prop), $prop_intrinsic), BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1164, __s_cpostfx), rn2(100)) : rn2(100)) + 50) | 0)));
+            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INVIS, $sizeof_prop), $prop_intrinsic), BigInt(((rn2_at(__s_eat_c, 1164, __s_cpostfx, 100) + 50) | 0)));
             if (!Blind() && !BInvis())
                 (yield* self_invis_message());
         } else {
@@ -1720,7 +1721,7 @@ function* cpostfx(pm) {
         case NHC.PM_DISPLACER_BEAST:
         if (!Displaced())
             (yield* toggle_displacement(null, 0n, 1));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DISPLACED, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1268, __s_cpostfx), d(6, 6)) : d(6, 6)));
+        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DISPLACED, $sizeof_prop), $prop_intrinsic), d_at(__s_eat_c, 1268, __s_cpostfx, 6, 6));
         break;
         case NHC.PM_DISENCHANTER:
         {
@@ -1739,7 +1740,7 @@ function* cpostfx(pm) {
         case NHC.PM_MIND_FLAYER:
         case NHC.PM_MASTER_MIND_FLAYER:
         if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) < (cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmax))) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1284, __s_cpostfx), rn2(2)) : rn2(2))) {
+            if (!rn2_at(__s_eat_c, 1284, __s_cpostfx, 2)) {
                 (yield* pline(__s_yum_that_was_real_brain_food));
                 void (yield* adjattrib(NHC.A_INT, 1, 0));
                 break;
@@ -1795,7 +1796,7 @@ export function* corpse_intrinsic(ptr) {
         if (!(yield* intrinsic_possible(i, ptr)))
             continue;
         ++count;
-        if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1363, __s_corpse_intrinsic), rn2(count)) : rn2(count))) {
+        if (!rn2_at(__s_eat_c, 1363, __s_corpse_intrinsic, count)) {
             {
                 if ((yield* debugcore(__s_eat_c, 1))) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -1806,7 +1807,7 @@ export function* corpse_intrinsic(ptr) {
             prop = i;
         }
     }
-    if (conveys_STR && count == 1 && !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1369, __s_corpse_intrinsic), rn2(2)) : rn2(2)))
+    if (conveys_STR && count == 1 && !rn2_at(__s_eat_c, 1369, __s_corpse_intrinsic, 2))
         prop = 0;
     return prop;
 }
@@ -1892,11 +1893,11 @@ export function set_tin_variety(obj, forcetype) {
         if (r < 0 || r >= 16)
             r = NHM.ROTTEN_TIN;
         while ((r == NHM.ROTTEN_TIN && !(cptr.ldI32o(obj, $obj_cursed) & 1)) || !(cptr.ldI32o2(tintxts, r, 24, 12) & 1))
-            r = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1477, __s_set_tin_variety), rn2((16 - 1) | 0)) : rn2((16 - 1) | 0));
+            r = rn2_at(__s_eat_c, 1477, __s_set_tin_variety, (16 - 1) | 0);
     } else if (forcetype >= 0 && forcetype < ((16 - 1) | 0)) {
         r = forcetype;
     } else {
-        r = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1481, __s_set_tin_variety), rn2((16 - 1) | 0)) : rn2((16 - 1) | 0));
+        r = rn2_at(__s_eat_c, 1481, __s_set_tin_variety, (16 - 1) | 0);
         if (r == NHM.ROTTEN_TIN && (ismnum(mnum) && ((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB)))
             r = NHM.HOMEMADE_TIN;
     }
@@ -1915,9 +1916,9 @@ function tin_variety(obj, displ) {
         r = -(cptr.ld1so(obj, $obj_spe));
         --r;
     } else {
-        r = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1503, __s_tin_variety), rn2((16 - 1) | 0)) : rn2((16 - 1) | 0));
+        r = rn2_at(__s_eat_c, 1503, __s_tin_variety, (16 - 1) | 0);
     }
-    if (!displ && r == NHM.HOMEMADE_TIN && !(cptr.ldI32o(obj, $obj_blessed) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1506, __s_tin_variety), rn2(7)) : rn2(7)))
+    if (!displ && r == NHM.HOMEMADE_TIN && !(cptr.ldI32o(obj, $obj_blessed) & 1) && !rn2_at(__s_eat_c, 1506, __s_tin_variety, 7))
         r = NHM.ROTTEN_TIN;
     if (r == NHM.ROTTEN_TIN && (ismnum(mnum) && ((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB)))
         r = NHM.HOMEMADE_TIN;
@@ -1944,7 +1945,7 @@ function* consume_tin(mesg) {
     let always_eat = schar(((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n));
     let tin = cptr.ldPtro(svc, $context_info_tin);
     r = tin_variety(tin, 0);
-    if ((cptr.ldI32o(tin, $obj_otrapped) & 1) | 0 || ((cptr.ldI32o(tin, $obj_cursed) & 1) | 0 && r != NHM.HOMEMADE_TIN && !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1537, __s_consume_tin), rn2(8)) : rn2(8)))) {
+    if ((cptr.ldI32o(tin, $obj_otrapped) & 1) | 0 || ((cptr.ldI32o(tin, $obj_cursed) & 1) | 0 && r != NHM.HOMEMADE_TIN && !rn2_at(__s_eat_c, 1537, __s_consume_tin, 8))) {
         (yield* b_trapped(__s_tin, NHC.NO_PART));
         tin = (yield* costly_tin(NHC.COST_DSTROY));
         (yield* use_up_tin(tin));
@@ -1955,7 +1956,7 @@ function* consume_tin(mesg) {
         mnum = cptr.ldI32o(tin, $obj_corpsenm);
         if (mnum == NHC.NON_PM) {
             if (Hallucination())
-                (yield* pline(__s_it_s_full_of_s, (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1551, __s_consume_tin), rn2(2)) : rn2(2)) ? __s_air_elemental_souffle : __s_dehydrated_water));
+                (yield* pline(__s_it_s_full_of_s, rn2_at(__s_eat_c, 1551, __s_consume_tin, 2) ? __s_air_elemental_souffle : __s_dehydrated_water));
             else
                 (yield* pline(__s_it_turns_out_to_be_empty));
             (yield* observe_object(tin));
@@ -2009,7 +2010,7 @@ function* consume_tin(mesg) {
         if (!cptr.ldPtro(svc, $context_info_tin))
             return;
         if (cptr.ldI32o2(tintxts, r, 24, 8) < 0) {
-            (yield* make_vomiting(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1618, __s_consume_tin), rn2(15)) : rn2(15)) + 10) | 0)), 0));
+            (yield* make_vomiting(BigInt(((rn2_at(__s_eat_c, 1618, __s_consume_tin, 15) + 10) | 0)), 0));
         } else {
             nutamt = cptr.ldI32o2(tintxts, r, 24, 8);
             if (r == NHM.HOMEMADE_TIN && nutamt > cptr.ldU16o2(mons, mnum, $sizeof_permonst, $permonst_cnutrit))
@@ -2021,7 +2022,7 @@ function* consume_tin(mesg) {
         }
         if ((cptr.ldI32o2(tintxts, r, 24, 16) & 1)) {
             let alreadyglib = Number(BigInt.asIntN(32, (Glib() & 16777215n)));
-            (yield* make_glib((alreadyglib + (((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1641, __s_consume_tin), rn2(11)) : rn2(11)) + 5) | 0)) | 0));
+            (yield* make_glib((alreadyglib + ((rn2_at(__s_eat_c, 1641, __s_consume_tin, 11) + 5) | 0)) | 0));
             (yield* pline(__s_eating_s_food_made_your_s_s_slippery, cptr.ldPtro(tintxts, r, 24), (yield* fingers_or_gloves(1)), alreadyglib ? __s_even_more : __s_very));
         }
     } else {
@@ -2045,7 +2046,7 @@ function* consume_tin(mesg) {
             (yield* pline(__s_this_makes_you_feel_like_s, Hallucination() ? __s_swee_pea : (!Fixed_abil() ? __s_popeye : (cptr.ld1so(flags, $flag_female) ? __s_olive_oyl : __s_bluto))));
         (yield* gainstr(tin, 0, 0));
         tin = cptr.stPtro(svc, $context_info_tin, (yield* costly_tin(NHC.COST_OPEN)));
-        nutamt = ((cptr.ldI32o(tin, $obj_blessed) & 1) | 0 ? 600 : (!(cptr.ldI32o(tin, $obj_cursed) & 1) ? ((400 + (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1688, __s_consume_tin), rnd(200)) : rnd(200))) | 0) : ((200 + (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1689, __s_consume_tin), rnd(400)) : rnd(400))) | 0)));
+        nutamt = ((cptr.ldI32o(tin, $obj_blessed) & 1) | 0 ? 600 : (!(cptr.ldI32o(tin, $obj_cursed) & 1) ? ((400 + rnd_at(__s_eat_c, 1688, __s_consume_tin, 200)) | 0) : ((200 + rnd_at(__s_eat_c, 1689, __s_consume_tin, 400)) | 0)));
         if (always_eat)
             nutamt = (nutamt + 5) | 0;
         (yield* use_up_tin(tin)), tin = null;
@@ -2083,7 +2084,7 @@ function* start_tin(otmp) {
             (yield* You(__s_cannot_handle_the_tin_properly_to_open));
             return;
         } else if ((cptr.ldI32o(otmp, $obj_blessed) & 1)) {
-            tmp = (uwep.v && (cptr.ldI32o(uwep.v, $obj_blessed) & 1) | 0 && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.TIN_OPENER) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1741, __s_start_tin), rn2(2)) : rn2(2));
+            tmp = (uwep.v && (cptr.ldI32o(uwep.v, $obj_blessed) & 1) | 0 && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.TIN_OPENER) ? 0 : rn2_at(__s_eat_c, 1741, __s_start_tin, 2);
             if (!tmp)
                 mesg = __s_the_tin_opens_like_magic;
             else
@@ -2092,7 +2093,7 @@ function* start_tin(otmp) {
             switch (cptr.ldI16o(uwep.v, $obj_otyp)) {
                 case NHC.TIN_OPENER:
                 mesg = __s_you_easily_open_the_tin;
-                tmp = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1750, __s_start_tin), rn2((cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0 ? 3 : (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) ? 2 : 1))) : rn2((cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0 ? 3 : (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) ? 2 : 1)));
+                tmp = rn2_at(__s_eat_c, 1750, __s_start_tin, (cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0 ? 3 : (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) ? 2 : 1));
                 break;
                 case NHC.DAGGER:
                 case NHC.SILVER_DAGGER:
@@ -2145,7 +2146,7 @@ function* start_tin(otmp) {
 
 /** C ref: eat.c:1801 @returns {CInt} */
 export function* Hear_again() {
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1804, __s_hear_again), rn2(2)) : rn2(2))) {
+    if (!rn2_at(__s_eat_c, 1804, __s_hear_again, 2)) {
         (yield* make_deaf(0n, 0));
         cptr.st1(disp, 1);
     }
@@ -2155,21 +2156,21 @@ export function* Hear_again() {
 /** C ref: eat.c:1813 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* rottenfood(obj) {
     (yield* pline(__s_blecch_s_s, is_rottable(obj) ? __s_rotten__2 : __s_awful, (yield* foodword(obj))));
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1817, __s_rottenfood), rn2(4)) : rn2(4))) {
+    if (!rn2_at(__s_eat_c, 1817, __s_rottenfood, 4)) {
         if (Hallucination())
             (yield* You_feel(__s_rather_trippy));
         else
             (yield* You_feel(__s_rather_s, (yield* body_part(NHC.LIGHT_HEADED))));
-        (yield* make_confused(BigInt.asIntN(64, HConfusion() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1822, __s_rottenfood), d(2, 4)) : d(2, 4)))), 0));
-    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1823, __s_rottenfood), rn2(4)) : rn2(4)) && !Blind()) {
+        (yield* make_confused(BigInt.asIntN(64, HConfusion() + BigInt(d_at(__s_eat_c, 1822, __s_rottenfood, 2, 4))), 0));
+    } else if (!rn2_at(__s_eat_c, 1823, __s_rottenfood, 4) && !Blind()) {
         (yield* pline(__s_everything_suddenly_goes_dark));
-        (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1827, __s_rottenfood), d(2, 10)) : d(2, 10)))), 0));
+        (yield* make_blinded(BigInt.asIntN(64, BlindedTimeout() + BigInt(d_at(__s_eat_c, 1827, __s_rottenfood, 2, 10))), 0));
         if (!Blind())
             (yield* Your(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_vision_clears)));
-    } else if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1830, __s_rottenfood), rn2(3)) : rn2(3))) {
+    } else if (!rn2_at(__s_eat_c, 1830, __s_rottenfood, 3)) {
         let what;
         let where;
-        let duration = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1832, __s_rottenfood), rnd(10)) : rnd(10));
+        let duration = rnd_at(__s_eat_c, 1832, __s_rottenfood, 10);
         if (!Blind())
             what = __s_goes, where = __s_dark;
         else if (Levitation() || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
@@ -2219,7 +2220,7 @@ function* eatcorpse(otmp) {
     }
     if (!((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB)) {
         let age = (yield* peek_at_iced_corpse_age(otmp));
-        rotted = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age)) / (BigInt.asIntN(64, 10n + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1887, __s_eatcorpse), rn2(20)) : rn2(20)))));
+        rotted = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age)) / (BigInt.asIntN(64, 10n + BigInt(rn2_at(__s_eat_c, 1887, __s_eatcorpse, 20))));
         if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
             rotted += 2n;
         else if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
@@ -2232,7 +2233,7 @@ function* eatcorpse(otmp) {
             (yield* pline(__s_it_doesn_t_seem_at_all_sickening_though));
         } else {
             let sick_time;
-            sick_time = BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1909, __s_eatcorpse), rn2(10)) : rn2(10)) + 10) | 0));
+            sick_time = BigInt(((rn2_at(__s_eat_c, 1909, __s_eatcorpse, 10) + 10) | 0));
             if (Sick() && (sick_time > Sick()))
                 sick_time = (Sick() > 1n) ? BigInt.asIntN(64, Sick() - 1n) : 1n;
             (yield* make_sick(sick_time, (yield* corpse_xname(otmp, __s_rotted, NHM.CXN_NORMAL)), 1, NHM.SICK_VOMITABLE));
@@ -2246,21 +2247,21 @@ function* eatcorpse(otmp) {
     } else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 134217728n) != 0n) && !Acid_resistance()) {
         tp++;
         (yield* You(__s_have_a_very_bad_case_of_stomach_acid));
-        (yield* losehp((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1926, __s_eatcorpse), rnd(15)) : rnd(15)), !glob ? __s_acidic_corpse : __s_acidic_glob, NHM.KILLED_BY_AN));
-    } else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 268435456n) != 0n) && (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1928, __s_eatcorpse), rn2(5)) : rn2(5))) {
+        (yield* losehp(rnd_at(__s_eat_c, 1926, __s_eatcorpse, 15), !glob ? __s_acidic_corpse : __s_acidic_glob, NHM.KILLED_BY_AN));
+    } else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 268435456n) != 0n) && rn2_at(__s_eat_c, 1928, __s_eatcorpse, 5)) {
         tp++;
         (yield* pline(__s_ecch_that_must_have_been_poisonous));
         if (!Poison_resistance()) {
-            (yield* poison_strdmg((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1932, __s_eatcorpse), rnd(4)) : rnd(4)), (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1932, __s_eatcorpse), rnd(15)) : rnd(15)), !glob ? __s_poisonous_corpse : __s_poisonous_glob, NHM.KILLED_BY_AN));
+            (yield* poison_strdmg(rnd_at(__s_eat_c, 1932, __s_eatcorpse, 4), rnd_at(__s_eat_c, 1932, __s_eatcorpse, 15), !glob ? __s_poisonous_corpse : __s_poisonous_glob, NHM.KILLED_BY_AN));
         } else
             (yield* You(__s_seem_unaffected_by_the_poison));
-    } else if ((rotted > 5n || (rotted > 3n && (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1939, __s_eatcorpse), rn2(5)) : rn2(5)))) && !(cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
+    } else if ((rotted > 5n || (rotted > 3n && rn2_at(__s_eat_c, 1939, __s_eatcorpse, 5))) && !(cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
         tp++;
         (yield* You_feel(__s_ssick, (Sick()) ? __s_very__2 : __s_empty));
-        (yield* losehp((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1942, __s_eatcorpse), rnd(8)) : rnd(8)), !glob ? __s_cadaver : __s_rotted_glob, NHM.KILLED_BY_AN));
+        (yield* losehp(rnd_at(__s_eat_c, 1942, __s_eatcorpse, 8), !glob ? __s_cadaver : __s_rotted_glob, NHM.KILLED_BY_AN));
     }
     cptr.stI32o(svc, $context_info_victual + $victual_info_reqtime, ((3 + ((!glob ? cptr.ldI32o2(mons, mnum, $sizeof_permonst, $permonst_cwt) : cptr.ldI32o(otmp, $obj_owt)) >>> 6)) >>> 0) | 0);
-    if (!tp && !((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB) && ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1949, __s_eatcorpse), rn2(7)) : rn2(7)))) {
+    if (!tp && !((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB) && ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || !rn2_at(__s_eat_c, 1949, __s_eatcorpse, 7))) {
         if ((yield* rottenfood(otmp))) {
             cptr.stI32o(otmp, $obj_oeroded, 1);
             otmp = (yield* touchfood(otmp));
@@ -2287,9 +2288,9 @@ function* eatcorpse(otmp) {
         ;
     } else {
         let yummy = schar((vegan(cptr.add(mons, mnum, $sizeof_permonst)) ? (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) ? 1 : 0) : (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) ? 1 : 0)));
-        let palatable = schar(((vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) ? ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) : ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n)) && (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1988, __s_eatcorpse), rn2(10)) : rn2(10)) && (rotted < 1n || !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1989, __s_eatcorpse), rn2((Number(BigInt.asIntN(32, rotted)) + 1) | 0)) : rn2((Number(BigInt.asIntN(32, rotted)) + 1) | 0))) ? 1 : 0));
+        let palatable = schar(((vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) ? ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) : ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n)) && rn2_at(__s_eat_c, 1988, __s_eatcorpse, 10) && (rotted < 1n || !rn2_at(__s_eat_c, 1989, __s_eatcorpse, (Number(BigInt.asIntN(32, rotted)) + 1) | 0)) ? 1 : 0));
         let pmxnam = (yield* food_xname(otmp, 0));
-        let idx = vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) ? 0 : (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1996, __s_eatcorpse), rn2(5)) : rn2(5));
+        let idx = vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) ? 0 : rn2_at(__s_eat_c, 1996, __s_eatcorpse, 5);
         let palat_msg = cptr.ldPtro(__static_eatcorpse_palatable_msgs, idx, 8);
         let use_is = schar((Hallucination() || (palatable && cptr.ld1s(palat_msg) == 73) ? 1 : 0));
         if (!(yield* strncmpi(pmxnam, __s_the, 4)))
@@ -2388,11 +2389,11 @@ function* fprefx(otmp) {
                 (yield* useup(otmp));
             else
                 (yield* useupf(otmp, 1n));
-            (yield* explode(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), -11, (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2108, __s_fprefx), d(3, 6)) : d(3, 6)), 0, NHC.EXPL_FIERY));
+            (yield* explode(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), -11, d_at(__s_eat_c, 2108, __s_fprefx, 3, 6), 0, NHC.EXPL_FIERY));
             return 0;
         } else if (((BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o((otmp), $obj_age))) > 400n)) {
             (yield* pline(__s_ugh_rotten_egg));
-            (yield* make_vomiting(BigInt.asIntN(64, (Vomiting() & 16777215n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2115, __s_fprefx), d(10, 4)) : d(10, 4)))), 1));
+            (yield* make_vomiting(BigInt.asIntN(64, (Vomiting() & 16777215n) + BigInt(d_at(__s_eat_c, 2115, __s_fprefx, 10, 4))), 1));
         } else
             {
                 (yield* pline(__s_this_s_is_s, (yield* singular(otmp, xname)), (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? (Hallucination() ? __s_grody__2 : __s_terrible__2) : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION) ? __s_bland : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))));
@@ -2414,8 +2415,8 @@ function* fprefx(otmp) {
             (yield* pline(__s_yak_dog_food));
             (yield* more_experienced(1, 0));
             (yield* newexplevel());
-            if ((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2143, __s_fprefx), rn2(2)) : rn2(2)) && !((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))
-                (yield* make_vomiting(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2144, __s_fprefx), rn2(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))) : rn2(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))) + 14) | 0)), 0));
+            if (rn2_at(__s_eat_c, 2143, __s_fprefx, 2) && !((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))
+                (yield* make_vomiting(BigInt(((rn2_at(__s_eat_c, 2144, __s_fprefx, cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) + 14) | 0)), 0));
         }
         break;
         case NHC.LEMBAS_WAFER:
@@ -2440,7 +2441,7 @@ function* fprefx(otmp) {
         }
         case NHC.CLOVE_OF_GARLIC:
         if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n)) {
-            (yield* make_vomiting(BigInt((((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2164, __s_fprefx), rn2(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))) : rn2(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))) + 5) | 0)), 0));
+            (yield* make_vomiting(BigInt(((rn2_at(__s_eat_c, 2164, __s_fprefx, cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) + 5) | 0)), 0));
             break;
         }
         (yield* iter_mons(garlic_breath));
@@ -2457,7 +2458,7 @@ function* fprefx(otmp) {
             if (!Hallucination()) {
                 (yield* pline(__s_core_dumped));
             } else {
-                let x = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2193, __s_fprefx), rnd(100)) : rnd(100));
+                let x = rnd_at(__s_eat_c, 2193, __s_fprefx, 100);
                 (yield* pline(__s_s_core_dumped, (x <= 75) ? __s_segmentation_fault : ((x <= 99) ? __s_bus_error : __s_yo_mama)));
             }
         } else {
@@ -2483,14 +2484,14 @@ function bounded_increase(old, inc, typ) {
     if (absinc == 0 || sgnold != sgninc || ((absold + absinc) | 0) < 10) {
         ;
     } else if (((absold + absinc) | 0) < 20) {
-        absinc = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2237, __s_bounded_increase), rnd(absinc)) : rnd(absinc));
+        absinc = rnd_at(__s_eat_c, 2237, __s_bounded_increase, absinc);
         if (((absold + absinc) | 0) < 10)
             absinc = (10 - absold) | 0;
         inc = Math.imul(sgninc, absinc);
     } else if (((absold + absinc) | 0) < 40) {
-        absinc = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2242, __s_bounded_increase), rn2(absinc)) : rn2(absinc)) ? 1 : 0;
+        absinc = rn2_at(__s_eat_c, 2242, __s_bounded_increase, absinc) ? 1 : 0;
         if (((absold + absinc) | 0) < 20)
-            absinc = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2244, __s_bounded_increase), rnd((20 - absold) | 0)) : rnd((20 - absold) | 0));
+            absinc = rnd_at(__s_eat_c, 2244, __s_bounded_increase, (20 - absold) | 0);
         inc = Math.imul(sgninc, absinc);
     } else {
         inc = 0;
@@ -2519,7 +2520,7 @@ function* eataccessory(otmp) {
     }
     (yield* observe_object(otmp));
     cptr.stI32o(otmp, $obj_known, 1);
-    if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2280, __s_eataccessory), rn2(cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS ? 3 : 5)) : rn2(cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS ? 3 : 5))) {
+    if (!rn2_at(__s_eat_c, 2280, __s_eataccessory, cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS ? 3 : 5)) {
         switch (cptr.ldI16o(otmp, $obj_otyp)) {
             default:
             if (!cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop))
@@ -2551,7 +2552,7 @@ function* eataccessory(otmp) {
                 cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, oldprop);
                 if (!Levitation()) {
                     (yield* float_up());
-                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), $prop_intrinsic), (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2319, __s_eataccessory), d(10, 20)) : d(10, 20)));
+                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), $prop_intrinsic), d_at(__s_eat_c, 2319, __s_eataccessory, 10, 20));
                     (yield* discover_object((typ), 1, 1, 1));
                 }
                 break;
@@ -2613,7 +2614,7 @@ function* eataccessory(otmp) {
             break;
             case NHC.AMULET_OF_RESTFUL_SLEEP:
             {
-                let newnap = BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2390, __s_eataccessory), rnd(100)) : rnd(100)));
+                let newnap = BigInt(rnd_at(__s_eat_c, 2390, __s_eataccessory, 100));
                 let oldnap = (HSleepy() & 16777215n);
                 if (!(HSleepy() & 67108864n))
                     (yield* accessory_has_effect(otmp));
@@ -2744,18 +2745,18 @@ function* fpostfx(otmp) {
             break;
         (yield* gainstr(otmp, 1, 1));
         if (Upolyd()) {
-            cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? -(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2537, __s_fpostfx), rnd(20)) : rnd(20)) : (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2537, __s_fpostfx), rnd(20)) : rnd(20)))) | 0), cptr.st1(disp, 1);
+            cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? -rnd_at(__s_eat_c, 2537, __s_fpostfx, 20) : rnd_at(__s_eat_c, 2537, __s_fpostfx, 20))) | 0), cptr.st1(disp, 1);
             if (cptr.ldI32o(u, $you_mh) > cptr.ldI32o(u, $you_mhmax)) {
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2539, __s_fpostfx), rn2(17)) : rn2(17)))
+                if (!rn2_at(__s_eat_c, 2539, __s_fpostfx, 17))
                     setuhpmax((cptr.ldI32o(u, $you_mhmax) + 1) | 0, 0);
                 cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mhmax));
             } else if (cptr.ldI32o(u, $you_mh) <= 0) {
                 (yield* rehumanize());
             }
         } else {
-            cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) + ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? -(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2546, __s_fpostfx), rnd(20)) : rnd(20)) : (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2546, __s_fpostfx), rnd(20)) : rnd(20)))) | 0), cptr.st1(disp, 1);
+            cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) + ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? -rnd_at(__s_eat_c, 2546, __s_fpostfx, 20) : rnd_at(__s_eat_c, 2546, __s_fpostfx, 20))) | 0), cptr.st1(disp, 1);
             if (cptr.ldI32o(u, $you_uhp) > cptr.ldI32o(u, $you_uhpmax)) {
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2548, __s_fpostfx), rn2(17)) : rn2(17)))
+                if (!rn2_at(__s_eat_c, 2548, __s_fpostfx, 17))
                     setuhpmax((cptr.ldI32o(u, $you_uhpmax) + 1) | 0, 0);
                 cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhpmax));
             } else if (cptr.ldI32o(u, $you_uhp) <= 0) {
@@ -2793,7 +2794,7 @@ function* fpostfx(otmp) {
                 ;
                 (yield* You_hear(__s_sinister_laughter_as_you_fall_asleep));
             }
-            (yield* fall_asleep(-(((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2595, __s_fpostfx), rn2(11)) : rn2(11)) + 20) | 0), 1));
+            (yield* fall_asleep(-((rn2_at(__s_eat_c, 2595, __s_fpostfx, 11) + 20) | 0), 1));
         }
         break;
     }
@@ -2903,7 +2904,7 @@ function* doeat_nonfood(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS && (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0) {
         (yield* pline(__s_ecch_that_must_have_been_poisonous));
         if (!Poison_resistance()) {
-            (yield* poison_strdmg((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2798, __s_doeat_nonfood), rnd(4)) : rnd(4)), (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2798, __s_doeat_nonfood), rnd(15)) : rnd(15)), (yield* xname(otmp)), NHM.KILLED_BY_AN));
+            (yield* poison_strdmg(rnd_at(__s_eat_c, 2798, __s_doeat_nonfood, 4), rnd_at(__s_eat_c, 2798, __s_doeat_nonfood, 15), (yield* xname(otmp)), NHM.KILLED_BY_AN));
         } else
             (yield* You(__s_seem_unaffected_by_the_poison));
     } else if (!nodelicious) {
@@ -2962,7 +2963,7 @@ export function* doeat() {
         }
         (yield* pline(__s_ulch_that_s_was_rustproofed, (yield* xname(otmp.v))));
         cptr.stI32o(otmp.v, $obj_oerodeproof, 0);
-        (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 2888, __s_doeat), rn2(10)) : rn2(10)))), 1));
+        (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(rn2_at(__s_eat_c, 2888, __s_doeat, 10))), 1));
         if ((yield* welded(otmp.v)) || ((cptr.ldI32o(otmp.v, $obj_cursed) & 1) | 0 && (cptr.ldI64o(otmp.v, $obj_owornmask) & 393216n))) {
             (yield* set_bknown(otmp.v, 1));
             (yield* You(__s_spit_out_s, (yield* the((yield* xname(otmp.v))))));
@@ -3049,7 +3050,7 @@ export function* doeat() {
             break;
         }
         cptr.stI32o(svc, $context_info_victual + $victual_info_reqtime, cptr.ld1so2(objects, cptr.ldI16o(otmp.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay));
-        if (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.FORTUNE_COOKIE && ((cptr.ldI32o(otmp.v, $obj_cursed) & 1) | 0 || (!((cptr.ldI16o(otmp.v, $obj_otyp)) == NHC.LEMBAS_WAFER || (cptr.ldI16o(otmp.v, $obj_otyp)) == NHC.CRAM_RATION) && (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(otmp.v, $obj_age))) > ((cptr.ldI32o(otmp.v, $obj_blessed) & 1) | 0 ? 50n : 30n) && ((cptr.ldI32o(otmp.v, $obj_oeroded) & 3) | 0 || !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 3031, __s_doeat), rn2(7)) : rn2(7)))))) {
+        if (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.FORTUNE_COOKIE && ((cptr.ldI32o(otmp.v, $obj_cursed) & 1) | 0 || (!((cptr.ldI16o(otmp.v, $obj_otyp)) == NHC.LEMBAS_WAFER || (cptr.ldI16o(otmp.v, $obj_otyp)) == NHC.CRAM_RATION) && (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(otmp.v, $obj_age))) > ((cptr.ldI32o(otmp.v, $obj_blessed) & 1) | 0 ? 50n : 30n) && ((cptr.ldI32o(otmp.v, $obj_oeroded) & 3) | 0 || !rn2_at(__s_eat_c, 3031, __s_doeat, 7))))) {
             if ((yield* rottenfood(otmp.v))) {
                 cptr.stI32o(otmp.v, $obj_oeroded, 1);
                 dont_start = 1;
@@ -3155,9 +3156,9 @@ export function* gethungry() {
     let accessorytime;
     if ((cptr.ldI32o(u, $you_uinvulnerable) & 1) | 0 || cptr.ld1so(iflags, $instance_flags_debug_hunger))
         return;
-    if ((!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || !(rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 3174, __s_gethungry), rn2(10)) : rn2(10))) && (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n)) && !Slow_digestion())
+    if ((!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || !rn2_at(__s_eat_c, 3174, __s_gethungry, 10)) && (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n)) && !Slow_digestion())
         (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
-    accessorytime = (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 3191, __s_gethungry), rn2(20)) : rn2(20));
+    accessorytime = rn2_at(__s_eat_c, 3191, __s_gethungry, 20);
     if (accessorytime % 2) {
         if ((HRegeneration() & -268435457n) || (ERegeneration() & -8449n))
             (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
@@ -3288,7 +3289,7 @@ export function* newuhs(incr) {
         let uhunger_div_by_10 = Math.imul(sgn(cptr.ldI32o(u, $you_uhunger)), ((((Math.abs(cptr.ldI32o(u, $you_uhunger)) + 5) | 0) / 10) | 0));
         if (is_fainted())
             newhs = NHC.FAINTED;
-        if (cptr.ldI32o(u, $you_uhs) <= NHC.WEAK || (rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 3416, __s_newuhs), rn2((20 - uhunger_div_by_10) | 0)) : rn2((20 - uhunger_div_by_10) | 0)) >= 19) {
+        if (cptr.ldI32o(u, $you_uhs) <= NHC.WEAK || rn2_at(__s_eat_c, 3416, __s_newuhs, (20 - uhunger_div_by_10) | 0) >= 19) {
             if (!is_fainted() && cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
                 let duration = (10 - uhunger_div_by_10) | 0;
                 (yield* stop_occupation());

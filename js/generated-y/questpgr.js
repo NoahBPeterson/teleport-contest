@@ -13,6 +13,7 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
+import { rn2_at } from './nhrng.js';
 import { Blind, Role_switch, create_nhwindow, destroy_nhwindow, display_nhwindow, putmsghistory, putstr } from './nhprop.js';
 import { flags, gc, gi, gl, gm, gn, gu, program_state, svd, svl, svm, svp, svq, u } from './decl.js';
 import { impossible, pline } from './pline.js';
@@ -29,7 +30,6 @@ import { windowprocs } from './windows.js';
 import { get_table_option, get_table_str_opt, nhl_done, nhl_init, nhl_loadlua } from './nhlua.js';
 import { lua_getfield, lua_getglobal, lua_gettable, lua_len, lua_pushinteger, lua_settop, lua_tointegerx, lua_type } from './lapi.js';
 import { dupstr } from './alloc.js';
-import { rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { luaL_checklstring } from './lauxlib.js';
 import { mkclass } from './makemon.js';
 
@@ -607,7 +607,7 @@ function* com_pager_core(section, msgid, showerror, rawtext) {
                     return res;
                 }
             }
-            nelems = ((rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 566, __s_com_pager_core), rn2(nelems)) : rn2(nelems)) + 1) | 0;
+            nelems = (rn2_at(__s_questpgr_c, 566, __s_com_pager_core, nelems) + 1) | 0;
             (yield* lua_pushinteger(L, BigInt(nelems)));
             (yield* lua_gettable(L, -2));
             text = (yield* dupstr(((yield* luaL_checklstring(L, -1, null)))));
@@ -658,14 +658,14 @@ export function* qt_pager(msgid) {
 /** C ref: questpgr.c:637 @returns {CPtr<struct permonst>} */
 export function* qt_montype() {
     let qpm;
-    if ((rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 641, __s_qt_montype), rn2(5)) : rn2(5))) {
+    if (rn2_at(__s_questpgr_c, 641, __s_qt_montype, 5)) {
         qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy1num);
-        if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 643, __s_qt_montype), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+        if (qpm != NHC.NON_PM && rn2_at(__s_questpgr_c, 643, __s_qt_montype, 5) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
             return cptr.add(mons, qpm, $sizeof_permonst);
         return (yield* mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy1sym), 0));
     }
     qpm = cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enemy2num);
-    if (qpm != NHC.NON_PM && (rng_log_enabled() ? (rng_log_set_caller(__s_questpgr_c, 648, __s_qt_montype), rn2(5)) : rn2(5)) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+    if (qpm != NHC.NON_PM && rn2_at(__s_questpgr_c, 648, __s_qt_montype, 5) && !(cptr.ld1uo2(svm, qpm, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
         return cptr.add(mons, qpm, $sizeof_permonst);
     return (yield* mkclass(cptr.ld1so(gu, $instance_globals_u_urole + $Role_enemy2sym), 0));
 }

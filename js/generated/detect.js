@@ -9,12 +9,13 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { IS_FURNITURE, Is_box, SchroedingersBox, canspotmon, glyph_is_cmap, glyph_is_monster, glyph_is_object, glyph_is_swallow, glyph_is_trap, glyph_is_warning, glyph_to_mon, glyph_to_obj, has_mcorpsenm, helpless, is_cmap_furniture } from './nhmacrofn.js';
+import { rn2_at, rnd_at, rnl_at } from './nhrng.js';
 import { Blind, BlindedTimeout, Clairvoyant, Deaf, EDetect_monsters, HConfusion, HHallucination, HStun, Half_physical_damage, Hallucination, U_AP_TYPE, Ugender, Underwater, Upolyd, display_nhwindow, sokoban_dnum } from './nhprop.js';
 import { WIN_MAP, WIN_MESSAGE, c_common_strings, cg, flags, ga, gd, gf, gi, gk, gm, gn, gs, gu, gv, gy, iflags, quitchars, svd, svl, u, ublindf, uwep } from './decl.js';
 import { back_to_glyph, canseemon, cls, docrt, feel_location, feel_newsym, flash_glyph_at, flush_screen, glyph_at, magic_map_background, map_background, map_engraving, map_invisible, map_object, map_trap, mon_visible, newsym, see_monsters, sensemon, show_glyph, swallowed, under_ground, under_water, unmap_invisible, unmap_object, warning_of, xy_set_wall_state } from './display.js';
 import { getpos } from './getpos.js';
 import { def_char_is_furniture, def_char_to_monclass, def_char_to_objclass, def_monsyms, def_oc_syms } from './drawing.js';
-import { rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
+import { rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { mons } from './monst.js';
 import { detect_wsegs } from './worm.js';
 import { consume_obj_charge, currency, sobj_at, useup } from './invent.js';
@@ -334,7 +335,7 @@ export function trapped_chest_at(ttyp, x, y) {
     let otmp;
     if (!glyph_is_trap(glyph_at(x, y)))
         return 0;
-    if (ttyp != NHC.TRAPPED_CHEST || (Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 146, __s_trapped_chest_at), rn2(20)) : rn2(20))))
+    if (ttyp != NHC.TRAPPED_CHEST || (Hallucination() && rn2_at(__s_detect_c, 146, __s_trapped_chest_at, 20)))
         return 0;
     if (sobj_at(NHC.CHEST, x, y) || sobj_at(NHC.LARGE_BOX, x, y))
         return 1;
@@ -360,7 +361,7 @@ export function trapped_door_at(ttyp, x, y) {
     let lev;
     if (!glyph_is_trap(glyph_at(x, y)))
         return 0;
-    if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 188, __s_trapped_door_at), rn2(20)) : rn2(20))))
+    if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && rn2_at(__s_detect_c, 188, __s_trapped_door_at, 20)))
         return 0;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     if (!((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
@@ -552,7 +553,7 @@ export function gold_detect(sobj) {
         if (findgold(cptr.ldPtro(mtmp, $monst_minvent)) || (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) == NHC.PM_GOLD_GOLEM) {
             cptr.memcpy(gold, cg, 216);
             cptr.stI16o(gold, $obj_otyp, NHC.GOLD_PIECE);
-            cptr.stI64o(gold, $obj_quan, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 442, __s_gold_detect), rnd(10)) : rnd(10))));
+            cptr.stI64o(gold, $obj_quan, BigInt(rnd_at(__s_detect_c, 442, __s_gold_detect, 10)));
             cptr.stI16o(gold, $obj_ox, cptr.ldI16o(mtmp, $monst_mx));
             cptr.stI16o(gold, $obj_oy, cptr.ldI16o(mtmp, $monst_my));
             map_object(gold, 1);
@@ -820,7 +821,7 @@ export function object_detect(detector, class$) {
             let gold = cptr.alloc(216);
             cptr.memcpy(gold, cg, 216);
             cptr.stI16o(gold, $obj_otyp, NHC.GOLD_PIECE);
-            cptr.stI64o(gold, $obj_quan, BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 770, __s_object_detect), rnd(10)) : rnd(10))));
+            cptr.stI64o(gold, $obj_quan, BigInt(rnd_at(__s_detect_c, 770, __s_object_detect, 10)));
             cptr.stI16o(gold, $obj_ox, cptr.ldI16o(mtmp, $monst_mx));
             cptr.stI16o(gold, $obj_oy, cptr.ldI16o(mtmp, $monst_my));
             map_object(gold, 1);
@@ -900,7 +901,7 @@ function sense_trap(trap, x, y, src_cursed) {
             cptr.stI16o(obj, $obj_oy, y);
         }
         cptr.stI16o(obj, $obj_otyp, i16((!Hallucination() ? NHC.GOLD_PIECE : (((rn2)(((NHC.NUM_OBJECTS - NHC.FIRST_OBJECT) | 0)) + NHC.FIRST_OBJECT) | 0))));
-        cptr.stI64o(obj, $obj_quan, BigInt(((cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE) ? (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 879, __s_sense_trap), rnd(10)) : rnd(10)) : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 ? (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 880, __s_sense_trap), rnd(2)) : rnd(2)) : 1))));
+        cptr.stI64o(obj, $obj_quan, BigInt(((cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_PIECE) ? rnd_at(__s_detect_c, 879, __s_sense_trap, 10) : ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 ? rnd_at(__s_detect_c, 880, __s_sense_trap, 2) : 1))));
         cptr.stI32o(obj, $obj_corpsenm, ((rn2)(NHC.NUMMONS)));
         map_object(obj, 1);
     } else if (trap) {
@@ -1103,7 +1104,7 @@ export function level_distance(where) {
     let indun = schar((cptr.ldI16o(u, $you_uz) == cptr.ldI16(where)));
     let res = __s_empty;
     if (ll < 0) {
-        if (ll < ((-8 - (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1149, __s_level_distance), rn2(3)) : rn2(3))) | 0))
+        if (ll < ((-8 - rn2_at(__s_detect_c, 1149, __s_level_distance, 3)) | 0))
             if (!indun)
                 res = __s_far_away;
             else
@@ -1118,7 +1119,7 @@ export function level_distance(where) {
         else
             res = __s_just_below;
     } else if (ll > 0) {
-        if (ll > ((8 + (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1164, __s_level_distance), rn2(3)) : rn2(3))) | 0))
+        if (ll > ((8 + rn2_at(__s_detect_c, 1164, __s_level_distance, 3)) | 0))
             if (!indun)
                 res = __s_far_away;
             else
@@ -1165,9 +1166,9 @@ export function use_crystal_ball(optr) {
         return;
     }
     oops = is_quest_artifact(obj) ? 8 : ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 16 : 20);
-    if (charged && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1218, __s_use_crystal_ball), rnd(oops)) : rnd(oops)) > (acurr(NHC.A_INT)))) {
+    if (charged && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || rnd_at(__s_detect_c, 1218, __s_use_crystal_ball, oops) > (acurr(NHC.A_INT)))) {
         let impair = BigInt((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1219, __s_use_crystal_ball), rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)) : rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)));
-        switch ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1221, __s_use_crystal_ball), rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5)) : rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5))) {
+        switch (rnd_at(__s_detect_c, 1221, __s_use_crystal_ball, (cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 5)) {
             case 1:
             pline(__s_s_too_much_to_comprehend, Tobjnam(obj, __s_are));
             break;
@@ -1194,7 +1195,7 @@ export function use_crystal_ball(optr) {
             pline(__s_pct_s_bang, Tobjnam(obj, __s_explode));
             useup(obj);
             cptr.stPtr(optr, obj = null);
-            losehp(((Half_physical_damage()) ? ((((((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1250, __s_use_crystal_ball), rnd(30)) : rnd(30))) + 1) | 0) / 2) | 0) : ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1250, __s_use_crystal_ball), rnd(30)) : rnd(30)))), __s_exploding_crystal_ball, NHM.KILLED_BY_AN);
+            losehp(((Half_physical_damage()) ? ((((rnd_at(__s_detect_c, 1250, __s_use_crystal_ball, 30) + 1) | 0) / 2) | 0) : rnd_at(__s_detect_c, 1250, __s_use_crystal_ball, 30)), __s_exploding_crystal_ball, NHM.KILLED_BY_AN);
             break;
         }
         if (obj)
@@ -1202,7 +1203,7 @@ export function use_crystal_ball(optr) {
         return;
     }
     if (Hallucination()) {
-        nomul(-(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1260, __s_use_crystal_ball), rnd(charged ? 4 : 2)) : rnd(charged ? 4 : 2)));
+        nomul(-rnd_at(__s_detect_c, 1260, __s_use_crystal_ball, charged ? 4 : 2));
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_gazing_into_a_magic_8_ball_tm);
         cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
         if (!charged) {
@@ -1215,7 +1216,7 @@ export function use_crystal_ball(optr) {
                     return;
                 }
         } else {
-            switch ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1269, __s_use_crystal_ball), rnd(6)) : rnd(6))) {
+            switch (rnd_at(__s_detect_c, 1269, __s_use_crystal_ball, 6)) {
                 case 1:
                 You(__s_grok_some_groovy_globs_of_incandescent);
                 break;
@@ -1248,7 +1249,7 @@ export function use_crystal_ball(optr) {
         return;
     }
     You(__s_peer_into_s, the(xname(obj)));
-    nomul(-(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1313, __s_use_crystal_ball), rnd(charged ? 10 : 2)) : rnd(charged ? 10 : 2)));
+    nomul(-rnd_at(__s_detect_c, 1313, __s_use_crystal_ball, charged ? 10 : 2));
     cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_gazing_into_a_crystal_ball);
     cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
     if (!charged) {
@@ -1278,12 +1279,12 @@ export function use_crystal_ball(optr) {
         } else if (ch == 94) {
             ret = trap_detect(null);
         } else {
-            i = (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1354, __s_use_crystal_ball), rn2(4)) : rn2(4));
+            i = rn2_at(__s_detect_c, 1354, __s_use_crystal_ball, 4);
             You_see(__s_s_s, cptr.ldPtro(level_detects, i, $sizeof_crystalballlevels), level_distance(cptr.ldPtro2(level_detects, i, $sizeof_crystalballlevels, $crystalballlevels_where)));
             ret = 0;
         }
         if (ret) {
-            if (!(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1361, __s_use_crystal_ball), rn2(100)) : rn2(100)))
+            if (!rn2_at(__s_detect_c, 1361, __s_use_crystal_ball, 100))
                 You_see(__s_the_wizard_of_yendor_gazing_out_at_you);
             else
                 pline_The(__s_vision_is_unclear);
@@ -1298,7 +1299,7 @@ export function show_map_spot(x, y, cnf) {
     let t;
     let ep;
     let oldglyph;
-    if (cnf && (rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 1379, __s_show_map_spot), rn2(7)) : rn2(7)))
+    if (cnf && rn2_at(__s_detect_c, 1379, __s_show_map_spot, 7))
         return;
     lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
     cptr.st1o(lev, $rm_seenv, 255);
@@ -1750,7 +1751,7 @@ export function dosearch0(aflag) {
                 if (!aflag && (Blind() || visible_region_at(x, y)))
                     feel_location(x, y);
                 if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) {
-                    if ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 2043, __s_dosearch0), rnl((7 - fund) | 0)) : rnl((7 - fund) | 0)))
+                    if (rnl_at(__s_detect_c, 2043, __s_dosearch0, (7 - fund) | 0))
                         continue;
                     cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm));
                     recalc_block_point(x, y);
@@ -1760,7 +1761,7 @@ export function dosearch0(aflag) {
                     set_msg_xy(x, y);
                     You(__s_find_a_hidden_door);
                 } else if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SCORR) {
-                    if ((rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 2053, __s_dosearch0), rnl((7 - fund) | 0)) : rnl((7 - fund) | 0)))
+                    if (rnl_at(__s_detect_c, 2053, __s_dosearch0, (7 - fund) | 0))
                         continue;
                     cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.CORR);
                     unblock_point(x, y);
@@ -1779,7 +1780,7 @@ export function dosearch0(aflag) {
                     }
                     if (!aflag && !mtmp && !Blind())
                         void unmap_invisible(x, y);
-                    if ((trap = t_at(x, y)) && !(cptr.ldI32o(trap, $trap_tseen) & 1) && !(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 2079, __s_dosearch0), rnl(8)) : rnl(8))) {
+                    if ((trap = t_at(x, y)) && !(cptr.ldI32o(trap, $trap_tseen) & 1) && !rnl_at(__s_detect_c, 2079, __s_dosearch0, 8)) {
                         nomul(0);
                         if (((cptr.ldI32o(trap, $trap_ttyp) & 31) | 0) == NHC.STATUE_TRAP) {
                             if (activate_statue_trap(trap, x, y, 0))
