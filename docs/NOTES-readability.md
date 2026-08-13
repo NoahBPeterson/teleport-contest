@@ -259,7 +259,9 @@ plan is 1,416 and resetify still emits 1,395 bindings.
 ### where the names come from, and what refuses one
 
 Offsets come from the emitter's own `layoutOf()`, so this adds no new source of
-truth. What it needs is a table that means the same thing in every module,
+truth. **The layout is the emitter's own, not the host C ABI's**: it only has
+to be self-consistent inside the port, and nothing outside the port reads it.
+What the table needs is a name that means the same thing in every module,
 because they share one `nhfield.js`. `collectFieldOffsets()` in `build.mjs`
 computes it once for the corpus, before any file is emitted — which also keeps
 incremental builds honest, since a file whose emission is skipped still has its
@@ -554,3 +556,482 @@ On `readability-1`, off `main` at `524c52d`. Nothing pushed, nothing merged.
 `js/generated` must be committed from a **normal** build, never a
 `C2JS_FOLD_VERIFY=1` one — that mode re-emits through the real emitter methods
 and sets `usesConsts` on one extra file (pre-existing, see 1.8).
+
+---
+---
+
+# Readability, leg 2 — the source tier (roadmap 1.13)
+
+Branch `readable-2`, off `main` at `0e5980d`. Seven changes, and the rule
+governing all of them is the project owner's:
+
+> The goal is to make a source transpiler; we cannot randomly insert meaning
+> where previously none existed.
+
+So every name and every comment below is **recovered** from the C — from the
+AST, from the layout the emitter already computes, or from the C source text —
+and where a thing cannot be recovered it keeps its integer and is counted.
+Leg 1 (§1–§7 above) gave the code back the vocabulary of C's *values*; this leg
+gives it back the vocabulary of the C *source*: its types, its literals, its
+sizes, and its author's own commentary.
+
+| flag | default | what the other setting does |
+|---|---|---|
+| `C2JS_PTRDOC=0` | on | bare `@param {CPtr}` again (§11) |
+| `C2JS_STRNAMES=0` | on | `__slN` string-table names again (§10) |
+| `C2JS_SIZENAMES=0` | on | bare integer element sizes and strides (§12) |
+| `C2JS_RNGFOLD=0` | on | the inline rng-log ternary at every draw (§13) |
+| `C2JS_COMMENTS=0` | on | drop the C's comments (§9) |
+| `C2JS_BLANKLINES=0` | on | drop the C's blank lines (§9) |
+
+---
+
+## 8. The acceptance demo
+
+### before (`0e5980d`)
+
+```js
+/** C ref: detect.c:139 — @param {CInt} ttyp @param {CInt} x @param {CInt} y @returns {CInt} */
+export function trapped_chest_at(ttyp, x, y) {
+    let mtmp;
+    let otmp;
+    if (!glyph_is_trap(glyph_at(x, y)))
+        return 0;
+    if (ttyp != NHC.TRAPPED_CHEST || (Hallucination() && (rng_log_enabled() ? (rng_log_set_caller(__sl0, 146, __sl1), rn2(20)) : rn2(20))))
+        return 0;
+    if (sobj_at(NHC.CHEST, x, y) || sobj_at(NHC.LARGE_BOX, x, y))
+        return 1;
+    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
+        for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+            if (Is_box(otmp) && (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0)
+                return 1;
+        ...
+```
+
+### after
+
+```js
+/* this is checking whether a trap symbol represents a trapped chest,
+   not whether a trapped chest is actually present */
+/** C ref: detect.c:139 — @param {CInt} ttyp @param {CInt} x @param {CInt} y @returns {CInt} */
+export function trapped_chest_at(ttyp, x, y) {
+    let mtmp;
+    let otmp;
+
+    if (!glyph_is_trap(glyph_at(x, y)))
+        return 0;
+    if (ttyp != NHC.TRAPPED_CHEST || (Hallucination() && rn2_at(__s_detect_c, 146, __s_trapped_chest_at, 20)))
+        return 0;
+
+    /*
+     * TODO?  We should check containers recursively like the trap
+     * detecting routine does.  Chests and large boxes do not nest in
+     * themselves or each other, but could be contained inside statues.
+     *
+     * For farlook, we should also check for buried containers, but
+     * for '^' command to examine adjacent trap glyph, we shouldn't.
+     */
+
+    /* on map, presence of any trappable container will do */
+    if (sobj_at(NHC.CHEST, x, y) || sobj_at(NHC.LARGE_BOX, x, y))
+        return 1;
+    /* in inventory, we need to find one which is actually trapped */
+    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) {
+        for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
+            if (Is_box(otmp) && (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0)
+                return 1;
+        ...
+```
+
+and `trapped_door_at`'s address line, where the two remaining magic numbers
+were the strides:
+
+```js
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, 756), y, 36);   // before
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+```
+
+`dbridge.c`'s `do_entity` is the other half of the demo, because it is where
+the C author's *layout* comes back — a staircase of trailing comments that
+only makes sense read together:
+
+```js
+            pline(__s_s_crushed_underneath_the_drawbridge, E_phrase(etmp, __s_are));  /* no jump */
+            e_died(etmp, NHM.XKILL_NOCORPSE | (e_inview ? NHM.XKILL_GIVEMSG : NHM.XKILL_NOMSG), NHC.CRUSHING);  /* no corpse */
+            return;  /* Note: Beyond this point, we know we're  */
+        }  /* not at an opened drawbridge, since all  */
+        must_jump = 1;  /* *missable* creatures survive on the     */
+    }  /* square, and all the unmissed ones die.  */
+```
+
+---
+
+## 9. The C's comments, and its blank lines
+
+`detect.c` has 377 comments. `detect.js` had 11, and all eleven were ours.
+That is the largest body of recovered meaning still sitting in the source, and
+clang throws every byte of it away before the emitter sees anything: a comment
+is not an AST node, and no node carries a trace of one.
+
+So the comments are read out of the C text, positioned by the same source
+offsets `/** C ref: */` is already built from (`lineOf`, `range.begin`,
+`range.end`).
+
+### the unit is the line
+
+A byte-offset gap between two statements contains the `;` that ended the first
+one — clang's `range.end` points at the *start* of a node's last token — so an
+offset rule would have to model token ends to know where a statement really
+stopped. A line rule does not. It is also the rule task 6 needs, because a
+blank line is a line.
+
+### the classification, once per file
+
+`scanTrivia()` walks the C text with a scanner that knows comments, string and
+character literals, and C's backslash-newline splice, and classifies **every
+line** as `code`, `blank` or `comment`:
+
+* a comment with nothing but whitespace before it on its first line and
+  nothing after it on its last is **movable**, and its lines are trivia;
+* any other comment — one after code, one before code on the same line — is
+  **not**, and its lines are marked `code` so nothing can harvest them. A
+  comment after code on a single line is instead recorded as that line's
+  *trailing* comment.
+* a `//` comment continued with a backslash is refused outright: it is one
+  comment in C and would be a comment plus a statement in JS. (0 in this
+  corpus. The check is there because the failure would be silent and
+  syntactic.)
+
+### the attachment rule, and why it is right rather than merely near
+
+A statement takes the **run of blank and comment lines immediately above its
+first line, stopping at the first line with code on it.**
+
+That bound is the whole argument. A comment cannot cross a line of code, so
+the run above a statement can only ever be a comment the C author wrote about
+*that* statement. It is also what protects a function's own doc comment from
+being eaten by its first statement — the `{` is a line of code — and what
+keeps a file's licence header out of the first declaration, since `#include`
+lines sit in between.
+
+A comment after the code on a statement's **last** line is appended to that
+statement's last emitted line, which is what keeps `do_entity`'s staircase
+readable.
+
+A **declaration's** run goes above the whole chunk — above the hoisted statics
+and above our `/** C ref: */` — so the C author's line reads as theirs and
+ours reads as ours. The blank line the C puts above a declaration is dropped,
+because `assemble()` already writes one there and two would read as a gap the
+author did not leave.
+
+Runs of blank lines collapse to one.
+
+### dedup: a spliced region may not claim a comment twice
+
+The goto lowerings and the setjmp split emit some regions more than once
+(`emitLabeledItems`, `emitXBlockItems`, the try/catch pair in
+`emitBlockItems`). A comment repeated in two copies of one region claims about
+both what the C said about one, which is exactly the "wrong name on a right
+value" failure in a different costume.
+
+**Every trivia line is emitted at most once per function**, and the first copy
+carries it: 1,671 lines declined a second time. The one place that has to
+release its claim is the state-machine fallback, which re-emits a whole body
+after an attempt that was thrown away — it clears the lines the discarded
+attempt spent, or the final emission would come out bare.
+
+### what is dropped, stated rather than hidden
+
+* a comment inside a statement's own line span — inside a multi-line
+  condition, between the arms of a `for` header — has no statement to attach
+  to and is not carried;
+* a comment in a region the emitter never emits (dead code the goto lowering
+  suppresses, an `#if`-ed out block clang never parsed);
+* the file header, for the `#include` reason above;
+* 365 comments that share a line with code in a position that is neither
+  leading nor trailing.
+
+### the audit
+
+Every carried comment line must appear **verbatim in that module's own C
+source**, must not be carried more often than the C spells it, and must come
+from the C region of the declaration it was emitted under.
+
+**28,249 carried comment lines: 0 not found verbatim, 0 over-carried, 0 from
+outside the declaration's region.** (The audit's own false positives were
+three `lvm.js` comments whose enclosing `C ref:` marker the window heuristic
+mis-bracketed, and the 37 lines of the hand-written runtime preludes, which
+are not carried at all.)
+
+**15,535 comments carried (6,554 of them trailing a statement) and 20,516
+blank lines.**
+
+---
+
+## 10. String literals named by what they say
+
+24,129 interned literals were called `__sl0` … `__sl24128` and referenced
+58,151 times. The number is interning order — an artifact, and not even a
+stable one: adding a literal upstream renumbers every literal after it, so a
+one-word change to a `pline()` produced a diff across the file.
+
+The name now comes from the literal's own bytes:
+
+```js
+rng_log_set_caller(__sl0, 146, __sl1)
+rng_log_set_caller(__s_detect_c, 146, __s_trapped_chest_at)
+```
+
+### the rule
+
+1. runs of non-alphanumeric characters collapse to `_`; the result is
+   lower-cased and stripped of leading and trailing `_`;
+2. a literal left with **fewer than two alphanumeric characters** — `": "`,
+   `"%s"`, `"."`, `""` — is transliterated one character at a time instead
+   (`__s_colon_sp`, `__s_pct_s`, `__s_dot`, `__s_empty`), with a run of one
+   character carrying a count (`__s_sp10`). Rule 1 collapses these to nothing,
+   so without rule 2 every punctuation literal would be the same name;
+3. the slug is capped at **40 characters**, cut back to the last `_` past the
+   eighth so a cap never lands mid-word;
+4. a slug two distinct literals in one file produce is disambiguated by a
+   `__2`, `__3`, … suffix on the later ones, in interning order. It is
+   unambiguous because rule 1 collapses runs, so a slug can never itself
+   contain a doubled underscore.
+
+The escapes `cStringToJs` introduced are decoded before slugging, so a literal
+is named by what it *is*: `"\033["` is `__s_esc_lbrack`, not `__s_x1b_lbrack`.
+
+**23,585 named, 503 needed a collision suffix.**
+
+### what is unchanged, and the one hazard
+
+Identifier renaming only. The value of every literal, the dedup, and the order
+of each file's string table are byte-for-byte what they were.
+
+The hazard is that a C identifier may legally begin with `__s_`, and the
+string table is emitted **above** the body — so a collision would be a silent
+shadow, with every use reading the declaration rather than the literal.
+`assemble()` therefore asserts that no string name collides with anything the
+module declares. (No C identifier in this corpus begins with `__s_`; the two
+that come closest are `__sgi` and `__sub`.)
+
+`bundle.mjs`'s collision accounting learns the new spelling and keeps the old.
+Cross-module renames fall **23,159 → 5,945**, because two modules no longer
+both declare `__sl0`; the 16 that are real C symbols are unchanged.
+
+---
+
+## 11. A pointer parameter has a type
+
+Every pointer parameter in the tree read `@param {CPtr} mtmp` — true, and
+worth nothing. The AST spells it `struct monst *` and always did; `jsdocType`
+collapsed every pointer to one word before anyone could see it.
+
+```js
+/** C ref: detect.c:122 — @param {CPtr<struct monst>} mtmp @param {CInt} showtail */
+/** C ref: dbridge.c:286 — @param {CInt} x @param {CInt} y @returns {CPtr<struct entity>} */
+```
+
+The spelling inside the brackets is `qualType` — the C declaration's own
+spelling — not the desugared form, because the point is to hand back the
+vocabulary of the C: a `coordxy *` says `CPtr<coordxy>`, not `CPtr<short>`.
+cv-qualifiers are dropped, since the port's memory model has no notion of them
+and `CPtr<const char>` would claim something nothing enforces.
+
+Three shapes decline the bracket and stay bare `CPtr`, each because the
+spelling would be a claim the emitter cannot back:
+
+* a pointee spelling with parentheses in it — a function pointer
+  (`int (*)(int)`), and clang's anonymous-record spelling (`struct (unnamed
+  struct at <file>:12:5)`). The second is also what keeps this tier out of the
+  `__FILE__` hygiene problem **by construction**: no path can reach a comment
+  because no parenthesized spelling does;
+* a decayed array or function designator, which `parseType` calls a pointer
+  and which has no pointee at all;
+* anything over 40 characters.
+
+**8,496 pointers carry their C pointee, 142 stayed bare.** Comments only: not
+one emitted value changes.
+
+---
+
+## 12. Element sizes and strides — `sizeof_<record>` in `nhfield.js`
+
+§2 named the *displacement* in an address and left the other integers alone:
+
+```js
+cptr.ld1so3(svl, x, 756, y, 36, $instance_globals_saved_l_level + $rm_typ)
+cptr.add(mons, NHC.PM_LONG_WORM, 96)
+```
+
+says `levl[x][y].typ` and `mons[PM_LONG_WORM]` with three magic numbers in it.
+They are real C quantities and the emitter computed each of them from the
+layout it already has: **36 is `sizeof(struct rm)`**, **96 is
+`sizeof(struct permonst)`**, and **756 is `sizeof(struct rm [21])`** — the
+stride of one `levl` column, which decomposes exactly as `21 * sizeof_rm`.
+
+```js
+cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)
+cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)
+```
+
+### why nhfield.js and not a sibling
+
+Same table (`layoutOf`), same conflict rules, same `$name` module-scope
+binding for the same V8-folding reason §2 measured. A second module would have
+been a second preamble and a second import for no distinction that exists.
+
+A composed stride is **resolved arithmetically when the table is written** and
+carries its own decomposition beside the value:
+
+```js
+export const sizeof_rm = 36;
+export const sizeof_rm_x21 = 756;   // = 21 * sizeof_rm
+```
+
+so one entry per record covers every array bound the corpus reaches, and the
+claim "756 is 21 of them" is written down rather than asserted in prose. The
+equality audit reaches through the composition: a name is used at a site only
+when `base × ∏counts` is exactly the size that emitter just computed.
+
+A record whose own name ends `_x<digits>` is refused a size name from both
+sides, since `sizeof_rm_x21` is also how an array of 21 `struct rm` spells
+itself — §2's "a name that could mean two things" rule, applied before the two
+spellings can meet.
+
+### what deliberately keeps its integer
+
+* a **pointer (8), a scalar (1/2/4/8) and an enum (4)**: machine widths, not
+  NetHack's. `sizeof_int` would be a name for a fact no 5.1 merge can move,
+  and there are 9,226 such sites. Naming them would be inserting meaning, not
+  recovering it.
+* the **count** in a stride. 21 is `ROWNO` in the C (`#define ROWNO 21`,
+  global.h:383) — but the preprocessor consumed that name before clang saw the
+  array bound, and 21 is the value of many macros. Recovering it from the
+  value would be a guess. This leaves **381 sites** spelling a
+  `struct monst *[21]` row stride as `168`, where both factors are machine
+  widths and neither has a NetHack name.
+* C-source `sizeof` expressions, which are values in the constant-folding path
+  and are audited by `C2JS_FOLD_VERIFY` against an evaluator that binds only
+  `NHC`/`NHM`. Naming them would make every one of those folds unevaluable.
+
+**21,377 element sizes named and 1,912 composed strides**, over 2,945 exported
+names of which 5 are composed. **23 record sizes refused by the equality
+audit.** Of the 2,134 `o3` accesses, 422 keep a numeric stride; 381 of those
+are the `[21]` pointer rows above.
+
+---
+
+## 13. The rng-log fold — `js/generated/nhrng.js`
+
+The recorder's `hack.h` redefines every PRNG entry point to log its caller:
+
+```c
+#define rn2(x) (rng_log_enabled()                                    /* hack.h:1596 */
+                ? (rng_log_set_caller(__FILE__, __LINE__, __func__), rn2(x))
+                : rn2(x))
+```
+
+so where the C says `rn2(20)`, 2,724 sites in the port said
+
+```js
+(rng_log_enabled() ? (rng_log_set_caller(__s_detect_c, 146, __s_trapped_chest_at), rn2(20)) : rn2(20))
+```
+
+— the same eleven tokens every time, and the loudest thing on every line that
+draws. It folds to
+
+```js
+rn2_at(__s_detect_c, 146, __s_trapped_chest_at, 20)
+```
+
+with the ternary written once per macro in `nhrng.js`. Six helpers: `rn2`,
+`rnd`, `rnl`, `rne`, `rnz`, `d`.
+
+### the log is scored
+
+`getRngLog()` is what the judge reads. The helper therefore performs **exactly
+the three calls the macro did, in the macro's order**, and nothing about the
+log's content can move. Only the spelling of the call site changes.
+
+### the recognition, and the two audits
+
+Structural, on the AST, because the shape **is** the macro and nothing else in
+NetHack tests `rng_log_enabled()`: the condition is a call to it, the then-arm
+is a comma expression whose left is `rng_log_set_caller` with three arguments
+and whose right is a draw, and the else-arm is the same draw. The two arms are
+then required to emit **character-for-character the same call**, which is the
+audit — the extent machinery of §3 could not be used here because the body
+carries `__LINE__` and so emits differently at every site.
+
+### what a call really changes, and the guard
+
+Not how *many* times the argument runs — C spells it once per arm and exactly
+one arm runs — but **when**. C evaluated it inside the selected arm, after
+`rng_log_enabled()` and after `rng_log_set_caller`; a call evaluates it before
+both.
+
+A site is admitted only when the argument **neither writes nor draws**:
+`macroFnArgSafe`, the same evidence tier 1.12 hoists on (no assignment, no
+`++`/`--`, and every callee provably pure — which excludes the whole RNG by
+construction). The case that must be refused is `rn2(rnd(3))`: with the
+instrumentation inline the inner draw logs against the inner line and the
+outer against it too, and with the argument hoisted they log against different
+callers. That is a change to the scored artifact, and it is refused.
+
+**2,679 of 2,724 folded; 45 refused** — `rn2(++chcnt)`, `rnd(tmp = tmp / 2)`,
+`rn2(acurr(A_DEX))`, `rn2(d_at(...))`.
+
+`nhrng.js` imports `rnd.js`, which imports `decl.js`, so neither of those two
+may fold a site or the helper module joins its own import cycle. `rnd.c`
+cannot (hack.h's `RNGLOG_IN_RND_C` suppresses the macros there) and `decl.c`
+happens never to draw — asserted at assemble time rather than discovered at
+load time.
+
+---
+
+## 14. The generated modules carry provenance, not commentary
+
+Five generated sidecars carried authored prose headers — paragraphs a previous
+agent wrote into `build.mjs` as string constants and the generator printed
+verbatim into the output.
+
+That prose is **meaning inserted into generated output rather than recovered
+from the C**, which is the one thing this leg's governing rule forbids. The
+generated tree is the transpiler's output; the argument for a design decision
+belongs where design decisions are argued.
+
+| module | header lines before | after |
+|---|---|---|
+| `nhconst.js` | 8 | 3 |
+| `nhmacro.js` | 10 | 3 |
+| `nhfield.js` | 15 | 3 |
+| `nhprop.js` | 14 | 3 |
+| `nhmacrofn.js` | 19 | 3 |
+| `nhrng.js` (this leg's, same rule) | 11 | 3 |
+
+**74 lines of commentary removed.** What is kept is the factual stamp every
+generated file already has and that the owner explicitly chose to keep —
+`// Generated by tools/c2js — do not edit by hand`, the `Input:` path, the
+`Input sha256:` and the `Transpiler:` line — plus one pointer line so a reader
+of the module can find the explanation:
+
+```js
+// Generated by tools/c2js — do not edit by hand
+// Transpiler: tools/c2js c2js emit v1+batch
+// See docs/NOTES-readability.md §2 (field offsets) and §12 (element sizes).
+```
+
+Nothing was deleted as knowledge. Every claim the headers made is in `docs/`:
+
+| claim | where it lives |
+|---|---|
+| enum constants merged across every TU; why a namespace and why `NHC` | `NOTES-named-constants.md` §The module, §Why a namespace import |
+| `#define`s whose body is one integer token, named at their spelling location; why a second module and a second prefix | `NOTES-named-constants.md` (macro tier) §Tier 2, §Why a second module |
+| field offsets named `<record>_<field>`; **the layout is the emitter's own, not the host C ABI's, and only has to be self-consistent inside the port**; why this makes a 5.1 struct change a readable diff | §2 above (the ABI sentence was added there with this change) |
+| `sizeof_<record>` and `sizeof_<record>_x<count>` | §12 above |
+| macro-body helpers, and the character-for-character audit that makes them shorthand rather than reinterpretation | §3 above |
+| function-like macros: the back-substitution audit, the purity evidence, and the repeat-only admission rule | `NOTES-emit-hygiene.md` §3 |
+| the rng-log helpers and the scored log | §13 above |
+
+---
