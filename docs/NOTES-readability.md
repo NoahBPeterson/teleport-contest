@@ -1187,3 +1187,534 @@ have meant inventing rather than recovering: name the `21` in a `ROWNO` stride
 machine width (`sizeof_int` is not NetHack's fact to move), fold an rng-log
 site whose argument draws (it would rewrite the scored log), or carry a comment
 into a spliced region twice (the C said it once).
+
+---
+---
+
+# Readability, leg 3 — the shape tier (roadmap 1.14)
+
+Branch `readable-3`, off `main` at `1fab203`. Two changes, and they pull in
+opposite directions on bytes, which is the honest summary of the leg: one
+deletes an annotation nothing reads, the other spends bytes on whitespace so
+that a 5,090-character line becomes a shape.
+
+| flag | default | what the other setting does |
+|---|---|---|
+| `C2JS_RNGCALLER=1` | **off** | restores the `rn2_at(file, line, func, x)` annotation at every folded draw (§19) |
+| `C2JS_FMT=0` | on | restores one statement per line, however long (§20) |
+| `C2JS_FMT_COLS=<n>` | 100 | moves the column budget |
+
+With `C2JS_FMT=0 C2JS_RNGCALLER=1` the build reproduces `main` byte-for-byte
+apart from one comment line in `nhrng.js` (§21).
+
+---
+
+## 19. The caller annotation is a debugging aid, and the scorer says so
+
+§13 folded the recorder's rng-log ternary into one helper per PRNG entry point.
+It kept the annotation, because the annotation is what the log prints:
+
+```js
+rn2_at(__s_detect_c, 146, __s_trapped_chest_at, 20)
+```
+
+The shipped tree now writes what the C wrote:
+
+```js
+rn2(20)
+```
+
+### why this cannot move the score, read off the scorer
+
+`frozen/ps_test_runner.mjs` is the judge's harness and this is its whole
+normalization:
+
+```js
+function normalizeRng(entry) {
+    return entry.replace(/\s*@\s.*$/, '').replace(/^\d+\s+/, '').trim();
+}
+```
+
+The `@ caller(file:line)` suffix and the call number are **discarded before the
+C's entry and ours are compared**. What survives the normalization is the draw
+text — `rn2(20)=0` — and, separately, the number of entries, which is compared
+by index over the two arrays.
+
+Neither depends on the caller, and the reason is in `rnd.c` rather than in the
+harness: the entry is written by `rng_log_write()` **inside `rn2`**, and
+`rng_log_set_caller()` only stores three variables that decide which of that
+function's `fprintf` arms runs. With the caller never set, `rng_caller_file`
+stays null and every entry takes the plain arm — same count, same text, no
+suffix. Nothing else in the program reads those three variables; `rnd.js`'s
+own `__captureState` carries them, and carrying three nulls is what it now does.
+
+Measured rather than argued: the same session, built both ways.
+
+| | entries | annotated | after `normalizeRng` |
+|---|---|---|---|
+| `C2JS_RNGCALLER=1` | 3,130 | 3,130 | — |
+| shipped | 3,130 | 2,792 | **identical, byte for byte** |
+
+The 2,792 is the one wrinkle and it is worth stating rather than hiding.
+**The 45 sites §13 refused to fold are untouched**, as they should be — their
+argument itself draws or writes, and that refusal is about evaluation order,
+not about the annotation. They still call `rng_log_set_caller`, and the
+recorder never clears the caller (deliberately: a wrapper's internal draws
+inherit their caller), so after the first of those 45 fires every subsequent
+entry prints a *stale* annotation. The scorer strips it; a human reading a
+shipped-tree log should not trust it, and should build with
+`C2JS_RNGCALLER=1`, which is exactly what the flag is for. Folding those 45
+as well is available and would be provably output-equivalent once the caller
+is gone — with nothing between the argument and the draw, the emitted
+expression *is* the ternary's cold arm, character for character — but it is a
+change to 45 shipped sites that this leg was not asked to make.
+
+### the flag must keep working, and does
+
+`C2JS_RNGCALLER=1` is not a courtesy. Localizing a divergence against the C
+recorder means reading two logs side by side and finding the first entry whose
+*caller* differs, which is how the whole Phase 1 grind was run and how a
+Phase 2 merge against 5.1 will have to be run again. So the annotated build is
+a gate, not a nicety: it is verified to produce the annotated log (3,130
+entries, every one annotated) and to reproduce `main`'s trees byte-for-byte.
+
+Both modes share the recognition, the two audits and the arity table of §13.
+The only difference is at the end: with the flag on, the `rng_log_set_caller`
+arguments are emitted and the site spells `rn2_at(...)`; with it off, they are
+**not emitted at all** — which is the second half of the change.
+
+### 806 string literals that named nothing else
+
+`__FILE__` and `__func__` are string literals, and an emission interns them.
+Not emitting them removes them from the module's string table wherever nothing
+else in the module mentions them:
+
+**24,129 → 23,323 interned literals, 806 dropped, 0 added.**
+
+Most are `__func__` names (`__s_zap_over_floor`, `__s_x_monnam`) and a few are
+`__FILE__` names for files whose only `__FILE__` use was the rng-log
+(`__s_worm_c`, `__s_worn_c`). The `__FILE__` literal survives in every module
+that also panics or allocates, because `nhalloc` and `panic` take it too —
+which is the check that this dropped what it should and nothing more.
+
+`nhrng.js` itself comes out as a header and nothing else: with no site
+spelling a helper, an `import ... from './rnd.js'` there would be a module edge
+the shipped graph does not need.
+
+**js/generated 18,474,574 → 18,325,940 bytes (−0.80%)** on this change alone.
+
+---
+
+## 20. A shape for the expressions — `tools/c2js/jsfmt.mjs`
+
+708 lines in `js/generated` were over 400 characters; the longest was 5,090.
+Every tier so far gave the code back a *vocabulary* — enum names, field names,
+element sizes, string names, the C author's own commentary. None of them gave
+it back a *shape*, and a 5,090-character line does not have one.
+
+### the model is dart_style, and its rules are the whole design
+
+Dart's formatter is the right thing to copy: it solves this exact problem —
+deeply nested expression code, machine-generated as often as not — and its
+rules state in a paragraph.
+
+1. A construct goes on one line if it fits the column budget.
+2. When it does not, it splits at the **outermost** boundary first.
+   "Outermost" is operator precedence read backwards: the lowest-precedence
+   operator at the top level of the span is the one binding the construct most
+   loosely, so breaking there separates the largest ideas. Statement separators
+   first, then `,`, then assignment, then `?:`, then `||`, `&&`, `|`, `^`, `&`,
+   equality, relational, shift, additive, multiplicative — and only then, when
+   nothing at the top level splits, inside the widest bracketed group.
+3. Once an argument list splits, **every** argument goes on its own line. A
+   half-split list reads worse than either whole one.
+4. Continuations are indented consistently.
+
+Dart's two placement conventions come with it, and they are not arbitrary:
+**a binary operator ends the line it continues from**, so a line ending in
+`||` is visibly unfinished; **`?` and `:` begin theirs**, which is what turns a
+nested conditional into an indented decision tree instead of a staircase of
+question marks.
+
+### the column budget is 100
+
+NetHack's own C is written to 80. The port cannot be: `cptr.ldI32o(mtmp,
+$monst_female)` is the transpiled spelling of `mtmp->female`, and at 80 columns
+a two-load comparison — the single most common shape in the tree — would split
+in the middle of saying one thing. 100 keeps those on one line, still fits two
+windows side by side on any screen this is read on, and is what
+`C2JS_FMT_COLS` moves if that judgement is wrong.
+
+Indentation: a continuation is **one level (4 spaces) deeper than the line it
+continues**, except that a statement's first continuation is **two levels**, so
+a wrapped `if` condition can never be mistaken for the `if`'s body — which
+matters here because the emitter writes single-statement bodies without braces.
+
+### where a break may go, and why none of them can change the program
+
+A break is only ever inserted
+
+* after a binary operator, a `,`, a statement `;`, or an opening bracket;
+* before `?`, before `:`, or before a closing bracket;
+
+and never immediately after `return`/`throw`, nor before a postfix `++`/`--`.
+
+That last clause is the automatic-semicolon-insertion argument in full. ASI
+inserts a `;` only before a token the grammar cannot accept in that position;
+a line ending in an operator, a comma or an open bracket cannot be terminated,
+and a line beginning with `?`, `:` or a closing bracket cannot start a
+statement. The two *restricted productions* JavaScript actually has —
+`return [no LineTerminator here] Expression` and
+`LeftHandSideExpression [no LineTerminator here] ++` — are excluded by
+construction, because `return` is never the last token of a line the formatter
+writes and a postfix `++` is never the first.
+
+### the audit is token identity
+
+The argument above is a proof about the rules. The **audit** is a fact about
+each line, and it is what actually ships: every reformatted line is
+re-tokenized and its token sequence compared, kind and text, against the
+original's. The formatter only ever writes back exact source slices with
+whitespace between them, so a mismatch is impossible in theory; a line that
+fails is emitted unchanged and counted, and the count is printed by the build.
+
+**19,592 lines wrapped, 0 failed the audit.** Every file still passes
+`node --check`, which the batch build runs per module.
+
+### what is filled rather than split
+
+Rule 3 — one item per line — earns its keep on an *argument* list, where each
+item is an expression the reader takes in on its own. It is wrong for a list of
+150 bare identifiers, which is a paragraph. Three of those exist and all three
+are filled to the budget instead: the cross-module `import { ... }` lists, the
+field-offset preamble (which has filled its names since §2, for this reason),
+and `resetify`'s `__captureState` array — `decl.js`'s was 2.5 KB on one line.
+
+### comments
+
+The C author's comments are **never** reflowed. Their layout is theirs — §9's
+`do_entity` staircase is the case that proves it — and a whole-line comment is
+passed through byte-for-byte. A **trailing** comment is detached, its statement
+is wrapped, and the comment is re-attached to the last line the statement
+produced, which is the same rule §9 used to place it; 450 of the 6,554 trailing
+comments landed on a wrapped statement. A statement is never split merely to
+make room for its trailing comment: the budget is measured on the code.
+
+Our own `/** C ref: ... */` markers are a different matter — they are the
+emitter's, not the C's, and the JSDoc tiers have grown them to 237 characters
+of `@param`. **1,821 of them are reflowed** into ordinary JSDoc blocks, one tag
+per line, audited by word-for-word comparison of the content.
+
+### what stays long
+
+**1,046 lines are over budget with no break point**, and they divide into two
+honest classes: a `const __s_... = cptr.lit("...")` whose string literal is
+itself longer than the budget, and a statement whose *code* fits but whose
+trailing comment does not. Neither is splittable without lying about the
+source.
+
+### the numbers
+
+| | `main` | §19 | **shipped** |
+|---|---|---|---|
+| lines in `js/generated` | 357,529 | 356,650 | 490,060 |
+| over 100 chars | 26,936 | 26,264 | **2,743** |
+| over 200 chars | 4,119 | 4,020 | **5** |
+| over 400 chars | 734 | 713 | **1** |
+| longest line | 5,090 | 5,090 | **544** |
+
+All five lines still over 200 characters are in `js/generated/isaac64.js`, and
+they are there because that file is **never re-emitted**: it is the one
+translation unit the emitter fails on (`169 ok, 1 failed` in every batch build,
+expected since 1.0), so `assemble()` — and therefore the formatter — never sees
+it. It is also not in the module graph: the transpiled `rnd.js` imports the
+hand-written `js/isaac64.js` instead, and this file does not even parse. Every
+line over 200 characters in the shipped tree is in a module nothing loads.
+
+### the Phase 2 argument, which is why this is worth bytes
+
+A 5,090-character line is one diff hunk. Change one field offset inside it and
+the whole line is rewritten: 5,090 characters of churn for a four-character
+change. Wrapped, the same edit touches one 60-character line and the other 45
+lines of that statement are context.
+
+Phase 2 scores a 5.1 merge by the complexity of the diff it takes. Every line
+this splits is a line that can be *diffed* against 5.1 rather than re-read, and
+the effect compounds: the emitter is deterministic, so two builds of two
+adjacent NetHack versions produce wrapped trees whose unchanged statements are
+unchanged lines. That is the return on the bytes below.
+
+### the acceptance demo
+
+`detect.js`'s `trapped_door_at`, before (`main`) and after — both changes
+visible in it, since its draw is one of the 2,679:
+
+```js
+export function trapped_door_at(ttyp, x, y) {
+    let lev;
+
+    if (!glyph_is_trap(glyph_at(x, y)))
+        return 0;
+    if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && rn2_at(__s_detect_c, 188, __s_trapped_door_at, 20)))
+        return 0;
+    lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+    if (!((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
+        return 0;
+    if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 3) != 0 && trapped_chest_at(ttyp, x, y))
+        return 0;
+    return 1;
+}
+```
+
+```js
+export function trapped_door_at(ttyp, x, y) {
+    let lev;
+
+    if (!glyph_is_trap(glyph_at(x, y)))
+        return 0;
+    if (ttyp != NHC.TRAPPED_DOOR || (Hallucination() && rn2(20)))
+        return 0;
+    lev = cptr.add(
+        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+        y,
+        $sizeof_rm
+    );
+    if (!((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR))
+        return 0;
+    if ((((cptr.ldI32o(lev, $rm_flags) & 31) | 0) & 3) != 0 && trapped_chest_at(ttyp, x, y))
+        return 0;
+    return 1;
+}
+```
+
+and the genuinely bad case the brief named — the `flash_glyph_at` call in the
+same file (`detect.c`'s secret-door flash), 1,131 characters on one line:
+
+```js
+        flash_glyph_at(zx, zy, (((sym) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((sym) <= NHC.S_trwall) ? (((((sym) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, ...
+```
+
+becomes the decision tree the C's nested `?:` always was:
+
+```js
+        flash_glyph_at(
+            zx,
+            zy,
+            (((sym) == NHC.S_stone)
+                ? NHC.GLYPH_CMAP_STONE_OFF
+                : (((sym) <= NHC.S_trwall)
+                    ? (((((sym) - NHC.S_vwall) | 0) +
+                        (In_mines(cptr.add(u, $you_uz))
+                            ? NHC.GLYPH_CMAP_MINES_OFF
+                            : (In_hell(cptr.add(u, $you_uz))
+                                ? NHC.GLYPH_CMAP_GEH_OFF
+                                : ((((cptr.ldI16o(
+                                    (cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_knox_level
+                                    )),
+                                    $d_level_dlevel
+                                ) ||
+                                    cptr.ldI16((cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_knox_level
+                                    )))) &&
+                                    on_level(
+                                        cptr.add(u, $you_uz),
+                                        cptr.add(
+                                            svd,
+                                            $instance_globals_saved_d_dungeon_topology +
+                                                $dgn_topology_d_knox_level
+                                        )
+                                    )))
+                                    ? NHC.GLYPH_CMAP_KNOX_OFF
+                                    : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum())
+                                        ? NHC.GLYPH_CMAP_SOKO_OFF
+                                        : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
+                    : (((sym) < NHC.S_altar)
+                        ? (((((sym) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                        : (((sym) == NHC.S_altar)
+                            ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
+                            : (((sym) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
+                                ? (((((sym) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                                : (((sym) <= NHC.S_goodpos)
+                                    ? (((((sym) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)
+                                    : NHC.MAX_GLYPH)))))),
+            6
+        );
+```
+
+The `| 0` that ends the fourth-from-last line is there because of one deliberate
+exception to rule 2: **a split whose right operand is a single token of four
+characters or less is not taken.** The emitter's int normalization writes
+`(expr) | 0` and `(expr) >>> 0` around a very large number of expressions, and
+`0` alone on a continuation line is the least informative line this formatter
+could produce. Declining those candidates lets the operator *inside* the
+parenthesis do the split, which is the one that separates ideas.
+
+---
+
+## 21. Perf: what the whitespace costs, measured twice
+
+Three trees, interleaved, three rounds over all 69 sessions, both
+`js/generated` and `js/generated-y` swapped every time, round direction
+alternating (`main, §19, §19+§20` / reversed / forward).
+
+* (i) `main` `1fab203`
+* (ii) `7464b2e` — §19 only
+* (iii) `bb25ff8` — **shipped**
+
+**All 27 corpus runs passed 69/69.**
+
+| tree | slope med (min) | fit intercept med | corpus engine med (min) |
+|---|---|---|---|
+| (i) `main` | 0.6425 (0.6332) | 919.6 ms | 102,643 (100,011) ms |
+| (ii) §19 only | 0.6479 (0.6322) | 898.9 ms | 102,126 (99,971) ms |
+| (iii) **shipped** | **0.6416 (0.6325)** | 888.5 ms | **101,839 (100,454) ms** |
+
+Paired per round against (i), which is the statistic that survives a drifting
+box:
+
+```
+        round 1   2      3     median
+(ii)  slope  +2.9  +2.3  -1.6   +2.3%
+(ii)  total  -2.2  -0.5  -0.0   -0.5%
+(iii) slope +11.9  +1.3  -1.6   +1.3%
+(iii) total  -0.2  -0.8  +0.4   -0.2%
+```
+
+**Round 1's `+11.9%` slope is not a per-move cost and should not be read as
+one.** In the same run the fitted *intercept* came out 73 ms **lower** than
+`main`'s and the total corpus engine time was −0.2%: the OLS fit over 69
+sessions traded intercept against slope, and the total — which is a
+measurement rather than a fit — did not move. The same tree measured 0.6416 and
+0.6325 in the next two rounds. The load average on this box ran 7–14 through
+the third round and the wall time per corpus run went from ~3 minutes to ~20;
+that is the environment the previous two legs' notes describe, and it is why
+this table quotes the paired per-round deltas and the total.
+
+**Neither change is separable from the noise floor on slope, and total corpus
+engine time is flat to within 1%.**
+
+### startup, measured directly
+
+The fit's intercept is an extrapolation and moves with the machine (873–920 ms
+for `main` in three rounds an hour apart), so the number most at risk here —
+11% more source for V8 to parse — gets its own measurement: the shortest
+session (`seed8000`, 22 moves, where engine time is nearly all module-graph
+instantiation and `newgame()`), **15 interleaved runs per tree**.
+
+| tree | engine ms, min / median | vs `main` (min / median) | paired median |
+|---|---|---|---|
+| (i) `main` | 702.2 / 731.3 | — | — |
+| (ii) §19 only | 699.9 / 731.7 | −0.3% / +0.1% | −0.5% |
+| (iii) **shipped** | **699.7 / 736.4** | **−0.4% / +0.7%** | **+0.6%** |
+
+**+11.7% of source bytes costs about half a percent of startup, and that half
+percent is inside the run-to-run spread.** That is a specific fact about *what*
+the bytes are: leg 2 paid +1.9% of startup for +18% of bytes when those bytes
+were comments and longer identifiers; these bytes are newlines and leading
+spaces, which V8's scanner skips without allocating a token, and which produce
+not one extra byte of bytecode. §19's −0.8% of source and its 2,679 removed
+call arguments do not show up either.
+
+### size
+
+| | `main` | §19 | shipped | Δ vs `main` |
+|---|---|---|---|---|
+| `js/generated` | 18,474,574 | 18,325,940 | 20,467,274 | **+10.8%** |
+| `js/generated-y` | 36,593,306 | 36,297,414 | 40,542,565 | +10.8% |
+| `js/generated-y/__bundle.js` | 17,736,777 | 17,589,519 | 19,693,394 | +11.0% |
+
+§19 gives back 148,634 bytes; §20 spends 2.14 MB of them on whitespace.
+
+**Is the combination net negative?** No, on the evidence above: it is neutral
+on both statistics that were measured, at a price of 10.8% of bytes that is
+paid in disk and not in time. The honest caveat is that the box was contended
+enough that a real ±1% effect on slope would not have been visible; what the
+data rules out is a large one, and round 1's `+11.9%` is the kind of artefact
+that would have been reported as a regression if a single run had been quoted.
+
+---
+
+## 22. Gates
+
+Run on the final tree (`C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs
+--all --force`, then `test-union.mjs` / `test-setjmp.mjs` for the two fixtures
+outside its graph).
+
+| gate | result |
+|---|---|
+| batch build | 172 files: 169 transpiled, 1 failed (isaac64, expected), 2 prelude-proven; **0 parse failures** |
+| full rebuild reproduces the committed trees | **byte-identical** — `git status` clean over `js/generated`, `js/generated-y`, both reset barrels, `__bundle.js` and `js/boot/harness-y.mjs` |
+| `C2JS_FMT=0 C2JS_RNGCALLER=1` reproduces `main` | **byte-identical**, except one comment line in `nhrng.js` (which now points at §19) and its two copies |
+| `C2JS_FMT=0` reproduces the §19 tree | **byte-identical** across the whole `--all` graph |
+| `C2JS_RNGCALLER=1` writes the annotated log | 3,130 entries, **3,130 annotated**; identical to the shipped tree's log after `normalizeRng` |
+| jsfmt token audit | 19,592 lines wrapped, **0 failed**; 1,821 C-ref markers reflowed, 450 trailing comments carried |
+| `C2JS_FOLD_VERIFY=1` | **320,657 folds, 0 mismatched, 0 unevaluable** |
+| no-absolute-path assertion | **362 emitted modules, 0 hits** |
+| `assertNamespaceExports()` | every `NHC.`/`NHM.`/`FLD.` name a module reads is exported |
+| `assertPreloadPaths()` | all 4 exist |
+| `reset-census` | 180 modules, 46,280 declarations, plan **1,416**, **0 unclassified** |
+| corpus (`sessions/` + `sessions-extra/`), reset scoring path, **twice** | **69/69** and **69/69** |
+| yield + bundle corpus (`yieldtest/ps_test_runner.mjs`) | **69/69** |
+| ...and 27 more full-corpus runs inside the A/B | **69/69 every time** |
+| `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm (17 forked reference graphs) |
+| `tools/c2js/test-rnd.mjs` | PASS (3,130/3,130 and 2,983/2,983 RNG calls) |
+| `tools/c2js/test-hacklib.mjs` | PASS — 870 cases, 0 failures |
+| `tools/c2js/test-setjmp.mjs`, `test-union.mjs` | PASS (traces identical, output identical) |
+| `node --test test/*.test.mjs` | **6/6** |
+| `tools/c2js/purity-audit.mjs` | 15 functions `nhmacrofn.js` calls, **0 disagree** |
+| `tools/strict-score.mjs` | 344 files reachable from 2 roots, **0 violations**; sandbox parity OK on 3 sessions |
+| `judge-sim/run.mjs` seed8000 | **PASS**, 0 segment mismatches, 0 out-of-scope |
+| `judge-sim/run.mjs` seed0013 | **PASS**, 2/2 segments, 0 out-of-scope |
+| `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, 352 requests, 0 out-of-scope, 0 404s, **0 console entries**, first frame 615 ms |
+
+### counts, per task
+
+| task | done | left alone, and why |
+|---|---|---|
+| §19 caller annotation | 2,679 draws emit the bare call; 806 string literals dropped, 0 added | the 45 sites §13 refused (argument draws or writes) keep the inline ternary and their annotation |
+| §20 line splitting | 19,592 statement lines → 138,043; 1,821 C-ref markers reflowed | 1,046 lines over budget with no break point (a string literal longer than the budget, or a statement whose code fits and whose trailing comment does not); the C author's own comments are never reflowed |
+
+---
+
+## 23. Commits
+
+* `7464b2e` — the caller annotation is a debugging aid, not a scored one (§19).
+* `bc648c0` — a Dart-style line splitter for the emitted expressions (§20).
+* `bb25ff8` — the union gate fixture, regenerated with this emitter (it lives
+  outside `build.mjs --all`'s graph; `setjmp_gate.js` has no line over the
+  budget and is unchanged).
+
+On `readable-3`, off `main` at `1fab203`. Nothing pushed, nothing merged.
+`js/generated` must be committed from a **normal** build, never a
+`C2JS_FOLD_VERIFY=1` one.
+
+## 24. Merge readiness
+
+**Ready.** Both ship in their default positions.
+
+§19 is a deletion justified by reading the scorer: the annotation is stripped
+before comparison, the entry count does not depend on it, and the two logs are
+byte-identical after `normalizeRng`. The capability it removes from the shipped
+tree is restored in full by `C2JS_RNGCALLER=1`, which is verified rather than
+assumed, because Phase 2 will need it.
+
+§20 is the first tier in three legs that changes the *shape* of the output
+rather than its vocabulary, and it is the one with the strongest audit: every
+wrapped line is compared token for token against the line it replaced, and
+0 of 19,592 disagreed. It costs 10.8% of source bytes and, measured directly,
+about half a percent of startup — inside the noise. What it buys is that the
+longest line in the shipped tree is 544 characters instead of 5,090, that only
+five lines exceed 200 and all five are in a module nothing loads, and that a
+Phase 2 diff against 5.1 lands on lines rather than on ribbons.
+
+What this leg deliberately did **not** do: fold the 45 rng-log sites whose
+argument draws (provably safe once the caller is gone, but a change to shipped
+sites the brief scoped out — §19 records the one visible consequence, a stale
+`@` suffix in a shipped-tree debug log that the scorer discards); reflow the C
+author's comments (their layout is theirs); or split a statement to make room
+for its trailing comment.
