@@ -1035,3 +1035,155 @@ Nothing was deleted as knowledge. Every claim the headers made is in `docs/`:
 | the rng-log helpers and the scored log | §13 above |
 
 ---
+
+## 15. Perf: the interleaved A/B, and the size it is paid in
+
+Three trees, interleaved, three rounds over all 69 sessions, both
+`js/generated` and `js/generated-y` swapped every time, round direction
+alternating. The middle tree is the shipping one with **only** `C2JS_RNGFOLD=0`,
+because §13 is the only one of the seven that can plausibly move a cycle —
+§9–§12 and §14 are comments and identifiers.
+
+| tree | slope med (min) | fit intercept med | corpus engine med | 207-move session |
+|---|---|---|---|---|
+| (i) `main` `0e5980d` | 0.5565 (0.5395) | 864.6 ms | 95,112 ms | 980 ms |
+| (ii) shipping, `C2JS_RNGFOLD=0` | 0.5477 (0.5413) | 767.0 ms | 86,823 ms | 880 ms |
+| (iii) **shipping** | **0.5366 (0.5303)** | 754.0 ms | **85,233 ms** | **865 ms** |
+
+Paired per-round against (i), which is the statistic that survives a drifting
+box:
+
+```
+(ii)  slope  +0.3  -1.6  -1.3    median -1.3%
+(iii) slope  -0.5  -4.7  -2.3    median -2.3%
+```
+
+**Round 3 is contaminated** — every tree measured ~18% slower in it than in
+round 1 — which is exactly why both statistics are reported and why the paired
+delta is the one quoted. All 27 runs passed 69/69.
+
+### startup, measured directly rather than fitted
+
+The corpus fit's intercept is an OLS extrapolation over 69 sessions and moves
+with the machine (it reads 746.8 and 864.6 ms for the *same* tree an hour
+apart). Since this leg adds 18% to the bytes the engine parses, startup is the
+number most at risk and deserves a measurement of its own: the shortest session
+(22 moves, where engine time is nearly all module load and init), **min and
+median of 7 interleaved runs per tree**.
+
+| tree | engine ms, min / median | vs main |
+|---|---|---|
+| (i) `main` | 721.9 / 734.7 | — |
+| (ii) shipping, `C2JS_RNGFOLD=0` | 735.9 / 759.1 | **+1.9% / +3.3%** |
+| (iii) **shipping** | **691.4 / 703.9** | **−4.2% / −4.2%** |
+
+That is the whole story of this leg's cost, and it is coherent with the slope
+table:
+
+* **the comments, the names, the sizes and the JSDoc cost +1.9% of startup**
+  and nothing measurable per move. They are 2.8 MB more source to parse and
+  not one more instruction to run.
+* **the rng-log fold pays for all of it and more: −6% of startup on its own**
+  ((ii) → (iii)), and it is at or slightly below `main` on slope. Folding 2,679
+  eleven-token ternaries out of the hottest functions in the program removes
+  ~160 KB of bytecode from exactly the functions V8 has the most trouble
+  optimizing, and a smaller hot function is a cheaper one to parse, to compile
+  and to inline into.
+
+The brief's guard for §13 was ~1% of slope, with an emit-time fast path as the
+fallback if it cost more. It does not cost; it pays.
+
+### size
+
+| | `main` | this leg | Δ |
+|---|---|---|---|
+| `js/generated` | 15,639,713 | 18,474,574 | **+18.1%** |
+| `js/generated-y` | 31,238,600 | 36,593,306 | +17.1% |
+| `js/generated-y/__bundle.js` | 15,217,252 | 17,736,777 | +16.6% |
+
+Roughly 2.8 MB, of which the C's comments and blank lines are about 2.1 MB and
+the longer string-literal and size names most of the rest; the rng-log fold
+gives ~160 KB back. It is the same trade leg 1 made (+19.5% there) and, unlike
+leg 1's, it does **not** cost startup — §13 more than covers it.
+
+---
+
+## 16. Gates
+
+Run on the final tree (`C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs
+--all --force`).
+
+| gate | result |
+|---|---|
+| batch build | 172 files: 169 transpiled, 1 failed (isaac64, expected), 2 prelude-proven; **0 parse failures** |
+| full rebuild reproduces the committed trees | **byte-identical** — `git status` clean after `--force` |
+| all six flags off reproduces `main` | **byte-identical** for 164 of 172 modules. The 8 that differ are the five sidecar headers (§14 is not flag-gated: it is a policy, not a tier), `nhrng.js` (new, and with the fold off it comes out with no helpers), and the two gate fixtures `test-setjmp`/`test-union` regenerate |
+| `C2JS_FOLD_VERIFY=1` | **323,336 folds, 0 mismatched, 0 unevaluable** |
+| no-absolute-path assertion | **362 emitted modules, 0 hits** |
+| `assertNamespaceExports()` | every `NHC.`/`NHM.`/`FLD.` name a module reads is exported |
+| `assertPreloadPaths()` | all 4 exist |
+| `reset-census` | 180 modules, 47,086 declarations, plan **1,416**, **0 unclassified** |
+| corpus (`sessions/` + `sessions-extra/`), reset scoring path, Lua ports live, **twice** | **69/69** and **69/69** |
+| yield + bundle corpus (`yieldtest/ps_test_runner.mjs`) | **69/69** |
+| ...and 27 more full-corpus runs inside the A/B | **69/69 every time** |
+| `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm (17 forked reference graphs) |
+| `tools/c2js/test-rnd.mjs` | PASS (3,130/3,130 and 2,983/2,983 RNG calls) |
+| `tools/c2js/test-hacklib.mjs` | PASS — 870 cases, 0 failures |
+| `tools/c2js/test-setjmp.mjs`, `test-union.mjs` | PASS (traces identical, output identical) |
+| `node --test test/*.test.mjs` | **6/6** |
+| `tools/c2js/purity-audit.mjs` | 15 functions `nhmacrofn.js` calls, **0 disagree** |
+| `tools/strict-score.mjs` | 345 files reachable from 2 roots, **0 violations**; sandbox parity OK on 3 sessions |
+| `judge-sim/run.mjs` seed8000 | **PASS**, 0 segment mismatches, 0 out-of-scope |
+| `judge-sim/run.mjs` seed0013 | **PASS**, 2/2 segments, 0 out-of-scope |
+| `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, 353 requests, 0 out-of-scope, 0 404s, **0 console entries**, first frame 534 ms |
+| carried-comment audit (§9) | 28,249 lines: **0** not verbatim in the C, **0** over-carried, **0** from outside the declaration's C region |
+
+### counts, per task
+
+| task | named / carried | left alone, and why |
+|---|---|---|
+| §9 comments | 15,535 comments (6,554 trailing), 20,516 blank lines | 1,671 lines a spliced copy declined; 365 comments share a line with code; 0 backslash-continued |
+| §10 string names | 23,585 literals | 503 needed a `__2` collision suffix |
+| §11 pointer JSDoc | 8,496 pointers | 142 bare (fn pointer, anon record, decayed array, >40 chars) |
+| §12 element sizes | 21,377 sizes + 1,912 composed strides, 2,945 exported names | 9,226 machine widths by design; 23 refused by the equality audit; 381 `[21]` pointer-row strides |
+| §13 rng-log fold | 2,679 of 2,724 draws, 6 helpers | 45 refused on an argument that writes or draws |
+| §14 sidecar headers | 74 prose lines removed from 6 modules | the provenance stamp kept, by the owner's instruction |
+
+---
+
+## 17. Commits
+
+* `3ee2cc4` — a pointer parameter has a type, and the AST always knew it (§11).
+* `dbdd6ac` — name a literal after what it says, not when it was interned (§10).
+* `3e169fe` — a stride is a `sizeof`, and the layout already knew which one (§12).
+* `68a0fd5` — the rng-log instrumentation, once, instead of at 2,679 call sites (§13).
+* `1529ad5` — the C author's running commentary, and their paragraphs (§9).
+* `3e423e7` — provenance in the generated tree, argument in the docs (§14).
+* two follow-ups regenerating the `setjmp`/`union` gate fixtures, which live
+  outside `build.mjs --all`'s graph.
+
+On `readable-2`, off `main` at `0e5980d`. Nothing pushed, nothing merged.
+`js/generated` must be committed from a **normal** build, never a
+`C2JS_FOLD_VERIFY=1` one.
+
+## 18. Merge readiness
+
+**Ready.** All seven ship on.
+
+Every tier is emitter-side and flag-gated, every one is audited against
+something decisive rather than plausible — the C source text for the comments,
+string equality for the two arms of an rng-log ternary, `base × ∏counts` for a
+composed stride, the corpus for all of them — and with the six flags off the
+build reproduces `main` byte-for-byte apart from §14's policy change and the
+new empty module.
+
+The price is **+18.1% of source bytes**, and unlike leg 1 it is not paid in
+time: startup is **−4.2%** and slope is at or slightly below `main`, because
+§13 buys back more than §9–§12 spend.
+
+What this leg deliberately did **not** do, in each case because doing it would
+have meant inventing rather than recovering: name the `21` in a `ROWNO` stride
+(the preprocessor consumed the name; 21 is the value of many macros), name a
+machine width (`sizeof_int` is not NetHack's fact to move), fold an rng-log
+site whose argument draws (it would rewrite the scored log), or carry a comment
+into a spliced region twice (the C said it once).
