@@ -2448,7 +2448,7 @@ export class Emitter {
     // is a pure read of `rng_logfile`, and `rng_log_set_caller` — the only
     // thing the hot arm added — is not emitted, so the caller it would have
     // set can no longer disagree with the argument's own draws. What C wrote
-    // is what ships. See docs/NOTES-readability.md §19.
+    // is what ships. See docs/NOTES-readability.md §19a.
     if (RNG_CALLER) {
       for (const a of args) {
         const s = this.macroFnArgSafe(a);

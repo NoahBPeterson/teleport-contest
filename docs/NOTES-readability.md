@@ -1200,7 +1200,7 @@ that a 5,090-character line becomes a shape.
 
 | flag | default | what the other setting does |
 |---|---|---|
-| `C2JS_RNGCALLER=1` | **off** | restores the `rn2_at(file, line, func, x)` annotation at every folded draw (§19) |
+| `C2JS_RNGCALLER=1` | **off** | restores the `rn2_at(file, line, func, x)` annotation at every folded draw (§19), and with it the argument refusal that keeps 45 sites inline (§19a) |
 | `C2JS_FMT=0` | on | restores one statement per line, however long (§20) |
 | `C2JS_FMT_COLS=<n>` | 100 | moves the column budget |
 
@@ -1253,7 +1253,7 @@ Measured rather than argued: the same session, built both ways.
 | | entries | annotated | after `normalizeRng` |
 |---|---|---|---|
 | `C2JS_RNGCALLER=1` | 3,130 | 3,130 | — |
-| shipped | 3,130 | 2,792 | **identical, byte for byte** |
+| shipped (as of `7464b2e`) | 3,130 | 2,792 | **identical, byte for byte** |
 
 The 2,792 is the one wrinkle and it is worth stating rather than hiding.
 **The 45 sites §13 refused to fold are untouched**, as they should be — their
@@ -1268,6 +1268,102 @@ as well is available and would be provably output-equivalent once the caller
 is gone — with nothing between the argument and the draw, the emitted
 expression *is* the ternary's cold arm, character for character — but it is a
 change to 45 shipped sites that this leg was not asked to make.
+
+### 19a. the refusal is resolved — the last 45 sites fold too
+
+The paragraph above is now history, and this subsection records why it stopped
+being true. **All 2,724 instrumented draws fold; 0 are refused, on any ground.**
+
+The refusal was never about the annotation and never about the argument. It was
+about the word **call**. With `C2JS_RNGCALLER=1` the site really is a call —
+
+```js
+rn2_at(__s_detect_c, 1219, __s_use_crystal_ball, rnd(3))
+```
+
+— and JavaScript evaluates a call's arguments *before* its body, so `rnd(3)`
+runs before `rng_log_enabled()` and before `rng_log_set_caller`, where C ran it
+after both. The inner draw would log against the outer's caller. That is a real
+hazard, and with the flag on all three of §13's refusals still apply and these
+45 sites still keep their inline ternary and their annotation.
+
+With the flag **off** — the default since `7464b2e` — there is no call. The
+site emits
+
+```js
+rnd(3)
+```
+
+which is the ternary's cold arm, character for character, with nothing at all
+between the argument and the draw. The two things the refusal protected are
+both gone:
+
+* `rng_log_enabled()` is a pure read of `rng_logfile`. It cannot see the
+  argument and the argument cannot see it.
+* `rng_log_set_caller` — the only thing the hot arm added — **is not emitted**.
+  There is no longer a caller that could disagree with the argument's own
+  draws, because there is no caller.
+
+So the refusal is vacuous rather than merely safe to lift, and it is now gated
+on `RNG_CALLER` in `rngLogCall()` rather than run unconditionally. The two
+*shape* audits are not gated and never will be: they establish that the node
+really is the macro (both arms emit the same argument text; the arity agrees
+with every other site of that macro), which is true regardless of the flag.
+
+**What this removes from `js/generated`, exactly:**
+
+| symbol | before | after | what is left |
+|---|---|---|---|
+| `rng_log_enabled(` | 46 | **1** | the definition in `rnd.js` |
+| `rng_log_set_caller(` | 48 | **3** | the definition, one mention in `rnd.c`'s own comment, and `nhlua.c`'s `nhl_rnglog_set_lua_caller` |
+| `rng_log_write(` | 7 | **7** | untouched — this is what writes the scored entries |
+
+Every *macro* instrumentation site is gone. The three that remain are not macro
+expansions: two are the recorder's own function definitions in `rnd.c`, and the
+third is a plain C statement at the end of `nhl_rnglog_set_lua_caller()`, the
+helper patch `004-rng-log-lua-context.patch` added so a Lua-driven draw could
+name its `.lua` source line. Folding a macro does not reach a hand-written C
+statement, and that one is left alone deliberately — see "what the shipped log
+looks like now", below.
+
+49 more string literals are interned by nothing: **23,326 → 23,277, 0 added**,
+the same `__FILE__`/`__func__` pattern as the 806 above. `js/generated`
+**20,467,274 → 20,453,413 bytes (−0.07%)**; `js/generated-y` −26,965 and
+`__bundle.js` −12,969, the same −0.07%.
+
+### the log, before and after, on five sessions
+
+The claim this leg has to defend is the same one §19 defended, so it is
+verified the same way and wider: `getRngLog()` captured from the running port
+on **5 sessions / 276,662 draws** — `seed8000` (22 moves), `seed0013`
+(save then restore, 2 segments), `seed0030` (10 segments), `seed4500` (108k
+draws) and `gen9996-marathon-dlvl10` (17,828 moves) — before and after.
+
+| | result |
+|---|---|
+| entry **count**, every session | identical (3,130 / 4,804 / 105,529 / 108,275 / 54,924) |
+| entries after `normalizeRng` | **byte-identical, all 276,662** |
+| raw entries that moved | 271,936 — and **every one of them moved only inside the `@ caller(...)` suffix `normalizeRng` strips** |
+
+271,936 is exactly the number of entries that carried a *stale* annotation
+before, which is the audit: the fold did not silence an entry, reorder one, or
+change a draw's text; it removed a suffix that was wrong.
+
+### what the shipped log looks like now
+
+**Zero annotated entries, in all five sessions.** The nhlua statement survives
+in the tree but never runs on the shipped path: with the Lua ports live (the
+default) `nh.rn2` is served by `js/lua-js/bridge.mjs`'s `nhRn2`, which calls
+`rn2` directly, so `nhl_rn2` — and with it `nhl_rnglog_set_lua_caller` — is
+never reached. §19's wrinkle is gone from the shipped configuration entirely.
+
+It is *not* gone from `C2JS_LUA_PORT=0`, which runs the C interpreter and
+scores 69/69 the same way: there `nhl_rn2` does run, and 2,931 of `seed8000`'s
+3,130 entries come back annotated — but annotated with something worth reading,
+`@ random src=nhlib.lua:8 parent=shuffle(nhlib.lua:19)`. That is the one place
+in the port where a draw's real caller is a Lua source line rather than a C one,
+and suppressing it would cost a debugging capability while buying a grep count.
+It stays.
 
 ### the flag must keep working, and does
 
@@ -1718,3 +1814,146 @@ sites the brief scoped out — §19 records the one visible consequence, a stale
 `@` suffix in a shipped-tree debug log that the scorer discards); reflow the C
 author's comments (their layout is theirs); or split a statement to make room
 for its trailing comment.
+
+> The first of those three is done: see **§19a**, and §25 below.
+
+---
+
+# Readability, leg 4 — the last 45 rng-log sites
+
+One tier, one paragraph long: §19a. This section is its gates and its ledger.
+
+## 25. Gates
+
+Run on `723ca23`, after `C2JS_YIELD=1 C2JS_RESET=1 node tools/c2js/build.mjs
+--all --force`.
+
+| gate | result |
+|---|---|
+| batch build | 172 files: 169 transpiled, 1 failed (isaac64, expected), 2 prelude-proven; **0 parse failures** |
+| full rebuild reproduces the committed trees | **byte-identical** over `js/generated`, `js/generated-y`, both reset barrels, `__bundle.js` and `js/boot/**` — verified across four independent `--force` builds (378 files hashed each time) |
+| `C2JS_FOLD_VERIFY=1`, as its own build | **320,612 folds, 0 mismatched, 0 unevaluable** |
+| no-absolute-path assertion | **362 emitted modules, 0 hits** |
+| `assertNamespaceExports()` | every `NHC.`/`NHM.`/`FLD.` name a module reads is exported |
+| `assertPreloadPaths()` | all 4 exist |
+| `reset-census` | 180 modules, 46,231 declarations, plan **1,416**, **0 unclassified** (every declaration carries a strategy: 23,274 + 14,440 + 7,236 + 717 + 239 + 101 + 75 + 48 + 42 + 36 + 11 + 10 + 1 + 1 = 46,231) |
+| corpus (`sessions/` + `sessions-extra/`), reset scoring path, Lua ports live, **twice** | **69/69** and **69/69** (878+0.62/turn R²=0.869; 884+0.64/turn R²=0.868) |
+| yield + bundle corpus (`yieldtest/ps_test_runner.mjs`) | **69/69** (1171+0.93/turn) |
+| ...and 8 more full-corpus runs inside the A/B (§26) | **69/69 every time** |
+| `reset-diff --via runsegment` | **12/12** pairs byte-identical to a fresh realm (17 forked reference graphs) |
+| `tools/c2js/test-rnd.mjs` | PASS (3,130/3,130 and 2,983/2,983 RNG calls) |
+| `tools/c2js/test-hacklib.mjs` | PASS — 870 cases, 0 failures |
+| `test-setjmp.mjs` / `test-union.mjs` | PASS; both regenerate their fixture **byte-identically** |
+| `node --test test/*.test.mjs` | **6/6** |
+| `tools/c2js/purity-audit.mjs` | 15 functions `nhmacrofn.js` calls, **0 disagree** |
+| `tools/strict-score.mjs` | 344 files reachable from 2 roots, **0 violations**; sandbox parity OK on 3 sessions |
+| `judge-sim/run.mjs seed8000` | **PASS**, 1/1 segment, 0 mismatches, 0 out-of-scope |
+| `judge-sim/run.mjs seed0013` | **PASS**, 2/2 segments, 0 mismatches, 0 out-of-scope |
+| `judge-sim/playability.mjs --their-page --seed=1` | 130 moves, 352 requests, 0 out-of-scope, 0 404s, **0 console entries**, first frame 592 ms |
+
+### the two log gates, which are the point of the leg
+
+| gate | result |
+|---|---|
+| shipped log vs `main`'s, 5 sessions / 276,662 draws | **byte-identical after `normalizeRng`**; 271,936 raw lines moved, **every one only inside the `@` suffix** |
+| `C2JS_RNGCALLER=1` still annotates | seed8000 **3,130/3,130**; seed0030 105,529/105,529; seed4500 108,275/108,275; gen9996 54,924/54,924; seed0013 4,802/4,804 — the 2 are segment 2's only draws, which come from `js/lua-js/bridge.mjs`'s `nhRn2`, hand-written JS that has never set a caller |
+| `C2JS_RNGCALLER=1` build is **unchanged by this leg** | the flag-on tree built with this emitter is **byte-identical** to the flag-on tree built with `main`'s emitter, across all 378 files of `js/generated`, `js/generated-y` and `js/boot` |
+| flag-on log vs shipped log | **identical after `normalizeRng`** on all 5 sessions |
+
+The third row is the strongest form of the "the flag must keep working"
+promise §19 made: not "it still annotates" but "it emits the same bytes it
+emitted before", which is checked by hashing rather than by reading a log.
+
+## 26. Perf
+
+Two trees, **eight interleaved corpus runs**, `js/generated` and
+`js/generated-y` both swapped before every run, order `A B B A / B A A B` so
+that a monotonic drift in the box cancels within each round.
+
+* (A) `main` `d1c91ba`
+* (B) `rng-clean` `723ca23` — **shipped**
+
+**All eight runs passed 69/69.**
+
+| run | tree | slope | fit intercept | corpus engine total |
+|---|---|---|---|---|
+| 1 | A | 0.6302 | 892.9 ms | 100,616 ms |
+| 2 | B | 0.6470 | 877.3 ms | 100,579 ms |
+| 3 | B | 0.6305 | 865.6 ms | 98,747 ms |
+| 4 | A | 0.6183 | 878.8 ms | 98,909 ms |
+| 5 | B | 0.6169 | 873.8 ms | 98,472 ms |
+| 6 | A | 0.6210 | 870.2 ms | 98,478 ms |
+| 7 | A | 0.6288 | 868.3 ms | 98,827 ms |
+| 8 | B | 0.6152 | 863.0 ms | 97,625 ms |
+
+The box drifts monotonically downwards across the eight runs (100.6 s → 97.6 s
+for the same work), which is exactly what the ABBA ordering is for: within a
+round, `(B₂+B₃)/2` against `(A₁+A₄)/2` cancels a linear drift term.
+
+| statistic | round 1 | round 2 | mean | median over the 4+4 runs |
+|---|---|---|---|---|
+| **corpus engine total** | −0.10% | −0.61% | **−0.36%** | −0.3% |
+| fit intercept | −1.63% | −0.10% | **−0.86%** | −0.5% |
+| slope | +2.32% | −1.42% | +0.45% | −0.2% |
+
+**Total corpus engine time is the measurement rather than the fit, and it moves
+−0.36% in B's favour, in both rounds.** That is the expected shape and the
+expected size: 45 sites lose a call to `rng_log_enabled()` and a branch, and
+some of those 45 are in `mkroom`/`makemon`/`mklev`, which run during level
+generation rather than per move — so the win should land on the intercept and
+on the total, not on the per-move slope. It does. The slope straddles zero
+(+2.3% / −1.4%) and should be read as unresolved, not as a cost.
+
+### startup, measured directly — and not resolved
+
+31 interleaved runs per tree of the shortest session (`seed8000`, 22 moves),
+once per-run alternating and once in ABBA blocks of eight.
+
+| | A `main` | B shipped |
+|---|---|---|
+| min of 31 | 660.8 ms | 674.9 ms (**+2.1%**) |
+| median of 31 | 929.8 ms | 1,652.6 ms |
+| paired per-run delta, median of 15 | — | **−0.75%** |
+
+**This measurement failed and is reported as failed.** The box was running a
+load average of 24–38 throughout; individual runs of the *same* tree ranged
+from 661 ms to 3,361 ms, and the block design put the contention hump entirely
+inside B's two blocks, which is what the useless median column is. The min and
+the paired median disagree in sign at ±2–8%, so the honest reading is that
+this method resolves nothing finer than about ±5% today, and a 0.07% change in
+source bytes is far below that.
+
+The startup statistic worth quoting is the corpus fit's **intercept**, above:
+it averages 69 sessions per measurement and is ABBA-balanced, and it says
+**−0.86%**. It is the same conclusion §21 reached about §20's whitespace — the
+intercept moves less than the run-to-run spread — with the sign the other way.
+
+### size
+
+| | `main` | shipped | Δ |
+|---|---|---|---|
+| `js/generated` | 20,467,274 | 20,453,413 | **−13,861 (−0.07%)** |
+| `js/generated-y` | 40,542,623 | 40,515,658 | −26,965 (−0.07%) |
+| `js/generated-y/__bundle.js` | 19,693,394 | 19,680,425 | −12,969 (−0.07%) |
+| interned string literals | 23,326 | 23,277 | −49, 0 added |
+
+## 27. Commits
+
+* `723ca23` — fold the last 45 instrumented draws (§19a).
+* the docs commit that carries §19a and this section.
+
+On `rng-clean`, off `main` at `d1c91ba`. Nothing pushed, nothing merged.
+
+## 28. Merge readiness
+
+**Ready.** The change is one `if (RNG_CALLER)` around a refusal that the flag
+being off makes vacuous, and it is the deletion §19 said was available and
+declined to make. The evidence is the same evidence §19 offered, taken wider:
+five sessions instead of one, 276,662 draws instead of 3,130, and the raw
+diff classified line by line rather than counted.
+
+Two things a reviewer should check rather than take on trust, both above:
+the flag-on tree hashes equal to `main`'s (so the Phase 2 debugging build is
+provably untouched), and the 271,936 raw lines that moved are exactly the
+lines that carried a stale annotation, all of them inside the suffix
+`normalizeRng` strips.
