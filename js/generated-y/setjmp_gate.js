@@ -12,26 +12,26 @@ import * as cptr from '../cptr.js';
 import * as cjmp from '../cjmp.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("a: worker longjmps on %d\n");
-const __sl1 = cptr.lit("a: recovered in handler\n");
-const __sl2 = cptr.lit("a: direct call %d\n");
-const __sl3 = cptr.lit("a: unreachable\n");
-const __sl4 = cptr.lit("b: inner handler caught\n");
-const __sl5 = cptr.lit("b: inner returns normally\n");
-const __sl6 = cptr.lit("b: outer handler caught\n");
-const __sl7 = cptr.lit("b: unreachable\n");
-const __sl8 = cptr.lit("c: frame3 %d\n");
-const __sl9 = cptr.lit("c: frame2 %d\n");
-const __sl10 = cptr.lit("c: frame2 unreachable\n");
-const __sl11 = cptr.lit("c: frame1 %d\n");
-const __sl12 = cptr.lit("c: frame1 unreachable\n");
-const __sl13 = cptr.lit("c: caught value %d\n");
-const __sl14 = cptr.lit("c: unreachable\n");
-const __sl15 = cptr.lit("d: uncaught error %d\n");
-const __sl16 = cptr.lit("d: risky(%d)\n");
-const __sl17 = cptr.lit("d: runprotected status %d result %d\n");
-const __sl18 = cptr.lit("e: setjmp returned %d after longjmp(jb, 0)\n");
-const __sl19 = cptr.lit("done\n");
+const __s_a_worker_longjmps_on_d = cptr.lit("a: worker longjmps on %d\n");
+const __s_a_recovered_in_handler = cptr.lit("a: recovered in handler\n");
+const __s_a_direct_call_d = cptr.lit("a: direct call %d\n");
+const __s_a_unreachable = cptr.lit("a: unreachable\n");
+const __s_b_inner_handler_caught = cptr.lit("b: inner handler caught\n");
+const __s_b_inner_returns_normally = cptr.lit("b: inner returns normally\n");
+const __s_b_outer_handler_caught = cptr.lit("b: outer handler caught\n");
+const __s_b_unreachable = cptr.lit("b: unreachable\n");
+const __s_c_frame3_d = cptr.lit("c: frame3 %d\n");
+const __s_c_frame2_d = cptr.lit("c: frame2 %d\n");
+const __s_c_frame2_unreachable = cptr.lit("c: frame2 unreachable\n");
+const __s_c_frame1_d = cptr.lit("c: frame1 %d\n");
+const __s_c_frame1_unreachable = cptr.lit("c: frame1 unreachable\n");
+const __s_c_caught_value_d = cptr.lit("c: caught value %d\n");
+const __s_c_unreachable = cptr.lit("c: unreachable\n");
+const __s_d_uncaught_error_d = cptr.lit("d: uncaught error %d\n");
+const __s_d_risky_d = cptr.lit("d: risky(%d)\n");
+const __s_d_runprotected_status_d_result_d = cptr.lit("d: runprotected status %d result %d\n");
+const __s_e_setjmp_returned_d_after_longjmp_jb_0 = cptr.lit("e: setjmp returned %d after longjmp(jb, 0)\n");
+const __s_done = cptr.lit("done\n");
 
 /** C ref: setjmp_gate.c:20 — int[48] */
 const jb_a = cptr.alloc(48 * 4);
@@ -42,13 +42,16 @@ const jb_outer = cptr.alloc(48 * 4);
 /** C ref: setjmp_gate.c:21 — int[48] */
 const jb_inner = cptr.alloc(48 * 4);
 
+/* ---- (a) bare if (setjmp) — the nhlua.c:2281 shape ---------------------- */
+
 /** C ref: setjmp_gate.c:25 — @param {CInt} x @returns {CInt} */
 function worker_a(x) {
     if (x < 0) {
-        cptr.printf(__sl0, x);
+        cptr.printf(__s_a_worker_longjmps_on_d, x);
         cjmp.longjmp(cptr.decay(jb_a), 1);
     }
     return Math.imul(x, 10);
+
 }
 
 /** C ref: setjmp_gate.c:34 */
@@ -58,25 +61,28 @@ function test_a() {
         let __sv1 = 0;
         try {
             if (__sv1) {
-                cptr.printf(__sl1);
+                cptr.printf(__s_a_recovered_in_handler);
                 return;
             }
-            cptr.printf(__sl2, worker_a(5));
-            cptr.printf(__sl2, worker_a(-1));
-            cptr.printf(__sl3);
+            cptr.printf(__s_a_direct_call_d, worker_a(5));
+            cptr.printf(__s_a_direct_call_d, worker_a(-1));
+            cptr.printf(__s_a_unreachable);
         } catch (__e1) {
             if (!cjmp.matches(__e1, __sj1)) throw __e1;
             __sv1 = cjmp.jbval(__e1);
             if (__sv1) {
-                cptr.printf(__sl1);
+                cptr.printf(__s_a_recovered_in_handler);
                 return;
             }
-            cptr.printf(__sl2, worker_a(5));
-            cptr.printf(__sl2, worker_a(-1));
-            cptr.printf(__sl3);
+            cptr.printf(__s_a_direct_call_d, worker_a(5));
+            cptr.printf(__s_a_direct_call_d, worker_a(-1));
+            cptr.printf(__s_a_unreachable);
         }
     }
+
 }
+
+/* ---- (b) nested setjmp: inner catches, rethrows to outer ----------------- */
 
 /** C ref: setjmp_gate.c:47 — @param {CInt} mode */
 function inner_b(mode) {
@@ -85,24 +91,25 @@ function inner_b(mode) {
         let __sv2 = 0;
         try {
             if (__sv2) {
-                cptr.printf(__sl4);
+                cptr.printf(__s_b_inner_handler_caught);
                 cjmp.longjmp(cptr.decay(jb_outer), 3);
             }
             if (mode)
                 cjmp.longjmp(cptr.decay(jb_inner), 2);
-            cptr.printf(__sl5);
+            cptr.printf(__s_b_inner_returns_normally);
         } catch (__e2) {
             if (!cjmp.matches(__e2, __sj2)) throw __e2;
             __sv2 = cjmp.jbval(__e2);
             if (__sv2) {
-                cptr.printf(__sl4);
+                cptr.printf(__s_b_inner_handler_caught);
                 cjmp.longjmp(cptr.decay(jb_outer), 3);
             }
             if (mode)
                 cjmp.longjmp(cptr.decay(jb_inner), 2);
-            cptr.printf(__sl5);
+            cptr.printf(__s_b_inner_returns_normally);
         }
     }
+
 }
 
 /** C ref: setjmp_gate.c:58 */
@@ -112,47 +119,53 @@ function test_b() {
         let __sv3 = 0;
         try {
             if (__sv3) {
-                cptr.printf(__sl6);
+                cptr.printf(__s_b_outer_handler_caught);
                 return;
             }
             inner_b(0);
             inner_b(1);
-            cptr.printf(__sl7);
+            cptr.printf(__s_b_unreachable);
         } catch (__e3) {
             if (!cjmp.matches(__e3, __sj3)) throw __e3;
             __sv3 = cjmp.jbval(__e3);
             if (__sv3) {
-                cptr.printf(__sl6);
+                cptr.printf(__s_b_outer_handler_caught);
                 return;
             }
             inner_b(0);
             inner_b(1);
-            cptr.printf(__sl7);
+            cptr.printf(__s_b_unreachable);
         }
     }
+
 }
+
+/* ---- (c) longjmp across several frames ----------------------------------- */
 
 /** C ref: setjmp_gate.c:73 — int[48] */
 const jb_c = cptr.alloc(48 * 4);
 
 /** C ref: setjmp_gate.c:73 — @param {CInt} v */
 function frame3(v) {
-    cptr.printf(__sl8, v);
+    cptr.printf(__s_c_frame3_d, v);
     cjmp.longjmp(cptr.decay(jb_c), (v + 1) | 0);
+
 }
 
 /** C ref: setjmp_gate.c:79 — @param {CInt} v */
 function frame2(v) {
-    cptr.printf(__sl9, v);
+    cptr.printf(__s_c_frame2_d, v);
     frame3((v + 1) | 0);
-    cptr.printf(__sl10);
+    cptr.printf(__s_c_frame2_unreachable);
+
 }
 
 /** C ref: setjmp_gate.c:86 — @param {CInt} v */
 function frame1(v) {
-    cptr.printf(__sl11, v);
+    cptr.printf(__s_c_frame1_d, v);
     frame2((v + 1) | 0);
-    cptr.printf(__sl12);
+    cptr.printf(__s_c_frame1_unreachable);
+
 }
 
 /** C ref: setjmp_gate.c:93 */
@@ -164,52 +177,62 @@ function test_c() {
         let __sv4 = 0;
         try {
             if ((v = __sv4) != 0) {
-                cptr.printf(__sl13, v);
+                cptr.printf(__s_c_caught_value_d, v);
                 return;
             }
             frame1(10);
-            cptr.printf(__sl14);
+            cptr.printf(__s_c_unreachable);
         } catch (__e4) {
             if (!cjmp.matches(__e4, __sj4)) throw __e4;
             __sv4 = cjmp.jbval(__e4);
             if ((v = __sv4) != 0) {
-                cptr.printf(__sl13, v);
+                cptr.printf(__s_c_caught_value_d, v);
                 return;
             }
             frame1(10);
-            cptr.printf(__sl14);
+            cptr.printf(__s_c_unreachable);
         }
     }
+
 }
 
+/* ---- (d) Lua pattern: LUAI_TRY / LUAI_THROW ------------------------------ */
+
+/* mirrors struct lua_longjmp (ldo.c:74) and luaconf.h's C-setjmp branch:
+   #define LUAI_THROW(L,c) _longjmp((c)->b, 1)
+   #define LUAI_TRY(L,c,a) if (_setjmp((c)->b) == 0) { a }              */
 /** C ref: setjmp_gate.c:110 — struct lua_longjmp { b, status, previous } (memory model v0.5) */
 
 /** C ref: setjmp_gate.c:116 — struct lua_longjmp * */
 let errorJmp = null;
 
+/* mirrors luaD_throw's "set status, then jump" (ldo.c:111) */
 /** C ref: setjmp_gate.c:122 — @param {CInt} errcode */
 function l_throw(errcode) {
     if (errorJmp) {
         cptr.stI32o(errorJmp, 192, errcode);
         cjmp.longjmp((errorJmp), 1);
     } else {
-        cptr.printf(__sl15, errcode);
+        cptr.printf(__s_d_uncaught_error_d, errcode);
+
     }
 }
 
 /** C ref: setjmp_gate.c:132 — @param {CInt} arg @returns {CInt} */
 function risky_d(arg) {
-    cptr.printf(__sl16, arg);
+    cptr.printf(__s_d_risky_d, arg);
     if (arg > 100)
         l_throw(arg);
     return Math.imul(arg, 2);
+
 }
 
+/* mirrors luaD_rawrunprotected (ldo.c:135) */
 /** C ref: setjmp_gate.c:141 — @param {CPtr} f @param {CInt} arg @returns {CInt} */
 function* runprotected(f, arg) {
     let lj = cptr.alloc(208);
     let result = -1;
-    cptr.stI32o(lj, 192, 0);
+    cptr.stI32o(lj, 192, 0);  /* chain new error handler */
     cptr.stPtro(lj, 200, errorJmp);
     errorJmp = lj;
     {
@@ -221,7 +244,7 @@ function* runprotected(f, arg) {
             }
             ;
             errorJmp = cptr.ldPtro(lj, 200);
-            cptr.printf(__sl17, cptr.ldI32o(lj, 192), result);
+            cptr.printf(__s_d_runprotected_status_d_result_d, cptr.ldI32o(lj, 192), result);
             return cptr.ldI32o(lj, 192);
         } catch (__e5) {
             if (!cjmp.matches(__e5, __sj5)) throw __e5;
@@ -231,19 +254,23 @@ function* runprotected(f, arg) {
             }
             ;
             errorJmp = cptr.ldPtro(lj, 200);
-            cptr.printf(__sl17, cptr.ldI32o(lj, 192), result);
+            cptr.printf(__s_d_runprotected_status_d_result_d, cptr.ldI32o(lj, 192), result);
             return cptr.ldI32o(lj, 192);
         }
     }
+
 }
 
 /** C ref: setjmp_gate.c:156 */
 function* test_d() {
-    (yield* runprotected(risky_d, 21));
-    (yield* runprotected(risky_d, 300));
-    (yield* runprotected(risky_d, 7));
-    l_throw(99);
+    (yield* runprotected(risky_d, 21));  /* ok */
+    (yield* runprotected(risky_d, 300));  /* throws */
+    (yield* runprotected(risky_d, 7));  /* ok again — chain restored */
+    l_throw(99);  /* no handler: falls to the else branch */
+
 }
+
+/* ---- (e) longjmp(jb, 0) yields 1 ----------------------------------------- */
 
 /** C ref: setjmp_gate.c:168 — int[48] */
 const jb_e = cptr.alloc(48 * 4);
@@ -256,7 +283,7 @@ function test_e() {
         let __sv6 = 0;
         try {
             if ((v = __sv6) != 0) {
-                cptr.printf(__sl18, v);
+                cptr.printf(__s_e_setjmp_returned_d_after_longjmp_jb_0, v);
                 return;
             }
             cjmp.longjmp(cptr.decay(jb_e), 0);
@@ -264,7 +291,7 @@ function test_e() {
             if (!cjmp.matches(__e6, __sj6)) throw __e6;
             __sv6 = cjmp.jbval(__e6);
             if ((v = __sv6) != 0) {
-                cptr.printf(__sl18, v);
+                cptr.printf(__s_e_setjmp_returned_d_after_longjmp_jb_0, v);
                 return;
             }
             cjmp.longjmp(cptr.decay(jb_e), 0);
@@ -279,6 +306,6 @@ export function* main() {
     test_c();
     (yield* test_d());
     test_e();
-    cptr.printf(__sl19);
+    cptr.printf(__s_done);
     return 0;
 }
