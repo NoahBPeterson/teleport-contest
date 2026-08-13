@@ -6,8 +6,20 @@
 import { uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
-import { lua_callk, lua_concat, lua_copy, lua_error, lua_gc, lua_geti, lua_getmetatable, lua_gettop, lua_isstring, lua_load, lua_next, lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger, lua_pushnil, lua_pushnumber, lua_pushstring, lua_pushvalue, lua_rawequal, lua_rawget, lua_rawgeti, lua_rawlen, lua_rawset, lua_rotate, lua_setfield, lua_setmetatable, lua_settop, lua_setupvalue, lua_stringtonumber, lua_toboolean, lua_tolstring, lua_type, lua_typename, lua_warning } from './lapi.js';
-import { luaL_argerror, luaL_checkany, luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checkstack, luaL_checktype, luaL_error, luaL_getmetafield, luaL_loadbufferx, luaL_loadfilex, luaL_optinteger, luaL_optlstring, luaL_setfuncs, luaL_tolstring, luaL_typeerror, luaL_where } from './lauxlib.js';
+import {
+    lua_callk, lua_concat, lua_copy, lua_error, lua_gc, lua_geti, lua_getmetatable, lua_gettop,
+    lua_isstring, lua_load, lua_next, lua_pcallk, lua_pushboolean, lua_pushcclosure,
+    lua_pushinteger, lua_pushnil, lua_pushnumber, lua_pushstring, lua_pushvalue, lua_rawequal,
+    lua_rawget, lua_rawgeti, lua_rawlen, lua_rawset, lua_rotate, lua_setfield, lua_setmetatable,
+    lua_settop, lua_setupvalue, lua_stringtonumber, lua_toboolean, lua_tolstring, lua_type,
+    lua_typename, lua_warning
+} from './lapi.js';
+import {
+    luaL_argerror, luaL_checkany, luaL_checkinteger, luaL_checklstring, luaL_checkoption,
+    luaL_checkstack, luaL_checktype, luaL_error, luaL_getmetafield, luaL_loadbufferx,
+    luaL_loadfilex, luaL_optinteger, luaL_optlstring, luaL_setfuncs, luaL_tolstring, luaL_typeerror,
+    luaL_where
+} from './lauxlib.js';
 import { digit } from './hacklib.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
@@ -102,7 +114,13 @@ function luaB_warn(L) {
     return 0;
 }
 
-/** C ref: lbaselib.c:60 — @param {CPtr<char>} s @param {CInt} base @param {CPtr<lua_Integer>} pn @returns {CPtr<char>} */
+/**
+ * C ref: lbaselib.c:60
+ * @param {CPtr<char>} s
+ * @param {CInt} base
+ * @param {CPtr<lua_Integer>} pn
+ * @returns {CPtr<char>}
+ */
 function b_str2int(s, base, pn) {
     let n = 0n;
     let neg = 0;
@@ -115,10 +133,16 @@ function b_str2int(s, base, pn) {
     if (!isalnum(uchar(cptr.ld1s(s))))
         return null;
     do {
-        let digit = (isdigit(uchar(cptr.ld1s(s)))) ? (cptr.ld1s(s) - 48) | 0 : (((toupper(uchar(cptr.ld1s(s))) - 65) | 0) + 10) | 0;
+        let digit = (isdigit(uchar(cptr.ld1s(s))))
+                ? (cptr.ld1s(s) - 48) | 0
+                : (((toupper(uchar(cptr.ld1s(s))) - 65) | 0) + 10) | 0;
         if (digit >= base)
             return null;  /* invalid numeral */
-        n = BigInt.asUintN(64, BigInt.asUintN(64, n * BigInt.asUintN(64, BigInt(base))) + BigInt.asUintN(64, BigInt(digit)));
+        n = BigInt.asUintN(
+            64,
+            BigInt.asUintN(64, n * BigInt.asUintN(64, BigInt(base))) +
+                BigInt.asUintN(64, BigInt(digit))
+        );
         s = cptr.add(s, 1);
     } while (isalnum(uchar(cptr.ld1s(s))));
     s = cptr.add(s, strspn(s, __s_sp_ff_nl_cr_tab_vt));  /* skip trailing spaces */
@@ -147,7 +171,10 @@ function luaB_tonumber(L) {
         let base = luaL_checkinteger(L, 2);
         luaL_checktype(L, 1, 4);  /* no numbers as strings */
         s = lua_tolstring(L, 1, l);
-        (void ((__builtin_expect(BigInt(((2n <= base && base <= 36n ? 1 : 0) != 0)), 1n)) || luaL_argerror(L, 2, (__s_base_out_of_range)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((2n <= base && base <= 36n ? 1 : 0) != 0)), 1n)) ||
+            luaL_argerror(L, 2, (__s_base_out_of_range))
+                ? 1
+                : 0));
         if (cptr.eq(b_str2int(s, Number(BigInt.asIntN(32, base)), n), cptr.add(s, l.v))) {
             lua_pushinteger(L, n.v);
             return 1;
@@ -184,7 +211,10 @@ function luaB_getmetatable(L) {
 function luaB_setmetatable(L) {
     let t = lua_type(L, 2);
     luaL_checktype(L, 1, 5);
-    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, 2, (__s_nil_or_table)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) ||
+        luaL_typeerror(L, 2, (__s_nil_or_table))
+            ? 1
+            : 0));
     if ((__builtin_expect(BigInt(((luaL_getmetafield(L, 1, __s_metatable) != 0) != 0)), 0n)))
         return luaL_error(L, __s_cannot_change_a_protected_metatable);
     lua_settop(L, 2);
@@ -203,7 +233,10 @@ function luaB_rawequal(L) {
 /** C ref: lbaselib.c:157 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_rawlen(L) {
     let t = lua_type(L, 1);
-    (void ((__builtin_expect(BigInt(((t == 5 || t == 4 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, 1, (__s_table_or_string)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t == 5 || t == 4 ? 1 : 0) != 0)), 1n)) ||
+        luaL_typeerror(L, 1, (__s_table_or_string))
+            ? 1
+            : 0));
     lua_pushinteger(L, BigInt.asIntN(64, lua_rawlen(L, 1)));
     return 1;
 }
@@ -262,7 +295,11 @@ cptr.stI32o(__static_luaB_collectgarbage_optsnum, 36, 11); /** C ref: lbaselib.c
 
 /** C ref: lbaselib.c:199 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_collectgarbage(L) {
-    let o = cptr.ldI32o(__static_luaB_collectgarbage_optsnum, luaL_checkoption(L, 1, __s_collect, __static_luaB_collectgarbage_opts), 4);
+    let o = cptr.ldI32o(
+        __static_luaB_collectgarbage_optsnum,
+        luaL_checkoption(L, 1, __s_collect, __static_luaB_collectgarbage_opts),
+        4
+    );
     switch (o) {
         case 3:
         {
@@ -344,7 +381,10 @@ function luaB_collectgarbage(L) {
 /** C ref: lbaselib.c:259 — @param {CPtr<lua_State>} L @returns {CInt} */
 function luaB_type(L) {
     let t = lua_type(L, 1);
-    (void ((__builtin_expect(BigInt(((t != -1) != 0)), 1n)) || luaL_argerror(L, 1, (__s_value_expected)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t != -1) != 0)), 1n)) ||
+        luaL_argerror(L, 1, (__s_value_expected))
+            ? 1
+            : 0));
     lua_pushstring(L, lua_typename(L, t));
     return 1;
 }
@@ -361,7 +401,13 @@ function luaB_next(L) {
     }
 }
 
-/** C ref: lbaselib.c:279 — @param {CPtr<lua_State>} L @param {CInt} status @param {CLongLong} k @returns {CInt} */
+/**
+ * C ref: lbaselib.c:279
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} status
+ * @param {CLongLong} k
+ * @returns {CInt}
+ */
 function pairscont(L, status, k) {
     void L;  /* unused */
     void status;
@@ -407,7 +453,13 @@ function luaB_ipairs(L) {
     return 3;
 }
 
-/** C ref: lbaselib.c:323 — @param {CPtr<lua_State>} L @param {CInt} status @param {CInt} envidx @returns {CInt} */
+/**
+ * C ref: lbaselib.c:323
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} status
+ * @param {CInt} envidx
+ * @returns {CInt}
+ */
 function load_aux(L, status, envidx) {
     if ((__builtin_expect(BigInt(((status == 0) != 0)), 1n))) {
         if (envidx != 0) {
@@ -438,7 +490,13 @@ function luaB_loadfile(L) {
 ** stack top. Instead, it keeps its resulting string in a
 ** reserved slot inside the stack.
 */
-/** C ref: lbaselib.c:370 — @param {CPtr<lua_State>} L @param {CPtr<void>} ud @param {CPtr<size_t>} size @returns {CPtr<char>} */
+/**
+ * C ref: lbaselib.c:370
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<void>} ud
+ * @param {CPtr<size_t>} size
+ * @returns {CPtr<char>}
+ */
 function generic_reader(L, ud, size) {
     void (ud);  /* not used */
     luaL_checkstack(L, 2, __s_too_many_nested_functions);
@@ -475,7 +533,13 @@ function luaB_load(L) {
 
 /* }====================================================== */
 
-/** C ref: lbaselib.c:409 — @param {CPtr<lua_State>} L @param {CInt} d1 @param {CLongLong} d2 @returns {CInt} */
+/**
+ * C ref: lbaselib.c:409
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} d1
+ * @param {CLongLong} d2
+ * @returns {CInt}
+ */
 function dofilecont(L, d1, d2) {
     void d1;  /* only to match 'lua_Kfunction' prototype */
     void d2;
@@ -517,7 +581,10 @@ function luaB_select(L) {
             i = BigInt.asIntN(64, BigInt(n) + i);
         else if (i > BigInt(n))
             i = BigInt(n);
-        (void ((__builtin_expect(BigInt(((1n <= i) != 0)), 1n)) || luaL_argerror(L, 1, (__s_index_out_of_range)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((1n <= i) != 0)), 1n)) ||
+            luaL_argerror(L, 1, (__s_index_out_of_range))
+                ? 1
+                : 0));
         return (n - Number(BigInt.asIntN(32, i))) | 0;
     }
 }
@@ -529,7 +596,13 @@ function luaB_select(L) {
 ** 'extra' values (where 'extra' is exactly the number of items to be
 ** ignored).
 */
-/** C ref: lbaselib.c:461 — @param {CPtr<lua_State>} L @param {CInt} status @param {CLongLong} extra @returns {CInt} */
+/**
+ * C ref: lbaselib.c:461
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} status
+ * @param {CLongLong} extra
+ * @returns {CInt}
+ */
 function finishpcall(L, status, extra) {
     if ((__builtin_expect(BigInt(((status != 0 && status != 1 ? 1 : 0) != 0)), 0n))) {
         lua_pushboolean(L, 0);  /* first result (false) */
@@ -646,7 +719,11 @@ export function luaopen_base(L) {
 // 3 bindings: 0 rebound+refilled, 0 rebound, 3 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__static_luaB_collectgarbage_opts), S(__static_luaB_collectgarbage_optsnum), S(base_funcs)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__static_luaB_collectgarbage_opts), S(__static_luaB_collectgarbage_optsnum), S(base_funcs)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("lbaselib.js: __resetState before __captureState");

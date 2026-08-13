@@ -5,8 +5,14 @@
 
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
-import { lua_checkstack, lua_concat, lua_createtable, lua_error, lua_gettop, lua_pushboolean, lua_pushcclosure, lua_pushstring, lua_pushthread, lua_pushvalue, lua_rotate, lua_settop, lua_status, lua_tothread, lua_type, lua_xmove } from './lapi.js';
-import { luaL_checktype, luaL_checkversion_, luaL_error, luaL_setfuncs, luaL_typeerror, luaL_where } from './lauxlib.js';
+import {
+    lua_checkstack, lua_concat, lua_createtable, lua_error, lua_gettop, lua_pushboolean,
+    lua_pushcclosure, lua_pushstring, lua_pushthread, lua_pushvalue, lua_rotate, lua_settop,
+    lua_status, lua_tothread, lua_type, lua_xmove
+} from './lapi.js';
+import {
+    luaL_checktype, luaL_checkversion_, luaL_error, luaL_setfuncs, luaL_typeerror, luaL_where
+} from './lauxlib.js';
 import { lua_isyieldable, lua_resume, lua_yieldk } from './ldo.js';
 import { lua_closethread, lua_newthread } from './lstate.js';
 import { lua_getstack } from './ldebug.js';
@@ -35,7 +41,9 @@ const __s_close = cptr.lit("close");
 /** C ref: lcorolib.c:21 — @param {CPtr<lua_State>} L @returns {CPtr<lua_State>} */
 function getco(L) {
     let co = lua_tothread(L, 1);
-    (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, 1, (__s_thread)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((co) !== null)), 1n)) || luaL_typeerror(L, 1, (__s_thread))
+            ? 1
+            : 0));
     return co;
 }
 
@@ -43,7 +51,13 @@ function getco(L) {
 ** Resumes a coroutine. Returns the number of results for non-error
 ** cases or -1 for errors.
 */
-/** C ref: lcorolib.c:32 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} co @param {CInt} narg @returns {CInt} */
+/**
+ * C ref: lcorolib.c:32
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<lua_State>} co
+ * @param {CInt} narg
+ * @returns {CInt}
+ */
 function auxresume(L, co, narg) {
     let status;
     let nres = cptr.box(0);
@@ -133,7 +147,12 @@ cptr.stPtro(statname, 8, __s_dead);
 cptr.stPtro(statname, 16, __s_suspended);
 cptr.stPtro(statname, 24, __s_normal);
 
-/** C ref: lcorolib.c:127 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} co @returns {CInt} */
+/**
+ * C ref: lcorolib.c:127
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<lua_State>} co
+ * @returns {CInt}
+ */
 function auxstatus(L, co) {
     if (cptr.eq(L, co))
         return 0;
@@ -224,7 +243,11 @@ cptr.stPtro(co_funcs, 128 + $luaL_Reg_func, null);
 
 /** C ref: lcorolib.c:206 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_coroutine(L) {
-    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))), luaL_setfuncs(L, co_funcs, 0));
+    (
+        luaL_checkversion_(L, 504, 136n),
+        lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n)))),
+        luaL_setfuncs(L, co_funcs, 0)
+    );
     return 1;
 }
 

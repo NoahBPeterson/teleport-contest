@@ -7,24 +7,27 @@ import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
 import { case_insensitive_comp, nh_snprintf } from './hacklib.js';
 import { dupstr } from './alloc.js';
-import { bannerc_string, md_ignored_features, mdlib_version_string, version_id_string } from './mdlib.js';
+import {
+    bannerc_string, md_ignored_features, mdlib_version_string, version_id_string
+} from './mdlib.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $nomakedefs_s_build_time = FLD.nomakedefs_s_build_time,
-    $nomakedefs_s_copyright_banner_c = FLD.nomakedefs_s_copyright_banner_c,
-    $nomakedefs_s_git_branch = FLD.nomakedefs_s_git_branch,
-    $nomakedefs_s_git_prefix = FLD.nomakedefs_s_git_prefix, $nomakedefs_s_git_sha = FLD.nomakedefs_s_git_sha,
-    $nomakedefs_s_ignored_features = FLD.nomakedefs_s_ignored_features,
-    $nomakedefs_s_version_features = FLD.nomakedefs_s_version_features,
-    $nomakedefs_s_version_id = FLD.nomakedefs_s_version_id,
-    $nomakedefs_s_version_number = FLD.nomakedefs_s_version_number,
-    $nomakedefs_s_version_sanity1 = FLD.nomakedefs_s_version_sanity1,
-    $nomakedefs_s_version_string = FLD.nomakedefs_s_version_string,
-    $sizeof_nomakedefs_s = FLD.sizeof_nomakedefs_s, $tm_tm_hour = FLD.tm_tm_hour,
-    $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = FLD.tm_tm_min, $tm_tm_mon = FLD.tm_tm_mon,
-    $tm_tm_year = FLD.tm_tm_year, $version_info_entity_count = FLD.version_info_entity_count,
-    $version_info_feature_set = FLD.version_info_feature_set;
+      $nomakedefs_s_copyright_banner_c = FLD.nomakedefs_s_copyright_banner_c,
+      $nomakedefs_s_git_branch = FLD.nomakedefs_s_git_branch,
+      $nomakedefs_s_git_prefix = FLD.nomakedefs_s_git_prefix,
+      $nomakedefs_s_git_sha = FLD.nomakedefs_s_git_sha,
+      $nomakedefs_s_ignored_features = FLD.nomakedefs_s_ignored_features,
+      $nomakedefs_s_version_features = FLD.nomakedefs_s_version_features,
+      $nomakedefs_s_version_id = FLD.nomakedefs_s_version_id,
+      $nomakedefs_s_version_number = FLD.nomakedefs_s_version_number,
+      $nomakedefs_s_version_sanity1 = FLD.nomakedefs_s_version_sanity1,
+      $nomakedefs_s_version_string = FLD.nomakedefs_s_version_string,
+      $sizeof_nomakedefs_s = FLD.sizeof_nomakedefs_s, $tm_tm_hour = FLD.tm_tm_hour,
+      $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = FLD.tm_tm_min, $tm_tm_mon = FLD.tm_tm_mon,
+      $tm_tm_year = FLD.tm_tm_year, $version_info_entity_count = FLD.version_info_entity_count,
+      $version_info_feature_set = FLD.version_info_feature_set;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_tue_28_jul_87_13_18_57_edt = cptr.lit("Tue, 28-Jul-87 13:18:57 EDT");
@@ -57,7 +60,11 @@ let nomakedefs_populated = 0;
 /** C ref: date.c:25 — struct nomakedefs_s */
 export let nomakedefs = cptr.alloc($sizeof_nomakedefs_s);
 cptr.stPtr(nomakedefs, __s_tue_28_jul_87_13_18_57_edt);
-cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, __s_version_1_0_built_jul_28_13_18_57_1987);
+cptr.stPtro(
+    nomakedefs,
+    $nomakedefs_s_copyright_banner_c,
+    __s_version_1_0_built_jul_28_13_18_57_1987
+);
 cptr.stPtro(nomakedefs, $nomakedefs_s_git_sha, null);
 cptr.stPtro(nomakedefs, $nomakedefs_s_git_branch, null);
 cptr.stPtro(nomakedefs, $nomakedefs_s_git_prefix, null);
@@ -75,7 +82,19 @@ export function populate_nomakedefs(version) {
     let tmpbuf1 = new Uint8Array(256);
     let tmpbuf2 = new Uint8Array(256);
     let strp;
-    let mth = cptr.alloc(12 * 8); cptr.stPtro(mth, 0, __s_jan); cptr.stPtro(mth, 8, __s_feb); cptr.stPtro(mth, 16, __s_mar); cptr.stPtro(mth, 24, __s_apr); cptr.stPtro(mth, 32, __s_may); cptr.stPtro(mth, 40, __s_jun); cptr.stPtro(mth, 48, __s_jul); cptr.stPtro(mth, 56, __s_aug); cptr.stPtro(mth, 64, __s_sep); cptr.stPtro(mth, 72, __s_oct); cptr.stPtro(mth, 80, __s_nov); cptr.stPtro(mth, 88, __s_dec);
+    let mth = cptr.alloc(12 * 8);
+    cptr.stPtro(mth, 0, __s_jan);
+    cptr.stPtro(mth, 8, __s_feb);
+    cptr.stPtro(mth, 16, __s_mar);
+    cptr.stPtro(mth, 24, __s_apr);
+    cptr.stPtro(mth, 32, __s_may);
+    cptr.stPtro(mth, 40, __s_jun);
+    cptr.stPtro(mth, 48, __s_jul);
+    cptr.stPtro(mth, 56, __s_aug);
+    cptr.stPtro(mth, 64, __s_sep);
+    cptr.stPtro(mth, 72, __s_oct);
+    cptr.stPtro(mth, 80, __s_nov);
+    cptr.stPtro(mth, 88, __s_dec);
     let t = cptr.alloc(56); cptr.stI32(t, 0);
     let timeresult;
 
@@ -106,19 +125,36 @@ export function populate_nomakedefs(version) {
      * __DATE__ " " __TIME__ — because the surrounding code parses
      * fixed offsets out of it (year at 7, mday at 4, hour at 12, …).
      * Set NETHACK_REAL_BUILD_DATE in env to opt out of pinning. */
-    nh_snprintf(__s_populate_nomakedefs, 90, cptr.decay(tmpbuf1), 256n, __s_pct_s, getenv(__s_nethack_real_build_date) ? __s_aug_3_2026_19_27_05 : __s_may_2_2026_12_00_00);
+    nh_snprintf(
+        __s_populate_nomakedefs,
+        90,
+        cptr.decay(tmpbuf1),
+        256n,
+        __s_pct_s,
+        getenv(__s_nethack_real_build_date) ? __s_aug_3_2026_19_27_05 : __s_may_2_2026_12_00_00
+    );
     /* "Feb 12 1996 23:59:01"
         01234567890123456789  */
     if (Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(tmpbuf1)))) == 20) {
         {
             for (i = 0; i < 4; ++i)
-                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 7) | 0, 1), 1);  /* year */
+                cptr.st1o(
+                    cptr.decay(tmpbuf2),
+                    i,
+                    cptr.ld1so(cptr.decay(tmpbuf1), (i + 7) | 0, 1),
+                    1
+                );  /* year */
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
         cptr.stI32o(t, $tm_tm_year, (atoi(cptr.decay(tmpbuf2)) - 1900) | 0);  /* mon */
         {
             for (i = 0; i < 3; ++i)
-                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 0) | 0, 1), 1);
+                cptr.st1o(
+                    cptr.decay(tmpbuf2),
+                    i,
+                    cptr.ld1so(cptr.decay(tmpbuf1), (i + 0) | 0, 1),
+                    1
+                );
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
         for (i = 0; i < 12; ++i)
@@ -128,7 +164,12 @@ export function populate_nomakedefs(version) {
             }  /* mday */
         {
             for (i = 0; i < 2; ++i)
-                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 4) | 0, 1), 1);
+                cptr.st1o(
+                    cptr.decay(tmpbuf2),
+                    i,
+                    cptr.ld1so(cptr.decay(tmpbuf1), (i + 4) | 0, 1),
+                    1
+                );
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
         strp = cptr.decay(tmpbuf2);
@@ -137,19 +178,34 @@ export function populate_nomakedefs(version) {
         cptr.stI32o(t, $tm_tm_mday, atoi(strp));  /* hour */
         {
             for (i = 0; i < 2; ++i)
-                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 12) | 0, 1), 1);
+                cptr.st1o(
+                    cptr.decay(tmpbuf2),
+                    i,
+                    cptr.ld1so(cptr.decay(tmpbuf1), (i + 12) | 0, 1),
+                    1
+                );
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
         cptr.stI32o(t, $tm_tm_hour, atoi(cptr.decay(tmpbuf2)));  /* min  */
         {
             for (i = 0; i < 2; ++i)
-                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 15) | 0, 1), 1);
+                cptr.st1o(
+                    cptr.decay(tmpbuf2),
+                    i,
+                    cptr.ld1so(cptr.decay(tmpbuf1), (i + 15) | 0, 1),
+                    1
+                );
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
         cptr.stI32o(t, $tm_tm_min, atoi(cptr.decay(tmpbuf2)));  /* sec  */
         {
             for (i = 0; i < 2; ++i)
-                cptr.st1o(cptr.decay(tmpbuf2), i, cptr.ld1so(cptr.decay(tmpbuf1), (i + 18) | 0, 1), 1);
+                cptr.st1o(
+                    cptr.decay(tmpbuf2),
+                    i,
+                    cptr.ld1so(cptr.decay(tmpbuf1), (i + 18) | 0, 1),
+                    1
+                );
             cptr.st1o(cptr.decay(tmpbuf2), i, 0, 1);
         }
         cptr.stI32(t, atoi(cptr.decay(tmpbuf2)));
@@ -159,12 +215,32 @@ export function populate_nomakedefs(version) {
 
     }
     cptr.stU64o(nomakedefs, $nomakedefs_s_version_number, cptr.ldU64(version));
-    cptr.stU64o(nomakedefs, $nomakedefs_s_version_features, cptr.ldU64o(version, $version_info_feature_set));
+    cptr.stU64o(
+        nomakedefs,
+        $nomakedefs_s_version_features,
+        cptr.ldU64o(version, $version_info_feature_set)
+    );
     cptr.stU64o(nomakedefs, $nomakedefs_s_ignored_features, md_ignored_features());
-    cptr.stU64o(nomakedefs, $nomakedefs_s_version_sanity1, cptr.ldU64o(version, $version_info_entity_count));
-    cptr.stPtro(nomakedefs, $nomakedefs_s_version_string, dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __s_dot)));
-    cptr.stPtro(nomakedefs, $nomakedefs_s_version_id, dupstr(version_id_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs))));
-    cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, dupstr(bannerc_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs))));
+    cptr.stU64o(
+        nomakedefs,
+        $nomakedefs_s_version_sanity1,
+        cptr.ldU64o(version, $version_info_entity_count)
+    );
+    cptr.stPtro(
+        nomakedefs,
+        $nomakedefs_s_version_string,
+        dupstr(mdlib_version_string(cptr.decay(tmpbuf2), __s_dot))
+    );
+    cptr.stPtro(
+        nomakedefs,
+        $nomakedefs_s_version_id,
+        dupstr(version_id_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs)))
+    );
+    cptr.stPtro(
+        nomakedefs,
+        $nomakedefs_s_copyright_banner_c,
+        dupstr(bannerc_string(cptr.decay(tmpbuf2), 256n, cptr.ldPtr(nomakedefs)))
+    );
 
     nomakedefs_populated = 1;
     return;
@@ -182,11 +258,14 @@ export function free_nomakedefs() {
     if (cptr.ldPtr(nomakedefs))
         cptr.free(cptr.ldPtr(nomakedefs)), cptr.stPtr(nomakedefs, null);
     if (cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string))
-        cptr.free(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string)), cptr.stPtro(nomakedefs, $nomakedefs_s_version_string, null);
+        cptr.free(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string)),
+                cptr.stPtro(nomakedefs, $nomakedefs_s_version_string, null);
     if (cptr.ldPtro(nomakedefs, $nomakedefs_s_version_id))
-        cptr.free(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_id)), cptr.stPtro(nomakedefs, $nomakedefs_s_version_id, null);
+        cptr.free(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_id)),
+                cptr.stPtro(nomakedefs, $nomakedefs_s_version_id, null);
     if (cptr.ldPtro(nomakedefs, $nomakedefs_s_copyright_banner_c))
-        cptr.free(cptr.ldPtro(nomakedefs, $nomakedefs_s_copyright_banner_c)), cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, null);
+        cptr.free(cptr.ldPtro(nomakedefs, $nomakedefs_s_copyright_banner_c)),
+                cptr.stPtro(nomakedefs, $nomakedefs_s_copyright_banner_c, null);
 
     /* values are Null now; dynamic vs static doesn't really matter anymore */
     nomakedefs_populated = 0;

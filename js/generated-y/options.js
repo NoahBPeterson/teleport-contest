@@ -14,27 +14,67 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { SET__IS_VALUE_VALID } from './nhmacrofn.js';
-import { FEATURE_NOTICE_VER_MAJ, FEATURE_NOTICE_VER_MIN, FEATURE_NOTICE_VER_PATCH, create_nhwindow, destroy_nhwindow, discover, display_file, display_nhwindow, end_menu, number_pad, preference_update, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
-import { WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs, gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u } from './decl.js';
+import {
+    FEATURE_NOTICE_VER_MAJ, FEATURE_NOTICE_VER_MIN, FEATURE_NOTICE_VER_PATCH, create_nhwindow,
+    destroy_nhwindow, discover, display_file, display_nhwindow, end_menu, number_pad,
+    preference_update, putstr, start_menu, wait_synch, wizard
+} from './nhprop.js';
+import {
+    WIN_INVEN, a11y, cg, disclosure_options, disp, flags, ga, gc, gd, gf, gh, gm, gn, go, gp, gs,
+    gt, gv, gw, hexdd, iflags, program_state, svb, svc, svd, svp, u
+} from './decl.js';
 import { do_deferred_showpaths, nh_basename, read_sym_file } from './files.js';
-import { assure_syscf_file, config_error_add, config_error_done, config_error_init, config_unmatched_ignored, get_configfile, rcfile, read_config_file } from './cfgfiles.js';
-import { copynchars, digit, eos, fuzzymatch, highc, letter, lowc, mungspaces, nh_snprintf, strNsubst, str_end_is, str_start_is, strkitten, strncmpi, strstri, strsubst, trimspaces, visctrl } from './hacklib.js';
-import { add_menu, add_menu_heading, add_menu_str, adjust_menu_promptstyle, choose_classes_menu, choose_windows, getlin, select_menu, windowprocs } from './windows.js';
+import {
+    assure_syscf_file, config_error_add, config_error_done, config_error_init,
+    config_unmatched_ignored, get_configfile, rcfile, read_config_file
+} from './cfgfiles.js';
+import {
+    copynchars, digit, eos, fuzzymatch, highc, letter, lowc, mungspaces, nh_snprintf, strNsubst,
+    str_end_is, str_start_is, strkitten, strncmpi, strstri, strsubst, trimspaces, visctrl
+} from './hacklib.js';
+import {
+    add_menu, add_menu_heading, add_menu_str, adjust_menu_promptstyle, choose_classes_menu,
+    choose_windows, getlin, select_menu, windowprocs
+} from './windows.js';
 import { docrt, flush_screen, nul_glyphinfo, reglyph_darkroom, reset_glyphmap } from './display.js';
-import { assign_graphics, clear_symsetentry, do_symset, get_othersym, init_ov_primary_symbols, init_ov_rogue_symbols, init_rogue_symbols, init_symbols, known_handling, load_symset, parsesymbols, savedsym_strbuf, switch_symbols } from './symbols.js';
-import { all_options_statushilites, bot, check_gold_symbol, clear_status_hilites, cond_menu, condopt, condtests, count_status_hilites, opt_next_cond, parse_cond_option, parse_status_hl1, reset_status_hilites, status_hilite_menu, status_initialize } from './botl.js';
+import {
+    assign_graphics, clear_symsetentry, do_symset, get_othersym, init_ov_primary_symbols,
+    init_ov_rogue_symbols, init_rogue_symbols, init_symbols, known_handling, load_symset,
+    parsesymbols, savedsym_strbuf, switch_symbols
+} from './symbols.js';
+import {
+    all_options_statushilites, bot, check_gold_symbol, clear_status_hilites, cond_menu, condopt,
+    condtests, count_status_hilites, opt_next_cond, parse_cond_option, parse_status_hl1,
+    reset_status_hilites, status_hilite_menu, status_initialize
+} from './botl.js';
 import { nh_terminate, panic } from './end.js';
 import { alloc, dupstr } from './alloc.js';
 import { sanitize_name } from './bones.js';
-import { aligns, clearrolefilter, genders, races, rolefilterstring, roles, setrolefilter, str2align, str2gend, str2race, str2role } from './role.js';
-import { def_char_to_monclass, def_char_to_objclass, def_oc_syms, def_warnsyms } from './drawing.js';
+import {
+    aligns, clearrolefilter, genders, races, rolefilterstring, roles, setrolefilter, str2align,
+    str2gend, str2race, str2role
+} from './role.js';
+import {
+    def_char_to_monclass, def_char_to_objclass, def_oc_syms, def_warnsyms
+} from './drawing.js';
 import { on_level } from './dungeon.js';
 import { obj_descr, objects } from './objects.js';
 import { You_cant, impossible, pline, raw_printf } from './pline.js';
 import { fruit_from_name, makeplural, makesingular } from './objnam.js';
-import { apply_customizations, fill_glyphid_cache, free_glyphid_cache, glyphid_cache_status, glyphrep_to_custom_map_entries, reset_customcolors } from './glyphs.js';
-import { add_menu_coloring_parsed, attr2attrname, check_enhanced_colors, clr2colorname, color_attr_parse_str, color_attr_to_str, count_menucolors, free_one_menu_coloring, match_str2attr, query_attr, query_color, query_color_attr, wc_color_name } from './coloratt.js';
-import { all_options_autocomplete, bind_key, bind_mousebtn, bind_specialkey, cmd_from_func, cmdname_from_func, count_autocompletions, count_bind_keys, do_reqmenu, get_changed_key_binds, handler_change_autocompletions, handler_rebind_keys, reset_commands, update_rest_on_space } from './cmd.js';
+import {
+    apply_customizations, fill_glyphid_cache, free_glyphid_cache, glyphid_cache_status,
+    glyphrep_to_custom_map_entries, reset_customcolors
+} from './glyphs.js';
+import {
+    add_menu_coloring_parsed, attr2attrname, check_enhanced_colors, clr2colorname,
+    color_attr_parse_str, color_attr_to_str, count_menucolors, free_one_menu_coloring,
+    match_str2attr, query_attr, query_color, query_color_attr, wc_color_name
+} from './coloratt.js';
+import {
+    all_options_autocomplete, bind_key, bind_mousebtn, bind_specialkey, cmd_from_func,
+    cmdname_from_func, count_autocompletions, count_bind_keys, do_reqmenu, get_changed_key_binds,
+    handler_change_autocompletions, handler_rebind_keys, reset_commands, update_rest_on_space
+} from './cmd.js';
 import { assign_soundlib, get_soundlib_name, soundlib_id_from_opt } from './sounds.js';
 import { choose_disco_sort, get_sortdisco } from './o_init.js';
 import { set_vanq_order, vanqorders } from './insight.js';
@@ -46,7 +86,9 @@ import { vision_recalc } from './vision.js';
 import { Strlen_, strbuf_append, strbuf_init } from './strutil.js';
 import { sf_init } from './sfbase.js';
 import { init_random, rn2, rn2_on_display_rng, rnd } from './rnd.js';
-import { regex_compile, regex_error_desc, regex_free, regex_init, regex_match } from './posixregex.js';
+import {
+    regex_compile, regex_error_desc, regex_free, regex_init, regex_match
+} from './posixregex.js';
 import { name_to_mon } from './mondata.js';
 import { reset_customsymbols } from './utf8map.js';
 import { yyyymmddhhmmss } from './calendar.js';
@@ -54,242 +96,259 @@ import { authorize_explore_mode, authorize_wizard_mode } from './unixmain.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $Align_adj = FLD.Align_adj, $accessibility_data_glyph_updates = FLD.accessibility_data_glyph_updates,
-    $accessibility_data_mon_movement = FLD.accessibility_data_mon_movement,
-    $accessibility_data_mon_notices = FLD.accessibility_data_mon_notices,
-    $accessibility_data_msg_loc = FLD.accessibility_data_msg_loc, $action_desc = FLD.action_desc,
-    $allopt_t_addr = FLD.allopt_t_addr, $allopt_t_alias = FLD.allopt_t_alias,
-    $allopt_t_descr = FLD.allopt_t_descr, $allopt_t_disregarded = FLD.allopt_t_disregarded,
-    $allopt_t_dupdetected = FLD.allopt_t_dupdetected, $allopt_t_dupeok = FLD.allopt_t_dupeok,
-    $allopt_t_expectedbuf = FLD.allopt_t_expectedbuf, $allopt_t_has_handler = FLD.allopt_t_has_handler,
-    $allopt_t_idx = FLD.allopt_t_idx, $allopt_t_initval = FLD.allopt_t_initval,
-    $allopt_t_minmatch = FLD.allopt_t_minmatch, $allopt_t_negateok = FLD.allopt_t_negateok,
-    $allopt_t_opt_in_out = FLD.allopt_t_opt_in_out, $allopt_t_optfn = FLD.allopt_t_optfn,
-    $allopt_t_opttyp = FLD.allopt_t_opttyp, $allopt_t_pfx = FLD.allopt_t_pfx,
-    $allopt_t_prefixgw = FLD.allopt_t_prefixgw, $allopt_t_section = FLD.allopt_t_section,
-    $allopt_t_setwhere = FLD.allopt_t_setwhere, $allopt_t_termpref = FLD.allopt_t_termpref,
-    $allopt_t_valok = FLD.allopt_t_valok, $autopickup_exception_grab = FLD.autopickup_exception_grab,
-    $autopickup_exception_next = FLD.autopickup_exception_next,
-    $autopickup_exception_pattern = FLD.autopickup_exception_pattern, $cmd_num_pad = FLD.cmd_num_pad,
-    $cmd_pcHack_compat = FLD.cmd_pcHack_compat, $cmd_phone_layout = FLD.cmd_phone_layout,
-    $cmd_swap_yz = FLD.cmd_swap_yz, $color_and_attr_attr = FLD.color_and_attr_attr,
-    $condtests_t_enabled = FLD.condtests_t_enabled, $const_globals_zeroany = FLD.const_globals_zeroany,
-    $context_info_current_fruit = FLD.context_info_current_fruit, $d_level_dlevel = FLD.d_level_dlevel,
-    $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
-    $display_hints_botlx = FLD.display_hints_botlx, $flag_armorstatus = FLD.flag_armorstatus,
-    $flag_autodig = FLD.flag_autodig, $flag_autoopen = FLD.flag_autoopen,
-    $flag_autoquiver = FLD.flag_autoquiver, $flag_autounlock = FLD.flag_autounlock,
-    $flag_biff = FLD.flag_biff, $flag_bones = FLD.flag_bones, $flag_confirm = FLD.flag_confirm,
-    $flag_dark_room = FLD.flag_dark_room, $flag_debug = FLD.flag_debug, $flag_discosort = FLD.flag_discosort,
-    $flag_end_around = FLD.flag_end_around, $flag_end_disclose = FLD.flag_end_disclose,
-    $flag_end_own = FLD.flag_end_own, $flag_end_top = FLD.flag_end_top, $flag_explore = FLD.flag_explore,
-    $flag_female = FLD.flag_female, $flag_goldX = FLD.flag_goldX, $flag_help = FLD.flag_help,
-    $flag_ignintr = FLD.flag_ignintr, $flag_implicit_uncursed = FLD.flag_implicit_uncursed,
-    $flag_initalign = FLD.flag_initalign, $flag_initgend = FLD.flag_initgend,
-    $flag_initrace = FLD.flag_initrace, $flag_initrole = FLD.flag_initrole,
-    $flag_ins_chkpt = FLD.flag_ins_chkpt, $flag_inv_order = FLD.flag_inv_order,
-    $flag_invlet_constant = FLD.flag_invlet_constant, $flag_legacy = FLD.flag_legacy,
-    $flag_lit_corridor = FLD.flag_lit_corridor, $flag_lootabc = FLD.flag_lootabc,
-    $flag_made_fruit = FLD.flag_made_fruit, $flag_mention_decor = FLD.flag_mention_decor,
-    $flag_mention_walls = FLD.flag_mention_walls, $flag_menu_style = FLD.flag_menu_style,
-    $flag_nopick_dropped = FLD.flag_nopick_dropped, $flag_null = FLD.flag_null,
-    $flag_paranoia_bits = FLD.flag_paranoia_bits, $flag_pickup = FLD.flag_pickup,
-    $flag_pickup_burden = FLD.flag_pickup_burden, $flag_pickup_stolen = FLD.flag_pickup_stolen,
-    $flag_pickup_thrown = FLD.flag_pickup_thrown, $flag_pickup_types = FLD.flag_pickup_types,
-    $flag_pile_limit = FLD.flag_pile_limit, $flag_pushweapon = FLD.flag_pushweapon,
-    $flag_quick_farsight = FLD.flag_quick_farsight, $flag_rest_on_space = FLD.flag_rest_on_space,
-    $flag_runmode = FLD.flag_runmode, $flag_safe_dog = FLD.flag_safe_dog,
-    $flag_safe_wait = FLD.flag_safe_wait, $flag_showexp = FLD.flag_showexp,
-    $flag_showrace = FLD.flag_showrace, $flag_showvers = FLD.flag_showvers, $flag_silent = FLD.flag_silent,
-    $flag_sortloot = FLD.flag_sortloot, $flag_sortpack = FLD.flag_sortpack, $flag_sparkle = FLD.flag_sparkle,
-    $flag_standout = FLD.flag_standout, $flag_suppress_alert = FLD.flag_suppress_alert,
-    $flag_terrainstatus = FLD.flag_terrainstatus, $flag_time = FLD.flag_time, $flag_tips = FLD.flag_tips,
-    $flag_tombstone = FLD.flag_tombstone, $flag_travelcmd = FLD.flag_travelcmd,
-    $flag_tutorial = FLD.flag_tutorial, $flag_vanq_sortmode = FLD.flag_vanq_sortmode,
-    $flag_verbose = FLD.flag_verbose, $flag_versinfo = FLD.flag_versinfo,
-    $flag_weaponstatus = FLD.flag_weaponstatus, $fruit_fid = FLD.fruit_fid, $fruit_nextf = FLD.fruit_nextf,
-    $instance_flags_altmeta = FLD.instance_flags_altmeta,
-    $instance_flags_autodescribe = FLD.instance_flags_autodescribe,
-    $instance_flags_bgcolors = FLD.instance_flags_bgcolors,
-    $instance_flags_cmdassist = FLD.instance_flags_cmdassist,
-    $instance_flags_customcolors = FLD.instance_flags_customcolors,
-    $instance_flags_customsymbols = FLD.instance_flags_customsymbols,
-    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
-    $instance_flags_debug_hunger = FLD.instance_flags_debug_hunger,
-    $instance_flags_debug_mongen = FLD.instance_flags_debug_mongen,
-    $instance_flags_debug_overwrite_stairs = FLD.instance_flags_debug_overwrite_stairs,
-    $instance_flags_deferred_X = FLD.instance_flags_deferred_X,
-    $instance_flags_extmenu = FLD.instance_flags_extmenu,
-    $instance_flags_fireassist = FLD.instance_flags_fireassist,
-    $instance_flags_force_invmenu = FLD.instance_flags_force_invmenu,
-    $instance_flags_getloc_filter = FLD.instance_flags_getloc_filter,
-    $instance_flags_getloc_moveskip = FLD.instance_flags_getloc_moveskip,
-    $instance_flags_getloc_usemenu = FLD.instance_flags_getloc_usemenu,
-    $instance_flags_getpos_coords = FLD.instance_flags_getpos_coords,
-    $instance_flags_herecmd_menu = FLD.instance_flags_herecmd_menu,
-    $instance_flags_hilite_delta = FLD.instance_flags_hilite_delta,
-    $instance_flags_hilite_pile = FLD.instance_flags_hilite_pile,
-    $instance_flags_idlecheckpoint = FLD.instance_flags_idlecheckpoint,
-    $instance_flags_initoptions_noterminate = FLD.instance_flags_initoptions_noterminate,
-    $instance_flags_menu_head_objsym = FLD.instance_flags_menu_head_objsym,
-    $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
-    $instance_flags_menu_overlay = FLD.instance_flags_menu_overlay,
-    $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
-    $instance_flags_menu_tab_sep = FLD.instance_flags_menu_tab_sep,
-    $instance_flags_menuinvertmode = FLD.instance_flags_menuinvertmode,
-    $instance_flags_menuobjsyms = FLD.instance_flags_menuobjsyms,
-    $instance_flags_mon_polycontrol = FLD.instance_flags_mon_polycontrol,
-    $instance_flags_mon_telecontrol = FLD.instance_flags_mon_telecontrol,
-    $instance_flags_msg_history = FLD.instance_flags_msg_history,
-    $instance_flags_news = FLD.instance_flags_news, $instance_flags_num_pad = FLD.instance_flags_num_pad,
-    $instance_flags_num_pad_mode = FLD.instance_flags_num_pad_mode,
-    $instance_flags_perm_invent = FLD.instance_flags_perm_invent,
-    $instance_flags_perminv_mode = FLD.instance_flags_perminv_mode,
-    $instance_flags_prev_decor = FLD.instance_flags_prev_decor,
-    $instance_flags_prevmsg_window = FLD.instance_flags_prevmsg_window,
-    $instance_flags_pricequotes = FLD.instance_flags_pricequotes,
-    $instance_flags_query_menu = FLD.instance_flags_query_menu,
-    $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
-    $instance_flags_showdamage = FLD.instance_flags_showdamage,
-    $instance_flags_sounds = FLD.instance_flags_sounds,
-    $instance_flags_status_updates = FLD.instance_flags_status_updates,
-    $instance_flags_toptenwin = FLD.instance_flags_toptenwin,
-    $instance_flags_trav_debug = FLD.instance_flags_trav_debug,
-    $instance_flags_use_menu_color = FLD.instance_flags_use_menu_color,
-    $instance_flags_use_menu_glyphs = FLD.instance_flags_use_menu_glyphs,
-    $instance_flags_use_truecolor = FLD.instance_flags_use_truecolor,
-    $instance_flags_voices = FLD.instance_flags_voices,
-    $instance_flags_wc2_darkgray = FLD.instance_flags_wc2_darkgray,
-    $instance_flags_wc2_fullscreen = FLD.instance_flags_wc2_fullscreen,
-    $instance_flags_wc2_guicolor = FLD.instance_flags_wc2_guicolor,
-    $instance_flags_wc2_hitpointbar = FLD.instance_flags_wc2_hitpointbar,
-    $instance_flags_wc2_petattr = FLD.instance_flags_wc2_petattr,
-    $instance_flags_wc2_selectsaved = FLD.instance_flags_wc2_selectsaved,
-    $instance_flags_wc2_softkeyboard = FLD.instance_flags_wc2_softkeyboard,
-    $instance_flags_wc2_statuslines = FLD.instance_flags_wc2_statuslines,
-    $instance_flags_wc2_term_cols = FLD.instance_flags_wc2_term_cols,
-    $instance_flags_wc2_term_rows = FLD.instance_flags_wc2_term_rows,
-    $instance_flags_wc2_windowborders = FLD.instance_flags_wc2_windowborders,
-    $instance_flags_wc2_wraptext = FLD.instance_flags_wc2_wraptext,
-    $instance_flags_wc_align_message = FLD.instance_flags_wc_align_message,
-    $instance_flags_wc_align_status = FLD.instance_flags_wc_align_status,
-    $instance_flags_wc_ascii_map = FLD.instance_flags_wc_ascii_map,
-    $instance_flags_wc_color = FLD.instance_flags_wc_color,
-    $instance_flags_wc_eight_bit_input = FLD.instance_flags_wc_eight_bit_input,
-    $instance_flags_wc_font_map = FLD.instance_flags_wc_font_map,
-    $instance_flags_wc_font_menu = FLD.instance_flags_wc_font_menu,
-    $instance_flags_wc_font_message = FLD.instance_flags_wc_font_message,
-    $instance_flags_wc_font_status = FLD.instance_flags_wc_font_status,
-    $instance_flags_wc_font_text = FLD.instance_flags_wc_font_text,
-    $instance_flags_wc_fontsiz_map = FLD.instance_flags_wc_fontsiz_map,
-    $instance_flags_wc_fontsiz_menu = FLD.instance_flags_wc_fontsiz_menu,
-    $instance_flags_wc_fontsiz_message = FLD.instance_flags_wc_fontsiz_message,
-    $instance_flags_wc_fontsiz_status = FLD.instance_flags_wc_fontsiz_status,
-    $instance_flags_wc_fontsiz_text = FLD.instance_flags_wc_fontsiz_text,
-    $instance_flags_wc_hilite_pet = FLD.instance_flags_wc_hilite_pet,
-    $instance_flags_wc_inverse = FLD.instance_flags_wc_inverse,
-    $instance_flags_wc_map_mode = FLD.instance_flags_wc_map_mode,
-    $instance_flags_wc_mouse_support = FLD.instance_flags_wc_mouse_support,
-    $instance_flags_wc_player_selection = FLD.instance_flags_wc_player_selection,
-    $instance_flags_wc_popup_dialog = FLD.instance_flags_wc_popup_dialog,
-    $instance_flags_wc_preload_tiles = FLD.instance_flags_wc_preload_tiles,
-    $instance_flags_wc_scroll_amount = FLD.instance_flags_wc_scroll_amount,
-    $instance_flags_wc_scroll_margin = FLD.instance_flags_wc_scroll_margin,
-    $instance_flags_wc_splash_screen = FLD.instance_flags_wc_splash_screen,
-    $instance_flags_wc_tile_file = FLD.instance_flags_wc_tile_file,
-    $instance_flags_wc_tile_height = FLD.instance_flags_wc_tile_height,
-    $instance_flags_wc_tile_width = FLD.instance_flags_wc_tile_width,
-    $instance_flags_wc_tiled_map = FLD.instance_flags_wc_tiled_map,
-    $instance_flags_wc_vary_msgcount = FLD.instance_flags_wc_vary_msgcount,
-    $instance_flags_wcolors = FLD.instance_flags_wcolors,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_flags_windowtype_deferred = FLD.instance_flags_windowtype_deferred,
-    $instance_flags_windowtype_locked = FLD.instance_flags_windowtype_locked,
-    $instance_flags_wizmgender = FLD.instance_flags_wizmgender,
-    $instance_flags_wizweight = FLD.instance_flags_wizweight,
-    $instance_globals_a_apelist = FLD.instance_globals_a_apelist,
-    $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
-    $instance_globals_c_catname = FLD.instance_globals_c_catname,
-    $instance_globals_c_chosen_soundlib = FLD.instance_globals_c_chosen_soundlib,
-    $instance_globals_c_chosen_windowtype = FLD.instance_globals_c_chosen_windowtype,
-    $instance_globals_c_cmdline_windowsys = FLD.instance_globals_c_cmdline_windowsys,
-    $instance_globals_c_crash_email = FLD.instance_globals_c_crash_email,
-    $instance_globals_c_crash_name = FLD.instance_globals_c_crash_name,
-    $instance_globals_c_crash_urlmax = FLD.instance_globals_c_crash_urlmax,
-    $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
-    $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
-    $instance_globals_d_dogname = FLD.instance_globals_d_dogname,
-    $instance_globals_f_ffruit = FLD.instance_globals_f_ffruit,
-    $instance_globals_h_horsename = FLD.instance_globals_h_horsename,
-    $instance_globals_m_mapped_menu_cmds = FLD.instance_globals_m_mapped_menu_cmds,
-    $instance_globals_m_mapped_menu_op = FLD.instance_globals_m_mapped_menu_op,
-    $instance_globals_m_menu_colorings = FLD.instance_globals_m_menu_colorings,
-    $instance_globals_n_n_menu_mapped = FLD.instance_globals_n_n_menu_mapped,
-    $instance_globals_o_opt_from_file = FLD.instance_globals_o_opt_from_file,
-    $instance_globals_o_opt_initial = FLD.instance_globals_o_opt_initial,
-    $instance_globals_o_opt_need_glyph_reset = FLD.instance_globals_o_opt_need_glyph_reset,
-    $instance_globals_o_opt_need_promptstyle = FLD.instance_globals_o_opt_need_promptstyle,
-    $instance_globals_o_opt_need_redraw = FLD.instance_globals_o_opt_need_redraw,
-    $instance_globals_o_opt_phase = FLD.instance_globals_o_opt_phase,
-    $instance_globals_o_opt_reset_customcolors = FLD.instance_globals_o_opt_reset_customcolors,
-    $instance_globals_o_opt_reset_customsymbols = FLD.instance_globals_o_opt_reset_customsymbols,
-    $instance_globals_o_opt_symset_changed = FLD.instance_globals_o_opt_symset_changed,
-    $instance_globals_o_opt_update_basic_palette = FLD.instance_globals_o_opt_update_basic_palette,
-    $instance_globals_o_ov_primary_syms = FLD.instance_globals_o_ov_primary_syms,
-    $instance_globals_o_ov_rogue_syms = FLD.instance_globals_o_ov_rogue_syms,
-    $instance_globals_p_pl_race = FLD.instance_globals_p_pl_race,
-    $instance_globals_p_plinemsg_types = FLD.instance_globals_p_plinemsg_types,
-    $instance_globals_p_plnamelen = FLD.instance_globals_p_plnamelen,
-    $instance_globals_p_preferred_pet = FLD.instance_globals_p_preferred_pet,
-    $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
-    $instance_globals_s_simple_options_help = FLD.instance_globals_s_simple_options_help,
-    $instance_globals_s_symset = FLD.instance_globals_s_symset,
-    $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_p_pl_character = FLD.instance_globals_saved_p_pl_character,
-    $instance_globals_saved_p_pl_fruit = FLD.instance_globals_saved_p_pl_fruit,
-    $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
-    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
-    $instance_globals_w_warnsyms = FLD.instance_globals_w_warnsyms,
-    $instance_globals_w_wizkit = FLD.instance_globals_w_wizkit, $menu_cmd_t_cmd = FLD.menu_cmd_t_cmd,
-    $menu_cmd_t_desc = FLD.menu_cmd_t_desc, $menucoloring_attr = FLD.menucoloring_attr,
-    $menucoloring_color = FLD.menucoloring_color, $menucoloring_next = FLD.menucoloring_next,
-    $menucoloring_origstr = FLD.menucoloring_origstr, $menuscrollinfo_maskindx = FLD.menuscrollinfo_maskindx,
-    $nhcoord_y = FLD.nhcoord_y, $nomakedefs_s_git_branch = FLD.nomakedefs_s_git_branch,
-    $objclass_oc_class = FLD.objclass_oc_class, $objsymopt_descr = FLD.objsymopt_descr,
-    $objsymopt_nam = FLD.objsymopt_nam, $paranoia_opts_argMinLen = FLD.paranoia_opts_argMinLen,
-    $paranoia_opts_argname = FLD.paranoia_opts_argname, $paranoia_opts_explain = FLD.paranoia_opts_explain,
-    $paranoia_opts_synMinLen = FLD.paranoia_opts_synMinLen,
-    $paranoia_opts_synonym = FLD.paranoia_opts_synonym, $plinemsg_type_next = FLD.plinemsg_type_next,
-    $plinemsg_type_pattern = FLD.plinemsg_type_pattern, $plinemsg_type_regex = FLD.plinemsg_type_regex,
-    $sinfo_in_parseoptions = FLD.sinfo_in_parseoptions, $sizeof_Align = FLD.sizeof_Align,
-    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_Race = FLD.sizeof_Race, $sizeof_Role = FLD.sizeof_Role,
-    $sizeof_action = FLD.sizeof_action, $sizeof_allopt_t = FLD.sizeof_allopt_t,
-    $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_condtests_t = FLD.sizeof_condtests_t,
-    $sizeof_menu_cmd_t = FLD.sizeof_menu_cmd_t, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_menuscrollinfo = FLD.sizeof_menuscrollinfo, $sizeof_objclass = FLD.sizeof_objclass,
-    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_objsymopt = FLD.sizeof_objsymopt,
-    $sizeof_paranoia_opts = FLD.sizeof_paranoia_opts, $sizeof_symdef = FLD.sizeof_symdef,
-    $sizeof_symsetentry = FLD.sizeof_symsetentry, $sizeof_wc_Opt = FLD.sizeof_wc_Opt,
-    $sizeof_windowcolors_struct = FLD.sizeof_windowcolors_struct,
-    $symsetentry_explicitly = FLD.symsetentry_explicitly, $symsetentry_handling = FLD.symsetentry_handling,
-    $symsetentry_name = FLD.symsetentry_name, $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE,
-    $u_roleplay_deaf = FLD.u_roleplay_deaf, $u_roleplay_nudist = FLD.u_roleplay_nudist,
-    $u_roleplay_pauper = FLD.u_roleplay_pauper, $u_roleplay_reroll = FLD.u_roleplay_reroll,
-    $wc_Opt_wc_bit = FLD.wc_Opt_wc_bit,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_file = FLD.window_procs_win_display_file,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_number_pad = FLD.window_procs_win_number_pad,
-    $window_procs_win_preference_update = FLD.window_procs_win_preference_update,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
-    $window_procs_wincap = FLD.window_procs_wincap, $window_procs_wincap2 = FLD.window_procs_wincap2,
-    $window_procs_wp_id = FLD.window_procs_wp_id, $windowcolors_struct_bg = FLD.windowcolors_struct_bg,
-    $xtra_cntrls_desc = FLD.xtra_cntrls_desc, $you_uroleplay = FLD.you_uroleplay, $you_uz = FLD.you_uz;
+const $Align_adj = FLD.Align_adj,
+      $accessibility_data_glyph_updates = FLD.accessibility_data_glyph_updates,
+      $accessibility_data_mon_movement = FLD.accessibility_data_mon_movement,
+      $accessibility_data_mon_notices = FLD.accessibility_data_mon_notices,
+      $accessibility_data_msg_loc = FLD.accessibility_data_msg_loc, $action_desc = FLD.action_desc,
+      $allopt_t_addr = FLD.allopt_t_addr, $allopt_t_alias = FLD.allopt_t_alias,
+      $allopt_t_descr = FLD.allopt_t_descr, $allopt_t_disregarded = FLD.allopt_t_disregarded,
+      $allopt_t_dupdetected = FLD.allopt_t_dupdetected, $allopt_t_dupeok = FLD.allopt_t_dupeok,
+      $allopt_t_expectedbuf = FLD.allopt_t_expectedbuf,
+      $allopt_t_has_handler = FLD.allopt_t_has_handler, $allopt_t_idx = FLD.allopt_t_idx,
+      $allopt_t_initval = FLD.allopt_t_initval, $allopt_t_minmatch = FLD.allopt_t_minmatch,
+      $allopt_t_negateok = FLD.allopt_t_negateok, $allopt_t_opt_in_out = FLD.allopt_t_opt_in_out,
+      $allopt_t_optfn = FLD.allopt_t_optfn, $allopt_t_opttyp = FLD.allopt_t_opttyp,
+      $allopt_t_pfx = FLD.allopt_t_pfx, $allopt_t_prefixgw = FLD.allopt_t_prefixgw,
+      $allopt_t_section = FLD.allopt_t_section, $allopt_t_setwhere = FLD.allopt_t_setwhere,
+      $allopt_t_termpref = FLD.allopt_t_termpref, $allopt_t_valok = FLD.allopt_t_valok,
+      $autopickup_exception_grab = FLD.autopickup_exception_grab,
+      $autopickup_exception_next = FLD.autopickup_exception_next,
+      $autopickup_exception_pattern = FLD.autopickup_exception_pattern,
+      $cmd_num_pad = FLD.cmd_num_pad, $cmd_pcHack_compat = FLD.cmd_pcHack_compat,
+      $cmd_phone_layout = FLD.cmd_phone_layout, $cmd_swap_yz = FLD.cmd_swap_yz,
+      $color_and_attr_attr = FLD.color_and_attr_attr,
+      $condtests_t_enabled = FLD.condtests_t_enabled,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $context_info_current_fruit = FLD.context_info_current_fruit,
+      $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
+      $display_hints_botlx = FLD.display_hints_botlx, $flag_armorstatus = FLD.flag_armorstatus,
+      $flag_autodig = FLD.flag_autodig, $flag_autoopen = FLD.flag_autoopen,
+      $flag_autoquiver = FLD.flag_autoquiver, $flag_autounlock = FLD.flag_autounlock,
+      $flag_biff = FLD.flag_biff, $flag_bones = FLD.flag_bones, $flag_confirm = FLD.flag_confirm,
+      $flag_dark_room = FLD.flag_dark_room, $flag_debug = FLD.flag_debug,
+      $flag_discosort = FLD.flag_discosort, $flag_end_around = FLD.flag_end_around,
+      $flag_end_disclose = FLD.flag_end_disclose, $flag_end_own = FLD.flag_end_own,
+      $flag_end_top = FLD.flag_end_top, $flag_explore = FLD.flag_explore,
+      $flag_female = FLD.flag_female, $flag_goldX = FLD.flag_goldX, $flag_help = FLD.flag_help,
+      $flag_ignintr = FLD.flag_ignintr, $flag_implicit_uncursed = FLD.flag_implicit_uncursed,
+      $flag_initalign = FLD.flag_initalign, $flag_initgend = FLD.flag_initgend,
+      $flag_initrace = FLD.flag_initrace, $flag_initrole = FLD.flag_initrole,
+      $flag_ins_chkpt = FLD.flag_ins_chkpt, $flag_inv_order = FLD.flag_inv_order,
+      $flag_invlet_constant = FLD.flag_invlet_constant, $flag_legacy = FLD.flag_legacy,
+      $flag_lit_corridor = FLD.flag_lit_corridor, $flag_lootabc = FLD.flag_lootabc,
+      $flag_made_fruit = FLD.flag_made_fruit, $flag_mention_decor = FLD.flag_mention_decor,
+      $flag_mention_walls = FLD.flag_mention_walls, $flag_menu_style = FLD.flag_menu_style,
+      $flag_nopick_dropped = FLD.flag_nopick_dropped, $flag_null = FLD.flag_null,
+      $flag_paranoia_bits = FLD.flag_paranoia_bits, $flag_pickup = FLD.flag_pickup,
+      $flag_pickup_burden = FLD.flag_pickup_burden, $flag_pickup_stolen = FLD.flag_pickup_stolen,
+      $flag_pickup_thrown = FLD.flag_pickup_thrown, $flag_pickup_types = FLD.flag_pickup_types,
+      $flag_pile_limit = FLD.flag_pile_limit, $flag_pushweapon = FLD.flag_pushweapon,
+      $flag_quick_farsight = FLD.flag_quick_farsight, $flag_rest_on_space = FLD.flag_rest_on_space,
+      $flag_runmode = FLD.flag_runmode, $flag_safe_dog = FLD.flag_safe_dog,
+      $flag_safe_wait = FLD.flag_safe_wait, $flag_showexp = FLD.flag_showexp,
+      $flag_showrace = FLD.flag_showrace, $flag_showvers = FLD.flag_showvers,
+      $flag_silent = FLD.flag_silent, $flag_sortloot = FLD.flag_sortloot,
+      $flag_sortpack = FLD.flag_sortpack, $flag_sparkle = FLD.flag_sparkle,
+      $flag_standout = FLD.flag_standout, $flag_suppress_alert = FLD.flag_suppress_alert,
+      $flag_terrainstatus = FLD.flag_terrainstatus, $flag_time = FLD.flag_time,
+      $flag_tips = FLD.flag_tips, $flag_tombstone = FLD.flag_tombstone,
+      $flag_travelcmd = FLD.flag_travelcmd, $flag_tutorial = FLD.flag_tutorial,
+      $flag_vanq_sortmode = FLD.flag_vanq_sortmode, $flag_verbose = FLD.flag_verbose,
+      $flag_versinfo = FLD.flag_versinfo, $flag_weaponstatus = FLD.flag_weaponstatus,
+      $fruit_fid = FLD.fruit_fid, $fruit_nextf = FLD.fruit_nextf,
+      $instance_flags_altmeta = FLD.instance_flags_altmeta,
+      $instance_flags_autodescribe = FLD.instance_flags_autodescribe,
+      $instance_flags_bgcolors = FLD.instance_flags_bgcolors,
+      $instance_flags_cmdassist = FLD.instance_flags_cmdassist,
+      $instance_flags_customcolors = FLD.instance_flags_customcolors,
+      $instance_flags_customsymbols = FLD.instance_flags_customsymbols,
+      $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+      $instance_flags_debug_hunger = FLD.instance_flags_debug_hunger,
+      $instance_flags_debug_mongen = FLD.instance_flags_debug_mongen,
+      $instance_flags_debug_overwrite_stairs = FLD.instance_flags_debug_overwrite_stairs,
+      $instance_flags_deferred_X = FLD.instance_flags_deferred_X,
+      $instance_flags_extmenu = FLD.instance_flags_extmenu,
+      $instance_flags_fireassist = FLD.instance_flags_fireassist,
+      $instance_flags_force_invmenu = FLD.instance_flags_force_invmenu,
+      $instance_flags_getloc_filter = FLD.instance_flags_getloc_filter,
+      $instance_flags_getloc_moveskip = FLD.instance_flags_getloc_moveskip,
+      $instance_flags_getloc_usemenu = FLD.instance_flags_getloc_usemenu,
+      $instance_flags_getpos_coords = FLD.instance_flags_getpos_coords,
+      $instance_flags_herecmd_menu = FLD.instance_flags_herecmd_menu,
+      $instance_flags_hilite_delta = FLD.instance_flags_hilite_delta,
+      $instance_flags_hilite_pile = FLD.instance_flags_hilite_pile,
+      $instance_flags_idlecheckpoint = FLD.instance_flags_idlecheckpoint,
+      $instance_flags_initoptions_noterminate = FLD.instance_flags_initoptions_noterminate,
+      $instance_flags_menu_head_objsym = FLD.instance_flags_menu_head_objsym,
+      $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
+      $instance_flags_menu_overlay = FLD.instance_flags_menu_overlay,
+      $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
+      $instance_flags_menu_tab_sep = FLD.instance_flags_menu_tab_sep,
+      $instance_flags_menuinvertmode = FLD.instance_flags_menuinvertmode,
+      $instance_flags_menuobjsyms = FLD.instance_flags_menuobjsyms,
+      $instance_flags_mon_polycontrol = FLD.instance_flags_mon_polycontrol,
+      $instance_flags_mon_telecontrol = FLD.instance_flags_mon_telecontrol,
+      $instance_flags_msg_history = FLD.instance_flags_msg_history,
+      $instance_flags_news = FLD.instance_flags_news,
+      $instance_flags_num_pad = FLD.instance_flags_num_pad,
+      $instance_flags_num_pad_mode = FLD.instance_flags_num_pad_mode,
+      $instance_flags_perm_invent = FLD.instance_flags_perm_invent,
+      $instance_flags_perminv_mode = FLD.instance_flags_perminv_mode,
+      $instance_flags_prev_decor = FLD.instance_flags_prev_decor,
+      $instance_flags_prevmsg_window = FLD.instance_flags_prevmsg_window,
+      $instance_flags_pricequotes = FLD.instance_flags_pricequotes,
+      $instance_flags_query_menu = FLD.instance_flags_query_menu,
+      $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
+      $instance_flags_showdamage = FLD.instance_flags_showdamage,
+      $instance_flags_sounds = FLD.instance_flags_sounds,
+      $instance_flags_status_updates = FLD.instance_flags_status_updates,
+      $instance_flags_toptenwin = FLD.instance_flags_toptenwin,
+      $instance_flags_trav_debug = FLD.instance_flags_trav_debug,
+      $instance_flags_use_menu_color = FLD.instance_flags_use_menu_color,
+      $instance_flags_use_menu_glyphs = FLD.instance_flags_use_menu_glyphs,
+      $instance_flags_use_truecolor = FLD.instance_flags_use_truecolor,
+      $instance_flags_voices = FLD.instance_flags_voices,
+      $instance_flags_wc2_darkgray = FLD.instance_flags_wc2_darkgray,
+      $instance_flags_wc2_fullscreen = FLD.instance_flags_wc2_fullscreen,
+      $instance_flags_wc2_guicolor = FLD.instance_flags_wc2_guicolor,
+      $instance_flags_wc2_hitpointbar = FLD.instance_flags_wc2_hitpointbar,
+      $instance_flags_wc2_petattr = FLD.instance_flags_wc2_petattr,
+      $instance_flags_wc2_selectsaved = FLD.instance_flags_wc2_selectsaved,
+      $instance_flags_wc2_softkeyboard = FLD.instance_flags_wc2_softkeyboard,
+      $instance_flags_wc2_statuslines = FLD.instance_flags_wc2_statuslines,
+      $instance_flags_wc2_term_cols = FLD.instance_flags_wc2_term_cols,
+      $instance_flags_wc2_term_rows = FLD.instance_flags_wc2_term_rows,
+      $instance_flags_wc2_windowborders = FLD.instance_flags_wc2_windowborders,
+      $instance_flags_wc2_wraptext = FLD.instance_flags_wc2_wraptext,
+      $instance_flags_wc_align_message = FLD.instance_flags_wc_align_message,
+      $instance_flags_wc_align_status = FLD.instance_flags_wc_align_status,
+      $instance_flags_wc_ascii_map = FLD.instance_flags_wc_ascii_map,
+      $instance_flags_wc_color = FLD.instance_flags_wc_color,
+      $instance_flags_wc_eight_bit_input = FLD.instance_flags_wc_eight_bit_input,
+      $instance_flags_wc_font_map = FLD.instance_flags_wc_font_map,
+      $instance_flags_wc_font_menu = FLD.instance_flags_wc_font_menu,
+      $instance_flags_wc_font_message = FLD.instance_flags_wc_font_message,
+      $instance_flags_wc_font_status = FLD.instance_flags_wc_font_status,
+      $instance_flags_wc_font_text = FLD.instance_flags_wc_font_text,
+      $instance_flags_wc_fontsiz_map = FLD.instance_flags_wc_fontsiz_map,
+      $instance_flags_wc_fontsiz_menu = FLD.instance_flags_wc_fontsiz_menu,
+      $instance_flags_wc_fontsiz_message = FLD.instance_flags_wc_fontsiz_message,
+      $instance_flags_wc_fontsiz_status = FLD.instance_flags_wc_fontsiz_status,
+      $instance_flags_wc_fontsiz_text = FLD.instance_flags_wc_fontsiz_text,
+      $instance_flags_wc_hilite_pet = FLD.instance_flags_wc_hilite_pet,
+      $instance_flags_wc_inverse = FLD.instance_flags_wc_inverse,
+      $instance_flags_wc_map_mode = FLD.instance_flags_wc_map_mode,
+      $instance_flags_wc_mouse_support = FLD.instance_flags_wc_mouse_support,
+      $instance_flags_wc_player_selection = FLD.instance_flags_wc_player_selection,
+      $instance_flags_wc_popup_dialog = FLD.instance_flags_wc_popup_dialog,
+      $instance_flags_wc_preload_tiles = FLD.instance_flags_wc_preload_tiles,
+      $instance_flags_wc_scroll_amount = FLD.instance_flags_wc_scroll_amount,
+      $instance_flags_wc_scroll_margin = FLD.instance_flags_wc_scroll_margin,
+      $instance_flags_wc_splash_screen = FLD.instance_flags_wc_splash_screen,
+      $instance_flags_wc_tile_file = FLD.instance_flags_wc_tile_file,
+      $instance_flags_wc_tile_height = FLD.instance_flags_wc_tile_height,
+      $instance_flags_wc_tile_width = FLD.instance_flags_wc_tile_width,
+      $instance_flags_wc_tiled_map = FLD.instance_flags_wc_tiled_map,
+      $instance_flags_wc_vary_msgcount = FLD.instance_flags_wc_vary_msgcount,
+      $instance_flags_wcolors = FLD.instance_flags_wcolors,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_flags_windowtype_deferred = FLD.instance_flags_windowtype_deferred,
+      $instance_flags_windowtype_locked = FLD.instance_flags_windowtype_locked,
+      $instance_flags_wizmgender = FLD.instance_flags_wizmgender,
+      $instance_flags_wizweight = FLD.instance_flags_wizweight,
+      $instance_globals_a_apelist = FLD.instance_globals_a_apelist,
+      $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
+      $instance_globals_c_catname = FLD.instance_globals_c_catname,
+      $instance_globals_c_chosen_soundlib = FLD.instance_globals_c_chosen_soundlib,
+      $instance_globals_c_chosen_windowtype = FLD.instance_globals_c_chosen_windowtype,
+      $instance_globals_c_cmdline_windowsys = FLD.instance_globals_c_cmdline_windowsys,
+      $instance_globals_c_crash_email = FLD.instance_globals_c_crash_email,
+      $instance_globals_c_crash_name = FLD.instance_globals_c_crash_name,
+      $instance_globals_c_crash_urlmax = FLD.instance_globals_c_crash_urlmax,
+      $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
+      $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
+      $instance_globals_d_dogname = FLD.instance_globals_d_dogname,
+      $instance_globals_f_ffruit = FLD.instance_globals_f_ffruit,
+      $instance_globals_h_horsename = FLD.instance_globals_h_horsename,
+      $instance_globals_m_mapped_menu_cmds = FLD.instance_globals_m_mapped_menu_cmds,
+      $instance_globals_m_mapped_menu_op = FLD.instance_globals_m_mapped_menu_op,
+      $instance_globals_m_menu_colorings = FLD.instance_globals_m_menu_colorings,
+      $instance_globals_n_n_menu_mapped = FLD.instance_globals_n_n_menu_mapped,
+      $instance_globals_o_opt_from_file = FLD.instance_globals_o_opt_from_file,
+      $instance_globals_o_opt_initial = FLD.instance_globals_o_opt_initial,
+      $instance_globals_o_opt_need_glyph_reset = FLD.instance_globals_o_opt_need_glyph_reset,
+      $instance_globals_o_opt_need_promptstyle = FLD.instance_globals_o_opt_need_promptstyle,
+      $instance_globals_o_opt_need_redraw = FLD.instance_globals_o_opt_need_redraw,
+      $instance_globals_o_opt_phase = FLD.instance_globals_o_opt_phase,
+      $instance_globals_o_opt_reset_customcolors = FLD.instance_globals_o_opt_reset_customcolors,
+      $instance_globals_o_opt_reset_customsymbols = FLD.instance_globals_o_opt_reset_customsymbols,
+      $instance_globals_o_opt_symset_changed = FLD.instance_globals_o_opt_symset_changed,
+      $instance_globals_o_opt_update_basic_palette = FLD.instance_globals_o_opt_update_basic_palette,
+      $instance_globals_o_ov_primary_syms = FLD.instance_globals_o_ov_primary_syms,
+      $instance_globals_o_ov_rogue_syms = FLD.instance_globals_o_ov_rogue_syms,
+      $instance_globals_p_pl_race = FLD.instance_globals_p_pl_race,
+      $instance_globals_p_plinemsg_types = FLD.instance_globals_p_plinemsg_types,
+      $instance_globals_p_plnamelen = FLD.instance_globals_p_plnamelen,
+      $instance_globals_p_preferred_pet = FLD.instance_globals_p_preferred_pet,
+      $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
+      $instance_globals_s_simple_options_help = FLD.instance_globals_s_simple_options_help,
+      $instance_globals_s_symset = FLD.instance_globals_s_symset,
+      $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_p_pl_character = FLD.instance_globals_saved_p_pl_character,
+      $instance_globals_saved_p_pl_fruit = FLD.instance_globals_saved_p_pl_fruit,
+      $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
+      $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+      $instance_globals_w_warnsyms = FLD.instance_globals_w_warnsyms,
+      $instance_globals_w_wizkit = FLD.instance_globals_w_wizkit,
+      $menu_cmd_t_cmd = FLD.menu_cmd_t_cmd, $menu_cmd_t_desc = FLD.menu_cmd_t_desc,
+      $menucoloring_attr = FLD.menucoloring_attr, $menucoloring_color = FLD.menucoloring_color,
+      $menucoloring_next = FLD.menucoloring_next, $menucoloring_origstr = FLD.menucoloring_origstr,
+      $menuscrollinfo_maskindx = FLD.menuscrollinfo_maskindx, $nhcoord_y = FLD.nhcoord_y,
+      $nomakedefs_s_git_branch = FLD.nomakedefs_s_git_branch,
+      $objclass_oc_class = FLD.objclass_oc_class, $objsymopt_descr = FLD.objsymopt_descr,
+      $objsymopt_nam = FLD.objsymopt_nam, $paranoia_opts_argMinLen = FLD.paranoia_opts_argMinLen,
+      $paranoia_opts_argname = FLD.paranoia_opts_argname,
+      $paranoia_opts_explain = FLD.paranoia_opts_explain,
+      $paranoia_opts_synMinLen = FLD.paranoia_opts_synMinLen,
+      $paranoia_opts_synonym = FLD.paranoia_opts_synonym,
+      $plinemsg_type_next = FLD.plinemsg_type_next,
+      $plinemsg_type_pattern = FLD.plinemsg_type_pattern,
+      $plinemsg_type_regex = FLD.plinemsg_type_regex,
+      $sinfo_in_parseoptions = FLD.sinfo_in_parseoptions, $sizeof_Align = FLD.sizeof_Align,
+      $sizeof_Gender = FLD.sizeof_Gender, $sizeof_Race = FLD.sizeof_Race,
+      $sizeof_Role = FLD.sizeof_Role, $sizeof_action = FLD.sizeof_action,
+      $sizeof_allopt_t = FLD.sizeof_allopt_t, $sizeof_class_sym = FLD.sizeof_class_sym,
+      $sizeof_condtests_t = FLD.sizeof_condtests_t, $sizeof_menu_cmd_t = FLD.sizeof_menu_cmd_t,
+      $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_menuscrollinfo = FLD.sizeof_menuscrollinfo,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
+      $sizeof_objsymopt = FLD.sizeof_objsymopt, $sizeof_paranoia_opts = FLD.sizeof_paranoia_opts,
+      $sizeof_symdef = FLD.sizeof_symdef, $sizeof_symsetentry = FLD.sizeof_symsetentry,
+      $sizeof_wc_Opt = FLD.sizeof_wc_Opt,
+      $sizeof_windowcolors_struct = FLD.sizeof_windowcolors_struct,
+      $symsetentry_explicitly = FLD.symsetentry_explicitly,
+      $symsetentry_handling = FLD.symsetentry_handling, $symsetentry_name = FLD.symsetentry_name,
+      $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $u_roleplay_nudist = FLD.u_roleplay_nudist, $u_roleplay_pauper = FLD.u_roleplay_pauper,
+      $u_roleplay_reroll = FLD.u_roleplay_reroll, $wc_Opt_wc_bit = FLD.wc_Opt_wc_bit,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_file = FLD.window_procs_win_display_file,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_number_pad = FLD.window_procs_win_number_pad,
+      $window_procs_win_preference_update = FLD.window_procs_win_preference_update,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
+      $window_procs_wincap = FLD.window_procs_wincap,
+      $window_procs_wincap2 = FLD.window_procs_wincap2,
+      $window_procs_wp_id = FLD.window_procs_wp_id,
+      $windowcolors_struct_bg = FLD.windowcolors_struct_bg,
+      $xtra_cntrls_desc = FLD.xtra_cntrls_desc, $you_uroleplay = FLD.you_uroleplay,
+      $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_windowtype = cptr.lit("windowtype");
@@ -2277,7 +2336,11 @@ cptr.stI32o(allopt_init, 4576 + $allopt_t_dupeok, NHC.No);
 cptr.stI32o(allopt_init, 4576 + $allopt_t_pfx, NHC.No);
 cptr.stI32o(allopt_init, 4576 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 4576 + $allopt_t_opt_in_out, NHC.opt_in);
-cptr.stPtro(allopt_init, 4576 + $allopt_t_addr, cptr.add(iflags, $instance_flags_debug_overwrite_stairs));
+cptr.stPtro(
+    allopt_init,
+    4576 + $allopt_t_addr,
+    cptr.add(iflags, $instance_flags_debug_overwrite_stairs)
+);
 cptr.stPtro(allopt_init, 4576 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 4576 + $allopt_t_alias, (null));
 cptr.stPtro(allopt_init, 4576 + $allopt_t_descr, __s_level_generation_can_overwrite_stairs);
@@ -2355,7 +2418,11 @@ cptr.st1o(allopt_init, 4888 + $allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4992, __s_dungeon);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_minmatch, 0);
-cptr.stI32o(allopt_init, 4992 + $allopt_t_expectedbuf, ((((((NHC.S_water - NHC.S_stone) | 0) + 1) | 0) + 1) | 0));
+cptr.stI32o(
+    allopt_init,
+    4992 + $allopt_t_expectedbuf,
+    ((((((NHC.S_water - NHC.S_stone) | 0) + 1) | 0) + 1) | 0)
+);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_idx, NHC.opt_dungeon);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_setwhere, NHC.set_in_config);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_opttyp, NHC.CompOpt);
@@ -2377,7 +2444,11 @@ cptr.st1o(allopt_init, 4992 + $allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5096, __s_effects);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_minmatch, 0);
-cptr.stI32o(allopt_init, 5096 + $allopt_t_expectedbuf, ((((((NHC.S_expl_br - NHC.S_vbeam) | 0) + 1) | 0) + 1) | 0));
+cptr.stI32o(
+    allopt_init,
+    5096 + $allopt_t_expectedbuf,
+    ((((((NHC.S_expl_br - NHC.S_vbeam) | 0) + 1) | 0) + 1) | 0)
+);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_idx, NHC.opt_effects);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_setwhere, NHC.set_in_config);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_opttyp, NHC.CompOpt);
@@ -2409,7 +2480,11 @@ cptr.stI32o(allopt_init, 5200 + $allopt_t_dupeok, NHC.No);
 cptr.stI32o(allopt_init, 5200 + $allopt_t_pfx, NHC.No);
 cptr.stI32o(allopt_init, 5200 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 5200 + $allopt_t_opt_in_out, NHC.opt_in);
-cptr.stPtro(allopt_init, 5200 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc_eight_bit_input));
+cptr.stPtro(
+    allopt_init,
+    5200 + $allopt_t_addr,
+    cptr.add(iflags, $instance_flags_wc_eight_bit_input)
+);
 cptr.stPtro(allopt_init, 5200 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 5200 + $allopt_t_alias, (null));
 cptr.stPtro(allopt_init, 5200 + $allopt_t_descr, __s_send_8_bit_characters_directly_to);
@@ -4345,7 +4420,11 @@ cptr.stI32o(allopt_init, 14352 + $allopt_t_dupeok, NHC.No);
 cptr.stI32o(allopt_init, 14352 + $allopt_t_pfx, NHC.No);
 cptr.stI32o(allopt_init, 14352 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 14352 + $allopt_t_opt_in_out, NHC.opt_out);
-cptr.stPtro(allopt_init, 14352 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc_preload_tiles));
+cptr.stPtro(
+    allopt_init,
+    14352 + $allopt_t_addr,
+    cptr.add(iflags, $instance_flags_wc_preload_tiles)
+);
 cptr.stPtro(allopt_init, 14352 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 14352 + $allopt_t_alias, (null));
 cptr.stPtro(allopt_init, 14352 + $allopt_t_descr, null);
@@ -4851,7 +4930,11 @@ cptr.stI32o(allopt_init, 16744 + $allopt_t_dupeok, NHC.No);
 cptr.stI32o(allopt_init, 16744 + $allopt_t_pfx, NHC.No);
 cptr.stI32o(allopt_init, 16744 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 16744 + $allopt_t_opt_in_out, NHC.opt_in);
-cptr.stPtro(allopt_init, 16744 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc2_softkeyboard));
+cptr.stPtro(
+    allopt_init,
+    16744 + $allopt_t_addr,
+    cptr.add(iflags, $instance_flags_wc2_softkeyboard)
+);
 cptr.stPtro(allopt_init, 16744 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 16744 + $allopt_t_alias, (null));
 cptr.stPtro(allopt_init, 16744 + $allopt_t_descr, null);
@@ -5049,7 +5132,11 @@ cptr.stI32o(allopt_init, 17680 + $allopt_t_dupeok, NHC.No);
 cptr.stI32o(allopt_init, 17680 + $allopt_t_pfx, NHC.No);
 cptr.stI32o(allopt_init, 17680 + $allopt_t_termpref, NHC.Term_False);
 cptr.st1o(allopt_init, 17680 + $allopt_t_opt_in_out, NHC.opt_out);
-cptr.stPtro(allopt_init, 17680 + $allopt_t_addr, cptr.add(iflags, $instance_flags_wc_splash_screen));
+cptr.stPtro(
+    allopt_init,
+    17680 + $allopt_t_addr,
+    cptr.add(iflags, $instance_flags_wc_splash_screen)
+);
 cptr.stPtro(allopt_init, 17680 + $allopt_t_optfn, optfn_boolean);
 cptr.stPtro(allopt_init, 17680 + $allopt_t_alias, (null));
 cptr.stPtro(allopt_init, 17680 + $allopt_t_descr, null);
@@ -6135,7 +6222,13 @@ export const MAX_ROLEOPT = 4;
 const opt_set_in_config = new Uint8Array(217);
 
 /** C ref: options.c:112 — char *[4][7] */
-const roleoptvals = (function () { const flat = new Uint8Array(4 * 7 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 7 * 8, (r + 1) * 7 * 8)); a.buf = flat; return a; })();
+const roleoptvals = (function () {
+    const flat = new Uint8Array(4 * 7 * 8);
+    const a = [];
+    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 7 * 8, (r + 1) * 7 * 8));
+    a.buf = flat;
+    return a;
+})();
 
 /** C ref: options.c:114 — char *[5] */
 const OptS_type = cptr.alloc(5 * 8);
@@ -6146,7 +6239,24 @@ cptr.stPtro(OptS_type, 24, __s_status);
 cptr.stPtro(OptS_type, 32, __s_advanced);
 
 /** C ref: options.c:118 — char[18] */
-const def_inv_order = [NHC.COIN_CLASS, NHC.AMULET_CLASS, NHC.WEAPON_CLASS, NHC.ARMOR_CLASS, NHC.FOOD_CLASS, NHC.SCROLL_CLASS, NHC.SPBOOK_CLASS, NHC.POTION_CLASS, NHC.RING_CLASS, NHC.WAND_CLASS, NHC.TOOL_CLASS, NHC.GEM_CLASS, NHC.ROCK_CLASS, NHC.BALL_CLASS, NHC.CHAIN_CLASS, 0];
+const def_inv_order = [
+    NHC.COIN_CLASS,
+    NHC.AMULET_CLASS,
+    NHC.WEAPON_CLASS,
+    NHC.ARMOR_CLASS,
+    NHC.FOOD_CLASS,
+    NHC.SCROLL_CLASS,
+    NHC.SPBOOK_CLASS,
+    NHC.POTION_CLASS,
+    NHC.RING_CLASS,
+    NHC.WAND_CLASS,
+    NHC.TOOL_CLASS,
+    NHC.GEM_CLASS,
+    NHC.ROCK_CLASS,
+    NHC.BALL_CLASS,
+    NHC.CHAIN_CLASS,
+    0
+];
 
 /** C ref: options.c:124 — char[7] */
 const none = cptr.bytes("(none)");
@@ -6164,7 +6274,10 @@ const defopt = cptr.bytes("default");
 const defbrief = cptr.bytes("def");
 
 /* paranoia[] - used by parseoptions() and handler_paranoid_confirmation() */
-/** C ref: options.c:129 — struct paranoia_opts { flagmask, argname, argMinLen, synonym, synMinLen, explain } (memory model v0.5) */
+/**
+ * C ref: options.c:129 — struct paranoia_opts { flagmask, argname, argMinLen, synonym, synMinLen,
+ *     explain } (memory model v0.5)
+ */
 
 /** C ref: options.c:136 — struct paranoia_opts[15] */
 const paranoia = cptr.alloc(15 * $sizeof_paranoia_opts);
@@ -6260,7 +6373,13 @@ cptr.stI32o(paranoia, 672 + $paranoia_opts_synMinLen, 0);
 cptr.stPtro(paranoia, 672 + $paranoia_opts_explain, null);
 
 /** C ref: options.c:184 — char *[4][3] */
-const menutype = (function () { const flat = new Uint8Array(4 * 3 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
+const menutype = (function () {
+    const flat = new Uint8Array(4 * 3 * 8);
+    const a = [];
+    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(menutype[0]), 0, __s_traditional);
 cptr.stPtro(cptr.decay(menutype[0]), 8, __s_prompt_for_object_class_es_then);
 cptr.stPtro(cptr.decay(menutype[0]), 16, __s_ask_y_n_for_each_item_in_those_classes);
@@ -6275,7 +6394,13 @@ cptr.stPtro(cptr.decay(menutype[3]), 8, __s_skip_class_filtering_always);
 cptr.stPtro(cptr.decay(menutype[3]), 16, __s_use_menu_of_all_available_items);
 
 /** C ref: options.c:195 — char *[4][3] */
-const msgwind = (function () { const flat = new Uint8Array(4 * 3 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
+const msgwind = (function () {
+    const flat = new Uint8Array(4 * 3 * 8);
+    const a = [];
+    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(msgwind[0]), 0, __s_single);
 cptr.stPtro(cptr.decay(msgwind[0]), 8, __s_show_one_old_message_at_a_time);
 cptr.stPtro(cptr.decay(msgwind[0]), 16, __s_most_recent_first);
@@ -6291,7 +6416,13 @@ cptr.stPtro(cptr.decay(msgwind[3]), 16, __s_most_recent_first);
 
 /* autounlock settings */
 /** C ref: options.c:207 — char *[4][2] */
-const unlocktypes = (function () { const flat = new Uint8Array(4 * 2 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8)); a.buf = flat; return a; })();
+const unlocktypes = (function () {
+    const flat = new Uint8Array(4 * 2 * 8);
+    const a = [];
+    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(unlocktypes[0]), 0, __s_untrap);
 cptr.stPtro(cptr.decay(unlocktypes[0]), 8, __s_might_fail);
 cptr.stPtro(cptr.decay(unlocktypes[1]), 0, __s_apply_key);
@@ -6326,7 +6457,13 @@ cptr.stPtro(sortltype, 16, __s_full);
 /* second column is an alias for the first; third is brief explanation;
    entries 5 and 6 are 1|4 and 2|4 (tty only) */
 /** C ref: options.c:225 — char *[9][3] */
-const perminv_modes = (function () { const flat = new Uint8Array(9 * 3 * 8); const a = []; for (let r = 0; r < 9; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
+const perminv_modes = (function () {
+    const flat = new Uint8Array(9 * 3 * 8);
+    const a = [];
+    for (let r = 0; r < 9; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(perminv_modes[0]), 0, __s_none);
 cptr.stPtro(cptr.decay(perminv_modes[0]), 8, __s_off);
 cptr.stPtro(cptr.decay(perminv_modes[0]), 16, __s_no_permanent_inventory_window);
@@ -6470,10 +6607,18 @@ cptr.st1o(default_menu_cmd_info, 240 + $menu_cmd_t_cmd, 58);
 cptr.stPtro(default_menu_cmd_info, 240 + $menu_cmd_t_desc, __s_search_and_invert_matching_items);
 cptr.stPtro(default_menu_cmd_info, 264, __s_menu_shift_right);
 cptr.st1o(default_menu_cmd_info, 264 + $menu_cmd_t_cmd, 125);
-cptr.stPtro(default_menu_cmd_info, 264 + $menu_cmd_t_desc, __s_pan_current_page_to_right_perm_invent);
+cptr.stPtro(
+    default_menu_cmd_info,
+    264 + $menu_cmd_t_desc,
+    __s_pan_current_page_to_right_perm_invent
+);
 cptr.stPtro(default_menu_cmd_info, 288, __s_menu_shift_left);
 cptr.st1o(default_menu_cmd_info, 288 + $menu_cmd_t_cmd, 123);
-cptr.stPtro(default_menu_cmd_info, 288 + $menu_cmd_t_desc, __s_pan_current_page_to_left_perm_invent);
+cptr.stPtro(
+    default_menu_cmd_info,
+    288 + $menu_cmd_t_desc,
+    __s_pan_current_page_to_left_perm_invent
+);
 cptr.stPtro(default_menu_cmd_info, 312, null);
 cptr.st1o(default_menu_cmd_info, 312 + $menu_cmd_t_cmd, 0);
 cptr.stPtro(default_menu_cmd_info, 312 + $menu_cmd_t_desc, null);
@@ -6500,15 +6645,42 @@ export function* ask_do_tutorial() {
 
         rc = nh_basename(get_configfile(), 1);
         norc = schar((!strcmp(get_configfile(), __s_dev_null)));
-        nh_snprintf(__s_ask_do_tutorial, 447, cptr.decay(buf), 256n, __s_put_options_tutorial_in_s_to_skip_this, (rc && cptr.ld1s(rc) && !norc) ? rc : __s_your_configuration_file);
+        nh_snprintf(
+            __s_ask_do_tutorial,
+            447,
+            cptr.decay(buf),
+            256n,
+            __s_put_options_tutorial_in_s_to_skip_this,
+            (rc && cptr.ld1s(rc) && !norc) ? rc : __s_your_configuration_file
+        );
         do {
             win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(start_menu()(win, 0n)));
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             cptr.st1(any, 121);
-            (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_yes_do_a_tutorial, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                win,
+                nul_glyphinfo.v,
+                any,
+                cptr.ld1s(any),
+                0,
+                NHM.ATR_NONE,
+                NHM.NO_COLOR,
+                __s_yes_do_a_tutorial,
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
             cptr.st1(any, 110);
-            (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, NHM.NO_COLOR, __s_no_just_start_play, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                win,
+                nul_glyphinfo.v,
+                any,
+                cptr.ld1s(any),
+                0,
+                NHM.ATR_NONE,
+                NHM.NO_COLOR,
+                __s_no_just_start_play,
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
 
             (yield* add_menu_str(win, __s_empty));
             (yield* add_menu_str(win, cptr.decay(buf)));
@@ -6537,7 +6709,13 @@ export function* ask_do_tutorial() {
  *
  **********************************
  */
-/** C ref: options.c:489 — @param {CPtr<char>} opts @param {CInt} tinitial @param {CInt} tfrom_file @returns {CInt} */
+/**
+ * C ref: options.c:489
+ * @param {CPtr<char>} opts
+ * @param {CInt} tinitial
+ * @param {CInt} tfrom_file
+ * @returns {CInt}
+ */
 export function* parseoptions(opts, tinitial, tfrom_file) {
     let op;
     let negated;
@@ -6567,7 +6745,11 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
         /* current element remains pending while the rest of the line gets
            handled recursively; if the rest of line contains any commas,
            then the process will recurse deeper as it is processed */
-        if (!(yield* parseoptions(op, cptr.ld1so(go, $instance_globals_o_opt_initial), cptr.ld1so(go, $instance_globals_o_opt_from_file))))
+        if (!(yield* parseoptions(
+            op,
+            cptr.ld1so(go, $instance_globals_o_opt_initial),
+            cptr.ld1so(go, $instance_globals_o_opt_from_file)
+        )))
             retval = 0;
     }
     if (cptr.strlen(opts) > 128n) {
@@ -6579,7 +6761,8 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     while (isspace(uchar(cptr.ld1s(opts))))
         opts = cptr.add(opts, 1);
     op = eos(opts);
-    while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))))
+    while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 &&
+            isspace(uchar(cptr.ld1s(op))))
         cptr.st1(op, 0);
 
     if (!cptr.ld1s(opts)) {
@@ -6615,10 +6798,20 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
          *
          */
         if (!got_match && cptr.ldPtro(allopt, i, $sizeof_allopt_t))
-            got_match = (yield* match_optname(opts, cptr.ldPtro(allopt, i, $sizeof_allopt_t), cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch), 1));
+            got_match = (yield* match_optname(
+                opts,
+                cptr.ldPtro(allopt, i, $sizeof_allopt_t),
+                cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch),
+                1
+            ));
         if (got_match) {
-            if (!cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_pfx) && optlen < cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch)) {
-                (yield* config_error_add(__s_ambiguous_option_s_d_characters_are, opts, cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch)));
+            if (!cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_pfx) &&
+                    optlen < cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch)) {
+                (yield* config_error_add(
+                    __s_ambiguous_option_s_d_characters_are,
+                    opts,
+                    cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch)
+                ));
                 break;
             }
             matchidx = i;
@@ -6636,7 +6829,15 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
         for (i = 0; i < NHC.OPTCOUNT; ++i) {
             if (!cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias))
                 continue;
-            got_match = (yield* match_optname(opts, cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias), Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias)))), 1));
+            got_match = (yield* match_optname(
+                opts,
+                cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias),
+                Number(BigInt.asIntN(
+                    32,
+                    cptr.strlen(cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_alias))
+                )),
+                1
+            ));
             if (got_match) {
                 matchidx = i;
                 using_alias = 1;
@@ -6646,9 +6847,16 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
     }
 
     /* allow optfn's to test whether they were called from parseoptions() */
-    (cptr.stI32o(program_state, $sinfo_in_parseoptions, cptr.ldI32o(program_state, $sinfo_in_parseoptions) + 1)) - (1);
+    (cptr.stI32o(
+        program_state,
+        $sinfo_in_parseoptions,
+        cptr.ldI32o(program_state, $sinfo_in_parseoptions) + 1
+    )) -
+            (1);
 
-    if (got_match && (matchidx >= 0 && matchidx < NHC.OPTCOUNT) && !cptr.ld1so2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_disregarded)) {
+    if (got_match &&
+            (matchidx >= 0 && matchidx < NHC.OPTCOUNT) &&
+            !cptr.ld1so2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_disregarded)) {
         duplicate = duplicate_opt_detection(matchidx);
         if (duplicate && !cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_dupeok))
             (yield* complain_about_duplicate(matchidx));
@@ -6665,14 +6873,25 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
          */
         if (cptr.ldPtro2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_optfn)) {
             op = (yield* string_for_opt(opts, 1));
-            optresult = (yield* Y.icall((cptr.ldPtro2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_idx), NHC.do_set, negated, opts, op)));
+            optresult = (yield* Y.icall((cptr.ldPtro2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_optfn))(
+                cptr.ldI32o2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_idx),
+                NHC.do_set,
+                negated,
+                opts,
+                op
+            )));
             if (optresult == NHC.optn_ok)
                 cptr.st1o(cptr.decay(opt_set_in_config), matchidx, 1, 1);
         }
     }
 
     if (cptr.ldI32o(program_state, $sinfo_in_parseoptions) > 0)
-        (cptr.stI32o(program_state, $sinfo_in_parseoptions, cptr.ldI32o(program_state, $sinfo_in_parseoptions) + -1)) - (-1);
+        (cptr.stI32o(
+            program_state,
+            $sinfo_in_parseoptions,
+            cptr.ldI32o(program_state, $sinfo_in_parseoptions) + -1
+        )) -
+                (-1);
 
     if (!got_match) {
         /* Is it a symbol? */
@@ -6683,7 +6902,9 @@ export function* parseoptions(opts, tinitial, tfrom_file) {
         }
     }
 
-    if (optresult == NHC.optn_silenterr || (got_match && cptr.ld1so2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_disregarded)) || (!got_match && config_unmatched_ignored()))
+    if (optresult == NHC.optn_silenterr ||
+            (got_match && cptr.ld1so2(allopt, matchidx, $sizeof_allopt_t, $allopt_t_disregarded)) ||
+            (!got_match && config_unmatched_ignored()))
         return 0;
     if (pfx_match && optresult == NHC.optn_err) {
         let pfxbuf = new Uint8Array(256);
@@ -6713,7 +6934,12 @@ function* check_misc_menu_command(opts, op) {
     /* check for menu command mapping */
     for (i = 0; cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t); i++) {
         name_to_check = cptr.ldPtro(default_menu_cmd_info, i, $sizeof_menu_cmd_t);
-        if ((yield* match_optname(opts, name_to_check, Number(BigInt.asIntN(32, cptr.strlen(name_to_check))), 1)))
+        if ((yield* match_optname(
+            opts,
+            name_to_check,
+            Number(BigInt.asIntN(32, cptr.strlen(name_to_check))),
+            1
+        )))
             return i;
     }
     return -1;
@@ -6760,7 +6986,10 @@ function* getoptstr(optidx, ophase) {
                 break;
             }
     }
-    if ((roleoptindx >= 0 && roleoptindx < NHC.MAX_ROLEOPT && ophase >= 0 && ophase < NHC.num_opt_phases))
+    if ((roleoptindx >= 0 &&
+            roleoptindx < NHC.MAX_ROLEOPT &&
+            ophase >= 0 &&
+            ophase < NHC.num_opt_phases))
         return cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8);
     (yield* panic(__s_bad_index_roleoptvals_d_d, roleoptindx, ophase));
     /*NOTREACHED*/
@@ -6791,7 +7020,8 @@ function unsaveoptstr(optidx, ophase) {
     let roleoptindx = opt2roleopt(optidx);
 
     if (cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8))
-        cptr.free(cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8)), cptr.stPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, null, 8);
+        cptr.free(cptr.ldPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, 8)),
+                cptr.stPtro(cptr.decay(roleoptvals[roleoptindx]), ophase, null, 8);
 }
 
 /* discard all saved option strings */
@@ -6806,10 +7036,24 @@ export function freeroleoptvals() {
 }
 
 /* common to optfn_catname(), optfn_dogname(), optfn_horsename() */
-/** C ref: options.c:848 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:848
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* petname_optfn(optidx, req, negated, opts, op) {
     let failsafe = new Uint8Array(64);
-    let petname = (optidx == NHC.opt_catname) ? cptr.add(gc, $instance_globals_c_catname) : ((optidx == NHC.opt_dogname) ? cptr.add(gd, $instance_globals_d_dogname) : ((optidx == NHC.opt_horsename) ? cptr.add(gh, $instance_globals_h_horsename) : cptr.decay(failsafe)));
+    let petname = (optidx == NHC.opt_catname)
+            ? cptr.add(gc, $instance_globals_c_catname)
+            : ((optidx == NHC.opt_dogname)
+                ? cptr.add(gd, $instance_globals_d_dogname)
+                : ((optidx == NHC.opt_horsename)
+                    ? cptr.add(gh, $instance_globals_h_horsename)
+                    : cptr.decay(failsafe)));
 
     if (req == NHC.do_init) {
         ;
@@ -6822,7 +7066,11 @@ function* petname_optfn(optidx, req, negated, opts, op) {
         sanitize_name(petname);
     } else if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(cptr.decay(failsafe), 0, 0, 1);
-        void cptr.sprintf(opts, __s_pct_s, cptr.ld1s(petname) ? petname : ((req == NHC.get_cnf_val) ? __s_none : cptr.decay(none)));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ld1s(petname) ? petname : ((req == NHC.get_cnf_val) ? __s_none : cptr.decay(none))
+        );
     }
     return NHC.optn_ok;
 }
@@ -6835,7 +7083,15 @@ function* petname_optfn(optidx, req, negated, opts, op) {
  **********************************
  */
 
-/** C ref: options.c:885 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:885
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_alignment(optidx, req, negated, opts, op) {
     op = cptr.box(op);
     if (req == NHC.do_init) {
@@ -6843,20 +7099,55 @@ function* optfn_alignment(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         /* alignment:string */
-        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
+        if (!(yield* parse_role_opt(
+            optidx,
+            negated,
+            cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+            opts,
+            op
+        )))
             return NHC.optn_silenterr;
 
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initalign, (yield* str2align(op.v)))) == -1) {
-                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
+                (yield* config_error_add(
+                    __s_unknown_s_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op.v
+                ));
                 return NHC.optn_err;
             }
-            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
+            (yield* saveoptstr(
+                optidx,
+                ((cptr.ldI32o(flags, $flag_initalign) >= 0)
+                    ? cptr.ldPtro2(
+                        aligns,
+                        cptr.ldI32o(flags, $flag_initalign),
+                        $sizeof_Align,
+                        $Align_adj
+                    )
+                    : ((cptr.ldI32o(flags, $flag_initalign) == -2)
+                        ? cptr.decay(randomrole)
+                        : cptr.decay(none)))
+            ));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initalign) >= 0) ? cptr.ldPtro2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_adj) : ((cptr.ldI32o(flags, $flag_initalign) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            ((cptr.ldI32o(flags, $flag_initalign) >= 0)
+                ? cptr.ldPtro2(
+                    aligns,
+                    cptr.ldI32o(flags, $flag_initalign),
+                    $sizeof_Align,
+                    $Align_adj
+                )
+                : ((cptr.ldI32o(flags, $flag_initalign) == -2)
+                    ? cptr.decay(randomrole)
+                    : cptr.decay(none)))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -6867,7 +7158,15 @@ function* optfn_alignment(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:923 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:923
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_align_message(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -6886,7 +7185,11 @@ function* optfn_align_message(optidx, req, negated, opts, op) {
             else if (!(yield* strncmpi(op, __s_bottom, 6)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_message, NHM.ALIGN_BOTTOM);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         } else if (negated) {
@@ -6899,7 +7202,17 @@ function* optfn_align_message(optidx, req, negated, opts, op) {
         let which;
 
         which = cptr.ldI32o(iflags, $instance_flags_wc_align_message);
-        void cptr.sprintf(opts, __s_pct_s, (which == NHM.ALIGN_TOP) ? __s_top : ((which == NHM.ALIGN_LEFT) ? __s_left : ((which == NHM.ALIGN_BOTTOM) ? __s_bottom : ((which == NHM.ALIGN_RIGHT) ? __s_right : cptr.decay(defopt)))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            (which == NHM.ALIGN_TOP)
+                ? __s_top
+                : ((which == NHM.ALIGN_LEFT)
+                    ? __s_left
+                    : ((which == NHM.ALIGN_BOTTOM)
+                        ? __s_bottom
+                        : ((which == NHM.ALIGN_RIGHT) ? __s_right : cptr.decay(defopt))))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -6908,7 +7221,15 @@ function* optfn_align_message(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:973 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:973
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_align_status(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -6926,7 +7247,11 @@ function* optfn_align_status(optidx, req, negated, opts, op) {
             else if (!(yield* strncmpi(op, __s_bottom, 6)))
                 cptr.stI32o(iflags, $instance_flags_wc_align_status, NHM.ALIGN_BOTTOM);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         } else if (negated) {
@@ -6939,7 +7264,17 @@ function* optfn_align_status(optidx, req, negated, opts, op) {
         let which;
 
         which = cptr.ldI32o(iflags, $instance_flags_wc_align_status);
-        void cptr.sprintf(opts, __s_pct_s, (which == NHM.ALIGN_TOP) ? __s_top : ((which == NHM.ALIGN_LEFT) ? __s_left : ((which == NHM.ALIGN_BOTTOM) ? __s_bottom : ((which == NHM.ALIGN_RIGHT) ? __s_right : cptr.decay(defopt)))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            (which == NHM.ALIGN_TOP)
+                ? __s_top
+                : ((which == NHM.ALIGN_LEFT)
+                    ? __s_left
+                    : ((which == NHM.ALIGN_BOTTOM)
+                        ? __s_bottom
+                        : ((which == NHM.ALIGN_RIGHT) ? __s_right : cptr.decay(defopt))))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -6948,7 +7283,15 @@ function* optfn_align_status(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1022 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1022
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function optfn_altkeyhandling(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -6967,7 +7310,15 @@ function optfn_altkeyhandling(optidx, req, negated, opts, op) {
 
 const __static_optfn_autounlock_plus = cptr.bytes(" + "); /** C ref: options.c:1149 — char[4] (function-static) */
 
-/** C ref: options.c:1066 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1066
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_autounlock(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         cptr.stI32o(flags, $flag_autounlock, NHM.AUTOUNLOCK_APPLY_KEY);
@@ -7000,7 +7351,13 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
             if (str_start_is(__s_none, op, 1))
                 negated = 1, matched = 1;
             for (i = 0; i < unlocktypes.length && !matched; ++i) {
-                if (str_start_is(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), op, 1) || (yield* fuzzymatch(op, cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), __s_sp_dash_us, 1))) {
+                if (str_start_is(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), op, 1) ||
+                        (yield* fuzzymatch(
+                            op,
+                            cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8),
+                            __s_sp_dash_us,
+                            1
+                        ))) {
                     matched = 1;
                     switch (cptr.ld1s(op)) {
                         case 117:
@@ -7022,13 +7379,20 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
                 }
             }
             if (!matched) {
-                (yield* config_error_add(__s_invalid_value_for_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_invalid_value_for_s_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_silenterr;
             }
             op = nxt;
         }
         if (negated && newflags != 0) {
-            (yield* config_error_add(__s_invalid_value_combination_for_s_none, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
+            (yield* config_error_add(
+                __s_invalid_value_combination_for_s_none,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+            ));
             return NHC.optn_silenterr;
         }
         cptr.stI32o(flags, $flag_autounlock, newflags);
@@ -7042,13 +7406,36 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
 
             cptr.st1(opts, 0);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_UNTRAP) >>> 0)
-                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[0]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
+                void cptr.sprintf(
+                    eos(opts),
+                    __s_s_s,
+                    p,
+                    cptr.ldPtro(cptr.decay(unlocktypes[0]), 0, 8)
+                ),
+                        p = cptr.decay(__static_optfn_autounlock_plus);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_APPLY_KEY) >>> 0)
-                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[1]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
+                void cptr.sprintf(
+                    eos(opts),
+                    __s_s_s,
+                    p,
+                    cptr.ldPtro(cptr.decay(unlocktypes[1]), 0, 8)
+                ),
+                        p = cptr.decay(__static_optfn_autounlock_plus);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_KICK) >>> 0)
-                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[2]), 0, 8)), p = cptr.decay(__static_optfn_autounlock_plus);
+                void cptr.sprintf(
+                    eos(opts),
+                    __s_s_s,
+                    p,
+                    cptr.ldPtro(cptr.decay(unlocktypes[2]), 0, 8)
+                ),
+                        p = cptr.decay(__static_optfn_autounlock_plus);
             if ((cptr.ldI32o(flags, $flag_autounlock) & NHM.AUTOUNLOCK_FORCE) >>> 0)
-                void cptr.sprintf(eos(opts), __s_s_s, p, cptr.ldPtro(cptr.decay(unlocktypes[3]), 0, 8));  /*no more p*/
+                void cptr.sprintf(
+                    eos(opts),
+                    __s_s_s,
+                    p,
+                    cptr.ldPtro(cptr.decay(unlocktypes[3]), 0, 8)
+                );  /*no more p*/
         }
         return NHC.optn_ok;
     }
@@ -7058,7 +7445,15 @@ function* optfn_autounlock(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1171 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1171
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_boulder(optidx, req, negated, opts, op) {
     let clash = 0;
 
@@ -7085,21 +7480,72 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
         } else if (clash) {
             /* symbol chosen matches a used monster or warning
                symbol which is not good - reject it */
-            (yield* config_error_add(__s_badoption_boulder_symbol_s_would, visctrl(cptr.ld1so(opts, 0)), (clash == 1) ? __s_monster : __s_warning));
+            (yield* config_error_add(
+                __s_badoption_boulder_symbol_s_would,
+                visctrl(cptr.ld1so(opts, 0)),
+                (clash == 1) ? __s_monster : __s_warning
+            ));
         } else {
             /*
              * Override the default boulder symbol.
              */
-            cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms, uchar(cptr.ld1so(opts, 0)));
-            cptr.st1o2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_rogue_syms, uchar(cptr.ld1so(opts, 0)));
+            cptr.st1o2(
+                go,
+                ((NHC.SYM_BOULDER +
+                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                1,
+                $instance_globals_o_ov_primary_syms,
+                uchar(cptr.ld1so(opts, 0))
+            );
+            cptr.st1o2(
+                go,
+                ((NHC.SYM_BOULDER +
+                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                1,
+                $instance_globals_o_ov_rogue_syms,
+                uchar(cptr.ld1so(opts, 0))
+            );
             /* for 'initial', update of BOULDER symbol is done in
                initoptions_finish(), after all symset options
                have been processed */
             if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
-                let sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
+                let sym = get_othersym(
+                    NHC.SYM_BOULDER,
+                    (((cptr.ldI16o(
+                        (cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                        )),
+                        $d_level_dlevel
+                    ) ||
+                        cptr.ldI16((cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                        )))) &&
+                        on_level(
+                            cptr.add(u, $you_uz),
+                            cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_rogue_level
+                            )
+                        )))
+                        ? NHC.ROGUESET
+                        : NHC.PRIMARYSET
+                );
 
                 if (sym)
-                    cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms, sym);
+                    cptr.st1o2(
+                        gs,
+                        ((NHC.SYM_BOULDER +
+                            (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                                NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                        1,
+                        $instance_globals_s_showsyms,
+                        sym
+                    );
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
             }
         }
@@ -7107,18 +7553,60 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(opts, 0, 0);
-        void cptr.sprintf(opts, __s_pct_c, cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) ? cptr.ld1uo2(go, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_o_ov_primary_syms) : cptr.ld1uo2(gs, (cptr.ld1so2(objects, NHC.BOULDER, $sizeof_objclass, $objclass_oc_class) + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms));
+        void cptr.sprintf(
+            opts,
+            __s_pct_c,
+            cptr.ld1uo2(
+                go,
+                ((NHC.SYM_BOULDER +
+                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                1,
+                $instance_globals_o_ov_primary_syms
+            )
+                ? cptr.ld1uo2(
+                    go,
+                    ((NHC.SYM_BOULDER +
+                        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                    1,
+                    $instance_globals_o_ov_primary_syms
+                )
+                : cptr.ld1uo2(
+                    gs,
+                    (cptr.ld1so2(objects, NHC.BOULDER, $sizeof_objclass, $objclass_oc_class) +
+                        (((0) + NHC.MAXPCHARS) | 0)) | 0,
+                    1,
+                    $instance_globals_s_showsyms
+                )
+        );
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1249 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1249
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_catname(optidx, req, negated, opts, op) {
     return (yield* petname_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1259 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1259
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_crash_email(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7141,7 +7629,15 @@ function* optfn_crash_email(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1285 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1285
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_crash_name(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7164,7 +7660,15 @@ function* optfn_crash_name(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1311 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1311
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_crash_urlmax(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7191,7 +7695,15 @@ function* optfn_crash_urlmax(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1394 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1394
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_DECgraphics(optidx, req, negated, opts, op) {
     let badflag = 0;
 
@@ -7201,10 +7713,21 @@ function* optfn_DECgraphics(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         if (!negated) {
             /* There is no rogue level DECgraphics-specific set */
-            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
+            if (cptr.ldPtro2(
+                gs,
+                NHC.PRIMARYSET,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name
+            )) {
                 badflag = 1;
             } else {
-                cptr.stPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t))));
+                cptr.stPtro2(
+                    gs,
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name,
+                    (yield* dupstr(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)))
+                );
                 if (!(yield* read_sym_file(NHC.PRIMARYSET))) {
                     badflag = 1;
                     clear_symsetentry(NHC.PRIMARYSET, 1);
@@ -7212,7 +7735,10 @@ function* optfn_DECgraphics(optidx, req, negated, opts, op) {
                     (yield* switch_symbols(1));
             }
             if (badflag) {
-                (yield* config_error_add(__s_failure_to_load_symbol_set_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
+                (yield* config_error_add(
+                    __s_failure_to_load_symbol_set_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+                ));
                 return NHC.optn_err;
             }
         }
@@ -7227,7 +7753,15 @@ function* optfn_DECgraphics(optidx, req, negated, opts, op) {
 
 const __static_optfn_disclose_valid_settings = [121, 110, 63, 43, 45, 35, 0]; /** C ref: options.c:1500 — char[7] (function-static) */
 
-/** C ref: options.c:1442 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1442
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_disclose(optidx, req, negated, opts, op) {
     let i;
     let idx;
@@ -7271,7 +7805,9 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
         }
         /* "disclose" without a value means "all with prompting"
            and negated means "none without prompting" */
-        if (cptr.eq(op, cptr.decay(empty_optstr)) || !(yield* strncmpi((op), (__s_all), -1)) || !(yield* strncmpi((op), (__s_none), -1))) {
+        if (cptr.eq(op, cptr.decay(empty_optstr)) ||
+                !(yield* strncmpi((op), (__s_all), -1)) ||
+                !(yield* strncmpi((op), (__s_none), -1))) {
             if (!cptr.eq(op, cptr.decay(empty_optstr)) && !(yield* strncmpi((op), (__s_none), -1)))
                 negated = 1;
             for (num = 0; num < NHM.NUM_DISCLOSURE_OPTIONS; num++)
@@ -7313,7 +7849,11 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
             } else if (c == 32) {
                 ;  /* do nothing */
             } else {
-                (yield* config_error_add(__s_unknown_s_parameter_c, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.ld1s(op)));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_c,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    cptr.ld1s(op)
+                ));
                 return NHC.optn_err;
             }
             op = cptr.add(op, 1);
@@ -7336,12 +7876,28 @@ function* optfn_disclose(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1563 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1563
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_dogname(optidx, req, negated, opts, op) {
     return (yield* petname_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1572 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1572
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function optfn_dungeon(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7360,7 +7916,15 @@ function optfn_dungeon(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1594 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1594
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function optfn_effects(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7379,67 +7943,155 @@ function optfn_effects(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1616 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1616
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_map(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1625 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1625
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_menu(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1634 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1634
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_message(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1643 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1643
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_size_map(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1652 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1652
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_size_menu(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1661 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1661
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_size_message(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1670 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1670
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_size_status(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1679 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1679
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_size_text(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1688 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1688
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_status(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1697 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1697
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_font_text(optidx, req, negated, opts, op) {
     /* send them over to the prefix handling for font_ */
     return (yield* pfxfn_font(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1706 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1706
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_fruit(optidx, req, negated, opts, op) {
     let forig = null;
 
@@ -7448,7 +8100,10 @@ function* optfn_fruit(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         __lbl_goodfruit: {
-            op = (yield* string_for_opt(opts, schar((negated || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))));
+            op = (yield* string_for_opt(
+                opts,
+                schar((negated || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))
+            ));
             if (negated) {
                 if (!cptr.eq(op, cptr.decay(empty_optstr))) {
                     (yield* bad_negation(__s_fruit, 1));
@@ -7470,7 +8125,11 @@ function* optfn_fruit(optidx, req, negated, opts, op) {
                 f = (yield* fruit_from_name(op, 0, fnum));
                 if (!f) {
                     if (!cptr.ld1so(flags, $flag_made_fruit))
-                        forig = (yield* fruit_from_name(cptr.add(svp, $instance_globals_saved_p_pl_fruit), 0, null));
+                        forig = (yield* fruit_from_name(
+                            cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                            0,
+                            null
+                        ));
 
                     if (!forig && fnum.v >= 100) {
                         (yield* config_error_add(__s_doing_that_so_many_times_isn_t_very));
@@ -7507,7 +8166,15 @@ function* optfn_fruit(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1777 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1777
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_gender(optidx, req, negated, opts, op) {
     op = cptr.box(op);
     if (req == NHC.do_init) {
@@ -7515,21 +8182,46 @@ function* optfn_gender(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         /* gender:string */
-        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
+        if (!(yield* parse_role_opt(
+            optidx,
+            negated,
+            cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+            opts,
+            op
+        )))
             return NHC.optn_silenterr;
 
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initgend, (yield* str2gend(op.v)))) == -1) {
-                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
+                (yield* config_error_add(
+                    __s_unknown_s_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op.v
+                ));
                 return NHC.optn_err;
             }
             cptr.st1o(flags, $flag_female, schar(cptr.ldI32o(flags, $flag_initgend)));
-            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender) : ((cptr.ldI32o(flags, $flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
+            (yield* saveoptstr(
+                optidx,
+                ((cptr.ldI32o(flags, $flag_initgend) >= 0)
+                    ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender)
+                    : ((cptr.ldI32o(flags, $flag_initgend) == -2)
+                        ? cptr.decay(randomrole)
+                        : cptr.decay(none)))
+            ));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initgend) >= 0) ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender) : ((cptr.ldI32o(flags, $flag_initgend) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            ((cptr.ldI32o(flags, $flag_initgend) >= 0)
+                ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender)
+                : ((cptr.ldI32o(flags, $flag_initgend) == -2)
+                    ? cptr.decay(randomrole)
+                    : cptr.decay(none)))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -7540,7 +8232,15 @@ function* optfn_gender(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1815 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1815
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_glyph(optidx, req, negated, opts, op) {
     let glyph = cptr.box(0);
 
@@ -7574,7 +8274,15 @@ function* optfn_glyph(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1852 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1852
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_hilite_status(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7595,18 +8303,37 @@ function* optfn_hilite_status(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         cptr.st1o(opts, 0, 0);
         if (req == NHC.get_val)
-            void cptr.strcpy(opts, (yield* count_status_hilites()) ? __s_see_status_highlight_rules_below : __s_none__2);
+            void cptr.strcpy(
+                opts,
+                (yield* count_status_hilites()) ? __s_see_status_highlight_rules_below : __s_none__2
+            );
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1897 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1897
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_horsename(optidx, req, negated, opts, op) {
     return (yield* petname_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:1906 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1906
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
     let sym_name = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let badflag = 0;
@@ -7619,12 +8346,23 @@ function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
 
         if (!negated) {
             for (i = 0; i < NHC.NUM_GRAPHICS; ++i) {
-                if (cptr.ldPtro2(gs, i, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
+                if (cptr.ldPtro2(
+                    gs,
+                    i,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                )) {
                     badflag = 1;
                 } else {
                     if (i == NHC.ROGUESET)
                         sym_name = __s_rogueibm;
-                    cptr.stPtro2(gs, i, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(sym_name)));
+                    cptr.stPtro2(
+                        gs,
+                        i,
+                        $sizeof_symsetentry,
+                        $instance_globals_s_symset + $symsetentry_name,
+                        (yield* dupstr(sym_name))
+                    );
                     if (!(yield* read_sym_file(i))) {
                         badflag = 1;
                         clear_symsetentry(i, 1);
@@ -7637,7 +8375,28 @@ function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
                 return NHC.optn_err;
             } else {
                 (yield* switch_symbols(1));
-                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
+                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                        (((cptr.ldI16o(
+                            (cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_rogue_level
+                            )),
+                            $d_level_dlevel
+                        ) ||
+                            cptr.ldI16((cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_rogue_level
+                            )))) &&
+                            on_level(
+                                cptr.add(u, $you_uz),
+                                cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_rogue_level
+                                )
+                            ))))
                     assign_graphics(NHC.ROGUESET);
             }
         }
@@ -7650,7 +8409,15 @@ function* optfn_IBMgraphics(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:1963 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:1963
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_map_mode(optidx, req, negated, opts, op) {
     let i;
 
@@ -7695,11 +8462,16 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
             else if (!(yield* strncmpi(op, __s_tiles_fit_to_screen, 19)))
                 cptr.stI32o(iflags, $instance_flags_wc_map_mode, NHM.MAP_MODE_TILES_FIT_TO_SCREEN);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
             if (wc_supported(__s_map_mode)) {
-                if (!cptr.ldI32o(iflags, $instance_flags_wc_map_mode) || save_map_mode != cptr.ldI32o(iflags, $instance_flags_wc_map_mode))
+                if (!cptr.ldI32o(iflags, $instance_flags_wc_map_mode) ||
+                        save_map_mode != cptr.ldI32o(iflags, $instance_flags_wc_map_mode))
                     (yield* Y.icall(preference_update()(__s_map_mode)));
             }
         } else if (negated) {
@@ -7710,7 +8482,33 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         i = cptr.ldI32o(iflags, $instance_flags_wc_map_mode);
-        void cptr.sprintf(opts, __s_pct_s, (i == NHM.MAP_MODE_TILES) ? __s_tiles : ((i == NHM.MAP_MODE_ASCII4x6) ? __s_ascii4x6 : ((i == NHM.MAP_MODE_ASCII6x8) ? __s_ascii6x8 : ((i == NHM.MAP_MODE_ASCII8x8) ? __s_ascii8x8 : ((i == NHM.MAP_MODE_ASCII16x8) ? __s_ascii16x8 : ((i == NHM.MAP_MODE_ASCII7x12) ? __s_ascii7x12 : ((i == NHM.MAP_MODE_ASCII8x12) ? __s_ascii8x12 : ((i == NHM.MAP_MODE_ASCII16x12) ? __s_ascii16x12 : ((i == NHM.MAP_MODE_ASCII12x16) ? __s_ascii12x16 : ((i == NHM.MAP_MODE_ASCII10x18) ? __s_ascii10x18 : ((i == NHM.MAP_MODE_ASCII_FIT_TO_SCREEN) ? __s_fit_to_screen : cptr.decay(defopt))))))))))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            (i == NHM.MAP_MODE_TILES)
+                ? __s_tiles
+                : ((i == NHM.MAP_MODE_ASCII4x6)
+                    ? __s_ascii4x6
+                    : ((i == NHM.MAP_MODE_ASCII6x8)
+                        ? __s_ascii6x8
+                        : ((i == NHM.MAP_MODE_ASCII8x8)
+                            ? __s_ascii8x8
+                            : ((i == NHM.MAP_MODE_ASCII16x8)
+                                ? __s_ascii16x8
+                                : ((i == NHM.MAP_MODE_ASCII7x12)
+                                    ? __s_ascii7x12
+                                    : ((i == NHM.MAP_MODE_ASCII8x12)
+                                        ? __s_ascii8x12
+                                        : ((i == NHM.MAP_MODE_ASCII16x12)
+                                            ? __s_ascii16x12
+                                            : ((i == NHM.MAP_MODE_ASCII12x16)
+                                                ? __s_ascii12x16
+                                                : ((i == NHM.MAP_MODE_ASCII10x18)
+                                                    ? __s_ascii10x18
+                                                    : ((i == NHM.MAP_MODE_ASCII_FIT_TO_SCREEN)
+                                                        ? __s_fit_to_screen
+                                                        : cptr.decay(defopt)))))))))))
+        );
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
@@ -7718,7 +8516,15 @@ function* optfn_map_mode(optidx, req, negated, opts, op) {
 
 /* all the key assignment options for menu_* commands are identical
    but optlist.h treats them as distinct rather than sharing one */
-/** C ref: options.c:2052 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2052
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* shared_menu_optfn(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7741,74 +8547,186 @@ function* shared_menu_optfn(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2077 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2077
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_deselect_all(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2085 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2085
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_deselect_page(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2093 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2093
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_first_page(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2101 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2101
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_invert_all(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2109 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2109
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_invert_page(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2117 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2117
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_last_page(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2125 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2125
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_next_page(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2133 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2133
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_previous_page(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2141 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2141
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_search(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2149 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2149
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_select_all(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2157 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2157
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_select_page(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2165 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2165
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_shift_left(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
-/** C ref: options.c:2173 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2173
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_shift_right(optidx, req, negated, opts, op) {
     return (yield* shared_menu_optfn(optidx, req, negated, opts, op));
 }
 
 /* end of shared key assignments for menu commands */
 
-/** C ref: options.c:2183 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2183
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_headings(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7819,7 +8737,11 @@ function* optfn_menu_headings(optidx, req, negated, opts, op) {
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
             /* OPTIONS=menu_headings w/o value => no-color&inverse;
                OPTIONS=!menu_headings => no-color&none */
-            cptr.stI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr, negated ? NHM.ATR_NONE : NHM.ATR_INVERSE);
+            cptr.stI32o(
+                iflags,
+                $instance_flags_menu_headings + $color_and_attr_attr,
+                negated ? NHM.ATR_NONE : NHM.ATR_INVERSE
+            );
             cptr.stI32o(iflags, $instance_flags_menu_headings, NHM.NO_COLOR);
             return NHC.optn_ok;
         } else if (negated) {
@@ -7834,7 +8756,10 @@ function* optfn_menu_headings(optidx, req, negated, opts, op) {
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         let ca_buf = new Uint8Array(256);
 
-        void cptr.strcpy(cptr.decay(ca_buf), color_attr_to_str(cptr.add(iflags, $instance_flags_menu_headings)));
+        void cptr.strcpy(
+            cptr.decay(ca_buf),
+            color_attr_to_str(cptr.add(iflags, $instance_flags_menu_headings))
+        );
         /* change "no color" to "no-color" or "light blue" to "light-blue" */
         void (yield* strNsubst(cptr.decay(ca_buf), __s_sp, __s_dash, 0));
         void cptr.strcpy(opts, cptr.decay(ca_buf));
@@ -7848,7 +8773,15 @@ function* optfn_menu_headings(optidx, req, negated, opts, op) {
 
 const __static_optfn_menu_objsyms_alt5 = cptr.bytes("one-or-the-other"); /** C ref: options.c:2260 — char[17] (function-static) */
 
-/** C ref: options.c:2225 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2225
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         /* set iflags.menu_objsyms to 4, "conditional"; also sets
@@ -7875,7 +8808,11 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
         } else if (digit(cptr.ld1s(op))) {
             i = atoi(op);
             if (i >= 6) {
-                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_illegal_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
             osyms = i;
@@ -7885,10 +8822,19 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
             osyms = 0;
             k = Number(BigInt.asUintN(32, cptr.strlen(op)));
             for (i = 0; i < 6; ++i) {
-                l = Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam))));
+                l = Number(BigInt.asUintN(
+                    32,
+                    cptr.strlen(cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam))
+                ));
                 if (k >= 4)
                     l = k;
-                if (!(yield* strncmpi(cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam), op, l | 0)) || (i == 5 && !(yield* strncmpi(cptr.decay(__static_optfn_menu_objsyms_alt5), op, l5 | 0)))) {
+                if (!(yield* strncmpi(
+                    cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam),
+                    op,
+                    l | 0
+                )) ||
+                        (i == 5 &&
+                            !(yield* strncmpi(cptr.decay(__static_optfn_menu_objsyms_alt5), op, l5 | 0)))) {
                     osyms = i;
                     break;
                 }
@@ -7898,7 +8844,16 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(objsymvals, cptr.ldI32o(iflags, $instance_flags_menuobjsyms), $sizeof_objsymopt, $objsymopt_nam));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro2(
+                objsymvals,
+                cptr.ldI32o(iflags, $instance_flags_menuobjsyms),
+                $sizeof_objsymopt,
+                $objsymopt_nam
+            )
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -7907,7 +8862,15 @@ function* optfn_menu_objsyms(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2290 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2290
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menuinvertmode(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7918,7 +8881,11 @@ function* optfn_menuinvertmode(optidx, req, negated, opts, op) {
             let mode = atoi(op);
 
             if (mode < 0 || mode > 2) {
-                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_illegal_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
             cptr.stI32o(iflags, $instance_flags_menuinvertmode, mode);
@@ -7932,7 +8899,15 @@ function* optfn_menuinvertmode(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2320 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2320
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_menustyle(optidx, req, negated, opts, op) {
     let tmp;
     let val_required;
@@ -7944,7 +8919,10 @@ function* optfn_menustyle(optidx, req, negated, opts, op) {
         /* menustyle:traditional or combination or full or partial */
 
         val_required = schar((cptr.strlen(opts) > 5n && !negated ? 1 : 0));
-        if (cptr.eq((op = (yield* string_for_opt(opts, schar((!val_required))))), cptr.decay(empty_optstr))) {
+        if (cptr.eq(
+            (op = (yield* string_for_opt(opts, schar((!val_required))))),
+            cptr.decay(empty_optstr)
+        )) {
             if (val_required)
                 return NHC.optn_err;  /* string_for_opt gave feedback */
             tmp = negated ? 110 : 102;
@@ -7966,13 +8944,21 @@ function* optfn_menustyle(optidx, req, negated, opts, op) {
             cptr.st1o(flags, $flag_menu_style, NHM.MENU_PARTIAL);
             break;
             default:
-            (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+            (yield* config_error_add(
+                __s_unknown_s_parameter_s,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                op
+            ));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8)
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -7981,7 +8967,15 @@ function* optfn_menustyle(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2378 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2378
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function optfn_monsters(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -7996,7 +8990,13 @@ function optfn_monsters(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-const __static_optfn_mouse_support_mousemodes = (function () { const flat = new Uint8Array(3 * 2 * 8); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8)); a.buf = flat; return a; })();
+const __static_optfn_mouse_support_mousemodes = (function () {
+    const flat = new Uint8Array(3 * 2 * 8);
+    const a = [];
+    for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[0]), 0, __s_0_off);
 cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[0]), 8, __s_empty);
 cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 0, __s_1_on);
@@ -8004,7 +9004,15 @@ cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[1]), 8, __s_o_s_a
 cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 0, __s_2_on);
 cptr.stPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[2]), 8, __s_o_s_unchanged); /** C ref: options.c:2435 — char *[3][2] (function-static) */
 
-/** C ref: options.c:2396 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2396
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_mouse_support(optidx, req, negated, opts, op) {
     let compat;
 
@@ -8013,7 +9021,10 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         compat = schar((cptr.strlen(opts) <= 13n));
-        op = (yield* string_for_opt(opts, schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))));
+        op = (yield* string_for_opt(
+            opts,
+            schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))
+        ));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
             if (compat || negated || cptr.ld1so(go, $instance_globals_o_opt_initial)) {
                 /* for backwards compatibility, "mouse_support" without a
@@ -8024,7 +9035,11 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
             let mode = atoi(op);
 
             if (mode < 0 || mode > 2 || (mode == 0 && cptr.ld1s(op) != 48)) {
-                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_illegal_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc_mouse_support, mode);
@@ -8036,7 +9051,12 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
         let ms = cptr.ldI32o(iflags, $instance_flags_wc_mouse_support);
 
         if (ms >= 0 && ms <= 2)
-            void cptr.sprintf(opts, __s_s_s, cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 0, 8), cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 1, 8));
+            void cptr.sprintf(
+                opts,
+                __s_s_s,
+                cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 0, 8),
+                cptr.ldPtro(cptr.decay(__static_optfn_mouse_support_mousemodes[ms]), 1, 8)
+            );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -8046,7 +9066,15 @@ function* optfn_mouse_support(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2456 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2456
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_msg_window(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let tmp;
@@ -8072,7 +9100,11 @@ function* optfn_msg_window(optidx, req, negated, opts, op) {
             cptr.st1o(iflags, $instance_flags_prevmsg_window, schar(tmp));
             break;
             default:
-            (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+            (yield* config_error_add(
+                __s_unknown_s_parameter_s,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                op
+            ));
             retval = NHC.optn_err;
         }
         return retval;
@@ -8084,7 +9116,13 @@ function* optfn_msg_window(optidx, req, negated, opts, op) {
             if (tmp == 115 || tmp == 99)
                 tmp = cptr.st1o(iflags, $instance_flags_prevmsg_window, 114);
         }
-        void cptr.sprintf(opts, __s_pct_s, (tmp == 115) ? __s_single : ((tmp == 99) ? __s_combination : ((tmp == 102) ? __s_full : __s_reversed)));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            (tmp == 115)
+                ? __s_single
+                : ((tmp == 99) ? __s_combination : ((tmp == 102) ? __s_full : __s_reversed))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8093,14 +9131,23 @@ function* optfn_msg_window(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2523 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2523
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_msghistory(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
         op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, negated));
-        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
+        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) ||
+                (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_msg_history, (negated ? 0 : atoi(op)) >>> 0);
         } else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
@@ -8115,7 +9162,15 @@ function* optfn_msghistory(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2549 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2549
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_name(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8123,7 +9178,10 @@ function* optfn_name(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         /* name:string */
 
-        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
+        if (!cptr.eq(
+            (op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))),
+            cptr.decay(empty_optstr)
+        )) {
             (yield* nmcpy(svp, op, NHM.PL_NSIZ));
         } else
             return NHC.optn_err;
@@ -8144,7 +9202,15 @@ cptr.stPtro(__static_optfn_number_pad_numpadmodes, 24, __s_3_on_phone_style_layo
 cptr.stPtro(__static_optfn_number_pad_numpadmodes, 32, __s_4_on_phone_layout_msdos_compatible);
 cptr.stPtro(__static_optfn_number_pad_numpadmodes, 40, __s_1_off_y_z_swapped); /** C ref: options.c:2623 — char *[6] (function-static) */
 
-/** C ref: options.c:2574 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2574
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_number_pad(optidx, req, negated, opts, op) {
     let compat;
 
@@ -8153,7 +9219,10 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         compat = schar((cptr.strlen(opts) <= 10n));
-        op = (yield* string_for_opt(opts, schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))));
+        op = (yield* string_for_opt(
+            opts,
+            schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))
+        ));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
             if (compat || negated || cptr.ld1so(go, $instance_globals_o_opt_initial)) {
                 /* for backwards compatibility, "number_pad" without a
@@ -8168,7 +9237,11 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
             let mode = atoi(op);
 
             if (mode < -1 || mode > 4 || (mode == 0 && cptr.ld1s(op) != 48)) {
-                (yield* config_error_add(__s_illegal_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_illegal_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             } else if (mode <= 0) {
                 cptr.st1o(iflags, $instance_flags_num_pad, 0);
@@ -8179,10 +9252,18 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
                 cptr.st1o(iflags, $instance_flags_num_pad_mode, 0);
                 /* PC Hack / MSDOS compatibility */
                 if (mode == 2 || mode == 4)
-                    cptr.st1o(iflags, $instance_flags_num_pad_mode, cptr.ld1uo(iflags, $instance_flags_num_pad_mode) | 1);
+                    cptr.st1o(
+                        iflags,
+                        $instance_flags_num_pad_mode,
+                        cptr.ld1uo(iflags, $instance_flags_num_pad_mode) | 1
+                    );
                 /* phone keypad layout */
                 if (mode == 3 || mode == 4)
-                    cptr.st1o(iflags, $instance_flags_num_pad_mode, cptr.ld1uo(iflags, $instance_flags_num_pad_mode) | 2);
+                    cptr.st1o(
+                        iflags,
+                        $instance_flags_num_pad_mode,
+                        cptr.ld1uo(iflags, $instance_flags_num_pad_mode) | 2
+                    );
             }
         }
         (yield* reset_commands(0));
@@ -8190,7 +9271,11 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        let indx = cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout) ? (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ? 4 : 3) : (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ? 2 : 1)) : (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz) ? 5 : 0);
+        let indx = cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)
+                ? (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout)
+                    ? (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ? 4 : 3)
+                    : (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ? 2 : 1))
+                : (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz) ? 5 : 0);
 
         if (req == NHC.get_val)
             void cptr.strcpy(opts, cptr.ldPtro(__static_optfn_number_pad_numpadmodes, indx, 8));
@@ -8205,7 +9290,15 @@ function* optfn_number_pad(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2648 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2648
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function optfn_objects(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8224,7 +9317,15 @@ function optfn_objects(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:2670 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2670
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_packorder(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8247,7 +9348,15 @@ function* optfn_packorder(optidx, req, negated, opts, op) {
 }
 
 /* for "paranoid_confirmation:foo" and alias "[!]prayconfirm" */
-/** C ref: options.c:2818 — @param {CInt} optidx @param {CInt} req @param {CInt} opt_negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:2818
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} opt_negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
     let fld_negated;
     let i;
@@ -8294,14 +9403,23 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                    this will erroneously reject "prayconfirm:true"; too
                    bad; back when prayconfirm was in active use, tacking on
                    an explicit value to a boolean option wasn't supported */
-                (yield* config_error_add(__s_deprecated_sprayconfirm_option_takes_no, opt_negated ? __s_bang : __s_empty, op));
+                (yield* config_error_add(
+                    __s_deprecated_sprayconfirm_option_takes_no,
+                    opt_negated ? __s_bang : __s_empty,
+                    op
+                ));
                 return NHC.optn_silenterr;
             }
             /* config file summary of complaints includes this in the count
                of errors; we'd prefer that it be described as a warning but
                that isn't supported [not important since this is considered
                temporary until 'prayconfirm' gets removed altogether] */
-            (yield* config_error_add(__s_sprayconfirm_option_is_deprecated, opt_negated ? __s_bang : __s_empty, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opt_negated ? 45 : 43));
+            (yield* config_error_add(
+                __s_sprayconfirm_option_is_deprecated,
+                opt_negated ? __s_bang : __s_empty,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                opt_negated ? 45 : 43
+            ));
             /* convert prayconfirm to paranoid_confirm:+pray and
                !prayconfirm to paranoid_confirm:-pray */
             void cptr.sprintf(cptr.decay(prayconfirm), __s_cpray, opt_negated ? 45 : 43);
@@ -8320,12 +9438,18 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                 cptr.stI32o(flags, $flag_paranoia_bits, 0);
                 return NHC.optn_ok;
             } else {
-                (yield* config_error_add(__s_s_does_not_accept_a_value, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
+                (yield* config_error_add(
+                    __s_s_does_not_accept_a_value,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+                ));
                 return NHC.optn_silenterr;
             }
         } else if (!cptr.ld1s(op)) {
             /* "paranoid_confirm" without any arguments is disallowed */
-            (yield* config_error_add(__s_s_requires_a_value_use_none_to_cancel, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
+            (yield* config_error_add(
+                __s_s_requires_a_value_use_none_to_cancel,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+            ));
             return NHC.optn_silenterr;
         }
 
@@ -8387,7 +9511,11 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                 /* accept "nofoo" to be same as "!foo", unless "no" is
                    followed by a space or 'foo' begins with "n" (to avoid
                    confusion for "none" */
-                if (lowc(cptr.ld1so(op, 0)) == 110 && lowc(cptr.ld1so(op, 1)) == 111 && lowc(schar((cptr.ld1so(op, 2) != 110 && lowc(cptr.ld1so(op, 2)) != 0 ? 1 : 0)))) {
+                if (lowc(cptr.ld1so(op, 0)) == 110 &&
+                        lowc(cptr.ld1so(op, 1)) == 111 &&
+                        lowc(schar((cptr.ld1so(op, 2) != 110 && lowc(cptr.ld1so(op, 2)) != 0
+                            ? 1
+                            : 0)))) {
                     fld_negated = 1;
                     op = cptr.add(op, 2);  /* skip "no"; we know next char isn't space  */
                 }
@@ -8403,16 +9531,48 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
                does what we want once we've broken the space
                delimited aggregate into separate tokens */
             for (i = 0; i < 15; ++i) {
-                if ((yield* match_optname(op, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname), cptr.ldI32o2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argMinLen), 0)) || (cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synonym) && (yield* match_optname(op, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synonym), cptr.ldI32o2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synMinLen), 0)))) {
+                if ((yield* match_optname(
+                    op,
+                    cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname),
+                    cptr.ldI32o2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argMinLen),
+                    0
+                )) ||
+                        (cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_synonym) &&
+                            (yield* match_optname(
+                                op,
+                                cptr.ldPtro2(
+                                    paranoia,
+                                    i,
+                                    $sizeof_paranoia_opts,
+                                    $paranoia_opts_synonym
+                                ),
+                                cptr.ldI32o2(
+                                    paranoia,
+                                    i,
+                                    $sizeof_paranoia_opts,
+                                    $paranoia_opts_synMinLen
+                                ),
+                                0
+                            )))) {
                     if (!cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) {
                         /* flagmask==0 is "none", clear all bits
                            but "+none" and "-none" are no-ops */
                         if (!plus_or_minus)
                             cptr.stI32o(flags, $flag_paranoia_bits, 0);  /* clear all */
                     } else if (opt_negated || fld_negated) {
-                        cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) & ((~cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) >>> 0));
+                        cptr.stI32o(
+                            flags,
+                            $flag_paranoia_bits,
+                            cptr.ldI32o(flags, $flag_paranoia_bits) &
+                                ((~cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts)) >>> 0)
+                        );
                     } else {
-                        cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) | (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0));
+                        cptr.stI32o(
+                            flags,
+                            $flag_paranoia_bits,
+                            cptr.ldI32o(flags, $flag_paranoia_bits) |
+                                (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0)
+                        );
                     }
                     break;
                 }
@@ -8420,7 +9580,11 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
             if (i == 15) {
                 /* didn't match anything, so arg is bad;
                    any flags already modified will stay modified */
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_silenterr;
             }
             /* move on to next token */
@@ -8436,12 +9600,28 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
 
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
         for (i = 0; cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != 0; ++i) {
-            if (((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0) != 0 && (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != NHM.PARANOID_BONES || wizard() || req == NHC.get_cnf_val))
-                nh_snprintf(__s_optfn_paranoid_confirmation, 3032, eos(cptr.decay(tmpbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))), __s_sp_pct_s, cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname));
+            if (((cptr.ldI32o(flags, $flag_paranoia_bits) &
+                cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0) != 0 &&
+                    (cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) != NHM.PARANOID_BONES ||
+                        wizard() ||
+                        req == NHC.get_cnf_val))
+                nh_snprintf(
+                    __s_optfn_paranoid_confirmation,
+                    3032,
+                    eos(cptr.decay(tmpbuf)),
+                    BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(tmpbuf))),
+                    __s_sp_pct_s,
+                    cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname)
+                );
         }
         /* note: always leaves enough room for caller to tack on '\n' */
         cptr.st1o(opts, 0, 0);
-        void __builtin___strncat_chk(opts, cptr.ld1so(cptr.decay(tmpbuf), 0, 1) ? cptr.add(cptr.decay(tmpbuf), 1, 1) : __s_none, 255n, __builtin_object_size(opts, 1));
+        void __builtin___strncat_chk(
+            opts,
+            cptr.ld1so(cptr.decay(tmpbuf), 0, 1) ? cptr.add(cptr.decay(tmpbuf), 1, 1) : __s_none,
+            255n,
+            __builtin_object_size(opts, 1)
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8450,7 +9630,15 @@ function* optfn_paranoid_confirmation(optidx, req, opt_negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3046 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3046
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_perminv_mode(optidx, req, negated, opts, op) {
     let old_perm_invent = cptr.ld1so(iflags, $instance_flags_perm_invent);
     let old_perminv_mode = cptr.ld1uo(iflags, $instance_flags_perminv_mode);
@@ -8473,10 +9661,18 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
                 if (!(pi0 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)))
                     continue;
                 pi1 = cptr.ldPtro(cptr.decay(perminv_modes[i]), 1, 8);
-                if (!(yield* strncmpi(op, pi0, ln | 0)) || !(yield* strncmpi(op, pi1, ln | 0)) || cptr.ld1so(op, 0) == ((i + 48) | 0)) {
-                    if ((yield* strstri(pi0, __s_grid)) && !(cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty)) {
+                if (!(yield* strncmpi(op, pi0, ln | 0)) ||
+                        !(yield* strncmpi(op, pi1, ln | 0)) ||
+                        cptr.ld1so(op, 0) == ((i + 48) | 0)) {
+                    if ((yield* strstri(pi0, __s_grid)) &&
+                            !(cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty)) {
                         i &= -5;
-                        (yield* config_error_add(__s_s_unavailable_perm_invent_mode_s_using_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), pi0, cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)));
+                        (yield* config_error_add(
+                            __s_s_unavailable_perm_invent_mode_s_using_s,
+                            cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                            pi0,
+                            cptr.ldPtro(cptr.decay(perminv_modes[i]), 0, 8)
+                        ));
                     }
                     cptr.st1o(iflags, $instance_flags_perminv_mode, uchar(i));
                     cptr.st1o(iflags, $instance_flags_perm_invent, 1);
@@ -8484,7 +9680,11 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
                 }
             }
             if (i == perminv_modes.length) {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 cptr.st1o(iflags, $instance_flags_perminv_mode, NHC.InvOptNone);
                 cptr.st1o(iflags, $instance_flags_perm_invent, 0);
                 retval = NHC.optn_silenterr;
@@ -8494,7 +9694,8 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
             cptr.st1o(iflags, $instance_flags_perm_invent, 0);
         }
         if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
-            if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) != old_perminv_mode || cptr.ld1so(iflags, $instance_flags_perm_invent) != old_perm_invent)
+            if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) != old_perminv_mode ||
+                    cptr.ld1so(iflags, $instance_flags_perm_invent) != old_perm_invent)
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
         }
     } else if (req == NHC.do_handler) {
@@ -8503,23 +9704,53 @@ function* optfn_perminv_mode(optidx, req, negated, opts, op) {
     } else if (req == NHC.get_val) {
         /* value shown when examining current option settings; enclosed
            within square brackets for 'O', shown as-is when setting value */
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]), 2, 8));
-        if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) != NHC.InvOptNone && !cptr.ld1so(iflags, $instance_flags_perm_invent) && op) {
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro(
+                cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]),
+                2,
+                8
+            )
+        );
+        if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) != NHC.InvOptNone &&
+                !cptr.ld1so(iflags, $instance_flags_perm_invent) && op) {
             /* perminv_mode is set but isn't useful because perm_invent is
                Off; say so after squeezing out enough for it to barely fit */
             if (cptr.ld1uo(iflags, $instance_flags_perminv_mode) == NHC.InvOptInUse)
                 void strsubst(opts, __s_currently, __s_empty);
             else
                 void strsubst(opts, __s_inventory, __s_invent);
-            void cptr.strcat(opts, (((cptr.ld1uo(iflags, $instance_flags_perminv_mode) & NHC.InvSparse) != 0) ? __s_off__2 : __s_perm_invent_is_off));
+            void cptr.strcat(
+                opts,
+                (((cptr.ld1uo(iflags, $instance_flags_perminv_mode) & NHC.InvSparse) != 0)
+                    ? __s_off__2
+                    : __s_perm_invent_is_off)
+            );
         }
     } else if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]), 0, 8));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro(
+                cptr.decay(perminv_modes[cptr.ld1uo(iflags, $instance_flags_perminv_mode)]),
+                0,
+                8
+            )
+        );
     }
     return retval;
 }
 
-/** C ref: options.c:3138 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3138
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_petattr(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
 
@@ -8537,7 +9768,11 @@ function* optfn_petattr(optidx, req, negated, opts, op) {
             let itmp = (yield* match_str2attr(op, 0));
 
             if (itmp == -1) {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    opts
+                ));
                 retval = NHC.optn_err;
             } else
                 cptr.stI32o(iflags, $instance_flags_wc2_petattr, itmp);
@@ -8545,14 +9780,19 @@ function* optfn_petattr(optidx, req, negated, opts, op) {
             cptr.stI32o(iflags, $instance_flags_wc2_petattr, NHM.ATR_NONE);
         }
         if (retval != NHC.optn_err) {
-            cptr.st1o(iflags, $instance_flags_wc_hilite_pet, schar((cptr.ldI32o(iflags, $instance_flags_wc2_petattr) != NHM.ATR_NONE)));
+            cptr.st1o(
+                iflags,
+                $instance_flags_wc_hilite_pet,
+                schar((cptr.ldI32o(iflags, $instance_flags_wc2_petattr) != NHM.ATR_NONE))
+            );
             if (!cptr.ld1so(go, $instance_globals_o_opt_initial))
                 cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
         }
         return retval;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) || (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses)) {
+        if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) ||
+                (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses)) {
             void cptr.strcpy(opts, attr2attrname(cptr.ldI32o(iflags, $instance_flags_wc2_petattr)));
         } else if (cptr.ldI32o(iflags, $instance_flags_wc2_petattr) != 0)
             void cptr.sprintf(opts, __s_0x_08x, cptr.ldI32o(iflags, $instance_flags_wc2_petattr));
@@ -8567,13 +9807,24 @@ function* optfn_petattr(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3197 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3197
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_pettype(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
-        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, negated))), cptr.decay(empty_optstr))) {
+        if (!cptr.eq(
+            (op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, negated))),
+            cptr.decay(empty_optstr)
+        )) {
             switch (lowc(cptr.ld1s(op))) {
                 case 100:
                 cptr.st1o(gp, $instance_globals_p_preferred_pet, 100);
@@ -8604,7 +9855,19 @@ function* optfn_pettype(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, (cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 99) ? __s_cat : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 100) ? __s_dog : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 104) ? __s_horse : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 110) ? __s_none : __s_random))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            (cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 99)
+                ? __s_cat
+                : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 100)
+                    ? __s_dog
+                    : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 104)
+                        ? __s_horse
+                        : ((cptr.ld1so(gp, $instance_globals_p_preferred_pet) == 110)
+                            ? __s_none
+                            : __s_random)))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -8617,7 +9880,15 @@ function* optfn_pettype(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3256 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3256
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_pickup_burden(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8625,7 +9896,10 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         /* maximum burden picked up before prompt (Warren Cheung) */
 
-        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
+        if (!cptr.eq(
+            (op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))),
+            cptr.decay(empty_optstr)
+        )) {
             switch (lowc(cptr.ld1s(op))) {
                 case 117:
                 cptr.stI32o(flags, $flag_pickup_burden, NHC.UNENCUMBERED);
@@ -8647,7 +9921,11 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
                 cptr.stI32o(flags, $flag_pickup_burden, NHC.OVERLOADED);
                 break;
                 default:
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         } else
@@ -8655,7 +9933,11 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(burdentype, cptr.ldI32o(flags, $flag_pickup_burden), 8));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro(burdentype, cptr.ldI32o(flags, $flag_pickup_burden), 8)
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8664,7 +9946,15 @@ function* optfn_pickup_burden(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3308 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3308
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_pickup_types(optidx, req, negated, opts, op) {
     let ocl = new Uint8Array(19);
     let tbuf = new Uint8Array(19);
@@ -8684,7 +9974,10 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
 
         (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(tbuf)));
         cptr.st1o2(flags, 0, 1, $flag_pickup_types, 0);  /* all */
-        op = (yield* string_for_opt(opts, schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))));
+        op = (yield* string_for_opt(
+            opts,
+            schar((compat || !cptr.ld1so(go, $instance_globals_o_opt_initial) ? 1 : 0))
+        ));
         if (cptr.eq(op, cptr.decay(empty_optstr))) {
             if (compat || negated || cptr.ld1so(go, $instance_globals_o_opt_initial)) {
                 /* for backwards compatibility, "pickup" without a
@@ -8695,18 +9988,26 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             }
             (yield* oc_to_str(cptr.add(flags, $flag_inv_order), cptr.decay(ocl)));
             use_menu = 1;
-            if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL || cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION) {
+            if (cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL ||
+                    cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION) {
                 let wasspace;
 
                 use_menu = 0;
-                void cptr.sprintf(cptr.decay(qbuf), __s_new_s_s_am_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.decay(ocl), cptr.ld1s(cptr.decay(tbuf)) ? cptr.decay(tbuf) : __s_all);
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_new_s_s_am_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    cptr.decay(ocl),
+                    cptr.ld1s(cptr.decay(tbuf)) ? cptr.decay(tbuf) : __s_all
+                );
                 cptr.st1o(cptr.decay(abuf), 0, 0, 1);
                 (yield* getlin(cptr.decay(qbuf), cptr.decay(abuf)));
                 wasspace = schar((cptr.ld1so(cptr.decay(abuf), 0, 1) == 32));  /* before mungspaces */
                 op = (yield* mungspaces(cptr.decay(abuf)));
                 if (wasspace && !cptr.ld1so(cptr.decay(abuf), 0, 1))
                     ;  /* one or more spaces will remove old value */
-                else if (!cptr.ld1so(cptr.decay(abuf), 0, 1) || cptr.ld1so(cptr.decay(abuf), 0, 1) == 27)
+                else if (!cptr.ld1so(cptr.decay(abuf), 0, 1) ||
+                        cptr.ld1so(cptr.decay(abuf), 0, 1) == 27)
                     op = cptr.decay(tbuf);  /* restore */
                 else if (cptr.ld1so(cptr.decay(abuf), 0, 1) == 109)
                     use_menu = 1;
@@ -8716,7 +10017,13 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             if (use_menu) {
                 if (wizard() && !cptr.strchr(cptr.decay(ocl), NHC.VENOM_SYM))
                     (yield* strkitten(cptr.decay(ocl), NHC.VENOM_SYM));
-                void (yield* choose_classes_menu(__s_autopickup_what, 1, 1, cptr.decay(ocl), cptr.decay(tbuf)));
+                void (yield* choose_classes_menu(
+                    __s_autopickup_what,
+                    1,
+                    1,
+                    cptr.decay(ocl),
+                    cptr.decay(tbuf)
+                ));
                 op = cptr.decay(tbuf);
             }
         }
@@ -8731,7 +10038,8 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
             while (cptr.ld1s(op)) {
                 oc_sym = def_char_to_objclass(cptr.ld1s(op));
                 /* make sure all are valid obj symbols occurring once */
-                if (oc_sym != NHC.MAXOCLASSES && !cptr.strchr(cptr.add(flags, $flag_pickup_types), oc_sym)) {
+                if (oc_sym != NHC.MAXOCLASSES &&
+                        !cptr.strchr(cptr.add(flags, $flag_pickup_types), oc_sym)) {
                     cptr.st1o2(flags, num, 1, $flag_pickup_types, schar(oc_sym));
                     cptr.st1o2(flags, ++num, 1, $flag_pickup_types, 0);
                 } else
@@ -8739,7 +10047,11 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
                 op = cptr.add(op, 1);
             }
             if (badopt) {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         }
@@ -8747,7 +10059,11 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(ocl)));
-        void cptr.sprintf(opts, __s_pct_s, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __s_all);
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __s_all
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8756,7 +10072,15 @@ function* optfn_pickup_types(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3404 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3404
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_pile_limit(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8767,7 +10091,8 @@ function* optfn_pile_limit(optidx, req, negated, opts, op) {
          */
 
         op = (yield* string_for_opt(opts, negated));
-        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr))))
+        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) ||
+                (!negated && !cptr.eq(op, cptr.decay(empty_optstr))))
             cptr.stI32o(flags, $flag_pile_limit, negated ? 0 : atoi(op));
         else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
@@ -8786,7 +10111,15 @@ function* optfn_pile_limit(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3438 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3438
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_player_selection(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8801,20 +10134,36 @@ function* optfn_player_selection(optidx, req, negated, opts, op) {
             } else if (!(yield* strncmpi(op, __s_prompt, 6))) {
                 cptr.stI32o(iflags, $instance_flags_wc_player_selection, NHM.VIA_PROMPTS);
             } else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldI32o(iflags, $instance_flags_wc_player_selection) ? __s_prompts : __s_dialog);
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldI32o(iflags, $instance_flags_wc_player_selection) ? __s_prompts : __s_dialog
+        );
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3471 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3471
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_playmode(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8833,7 +10182,11 @@ function* optfn_playmode(optidx, req, negated, opts, op) {
         } else if (!(yield* strncmpi(op, __s_debug, 5)) || !(yield* strncmpi(op, __s_wizard, 6))) {
             cptr.st1o(flags, $flag_debug, 1), cptr.st1o(flags, $flag_explore, 0);
         } else {
-            (yield* config_error_add(__s_invalid_value_for_s_s__2, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+            (yield* config_error_add(
+                __s_invalid_value_for_s_s__2,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                op
+            ));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
@@ -8845,7 +10198,15 @@ function* optfn_playmode(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3507 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3507
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_race(optidx, req, negated, opts, op) {
     op = cptr.box(op);
     if (req == NHC.do_init) {
@@ -8853,21 +10214,46 @@ function* optfn_race(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         /* race:string */
-        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
+        if (!(yield* parse_role_opt(
+            optidx,
+            negated,
+            cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+            opts,
+            op
+        )))
             return NHC.optn_silenterr;
 
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initrace, (yield* str2race(op.v)))) == -1) {
-                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
+                (yield* config_error_add(
+                    __s_unknown_s_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op.v
+                ));
                 return NHC.optn_err;
             }
             cptr.st1o(gp, $instance_globals_p_pl_race, cptr.ld1s(op.v));  /* Backwards compatibility */
-            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), $sizeof_Race) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
+            (yield* saveoptstr(
+                optidx,
+                ((cptr.ldI32o(flags, $flag_initrace) >= 0)
+                    ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), $sizeof_Race)
+                    : ((cptr.ldI32o(flags, $flag_initrace) == -2)
+                        ? cptr.decay(randomrole)
+                        : cptr.decay(none)))
+            ));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initrace) >= 0) ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), $sizeof_Race) : ((cptr.ldI32o(flags, $flag_initrace) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            ((cptr.ldI32o(flags, $flag_initrace) >= 0)
+                ? cptr.ldPtro(races, cptr.ldI32o(flags, $flag_initrace), $sizeof_Race)
+                : ((cptr.ldI32o(flags, $flag_initrace) == -2)
+                    ? cptr.decay(randomrole)
+                    : cptr.decay(none)))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -8878,24 +10264,80 @@ function* optfn_race(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3545 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3545
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_roguesymset(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
-                cptr.free(cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), cptr.stPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, null);
-            cptr.stPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(op)));
+            if (cptr.ldPtro2(
+                gs,
+                NHC.ROGUESET,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name
+            ))
+                cptr.free(cptr.ldPtro2(
+                    gs,
+                    NHC.ROGUESET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                )),
+                        cptr.stPtro2(
+                            gs,
+                            NHC.ROGUESET,
+                            $sizeof_symsetentry,
+                            $instance_globals_s_symset + $symsetentry_name,
+                            null
+                        );
+            cptr.stPtro2(
+                gs,
+                NHC.ROGUESET,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name,
+                (yield* dupstr(op))
+            );
             if (!(yield* read_sym_file(NHC.ROGUESET))) {
                 clear_symsetentry(NHC.ROGUESET, 1);
                 (yield* config_error_add(__s_unable_to_load_symbol_set_s_from_s, op, __s_symbols));
                 return NHC.optn_err;
             } else {
-                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
+                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                        (((cptr.ldI16o(
+                            (cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_rogue_level
+                            )),
+                            $d_level_dlevel
+                        ) ||
+                            cptr.ldI16((cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_rogue_level
+                            )))) &&
+                            on_level(
+                                cptr.add(u, $you_uz),
+                                cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_rogue_level
+                                )
+                            ))))
                     assign_graphics(NHC.ROGUESET);
-                cptr.st1o(go, $instance_globals_o_opt_need_redraw, cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1));
+                cptr.st1o(
+                    go,
+                    $instance_globals_o_opt_need_redraw,
+                    cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1)
+                );
                 cptr.st1o(go, $instance_globals_o_opt_symset_changed, 1);
             }
         } else
@@ -8903,8 +10345,30 @@ function* optfn_roguesymset(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) : __s_default);
-        if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.ROGUESET && cptr.ldPtro2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro2(
+                gs,
+                NHC.ROGUESET,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name
+            )
+                ? cptr.ldPtro2(
+                    gs,
+                    NHC.ROGUESET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                )
+                : __s_default
+        );
+        if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.ROGUESET &&
+                cptr.ldPtro2(
+                    gs,
+                    NHC.ROGUESET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                ))
             void cptr.strcat(opts, __s_active);
         return NHC.optn_ok;
     }
@@ -8914,7 +10378,15 @@ function* optfn_roguesymset(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3589 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3589
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_role(optidx, req, negated, opts, op) {
     op = cptr.box(op);
     if (req == NHC.do_init) {
@@ -8922,21 +10394,46 @@ function* optfn_role(optidx, req, negated, opts, op) {
     }
     if (req == NHC.do_set) {
         /* role:string */
-        if (!(yield* parse_role_opt(optidx, negated, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, op)))
+        if (!(yield* parse_role_opt(
+            optidx,
+            negated,
+            cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+            opts,
+            op
+        )))
             return NHC.optn_silenterr;
 
         if (cptr.ld1s(op.v) != 33) {
             if ((cptr.stI32o(flags, $flag_initrole, (yield* str2role(op.v)))) == -1) {
-                (yield* config_error_add(__s_unknown_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op.v));
+                (yield* config_error_add(
+                    __s_unknown_s_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op.v
+                ));
                 return NHC.optn_err;
             }
             (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_character), op.v, NHM.PL_NSIZ));  /* Backwards compat */
-            (yield* saveoptstr(optidx, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), $sizeof_Role) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none)))));
+            (yield* saveoptstr(
+                optidx,
+                ((cptr.ldI32o(flags, $flag_initrole) >= 0)
+                    ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), $sizeof_Role)
+                    : ((cptr.ldI32o(flags, $flag_initrole) == -2)
+                        ? cptr.decay(randomrole)
+                        : cptr.decay(none)))
+            ));
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, ((cptr.ldI32o(flags, $flag_initrole) >= 0) ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), $sizeof_Role) : ((cptr.ldI32o(flags, $flag_initrole) == -2) ? cptr.decay(randomrole) : cptr.decay(none))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            ((cptr.ldI32o(flags, $flag_initrole) >= 0)
+                ? cptr.ldPtro(roles, cptr.ldI32o(flags, $flag_initrole), $sizeof_Role)
+                : ((cptr.ldI32o(flags, $flag_initrole) == -2)
+                    ? cptr.decay(randomrole)
+                    : cptr.decay(none)))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -8947,7 +10444,15 @@ function* optfn_role(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3627 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3627
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_runmode(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8965,17 +10470,28 @@ function* optfn_runmode(optidx, req, negated, opts, op) {
             else if (str_start_is(__s_crawl, op, 1))
                 cptr.stI32o(flags, $flag_runmode, NHC.RUN_CRAWL);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         } else {
-            (yield* config_error_add(__s_value_is_mandatory_for_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
+            (yield* config_error_add(
+                __s_value_is_mandatory_for_s,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+            ));
             return NHC.optn_err;
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(runmodes, cptr.ldI32o(flags, $flag_runmode), 8));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro(runmodes, cptr.ldI32o(flags, $flag_runmode), 8)
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -8984,7 +10500,15 @@ function* optfn_runmode(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3669 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3669
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_scores(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -8999,7 +10523,8 @@ function* optfn_scores(optidx, req, negated, opts, op) {
            if player's scores:foo option only specified some of the three;
            in particular, attempting to use 'scores:own' rather than
            'scores:0 top/0 around/own' didn't work as intended */
-        cptr.stI32o(flags, $flag_end_top, cptr.stI32o(flags, $flag_end_around, 0)), cptr.st1o(flags, $flag_end_own, 0);
+        cptr.stI32o(flags, $flag_end_top, cptr.stI32o(flags, $flag_end_around, 0)),
+                cptr.st1o(flags, $flag_end_own, 0);
 
         if (negated)
             op = eos(op);
@@ -9030,17 +10555,26 @@ function* optfn_scores(optidx, req, negated, opts, op) {
                 cptr.st1o(flags, $flag_end_own, schar(((negated || !inum) ? 0 : 1)));
                 break;
                 case 110:
-                cptr.stI32o(flags, $flag_end_top, cptr.stI32o(flags, $flag_end_around, 0)), cptr.st1o(flags, $flag_end_own, 0);
+                cptr.stI32o(flags, $flag_end_top, cptr.stI32o(flags, $flag_end_around, 0)),
+                        cptr.st1o(flags, $flag_end_own, 0);
                 break;
                 case 45:
                 if (digit(cptr.ld1s((cptr.add(op, 1))))) {
-                    (yield* config_error_add(__s_values_for_s_top_and_s_around_must_not, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
+                    (yield* config_error_add(
+                        __s_values_for_s_top_and_s_around_must_not,
+                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+                    ));
                     return NHC.optn_silenterr;
                 }
                 // @FallThrough
                 ;
                 default:
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_silenterr;
             }
             /* "3a" is sufficient but accept "3around" (or "3abracadabra") */
@@ -9059,9 +10593,20 @@ function* optfn_scores(optidx, req, negated, opts, op) {
         if (cptr.ldI32o(flags, $flag_end_top) > 0)
             void cptr.sprintf(opts, __s_d_top, cptr.ldI32o(flags, $flag_end_top));
         if (cptr.ldI32o(flags, $flag_end_around) > 0)
-            void cptr.sprintf(eos(opts), __s_s_d_around, (cptr.ldI32o(flags, $flag_end_top) > 0) ? __s_slash : __s_empty, cptr.ldI32o(flags, $flag_end_around));
+            void cptr.sprintf(
+                eos(opts),
+                __s_s_d_around,
+                (cptr.ldI32o(flags, $flag_end_top) > 0) ? __s_slash : __s_empty,
+                cptr.ldI32o(flags, $flag_end_around)
+            );
         if (cptr.ld1so(flags, $flag_end_own))
-            void cptr.sprintf(eos(opts), __s_sown, (cptr.ldI32o(flags, $flag_end_top) > 0 || cptr.ldI32o(flags, $flag_end_around) > 0) ? __s_slash : __s_empty);
+            void cptr.sprintf(
+                eos(opts),
+                __s_sown,
+                (cptr.ldI32o(flags, $flag_end_top) > 0 || cptr.ldI32o(flags, $flag_end_around) > 0)
+                    ? __s_slash
+                    : __s_empty
+            );
         if (!cptr.ld1s(opts))
             void cptr.strcpy(opts, __s_none);
         return NHC.optn_ok;
@@ -9069,7 +10614,15 @@ function* optfn_scores(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3763 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3763
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_scroll_amount(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9078,7 +10631,8 @@ function* optfn_scroll_amount(optidx, req, negated, opts, op) {
         /* WINCAP scroll_amount:nn */
 
         op = (yield* string_for_opt(opts, negated));
-        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
+        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) ||
+                (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_scroll_amount, negated ? 1 : atoi(op));
         } else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
@@ -9088,7 +10642,11 @@ function* optfn_scroll_amount(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc_scroll_amount))
-            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_scroll_amount));
+            void cptr.sprintf(
+                opts,
+                __s_pct_d,
+                cptr.ldI32o(iflags, $instance_flags_wc_scroll_amount)
+            );
         else
             void cptr.strcpy(opts, cptr.decay(defopt));
         return NHC.optn_ok;
@@ -9096,7 +10654,15 @@ function* optfn_scroll_amount(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3794 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3794
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_scroll_margin(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9104,7 +10670,8 @@ function* optfn_scroll_margin(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         /* WINCAP scroll_margin:nn */
         op = (yield* string_for_opt(opts, negated));
-        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
+        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) ||
+                (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_scroll_margin, negated ? 5 : atoi(op));
         } else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
@@ -9114,7 +10681,11 @@ function* optfn_scroll_margin(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc_scroll_margin))
-            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_scroll_margin));
+            void cptr.sprintf(
+                opts,
+                __s_pct_d,
+                cptr.ldI32o(iflags, $instance_flags_wc_scroll_margin)
+            );
         else
             void cptr.strcpy(opts, cptr.decay(defopt));
         return NHC.optn_ok;
@@ -9122,7 +10693,15 @@ function* optfn_scroll_margin(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3824 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3824
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_soundlib(optidx, req, negated, opts, op) {
     let soundlibbuf = new Uint8Array(16);
 
@@ -9138,7 +10717,10 @@ function* optfn_soundlib(optidx, req, negated, opts, op) {
          * to activate_chosen_soundlib() actually activates it, and
          * sets gc.active_soundlib.
          */
-        if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
+        if (!cptr.eq(
+            (op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))),
+            cptr.decay(empty_optstr)
+        )) {
             let option_id;
 
             (yield* get_soundlib_name(cptr.decay(soundlibbuf), NHM.WINTYPELEN));
@@ -9157,7 +10739,15 @@ function* optfn_soundlib(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3863 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3863
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         cptr.st1o(flags, $flag_discosort, 111);
@@ -9186,7 +10776,11 @@ function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
                 cptr.st1o(flags, $flag_discosort, 97);
                 break;
                 default:
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_silenterr;
             }
         } else
@@ -9204,7 +10798,15 @@ function* optfn_sortdiscoveries(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:3914 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3914
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_sortloot(optidx, req, negated, opts, op) {
     let i;
 
@@ -9223,7 +10825,11 @@ function* optfn_sortloot(optidx, req, negated, opts, op) {
                 cptr.st1o(flags, $flag_sortloot, c);
                 break;
                 default:
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         } else
@@ -9246,7 +10852,15 @@ function* optfn_sortloot(optidx, req, negated, opts, op) {
 
 const __static_optfn_sortvanquished_vanqmodes = cptr.bytes("tdaACcnz"); /** C ref: options.c:3963 — char[9] (function-static) */
 
-/** C ref: options.c:3958 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:3958
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_sortvanquished(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
 
@@ -9262,8 +10876,14 @@ function* optfn_sortvanquished(optidx, req, negated, opts, op) {
             let p;
             let vndx = 0;
 
-            if ((p = cptr.strchr(cptr.decay(__static_optfn_sortvanquished_vanqmodes), cptr.ld1s(op))) !== null) {
-                vndx = Number(BigInt.asIntN(32, (cptr.diff(p, cptr.decay(__static_optfn_sortvanquished_vanqmodes)))));
+            if ((p = cptr.strchr(
+                cptr.decay(__static_optfn_sortvanquished_vanqmodes),
+                cptr.ld1s(op)
+            )) !== null) {
+                vndx = Number(BigInt.asIntN(
+                    32,
+                    (cptr.diff(p, cptr.decay(__static_optfn_sortvanquished_vanqmodes)))
+                ));
             } else if (cptr.strchr(__s_01234567, cptr.ld1s(op))) {
                 vndx = (cptr.ld1s(op) - 48) | 0;
             } else {
@@ -9276,9 +10896,16 @@ function* optfn_sortvanquished(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.strcpy(opts, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8));
+        void cptr.strcpy(
+            opts,
+            cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8)
+        );
         if (req == NHC.get_val)
-            void cptr.sprintf(eos(opts), __s_colon_sp_pct_s, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8));
+            void cptr.sprintf(
+                eos(opts),
+                __s_colon_sp_pct_s,
+                cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8)
+            );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9286,12 +10913,28 @@ function* optfn_sortvanquished(optidx, req, negated, opts, op) {
 
         /* return handler_sortvanquished(); */
         void (yield* set_vanq_order(1));  /* insight.c */
-        (yield* pline(__s_s_s_s_s, optname, (cptr.ld1uo(flags, $flag_vanq_sortmode) == prev_sortmode) ? __s_not_changed_still : __s_changed_to, cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8), cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8)));
+        (yield* pline(
+            __s_s_s_s_s,
+            optname,
+            (cptr.ld1uo(flags, $flag_vanq_sortmode) == prev_sortmode)
+                ? __s_not_changed_still
+                : __s_changed_to,
+            cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 0, 8),
+            cptr.ldPtro(cptr.decay(vanqorders[cptr.ld1uo(flags, $flag_vanq_sortmode)]), 1, 8)
+        ));
     }
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4013 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4013
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_statushilites(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9301,7 +10944,11 @@ function* optfn_statushilites(optidx, req, negated, opts, op) {
             cptr.stI64o(iflags, $instance_flags_hilite_delta, 0n);
         } else {
             op = (yield* string_for_opt(opts, 1));
-            cptr.stI64o(iflags, $instance_flags_hilite_delta, (cptr.eq(op, cptr.decay(empty_optstr)) || !cptr.ld1s(op)) ? 3n : atol(op));
+            cptr.stI64o(
+                iflags,
+                $instance_flags_hilite_delta,
+                (cptr.eq(op, cptr.decay(empty_optstr)) || !cptr.ld1s(op)) ? 3n : atol(op)
+            );
             if (cptr.ldI64o(iflags, $instance_flags_hilite_delta) < 0n)
                 cptr.stI64o(iflags, $instance_flags_hilite_delta, 1n);
         }
@@ -9313,7 +10960,12 @@ function* optfn_statushilites(optidx, req, negated, opts, op) {
         if (!cptr.ldI64o(iflags, $instance_flags_hilite_delta))
             void cptr.strcpy(opts, __s_0_off_don_t_highlight_status_fields);
         else
-            void cptr.sprintf(opts, __s_ld_on_highlight_status_for_ld_turns, cptr.ldI64o(iflags, $instance_flags_hilite_delta), cptr.ldI64o(iflags, $instance_flags_hilite_delta));
+            void cptr.sprintf(
+                opts,
+                __s_ld_on_highlight_status_for_ld_turns,
+                cptr.ldI64o(iflags, $instance_flags_hilite_delta),
+                cptr.ldI64o(iflags, $instance_flags_hilite_delta)
+            );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -9322,7 +10974,15 @@ function* optfn_statushilites(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4067 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4067
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_statuslines(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let itmp = 0;
@@ -9343,7 +11003,11 @@ function* optfn_statuslines(optidx, req, negated, opts, op) {
             itmp = atoi(op);
         }
         if (itmp < 2 || itmp > 3) {
-            (yield* config_error_add(__s_s_s_is_invalid_must_be_2_or_3, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+            (yield* config_error_add(
+                __s_s_s_is_invalid_must_be_2_or_3,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                op
+            ));
             retval = NHC.optn_silenterr;
         } else {
             cptr.stI32o(iflags, $instance_flags_wc2_statuslines, itmp);
@@ -9354,7 +11018,10 @@ function* optfn_statuslines(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (wc2_supported(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)))
-            void cptr.strcpy(opts, (cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) < 3) ? __s_2 : __s_3);
+            void cptr.strcpy(
+                opts,
+                (cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) < 3) ? __s_2 : __s_3
+            );
         else
             void cptr.strcpy(opts, __s_unknown);
         return NHC.optn_ok;
@@ -9362,7 +11029,15 @@ function* optfn_statuslines(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4135 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4135
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_suppress_alert(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9381,31 +11056,82 @@ function* optfn_suppress_alert(optidx, req, negated, opts, op) {
         else if (cptr.ldU64o(flags, $flag_suppress_alert) == 0n)
             void cptr.strcpy(opts, cptr.decay(none));
         else
-            void cptr.sprintf(opts, __s_lu_lu_lu, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
+            void cptr.sprintf(
+                opts,
+                __s_lu_lu_lu,
+                FEATURE_NOTICE_VER_MAJ(),
+                FEATURE_NOTICE_VER_MIN(),
+                FEATURE_NOTICE_VER_PATCH()
+            );
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4167 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4167
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_symset(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
     }
     if (req == NHC.do_set) {
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
-            if (cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
-                cptr.free(cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), cptr.stPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, null);
-            cptr.stPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name, (yield* dupstr(op)));
+            if (cptr.ldPtro2(
+                gs,
+                NHC.PRIMARYSET,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name
+            ))
+                cptr.free(cptr.ldPtro2(
+                    gs,
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                )),
+                        cptr.stPtro2(
+                            gs,
+                            NHC.PRIMARYSET,
+                            $sizeof_symsetentry,
+                            $instance_globals_s_symset + $symsetentry_name,
+                            null
+                        );
+            cptr.stPtro2(
+                gs,
+                NHC.PRIMARYSET,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name,
+                (yield* dupstr(op))
+            );
             if (!(yield* read_sym_file(NHC.PRIMARYSET))) {
                 clear_symsetentry(NHC.PRIMARYSET, 1);
                 (yield* config_error_add(__s_unable_to_load_symbol_set_s_from_s, op, __s_symbols));
                 return NHC.optn_err;
             } else {
-                if (cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling)) {
+                if (cptr.ldI32o2(
+                    gs,
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_handling
+                )) {
                 }
-                (yield* switch_symbols(cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) !== null));
-                cptr.st1o(go, $instance_globals_o_opt_need_redraw, cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1));
+                (yield* switch_symbols(cptr.ldPtro2(
+                    gs,
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                ) !== null));
+                cptr.st1o(
+                    go,
+                    $instance_globals_o_opt_need_redraw,
+                    cptr.st1o(go, $instance_globals_o_opt_need_glyph_reset, 1)
+                );
                 cptr.st1o(go, $instance_globals_o_opt_symset_changed, 1);
             }
         } else
@@ -9413,16 +11139,72 @@ function* optfn_symset(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) : __s_default);
-        if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.PRIMARYSET && cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name))
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro2(
+                gs,
+                NHC.PRIMARYSET,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name
+            )
+                ? cptr.ldPtro2(
+                    gs,
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                )
+                : __s_default
+        );
+        if (cptr.ldI32o(gc, $instance_globals_c_currentgraphics) == NHC.PRIMARYSET &&
+                cptr.ldPtro2(
+                    gs,
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                ))
             void cptr.strcat(opts, __s_active);
-        if (cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling)) {
-            void cptr.sprintf(eos(opts), __s_handler_s, cptr.ldPtro(known_handling, cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling), 8));
+        if (cptr.ldI32o2(
+            gs,
+            NHC.PRIMARYSET,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_handling
+        )) {
+            void cptr.sprintf(
+                eos(opts),
+                __s_handler_s,
+                cptr.ldPtro(
+                    known_handling,
+                    cptr.ldI32o2(
+                        gs,
+                        NHC.PRIMARYSET,
+                        $sizeof_symsetentry,
+                        $instance_globals_s_symset + $symsetentry_handling
+                    ),
+                    8
+                )
+            );
         }
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) : __s_default);
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro2(
+                gs,
+                NHC.PRIMARYSET,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name
+            )
+                ? cptr.ldPtro2(
+                    gs,
+                    NHC.PRIMARYSET,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                )
+                : __s_default
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9440,7 +11222,15 @@ function* optfn_symset(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4239 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4239
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_term_cols(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let ltmp;
@@ -9457,7 +11247,11 @@ function* optfn_term_cols(optidx, req, negated, opts, op) {
             /* just checks atol() sanity, not logical window size sanity
              */
             if (ltmp <= 0n || ltmp >= 32767n) {
-                (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), ltmp));
+                (yield* config_error_add(
+                    __s_invalid_s_ld,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    ltmp
+                ));
                 retval = NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_term_cols, Number(BigInt.asIntN(32, ltmp)));
@@ -9477,7 +11271,15 @@ function* optfn_term_cols(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4280 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4280
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_term_rows(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
     let ltmp;
@@ -9494,7 +11296,11 @@ function* optfn_term_rows(optidx, req, negated, opts, op) {
             /* just checks atol() sanity, not logical window size sanity
              */
             if (ltmp <= 0n || ltmp >= 32767n) {
-                (yield* config_error_add(__s_invalid_s_ld, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), ltmp));
+                (yield* config_error_add(
+                    __s_invalid_s_ld,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    ltmp
+                ));
                 retval = NHC.optn_err;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_term_rows, Number(BigInt.asIntN(32, ltmp)));
@@ -9514,7 +11320,15 @@ function* optfn_term_rows(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4321 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4321
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_tile_file(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9530,7 +11344,13 @@ function* optfn_tile_file(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_tile_file) ? cptr.ldPtro(iflags, $instance_flags_wc_tile_file) : cptr.decay(defopt));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            cptr.ldPtro(iflags, $instance_flags_wc_tile_file)
+                ? cptr.ldPtro(iflags, $instance_flags_wc_tile_file)
+                : cptr.decay(defopt)
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -9543,7 +11363,15 @@ function* optfn_tile_file(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4354 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4354
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_tile_height(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9551,7 +11379,8 @@ function* optfn_tile_height(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         /* WINCAP tile_height:nn */
         op = (yield* string_for_opt(opts, negated));
-        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
+        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) ||
+                (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_tile_height, negated ? 0 : atoi(op));
         } else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
@@ -9571,7 +11400,15 @@ function* optfn_tile_height(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4386 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4386
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_tile_width(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9579,7 +11416,8 @@ function* optfn_tile_width(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         /* WINCAP tile_width:nn */
         op = (yield* string_for_opt(opts, negated));
-        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
+        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) ||
+                (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_tile_width, negated ? 0 : atoi(op));
         } else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
@@ -9599,7 +11437,15 @@ function* optfn_tile_width(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4418 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4418
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function optfn_traps(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9618,7 +11464,15 @@ function optfn_traps(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4440 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4440
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9626,7 +11480,8 @@ function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
     if (req == NHC.do_set) {
         /* WINCAP vary_msgcount:nn */
         op = (yield* string_for_opt(opts, negated));
-        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) || (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
+        if ((negated && cptr.eq(op, cptr.decay(empty_optstr))) ||
+                (!negated && !cptr.eq(op, cptr.decay(empty_optstr)))) {
             cptr.stI32o(iflags, $instance_flags_wc_vary_msgcount, negated ? 0 : atoi(op));
         } else if (negated) {
             (yield* bad_negation(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), 1));
@@ -9636,7 +11491,11 @@ function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (cptr.ldI32o(iflags, $instance_flags_wc_vary_msgcount))
-            void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_vary_msgcount));
+            void cptr.sprintf(
+                opts,
+                __s_pct_d,
+                cptr.ldI32o(iflags, $instance_flags_wc_vary_msgcount)
+            );
         else if (req == NHC.get_cnf_val)
             cptr.st1o(opts, 0, 0);
         else
@@ -9646,7 +11505,15 @@ function* optfn_vary_msgcount(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4472 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4472
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_versinfo(optidx, req, negated, opts, op) {
     let optname = cptr.ldPtro(allopt, optidx, $sizeof_allopt_t);
     let vi = cptr.ldI32o(flags, $flag_versinfo);
@@ -9661,7 +11528,10 @@ function* optfn_versinfo(optidx, req, negated, opts, op) {
            If branch is requested but unavailable, status_version will
            treat 4 as 1.
          */
-        let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch)) ? 1 : 0));
+        let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) &&
+            cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch))
+                ? 1
+                : 0));
         let val;
         let dflt = have_branch ? NHM.VI_BRANCH : NHM.VI_NUMBER;
 
@@ -9683,23 +11553,47 @@ function* optfn_versinfo(optidx, req, negated, opts, op) {
     } else if (req == NHC.do_handler) {
         /* return handler_versinfo(); */
         void (yield* handler_versinfo());
-        (yield* pline(__s_s_s_u, optname, (cptr.ldI32o(flags, $flag_versinfo) == vi) ? __s_not_changed_still : __s_changed_to, cptr.ldI32o(flags, $flag_versinfo)));
+        (yield* pline(
+            __s_s_s_u,
+            optname,
+            (cptr.ldI32o(flags, $flag_versinfo) == vi) ? __s_not_changed_still : __s_changed_to,
+            cptr.ldI32o(flags, $flag_versinfo)
+        ));
     } else if (req == NHC.get_val) {
         let vbuf = new Uint8Array(128);
         let g = schar((((vi & NHM.VI_NAME) >>> 0) != 0));
         let b = schar((((vi & NHM.VI_BRANCH) >>> 0) != 0));
         let n = schar((((vi & NHM.VI_NUMBER) >>> 0) != 0));
 
-        void cptr.sprintf(opts, __s_u_s_s_s_s_s_99s, cptr.ldI32o(flags, $flag_versinfo), g ? __s_name : __s_empty, (b && g) ? __s_plus : __s_empty, b ? __s_branch : __s_empty, (n && (b || g)) ? __s_plus : __s_empty, n ? __s_number : __s_empty, (yield* status_version(cptr.decay(vbuf), 128n, 0)));
+        void cptr.sprintf(
+            opts,
+            __s_u_s_s_s_s_s_99s,
+            cptr.ldI32o(flags, $flag_versinfo),
+            g ? __s_name : __s_empty,
+            (b && g) ? __s_plus : __s_empty,
+            b ? __s_branch : __s_empty,
+            (n && (b || g)) ? __s_plus : __s_empty,
+            n ? __s_number : __s_empty,
+            (yield* status_version(cptr.decay(vbuf), 128n, 0))
+        );
     } else if (req == NHC.get_cnf_val) {
         void cptr.sprintf(opts, __s_pct_u, cptr.ldI32o(flags, $flag_versinfo));
     }
-    if (cptr.ldI32o(flags, $flag_versinfo) != vi && !cptr.ld1so(go, $instance_globals_o_opt_initial))
+    if (cptr.ldI32o(flags, $flag_versinfo) != vi &&
+            !cptr.ld1so(go, $instance_globals_o_opt_initial))
         cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4682 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4682
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_warnings(optidx, req, negated, opts, op) {
     let reslt;
 
@@ -9719,7 +11613,15 @@ function* optfn_warnings(optidx, req, negated, opts, op) {
 
 const __static_optfn_whatis_coord_gpcoords = [110, 99, 102, 109, 115, 0]; /** C ref: options.c:4716 — char[6] (function-static) */
 
-/** C ref: options.c:4703 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4703
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_whatis_coord(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9728,13 +11630,20 @@ function* optfn_whatis_coord(optidx, req, negated, opts, op) {
         if (negated) {
             cptr.stI32o(iflags, $instance_flags_getpos_coords, 110);
             return NHC.optn_ok;
-        } else if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
+        } else if (!cptr.eq(
+            (op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))),
+            cptr.decay(empty_optstr)
+        )) {
             let c = lowc(cptr.ld1s(op));
 
             if (c && cptr.strchr(cptr.decay(__static_optfn_whatis_coord_gpcoords), c))
                 cptr.stI32o(iflags, $instance_flags_getpos_coords, c);
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         } else
@@ -9742,7 +11651,19 @@ function* optfn_whatis_coord(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, (cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 109) ? __s_map__2 : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 99) ? __s_compass : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 102) ? __s_full_compass : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 115) ? __s_screen : __s_none))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            (cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 109)
+                ? __s_map__2
+                : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 99)
+                    ? __s_compass
+                    : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 102)
+                        ? __s_full_compass
+                        : ((cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 115)
+                            ? __s_screen
+                            : __s_none)))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9751,7 +11672,15 @@ function* optfn_whatis_coord(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4748 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4748
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_whatis_filter(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9760,7 +11689,10 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
         if (negated) {
             cptr.stI32o(iflags, $instance_flags_getloc_filter, NHC.GFILTER_NONE);
             return NHC.optn_ok;
-        } else if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
+        } else if (!cptr.eq(
+            (op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))),
+            cptr.decay(empty_optstr)
+        )) {
             let c = lowc(cptr.ld1s(op));
 
             switch (c) {
@@ -9775,7 +11707,11 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
                 break;
                 default:
                 {
-                    (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                    (yield* config_error_add(
+                        __s_unknown_s_parameter_s,
+                        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                        op
+                    ));
                     return NHC.optn_err;
                 }
             }
@@ -9784,7 +11720,15 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
         return NHC.optn_ok;
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
-        void cptr.sprintf(opts, __s_pct_s, (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __s_view : ((cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA) ? __s_area : __s_none));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW)
+                ? __s_view
+                : ((cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA)
+                    ? __s_area
+                    : __s_none)
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.do_handler) {
@@ -9793,7 +11737,15 @@ function* optfn_whatis_filter(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4797 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4797
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_windowborders(optidx, req, negated, opts, op) {
     let retval = NHC.optn_ok;
 
@@ -9816,7 +11768,11 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
                 itmp = atoi(op);
 
             if (itmp < 0 || itmp > 4) {
-                (yield* config_error_add(__s_invalid_s_should_be_within_0_to_4_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts));
+                (yield* config_error_add(
+                    __s_invalid_s_should_be_within_0_to_4_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    opts
+                ));
                 retval = NHC.optn_silenterr;
             } else {
                 cptr.stI32o(iflags, $instance_flags_wc2_windowborders, itmp);
@@ -9825,7 +11781,21 @@ function* optfn_windowborders(optidx, req, negated, opts, op) {
         return retval;
     }
     if (req == NHC.get_val) {
-        void cptr.sprintf(opts, __s_pct_s, (cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 0) ? __s_0_off : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 1) ? __s_1_on : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 2) ? __s_2_auto : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 3) ? __s_3_on_except_off_for_perm_invent : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 4) ? __s_4_auto_except_off_for_perm_invent : cptr.decay(defopt))))));
+        void cptr.sprintf(
+            opts,
+            __s_pct_s,
+            (cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 0)
+                ? __s_0_off
+                : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 1)
+                    ? __s_1_on
+                    : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 2)
+                        ? __s_2_auto
+                        : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 3)
+                            ? __s_3_on_except_off_for_perm_invent
+                            : ((cptr.ldI32o(iflags, $instance_flags_wc2_windowborders) == 4)
+                                ? __s_4_auto_except_off_for_perm_invent
+                                : cptr.decay(defopt)))))
+        );
         return NHC.optn_ok;
     }
     if (req == NHC.get_cnf_val) {
@@ -9856,7 +11826,15 @@ cptr.stPtro(wcshortnames, 24, __s_txt);
 /** C ref: options.c:4891 — int[4] */
 export const wcolors_opt = cptr.alloc(4 * 4);
 
-/** C ref: options.c:4894 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4894
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_windowcolors(optidx, req, negated, opts, op) {
     let wccount;
 
@@ -9873,7 +11851,11 @@ function* optfn_windowcolors(optidx, req, negated, opts, op) {
          */
         if (!cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
             if (!(yield* wc_set_window_colors(op))) {
-                (yield* config_error_add(__s_could_not_set_s_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), op));
+                (yield* config_error_add(
+                    __s_could_not_set_s_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    op
+                ));
                 return NHC.optn_err;
             }
         }
@@ -9886,20 +11868,47 @@ function* optfn_windowcolors(optidx, req, negated, opts, op) {
         /* TODO: wide 'get_val' may need to be wrapped in the menu display */
         cptr.st1o(opts, 0, 0);
         for (wccount = 0; wccount < NHC.WC_COUNT; ++wccount) {
-            fg = cptr.ldPtro2(iflags, wccount, $sizeof_windowcolors_struct, $instance_flags_wcolors);
-            bg = cptr.ldPtro2(iflags, wccount, $sizeof_windowcolors_struct, $instance_flags_wcolors + $windowcolors_struct_bg);
+            fg = cptr.ldPtro2(
+                iflags,
+                wccount,
+                $sizeof_windowcolors_struct,
+                $instance_flags_wcolors
+            );
+            bg = cptr.ldPtro2(
+                iflags,
+                wccount,
+                $sizeof_windowcolors_struct,
+                $instance_flags_wcolors + $windowcolors_struct_bg
+            );
             if (fg && (!cptr.ld1s(fg) || !strcmp(fg, cptr.decay(defbrief))))
                 fg = null;
             if (bg && (!cptr.ld1s(bg) || !strcmp(bg, cptr.decay(defbrief))))
                 bg = null;
-            void cptr.sprintf(eos(opts), __s_s_s_s_s__2, !wccount ? __s_empty : __s_sp, (fg || bg) ? cptr.ldPtro(wcnames, wccount, 8) : cptr.ldPtro(wcshortnames, wccount, 8), fg ? fg : cptr.decay(defbrief), bg ? bg : cptr.decay(defbrief));
+            void cptr.sprintf(
+                eos(opts),
+                __s_s_s_s_s__2,
+                !wccount ? __s_empty : __s_sp,
+                (fg || bg)
+                    ? cptr.ldPtro(wcnames, wccount, 8)
+                    : cptr.ldPtro(wcshortnames, wccount, 8),
+                fg ? fg : cptr.decay(defbrief),
+                bg ? bg : cptr.decay(defbrief)
+            );
         }
         return NHC.optn_ok;
     }
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:4943 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4943
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_windowtype(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -9923,7 +11932,10 @@ function* optfn_windowtype(optidx, req, negated, opts, op) {
             if (cptr.ld1so(iflags, $instance_flags_windowtype_locked))
                 return NHC.optn_ok;
 
-            if (!cptr.eq((op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))), cptr.decay(empty_optstr))) {
+            if (!cptr.eq(
+                (op = (yield* string_for_env_opt(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts, 0))),
+                cptr.decay(empty_optstr)
+            )) {
                 (yield* nmcpy(cptr.add(gc, $instance_globals_c_chosen_windowtype), op, NHM.WINTYPELEN));
                 if (!cptr.ld1so(iflags, $instance_flags_windowtype_deferred)) {
                     (yield* choose_windows(cptr.add(gc, $instance_globals_c_chosen_windowtype)));
@@ -9945,7 +11957,15 @@ function* optfn_windowtype(optidx, req, negated, opts, op) {
  *    Prefix-handling functions
  */
 
-/** C ref: options.c:4994 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:4994
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* pfxfn_cond_(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         (yield* condopt(0, null, 0));  /* make the choices match defaults */
@@ -9984,7 +12004,15 @@ function* pfxfn_cond_(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:5039 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:5039
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* pfxfn_font(optidx, req, negated, opts, op) {
     let opttype = -1;
 
@@ -10004,7 +12032,11 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
             opttype = NHC.MENU_OPTION;
         else if (optidx == NHC.opt_font_status)
             opttype = NHC.STATUS_OPTION;
-        else if (optidx == NHC.opt_font_size_map || optidx == NHC.opt_font_size_message || optidx == NHC.opt_font_size_text || optidx == NHC.opt_font_size_menu || optidx == NHC.opt_font_size_status) {
+        else if (optidx == NHC.opt_font_size_map ||
+                optidx == NHC.opt_font_size_message ||
+                optidx == NHC.opt_font_size_text ||
+                optidx == NHC.opt_font_size_menu ||
+                optidx == NHC.opt_font_size_status) {
             if (optidx == NHC.opt_font_size_map)
                 opttype = NHC.MAP_OPTION;
             else if (optidx == NHC.opt_font_size_message)
@@ -10016,12 +12048,18 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
             else if (optidx == NHC.opt_font_size_status)
                 opttype = NHC.STATUS_OPTION;
             else {
-                (yield* config_error_add(__s_unknown_s_parameter_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), opts));
+                (yield* config_error_add(
+                    __s_unknown_s_parameter_s,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                    opts
+                ));
                 return NHC.optn_err;
             }
             if (duplicate)
                 (yield* complain_about_duplicate(optidx));
-            if (opttype > 0 && !negated && !cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
+            if (opttype > 0 &&
+                    !negated &&
+                    !cptr.eq((op = (yield* string_for_opt(opts, 0))), cptr.decay(empty_optstr))) {
                 switch (opttype) {
                     case NHC.MAP_OPTION:
                     cptr.stI32o(iflags, $instance_flags_wc_fontsiz_map, atoi(op));
@@ -10056,38 +12094,88 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
     }
     if (req == NHC.get_val || req == NHC.get_cnf_val) {
         if (optidx == NHC.opt_font_map) {
-            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_map) ? cptr.ldPtro(iflags, $instance_flags_wc_font_map) : cptr.decay(defopt));
+            void cptr.sprintf(
+                opts,
+                __s_pct_s,
+                cptr.ldPtro(iflags, $instance_flags_wc_font_map)
+                    ? cptr.ldPtro(iflags, $instance_flags_wc_font_map)
+                    : cptr.decay(defopt)
+            );
         } else if (optidx == NHC.opt_font_message) {
-            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_message) ? cptr.ldPtro(iflags, $instance_flags_wc_font_message) : cptr.decay(defopt));
+            void cptr.sprintf(
+                opts,
+                __s_pct_s,
+                cptr.ldPtro(iflags, $instance_flags_wc_font_message)
+                    ? cptr.ldPtro(iflags, $instance_flags_wc_font_message)
+                    : cptr.decay(defopt)
+            );
         } else if (optidx == NHC.opt_font_status) {
-            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_status) ? cptr.ldPtro(iflags, $instance_flags_wc_font_status) : cptr.decay(defopt));
+            void cptr.sprintf(
+                opts,
+                __s_pct_s,
+                cptr.ldPtro(iflags, $instance_flags_wc_font_status)
+                    ? cptr.ldPtro(iflags, $instance_flags_wc_font_status)
+                    : cptr.decay(defopt)
+            );
         } else if (optidx == NHC.opt_font_menu) {
-            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_menu) ? cptr.ldPtro(iflags, $instance_flags_wc_font_menu) : cptr.decay(defopt));
+            void cptr.sprintf(
+                opts,
+                __s_pct_s,
+                cptr.ldPtro(iflags, $instance_flags_wc_font_menu)
+                    ? cptr.ldPtro(iflags, $instance_flags_wc_font_menu)
+                    : cptr.decay(defopt)
+            );
         } else if (optidx == NHC.opt_font_text) {
-            void cptr.sprintf(opts, __s_pct_s, cptr.ldPtro(iflags, $instance_flags_wc_font_text) ? cptr.ldPtro(iflags, $instance_flags_wc_font_text) : cptr.decay(defopt));
+            void cptr.sprintf(
+                opts,
+                __s_pct_s,
+                cptr.ldPtro(iflags, $instance_flags_wc_font_text)
+                    ? cptr.ldPtro(iflags, $instance_flags_wc_font_text)
+                    : cptr.decay(defopt)
+            );
         } else if (optidx == NHC.opt_font_size_map) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_map))
-                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_map));
+                void cptr.sprintf(
+                    opts,
+                    __s_pct_d,
+                    cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_map)
+                );
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_message) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_message))
-                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_message));
+                void cptr.sprintf(
+                    opts,
+                    __s_pct_d,
+                    cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_message)
+                );
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_status) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_status))
-                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_status));
+                void cptr.sprintf(
+                    opts,
+                    __s_pct_d,
+                    cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_status)
+                );
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_menu) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_menu))
-                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_menu));
+                void cptr.sprintf(
+                    opts,
+                    __s_pct_d,
+                    cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_menu)
+                );
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         } else if (optidx == NHC.opt_font_size_text) {
             if (cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_text))
-                void cptr.sprintf(opts, __s_pct_d, cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_text));
+                void cptr.sprintf(
+                    opts,
+                    __s_pct_d,
+                    cptr.ldI32o(iflags, $instance_flags_wc_fontsiz_text)
+                );
             else
                 void cptr.strcpy(opts, cptr.decay(defopt));
         }
@@ -10101,7 +12189,15 @@ function* pfxfn_font(optidx, req, negated, opts, op) {
  *    (Use optidx to reference the specific option)
  */
 
-/** C ref: options.c:5192 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:5192
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 export function* optfn_boolean(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -10114,31 +12210,45 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             return NHC.optn_ok;  /* silent retreat */
 
         /* option that must come from config file? */
-        if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && (cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_config))
+        if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                (cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                    NHC.set_in_config))
             return NHC.optn_err;
 
         /* options that must NOT come from config file */
-        if (cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz)
+        if (cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                    NHC.set_wiznofuz)
             return NHC.optn_err;
 
         op = (yield* string_for_opt(opts, 1));
         if (!cptr.eq(op, cptr.decay(empty_optstr))) {
             if (negated) {
-                (yield* config_error_add(__s_negated_boolean_s_should_not_have_a, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
+                (yield* config_error_add(
+                    __s_negated_boolean_s_should_not_have_a,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+                ));
                 return NHC.optn_silenterr;
             }
             /* length is greater than 0 or we wouldn't have gotten here */
             ln = Number(BigInt.asIntN(32, cptr.strlen(op)));
-            if (!(yield* strncmpi(op, __s_true, ln)) || !(yield* strncmpi(op, __s_yes, ln)) || !(yield* strncmpi((op), (__s_on), -1)) || (digit(cptr.ld1s(op)) && atoi(op) == 1)) {
+            if (!(yield* strncmpi(op, __s_true, ln)) ||
+                    !(yield* strncmpi(op, __s_yes, ln)) ||
+                    !(yield* strncmpi((op), (__s_on), -1)) ||
+                    (digit(cptr.ld1s(op)) && atoi(op) == 1)) {
                 negated = 0;
-            } else if (!(yield* strncmpi(op, __s_false, ln)) || !(yield* strncmpi(op, __s_no, ln)) || !(yield* strncmpi((op), (__s_off), -1)) || (digit(cptr.ld1s(op)) && atoi(op) == 0)) {
+            } else if (!(yield* strncmpi(op, __s_false, ln)) ||
+                    !(yield* strncmpi(op, __s_no, ln)) ||
+                    !(yield* strncmpi((op), (__s_off), -1)) ||
+                    (digit(cptr.ld1s(op)) && atoi(op) == 0)) {
                 negated = 1;
             } else if (!cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_valok)) {
                 (yield* config_error_add(__s_s_is_not_valid_for_a_boolean, opts));
                 return NHC.optn_silenterr;
             }
         }
-        if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && !cptr.ld1so(go, $instance_globals_o_opt_initial)) {
+        if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) &&
+                !cptr.ld1so(go, $instance_globals_o_opt_initial)) {
             /* don't randomly toggle this/these */
             if ((optidx == NHC.opt_silent) || (optidx == NHC.opt_perm_invent))
                 return NHC.optn_ok;
@@ -10147,15 +12257,21 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
         switch (optidx) {
             case NHC.opt_female:
             if (!(yield* strncmpi(opts, __s_female, ((ln) > 3 ? (ln) : 3)))) {
-                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ld1so(flags, $flag_female) == negated) {
+                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                        cptr.ld1so(flags, $flag_female) == negated) {
                     nosexchange = 1;
                 } else {
-                    cptr.stI32o(flags, $flag_initgend, cptr.st1o(flags, $flag_female, schar((!negated))));
+                    cptr.stI32o(
+                        flags,
+                        $flag_initgend,
+                        cptr.st1o(flags, $flag_female, schar((!negated)))
+                    );
                     return NHC.optn_ok;
                 }
             }
             if (!(yield* strncmpi(opts, __s_male, ((ln) > 3 ? (ln) : 3)))) {
-                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ld1so(flags, $flag_female) != negated) {
+                if (!cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                        cptr.ld1so(flags, $flag_female) != negated) {
                     nosexchange = 1;
                 } else {
                     cptr.stI32o(flags, $flag_initgend, cptr.st1o(flags, $flag_female, negated));
@@ -10164,7 +12280,9 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             }
             break;
             case NHC.opt_perm_invent:
-            if (!negated && !cptr.ld1so(go, $instance_globals_o_opt_initial) && !can_set_perm_invent())
+            if (!negated &&
+                    !cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+                    !can_set_perm_invent())
                 return NHC.optn_silenterr;
             break;
             default:
@@ -10184,13 +12302,20 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             return NHC.optn_silenterr;
         }
 
-        cptr.st1((cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_addr)), schar((!negated)));  /* <==== SET IT HERE */
+        cptr.st1(
+            (cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_addr)),
+            schar((!negated))
+        );  /* <==== SET IT HERE */
 
         /* After the change */
         switch (optidx) {
             case NHC.opt_pauper:
             /* pauper implies nudist */
-            cptr.st1o(u, $you_uroleplay + $u_roleplay_nudist, cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper));
+            cptr.st1o(
+                u,
+                $you_uroleplay + $u_roleplay_nudist,
+                cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper)
+            );
             break;
             case NHC.opt_ascii_map:
             cptr.st1o(iflags, $instance_flags_wc_tiled_map, negated);
@@ -10199,12 +12324,14 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             cptr.st1o(iflags, $instance_flags_wc_ascii_map, negated);
             break;
             case NHC.opt_hilite_pet:
-            if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) || (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses)) {
+            if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) ||
+                    (cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_curses)) {
                 /* if we're enabling hilite_pet and petattr isn't set,
                    set it to Inverse; if we're disabling, leave petattr
                    alone so that re-enabling will get current value back
                  */
-                if (cptr.ld1so(iflags, $instance_flags_wc_hilite_pet) && !cptr.ldI32o(iflags, $instance_flags_wc2_petattr))
+                if (cptr.ld1so(iflags, $instance_flags_wc_hilite_pet) &&
+                        !cptr.ldI32o(iflags, $instance_flags_wc2_petattr))
                     cptr.stI32o(iflags, $instance_flags_wc2_petattr, NHM.ATR_INVERSE);
             }
             cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
@@ -10232,7 +12359,10 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             case NHC.opt_armorstatus:
             if (!wc2_supported(cptr.ldPtro(allopt, optidx, $sizeof_allopt_t))) {
                 /* not actually an error */
-                (yield* config_error_add(__s_s_is_not_supported, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)));
+                (yield* config_error_add(
+                    __s_s_is_not_supported,
+                    cptr.ldPtro(allopt, optidx, $sizeof_allopt_t)
+                ));
                 return NHC.optn_ok;
             }
             // @FallThrough
@@ -10307,7 +12437,11 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
             (yield* update_rest_on_space());
             break;
             case NHC.opt_accessiblemsg:
-            cptr.stI16o(a11y, $accessibility_data_msg_loc, cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, 0));
+            cptr.stI16o(
+                a11y,
+                $accessibility_data_msg_loc,
+                cptr.stI16o(a11y, $accessibility_data_msg_loc + $nhcoord_y, 0)
+            );
             break;
             default:
             break;
@@ -10317,7 +12451,11 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
            still be pending at this point (mainly for opt_need_redraw);
            give the toggled message now regardless */
         if (give_opt_msg)
-            (yield* pline(__s_s_option_toggled_s, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), !negated ? __s_on : __s_off));
+            (yield* pline(
+                __s_s_option_toggled_s,
+                cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+                !negated ? __s_on : __s_off
+            ));
 
         return NHC.optn_ok;
     }
@@ -10328,7 +12466,15 @@ export function* optfn_boolean(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:5452 — @param {CInt} midx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:5452
+ * @param {CInt} midx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* spcfn_misc_menu_cmd(midx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -10342,7 +12488,10 @@ function* spcfn_misc_menu_cmd(midx, req, negated, opts, op) {
 
             if ((yield* illegal_menu_cmd_key(uchar(c))))
                 return NHC.optn_err;
-            (yield* add_menu_cmd_alias(c, cptr.ld1so2(default_menu_cmd_info, midx, $sizeof_menu_cmd_t, $menu_cmd_t_cmd)));
+            (yield* add_menu_cmd_alias(
+                c,
+                cptr.ld1so2(default_menu_cmd_info, midx, $sizeof_menu_cmd_t, $menu_cmd_t_cmd)
+            ));
         }
         return NHC.optn_ok;
     }
@@ -10397,11 +12546,36 @@ function* handler_menustyle() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < menutype.length; i++) {
-        void cptr.sprintf(cptr.decay(buf), __s_12_12s_c_60s, cptr.ldPtro(cptr.decay(menutype[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(menutype[i]), 1, 8));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_12_12s_c_60s,
+            cptr.ldPtro(cptr.decay(menutype[i]), 0, 8),
+            sep,
+            cptr.ldPtro(cptr.decay(menutype[i]), 1, 8)
+        );
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (i == cptr.ld1so(flags, $flag_menu_style)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1s(cptr.decay(buf)),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            (i == cptr.ld1so(flags, $flag_menu_style))
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
         /* second line is prefixed by spaces that "c - " would use */
-        void cptr.sprintf(cptr.decay(buf), __s_4s_12_12s_c_60s, __s_empty, __s_empty, sep, cptr.ldPtro(cptr.decay(menutype[i]), 2, 8));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_4s_12_12s_c_60s,
+            __s_empty,
+            __s_empty,
+            sep,
+            cptr.ldPtro(cptr.decay(menutype[i]), 2, 8)
+        );
         (yield* add_menu_str(tmpwin, cptr.decay(buf)));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_select_menustyle)));
@@ -10417,7 +12591,11 @@ function* handler_menustyle() {
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
     chngd = schar((cptr.ld1so(flags, $flag_menu_style) != old_menu_style));
     if (chngd || cptr.ld1so(flags, $flag_verbose))
-        (yield* pline(__s_menustyle_s_s, chngd ? __s_changed_to : __s_is_still, cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8)));
+        (yield* pline(
+            __s_menustyle_s_s,
+            chngd ? __s_changed_to : __s_is_still,
+            cptr.ldPtro(cptr.decay(menutype[cptr.ld1so(flags, $flag_menu_style)]), 0, 8)
+        ));
     return NHC.optn_ok;
 }
 
@@ -10433,14 +12611,58 @@ function* handler_align_misc(optidx) {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stI32(any, NHM.ALIGN_TOP);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 116, 0, NHM.ATR_NONE, clr, __s_top, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        116,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_top,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.stI32(any, NHM.ALIGN_BOTTOM);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 98, 0, NHM.ATR_NONE, clr, __s_bottom, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        98,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_bottom,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.stI32(any, NHM.ALIGN_LEFT);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 108, 0, NHM.ATR_NONE, clr, __s_left, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        108,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_left,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.stI32(any, NHM.ALIGN_RIGHT);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 114, 0, NHM.ATR_NONE, clr, __s_right, NHM.MENU_ITEMFLAGS_NONE));
-    void cptr.sprintf(cptr.decay(abuf), __s_select_s_window_placement_relative_to, (optidx == NHC.opt_align_message) ? __s_message : __s_status__2);
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        114,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_right,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
+    void cptr.sprintf(
+        cptr.decay(abuf),
+        __s_select_s_window_placement_relative_to,
+        (optidx == NHC.opt_align_message) ? __s_message : __s_status__2
+    );
     (yield* Y.icall(end_menu()(tmpwin, cptr.decay(abuf))));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick)) > 0) {
         if (optidx == NHC.opt_align_message)
@@ -10473,10 +12695,26 @@ function* handler_autounlock(optidx) {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < unlocktypes.length; ++i) {
-        void cptr.sprintf(cptr.decay(buf), __s_10_10s_c_40s, cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(unlocktypes[i]), 1, 8));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_10_10s_c_40s,
+            cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8),
+            sep,
+            cptr.ldPtro(cptr.decay(unlocktypes[i]), 1, 8)
+        );
         presel = ((cptr.ldI32o(flags, $flag_autounlock) & (1 << i) >>> 0) >>> 0) | 0;
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (presel ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE)));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1s(cptr.ldPtro(cptr.decay(unlocktypes[i]), 0, 8)),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            (presel ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE)
+        ));
     }
     void cptr.sprintf(cptr.decay(buf), __s_select_20s_actions, optname);
     (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
@@ -10530,9 +12768,25 @@ function* handler_disclose() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
-        void cptr.sprintf(cptr.decay(buf), __s_12s_c_c, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8), cptr.ld1so2(flags, i, 1, $flag_end_disclose), cptr.ld1so(cptr.decay(disclosure_options), i, 1));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_12s_c_c,
+            cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8),
+            cptr.ld1so2(flags, i, 1, $flag_end_disclose),
+            cptr.ld1so(cptr.decay(disclosure_options), i, 1)
+        );
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(cptr.decay(disclosure_options), i, 1), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1so(cptr.decay(disclosure_options), i, 1),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
         cptr.stI32o(disc_cat, i, 0, 4);
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_change_which_disclosure_options)));
@@ -10550,33 +12804,119 @@ function* handler_disclose() {
     for (i = 0; i < NHM.NUM_DISCLOSURE_OPTIONS; i++) {
         if (cptr.ldI32o(disc_cat, i, 4)) {
             c = cptr.ld1so2(flags, i, 1, $flag_end_disclose);
-            void cptr.sprintf(cptr.decay(buf), __s_disclosure_options_for_s, cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_disclosure_options_for_s,
+                cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)
+            );
             tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(start_menu()(tmpwin, 0n)));
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             /* 'y','n',and '+' work as alternate selectors; '-' doesn't */
             cptr.st1(any, 45);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_never_disclose_without_prompting, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                0,
+                cptr.ld1s(any),
+                NHM.ATR_NONE,
+                clr,
+                __s_never_disclose_without_prompting,
+                (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+            ));
             cptr.st1(any, 43);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_always_disclose_without_prompting, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-            if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 || cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 103) {
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                0,
+                cptr.ld1s(any),
+                NHM.ATR_NONE,
+                clr,
+                __s_always_disclose_without_prompting,
+                (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+            ));
+            if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 ||
+                    cptr.ld1s(cptr.ldPtro(
+                        __static_handler_disclose_disclosure_names,
+                        i,
+                        8
+                    )) == 103) {
                 cptr.st1(any, 35);  /* '#' */
-                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_always_disclose_pick_sort_order_from, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+                (yield* add_menu(
+                    tmpwin,
+                    nul_glyphinfo.v,
+                    any,
+                    0,
+                    cptr.ld1s(any),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_always_disclose_pick_sort_order_from,
+                    (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+                ));
             }
             cptr.st1(any, 110);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_prompt_with_default_answer_of_no, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                0,
+                cptr.ld1s(any),
+                NHM.ATR_NONE,
+                clr,
+                __s_prompt_with_default_answer_of_no,
+                (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+            ));
             cptr.st1(any, 121);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_prompt_with_default_answer_of_yes, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
-            if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 || cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 103) {
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                0,
+                cptr.ld1s(any),
+                NHM.ATR_NONE,
+                clr,
+                __s_prompt_with_default_answer_of_yes,
+                (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+            ));
+            if (cptr.ld1s(cptr.ldPtro(__static_handler_disclose_disclosure_names, i, 8)) == 118 ||
+                    cptr.ld1s(cptr.ldPtro(
+                        __static_handler_disclose_disclosure_names,
+                        i,
+                        8
+                    )) == 103) {
                 cptr.st1(any, 63);  /* '?' */
-                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, cptr.ld1s(any), NHM.ATR_NONE, clr, __s_prompt_with_default_answer_of_ask_to, (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+                (yield* add_menu(
+                    tmpwin,
+                    nul_glyphinfo.v,
+                    any,
+                    0,
+                    cptr.ld1s(any),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_prompt_with_default_answer_of_ask_to,
+                    (c == cptr.ld1s(any)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+                ));
             }
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
             n = (yield* select_menu(tmpwin, NHM.PICK_ONE, disclosure_pick));
             if (n > 0) {
-                cptr.st1o2(flags, i, 1, $flag_end_disclose, cptr.ld1so(disclosure_pick.v, 0, $sizeof_menu_item));
+                cptr.st1o2(
+                    flags,
+                    i,
+                    1,
+                    $flag_end_disclose,
+                    cptr.ld1so(disclosure_pick.v, 0, $sizeof_menu_item)
+                );
                 if (n > 1 && cptr.ld1so2(flags, i, 1, $flag_end_disclose) == c)
-                    cptr.st1o2(flags, i, 1, $flag_end_disclose, cptr.ld1so(disclosure_pick.v, 1, $sizeof_menu_item));
+                    cptr.st1o2(
+                        flags,
+                        i,
+                        1,
+                        $flag_end_disclose,
+                        cptr.ld1so(disclosure_pick.v, 1, $sizeof_menu_item)
+                    );
                 cptr.free(disclosure_pick.v);
             }
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -10587,7 +12927,10 @@ function* handler_disclose() {
 
 /** C ref: options.c:5780 @returns {CInt} */
 function* handler_menu_headings() {
-    let gotca = (yield* query_color_attr(cptr.add(iflags, $instance_flags_menu_headings), __s_how_to_highlight_menu_headings));
+    let gotca = (yield* query_color_attr(
+        cptr.add(iflags, $instance_flags_menu_headings),
+        __s_how_to_highlight_menu_headings
+    ));
 
     if (gotca) {
         /* header highlighting affects persistent inventory display */
@@ -10614,10 +12957,31 @@ function* handler_menu_objsyms() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < 6; ++i) {
-        nh_snprintf(__s_handler_menu_objsyms, 5809, cptr.decay(buf), 256n, __s_12_12s_c_60s, cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam), sep, cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_descr));
+        nh_snprintf(
+            __s_handler_menu_objsyms,
+            5809,
+            cptr.decay(buf),
+            256n,
+            __s_12_12s_c_60s,
+            cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_nam),
+            sep,
+            cptr.ldPtro2(objsymvals, i, $sizeof_objsymopt, $objsymopt_descr)
+        );
         cptr.stI32(any, (i + 1) | 0);
         j = cptr.ldI32o(objsymvals, i, $sizeof_objsymopt);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((48 + i) | 0)), cptr.ld1s(cptr.decay(buf)), NHM.ATR_NONE, clr, cptr.decay(buf), (j == cptr.ldI32o(iflags, $instance_flags_menuobjsyms)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            schar(((48 + i) | 0)),
+            cptr.ld1s(cptr.decay(buf)),
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            (j == cptr.ldI32o(iflags, $instance_flags_menuobjsyms))
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_set_object_symbols_in_menus_to_what)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, picklist));
@@ -10659,11 +13023,36 @@ function* handler_msg_window() {
         for (i = 0; i < menutype.length; i++) {
             if (i < 2 && is_curses)
                 continue;
-            void cptr.sprintf(cptr.decay(buf), __s_12_12s_c_60s, cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8), sep, cptr.ldPtro(cptr.decay(msgwind[i]), 1, 8));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_12_12s_c_60s,
+                cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8),
+                sep,
+                cptr.ldPtro(cptr.decay(msgwind[i]), 1, 8)
+            );
             cptr.st1(any, c = cptr.ld1s(cptr.ldPtro(cptr.decay(msgwind[i]), 0, 8)));
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.decay(buf)), 0, NHM.ATR_NONE, clr, cptr.decay(buf), (c == cptr.ld1so(iflags, $instance_flags_prevmsg_window)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                cptr.ld1s(cptr.decay(buf)),
+                0,
+                NHM.ATR_NONE,
+                clr,
+                cptr.decay(buf),
+                (c == cptr.ld1so(iflags, $instance_flags_prevmsg_window))
+                    ? NHM.MENU_ITEMFLAGS_SELECTED
+                    : NHM.MENU_ITEMFLAGS_NONE
+            ));
             /* second line is prefixed by spaces that "c - " would use */
-            void cptr.sprintf(cptr.decay(buf), __s_4s_12_12s_c_60s, __s_empty, __s_empty, sep, cptr.ldPtro(cptr.decay(msgwind[i]), 2, 8));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_4s_12_12s_c_60s,
+                __s_empty,
+                __s_empty,
+                sep,
+                cptr.ldPtro(cptr.decay(msgwind[i]), 2, 8)
+            );
             (yield* add_menu_str(tmpwin, cptr.decay(buf)));
         }
         (yield* Y.icall(end_menu()(tmpwin, __s_select_message_history_display_type)));
@@ -10679,11 +13068,21 @@ function* handler_msg_window() {
         (yield* Y.icall(destroy_nhwindow()(tmpwin)));
         chngd = schar((cptr.ld1so(iflags, $instance_flags_prevmsg_window) != old_prevmsg_window));
         if (chngd || cptr.ld1so(flags, $flag_verbose)) {
-            void (yield* optfn_msg_window(NHC.opt_msg_window, NHC.get_val, 0, cptr.decay(buf), cptr.decay(empty_optstr)));
+            void (yield* optfn_msg_window(
+                NHC.opt_msg_window,
+                NHC.get_val,
+                0,
+                cptr.decay(buf),
+                cptr.decay(empty_optstr)
+            ));
             (yield* pline(__s_msg_window_20s_20s, chngd ? __s_changed_to : __s_is_still, cptr.decay(buf)));
         }
     } else
-        (yield* pline(__s_s_option_is_not_supported_for_s, cptr.ldPtro(allopt, NHC.opt_msg_window, $sizeof_allopt_t), cptr.ldPtr(windowprocs)));
+        (yield* pline(
+            __s_s_option_is_not_supported_for_s,
+            cptr.ldPtro(allopt, NHC.opt_msg_window, $sizeof_allopt_t),
+            cptr.ldPtr(windowprocs)
+        ));
     return NHC.optn_ok;
 }
 
@@ -10692,7 +13091,11 @@ cptr.stPtro(__static_handler_number_pad_npchoices, 0, __s_0_off__2);
 cptr.stPtro(__static_handler_number_pad_npchoices, 8, __s_1_on__2);
 cptr.stPtro(__static_handler_number_pad_npchoices, 16, __s_2_on_msdos_compatible__2);
 cptr.stPtro(__static_handler_number_pad_npchoices, 24, __s_3_on_phone_style_digit_layout);
-cptr.stPtro(__static_handler_number_pad_npchoices, 32, __s_4_on_phone_style_layout_msdos_compatible);
+cptr.stPtro(
+    __static_handler_number_pad_npchoices,
+    32,
+    __s_4_on_phone_style_layout_msdos_compatible
+);
 cptr.stPtro(__static_handler_number_pad_npchoices, 40, __s_1_off_z_to_move_upper_left_y_to_zap); /** C ref: options.c:5898 — char *[6] (function-static) */
 
 /** C ref: options.c:5893 @returns {CInt} */
@@ -10708,7 +13111,17 @@ function* handler_number_pad() {
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     for (i = 0; i < 6; i++) {
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, cptr.ldPtro(__static_handler_number_pad_npchoices, i, 8), NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            schar(((97 + i) | 0)),
+            schar(((48 + i) | 0)),
+            NHM.ATR_NONE,
+            clr,
+            cptr.ldPtro(__static_handler_number_pad_npchoices, i, 8),
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_select_number_pad_mode)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
@@ -10777,12 +13190,34 @@ function* handler_paranoid_confirmation() {
                 cmdnm = (yield* cmdname_from_func(do_reqmenu, cptr.decay(cbuf), 1));
                 if (!cmdnm)
                     cmdnm = __s_reqmenu;
-                void cptr.sprintf(cptr.decay(mbuf), __s_s_31s, (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty, cmdnm);
+                void cptr.sprintf(
+                    cptr.decay(mbuf),
+                    __s_s_31s,
+                    (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty,
+                    cmdnm
+                );
             }
-            explain = strsubst(cptr.strcpy(cptr.decay(ebuf), explain), __s_apos_m_apos, cptr.decay(mbuf));
+            explain = strsubst(
+                cptr.strcpy(cptr.decay(ebuf), explain),
+                __s_apos_m_apos,
+                cptr.decay(mbuf)
+            );
         }
         cptr.stI32(any, cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts));
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname)), 0, NHM.ATR_NONE, clr, explain, ((cptr.ldI32o(flags, $flag_paranoia_bits) & cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1s(cptr.ldPtro2(paranoia, i, $sizeof_paranoia_opts, $paranoia_opts_argname)),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            explain,
+            ((cptr.ldI32o(flags, $flag_paranoia_bits) &
+                cptr.ldI32o(paranoia, i, $sizeof_paranoia_opts) >>> 0) >>> 0)
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_actions_requiring_extra_confirmation)));
     i = (yield* select_menu(tmpwin, NHM.PICK_ANY, paranoia_picks));
@@ -10794,7 +13229,12 @@ function* handler_paranoid_confirmation() {
         if (i > 0) {
             /* at least 1 item set, either preselected or newly picked */
             while (--i >= 0)
-                cptr.stI32o(flags, $flag_paranoia_bits, cptr.ldI32o(flags, $flag_paranoia_bits) | (cptr.ldI32o(paranoia_picks.v, i, $sizeof_menu_item) >>> 0));
+                cptr.stI32o(
+                    flags,
+                    $flag_paranoia_bits,
+                    cptr.ldI32o(flags, $flag_paranoia_bits) |
+                        (cptr.ldI32o(paranoia_picks.v, i, $sizeof_menu_item) >>> 0)
+                );
             cptr.free(paranoia_picks.v);
         }
     }
@@ -10829,14 +13269,35 @@ function* handler_perminv_mode() {
         if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) {
             let numspaces = (widest - Number(BigInt.asIntN(32, cptr.strlen(pi0)))) | 0;
 
-            void cptr.sprintf(cptr.decay(sepbuf), __s_pct_star_s, ((numspaces) > 1 ? (numspaces) : 1), __s_sp);
+            void cptr.sprintf(
+                cptr.decay(sepbuf),
+                __s_pct_star_s,
+                ((numspaces) > 1 ? (numspaces) : 1),
+                __s_sp
+            );
         } else {
             void cptr.strcpy(cptr.decay(sepbuf), __s_tab);
         }
-        void cptr.sprintf(cptr.decay(buf), __s_s_s_s__2, pi0, cptr.decay(sepbuf), cptr.ldPtro(cptr.decay(perminv_modes[i]), 2, 8));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s_s__2,
+            pi0,
+            cptr.decay(sepbuf),
+            cptr.ldPtro(cptr.decay(perminv_modes[i]), 2, 8)
+        );
         let$ = schar((((i & NHC.InvSparse) != 0) ? highc(cptr.ld1so(pi1, 0)) : cptr.ld1so(pi0, 0)));
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, let$, schar(((48 + i) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), (i == old_pi) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            let$,
+            schar(((48 + i) | 0)),
+            NHM.ATR_NONE,
+            NHM.NO_COLOR,
+            cptr.decay(buf),
+            (i == old_pi) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_choose_permanent_inventory_mode)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, pi_pick));
@@ -10851,13 +13312,19 @@ function* handler_perminv_mode() {
     if (n >= 0) {
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
         void (yield* optfn_perminv_mode(NHC.opt_perm_invent, NHC.get_val, 0, cptr.decay(buf), null));
-        (yield* pline(__s_perminv_mode_s_s_s, (new_pi != old_pi) ? __s_changed_to : __s_is_still, cptr.ldPtro(cptr.decay(perminv_modes[new_pi]), 0, 8), cptr.decay(buf)));
+        (yield* pline(
+            __s_perminv_mode_s_s_s,
+            (new_pi != old_pi) ? __s_changed_to : __s_is_still,
+            cptr.ldPtro(cptr.decay(perminv_modes[new_pi]), 0, 8),
+            cptr.decay(buf)
+        ));
         if (new_pi != NHC.InvOptNone && !old_perm_invent)
             cptr.st1o(iflags, $instance_flags_perm_invent, can_set_perm_invent());
         else if (new_pi == NHC.InvOptNone && old_perm_invent)
             cptr.st1o(iflags, $instance_flags_perm_invent, 0);
 
-        if (new_pi != old_pi || cptr.ld1so(iflags, $instance_flags_perm_invent) != old_perm_invent) {
+        if (new_pi != old_pi ||
+                cptr.ld1so(iflags, $instance_flags_perm_invent) != old_perm_invent) {
             cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
         }
     }
@@ -10880,7 +13347,17 @@ function* handler_pickup_burden() {
     for (i = 0; i < 6; i++) {
         burden_name = cptr.ldPtro(burdentype, i, 8);
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(burden_letters, i), 0, NHM.ATR_NONE, clr, burden_name, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1so(burden_letters, i),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            burden_name,
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_select_encumbrance_level)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, burden_pick)) > 0) {
@@ -10915,7 +13392,17 @@ function* handler_runmode() {
     for (i = 0; i < 4; i++) {
         mode_name = cptr.ldPtro(runmodes, i, 8);
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(mode_name), 0, NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1s(mode_name),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            mode_name,
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_select_run_travel_display_mode)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
@@ -10928,11 +13415,18 @@ function* handler_runmode() {
 
 /** C ref: options.c:6152 @returns {CInt} */
 function* handler_petattr() {
-    let tmp = (yield* query_attr(__s_select_pet_highlight_attribute, cptr.ldI32o(iflags, $instance_flags_wc2_petattr)));
+    let tmp = (yield* query_attr(
+        __s_select_pet_highlight_attribute,
+        cptr.ldI32o(iflags, $instance_flags_wc2_petattr)
+    ));
 
     if (tmp != -1) {
         cptr.stI32o(iflags, $instance_flags_wc2_petattr, tmp);
-        cptr.st1o(iflags, $instance_flags_wc_hilite_pet, schar((cptr.ldI32o(iflags, $instance_flags_wc2_petattr) != NHM.ATR_NONE)));
+        cptr.st1o(
+            iflags,
+            $instance_flags_wc_hilite_pet,
+            schar((cptr.ldI32o(iflags, $instance_flags_wc2_petattr) != NHM.ATR_NONE))
+        );
         if (!cptr.ld1so(go, $instance_globals_o_opt_initial))
             cptr.st1o(go, $instance_globals_o_opt_need_redraw, 1);
     }
@@ -10955,7 +13449,19 @@ function* handler_sortloot() {
     for (i = 0; i < 3; i++) {
         sortl_name = cptr.ldPtro(sortltype, i, 8);
         cptr.st1(any, cptr.ld1s(sortl_name));
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(sortl_name), 0, NHM.ATR_NONE, clr, sortl_name, (cptr.ld1so(flags, $flag_sortloot) == cptr.ld1s(sortl_name)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1s(sortl_name),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            sortl_name,
+            (cptr.ld1so(flags, $flag_sortloot) == cptr.ld1s(sortl_name))
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_select_loot_sorting_type)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, sortl_pick));
@@ -10988,30 +13494,104 @@ function* handler_whatis_coord() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.st1(any, 99);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 99, 0, NHM.ATR_NONE, clr, __s_compass_east_or_3s_or_2n_4w, (gpc == 99) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        99,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_compass_east_or_3s_or_2n_4w,
+        (gpc == 99) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.st1(any, 102);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 102, 0, NHM.ATR_NONE, clr, __s_full_compass_east_or_3south_or_2north, (gpc == 102) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        102,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_full_compass_east_or_3south_or_2north,
+        (gpc == 102) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.st1(any, 109);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 109, 0, NHM.ATR_NONE, clr, __s_map_x_y, (gpc == 109) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        109,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_map_x_y,
+        (gpc == 109) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.st1(any, 115);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 115, 0, NHM.ATR_NONE, clr, __s_screen_row_column, (gpc == 115) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        115,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_screen_row_column,
+        (gpc == 115) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.st1(any, 110);
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __s_none_no_coordinates_displayed, (gpc == 110) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        110,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_none_no_coordinates_displayed,
+        (gpc == 110) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     (yield* add_menu_str(tmpwin, __s_empty));
-    void cptr.sprintf(cptr.decay(buf), __s_map_upper_left_d_d_lower_right_d_d_s, 1, 0, 79, 20, cptr.ld1so(flags, $flag_verbose) ? __s_column_0_unused_off_left_edge : __s_empty);
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_map_upper_left_d_d_lower_right_d_d_s,
+        1,
+        0,
+        79,
+        20,
+        cptr.ld1so(flags, $flag_verbose) ? __s_column_0_unused_off_left_edge : __s_empty
+    );
     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
     if (strcmp(cptr.ldPtr(windowprocs), __s_tty))
         (yield* add_menu_str(tmpwin, __s_screen_row_is_offset_to_accommodate_tty));
-    void cptr.sprintf(cptr.decay(buf), __s_screen_upper_left_02d_02d_lower_right_d, 2, 1, 22, 79, cptr.ld1so(flags, $flag_verbose) ? __s_column_80_is_not_used : __s_empty);
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_screen_upper_left_02d_02d_lower_right_d,
+        2,
+        1,
+        22,
+        79,
+        cptr.ld1so(flags, $flag_verbose) ? __s_column_80_is_not_used : __s_empty
+    );
     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
     (yield* add_menu_str(tmpwin, __s_empty));
     (yield* Y.icall(end_menu()(tmpwin, __s_select_coordinate_display_when_auto)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
-        cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 0, $sizeof_menu_item));
+        cptr.stI32o(
+            iflags,
+            $instance_flags_getpos_coords,
+            cptr.ld1so(window_pick.v, 0, $sizeof_menu_item)
+        );
         /* PICK_ONE doesn't unselect preselected entry when
            selecting another one */
         if (pick_cnt > 1 && cptr.ldI32o(iflags, $instance_flags_getpos_coords) == gpc)
-            cptr.stI32o(iflags, $instance_flags_getpos_coords, cptr.ld1so(window_pick.v, 1, $sizeof_menu_item));
+            cptr.stI32o(
+                iflags,
+                $instance_flags_getpos_coords,
+                cptr.ld1so(window_pick.v, 1, $sizeof_menu_item)
+            );
         cptr.free(window_pick.v);
     }
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -11031,18 +13611,56 @@ function* handler_whatis_filter() {
     (yield* Y.icall(start_menu()(tmpwin, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.st1(any, (schar(((NHC.GFILTER_NONE + 1) | 0))));
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, 0, NHM.ATR_NONE, clr, __s_no_filtering, (gfilt == NHC.GFILTER_NONE) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        110,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_no_filtering,
+        (gfilt == NHC.GFILTER_NONE) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.st1(any, (schar(((NHC.GFILTER_VIEW + 1) | 0))));
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 118, 0, NHM.ATR_NONE, clr, __s_in_view_only, (gfilt == NHC.GFILTER_VIEW) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        118,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_in_view_only,
+        (gfilt == NHC.GFILTER_VIEW) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.st1(any, (schar(((NHC.GFILTER_AREA + 1) | 0))));
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, __s_in_same_area, (gfilt == NHC.GFILTER_AREA) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        97,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_in_same_area,
+        (gfilt == NHC.GFILTER_AREA) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     (yield* Y.icall(end_menu()(tmpwin, __s_select_location_filtering_when_going)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, window_pick))) > 0) {
-        cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 0, $sizeof_menu_item) - 1) | 0));
+        cptr.stI32o(
+            iflags,
+            $instance_flags_getloc_filter,
+            ((cptr.ld1so(window_pick.v, 0, $sizeof_menu_item) - 1) | 0)
+        );
         /* PICK_ONE doesn't unselect preselected entry when
            selecting another one */
         if (pick_cnt > 1 && cptr.ldI32o(iflags, $instance_flags_getloc_filter) == gfilt)
-            cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ld1so(window_pick.v, 1, $sizeof_menu_item) - 1) | 0));
+            cptr.stI32o(
+                iflags,
+                $instance_flags_getloc_filter,
+                ((cptr.ld1so(window_pick.v, 1, $sizeof_menu_item) - 1) | 0)
+            );
         cptr.free(window_pick.v);
     }
     (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -11106,17 +13724,44 @@ function* handler_autopickup_exception() {
                     cptr.stPtr(any, (opt_idx == 1) ? null : ape);
                     /* length of pattern plus quotes (plus '<'/'>') is
                        less than BUFSZ */
-                    void cptr.sprintf(cptr.decay(apebuf), __s_c_s, cptr.ld1so(ape, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(ape, $autopickup_exception_pattern));
-                    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(apebuf), NHM.MENU_ITEMFLAGS_NONE));
+                    void cptr.sprintf(
+                        cptr.decay(apebuf),
+                        __s_c_s,
+                        cptr.ld1so(ape, $autopickup_exception_grab) ? 60 : 62,
+                        cptr.ldPtro(ape, $autopickup_exception_pattern)
+                    );
+                    (yield* add_menu(
+                        tmpwin,
+                        nul_glyphinfo.v,
+                        any,
+                        0,
+                        0,
+                        NHM.ATR_NONE,
+                        clr,
+                        cptr.decay(apebuf),
+                        NHM.MENU_ITEMFLAGS_NONE
+                    ));
                     ape = cptr.ldPtro(ape, $autopickup_exception_next);
                 }
             }
-            void cptr.sprintf(cptr.decay(apebuf), __s_s_autopickup_exceptions, (opt_idx == 1) ? __s_list_of : __s_remove_which);
+            void cptr.sprintf(
+                cptr.decay(apebuf),
+                __s_s_autopickup_exceptions,
+                (opt_idx == 1) ? __s_list_of : __s_remove_which
+            );
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(apebuf))));
-            pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
+            pick_cnt = (yield* select_menu(
+                tmpwin,
+                (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY,
+                pick_list
+            ));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    remove_autopickup_exception(cptr.ldPtro(pick_list.v, pick_idx, $sizeof_menu_item));
+                    remove_autopickup_exception(cptr.ldPtro(
+                        pick_list.v,
+                        pick_idx,
+                        $sizeof_menu_item
+                    ));
                 cptr.free(pick_list.v), pick_list.v = null;
             }
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -11164,7 +13809,11 @@ function* handler_menu_colors() {
                     }
                     return NHC.optn_ok;
                 }
-            if (cptr.ld1s(cptr.decay(mcbuf)) && (yield* test_regex_pattern(cptr.decay(mcbuf), __s_menucolors_regex)) && (mcclr = (yield* query_color(null, NHM.NO_COLOR))) != -1 && (mcattr = (yield* query_attr(null, NHM.ATR_NONE))) != -1 && !(yield* add_menu_coloring_parsed(cptr.decay(mcbuf), mcclr, mcattr))) {
+            if (cptr.ld1s(cptr.decay(mcbuf)) &&
+                    (yield* test_regex_pattern(cptr.decay(mcbuf), __s_menucolors_regex)) &&
+                    (mcclr = (yield* query_color(null, NHM.NO_COLOR))) != -1 &&
+                    (mcattr = (yield* query_attr(null, NHM.ATR_NONE))) != -1 &&
+                    !(yield* add_menu_coloring_parsed(cptr.decay(mcbuf), mcclr, mcattr))) {
                 (yield* pline(__s_error_adding_the_menu_color));
                 (yield* Y.icall(wait_synch()()));
             }
@@ -11187,29 +13836,83 @@ function* handler_menu_colors() {
             mc_idx = 0;
             while (tmp) {
                 sattr = attr2attrname(cptr.ldI32o(tmp, $menucoloring_attr));
-                sclr = cptr.strcpy(cptr.decay(clrbuf), clr2colorname(cptr.ldI32o(tmp, $menucoloring_color)));
+                sclr = cptr.strcpy(
+                    cptr.decay(clrbuf),
+                    clr2colorname(cptr.ldI32o(tmp, $menucoloring_color))
+                );
                 void (yield* strNsubst(cptr.decay(clrbuf), __s_sp, __s_dash, 0));
                 cptr.stI32(any, ++mc_idx);
                 /* construct suffix */
-                void cptr.sprintf(cptr.decay(buf), __s_s_s_s__3, sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __s_amp : __s_empty, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __s_empty);
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_s_s_s__3,
+                    sclr,
+                    (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __s_amp : __s_empty,
+                    (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __s_empty
+                );
                 /* now main string */
-                ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(buf), __s_handler_menu_colors, 6470)) >>> 0)) - 1n)));  /* length available */
+                ln = Number(BigInt.asUintN(
+                    32,
+                    BigInt.asUintN(
+                        64,
+                        BigInt.asUintN(
+                            64,
+                            256n -
+                                BigInt((yield* Strlen_(
+                                    cptr.decay(buf),
+                                    __s_handler_menu_colors,
+                                    6470
+                                )) >>> 0)
+                        ) - 1n
+                    )
+                ));  /* length available */
                 void cptr.strcpy(cptr.decay(mcbuf), __s_quot);
                 if (cptr.strlen(cptr.ldPtro(tmp, $menucoloring_origstr)) > BigInt(ln >>> 0))
-                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mcbuf), cptr.ldPtro(tmp, $menucoloring_origstr), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mcbuf), 1)), __s_dot3);
+                    void cptr.strcat(
+                        __builtin___strncat_chk(
+                            cptr.decay(mcbuf),
+                            cptr.ldPtro(tmp, $menucoloring_origstr),
+                            BigInt(((ln - 3) >>> 0) >>> 0),
+                            __builtin_object_size(cptr.decay(mcbuf), 1)
+                        ),
+                        __s_dot3
+                    );
                 else
                     void cptr.strcat(cptr.decay(mcbuf), cptr.ldPtro(tmp, $menucoloring_origstr));
                 /* combine main string and suffix */
                 void cptr.strcat(cptr.decay(mcbuf), cptr.add(cptr.decay(buf), 1, 1));  /* skip buf[]'s initial quote */
-                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mcbuf), NHM.MENU_ITEMFLAGS_NONE));
+                (yield* add_menu(
+                    tmpwin,
+                    nul_glyphinfo.v,
+                    any,
+                    0,
+                    0,
+                    NHM.ATR_NONE,
+                    clr,
+                    cptr.decay(mcbuf),
+                    NHM.MENU_ITEMFLAGS_NONE
+                ));
                 tmp = cptr.ldPtro(tmp, $menucoloring_next);
             }
-            void cptr.sprintf(cptr.decay(mcbuf), __s_s_menu_colors, (opt_idx == 1) ? __s_list_of : __s_remove_which);
+            void cptr.sprintf(
+                cptr.decay(mcbuf),
+                __s_s_menu_colors,
+                (opt_idx == 1) ? __s_list_of : __s_remove_which
+            );
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(mcbuf))));
-            pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
+            pick_cnt = (yield* select_menu(
+                tmpwin,
+                (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY,
+                pick_list
+            ));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    free_one_menu_coloring((((cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) - 1) | 0) - pick_idx) | 0);
+                    free_one_menu_coloring((((cptr.ldI32o(
+                        pick_list.v,
+                        pick_idx,
+                        $sizeof_menu_item
+                    ) - 1) | 0) -
+                            pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -11238,7 +13941,10 @@ function* handler_msgtype() {
             (yield* getlin(__s_what_new_message_pattern, cptr.decay(mtbuf)));
             if (cptr.ld1s(cptr.decay(mtbuf)) == 27)
                 return 1;
-            if (cptr.ld1s(cptr.decay(mtbuf)) && (yield* test_regex_pattern(cptr.decay(mtbuf), __s_msgtype_regex)) && (mttyp = (yield* query_msgtype())) != -1 && !(yield* msgtype_add(mttyp, cptr.decay(mtbuf)))) {
+            if (cptr.ld1s(cptr.decay(mtbuf)) &&
+                    (yield* test_regex_pattern(cptr.decay(mtbuf), __s_msgtype_regex)) &&
+                    (mttyp = (yield* query_msgtype())) != -1 &&
+                    !(yield* msgtype_add(mttyp, cptr.decay(mtbuf)))) {
                 (yield* pline(__s_error_adding_the_message_type));
                 (yield* Y.icall(wait_synch()()));
             }
@@ -11261,20 +13967,64 @@ function* handler_msgtype() {
                 mtype = msgtype2name(cptr.ldI16(tmp));
                 cptr.stI32(any, ++mt_idx);
                 void cptr.sprintf(cptr.decay(mtbuf), __s_5s, mtype);
-                ln = Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, 256n - BigInt((yield* Strlen_(cptr.decay(mtbuf), __s_handler_msgtype, 6544)) >>> 0)) - 2n)));
+                ln = Number(BigInt.asUintN(
+                    32,
+                    BigInt.asUintN(
+                        64,
+                        BigInt.asUintN(
+                            64,
+                            256n -
+                                BigInt((yield* Strlen_(cptr.decay(mtbuf), __s_handler_msgtype, 6544)) >>> 0)
+                        ) - 2n
+                    )
+                ));
                 if (cptr.strlen(cptr.ldPtro(tmp, $plinemsg_type_pattern)) > BigInt(ln >>> 0))
-                    void cptr.strcat(__builtin___strncat_chk(cptr.decay(mtbuf), cptr.ldPtro(tmp, $plinemsg_type_pattern), BigInt(((ln - 3) >>> 0) >>> 0), __builtin_object_size(cptr.decay(mtbuf), 1)), __s_dot3_quot);
+                    void cptr.strcat(
+                        __builtin___strncat_chk(
+                            cptr.decay(mtbuf),
+                            cptr.ldPtro(tmp, $plinemsg_type_pattern),
+                            BigInt(((ln - 3) >>> 0) >>> 0),
+                            __builtin_object_size(cptr.decay(mtbuf), 1)
+                        ),
+                        __s_dot3_quot
+                    );
                 else
-                    void cptr.strcat(cptr.strcat(cptr.decay(mtbuf), cptr.ldPtro(tmp, $plinemsg_type_pattern)), __s_quot);
-                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(mtbuf), NHM.MENU_ITEMFLAGS_NONE));
+                    void cptr.strcat(
+                        cptr.strcat(cptr.decay(mtbuf), cptr.ldPtro(tmp, $plinemsg_type_pattern)),
+                        __s_quot
+                    );
+                (yield* add_menu(
+                    tmpwin,
+                    nul_glyphinfo.v,
+                    any,
+                    0,
+                    0,
+                    NHM.ATR_NONE,
+                    clr,
+                    cptr.decay(mtbuf),
+                    NHM.MENU_ITEMFLAGS_NONE
+                ));
                 tmp = cptr.ldPtro(tmp, $plinemsg_type_next);
             }
-            void cptr.sprintf(cptr.decay(mtbuf), __s_s_message_types, (opt_idx == 1) ? __s_list_of : __s_remove_which);
+            void cptr.sprintf(
+                cptr.decay(mtbuf),
+                __s_s_message_types,
+                (opt_idx == 1) ? __s_list_of : __s_remove_which
+            );
             (yield* Y.icall(end_menu()(tmpwin, cptr.decay(mtbuf))));
-            pick_cnt = (yield* select_menu(tmpwin, (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY, pick_list));
+            pick_cnt = (yield* select_menu(
+                tmpwin,
+                (opt_idx == 1) ? NHM.PICK_NONE : NHM.PICK_ANY,
+                pick_list
+            ));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    free_one_msgtype((((cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) - 1) | 0) - pick_idx) | 0);
+                    free_one_msgtype((((cptr.ldI32o(
+                        pick_list.v,
+                        pick_idx,
+                        $sizeof_menu_item
+                    ) - 1) | 0) -
+                            pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
             (yield* Y.icall(destroy_nhwindow()(tmpwin)));
@@ -11290,7 +14040,10 @@ function* handler_versinfo() {
     let tmpwin;
     let any = cptr.alloc(8);
     let vi_pick = cptr.box(null);
-    let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch)) ? 1 : 0));
+    let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) &&
+        cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch))
+            ? 1
+            : 0));
     let n;
     let vi = cptr.ldI32o(flags, $flag_versinfo) | 0;
 
@@ -11299,11 +14052,41 @@ function* handler_versinfo() {
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
 
     cptr.stI32(any, n = NHM.VI_NUMBER);  /* 1 */
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 110, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __s_version_number, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        110,
+        schar(((n + 48) | 0)),
+        NHM.ATR_NONE,
+        NHM.NO_COLOR,
+        __s_version_number,
+        (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.stI32(any, n = NHM.VI_NAME);  /* 2 */
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 103, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, __s_game_name, (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        103,
+        schar(((n + 48) | 0)),
+        NHM.ATR_NONE,
+        NHM.NO_COLOR,
+        __s_game_name,
+        (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.stI32(any, n = NHM.VI_BRANCH);  /* 4 */
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 98, schar(((n + 48) | 0)), NHM.ATR_NONE, NHM.NO_COLOR, (have_branch ? __s_development_branch : __s_not_applicable), (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        98,
+        schar(((n + 48) | 0)),
+        NHM.ATR_NONE,
+        NHM.NO_COLOR,
+        (have_branch ? __s_development_branch : __s_not_applicable),
+        (vi & n) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
 
     (yield* Y.icall(end_menu()(tmpwin, __s_select_version_information_flags)));
     n = (yield* select_menu(tmpwin, NHM.PICK_ANY, vi_pick));
@@ -11325,9 +14108,21 @@ function* handler_versinfo() {
 const __static_handler_windowborders_windowborders_text = cptr.alloc(5 * 8);
 cptr.stPtro(__static_handler_windowborders_windowborders_text, 0, __s_off_never_show_borders);
 cptr.stPtro(__static_handler_windowborders_windowborders_text, 8, __s_on_always_show_borders);
-cptr.stPtro(__static_handler_windowborders_windowborders_text, 16, __s_auto_on_if_display_is_at_least_24_2_x);
-cptr.stPtro(__static_handler_windowborders_windowborders_text, 24, __s_on_except_forced_off_for_perm_invent);
-cptr.stPtro(__static_handler_windowborders_windowborders_text, 32, __s_auto_except_forced_off_for_perm_invent); /** C ref: options.c:6628 — char *[5] (function-static) */
+cptr.stPtro(
+    __static_handler_windowborders_windowborders_text,
+    16,
+    __s_auto_on_if_display_is_at_least_24_2_x
+);
+cptr.stPtro(
+    __static_handler_windowborders_windowborders_text,
+    24,
+    __s_on_except_forced_off_for_perm_invent
+);
+cptr.stPtro(
+    __static_handler_windowborders_windowborders_text,
+    32,
+    __s_auto_except_forced_off_for_perm_invent
+); /** C ref: options.c:6628 — char *[5] (function-static) */
 
 /** C ref: options.c:6620 @returns {CInt} */
 function* handler_windowborders() {
@@ -11346,7 +14141,17 @@ function* handler_windowborders() {
         cptr.stI32(any, (i + 1) | 0);
         /* index 'i' matches the numeric setting for windowborders,
            so allow corresponding digit as group accelerator */
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(((97 + i) | 0)), schar(((48 + i) | 0)), NHM.ATR_NONE, clr, mode_name, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            schar(((97 + i) | 0)),
+            schar(((48 + i) | 0)),
+            NHM.ATR_NONE,
+            clr,
+            mode_name,
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_select_window_borders_mode)));
     if ((yield* select_menu(tmpwin, NHM.PICK_ONE, mode_pick)) > 0) {
@@ -11365,7 +14170,12 @@ function* handler_windowborders() {
  **********************************
  */
 
-/** C ref: options.c:6665 — @param {CPtr<char>} opts @param {CInt} val_optional @returns {CPtr<char>} */
+/**
+ * C ref: options.c:6665
+ * @param {CPtr<char>} opts
+ * @param {CInt} val_optional
+ * @returns {CPtr<char>}
+ */
 function* string_for_opt(opts, val_optional) {
     let colon;
     let equals;
@@ -11383,7 +14193,13 @@ function* string_for_opt(opts, val_optional) {
     return colon;
 }
 
-/** C ref: options.c:6683 — @param {CPtr<char>} optname @param {CPtr<char>} opts @param {CInt} val_optional @returns {CPtr<char>} */
+/**
+ * C ref: options.c:6683
+ * @param {CPtr<char>} optname
+ * @param {CPtr<char>} opts
+ * @param {CInt} val_optional
+ * @returns {CPtr<char>}
+ */
 function* string_for_env_opt(optname, opts, val_optional) {
     if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
         (yield* rejectoption(optname));
@@ -11394,7 +14210,11 @@ function* string_for_env_opt(optname, opts, val_optional) {
 
 /** C ref: options.c:6693 — @param {CPtr<char>} optname @param {CInt} with_parameter */
 function* bad_negation(optname, with_parameter) {
-    (yield* config_error_add(__s_the_s_option_may_not_sbe_negated, optname, with_parameter ? __s_both_have_a_value_and : __s_empty));
+    (yield* config_error_add(
+        __s_the_s_option_may_not_sbe_negated,
+        optname,
+        with_parameter ? __s_both_have_a_value_and : __s_empty
+    ));
 }
 
 /* go through all of the options and set the minmatch value
@@ -11434,8 +14254,17 @@ function* determine_ambiguities() {
         }
     }
     for (i = 0; i < ((218 - 1) | 0); ++i) {
-        len = (yield* Strlen_(cptr.ldPtro(allopt, i, $sizeof_allopt_t), __s_determine_ambiguities, 6732)) | 0;
-        cptr.stI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_minmatch, (cptr.ldI32o(needed, i, 4) < 3) ? 3 : ((cptr.ldI32o(needed, i, 4) <= len) ? cptr.ldI32o(needed, i, 4) : len));
+        len = (yield* Strlen_(cptr.ldPtro(allopt, i, $sizeof_allopt_t), __s_determine_ambiguities, 6732)) |
+                0;
+        cptr.stI32o2(
+            allopt,
+            i,
+            $sizeof_allopt_t,
+            $allopt_t_minmatch,
+            (cptr.ldI32o(needed, i, 4) < 3)
+                ? 3
+                : ((cptr.ldI32o(needed, i, 4) <= len) ? cptr.ldI32o(needed, i, 4) : len)
+        );
     }
 }
 
@@ -11459,7 +14288,14 @@ function length_without_val(user_string, len) {
 /* check whether a user-supplied option string is a proper leading
    substring of a particular option name; option string might have
    a colon or equals sign and arbitrary value appended to it */
-/** C ref: options.c:6760 — @param {CPtr<char>} user_string @param {CPtr<char>} optn_name @param {CInt} min_length @param {CInt} val_allowed @returns {CInt} */
+/**
+ * C ref: options.c:6760
+ * @param {CPtr<char>} user_string
+ * @param {CPtr<char>} optn_name
+ * @param {CInt} min_length
+ * @param {CInt} val_allowed
+ * @returns {CInt}
+ */
 export function* match_optname(user_string, optn_name, min_length, val_allowed) {
     let len = Number(BigInt.asIntN(32, cptr.strlen(user_string)));
 
@@ -11479,8 +14315,12 @@ export function reset_duplicate_opt_detection() {
 
 /** C ref: options.c:6782 — @param {CInt} optidx @returns {CInt} */
 function duplicate_opt_detection(optidx) {
-    if (cptr.ld1so(go, $instance_globals_o_opt_initial) && cptr.ld1so(go, $instance_globals_o_opt_from_file))
-        return cptr.postinc1(cptr.add(cptr.add(allopt, optidx, $sizeof_allopt_t), $allopt_t_dupdetected));
+    if (cptr.ld1so(go, $instance_globals_o_opt_initial) &&
+            cptr.ld1so(go, $instance_globals_o_opt_from_file))
+        return cptr.postinc1(cptr.add(
+            cptr.add(allopt, optidx, $sizeof_allopt_t),
+            $allopt_t_dupdetected
+        ));
     return 0;
 }
 
@@ -11489,8 +14329,19 @@ function* complain_about_duplicate(optidx) {
     let buf = new Uint8Array(256);
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (using_alias)
-        void cptr.sprintf(cptr.decay(buf), __s_via_alias_s, cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_alias));
-    (yield* config_error_add(__s_s_option_specified_multiple_times_s_s, (cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.CompOpt) ? __s_compound : __s_boolean, cptr.ldPtro(allopt, optidx, $sizeof_allopt_t), cptr.decay(buf)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_via_alias_s,
+            cptr.ldPtro2(allopt, optidx, $sizeof_allopt_t, $allopt_t_alias)
+        );
+    (yield* config_error_add(
+        __s_s_option_specified_multiple_times_s_s,
+        (cptr.ldI32o2(allopt, optidx, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.CompOpt)
+            ? __s_compound
+            : __s_boolean,
+        cptr.ldPtro(allopt, optidx, $sizeof_allopt_t),
+        cptr.decay(buf)
+    ));
     return;
 }
 
@@ -11543,7 +14394,10 @@ function* nmcpy(dest, src, maxlen) {
     for (count = 1; count < maxlen; count++) {
         if (cptr.ld1s(src) == 44 || cptr.ld1s(src) == 0)
             break;  /*exit on \0 terminator*/
-        cptr.st1(cptr.postinc(() => dest, (v) => { dest = v; }), cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; })));
+        cptr.st1(
+            cptr.postinc(() => dest, (v) => { dest = v; }),
+            cptr.ld1s(cptr.postinc(() => src, (v) => { src = v; }))
+        );
     }
     cptr.st1(dest, 0);
 }
@@ -11585,7 +14439,11 @@ function* escapes(cp, tp) {
     while (cptr.ld1s(cp)) {
         /* \M has to be followed by something to do meta conversion,
            otherwise it will just be \M which ultimately yields 'M' */
-        meta = (cptr.ld1s(cp) == 92 && (cptr.ld1so(cp, 1) == 109 || cptr.ld1so(cp, 1) == 77) && cptr.ld1so(cp, 2) ? 1 : 0);
+        meta = (cptr.ld1s(cp) == 92 &&
+            (cptr.ld1so(cp, 1) == 109 || cptr.ld1so(cp, 1) == 77) &&
+            cptr.ld1so(cp, 2)
+                ? 1
+                : 0);
         if (meta)
             cp = cptr.add(cp, 2);
 
@@ -11602,17 +14460,29 @@ function* escapes(cp, tp) {
             cp = cptr.add(cp, 1);  /* move past backslash to first digit */
             do {
                 cval = ((Math.imul(cval, 10)) + ((cptr.ld1s(cp) - 48) | 0)) | 0;
-            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && cptr.strchr(cptr.decay(__static_escapes_dec), cptr.ld1s(cp)) && ++dcount < 3);
-        } else if ((cptr.ld1so(cp, 1) == 111 || cptr.ld1so(cp, 1) == 79) && cptr.ld1so(cp, 2) && cptr.strchr(cptr.decay(__static_escapes_oct), cptr.ld1so(cp, 2))) {
+            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) &&
+                    cptr.strchr(cptr.decay(__static_escapes_dec), cptr.ld1s(cp)) &&
+                    ++dcount < 3);
+        } else if ((cptr.ld1so(cp, 1) == 111 || cptr.ld1so(cp, 1) == 79) &&
+                cptr.ld1so(cp, 2) &&
+                cptr.strchr(cptr.decay(__static_escapes_oct), cptr.ld1so(cp, 2))) {
             cp = cptr.add(cp, 2);  /* move past backslash and 'O' */
             do {
                 cval = ((Math.imul(cval, 8)) + ((cptr.ld1s(cp) - 48) | 0)) | 0;
-            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && cptr.strchr(cptr.decay(__static_escapes_oct), cptr.ld1s(cp)) && ++dcount < 3);
-        } else if ((cptr.ld1so(cp, 1) == 120 || cptr.ld1so(cp, 1) == 88) && cptr.ld1so(cp, 2) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null) {
+            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) &&
+                    cptr.strchr(cptr.decay(__static_escapes_oct), cptr.ld1s(cp)) &&
+                    ++dcount < 3);
+        } else if ((cptr.ld1so(cp, 1) == 120 || cptr.ld1so(cp, 1) == 88) &&
+                cptr.ld1so(cp, 2) &&
+                (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null) {
             cp = cptr.add(cp, 2);  /* move past backslash and 'X' */
             do {
-                cval = ((Math.imul(cval, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
-            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null && ++dcount < 2);
+                cval = ((Math.imul(cval, 16)) +
+                    ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) |
+                        0;
+            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) &&
+                    (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null &&
+                    ++dcount < 2);
         } else {
             switch (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; }))) {
                 case 92:
@@ -11786,7 +14656,10 @@ export function* initoptions() {
 export function* initoptions_init() {
     let opts;
     let i;
-    let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) && cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch)) ? 1 : 0));
+    let have_branch = schar((cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch) &&
+        cptr.ld1s(cptr.ldPtro(nomakedefs, $nomakedefs_s_git_branch))
+            ? 1
+            : 0));
 
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.builtin_opt);  /* Did I need to move this here? */
     /* initialize the function pointers for saving the game */
@@ -11795,7 +14668,11 @@ export function* initoptions_init() {
     /* if windowtype has been specified on the command line, set it up
        early so windowtype-specific options use it as their base */
     if (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)) {
-        (yield* nmcpy(cptr.add(gc, $instance_globals_c_chosen_windowtype), cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys), NHM.WINTYPELEN));
+        (yield* nmcpy(
+            cptr.add(gc, $instance_globals_c_chosen_windowtype),
+            cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys),
+            NHM.WINTYPELEN
+        ));
         (yield* config_error_init(0, __s_command_line, 0));
         (yield* choose_windows(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)));
         (yield* config_error_done());
@@ -11805,11 +14682,17 @@ export function* initoptions_init() {
          * that situation though, so the game will use whatever is in
          * RC/NETHACKOPTIONS or resort to DEFAULT_WINDOW_SYS.
          */
-        if (cptr.ldPtr(windowprocs) && !(yield* strncmpi((cptr.ldPtr(windowprocs)), (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)), -1)))
+        if (cptr.ldPtr(windowprocs) &&
+                !(yield* strncmpi(
+                    (cptr.ldPtr(windowprocs)),
+                    (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)),
+                    -1
+                )))
             /* ignore any windowtype:foo in RC file or NETHACKOPTIONS */
             cptr.st1o(iflags, $instance_flags_windowtype_locked, 1);
         /* shouldn't need cmdline_windowsys beyond here */
-        cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)), cptr.stPtro(gc, $instance_globals_c_cmdline_windowsys, null);
+        cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys)),
+                cptr.stPtro(gc, $instance_globals_c_cmdline_windowsys, null);
     }
 
     /* make any symbol parsing quicker */
@@ -11826,7 +14709,10 @@ export function* initoptions_init() {
     cptr.stI32o(go, $instance_globals_o_opt_phase, NHC.builtin_opt);
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
         if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr))
-            cptr.st1((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)), cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval));
+            cptr.st1(
+                (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)),
+                cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval)
+            );
     }
 
     cptr.st1o(flags, $flag_end_own, 0);
@@ -11844,14 +14730,28 @@ export function* initoptions_init() {
     cptr.stI32o(iflags, $instance_flags_getpos_coords, 110);
 
     /* hero's role, race, &c haven't been chosen yet */
-    cptr.stI32o(flags, $flag_initrole, cptr.stI32o(flags, $flag_initrace, cptr.stI32o(flags, $flag_initgend, cptr.stI32o(flags, $flag_initalign, -1))));
+    cptr.stI32o(
+        flags,
+        $flag_initrole,
+        cptr.stI32o(
+            flags,
+            $flag_initrace,
+            cptr.stI32o(flags, $flag_initgend, cptr.stI32o(flags, $flag_initalign, -1))
+        )
+    );
 
     init_ov_primary_symbols();
     init_ov_rogue_symbols();
     /* Set the default monster and object class symbols. */
     init_symbols();
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o2(gw, i, 1, $instance_globals_w_warnsyms, cptr.ld1uo(def_warnsyms, i, $sizeof_symdef));
+        cptr.st1o2(
+            gw,
+            i,
+            1,
+            $instance_globals_w_warnsyms,
+            cptr.ld1uo(def_warnsyms, i, $sizeof_symdef)
+        );
 
     /* assert( sizeof flags.inv_order == sizeof def_inv_order ); */
     void cptr.memcpy(cptr.add(flags, $flag_inv_order), cptr.decay(def_inv_order), 18n);
@@ -11872,16 +14772,39 @@ export function* initoptions_init() {
      */
     /* this detects the IBM-compatible console on most 386 boxes */
     if ((opts = nh_getenv(__s_term)) && !cptr.strncmp(opts, __s_at, 2n)) {
-        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
+        if (!(cptr.ldI32o2(
+            gs,
+            NHC.PRIMARYSET,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_explicitly
+        ) & 1))
             (yield* load_symset(__s_ibmgraphics__2, NHC.PRIMARYSET));
-        if (!(cptr.ldI32o2(gs, NHC.ROGUESET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
+        if (!(cptr.ldI32o2(
+            gs,
+            NHC.ROGUESET,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_explicitly
+        ) & 1))
             (yield* load_symset(__s_rogueibm, NHC.ROGUESET));
         (yield* switch_symbols(1));
         cptr.st1o(iflags, $instance_flags_wc_color, 1);
     }
     /* detect whether a "vt" terminal can handle alternate charsets */
-    if ((opts = nh_getenv(__s_term)) && !(yield* strncmpi(opts, __s_vt, 2)) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data) && cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data), 14) && cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE), 15)) {
-        if (!(cptr.ldI32o2(gs, NHC.PRIMARYSET, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly) & 1))
+    if ((opts = nh_getenv(__s_term)) &&
+            !(yield* strncmpi(opts, __s_vt, 2)) &&
+            cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data) &&
+            cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE) &&
+            cptr.strchr(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data), 14) &&
+            cptr.strchr(
+                cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE),
+                15
+            )) {
+        if (!(cptr.ldI32o2(
+            gs,
+            NHC.PRIMARYSET,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_explicitly
+        ) & 1))
             (yield* load_symset(__s_decgraphics__2, NHC.PRIMARYSET));
         (yield* switch_symbols(1));
     }
@@ -11910,7 +14833,15 @@ export function* initoptions_init() {
 
     /* since this is done before init_objects(), do partial init here */
     cptr.stI16o(objects, NHC.SLIME_MOLD, NHC.SLIME_MOLD, $sizeof_objclass);
-    (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, NHC.SLIME_MOLD, $sizeof_objclass))), $sizeof_objdescr)), NHM.PL_FSIZ));
+    (yield* nmcpy(
+        cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+        (cptr.ldPtro(
+            obj_descr,
+            cptr.ldI16((cptr.add(objects, NHC.SLIME_MOLD, $sizeof_objclass))),
+            $sizeof_objdescr
+        )),
+        NHM.PL_FSIZ
+    ));
     /* If SYSCF_FILE is specified, it _must_ exist... */
     (yield* assure_syscf_file());
     (yield* config_error_init(1, __s_sysconf, 0));
@@ -11960,9 +14891,39 @@ export function* initoptions_finish() {
      */
     cptr.stPtro(obj_descr, NHC.SLIME_MOLD, __s_fruit, $sizeof_objdescr);
 
-    sym = get_othersym(NHC.SYM_BOULDER, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? NHC.ROGUESET : NHC.PRIMARYSET);
+    sym = get_othersym(
+        NHC.SYM_BOULDER,
+        (((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )
+            )))
+            ? NHC.ROGUESET
+            : NHC.PRIMARYSET
+    );
     if (sym)
-        cptr.st1o2(gs, ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms, sym);
+        cptr.st1o2(
+            gs,
+            ((NHC.SYM_BOULDER +
+                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+            1,
+            $instance_globals_s_showsyms,
+            sym
+        );
     reglyph_darkroom();
     reset_glyphmap(NHC.gm_optionchange);
     /*
@@ -11984,12 +14945,19 @@ export function* initoptions_finish() {
        different interfaces; if neither tiled_map nor ascii_map pass the
        wc_supported() test, assume ascii_map */
     if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) && !wc_supported(__s_tiled_map))
-        cptr.st1o(iflags, $instance_flags_wc_tiled_map, 0), cptr.st1o(iflags, $instance_flags_wc_ascii_map, 1);
-    else if (cptr.ld1so(iflags, $instance_flags_wc_ascii_map) && !wc_supported(__s_ascii_map) && wc_supported(__s_tiled_map))
-        cptr.st1o(iflags, $instance_flags_wc_ascii_map, 0), cptr.st1o(iflags, $instance_flags_wc_tiled_map, 1);
+        cptr.st1o(iflags, $instance_flags_wc_tiled_map, 0),
+                cptr.st1o(iflags, $instance_flags_wc_ascii_map, 1);
+    else if (cptr.ld1so(iflags, $instance_flags_wc_ascii_map) &&
+            !wc_supported(__s_ascii_map) &&
+            wc_supported(__s_tiled_map))
+        cptr.st1o(iflags, $instance_flags_wc_ascii_map, 0),
+                cptr.st1o(iflags, $instance_flags_wc_tiled_map, 1);
     if (glyphid_cache_status())
         free_glyphid_cache();
-    (yield* apply_customizations(cptr.ldI32o(gc, $instance_globals_c_currentgraphics), (NHC.do_custom_symbols | NHC.do_custom_colors)));
+    (yield* apply_customizations(
+        cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+        (NHC.do_custom_symbols | NHC.do_custom_colors)
+    ));
     cptr.st1o(go, $instance_globals_o_opt_initial, 0);
     return;
 }
@@ -12005,7 +14973,10 @@ export function* allopt_array_init() {
         (yield* determine_ambiguities());
         for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
             if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr))
-                cptr.st1((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)), cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval));
+                cptr.st1(
+                    (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)),
+                    cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval)
+                );
         }
         heed_all_options();
         /*
@@ -12018,7 +14989,13 @@ export function* allopt_array_init() {
          */
         for (i = 0; i < NHC.OPTCOUNT; ++i) {
             if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))
-                (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(i, NHC.do_init, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
+                (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(
+                    i,
+                    NHC.do_init,
+                    0,
+                    cptr.decay(empty_optstr),
+                    cptr.decay(empty_optstr)
+                )));
         }
         __static_allopt_array_init_options_array_inited_already = 1;
     }
@@ -12121,7 +15098,16 @@ function* warning_opts(opts, optype) {
     length = Number(BigInt.asIntN(32, cptr.strlen(opts)));
     /* match the form obtained from PC configuration files */
     for (i = 0; i < NHM.WARNCOUNT; i++)
-        cptr.st1o(cptr.decay(translate), i, uchar(((i >= length) ? 0 : (cptr.ld1so(opts, i) ? uchar(cptr.ld1so(opts, i)) : cptr.ld1uo(def_warnsyms, i, $sizeof_symdef)))), 1);
+        cptr.st1o(
+            cptr.decay(translate),
+            i,
+            uchar(((i >= length)
+                ? 0
+                : (cptr.ld1so(opts, i)
+                    ? uchar(cptr.ld1so(opts, i))
+                    : cptr.ld1uo(def_warnsyms, i, $sizeof_symdef)))),
+            1
+        );
     assign_warnings(cptr.decay(translate));
     return 1;
 }
@@ -12160,7 +15146,13 @@ function* feature_alert_opts(op, optn) {
 
     cptr.stU64o(flags, $flag_suppress_alert, fnv);
     if (!cptr.ld1so(go, $instance_globals_o_opt_initial)) {
-        void cptr.sprintf(cptr.decay(buf), __s_lu_lu_lu, FEATURE_NOTICE_VER_MAJ(), FEATURE_NOTICE_VER_MIN(), FEATURE_NOTICE_VER_PATCH());
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_lu_lu_lu,
+            FEATURE_NOTICE_VER_MAJ(),
+            FEATURE_NOTICE_VER_MIN(),
+            FEATURE_NOTICE_VER_PATCH()
+        );
         (yield* pline(__s_feature_change_alerts_disabled_for, cptr.decay(buf)));
     }
     return 1;
@@ -12191,7 +15183,8 @@ export function* parsebindings(bindings) {
         /* at start so it represents a key */
         if (cptr.eq(bind, bindings))
             bind = cptr.strchr(cptr.add(bind, 1), 44);
-        else if (cptr.ld1so(bind, -1) == 92 || (cptr.ld1so(bind, -1) == 39 && cptr.ld1so(bind, 1) == 39))
+        else if (cptr.ld1so(bind, -1) == 92 ||
+                (cptr.ld1so(bind, -1) == 39 && cptr.ld1so(bind, 1) == 39))
             bind = cptr.strchr(cptr.add(bind, 2), 44);
     }
     /* if a comma separator has been found, break off first binding from rest;
@@ -12236,7 +15229,10 @@ export function* parsebindings(bindings) {
                 (yield* config_error_add(__s_bad_menu_key_s_s, visctrl(schar(key)), bind));
                 return 0;
             } else {
-                (yield* add_menu_cmd_alias(schar(key), cptr.ld1so2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_cmd)));
+                (yield* add_menu_cmd_alias(
+                    schar(key),
+                    cptr.ld1so2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_cmd)
+                ));
             }
             return ret;
         }
@@ -12298,7 +15294,17 @@ function* query_msgtype() {
     for (i = 0; i < 6; i++)
         if (cptr.ldPtro2(msgtype_names, i, 24, 16)) {
             cptr.stI32(any, (cptr.ld1so2(msgtype_names, i, 24, 8) + 1) | 0);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.ldPtro2(msgtype_names, i, 24, 16), NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                0,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                cptr.ldPtro2(msgtype_names, i, 24, 16),
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         }
     (yield* Y.icall(end_menu()(tmpwin, __s_how_to_show_the_message)));
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, picks));
@@ -12323,7 +15329,10 @@ function* msgtype_add(typ, pattern) {
        it again could conceivably run out of memory */
     if (!regex_compile(pattern, cptr.ldPtro(tmp, $plinemsg_type_regex))) {
         let errbuf = new Uint8Array(256);
-        let re_error_desc = regex_error_desc(cptr.ldPtro(tmp, $plinemsg_type_regex), cptr.decay(errbuf));
+        let re_error_desc = regex_error_desc(
+            cptr.ldPtro(tmp, $plinemsg_type_regex),
+            cptr.decay(errbuf)
+        );
 
         /* free first in case reason for failure was insufficient memory */
         regex_free(cptr.ldPtro(tmp, $plinemsg_type_regex));
@@ -12398,7 +15407,11 @@ export function hide_unhide_msgtypes(hide, hide_mask) {
     let mt;
 
     /* negative msgtype value won't be recognized by pline, so does nothing */
-    for (tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types); tmp; tmp = cptr.ldPtro(tmp, $plinemsg_type_next)) {
+    for (
+        tmp = cptr.ldPtro(gp, $instance_globals_p_plinemsg_types);
+        tmp;
+        tmp = cptr.ldPtro(tmp, $plinemsg_type_next)
+    ) {
         mt = cptr.ldI16(tmp);
         if (!hide)
             mt = -mt;  /* unhide: negate negative, yielding positive */
@@ -12482,11 +15495,25 @@ function* test_regex_pattern(str, errmsg) {
 /* parse 'role' or 'race' or 'gender' or 'alignment' */
 const __static_parse_role_opt_neg_opt = cptr.bytes("!"); /** C ref: options.c:7912 — char[2] (function-static) */
 
-/** C ref: options.c:7905 — @param {CInt} optidx @param {CInt} negated @param {CPtr<char>} fullname @param {CPtr<char>} opts @param {CPtr<char *>} opp @returns {CInt} */
+/**
+ * C ref: options.c:7905
+ * @param {CInt} optidx
+ * @param {CInt} negated
+ * @param {CPtr<char>} fullname
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char *>} opp
+ * @returns {CInt}
+ */
 function* parse_role_opt(optidx, negated, fullname, opts, opp) {
     let preval;
     let op;
-    let which = (optidx == NHC.opt_role) ? NHM.RS_ROLE : ((optidx == NHC.opt_race) ? NHM.RS_RACE : ((optidx == NHC.opt_gender) ? NHM.RS_GENDER : ((optidx == NHC.opt_alignment) ? NHM.RS_ALGNMNT : NHM.RS_filter)));  /* none of the above */
+    let which = (optidx == NHC.opt_role)
+            ? NHM.RS_ROLE
+            : ((optidx == NHC.opt_race)
+                ? NHM.RS_RACE
+                : ((optidx == NHC.opt_gender)
+                    ? NHM.RS_GENDER
+                    : ((optidx == NHC.opt_alignment) ? NHM.RS_ALGNMNT : NHM.RS_filter)));  /* none of the above */
     let ok = 0;
 
     /*
@@ -12523,7 +15550,11 @@ function* parse_role_opt(optidx, negated, fullname, opts, opp) {
             }
             if (!first) {
                 if ((val_negated ^ prev_negated) || (negated && val_negated)) {
-                    (yield* config_error_add(__s_invalid_mixed_negation_for_s_s, negated ? __s_bang : __s_empty, fullname));
+                    (yield* config_error_add(
+                        __s_invalid_mixed_negation_for_s_s,
+                        negated ? __s_bang : __s_empty,
+                        fullname
+                    ));
                     return 0;
                 } else if (!negated && !val_negated) {
                     (yield* config_error_add(__s_multiple_role_values_only_allowed_when));
@@ -12603,7 +15634,13 @@ function* get_cnf_role_opt(optidx) {
 /* Check if character c is illegal as a menu command key */
 /** C ref: options.c:8037 — @param {CUInt} c @returns {CInt} */
 function* illegal_menu_cmd_key(c) {
-    if (c == 0 || c == 13 || c == 10 || c == 27 || c == 32 || digit(schar(c)) || (letter(schar(c)) && c != 64)) {
+    if (c == 0 ||
+            c == 13 ||
+            c == 10 ||
+            c == 27 ||
+            c == 32 ||
+            digit(schar(c)) ||
+            (letter(schar(c)) && c != 64)) {
         (yield* config_error_add(__s_reserved_menu_command_key_s, visctrl(schar(c))));
         return 1;
     } else {
@@ -12630,7 +15667,10 @@ export function* oc_to_str(src, dest) {
         if (i < 0 || i >= NHC.MAXOCLASSES)
             (yield* impossible(__s_oc_to_str_illegal_object_class_d, i));
         else
-            cptr.st1(cptr.postinc(() => dest, (v) => { dest = v; }), cptr.ld1so(def_oc_syms, i, $sizeof_class_sym));
+            cptr.st1(
+                cptr.postinc(() => dest, (v) => { dest = v; }),
+                cptr.ld1so(def_oc_syms, i, $sizeof_class_sym)
+            );
     }
     cptr.st1(dest, 0);
 }
@@ -12644,11 +15684,40 @@ export function* add_menu_cmd_alias(from_ch, to_ch) {
     if (cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped) >= NHM.MAX_MENU_MAPPED_CMDS) {
         (yield* pline(__s_out_of_menu_map_space));
     } else {
-        cptr.st1o2(gm, cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped), 1, $instance_globals_m_mapped_menu_cmds, from_ch);
-        cptr.st1o2(gm, cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped), 1, $instance_globals_m_mapped_menu_op, to_ch);
-        (cptr.stI16o(gn, $instance_globals_n_n_menu_mapped, cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped) + 1)) - (1);
-        cptr.st1o2(gm, cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped), 1, $instance_globals_m_mapped_menu_cmds, 0);
-        cptr.st1o2(gm, cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped), 1, $instance_globals_m_mapped_menu_op, 0);
+        cptr.st1o2(
+            gm,
+            cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped),
+            1,
+            $instance_globals_m_mapped_menu_cmds,
+            from_ch
+        );
+        cptr.st1o2(
+            gm,
+            cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped),
+            1,
+            $instance_globals_m_mapped_menu_op,
+            to_ch
+        );
+        (cptr.stI16o(
+            gn,
+            $instance_globals_n_n_menu_mapped,
+            cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped) + 1
+        )) -
+                (1);
+        cptr.st1o2(
+            gm,
+            cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped),
+            1,
+            $instance_globals_m_mapped_menu_cmds,
+            0
+        );
+        cptr.st1o2(
+            gm,
+            cptr.ldI16o(gn, $instance_globals_n_n_menu_mapped),
+            1,
+            $instance_globals_m_mapped_menu_op,
+            0
+        );
     }
 }
 
@@ -12657,7 +15726,10 @@ export function get_menu_cmd_key(ch) {
     let found = cptr.strchr(cptr.add(gm, $instance_globals_m_mapped_menu_op), ch);
 
     if (found) {
-        let idx = Number(BigInt.asIntN(32, (cptr.diff(found, cptr.add(gm, $instance_globals_m_mapped_menu_op)))));
+        let idx = Number(BigInt.asIntN(
+            32,
+            (cptr.diff(found, cptr.add(gm, $instance_globals_m_mapped_menu_op)))
+        ));
 
         ch = cptr.ld1so2(gm, idx, 1, $instance_globals_m_mapped_menu_cmds);
     }
@@ -12673,7 +15745,10 @@ export function map_menu_cmd(ch) {
     let found = cptr.strchr(cptr.add(gm, $instance_globals_m_mapped_menu_cmds), ch);
 
     if (found) {
-        let idx = Number(BigInt.asIntN(32, (cptr.diff(found, cptr.add(gm, $instance_globals_m_mapped_menu_cmds)))));
+        let idx = Number(BigInt.asIntN(
+            32,
+            (cptr.diff(found, cptr.add(gm, $instance_globals_m_mapped_menu_cmds)))
+        ));
 
         ch = cptr.ld1so2(gm, idx, 1, $instance_globals_m_mapped_menu_op);
     }
@@ -12696,14 +15771,30 @@ cptr.st1o(__static_collect_menu_keys_scroll_keys, 8 + $menuscrollinfo_maskindx, 
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 10, 125);
 cptr.st1o(__static_collect_menu_keys_scroll_keys, 10 + $menuscrollinfo_maskindx, 8); /** C ref: options.c:8139 — struct menuscrollinfo[6] (function-static) */
 
-/** C ref: options.c:8126 — @param {CPtr<char>} outbuf @param {CUInt} scrollmask @param {CInt} printable @returns {CPtr<char>} */
+/**
+ * C ref: options.c:8126
+ * @param {CPtr<char>} outbuf
+ * @param {CUInt} scrollmask
+ * @param {CInt} printable
+ * @returns {CPtr<char>}
+ */
 export function* collect_menu_keys(outbuf, scrollmask, printable) {
     let i;
 
     cptr.st1o(outbuf, 0, 0);
     for (i = 0; i < 6; ++i) {
-        if ((scrollmask & cptr.ld1uo2(__static_collect_menu_keys_scroll_keys, i, $sizeof_menuscrollinfo, $menuscrollinfo_maskindx)) >>> 0) {
-            let c = get_menu_cmd_key(cptr.ld1so(__static_collect_menu_keys_scroll_keys, i, $sizeof_menuscrollinfo));
+        if ((scrollmask &
+                cptr.ld1uo2(
+                    __static_collect_menu_keys_scroll_keys,
+                    i,
+                    $sizeof_menuscrollinfo,
+                    $menuscrollinfo_maskindx
+                )) >>> 0) {
+            let c = get_menu_cmd_key(cptr.ld1so(
+                __static_collect_menu_keys_scroll_keys,
+                i,
+                $sizeof_menuscrollinfo
+            ));
 
             if (printable)
                 void cptr.strcat(outbuf, visctrl(c));
@@ -12720,7 +15811,12 @@ export function* collect_menu_keys(outbuf, scrollmask, printable) {
  * If replace_fruit is sent in, replace the fruit in the chain rather than
  * adding a new entry--for user specified fruits only.
  */
-/** C ref: options.c:8170 — @param {CPtr<char>} str @param {CPtr<struct fruit>} replace_fruit @returns {CInt} */
+/**
+ * C ref: options.c:8170
+ * @param {CPtr<char>} str
+ * @param {CPtr<struct fruit>} replace_fruit
+ * @returns {CInt}
+ */
 export function* fruitadd(str, replace_fruit) {
     let i;
     let f;
@@ -12746,15 +15842,62 @@ export function* fruitadd(str, replace_fruit) {
                they already received it in their original game;
                str==pl_fruit but makesingular() creates a copy
                so we need to copy that back into pl_fruit */
-            (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), (yield* makesingular(str)), NHM.PL_FSIZ));
+            (yield* nmcpy(
+                cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                (yield* makesingular(str)),
+                NHM.PL_FSIZ
+            ));
 
             /* disallow naming after other foods (since it'd be impossible
              * to tell the difference); globs might have a size prefix which
              * needs to be skipped in order to match the object type name
              */
-            globpfx = (!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_small, 6n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_large, 6n)) ? 6 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_medium, 7n)) ? 7 : ((!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_very_large, 11n)) ? 11 : 0));
-            for (i = cptr.ldI32o2(svb, NHC.FOOD_CLASS, 4, $instance_globals_saved_b_bases); cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == NHC.FOOD_CLASS; i++) {
-                if (!strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)), cptr.add(svp, $instance_globals_saved_p_pl_fruit)) || (globpfx > 0 && !strcmp((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)), cptr.add(cptr.add(svp, $instance_globals_saved_p_pl_fruit), globpfx, 1)))) {
+            globpfx = (!cptr.strncmp(
+                cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                __s_small,
+                6n
+            ) ||
+                !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_large, 6n))
+                    ? 6
+                    : ((!cptr.strncmp(
+                        cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                        __s_medium,
+                        7n
+                    ))
+                        ? 7
+                        : ((!cptr.strncmp(
+                            cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                            __s_very_large,
+                            11n
+                        ))
+                            ? 11
+                            : 0));
+            for (
+                i = cptr.ldI32o2(svb, NHC.FOOD_CLASS, 4, $instance_globals_saved_b_bases);
+                cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == NHC.FOOD_CLASS;
+                i++
+            ) {
+                if (!strcmp(
+                    (cptr.ldPtro(
+                        obj_descr,
+                        cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))),
+                        $sizeof_objdescr
+                    )),
+                    cptr.add(svp, $instance_globals_saved_p_pl_fruit)
+                ) ||
+                        (globpfx > 0 &&
+                            !strcmp(
+                                (cptr.ldPtro(
+                                    obj_descr,
+                                    cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))),
+                                    $sizeof_objdescr
+                                )),
+                                cptr.add(
+                                    cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                                    globpfx,
+                                    1
+                                )
+                            ))) {
                     found = 1;
                     break;
                 }
@@ -12762,13 +15905,77 @@ export function* fruitadd(str, replace_fruit) {
             if (!found) {
                 let c;
 
-                for (c = cptr.add(svp, $instance_globals_saved_p_pl_fruit); cptr.ld1s(c) >= 48 && cptr.ld1s(c) <= 57; c = cptr.add(c, 1))
+                for (
+                    c = cptr.add(svp, $instance_globals_saved_p_pl_fruit);
+                    cptr.ld1s(c) >= 48 && cptr.ld1s(c) <= 57;
+                    c = cptr.add(c, 1)
+                )
                     continue;
                 if (!cptr.ld1s(c) || isspace(uchar(cptr.ld1s(c))))
                     numeric = 1;
             }
-            if (found || numeric || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_cursed, 7n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_uncursed, 9n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_blessed, 8n) || !cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_partly_eaten, 13n) || (!cptr.strncmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_tin_of, 7n) && (!strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), __s_spinach) || (((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), null))) >= NHC.LOW_PM && ((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7), null))) < NHC.NUMMONS))) || !strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_empty_tin) || (!strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_glob) || (globpfx > 0 && !strcmp(__s_glob, cptr.add(cptr.add(svp, $instance_globals_saved_p_pl_fruit), globpfx, 1)))) || ((str_end_is(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_corpse) || str_end_is(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_egg)) && (((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null))) >= NHC.LOW_PM && ((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null))) < NHC.NUMMONS))) {
-                void cptr.strcpy(cptr.decay(buf), cptr.add(svp, $instance_globals_saved_p_pl_fruit));
+            if (found ||
+                    numeric ||
+                    !cptr.strncmp(
+                        cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                        __s_cursed,
+                        7n
+                    ) ||
+                    !cptr.strncmp(
+                        cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                        __s_uncursed,
+                        9n
+                    ) ||
+                    !cptr.strncmp(
+                        cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                        __s_blessed,
+                        8n
+                    ) ||
+                    !cptr.strncmp(
+                        cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                        __s_partly_eaten,
+                        13n
+                    ) ||
+                    (!cptr.strncmp(
+                        cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                        __s_tin_of,
+                        7n
+                    ) &&
+                        (!strcmp(
+                            cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7),
+                            __s_spinach
+                        ) ||
+                            (((yield* name_to_mon(
+                                cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7),
+                                null
+                            ))) >=
+                                NHC.LOW_PM &&
+                                ((yield* name_to_mon(
+                                    cptr.add(svp, $instance_globals_saved_p_pl_fruit + 7),
+                                    null
+                                ))) <
+                                    NHC.NUMMONS))) ||
+                    !strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_empty_tin) ||
+                    (!strcmp(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_glob) ||
+                        (globpfx > 0 &&
+                            !strcmp(
+                                __s_glob,
+                                cptr.add(
+                                    cptr.add(svp, $instance_globals_saved_p_pl_fruit),
+                                    globpfx,
+                                    1
+                                )
+                            ))) ||
+                    ((str_end_is(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_corpse) ||
+                        str_end_is(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_egg)) &&
+                        (((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null))) >=
+                            NHC.LOW_PM &&
+                            ((yield* name_to_mon(cptr.add(svp, $instance_globals_saved_p_pl_fruit), null))) <
+                                NHC.NUMMONS))) {
+                void cptr.strcpy(
+                    cptr.decay(buf),
+                    cptr.add(svp, $instance_globals_saved_p_pl_fruit)
+                );
                 void cptr.strcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_candied);
                 (yield* nmcpy(cptr.add(svp, $instance_globals_saved_p_pl_fruit + 8), cptr.decay(buf), 24));
             }
@@ -12794,7 +16001,11 @@ export function* fruitadd(str, replace_fruit) {
             sanitize_name(cptr.decay(altname));
             cptr.st1o(flags, $flag_made_fruit, 1);
         }
-        f = (yield* fruit_from_name(cptr.ld1s(cptr.decay(altname)) ? cptr.decay(altname) : str, 0, highest_fruit_id));
+        f = (yield* fruit_from_name(
+            cptr.ld1s(cptr.decay(altname)) ? cptr.decay(altname) : str,
+            0,
+            highest_fruit_id
+        ));
         if (f)
             break __lbl_nonew;
 
@@ -12819,7 +16030,15 @@ export function* fruitadd(str, replace_fruit) {
     return cptr.ldI32o(f, $fruit_fid);
 }
 
-/** C ref: options.c:8302 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:8302
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_o_autopickup_exceptions(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -12838,7 +16057,15 @@ function* optfn_o_autopickup_exceptions(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8324 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:8324
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_o_bind_keys(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -12857,7 +16084,15 @@ function* optfn_o_bind_keys(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8346 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:8346
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_o_autocomplete(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -12876,7 +16111,15 @@ function* optfn_o_autocomplete(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8368 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:8368
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_o_menu_colors(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -12895,7 +16138,15 @@ function* optfn_o_menu_colors(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8389 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:8389
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_o_message_types(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -12914,7 +16165,15 @@ function* optfn_o_message_types(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8414 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:8414
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_o_status_cond(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -12939,7 +16198,15 @@ function* optfn_o_status_cond(optidx, req, negated, opts, op) {
     return NHC.optn_ok;
 }
 
-/** C ref: options.c:8446 — @param {CInt} optidx @param {CInt} req @param {CInt} negated @param {CPtr<char>} opts @param {CPtr<char>} op @returns {CInt} */
+/**
+ * C ref: options.c:8446
+ * @param {CInt} optidx
+ * @param {CInt} req
+ * @param {CInt} negated
+ * @param {CPtr<char>} opts
+ * @param {CPtr<char>} op
+ * @returns {CInt}
+ */
 function* optfn_o_status_hilites(optidx, req, negated, opts, op) {
     if (req == NHC.do_init) {
         return NHC.optn_ok;
@@ -12969,21 +16236,39 @@ function* optfn_o_status_hilites(optidx, req, negated, opts, op) {
  */
 const __static_get_option_value_retbuf = new Uint8Array(256); /** C ref: options.c:8483 — char[256] (function-static) */
 
-/** C ref: options.c:8481 — @param {CPtr<char>} optname @param {CInt} cnfvalid @returns {CPtr<char>} */
+/**
+ * C ref: options.c:8481
+ * @param {CPtr<char>} optname
+ * @param {CInt} cnfvalid
+ * @returns {CPtr<char>}
+ */
 export function* get_option_value(optname, cnfvalid) {
     let bool_p;
     let i;
 
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t) !== null; i++)
         if (!strcmp(optname, cptr.ldPtro(allopt, i, $sizeof_allopt_t))) {
-            if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) !== null) {
-                void cptr.sprintf(cptr.decay(__static_get_option_value_retbuf), __s_pct_s, cptr.ld1s(bool_p) ? __s_true : __s_false);
+            if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt &&
+                    (bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) !== null) {
+                void cptr.sprintf(
+                    cptr.decay(__static_get_option_value_retbuf),
+                    __s_pct_s,
+                    cptr.ld1s(bool_p) ? __s_true : __s_false
+                );
                 return cptr.decay(__static_get_option_value_retbuf);
-            } else if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.CompOpt && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
+            } else if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.CompOpt &&
+                    cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
                 let reslt = NHC.optn_err;
 
-                reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx), cnfvalid ? NHC.get_cnf_val : NHC.get_val, 0, cptr.decay(__static_get_option_value_retbuf), cptr.decay(empty_optstr))));
-                if (reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(__static_get_option_value_retbuf), 0, 1))
+                reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(
+                    cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx),
+                    cnfvalid ? NHC.get_cnf_val : NHC.get_val,
+                    0,
+                    cptr.decay(__static_get_option_value_retbuf),
+                    cptr.decay(empty_optstr)
+                )));
+                if (reslt == NHC.optn_ok &&
+                        cptr.ld1so(cptr.decay(__static_get_option_value_retbuf), 0, 1))
                     return cptr.decay(__static_get_option_value_retbuf);
                 return null;
             }
@@ -13002,12 +16287,15 @@ function* longest_option_name(startpass, endpass) {
 
     for (pass = 0; pass < 2; pass++)
         for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
-            if (pass == 0 && (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)))
+            if (pass == 0 &&
+                    (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.BoolOpt ||
+                        !cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)))
                 continue;
             optflags = cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere);
             if (optflags < startpass || optflags > endpass)
                 continue;
-            if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
+            if ((is_wc_option(name) && !wc_supported(name)) ||
+                    (is_wc2_option(name) && !wc2_supported(name)))
                 continue;
 
             let len = (yield* Strlen_(name, __s_longest_option_name, 8527));
@@ -13043,9 +16331,16 @@ function* doset_simple_menu() {
        in case 'menu_tab_sep' ever gets included in the simple menu so
        becomes subject to being changed while doset_simple() is running */
     if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep))
-        void cptr.sprintf(cptr.decay(fmtstr_doset_simple), __s_us_s, (yield* longest_option_name(NHC.set_gameview, NHC.set_in_game)));
+        void cptr.sprintf(
+            cptr.decay(fmtstr_doset_simple),
+            __s_us_s,
+            (yield* longest_option_name(NHC.set_gameview, NHC.set_in_game))
+        );
     else
-        void cptr.strcpy(cptr.decay(fmtstr_doset_simple), cptr.decay(__static_doset_simple_menu_fmtstr_tab_doset_simple));
+        void cptr.strcpy(
+            cptr.decay(fmtstr_doset_simple),
+            cptr.decay(__static_doset_simple_menu_fmtstr_tab_doset_simple)
+        );
     fmtstr = cptr.decay(fmtstr_doset_simple);
     __lbl_redo_opt_help: while (true) {
         tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
@@ -13062,7 +16357,17 @@ function* doset_simple_menu() {
         }
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, -1);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 63, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ld1so(gs, $instance_globals_s_simple_options_help) ? __s_hide_help : __s_show_help, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            63,
+            0,
+            NHM.ATR_NONE,
+            NHM.NO_COLOR,
+            cptr.ld1so(gs, $instance_globals_s_simple_options_help) ? __s_hide_help : __s_show_help,
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
 
         for (section = NHC.OptS_General; section < NHC.OptS_Advanced; section++) {
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -13072,7 +16377,8 @@ function* doset_simple_menu() {
             for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++) {
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_section) != section)
                     continue;
-                if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
+                if ((is_wc_option(name) && !wc_supported(name)) ||
+                        (is_wc2_option(name) && !wc2_supported(name)))
                     continue;
 
                 cptr.stI32(any, (i + 1) | 0);
@@ -13081,14 +16387,43 @@ function* doset_simple_menu() {
                     bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr);
                     if (!bool_p)
                         continue;
-                    if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) && cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_color)
+                    if (cptr.ld1so(iflags, $instance_flags_wc_tiled_map) &&
+                            cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) ==
+                                NHC.opt_color)
                         continue;
-                    void cptr.sprintf(cptr.decay(buf), fmtstr, name, cptr.ld1s(bool_p) ? __s_x : __s_sp);
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        fmtstr,
+                        name,
+                        cptr.ld1s(bool_p) ? __s_x : __s_sp
+                    );
                     break;
                     case NHC.CompOpt:
                     case NHC.OthrOpt:
                     k = i;
-                    if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn) === optfn_symset && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level))))) {
+                    if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn) ===
+                        optfn_symset &&
+                            (((cptr.ldI16o(
+                                (cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_rogue_level
+                                )),
+                                $d_level_dlevel
+                            ) ||
+                                cptr.ldI16((cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_rogue_level
+                                )))) &&
+                                on_level(
+                                    cptr.add(u, $you_uz),
+                                    cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_rogue_level
+                                    )
+                                )))) {
                         k = NHC.opt_roguesymset;
                         name = cptr.ldPtro(allopt, k, $sizeof_allopt_t);
                         cptr.stI32(any, (k + 1) | 0);
@@ -13097,8 +16432,21 @@ function* doset_simple_menu() {
                     cptr.st1o(cptr.decay(buf2), 0, 0, 1);
                     reslt = NHC.optn_err;
                     if (cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))
-                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr))));
-                    void cptr.sprintf(cptr.decay(buf), fmtstr, name, ((reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1)) ? cptr.decay(buf2) : __s_unknown));
+                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(
+                            cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx),
+                            NHC.get_val,
+                            0,
+                            cptr.decay(buf2),
+                            cptr.decay(empty_optstr)
+                        )));
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        fmtstr,
+                        name,
+                        ((reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1))
+                            ? cptr.decay(buf2)
+                            : __s_unknown)
+                    );
                     break;
                     default:
                     void cptr.sprintf(cptr.decay(buf), __s_error);
@@ -13106,11 +16454,33 @@ function* doset_simple_menu() {
                 }
                 /* pickup_types is separated from autopickup due to the
                    spelling of their names; emphasize what it means */
-                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_types || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_thrown || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_pickup_stolen || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) == NHC.opt_dropped_nopick)
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) ==
+                    NHC.opt_pickup_types ||
+                        cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) ==
+                            NHC.opt_pickup_thrown ||
+                        cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) ==
+                            NHC.opt_pickup_stolen ||
+                        cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx) ==
+                            NHC.opt_dropped_nopick)
                     void cptr.strcat(cptr.decay(buf), __s_for_autopickup);
-                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
-                if (cptr.ld1so(gs, $instance_globals_s_simple_options_help) && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr)) {
-                    void cptr.sprintf(cptr.decay(buf), __s_sp4_pct_s, cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr));
+                (yield* add_menu(
+                    tmpwin,
+                    nul_glyphinfo.v,
+                    any,
+                    0,
+                    0,
+                    NHM.ATR_NONE,
+                    NHM.NO_COLOR,
+                    cptr.decay(buf),
+                    NHM.MENU_ITEMFLAGS_NONE
+                ));
+                if (cptr.ld1so(gs, $instance_globals_s_simple_options_help) &&
+                        cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr)) {
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_sp4_pct_s,
+                        cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr)
+                    );
                     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
                     (yield* add_menu_str(tmpwin, __s_empty));
                 }
@@ -13131,25 +16501,60 @@ function* doset_simple_menu() {
 
             cptr.st1o(cptr.decay(abuf), 0, 0, 1);
             if (k == -2) {
-                cptr.st1o(gs, $instance_globals_s_simple_options_help, schar((!cptr.ld1so(gs, $instance_globals_s_simple_options_help))));
+                cptr.st1o(
+                    gs,
+                    $instance_globals_s_simple_options_help,
+                    schar((!cptr.ld1so(gs, $instance_globals_s_simple_options_help)))
+                );
                 toggled_help = 1;
             } else if (cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt) {
                 /* boolean option */
-                void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, k, $sizeof_allopt_t));
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_s_s,
+                    cptr.ld1s(cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_addr))
+                        ? __s_bang
+                        : __s_empty,
+                    cptr.ldPtro(allopt, k, $sizeof_allopt_t)
+                );
                 void (yield* parseoptions(cptr.decay(buf), 0, 0));
             } else {
                 /* compound option */
-                if (cptr.ld1so2(allopt, k, $sizeof_allopt_t, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn)) {
-                    reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
+                if (cptr.ld1so2(allopt, k, $sizeof_allopt_t, $allopt_t_has_handler) &&
+                        cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn)) {
+                    reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(
+                        cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx),
+                        NHC.do_handler,
+                        0,
+                        cptr.decay(empty_optstr),
+                        cptr.decay(empty_optstr)
+                    )));
                     /* if player eventually saves options, include this one */
-                    if (reslt == NHC.optn_ok && cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx) != NHC.pfx_cond_)
+                    if (reslt == NHC.optn_ok &&
+                            cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx) !=
+                                NHC.pfx_cond_)
                         cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                 } else {
-                    void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, k, $sizeof_allopt_t));
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_set_s_to_what,
+                        cptr.ldPtro(allopt, k, $sizeof_allopt_t)
+                    );
                     (yield* getlin(cptr.decay(buf), cptr.decay(abuf)));
                     if (cptr.ld1so(cptr.decay(abuf), 0, 1) != 27) {
-                        void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, k, $sizeof_allopt_t));
-                        (yield* copynchars(eos(cptr.decay(buf)), cptr.decay(abuf), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))));
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            __s_pct_s_colon,
+                            cptr.ldPtro(allopt, k, $sizeof_allopt_t)
+                        );
+                        (yield* copynchars(
+                            eos(cptr.decay(buf)),
+                            cptr.decay(abuf),
+                            Number(BigInt.asIntN(
+                                32,
+                                (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))
+                            ))
+                        ));
                         /* pass the buck */
                         void (yield* parseoptions(cptr.decay(buf), 0, 0));
                     }
@@ -13157,7 +16562,10 @@ function* doset_simple_menu() {
                        'picked 1' to caller which will loop for another choice */
                 }
             }
-            if (k >= 0 && cptr.ld1so(cptr.decay(abuf), 0, 1) != 27 && (wc_supported(cptr.ldPtro(allopt, k, $sizeof_allopt_t)) || wc2_supported(cptr.ldPtro(allopt, k, $sizeof_allopt_t))))
+            if (k >= 0 &&
+                    cptr.ld1so(cptr.decay(abuf), 0, 1) != 27 &&
+                    (wc_supported(cptr.ldPtro(allopt, k, $sizeof_allopt_t)) ||
+                        wc2_supported(cptr.ldPtro(allopt, k, $sizeof_allopt_t))))
                 (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, k, $sizeof_allopt_t))));
 
             cptr.free(pick_list.v), pick_list.v = null;
@@ -13207,7 +16615,13 @@ export function* doset_simple() {
     return NHM.ECMD_OK;
 }
 
-const __static_term_for_boolean_booleanterms = (function () { const flat = new Uint8Array(2 * 4 * 8); const a = []; for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8)); a.buf = flat; return a; })();
+const __static_term_for_boolean_booleanterms = (function () {
+    const flat = new Uint8Array(2 * 4 * 8);
+    const a = [];
+    for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 0, __s_false);
 cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 8, __s_off);
 cptr.stPtro(cptr.decay(__static_term_for_boolean_booleanterms[0]), 16, __s_disabled);
@@ -13278,11 +16692,26 @@ export function* doset() {
             cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
             for (i = 0; i < 5; ++i) {
                 if (cptr.ldPtro(__static_doset_helptext, i, 8)) {
-                    void cptr.sprintf(cptr.decay(buf), __s_4s_75s, __s_empty, cptr.ldPtro(__static_doset_helptext, i, 8));
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_4s_75s,
+                        __s_empty,
+                        cptr.ldPtro(__static_doset_helptext, i, 8)
+                    );
                     (yield* add_menu_str(tmpwin, cptr.decay(buf)));
                 } else {
                     cptr.stI32(any, ((218) + 1) | 0);  /* handling pick_list subtracts 1 */
-                    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 63, 63, NHM.ATR_NONE, clr, __s_view_help_for_options_menu, NHM.MENU_ITEMFLAGS_SKIPINVERT));
+                    (yield* add_menu(
+                        tmpwin,
+                        nul_glyphinfo.v,
+                        any,
+                        63,
+                        63,
+                        NHM.ATR_NONE,
+                        clr,
+                        __s_view_help_for_options_menu,
+                        NHM.MENU_ITEMFLAGS_SKIPINVERT
+                    ));
                 }
             }
         }
@@ -13291,7 +16720,11 @@ export function* doset() {
 
         if (!cptr.ld1so(iflags, $instance_flags_menu_tab_sep))
             /* initial "%s" is for indentation of non-selectable items */
-            void cptr.sprintf(cptr.decay(fmtstr_doset), __s_s_us_s, (yield* longest_option_name(startpass, endpass)));
+            void cptr.sprintf(
+                cptr.decay(fmtstr_doset),
+                __s_s_us_s,
+                (yield* longest_option_name(startpass, endpass))
+            );
         else
             void cptr.strcpy(cptr.decay(fmtstr_doset), cptr.decay(__static_doset_fmtstr_tab_doset));
 
@@ -13302,22 +16735,63 @@ export function* doset() {
         /* first list any other non-modifiable booleans, then modifiable ones */
         for (pass = 0; pass <= 1; pass++)
             for (i = 0; (name = cptr.ldPtro(allopt, i, $sizeof_allopt_t)) !== null; i++)
-                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && (bool_p = cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) !== null && ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) <= NHC.set_gameview && pass == 0) || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) >= NHC.set_in_game && pass == 1))) {
+                if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt &&
+                        (bool_p = cptr.ldPtro2(
+                            allopt,
+                            i,
+                            $sizeof_allopt_t,
+                            $allopt_t_addr
+                        )) !== null &&
+                        ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) <=
+                            NHC.set_gameview &&
+                            pass == 0) ||
+                            (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) >=
+                                NHC.set_in_game &&
+                                pass == 1))) {
                     if (cptr.eq(bool_p, cptr.add(flags, $flag_female)))
                         continue;  /* obsolete */
-                    if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard())
+                    if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                        NHC.set_wizonly &&
+                            !wizard())
                         continue;
-                    if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
+                    if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                        NHC.set_wiznofuz &&
+                            (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
                         continue;
-                    if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
+                    if ((is_wc_option(name) && !wc_supported(name)) ||
+                            (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
 
                     cptr.stI32(any, (pass == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
-                    indent = (pass == 0 && !cptr.ld1so(iflags, $instance_flags_menu_tab_sep)) ? __s_sp4 : __s_empty;
-                    void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr_doset), indent, name, term_for_boolean(i, bool_p));
+                    indent = (pass == 0 && !cptr.ld1so(iflags, $instance_flags_menu_tab_sep))
+                            ? __s_sp4
+                            : __s_empty;
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        cptr.decay(fmtstr_doset),
+                        indent,
+                        name,
+                        term_for_boolean(i, bool_p)
+                    );
                     if (pass == 0)
-                        enhance_menu_text(cptr.decay(buf), 256n, pass, bool_p, cptr.add(allopt, i, $sizeof_allopt_t));
-                    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT));
+                        enhance_menu_text(
+                            cptr.decay(buf),
+                            256n,
+                            pass,
+                            bool_p,
+                            cptr.add(allopt, i, $sizeof_allopt_t)
+                        );
+                    (yield* add_menu(
+                        tmpwin,
+                        nul_glyphinfo.v,
+                        any,
+                        0,
+                        0,
+                        NHM.ATR_NONE,
+                        clr,
+                        cptr.decay(buf),
+                        NHM.MENU_ITEMFLAGS_SKIPINVERT
+                    ));
                 }
 
         (yield* add_menu_str(tmpwin, __s_empty));
@@ -13328,10 +16802,17 @@ export function* doset() {
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.CompOpt)
                     continue;
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == pass) {
-                    if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
+                    if ((is_wc_option(name) && !wc_supported(name)) ||
+                            (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
 
-                    (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
+                    (yield* doset_add_menu(
+                        tmpwin,
+                        name,
+                        cptr.decay(fmtstr_doset),
+                        i,
+                        (pass == NHC.set_gameview) ? 0 : indexoffset
+                    ));
                 }
             }
 
@@ -13343,10 +16824,17 @@ export function* doset() {
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.OthrOpt)
                     continue;
                 if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == pass) {
-                    if ((is_wc_option(name) && !wc_supported(name)) || (is_wc2_option(name) && !wc2_supported(name)))
+                    if ((is_wc_option(name) && !wc_supported(name)) ||
+                            (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
 
-                    (yield* doset_add_menu(tmpwin, name, cptr.decay(fmtstr_doset), i, (pass == NHC.set_gameview) ? 0 : indexoffset));
+                    (yield* doset_add_menu(
+                        tmpwin,
+                        name,
+                        cptr.decay(fmtstr_doset),
+                        i,
+                        (pass == NHC.set_gameview) ? 0 : indexoffset
+                    ));
                 }
             }
         (yield* Y.icall(end_menu()(tmpwin, __s_set_what_options)));
@@ -13370,36 +16858,67 @@ export function* doset() {
                 if (opt_indx < -1)
                     opt_indx++;  /* -1 offset for select_menu() */
                 opt_indx = (opt_indx - indexoffset) | 0;
-                (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n) ? __assert_rtn(__s_doset, __s_options_c, 8924, __s_indexok_opt_indx_allopt) : void 0);
-                if (cptr.ldI32o2(allopt, opt_indx, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt) {
+                (__builtin_expect(BigInt((!(((opt_indx) >= 0 && (opt_indx) < 218)))), 0n)
+                        ? __assert_rtn(__s_doset, __s_options_c, 8924, __s_indexok_opt_indx_allopt)
+                        : void 0);
+                if (cptr.ldI32o2(allopt, opt_indx, $sizeof_allopt_t, $allopt_t_opttyp) ==
+                        NHC.BoolOpt) {
                     /* boolean option */
-                    void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_s_s,
+                        cptr.ld1s(cptr.ldPtro2(allopt, opt_indx, $sizeof_allopt_t, $allopt_t_addr))
+                            ? __s_bang
+                            : __s_empty,
+                        cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)
+                    );
                     void (yield* parseoptions(cptr.decay(buf), 0, 0));
                 } else {
                     /* compound option */
                     let k = opt_indx;
                     let reslt;
 
-                    if (cptr.ld1so2(allopt, k, $sizeof_allopt_t, $allopt_t_has_handler) && cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn)) {
-                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx), NHC.do_handler, 0, cptr.decay(empty_optstr), cptr.decay(empty_optstr))));
+                    if (cptr.ld1so2(allopt, k, $sizeof_allopt_t, $allopt_t_has_handler) &&
+                            cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn)) {
+                        reslt = (yield* Y.icall((cptr.ldPtro2(allopt, k, $sizeof_allopt_t, $allopt_t_optfn))(
+                            cptr.ldI32o2(allopt, k, $sizeof_allopt_t, $allopt_t_idx),
+                            NHC.do_handler,
+                            0,
+                            cptr.decay(empty_optstr),
+                            cptr.decay(empty_optstr)
+                        )));
                         /* if player eventually saves options, include this one */
                         if (reslt == NHC.optn_ok)
                             cptr.st1o(cptr.decay(opt_set_in_config), k, 1, 1);
                     } else {
                         let abuf = new Uint8Array(256);
 
-                        void cptr.sprintf(cptr.decay(buf), __s_set_s_to_what, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            __s_set_s_to_what,
+                            cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)
+                        );
                         cptr.st1o(cptr.decay(abuf), 0, 0, 1);
                         (yield* getlin(cptr.decay(buf), cptr.decay(abuf)));
                         if (cptr.ld1so(cptr.decay(abuf), 0, 1) == 27)
                             continue;
-                        void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t));
-                        void __builtin___strncat_chk(eos(cptr.decay(buf)), cptr.decay(abuf), (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))), __builtin_object_size(eos(cptr.decay(buf)), 1));
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            __s_pct_s_colon,
+                            cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)
+                        );
+                        void __builtin___strncat_chk(
+                            eos(cptr.decay(buf)),
+                            cptr.decay(abuf),
+                            (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))),
+                            __builtin_object_size(eos(cptr.decay(buf)), 1)
+                        );
                         /* pass the buck */
                         void (yield* parseoptions(cptr.decay(buf), 0, 0));
                     }
                 }
-                if (wc_supported(cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)) || wc2_supported(cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)))
+                if (wc_supported(cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)) ||
+                        wc2_supported(cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t)))
                     (yield* Y.icall(preference_update()(cptr.ldPtro(allopt, opt_indx, $sizeof_allopt_t))));
             }
             cptr.free(pick_list.v), pick_list.v = null;
@@ -13425,7 +16944,10 @@ function* reset_needed_visuals() {
     if (cptr.ld1so(go, $instance_globals_o_opt_need_glyph_reset)) {
         reset_glyphmap(NHC.gm_optionchange);
     }
-    if (cptr.ld1so(go, $instance_globals_o_opt_reset_customcolors) || cptr.ld1so(go, $instance_globals_o_opt_update_basic_palette) || cptr.ld1so(go, $instance_globals_o_opt_reset_customsymbols) || cptr.ld1so(go, $instance_globals_o_opt_need_redraw)) {
+    if (cptr.ld1so(go, $instance_globals_o_opt_reset_customcolors) ||
+            cptr.ld1so(go, $instance_globals_o_opt_update_basic_palette) ||
+            cptr.ld1so(go, $instance_globals_o_opt_reset_customsymbols) ||
+            cptr.ld1so(go, $instance_globals_o_opt_need_redraw)) {
         if (cptr.ld1so(go, $instance_globals_o_opt_update_basic_palette)) {
             cptr.st1o(go, $instance_globals_o_opt_update_basic_palette, 0);
         }
@@ -13453,7 +16975,14 @@ function* reset_needed_visuals() {
 }
 
 /* doset(#optionsfull command) menu entries for compound options */
-/** C ref: options.c:9018 — @param {CInt} win @param {CPtr<char>} option @param {CPtr<char>} fmtstr @param {CInt} idx @param {CInt} indexoffset */
+/**
+ * C ref: options.c:9018
+ * @param {CInt} win
+ * @param {CPtr<char>} option
+ * @param {CPtr<char>} fmtstr
+ * @param {CInt} idx
+ * @param {CInt} indexoffset
+ */
 function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
     let value = __s_unknown;  /* current value */
     let indent;
@@ -13466,10 +16995,19 @@ function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
 
     cptr.st1o(cptr.decay(buf2), 0, 0, 1);  /* per opt functs may not guarantee this, so do it */
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
-    if (i >= 0 && i < NHC.OPTCOUNT && cptr.ldPtro(allopt, i, $sizeof_allopt_t) && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
+    if (i >= 0 &&
+            i < NHC.OPTCOUNT &&
+            cptr.ldPtro(allopt, i, $sizeof_allopt_t) &&
+            cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
         cptr.stI32(any, (indexoffset == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
         if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))
-            reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx), NHC.get_val, 0, cptr.decay(buf2), cptr.decay(empty_optstr))));
+            reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(
+                cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx),
+                NHC.get_val,
+                0,
+                cptr.decay(buf2),
+                cptr.decay(empty_optstr)
+            )));
         if (reslt == NHC.optn_ok && cptr.ld1so(cptr.decay(buf2), 0, 1))
             value = cptr.decay(buf2);
     } else {
@@ -13485,21 +17023,47 @@ function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
     /* "    " replaces "a - " -- assumes menus follow that style */
     indent = !cptr.ldI32(any) ? __s_sp4 : __s_empty;
     void cptr.sprintf(cptr.decay(buf), fmtstr, indent, option, value);
-    (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT));
+    (yield* add_menu(
+        win,
+        nul_glyphinfo.v,
+        any,
+        0,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        cptr.decay(buf),
+        NHM.MENU_ITEMFLAGS_SKIPINVERT
+    ));
 }
 
 /* display keys for menu actions; used by cmd.c '?i' and pager.c '?k' */
 const __static_show_menu_controls_hardcoded = cptr.alloc(6 * 16);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 0, __s_return);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 0 + $xtra_cntrls_desc, __s_accept_current_choice_s_and_dismiss_menu);
+cptr.stPtro(
+    __static_show_menu_controls_hardcoded,
+    0 + $xtra_cntrls_desc,
+    __s_accept_current_choice_s_and_dismiss_menu
+);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 16, __s_enter__2);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 16 + $xtra_cntrls_desc, __s_same_as_return);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 32, __s_space__2);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 32 + $xtra_cntrls_desc, __s_if_not_on_last_page_advance_one_page);
+cptr.stPtro(
+    __static_show_menu_controls_hardcoded,
+    32 + $xtra_cntrls_desc,
+    __s_if_not_on_last_page_advance_one_page
+);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 48, __s_sp5);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 48 + $xtra_cntrls_desc, __s_when_on_last_page_treat_like_return);
+cptr.stPtro(
+    __static_show_menu_controls_hardcoded,
+    48 + $xtra_cntrls_desc,
+    __s_when_on_last_page_treat_like_return
+);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 64, __s_escape);
-cptr.stPtro(__static_show_menu_controls_hardcoded, 64 + $xtra_cntrls_desc, __s_cancel_menu_without_making_any_choice_s);
+cptr.stPtro(
+    __static_show_menu_controls_hardcoded,
+    64 + $xtra_cntrls_desc,
+    __s_cancel_menu_without_making_any_choice_s
+);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 80, null);
 cptr.stPtro(__static_show_menu_controls_hardcoded, 80 + $xtra_cntrls_desc, null); /** C ref: options.c:9075 — struct xtra_cntrls[6] (function-static) */
 const __static_show_menu_controls_mc_fmt = cptr.bytes("%8s     %-6s %s"); /** C ref: options.c:9083 — char[16] (function-static) */
@@ -13524,11 +17088,20 @@ export function* show_menu_controls(win, dolist) {
         let ch;
 
         fmt = __s_7s_s;
-        for (i = 0; cptr.ldPtro2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_desc); i++) {
+        for (
+            i = 0;
+            cptr.ldPtro2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_desc);
+            i++
+        ) {
             ch = cptr.ld1so2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_cmd);
             if ((ch == 125 || ch == 123) && !has_menu_shift)
                 continue;
-            void cptr.sprintf(cptr.decay(buf), fmt, visctrl(get_menu_cmd_key(ch)), cptr.ldPtro2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_desc));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                fmt,
+                visctrl(get_menu_cmd_key(ch)),
+                cptr.ldPtro2(default_menu_cmd_info, i, $sizeof_menu_cmd_t, $menu_cmd_t_desc)
+            );
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
         /* no separator before hardcoded */
@@ -13536,33 +17109,105 @@ export function* show_menu_controls(win, dolist) {
         arg = __s_empty;  /* no extra prefix for 'dolist' */
     } else {
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __s_empty, __s_whole, __s_current);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_altfmt),
+            __s_empty,
+            __s_whole,
+            __s_current
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_altfmt), __s_empty, __s_menu__2, __s_page);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_altfmt),
+            __s_empty,
+            __s_menu__2,
+            __s_page
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_select, visctrl(get_menu_cmd_key(46)), visctrl(get_menu_cmd_key(44)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_fmt),
+            __s_select,
+            visctrl(get_menu_cmd_key(46)),
+            visctrl(get_menu_cmd_key(44))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_invert, visctrl(get_menu_cmd_key(64)), visctrl(get_menu_cmd_key(126)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_fmt),
+            __s_invert,
+            visctrl(get_menu_cmd_key(64)),
+            visctrl(get_menu_cmd_key(126))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_deselect, visctrl(get_menu_cmd_key(45)), visctrl(get_menu_cmd_key(92)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_fmt),
+            __s_deselect,
+            visctrl(get_menu_cmd_key(45)),
+            visctrl(get_menu_cmd_key(92))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_go_to, visctrl(get_menu_cmd_key(62)), __s_next_page);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_fmt),
+            __s_go_to,
+            visctrl(get_menu_cmd_key(62)),
+            __s_next_page
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_empty, visctrl(get_menu_cmd_key(60)), __s_previous_page);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_fmt),
+            __s_empty,
+            visctrl(get_menu_cmd_key(60)),
+            __s_previous_page
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_empty, visctrl(get_menu_cmd_key(94)), __s_first_page);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_fmt),
+            __s_empty,
+            visctrl(get_menu_cmd_key(94)),
+            __s_first_page
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_empty, visctrl(get_menu_cmd_key(124)), __s_last_page);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_fmt),
+            __s_empty,
+            visctrl(get_menu_cmd_key(124)),
+            __s_last_page
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         if (has_menu_shift) {
-            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_pan_view, visctrl(get_menu_cmd_key(125)), __s_right_perm_invent_only);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                cptr.decay(__static_show_menu_controls_mc_fmt),
+                __s_pan_view,
+                visctrl(get_menu_cmd_key(125)),
+                __s_right_perm_invent_only
+            );
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_empty, visctrl(get_menu_cmd_key(123)), __s_left__2);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                cptr.decay(__static_show_menu_controls_mc_fmt),
+                __s_empty,
+                visctrl(get_menu_cmd_key(123)),
+                __s_left__2
+            );
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
-        void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_show_menu_controls_mc_fmt), __s_search, visctrl(get_menu_cmd_key(58)), __s_exter_a_target_string_and_invert_all);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            cptr.decay(__static_show_menu_controls_mc_fmt),
+            __s_search,
+            visctrl(get_menu_cmd_key(58)),
+            __s_exter_a_target_string_and_invert_all
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         /* separator before hardcoded */
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
@@ -13570,7 +17215,13 @@ export function* show_menu_controls(win, dolist) {
         arg = __s_other;  /* prefix for first hardcoded[] entry, then reset */
     }
     for (xcp = __static_show_menu_controls_hardcoded; cptr.ldPtr(xcp); xcp = cptr.add(xcp, 1, 16)) {
-        void cptr.sprintf(cptr.decay(buf), fmt, arg, cptr.ldPtr(xcp), cptr.ldPtro(xcp, $xtra_cntrls_desc));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            fmt,
+            arg,
+            cptr.ldPtr(xcp),
+            cptr.ldPtro(xcp, $xtra_cntrls_desc)
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         arg = __s_empty;
     }
@@ -13608,7 +17259,11 @@ cptr.stPtro(__static_handle_add_list_remove_action_titles, 0 + $action_desc, __s
 cptr.st1o(__static_handle_add_list_remove_action_titles, 16, 108);
 cptr.stPtro(__static_handle_add_list_remove_action_titles, 16 + $action_desc, __s_list_s);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 32, 114);
-cptr.stPtro(__static_handle_add_list_remove_action_titles, 32 + $action_desc, __s_remove_existing_s);
+cptr.stPtro(
+    __static_handle_add_list_remove_action_titles,
+    32 + $action_desc,
+    __s_remove_existing_s
+);
 cptr.st1o(__static_handle_add_list_remove_action_titles, 48, 120);
 cptr.stPtro(__static_handle_add_list_remove_action_titles, 48 + $action_desc, __s_exit_this_menu); /** C ref: options.c:9217 — struct action[4] (function-static) */
 
@@ -13632,8 +17287,27 @@ function* handle_add_list_remove(optname, numtotal) {
         /* omit list and remove if there aren't any yet */
         if (!numtotal && (i == 1 || i == 2))
             continue;
-        void cptr.sprintf(cptr.decay(tmpbuf), cptr.ldPtro2(__static_handle_add_list_remove_action_titles, i, $sizeof_action, $action_desc), (i == 1) ? (yield* makeplural(optname)) : optname);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1so(__static_handle_add_list_remove_action_titles, i, $sizeof_action), 0, NHM.ATR_NONE, clr, cptr.decay(tmpbuf), (i == 3) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        void cptr.sprintf(
+            cptr.decay(tmpbuf),
+            cptr.ldPtro2(
+                __static_handle_add_list_remove_action_titles,
+                i,
+                $sizeof_action,
+                $action_desc
+            ),
+            (i == 1) ? (yield* makeplural(optname)) : optname
+        );
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1so(__static_handle_add_list_remove_action_titles, i, $sizeof_action),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(tmpbuf),
+            (i == 3) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, __s_do_what)));
     if ((pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, pick_list))) > 0) {
@@ -13655,7 +17329,14 @@ export function* dotogglepickup() {
     cptr.st1o(flags, $flag_pickup, schar((!cptr.ld1so(flags, $flag_pickup))));
     if (cptr.ld1so(flags, $flag_pickup)) {
         (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(ocl)));
-        void cptr.sprintf(cptr.decay(buf), __s_on_for_s_objects_s, cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __s_all, (cptr.ldPtro(ga, $instance_globals_a_apelist)) ? ((count_apes() == 1) ? __s_with_one_exception : __s_with_some_exceptions) : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_on_for_s_objects_s,
+            cptr.ld1so(cptr.decay(ocl), 0, 1) ? cptr.decay(ocl) : __s_all,
+            (cptr.ldPtro(ga, $instance_globals_a_apelist))
+                ? ((count_apes() == 1) ? __s_with_one_exception : __s_with_some_exceptions)
+                : __s_empty
+        );
     } else {
         void cptr.strcpy(cptr.decay(buf), __s_off__3);
     }
@@ -13670,10 +17351,24 @@ export function* toggle_bool_option(p) {
     let ret = NHM.ECMD_FAIL;
 
     for (i = 0; i < NHC.OPTCOUNT; i++)
-        if (!(yield* strncmpi(cptr.ldPtro(allopt, i, $sizeof_allopt_t), p, Number(BigInt.asIntN(32, cptr.strlen(p))))) && cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt && cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_game && cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr) !== null) {
+        if (!(yield* strncmpi(
+            cptr.ldPtro(allopt, i, $sizeof_allopt_t),
+            p,
+            Number(BigInt.asIntN(32, cptr.strlen(p)))
+        )) &&
+                cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) == NHC.BoolOpt &&
+                cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_game &&
+                cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr) !== null) {
             let buf = new Uint8Array(256);
 
-            void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ld1s(cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) ? __s_bang : __s_empty, cptr.ldPtro(allopt, i, $sizeof_allopt_t));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_s_s,
+                cptr.ld1s(cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr))
+                    ? __s_bang
+                    : __s_empty,
+                cptr.ldPtro(allopt, i, $sizeof_allopt_t)
+            );
             if ((yield* parseoptions(cptr.decay(buf), 0, 0)))
                 ret = NHM.ECMD_OK;
 
@@ -13702,7 +17397,9 @@ export function* add_autopickup_exception(mapping) {
     end.v = 0;
     if ((n = sscanf(mapping, __s_253_c, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
         grab = 1;
-    } else if ((n = sscanf(mapping, __s_253_c__2, cptr.decay(text), end)) == 1 || (n = sscanf(mapping, __s_253_c__3, cptr.decay(text), end)) == 1 || (n == 2 && end.v == 35)) {
+    } else if ((n = sscanf(mapping, __s_253_c__2, cptr.decay(text), end)) == 1 ||
+            (n = sscanf(mapping, __s_253_c__3, cptr.decay(text), end)) == 1 ||
+            (n == 2 && end.v == 35)) {
         grab = 0;
     } else {
         (yield* config_error_add(__s_pct_s, cptr.decay(__static_add_autopickup_exception_APE_syntax_error)));
@@ -13718,7 +17415,11 @@ export function* add_autopickup_exception(mapping) {
         /* free first in case reason for failure was insufficient memory */
         regex_free(cptr.ldPtr(ape));
         cptr.free(ape);
-        (yield* config_error_add(__s_s_s__2, cptr.decay(__static_add_autopickup_exception_APE_regex_error), re_error_desc));
+        (yield* config_error_add(
+            __s_s_s__2,
+            cptr.decay(__static_add_autopickup_exception_APE_regex_error),
+            re_error_desc
+        ));
         return 0;
     }
     cptr.stPtro(ape, $autopickup_exception_pattern, (yield* dupstr(cptr.decay(text))));
@@ -13781,7 +17482,11 @@ export function* sym_val(strval) {
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 1), 1);
 
             /* if backslash, handle single or double quote or second backslash */
-        } else if (cptr.ld1so(strval, 1) == 92 && cptr.ld1so(strval, 2) && cptr.ld1so(strval, 3) == 39 && cptr.strchr(__s_apos_quot_bslash, cptr.ld1so(strval, 2)) && !cptr.ld1so(strval, 4)) {
+        } else if (cptr.ld1so(strval, 1) == 92 &&
+                cptr.ld1so(strval, 2) &&
+                cptr.ld1so(strval, 3) == 39 &&
+                cptr.strchr(__s_apos_quot_bslash, cptr.ld1so(strval, 2)) &&
+                !cptr.ld1so(strval, 4)) {
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(strval, 2), 1);
 
             /* not simple quote or basic backslash;
@@ -13790,7 +17495,12 @@ export function* sym_val(strval) {
             let p;
 
             /* +1: skip opening single quote */
-            void __builtin___strncpy_chk(cptr.decay(tmp), cptr.add(strval, 1), 127n, __builtin_object_size(cptr.decay(tmp), 1));
+            void __builtin___strncpy_chk(
+                cptr.decay(tmp),
+                cptr.add(strval, 1),
+                127n,
+                __builtin_object_size(cptr.decay(tmp), 1)
+            );
             cptr.st1o(cptr.decay(tmp), 127n, 0, 1);
             if ((p = cptr.strrchr(cptr.decay(tmp), 39)) !== null) {
                 cptr.st1(p, 0);
@@ -13798,7 +17508,12 @@ export function* sym_val(strval) {
             }  /* else buf[0] stays '\0' */
         }
     } else {
-        void __builtin___strncpy_chk(cptr.decay(tmp), strval, 127n, __builtin_object_size(cptr.decay(tmp), 1));
+        void __builtin___strncpy_chk(
+            cptr.decay(tmp),
+            strval,
+            127n,
+            __builtin_object_size(cptr.decay(tmp), 1)
+        );
         cptr.st1o(cptr.decay(tmp), 127n, 0, 1);
         (yield* escapes(cptr.decay(tmp), cptr.decay(buf)));
     }
@@ -13842,19 +17557,31 @@ export function* option_help() {
     let datawin;
 
     datawin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
-    nh_snprintf(__s_option_help, 9471, cptr.decay(buf), 256n, __s_set_options_as_options_options_in_s, get_configfile());
+    nh_snprintf(
+        __s_option_help,
+        9471,
+        cptr.decay(buf),
+        256n,
+        __s_set_options_as_options_options_in_s,
+        get_configfile()
+    );
     cptr.stPtro(opt_intro, 3, cptr.decay(buf), 8);
     for (i = 0; cptr.ldPtro(opt_intro, i, 8); i++)
         (yield* Y.icall(putstr()(datawin, 0, cptr.ldPtro(opt_intro, i, 8))));
 
     /* Boolean options */
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
-        if ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.BoolOpt || !cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
+        if ((cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.BoolOpt ||
+            !cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_addr)) ||
+                (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly &&
+                    !wizard()))
             continue;
-        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
+        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz &&
+                (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
             continue;
         optname = cptr.ldPtro(allopt, i, $sizeof_allopt_t);
-        if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
+        if ((is_wc_option(optname) && !wc_supported(optname)) ||
+                (is_wc2_option(optname) && !wc2_supported(optname)))
             continue;
         (yield* next_opt(datawin, optname));
     }
@@ -13863,15 +17590,28 @@ export function* option_help() {
     /* Compound options */
     (yield* Y.icall(putstr()(datawin, 0, __s_compound_options)));
     for (i = 0; cptr.ldPtro(allopt, i, $sizeof_allopt_t); i++) {
-        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.CompOpt || (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly && !wizard()))
+        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_opttyp) != NHC.CompOpt ||
+                (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wizonly &&
+                    !wizard()))
             continue;
-        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz && (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
+        if (cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_wiznofuz &&
+                (!wizard() || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)))
             continue;
         optname = cptr.ldPtro(allopt, i, $sizeof_allopt_t);
-        if ((is_wc_option(optname) && !wc_supported(optname)) || (is_wc2_option(optname) && !wc2_supported(optname)))
+        if ((is_wc_option(optname) && !wc_supported(optname)) ||
+                (is_wc2_option(optname) && !wc2_supported(optname)))
             continue;
         void cptr.sprintf(cptr.decay(buf2), __s_tick_pct_s_apos, optname);
-        nh_snprintf(__s_option_help, 9507, cptr.decay(buf), 256n, __s_20s_s_c, cptr.decay(buf2), cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr), cptr.ldPtro(allopt, (i + 1) | 0, $sizeof_allopt_t) ? 44 : 46);
+        nh_snprintf(
+            __s_option_help,
+            9507,
+            cptr.decay(buf),
+            256n,
+            __s_20s_s_c,
+            cptr.decay(buf2),
+            cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_descr),
+            cptr.ldPtro(allopt, (i + 1) | 0, $sizeof_allopt_t) ? 44 : 46
+        );
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
@@ -13932,7 +17672,9 @@ function* all_options_conds(sbuf) {
            to edit resulting file manually and insert '!' in front of them */
         if (idx == 0) {
             void cptr.strcpy(cptr.decay(buf), __s_options__2);
-        } else if (((((yield* Strlen_(cptr.decay(buf), __s_all_options_conds, 9568)) + 1) >>> 0) + (yield* Strlen_(cptr.decay(nextcond), __s_all_options_conds, 9568))) >>> 0 >= 75) {
+        } else if (((((yield* Strlen_(cptr.decay(buf), __s_all_options_conds, 9568)) + 1) >>> 0) +
+            (yield* Strlen_(cptr.decay(nextcond), __s_all_options_conds, 9568))) >>>
+                0 >= 75) {
             /* finish off previous line */
             void cptr.strcat(cptr.decay(buf), __s_comma_bslash_nl);  /* comma and backslash+newline */
             (yield* strbuf_append(sbuf, cptr.decay(buf)));
@@ -13970,7 +17712,10 @@ function* all_options_menucolors(sbuf) {
         return;
 
     /* reverse the order */
-    arr = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(ncolors)) * 8n)))));
+    arr = (yield* alloc(Number(BigInt.asUintN(
+        32,
+        BigInt.asUintN(64, BigInt.asUintN(64, BigInt(ncolors)) * 8n)
+    ))));
     while (tmp) {
         cptr.stPtro(arr, i++, tmp, 8);
         tmp = cptr.ldPtro(tmp, $menucoloring_next);
@@ -13980,7 +17725,14 @@ function* all_options_menucolors(sbuf) {
         tmp = cptr.ldPtro(arr, (i - 1) | 0, 8);
         let sattr = attr2attrname(cptr.ldI32o(tmp, $menucoloring_attr));
         let sclr = clr2colorname(cptr.ldI32o(tmp, $menucoloring_color));
-        void cptr.sprintf(cptr.decay(buf), __s_menucolor_s_s_s_s, cptr.ldPtro(tmp, $menucoloring_origstr), sclr, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __s_amp : __s_empty, (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_menucolor_s_s_s_s,
+            cptr.ldPtro(tmp, $menucoloring_origstr),
+            sclr,
+            (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? __s_amp : __s_empty,
+            (cptr.ldI32o(tmp, $menucoloring_attr) != NHM.ATR_NONE) ? sattr : __s_empty
+        );
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
     }
 
@@ -13994,7 +17746,12 @@ function* all_options_msgtypes(sbuf) {
 
     while (tmp) {
         let mtype = msgtype2name(cptr.ldI16(tmp));
-        void cptr.sprintf(cptr.decay(buf), __s_msgtype_s_s, mtype, cptr.ldPtro(tmp, $plinemsg_type_pattern));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_msgtype_s_s,
+            mtype,
+            cptr.ldPtro(tmp, $plinemsg_type_pattern)
+        );
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
         tmp = cptr.ldPtro(tmp, $plinemsg_type_next);
     }
@@ -14006,7 +17763,12 @@ function* all_options_apes(sbuf) {
     let buf = new Uint8Array(256);
 
     while (tmp) {
-        void cptr.sprintf(cptr.decay(buf), __s_autopickup_exception_c_s, cptr.ld1so(tmp, $autopickup_exception_grab) ? 60 : 62, cptr.ldPtro(tmp, $autopickup_exception_pattern));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_autopickup_exception_c_s,
+            cptr.ld1so(tmp, $autopickup_exception_grab) ? 60 : 62,
+            cptr.ldPtro(tmp, $autopickup_exception_pattern)
+        );
         (yield* strbuf_append(sbuf, cptr.decay(buf)));
         tmp = cptr.ldPtro(tmp, $autopickup_exception_next);
     }
@@ -14034,19 +17796,37 @@ export function* all_options_strbuf(sbuf) {
             if (!bool_p || cptr.eq(bool_p, cptr.add(flags, $flag_female)))
                 break;  /* obsolete */
             if (cptr.ld1s(bool_p) != cptr.ld1so2(allopt, i, $sizeof_allopt_t, $allopt_t_initval)) {
-                void cptr.sprintf(cptr.decay(tmp), __s_options_s_s, cptr.ld1s(bool_p) ? __s_empty : __s_bang, name);
+                void cptr.sprintf(
+                    cptr.decay(tmp),
+                    __s_options_s_s,
+                    cptr.ld1s(bool_p) ? __s_empty : __s_bang,
+                    name
+                );
                 (yield* strbuf_append(sbuf, cptr.decay(tmp)));
             }
             break;
             case NHC.CompOpt:
-            if (!(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_config || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_gameview || cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) == NHC.set_in_game))
+            if (!(cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                NHC.set_in_config ||
+                    cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                        NHC.set_gameview ||
+                    cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_setwhere) ==
+                        NHC.set_in_game))
                 break;
             /* FIXME: get_option_value for:
                - menu_deselect_all &c menu control keys,
                - term_cols, term_rows */
             buf2 = (yield* get_option_value(name, 1));
             if (buf2) {
-                nh_snprintf(__s_all_options_strbuf, 9714, cptr.decay(tmp), 255n, __s_options_s_s__2, name, buf2);
+                nh_snprintf(
+                    __s_all_options_strbuf,
+                    9714,
+                    cptr.decay(tmp),
+                    255n,
+                    __s_options_s_s__2,
+                    name,
+                    buf2
+                );
                 void cptr.strcat(cptr.decay(tmp), __s_nl);  /* guaranteed to fit */
                 (yield* strbuf_append(sbuf, cptr.decay(tmp)));
             }
@@ -14096,7 +17876,9 @@ export function* next_opt(datawin, str) {
             cptr.st1o(s, -2, 46), cptr.st1o(s, -1, 0);  /* replace ending ", " with "." */
         i = NHM.COLNO;  /* (greater than COLNO - 2) */
     } else {
-        i = (((((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) + (yield* Strlen_(str, __s_next_opt, 9770))) >>> 0) + 2) >>> 0) | 0;
+        i = (((((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) +
+            (yield* Strlen_(str, __s_next_opt, 9770))) >>> 0) + 2) >>> 0) |
+                0;
     }
 
     if (i > 78) {
@@ -14291,7 +18073,10 @@ function wc_supported(optnam) {
 
     for (k = 0; cptr.ldPtro(wc_options, k, $sizeof_wc_Opt); ++k) {
         if (!strcmp(cptr.ldPtro(wc_options, k, $sizeof_wc_Opt), optnam))
-            return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap) & cptr.ldU64o2(wc_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit)) ? 1 : 0));
+            return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap) &
+                cptr.ldU64o2(wc_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit))
+                    ? 1
+                    : 0));
     }
     return 0;
 }
@@ -14341,7 +18126,10 @@ function wc2_supported(optnam) {
 
     for (k = 0; cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt); ++k) {
         if (!strcmp(cptr.ldPtro(wc2_options, k, $sizeof_wc_Opt), optnam))
-            return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap2) & cptr.ldU64o2(wc2_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit)) ? 1 : 0));
+            return schar(((cptr.ldU64o(windowprocs, $window_procs_wincap2) &
+                cptr.ldU64o2(wc2_options, k, $sizeof_wc_Opt, $wc_Opt_wc_bit))
+                    ? 1
+                    : 0));
     }
     return 0;
 }
@@ -14381,17 +18169,93 @@ function* wc_set_font_name(opttype, fontname) {
 
 /** C ref: options.c:10012 — char **[4] */
 const fgp = cptr.alloc(4 * 8);
-cptr.stPtro(fgp, 0, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_menu, $sizeof_windowcolors_struct));
-cptr.stPtro(fgp, 8, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_message, $sizeof_windowcolors_struct));
-cptr.stPtro(fgp, 16, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_status, $sizeof_windowcolors_struct));
-cptr.stPtro(fgp, 24, cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_text, $sizeof_windowcolors_struct));
+cptr.stPtro(
+    fgp,
+    0,
+    cptr.add(
+        cptr.add(iflags, $instance_flags_wcolors),
+        NHC.wcolor_menu,
+        $sizeof_windowcolors_struct
+    )
+);
+cptr.stPtro(
+    fgp,
+    8,
+    cptr.add(
+        cptr.add(iflags, $instance_flags_wcolors),
+        NHC.wcolor_message,
+        $sizeof_windowcolors_struct
+    )
+);
+cptr.stPtro(
+    fgp,
+    16,
+    cptr.add(
+        cptr.add(iflags, $instance_flags_wcolors),
+        NHC.wcolor_status,
+        $sizeof_windowcolors_struct
+    )
+);
+cptr.stPtro(
+    fgp,
+    24,
+    cptr.add(
+        cptr.add(iflags, $instance_flags_wcolors),
+        NHC.wcolor_text,
+        $sizeof_windowcolors_struct
+    )
+);
 
 /** C ref: options.c:10016 — char **[4] */
 const bgp = cptr.alloc(4 * 8);
-cptr.stPtro(bgp, 0, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_menu, $sizeof_windowcolors_struct), $windowcolors_struct_bg));
-cptr.stPtro(bgp, 8, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_message, $sizeof_windowcolors_struct), $windowcolors_struct_bg));
-cptr.stPtro(bgp, 16, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_status, $sizeof_windowcolors_struct), $windowcolors_struct_bg));
-cptr.stPtro(bgp, 24, cptr.add(cptr.add(cptr.add(iflags, $instance_flags_wcolors), NHC.wcolor_text, $sizeof_windowcolors_struct), $windowcolors_struct_bg));
+cptr.stPtro(
+    bgp,
+    0,
+    cptr.add(
+        cptr.add(
+            cptr.add(iflags, $instance_flags_wcolors),
+            NHC.wcolor_menu,
+            $sizeof_windowcolors_struct
+        ),
+        $windowcolors_struct_bg
+    )
+);
+cptr.stPtro(
+    bgp,
+    8,
+    cptr.add(
+        cptr.add(
+            cptr.add(iflags, $instance_flags_wcolors),
+            NHC.wcolor_message,
+            $sizeof_windowcolors_struct
+        ),
+        $windowcolors_struct_bg
+    )
+);
+cptr.stPtro(
+    bgp,
+    16,
+    cptr.add(
+        cptr.add(
+            cptr.add(iflags, $instance_flags_wcolors),
+            NHC.wcolor_status,
+            $sizeof_windowcolors_struct
+        ),
+        $windowcolors_struct_bg
+    )
+);
+cptr.stPtro(
+    bgp,
+    24,
+    cptr.add(
+        cptr.add(
+            cptr.add(iflags, $instance_flags_wcolors),
+            NHC.wcolor_text,
+            $sizeof_windowcolors_struct
+        ),
+        $windowcolors_struct_bg
+    )
+);
 
 /** C ref: options.c:10020 — int */
 export let options_set_window_colors_flag = 0;
@@ -14460,21 +18324,31 @@ function* wc_set_window_colors(op) {
             cptr.st1(cptr.postinc(() => newop, (v) => { newop = v; }), 0);
 
         for (j = 0; j < NHC.WC_COUNT; ++j) {
-            if (!(yield* strncmpi((wn), (cptr.ldPtro(wcnames, j, 8)), -1)) || !(yield* strncmpi((wn), (cptr.ldPtro(wcshortnames, j, 8)), -1))) {
+            if (!(yield* strncmpi((wn), (cptr.ldPtro(wcnames, j, 8)), -1)) ||
+                    !(yield* strncmpi((wn), (cptr.ldPtro(wcshortnames, j, 8)), -1))) {
                 if (!(yield* strstri(tfg, __s_sp))) {
                     if (cptr.ldPtr(cptr.ldPtro(fgp, j, 8)))
                         cptr.free(cptr.ldPtr(cptr.ldPtro(fgp, j, 8)));
                     clr = (yield* check_enhanced_colors(tfg));
-                    cptr.stPtr(cptr.ldPtro(fgp, j, 8), (yield* dupstr((clr >= 0) ? wc_color_name(clr) : tfg)));
+                    cptr.stPtr(
+                        cptr.ldPtro(fgp, j, 8),
+                        (yield* dupstr((clr >= 0) ? wc_color_name(clr) : tfg))
+                    );
                 }
                 if (!(yield* strstri(tbg, __s_sp))) {
                     if (cptr.ldPtr(cptr.ldPtro(bgp, j, 8)))
                         cptr.free(cptr.ldPtr(cptr.ldPtro(bgp, j, 8)));
                     clr = (yield* check_enhanced_colors(tbg));
-                    cptr.stPtr(cptr.ldPtro(bgp, j, 8), (yield* dupstr((clr >= 0) ? wc_color_name(clr) : tbg)));
+                    cptr.stPtr(
+                        cptr.ldPtro(bgp, j, 8),
+                        (yield* dupstr((clr >= 0) ? wc_color_name(clr) : tbg))
+                    );
                 }
                 if (cptr.ldI32o(wcolors_opt, j, 4) != 0) {
-                    (yield* config_error_add(__s_windowcolors_for_s_windows_specified, cptr.ldPtro(wcnames, j, 8)));
+                    (yield* config_error_add(
+                        __s_windowcolors_for_s_windows_specified,
+                        cptr.ldPtro(wcnames, j, 8)
+                    ));
                 }
                 (cptr.stI32o(wcolors_opt, j, cptr.ldI32o(wcolors_opt, j, 4) + 1, 4)) - (1);
                 break;
@@ -14509,7 +18383,11 @@ export function options_free_window_colors() {
 export function set_playmode() {
     if (wizard()) {
         if (authorize_wizard_mode())
-            cptr.stI32o(gp, $instance_globals_p_plnamelen, Number(BigInt.asIntN(32, cptr.strlen(cptr.strcpy(svp, __s_wizard)))));
+            cptr.stI32o(
+                gp,
+                $instance_globals_p_plnamelen,
+                Number(BigInt.asIntN(32, cptr.strlen(cptr.strcpy(svp, __s_wizard))))
+            );
         else
             cptr.st1o(flags, $flag_debug, 0);  /* not allowed or not available */
         /* try explore mode if we didn't make it into wizard mode */
@@ -14525,7 +18403,14 @@ export function set_playmode() {
     /* don't need to do anything special for normal play */
 }
 
-/** C ref: options.c:10155 — @param {CPtr<char>} buf @param {CLongLong} sz @param {CInt} whichpass @param {CPtr<boolean>} bool_p @param {CPtr<struct allopt_t>} thisopt */
+/**
+ * C ref: options.c:10155
+ * @param {CPtr<char>} buf
+ * @param {CLongLong} sz
+ * @param {CInt} whichpass
+ * @param {CPtr<boolean>} bool_p
+ * @param {CPtr<struct allopt_t>} thisopt
+ */
 function enhance_menu_text(buf, sz, whichpass, bool_p, thisopt) {
     let nowsz;
     let availsz;
@@ -14572,7 +18457,34 @@ export function disregard_this_option(optidx) {
 // 68 bindings: 0 rebound+refilled, 7 rebound, 61 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(allopt_init), S(allopt), S(empty_optstr), S(duplicate), S(using_alias), S(give_opt_msg), S(opt_set_in_config), S(roleoptvals), S(OptS_type), S(def_inv_order), S(none), S(randomrole), S(to_be_done), S(defopt), S(defbrief), S(paranoia), S(menutype), S(msgwind), S(unlocktypes), S(burdentype), S(runmodes), S(sortltype), S(perminv_modes), S(objsymvals), S(default_menu_cmd_info), S(n_currently_set), S(roleopt2opt), S(__static_optfn_autounlock_plus), S(__static_optfn_disclose_valid_settings), S(__static_optfn_menu_objsyms_alt5), S(__static_optfn_mouse_support_mousemodes), S(__static_optfn_number_pad_numpadmodes), S(__static_optfn_sortvanquished_vanqmodes), S(__static_optfn_whatis_coord_gpcoords), S(wcnames), S(wcshortnames), S(wcolors_opt), S(__static_handler_disclose_disclosure_names), S(__static_handler_number_pad_npchoices), S(__static_handler_windowborders_windowborders_text), S(__static_escapes_oct), S(__static_escapes_dec), S(__static_allopt_array_init_options_array_inited_already), S(__static_parsebindings_mousebtn_names), S(msgtype_names), S(__static_msgtype_add_re_error), S(__static_test_regex_pattern_def_errmsg), S(__static_parse_role_opt_neg_opt), S(__static_collect_menu_keys_scroll_keys), S(__static_get_option_value_retbuf), S(__static_doset_simple_menu_fmtstr_tab_doset_simple), S(__static_term_for_boolean_booleanterms), S(__static_doset_fmtstr_tab_doset), S(__static_doset_helptext), S(__static_show_menu_controls_hardcoded), S(__static_show_menu_controls_mc_fmt), S(__static_show_menu_controls_mc_altfmt), S(__static_handle_add_list_remove_action_titles), S(__static_add_autopickup_exception_APE_regex_error), S(__static_add_autopickup_exception_APE_syntax_error), S(opt_intro), S(opt_epilog), S(__static_next_opt_buf), S(wc_options), S(wc2_options), S(fgp), S(bgp), S(options_set_window_colors_flag)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(allopt_init), S(allopt), S(empty_optstr), S(duplicate), S(using_alias), S(give_opt_msg),
+        S(opt_set_in_config), S(roleoptvals), S(OptS_type), S(def_inv_order), S(none),
+        S(randomrole), S(to_be_done), S(defopt), S(defbrief), S(paranoia), S(menutype), S(msgwind),
+        S(unlocktypes), S(burdentype), S(runmodes), S(sortltype), S(perminv_modes), S(objsymvals),
+        S(default_menu_cmd_info), S(n_currently_set), S(roleopt2opt),
+        S(__static_optfn_autounlock_plus), S(__static_optfn_disclose_valid_settings),
+        S(__static_optfn_menu_objsyms_alt5), S(__static_optfn_mouse_support_mousemodes),
+        S(__static_optfn_number_pad_numpadmodes), S(__static_optfn_sortvanquished_vanqmodes),
+        S(__static_optfn_whatis_coord_gpcoords), S(wcnames), S(wcshortnames), S(wcolors_opt),
+        S(__static_handler_disclose_disclosure_names), S(__static_handler_number_pad_npchoices),
+        S(__static_handler_windowborders_windowborders_text), S(__static_escapes_oct),
+        S(__static_escapes_dec), S(__static_allopt_array_init_options_array_inited_already),
+        S(__static_parsebindings_mousebtn_names), S(msgtype_names),
+        S(__static_msgtype_add_re_error), S(__static_test_regex_pattern_def_errmsg),
+        S(__static_parse_role_opt_neg_opt), S(__static_collect_menu_keys_scroll_keys),
+        S(__static_get_option_value_retbuf), S(__static_doset_simple_menu_fmtstr_tab_doset_simple),
+        S(__static_term_for_boolean_booleanterms), S(__static_doset_fmtstr_tab_doset),
+        S(__static_doset_helptext), S(__static_show_menu_controls_hardcoded),
+        S(__static_show_menu_controls_mc_fmt), S(__static_show_menu_controls_mc_altfmt),
+        S(__static_handle_add_list_remove_action_titles),
+        S(__static_add_autopickup_exception_APE_regex_error),
+        S(__static_add_autopickup_exception_APE_syntax_error), S(opt_intro), S(opt_epilog),
+        S(__static_next_opt_buf), S(wc_options), S(wc2_options), S(fgp), S(bgp),
+        S(options_set_window_colors_flag)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("options.js: __resetState before __captureState");

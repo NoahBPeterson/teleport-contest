@@ -21,15 +21,17 @@ import { newsym_force } from './display.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.NhRect_ly,
-    $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
-    $instance_globals_c_coder = FLD.instance_globals_c_coder,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level, $mkroom_hx = FLD.mkroom_hx,
-    $mkroom_hy = FLD.mkroom_hy, $mkroom_ly = FLD.mkroom_ly, $nhrect_hx = FLD.nhrect_hx,
-    $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly, $rm_edge = FLD.rm_edge, $rm_lit = FLD.rm_lit,
-    $rm_roomno = FLD.rm_roomno, $rm_typ = FLD.rm_typ, $selectionvar_bounds = FLD.selectionvar_bounds,
-    $selectionvar_bounds_dirty = FLD.selectionvar_bounds_dirty, $selectionvar_hei = FLD.selectionvar_hei,
-    $selectionvar_map = FLD.selectionvar_map, $sizeof_nhrect = FLD.sizeof_nhrect, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sp_coder_croom = FLD.sp_coder_croom;
+      $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
+      $instance_globals_c_coder = FLD.instance_globals_c_coder,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $mkroom_hx = FLD.mkroom_hx, $mkroom_hy = FLD.mkroom_hy, $mkroom_ly = FLD.mkroom_ly,
+      $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly,
+      $rm_edge = FLD.rm_edge, $rm_lit = FLD.rm_lit, $rm_roomno = FLD.rm_roomno,
+      $rm_typ = FLD.rm_typ, $selectionvar_bounds = FLD.selectionvar_bounds,
+      $selectionvar_bounds_dirty = FLD.selectionvar_bounds_dirty,
+      $selectionvar_hei = FLD.selectionvar_hei, $selectionvar_map = FLD.selectionvar_map,
+      $sizeof_nhrect = FLD.sizeof_nhrect, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sp_coder_croom = FLD.sp_coder_croom;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_unrecognized_gradient_type_defaulting = cptr.lit("Unrecognized gradient type! Defaulting to radial...");
@@ -48,9 +50,18 @@ export function selection_new() {
     cptr.st1o(tmps, $selectionvar_bounds_dirty, 0);
     cptr.stI16o(tmps, $selectionvar_bounds, NHM.COLNO);
     cptr.stI16o(tmps, $selectionvar_bounds + $nhrect_ly, NHM.ROWNO);
-    cptr.stI16o(tmps, $selectionvar_bounds + $nhrect_hx, cptr.stI16o(tmps, $selectionvar_bounds + $nhrect_hy, 0));
+    cptr.stI16o(
+        tmps,
+        $selectionvar_bounds + $nhrect_hx,
+        cptr.stI16o(tmps, $selectionvar_bounds + $nhrect_hy, 0)
+    );
     cptr.stPtro(tmps, $selectionvar_map, alloc(1681));
-    void __builtin___memset_chk(cptr.ldPtro(tmps, $selectionvar_map), 1, 1680n, __builtin_object_size(cptr.ldPtro(tmps, $selectionvar_map), 0));
+    void __builtin___memset_chk(
+        cptr.ldPtro(tmps, $selectionvar_map),
+        1,
+        1680n,
+        __builtin_object_size(cptr.ldPtro(tmps, $selectionvar_map), 0)
+    );
     cptr.st1o(cptr.ldPtro(tmps, $selectionvar_map), 1680, 0);
 
     return tmps;
@@ -72,7 +83,12 @@ export function selection_free(sel, freesel) {
 /* clear selection, setting all locations to value val */
 /** C ref: selvar.c:48 — @param {CPtr<struct selectionvar>} sel @param {CInt} val */
 export function selection_clear(sel, val) {
-    void __builtin___memset_chk(cptr.ldPtro(sel, $selectionvar_map), (1 + val) | 0, 1680n, __builtin_object_size(cptr.ldPtro(sel, $selectionvar_map), 0));
+    void __builtin___memset_chk(
+        cptr.ldPtro(sel, $selectionvar_map),
+        (1 + val) | 0,
+        1680n,
+        __builtin_object_size(cptr.ldPtro(sel, $selectionvar_map), 0)
+    );
     if (val) {
         cptr.stI16o(sel, $selectionvar_bounds, 0);
         cptr.stI16o(sel, $selectionvar_bounds + $nhrect_ly, 0);
@@ -81,12 +97,20 @@ export function selection_clear(sel, val) {
     } else {
         cptr.stI16o(sel, $selectionvar_bounds, NHM.COLNO);
         cptr.stI16o(sel, $selectionvar_bounds + $nhrect_ly, NHM.ROWNO);
-        cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hx, cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hy, 0));
+        cptr.stI16o(
+            sel,
+            $selectionvar_bounds + $nhrect_hx,
+            cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hy, 0)
+        );
     }
     cptr.st1o(sel, $selectionvar_bounds_dirty, 0);
 }
 
-/** C ref: selvar.c:65 — @param {CPtr<struct selectionvar>} sel @returns {CPtr<struct selectionvar>} */
+/**
+ * C ref: selvar.c:65
+ * @param {CPtr<struct selectionvar>} sel
+ * @returns {CPtr<struct selectionvar>}
+ */
 export function selection_clone(sel) {
     let tmps = alloc(32);
 
@@ -129,9 +153,16 @@ export function selection_recalc_bounds(sel) {
 
     cptr.stI16o(sel, $selectionvar_bounds, NHM.COLNO);
     cptr.stI16o(sel, $selectionvar_bounds + $nhrect_ly, NHM.ROWNO);
-    cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hx, cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hy, 0));
+    cptr.stI16o(
+        sel,
+        $selectionvar_bounds + $nhrect_hx,
+        cptr.stI16o(sel, $selectionvar_bounds + $nhrect_hy, 0)
+    );
 
-    cptr.stI16(r, cptr.stI16o(r, $nhrect_ly, cptr.stI16o(r, $nhrect_hx, cptr.stI16o(r, $nhrect_hy, -1))));
+    cptr.stI16(
+        r,
+        cptr.stI16o(r, $nhrect_ly, cptr.stI16o(r, $nhrect_hx, cptr.stI16o(r, $nhrect_hy, -1)))
+    );
 
     /* left */
     for (x = 0; x < cptr.ldI32(sel); x++) {
@@ -171,7 +202,11 @@ export function selection_recalc_bounds(sel) {
         }
 
         /* bottom */
-        for (y = i16(((cptr.ldI32o(sel, $selectionvar_hei) - 1) | 0)); y >= cptr.ldI16o(r, $nhrect_ly); y--) {
+        for (
+            y = i16(((cptr.ldI32o(sel, $selectionvar_hei) - 1) | 0));
+            y >= cptr.ldI16o(r, $nhrect_ly);
+            y--
+        ) {
             for (x = cptr.ldI16(r); x <= cptr.ldI16o(r, $nhrect_hx); x++) {
                 if (selection_getpoint(x, y, sel)) {
                     cptr.stI16o(r, $nhrect_hy, y);
@@ -187,17 +222,32 @@ export function selection_recalc_bounds(sel) {
     cptr.st1o(sel, $selectionvar_bounds_dirty, 0);
 }
 
-/** C ref: selvar.c:168 — @param {CInt} x @param {CInt} y @param {CPtr<struct selectionvar>} sel @returns {*} */
+/**
+ * C ref: selvar.c:168
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<struct selectionvar>} sel
+ * @returns {*}
+ */
 export function selection_getpoint(x, y, sel) {
     if (!sel || !cptr.ldPtro(sel, $selectionvar_map))
         return 0;
     if (x < 0 || y < 0 || x >= cptr.ldI32(sel) || y >= cptr.ldI32o(sel, $selectionvar_hei))
         return 0;
 
-    return i16(((cptr.ld1so(cptr.ldPtro(sel, $selectionvar_map), (Math.imul(cptr.ldI32(sel), y) + x) | 0) - 1) | 0));
+    return i16(((cptr.ld1so(
+        cptr.ldPtro(sel, $selectionvar_map),
+        (Math.imul(cptr.ldI32(sel), y) + x) | 0
+    ) - 1) | 0));
 }
 
-/** C ref: selvar.c:181 — @param {CInt} x @param {CInt} y @param {CPtr<struct selectionvar>} sel @param {CInt} c */
+/**
+ * C ref: selvar.c:181
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<struct selectionvar>} sel
+ * @param {CInt} c
+ */
 export function selection_setpoint(x, y, sel, c) {
     if (!sel || !cptr.ldPtro(sel, $selectionvar_map))
         return;
@@ -216,18 +266,30 @@ export function selection_setpoint(x, y, sel, c) {
 
         /* only set bounds_dirty if changing a point from 1 to 0; if changing
            a point from 0 to 0, nothing has really changed with the bounds */
-    } else if (cptr.ld1so(cptr.ldPtro(sel, $selectionvar_map), (Math.imul(cptr.ldI32(sel), y) + x) | 0) != 0) {
+    } else if (cptr.ld1so(
+        cptr.ldPtro(sel, $selectionvar_map),
+        (Math.imul(cptr.ldI32(sel), y) + x) | 0
+    ) != 0) {
         cptr.st1o(sel, $selectionvar_bounds_dirty, 1);
     }
 
-    cptr.st1o(cptr.ldPtro(sel, $selectionvar_map), (Math.imul(cptr.ldI32(sel), y) + x) | 0, schar(((c + 1) | 0)));
+    cptr.st1o(
+        cptr.ldPtro(sel, $selectionvar_map),
+        (Math.imul(cptr.ldI32(sel), y) + x) | 0,
+        schar(((c + 1) | 0))
+    );
 }
 
-/** C ref: selvar.c:211 — @param {CPtr<struct selectionvar>} s @returns {CPtr<struct selectionvar>} */
+/**
+ * C ref: selvar.c:211
+ * @param {CPtr<struct selectionvar>} s
+ * @returns {CPtr<struct selectionvar>}
+ */
 export function selection_not(s) {
     let x;
     let y;
-    let tmprect = cptr.alloc(8); cptr.memcpy(tmprect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let tmprect = cptr.alloc(8);
+    cptr.memcpy(tmprect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     for (x = 0; x < cptr.ldI32(s); x++)
         for (y = 0; y < cptr.ldI32o(s, $selectionvar_hei); y++)
@@ -236,12 +298,18 @@ export function selection_not(s) {
     return s;
 }
 
-/** C ref: selvar.c:224 — @param {CPtr<struct selectionvar>} ov @param {CInt} percent @returns {CPtr<struct selectionvar>} */
+/**
+ * C ref: selvar.c:224
+ * @param {CPtr<struct selectionvar>} ov
+ * @param {CInt} percent
+ * @returns {CPtr<struct selectionvar>}
+ */
 export function selection_filter_percent(ov, percent) {
     let x;
     let y;
     let ret;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     if (!ov)
         return null;
@@ -258,12 +326,19 @@ export function selection_filter_percent(ov, percent) {
     return ret;
 }
 
-/** C ref: selvar.c:248 — @param {CPtr<struct selectionvar>} ov @param {CInt} typ @param {CInt} lit @returns {CPtr<struct selectionvar>} */
+/**
+ * C ref: selvar.c:248
+ * @param {CPtr<struct selectionvar>} ov
+ * @param {CInt} typ
+ * @param {CInt} lit
+ * @returns {CPtr<struct selectionvar>}
+ */
 export function selection_filter_mapchar(ov, typ, lit) {
     let x;
     let y;
     let ret;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     if (!ov)
         return null;
@@ -274,7 +349,18 @@ export function selection_filter_mapchar(ov, typ, lit) {
 
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
-            if (selection_getpoint(i16(x), i16(y), ov) && match_maptyps(typ, i16(cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)))) {
+            if (selection_getpoint(i16(x), i16(y), ov) &&
+                    match_maptyps(
+                        typ,
+                        i16(cptr.ld1so3(
+                            svl,
+                            x,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        ))
+                    )) {
                 switch (lit) {
                     default:
                     case -2:
@@ -285,7 +371,15 @@ export function selection_filter_mapchar(ov, typ, lit) {
                     break;
                     case 0:
                     case 1:
-                    if ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) == lit >>> 0)
+                    if ((cptr.ldI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_lit
+                    ) & 1) ==
+                            lit >>> 0)
                         selection_setpoint(i16(x), i16(y), ret, 1);
                     break;
                 }
@@ -293,13 +387,21 @@ export function selection_filter_mapchar(ov, typ, lit) {
     return ret;
 }
 
-/** C ref: selvar.c:284 — @param {CPtr<struct selectionvar>} ov @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CInt} removeit @returns {CInt} */
+/**
+ * C ref: selvar.c:284
+ * @param {CPtr<struct selectionvar>} ov
+ * @param {CPtr<coordxy>} x
+ * @param {CPtr<coordxy>} y
+ * @param {CInt} removeit
+ * @returns {CInt}
+ */
 export function selection_rndcoord(ov, x, y, removeit) {
     let idx = 0;
     let c;
     let dx;
     let dy;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     selection_getbounds(ov, rect);
 
@@ -332,7 +434,8 @@ export function selection_do_grow(ov, dir) {
     let x;
     let y;
     let tmp;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     if (!ov)
         return;
@@ -344,13 +447,40 @@ export function selection_do_grow(ov, dir) {
 
     selection_getbounds(ov, rect);
 
-    for (x = i16((0 > ((cptr.ldI16(rect) - 1) | 0) ? 0 : ((cptr.ldI16(rect) - 1) | 0))); x <= (79 < ((cptr.ldI16o(rect, $nhrect_hx) + 1) | 0) ? 79 : ((cptr.ldI16o(rect, $nhrect_hx) + 1) | 0)); x++)
-        for (y = i16((0 > ((cptr.ldI16o(rect, $nhrect_ly) - 1) | 0) ? 0 : ((cptr.ldI16o(rect, $nhrect_ly) - 1) | 0))); y <= (20 < ((cptr.ldI16o(rect, $nhrect_hy) + 1) | 0) ? 20 : ((cptr.ldI16o(rect, $nhrect_hy) + 1) | 0)); y++) {
+    for (
+        x = i16((0 > ((cptr.ldI16(rect) - 1) | 0) ? 0 : ((cptr.ldI16(rect) - 1) | 0)));
+        x <=
+            (79 < ((cptr.ldI16o(rect, $nhrect_hx) + 1) | 0)
+                ? 79
+                : ((cptr.ldI16o(rect, $nhrect_hx) + 1) | 0));
+        x++
+    )
+        for (
+            y = i16((0 > ((cptr.ldI16o(rect, $nhrect_ly) - 1) | 0)
+                ? 0
+                : ((cptr.ldI16o(rect, $nhrect_ly) - 1) | 0)));
+            y <=
+                (20 < ((cptr.ldI16o(rect, $nhrect_hy) + 1) | 0)
+                    ? 20
+                    : ((cptr.ldI16o(rect, $nhrect_hy) + 1) | 0));
+            y++
+        ) {
             /* note:  dir is a mask of multiple directions, but the only
                way to specify diagonals is by including the two adjacent
                orthogonal directions, which effectively specifies three-
                way growth [WEST|NORTH => WEST plus WEST|NORTH plus NORTH] */
-            if (((dir & NHM.W_WEST) && selection_getpoint(i16(((x + 1) | 0)), y, ov)) || (((dir & 9) == 9) && selection_getpoint(i16(((x + 1) | 0)), i16(((y + 1) | 0)), ov)) || ((dir & NHM.W_NORTH) && selection_getpoint(x, i16(((y + 1) | 0)), ov)) || (((dir & 5) == 5) && selection_getpoint(i16(((x - 1) | 0)), i16(((y + 1) | 0)), ov)) || ((dir & NHM.W_EAST) && selection_getpoint(i16(((x - 1) | 0)), y, ov)) || (((dir & 6) == 6) && selection_getpoint(i16(((x - 1) | 0)), i16(((y - 1) | 0)), ov)) || ((dir & NHM.W_SOUTH) && selection_getpoint(x, i16(((y - 1) | 0)), ov)) || (((dir & 10) == 10) && selection_getpoint(i16(((x + 1) | 0)), i16(((y - 1) | 0)), ov))) {
+            if (((dir & NHM.W_WEST) && selection_getpoint(i16(((x + 1) | 0)), y, ov)) ||
+                    (((dir & 9) == 9) &&
+                        selection_getpoint(i16(((x + 1) | 0)), i16(((y + 1) | 0)), ov)) ||
+                    ((dir & NHM.W_NORTH) && selection_getpoint(x, i16(((y + 1) | 0)), ov)) ||
+                    (((dir & 5) == 5) &&
+                        selection_getpoint(i16(((x - 1) | 0)), i16(((y + 1) | 0)), ov)) ||
+                    ((dir & NHM.W_EAST) && selection_getpoint(i16(((x - 1) | 0)), y, ov)) ||
+                    (((dir & 6) == 6) &&
+                        selection_getpoint(i16(((x - 1) | 0)), i16(((y - 1) | 0)), ov)) ||
+                    ((dir & NHM.W_SOUTH) && selection_getpoint(x, i16(((y - 1) | 0)), ov)) ||
+                    (((dir & 10) == 10) &&
+                        selection_getpoint(i16(((x + 1) | 0)), i16(((y - 1) | 0)), ov))) {
                 selection_setpoint(x, y, tmp, 1);
             }
         }
@@ -374,7 +504,15 @@ export function set_selection_floodfillchk(f) {
 }
 
 /* check whethere <x,y> is already in xs[],ys[] */
-/** C ref: selvar.c:379 — @param {CInt} x @param {CInt} y @param {CPtr<coordxy>} xs @param {CPtr<coordxy>} ys @param {CInt} n @returns {CInt} */
+/**
+ * C ref: selvar.c:379
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<coordxy>} xs
+ * @param {CPtr<coordxy>} ys
+ * @param {CInt} n
+ * @returns {CInt}
+ */
 function sel_flood_havepoint(x, y, xs, ys, n) {
     let xx = x;
     let yy = y;
@@ -389,7 +527,13 @@ function sel_flood_havepoint(x, y, xs, ys, n) {
 
 const __static_selection_floodfill_floodfill_stack_overrun = cptr.bytes("floodfill stack overrun"); /** C ref: selvar.c:419 — char[24] (function-static) */
 
-/** C ref: selvar.c:395 — @param {CPtr<struct selectionvar>} ov @param {CInt} x @param {CInt} y @param {CInt} diagonals */
+/**
+ * C ref: selvar.c:395
+ * @param {CPtr<struct selectionvar>} ov
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} diagonals
+ */
 export function selection_floodfill(ov, x, y, diagonals) {
     let tmp = selection_new();
     let idx = 0;
@@ -417,7 +561,10 @@ export function selection_floodfill(ov, x, y, diagonals) {
             selection_setpoint(x, y, tmp, 1);
         }
         {
-            if (isok(i16((((x + 1) | 0))), (y)) && (selection_flood_check_func)(i16((((x + 1) | 0))), (y)) && !selection_getpoint(i16((((x + 1) | 0))), (y), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), (y), dx, dy, idx))
+            if (isok(i16((((x + 1) | 0))), (y)) &&
+                    (selection_flood_check_func)(i16((((x + 1) | 0))), (y)) &&
+                    !selection_getpoint(i16((((x + 1) | 0))), (y), (tmp)) &&
+                    !sel_flood_havepoint(i16((((x + 1) | 0))), (y), dx, dy, idx))
                 {
                     if (idx < 1680) {
                         cptr.stI16o(dx, idx, i16(((((x + 1) | 0)))), 2);
@@ -428,7 +575,10 @@ export function selection_floodfill(ov, x, y, diagonals) {
                 }
         }
         {
-            if (isok(i16((((x - 1) | 0))), (y)) && (selection_flood_check_func)(i16((((x - 1) | 0))), (y)) && !selection_getpoint(i16((((x - 1) | 0))), (y), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), (y), dx, dy, idx))
+            if (isok(i16((((x - 1) | 0))), (y)) &&
+                    (selection_flood_check_func)(i16((((x - 1) | 0))), (y)) &&
+                    !selection_getpoint(i16((((x - 1) | 0))), (y), (tmp)) &&
+                    !sel_flood_havepoint(i16((((x - 1) | 0))), (y), dx, dy, idx))
                 {
                     if (idx < 1680) {
                         cptr.stI16o(dx, idx, i16(((((x - 1) | 0)))), 2);
@@ -439,7 +589,10 @@ export function selection_floodfill(ov, x, y, diagonals) {
                 }
         }
         {
-            if (isok((x), i16((((y + 1) | 0)))) && (selection_flood_check_func)((x), i16((((y + 1) | 0)))) && !selection_getpoint((x), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint((x), i16((((y + 1) | 0))), dx, dy, idx))
+            if (isok((x), i16((((y + 1) | 0)))) &&
+                    (selection_flood_check_func)((x), i16((((y + 1) | 0)))) &&
+                    !selection_getpoint((x), i16((((y + 1) | 0))), (tmp)) &&
+                    !sel_flood_havepoint((x), i16((((y + 1) | 0))), dx, dy, idx))
                 {
                     if (idx < 1680) {
                         cptr.stI16o(dx, idx, ((x)), 2);
@@ -450,7 +603,10 @@ export function selection_floodfill(ov, x, y, diagonals) {
                 }
         }
         {
-            if (isok((x), i16((((y - 1) | 0)))) && (selection_flood_check_func)((x), i16((((y - 1) | 0)))) && !selection_getpoint((x), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint((x), i16((((y - 1) | 0))), dx, dy, idx))
+            if (isok((x), i16((((y - 1) | 0)))) &&
+                    (selection_flood_check_func)((x), i16((((y - 1) | 0)))) &&
+                    !selection_getpoint((x), i16((((y - 1) | 0))), (tmp)) &&
+                    !sel_flood_havepoint((x), i16((((y - 1) | 0))), dx, dy, idx))
                 {
                     if (idx < 1680) {
                         cptr.stI16o(dx, idx, ((x)), 2);
@@ -462,7 +618,16 @@ export function selection_floodfill(ov, x, y, diagonals) {
         }
         if (diagonals) {
             {
-                if (isok(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) && (selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), dx, dy, idx))
+                if (isok(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) &&
+                        (selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y + 1) | 0)))) &&
+                        !selection_getpoint(i16((((x + 1) | 0))), i16((((y + 1) | 0))), (tmp)) &&
+                        !sel_flood_havepoint(
+                            i16((((x + 1) | 0))),
+                            i16((((y + 1) | 0))),
+                            dx,
+                            dy,
+                            idx
+                        ))
                     {
                         if (idx < 1680) {
                             cptr.stI16o(dx, idx, i16(((((x + 1) | 0)))), 2);
@@ -473,7 +638,16 @@ export function selection_floodfill(ov, x, y, diagonals) {
                     }
             }
             {
-                if (isok(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) && (selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), dx, dy, idx))
+                if (isok(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) &&
+                        (selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y - 1) | 0)))) &&
+                        !selection_getpoint(i16((((x - 1) | 0))), i16((((y - 1) | 0))), (tmp)) &&
+                        !sel_flood_havepoint(
+                            i16((((x - 1) | 0))),
+                            i16((((y - 1) | 0))),
+                            dx,
+                            dy,
+                            idx
+                        ))
                     {
                         if (idx < 1680) {
                             cptr.stI16o(dx, idx, i16(((((x - 1) | 0)))), 2);
@@ -484,7 +658,16 @@ export function selection_floodfill(ov, x, y, diagonals) {
                     }
             }
             {
-                if (isok(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) && (selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) && !selection_getpoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), dx, dy, idx))
+                if (isok(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) &&
+                        (selection_flood_check_func)(i16((((x - 1) | 0))), i16((((y + 1) | 0)))) &&
+                        !selection_getpoint(i16((((x - 1) | 0))), i16((((y + 1) | 0))), (tmp)) &&
+                        !sel_flood_havepoint(
+                            i16((((x - 1) | 0))),
+                            i16((((y + 1) | 0))),
+                            dx,
+                            dy,
+                            idx
+                        ))
                     {
                         if (idx < 1680) {
                             cptr.stI16o(dx, idx, i16(((((x - 1) | 0)))), 2);
@@ -495,7 +678,16 @@ export function selection_floodfill(ov, x, y, diagonals) {
                     }
             }
             {
-                if (isok(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) && (selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) && !selection_getpoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), (tmp)) && !sel_flood_havepoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), dx, dy, idx))
+                if (isok(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) &&
+                        (selection_flood_check_func)(i16((((x + 1) | 0))), i16((((y - 1) | 0)))) &&
+                        !selection_getpoint(i16((((x + 1) | 0))), i16((((y - 1) | 0))), (tmp)) &&
+                        !sel_flood_havepoint(
+                            i16((((x + 1) | 0))),
+                            i16((((y - 1) | 0))),
+                            dx,
+                            dy,
+                            idx
+                        ))
                     {
                         if (idx < 1680) {
                             cptr.stI16o(dx, idx, i16(((((x + 1) | 0)))), 2);
@@ -511,7 +703,15 @@ export function selection_floodfill(ov, x, y, diagonals) {
 }
 
 /* McIlroy's Ellipse Algorithm */
-/** C ref: selvar.c:456 — @param {CPtr<struct selectionvar>} ov @param {CInt} xc @param {CInt} yc @param {CInt} a @param {CInt} b @param {CInt} filled */
+/**
+ * C ref: selvar.c:456
+ * @param {CPtr<struct selectionvar>} ov
+ * @param {CInt} xc
+ * @param {CInt} yc
+ * @param {CInt} a
+ * @param {CInt} b
+ * @param {CInt} filled
+ */
 export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
     let x = 0;
     let y = b;
@@ -542,7 +742,8 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
                 selection_setpoint(i16(((xc + x) | 0)), i16(((yc - y) | 0)), ov, 1);
                 selection_setpoint(i16(((xc - x) | 0)), i16(((yc + y) | 0)), ov, 1);
             }
-            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 || BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3) {
+            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 ||
+                    BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3) {
                 x++;
                 dxt += d2xt;
                 t += dxt;
@@ -561,26 +762,53 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
         }
     } else {
         while (y >= 0 && x <= a) {
-            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 || BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3) {
+            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 ||
+                    BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3) {
                 x++;
                 dxt += d2xt;
                 t += dxt;
                 width += 2n;
             } else if (BigInt.asIntN(64, t - BigInt.asIntN(64, a2 * BigInt(y))) > crit2) {
                 for (i = 0n; i < width; i++)
-                    selection_setpoint(Number(BigInt.asIntN(16, BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i))), i16(((yc - y) | 0)), ov, 1);
+                    selection_setpoint(
+                        Number(BigInt.asIntN(16, BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i))),
+                        i16(((yc - y) | 0)),
+                        ov,
+                        1
+                    );
                 if (y != 0)
                     for (i = 0n; i < width; i++)
-                        selection_setpoint(Number(BigInt.asIntN(16, BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i))), i16(((yc + y) | 0)), ov, 1);
+                        selection_setpoint(
+                            Number(BigInt.asIntN(
+                                16,
+                                BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i)
+                            )),
+                            i16(((yc + y) | 0)),
+                            ov,
+                            1
+                        );
                 y--;
                 dyt += d2yt;
                 t += dyt;
             } else {
                 for (i = 0n; i < width; i++)
-                    selection_setpoint(Number(BigInt.asIntN(16, BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i))), i16(((yc - y) | 0)), ov, 1);
+                    selection_setpoint(
+                        Number(BigInt.asIntN(16, BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i))),
+                        i16(((yc - y) | 0)),
+                        ov,
+                        1
+                    );
                 if (y != 0)
                     for (i = 0n; i < width; i++)
-                        selection_setpoint(Number(BigInt.asIntN(16, BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i))), i16(((yc + y) | 0)), ov, 1);
+                        selection_setpoint(
+                            Number(BigInt.asIntN(
+                                16,
+                                BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i)
+                            )),
+                            i16(((yc + y) | 0)),
+                            ov,
+                            1
+                        );
                 x++;
                 dxt += d2xt;
                 t += dxt;
@@ -594,7 +822,16 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
 }
 
 /* square of distance from line segment (x1,y1, x2,y2) to point (x3,y3) */
-/** C ref: selvar.c:542 — @param {CLongLong} x1 @param {CLongLong} y1 @param {CLongLong} x2 @param {CLongLong} y2 @param {CLongLong} x3 @param {CLongLong} y3 @returns {CLongLong} */
+/**
+ * C ref: selvar.c:542
+ * @param {CLongLong} x1
+ * @param {CLongLong} y1
+ * @param {CLongLong} x2
+ * @param {CLongLong} y2
+ * @param {CLongLong} x3
+ * @param {CLongLong} y3
+ * @returns {CLongLong}
+ */
 function line_dist_coord(x1, y1, x2, y2, x3, y3) {
     let px = BigInt.asIntN(64, x2 - x1);
     let py = BigInt.asIntN(64, y2 - y1);
@@ -607,9 +844,19 @@ function line_dist_coord(x1, y1, x2, y2, x3, y3) {
     let lu = 0;
 
     if (x1 == x2 && y1 == y2)
-        return BigInt(dist2(Number(BigInt.asIntN(16, x1)), Number(BigInt.asIntN(16, y1)), Number(BigInt.asIntN(16, x3)), Number(BigInt.asIntN(16, y3))));
+        return BigInt(dist2(
+            Number(BigInt.asIntN(16, x1)),
+            Number(BigInt.asIntN(16, y1)),
+            Number(BigInt.asIntN(16, x3)),
+            Number(BigInt.asIntN(16, y3))
+        ));
 
-    lu = Number((BigInt.asIntN(64, BigInt.asIntN(64, (BigInt.asIntN(64, x3 - x1)) * px) + BigInt.asIntN(64, (BigInt.asIntN(64, y3 - y1)) * py)))) / Number(s);
+    lu = Number((BigInt.asIntN(
+        64,
+        BigInt.asIntN(64, (BigInt.asIntN(64, x3 - x1)) * px) +
+            BigInt.asIntN(64, (BigInt.asIntN(64, y3 - y1)) * py)
+    ))) /
+            Number(s);
     if (lu > 1)
         lu = 1;
     else if (lu < 0)
@@ -625,7 +872,17 @@ function line_dist_coord(x1, y1, x2, y2, x3, y3) {
 }
 
 /* guts of l_selection_gradient */
-/** C ref: selvar.c:570 — @param {CPtr<struct selectionvar>} ov @param {CLongLong} x @param {CLongLong} y @param {CLongLong} x2 @param {CLongLong} y2 @param {CLongLong} gtyp @param {CLongLong} mind @param {CLongLong} maxd */
+/**
+ * C ref: selvar.c:570
+ * @param {CPtr<struct selectionvar>} ov
+ * @param {CLongLong} x
+ * @param {CLongLong} y
+ * @param {CLongLong} x2
+ * @param {CLongLong} y2
+ * @param {CLongLong} gtyp
+ * @param {CLongLong} mind
+ * @param {CLongLong} maxd
+ */
 export function selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
     let dx;
     let dy;
@@ -653,8 +910,16 @@ export function selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
                 for (dy = 0n; dy < 21n; dy++) {
                     let d0 = line_dist_coord(x, y, x2, y2, dx, dy);
 
-                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
-                        selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
+                    if (d0 <= BigInt.asIntN(64, mind * mind) ||
+                            (d0 <= BigInt.asIntN(64, maxd * maxd) &&
+                                BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) <
+                                    BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
+                        selection_setpoint(
+                            Number(BigInt.asIntN(16, dx)),
+                            Number(BigInt.asIntN(16, dy)),
+                            ov,
+                            1
+                        );
                 }
             break;
         }
@@ -667,10 +932,21 @@ export function selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
                     let d3 = line_dist_coord(x, y, x2, y2, x2, dy);
                     let d4 = line_dist_coord(x, y, x2, y2, dx, y2);
                     let d5 = line_dist_coord(x, y, x2, y2, dx, dy);
-                    let d0 = ((d5) < (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))) ? (d5) : (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))));
+                    let d0 = ((d5) <
+                        (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4))))
+                            ? (d5)
+                            : (((max(d1, d2)) < (max(d3, d4)) ? (max(d1, d2)) : (max(d3, d4)))));
 
-                    if (d0 <= BigInt.asIntN(64, mind * mind) || (d0 <= BigInt.asIntN(64, maxd * maxd) && BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) < BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
-                        selection_setpoint(Number(BigInt.asIntN(16, dx)), Number(BigInt.asIntN(16, dy)), ov, 1);
+                    if (d0 <= BigInt.asIntN(64, mind * mind) ||
+                            (d0 <= BigInt.asIntN(64, maxd * maxd) &&
+                                BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) <
+                                    BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
+                        selection_setpoint(
+                            Number(BigInt.asIntN(16, dx)),
+                            Number(BigInt.asIntN(16, dy)),
+                            ov,
+                            1
+                        );
                 }
             break;
         }  /*case*/
@@ -678,7 +954,14 @@ export function selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
 }
 
 /* bresenham line algo */
-/** C ref: selvar.c:626 — @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 @param {CPtr<struct selectionvar>} ov */
+/**
+ * C ref: selvar.c:626
+ * @param {CInt} x1
+ * @param {CInt} y1
+ * @param {CInt} x2
+ * @param {CInt} y2
+ * @param {CPtr<struct selectionvar>} ov
+ */
 export function selection_do_line(x1, y1, x2, y2, ov) {
     let d0;
     let dx;
@@ -737,7 +1020,16 @@ export function selection_do_line(x1, y1, x2, y2, ov) {
     }
 }
 
-/** C ref: selvar.c:683 — @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 @param {CInt} rough @param {CInt} rec @param {CPtr<struct selectionvar>} ov */
+/**
+ * C ref: selvar.c:683
+ * @param {CInt} x1
+ * @param {CInt} y1
+ * @param {CInt} x2
+ * @param {CInt} y2
+ * @param {CInt} rough
+ * @param {CInt} rec
+ * @param {CPtr<struct selectionvar>} ov
+ */
 export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
     let mx;
     let my;
@@ -747,8 +1039,13 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
     if (rec < 1 || (x2 == x1 && y2 == y1))
         return;
 
-    if (rough > ((Math.abs((x2 - x1) | 0)) > (Math.abs((y2 - y1) | 0)) ? (Math.abs((x2 - x1) | 0)) : (Math.abs((y2 - y1) | 0))))
-        rough = schar(((Math.abs((x2 - x1) | 0)) > (Math.abs((y2 - y1) | 0)) ? (Math.abs((x2 - x1) | 0)) : (Math.abs((y2 - y1) | 0))));
+    if (rough >
+            ((Math.abs((x2 - x1) | 0)) > (Math.abs((y2 - y1) | 0))
+                ? (Math.abs((x2 - x1) | 0))
+                : (Math.abs((y2 - y1) | 0))))
+        rough = schar(((Math.abs((x2 - x1) | 0)) > (Math.abs((y2 - y1) | 0))
+                ? (Math.abs((x2 - x1) | 0))
+                : (Math.abs((y2 - y1) | 0))));
 
     if (rough < 2) {
         mx = ((((x1 + x2) | 0) / 2) | 0);
@@ -776,11 +1073,17 @@ export function selection_do_randline(x1, y1, x2, y2, rough, rec, ov) {
     selection_setpoint(x2, y2, ov, 1);
 }
 
-/** C ref: selvar.c:726 — @param {CPtr<struct selectionvar>} ov @param {CPtr} func @param {CPtr} arg */
+/**
+ * C ref: selvar.c:726
+ * @param {CPtr<struct selectionvar>} ov
+ * @param {CPtr} func
+ * @param {CPtr} arg
+ */
 export function selection_iterate(ov, func, arg) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     if (!ov)
         return;
@@ -798,7 +1101,8 @@ export function selection_iterate(ov, func, arg) {
 export function selection_is_irregular(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     selection_getbounds(sel, rect);
 
@@ -811,16 +1115,30 @@ export function selection_is_irregular(sel) {
 }
 
 /* return a description of the selection size */
-/** C ref: selvar.c:764 — @param {CPtr<struct selectionvar>} sel @param {CPtr<char>} buf @returns {CPtr<char>} */
+/**
+ * C ref: selvar.c:764
+ * @param {CPtr<struct selectionvar>} sel
+ * @param {CPtr<char>} buf
+ * @returns {CPtr<char>}
+ */
 export function selection_size_description(sel, buf) {
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     let dx;
     let dy;
 
     selection_getbounds(sel, rect);
     dx = i16(((((cptr.ldI16o(rect, $nhrect_hx) - cptr.ldI16(rect)) | 0) + 1) | 0));
     dy = i16(((((cptr.ldI16o(rect, $nhrect_hy) - cptr.ldI16o(rect, $nhrect_ly)) | 0) + 1) | 0));
-    void cptr.sprintf(buf, __s_s_i_by_i, selection_is_irregular(sel) ? __s_irregularly_shaped : ((dx == dy) ? __s_square : __s_rectangular), dx, dy);
+    void cptr.sprintf(
+        buf,
+        __s_s_i_by_i,
+        selection_is_irregular(sel)
+            ? __s_irregularly_shaped
+            : ((dx == dy) ? __s_square : __s_rectangular),
+        dx,
+        dy
+    );
     return buf;
 }
 
@@ -831,7 +1149,9 @@ export function selection_from_mkroom(croom) {
     let y;
     let rmno;
 
-    if (!croom && cptr.ldPtro(gc, $instance_globals_c_coder) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom))
+    if (!croom &&
+            cptr.ldPtro(gc, $instance_globals_c_coder) &&
+            cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom))
         croom = cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom);
     if (!croom)
         return sel;
@@ -839,7 +1159,23 @@ export function selection_from_mkroom(croom) {
     rmno = Number(BigInt.asUintN(32, (BigInt.asIntN(64, (cptr.diff(croom, svr) / 224n) + 3n))));
     for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); y++)
         for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); x++)
-            if (isok(x, y) && !(cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) == rmno)
+            if (isok(x, y) &&
+                    !(cptr.ldI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_edge
+                    ) & 1) &&
+                    (cptr.ldI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) == rmno)
                 selection_setpoint(x, y, sel, 1);
     return sel;
 }
@@ -859,7 +1195,11 @@ export function selection_force_newsyms(sel) {
 // 2 bindings: 0 rebound+refilled, 1 rebound, 1 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(selection_flood_check_func), S(__static_selection_floodfill_floodfill_stack_overrun)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(selection_flood_check_func), S(__static_selection_floodfill_floodfill_stack_overrun)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("selvar.js: __resetState before __captureState");

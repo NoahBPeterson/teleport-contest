@@ -21,13 +21,15 @@ import { iflags } from './decl.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $instance_flags_cbreak = FLD.instance_flags_cbreak, $instance_flags_echo = FLD.instance_flags_echo,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited, $sizeof_termios = FLD.sizeof_termios,
-    $termios_c_cc = FLD.termios_c_cc, $termios_c_cflag = FLD.termios_c_cflag,
-    $termios_c_lflag = FLD.termios_c_lflag, $termios_c_oflag = FLD.termios_c_oflag,
-    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
-    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
-    $window_procs_wp_id = FLD.window_procs_wp_id;
+const $instance_flags_cbreak = FLD.instance_flags_cbreak,
+      $instance_flags_echo = FLD.instance_flags_echo,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $sizeof_termios = FLD.sizeof_termios, $termios_c_cc = FLD.termios_c_cc,
+      $termios_c_cflag = FLD.termios_c_cflag, $termios_c_lflag = FLD.termios_c_lflag,
+      $termios_c_oflag = FLD.termios_c_oflag,
+      $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+      $window_procs_wp_id = FLD.window_procs_wp_id;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_nomux_markers = cptr.lit("NOMUX_MARKERS");
@@ -132,7 +134,11 @@ export function gettty() {
 
     /* do not expand tabs - they might be needed inside a cm sequence */
     if (cptr.ldU64o(curttyb, $termios_c_oflag) & 4n) {
-        cptr.stU64o(curttyb, $termios_c_oflag, cptr.ldU64o(curttyb, $termios_c_oflag) & 18446744073709551611n);
+        cptr.stU64o(
+            curttyb,
+            $termios_c_oflag,
+            cptr.ldU64o(curttyb, $termios_c_oflag) & 18446744073709551611n
+        );
         setctty();
     }
     settty_needed = 1;
@@ -149,8 +155,16 @@ export function* settty(s) {
         if (!getenv(__s_nomux_markers))
             perror(__s_nethack_settty);
     }
-    cptr.st1o(iflags, $instance_flags_echo, schar(((cptr.ldU64o(inittyb, $termios_c_lflag) & 8n) ? NHM.ON : NHM.OFF)));
-    cptr.st1o(iflags, $instance_flags_cbreak, schar(((!(cptr.ldU64o(inittyb, $termios_c_lflag) & 256n)) ? NHM.ON : NHM.OFF)));
+    cptr.st1o(
+        iflags,
+        $instance_flags_echo,
+        schar(((cptr.ldU64o(inittyb, $termios_c_lflag) & 8n) ? NHM.ON : NHM.OFF))
+    );
+    cptr.st1o(
+        iflags,
+        $instance_flags_cbreak,
+        schar(((!(cptr.ldU64o(inittyb, $termios_c_lflag) & 256n)) ? NHM.ON : NHM.OFF))
+    );
     cptr.stU64(curttyb, cptr.ldU64(curttyb) | 32n);
     setioctls();
     settty_needed = 0;
@@ -168,13 +182,25 @@ export function setftty() {
     cptr.st1o(iflags, $instance_flags_echo, NHM.OFF);
     /* Should use (ECHO|CRMOD) here instead of ECHO */
     if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, $termios_c_lflag) & 8n))) != ef) {
-        cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) & 18446744073709551607n);
+        cptr.stU64o(
+            curttyb,
+            $termios_c_lflag,
+            cptr.ldU64o(curttyb, $termios_c_lflag) & 18446744073709551607n
+        );
         /* curttyb.echoflgs |= ef; */
         change++;
     }
     if (Number(BigInt.asUintN(32, (cptr.ldU64o(curttyb, $termios_c_lflag) & 256n))) != cf) {
-        cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) & 18446744073709551359n);
-        cptr.stU64o(curttyb, $termios_c_lflag, cptr.ldU64o(curttyb, $termios_c_lflag) | BigInt(cf >>> 0));
+        cptr.stU64o(
+            curttyb,
+            $termios_c_lflag,
+            cptr.ldU64o(curttyb, $termios_c_lflag) & 18446744073709551359n
+        );
+        cptr.stU64o(
+            curttyb,
+            $termios_c_lflag,
+            cptr.ldU64o(curttyb, $termios_c_lflag) | BigInt(cf >>> 0)
+        );
         /* be satisfied with one character; no timeout */
         cptr.st1o2(curttyb, 16, 1, $termios_c_cc, 1);  /* was VEOF */
         cptr.st1o2(curttyb, 17, 1, $termios_c_cc, 0);  /* was VEOL */
@@ -205,7 +231,9 @@ export function setftty() {
 /** C ref: unixtty.c:338 */
 export function intron() {
     /* Ugly hack to keep from changing tty modes for non-tty games -dlc */
-    if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) && BigInt(intr_char) != (fpathconf(0, 9)) && cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) != 3) {
+    if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) &&
+            BigInt(intr_char) != (fpathconf(0, 9)) &&
+            cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) != 3) {
         cptr.st1o2(curttyb, 8, 1, $termios_c_cc, 3);
         setctty();
     }
@@ -214,7 +242,8 @@ export function intron() {
 /** C ref: unixtty.c:350 */
 export function introff() {
     /* Ugly hack to keep from changing tty modes for non-tty games -dlc */
-    if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) && BigInt(cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) >>> 0) != (fpathconf(0, 9))) {
+    if ((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty) &&
+            BigInt(cptr.ld1uo2(curttyb, 8, 1, $termios_c_cc) >>> 0) != (fpathconf(0, 9))) {
         cptr.st1o2(curttyb, 8, 1, $termios_c_cc, Number(BigInt.asUintN(8, (fpathconf(0, 9)))));
         setctty();
     }
@@ -249,7 +278,11 @@ export function tty_utf8graphics_fixup() {
 // 6 bindings: 2 rebound+refilled, 4 rebound, 0 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(erase_char), S(intr_char), S(kill_char), S(settty_needed), S(inittyb), S(curttyb)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(erase_char), S(intr_char), S(kill_char), S(settty_needed), S(inittyb), S(curttyb)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("unixtty.js: __resetState before __captureState");

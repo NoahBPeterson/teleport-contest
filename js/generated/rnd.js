@@ -13,8 +13,8 @@ import { Luck } from './nhprop.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $rnglist_t_init = FLD.rnglist_t_init, $rnglist_t_rng_state = FLD.rnglist_t_rng_state,
-    $sizeof_rnglist_t = FLD.sizeof_rnglist_t, $you_moreluck = FLD.you_moreluck, $you_ulevel = FLD.you_ulevel,
-    $you_uluck = FLD.you_uluck;
+      $sizeof_rnglist_t = FLD.sizeof_rnglist_t, $you_moreluck = FLD.you_moreluck,
+      $you_ulevel = FLD.you_ulevel, $you_uluck = FLD.you_uluck;
 
 // ---- hand-written runtime prelude (tools/c2js/runtime/rnd-prelude.js) ----
 // rng-log runtime + minimal libc shims + extern stubs for the parity harness.
@@ -199,9 +199,28 @@ function rng_log_write(func, args, result) {
     rng_call_count++;
     if (rng_caller_file) {
         if (rng_caller_func) {
-            fprintf(rng_logfile, __s_d_s_s_d_s_s_d, rng_call_count, func, args, result, rng_caller_func, rng_caller_file, rng_caller_line);
+            fprintf(
+                rng_logfile,
+                __s_d_s_s_d_s_s_d,
+                rng_call_count,
+                func,
+                args,
+                result,
+                rng_caller_func,
+                rng_caller_file,
+                rng_caller_line
+            );
         } else {
-            fprintf(rng_logfile, __s_d_s_s_d_s_d, rng_call_count, func, args, result, rng_caller_file, rng_caller_line);
+            fprintf(
+                rng_logfile,
+                __s_d_s_s_d_s_d,
+                rng_call_count,
+                func,
+                args,
+                result,
+                rng_caller_file,
+                rng_caller_line
+            );
         }
         /* Do NOT clear rng_caller_file here -- let internal calls from
            wrapper functions (rnz, rne, rnl) inherit the same context. */
@@ -248,12 +267,27 @@ export function init_isaac64(seed, fn) {
         cptr.st1o(cptr.decay(new_rng_state), i, Number(BigInt.asUintN(8, (seed & 255n))), 1);
         seed >>= 8n;
     }
-    cptr.stPtro2(rnglist, rngindx, $sizeof_rnglist_t, $rnglist_t_rng_state, isaac64_init(new_rng_state));
+    cptr.stPtro2(
+        rnglist,
+        rngindx,
+        $sizeof_rnglist_t,
+        $rnglist_t_rng_state,
+        isaac64_init(new_rng_state)
+    );
 }
 
 /** C ref: rnd.c:149 — @param {CInt} x @returns {CInt} */
 function RND(x) {
-    return Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.CORE, $sizeof_rnglist_t, $rnglist_t_rng_state)) % BigInt.asUintN(64, BigInt(x)))));
+    return Number(BigInt.asIntN(
+        32,
+        (isaac64_next_uint64(cptr.ldPtro2(
+            rnglist,
+            NHC.CORE,
+            $sizeof_rnglist_t,
+            $rnglist_t_rng_state
+        )) %
+            BigInt.asUintN(64, BigInt(x)))
+    ));
 }
 
 /* 0 <= rn2(x) < x, but on a different sequence from the "main" rn2;
@@ -261,7 +295,16 @@ function RND(x) {
    want to give users easy control over the main RNG sequence. */
 /** C ref: rnd.c:158 — @param {CInt} x @returns {CInt} */
 export function rn2_on_display_rng(x) {
-    let result = Number(BigInt.asIntN(32, (isaac64_next_uint64(cptr.ldPtro2(rnglist, NHC.DISP, $sizeof_rnglist_t, $rnglist_t_rng_state)) % BigInt.asUintN(64, BigInt(x)))));
+    let result = Number(BigInt.asIntN(
+        32,
+        (isaac64_next_uint64(cptr.ldPtro2(
+            rnglist,
+            NHC.DISP,
+            $sizeof_rnglist_t,
+            $rnglist_t_rng_state
+        )) %
+            BigInt.asUintN(64, BigInt(x)))
+    ));
 
     if (rng_logfile && rng_log_disp) {
         rng_call_count++;
@@ -463,7 +506,12 @@ export function shuffle_int_array(indices, count) {
 // 9 bindings: 0 rebound+refilled, 7 rebound, 2 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__rngLog), S(has_strong_rngseed), S(rng_logfile), S(rng_log_disp), S(rng_call_count), S(rng_caller_file), S(rng_caller_line), S(rng_caller_func), S(rnglist)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__rngLog), S(has_strong_rngseed), S(rng_logfile), S(rng_log_disp), S(rng_call_count),
+        S(rng_caller_file), S(rng_caller_line), S(rng_caller_func), S(rnglist)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("rnd.js: __resetState before __captureState");

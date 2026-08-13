@@ -14,14 +14,29 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { age_is_relative, has_omid, has_omonst, is_unicorn, ismnum } from './nhmacrofn.js';
-import { Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, putmsghistory, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
-import { WIN_MESSAGE, cg, flags, gb, gc, gd, ge, gf, gh, gi, gm, gn, go, gs, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svn, svo, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, uwep } from './decl.js';
-import { free_omid, new_omailcmd, newoextra, newomid, newomonst, next_ident, place_object } from './mkobj.js';
+import {
+    Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, discover,
+    display_nhwindow, end_menu, putmsghistory, putstr, start_menu, wait_synch, wizard
+} from './nhprop.js';
+import {
+    WIN_MESSAGE, cg, flags, gb, gc, gd, ge, gf, gh, gi, gm, gn, go, gs, gu, gv, gy, iflags,
+    program_state, svc, svd, svk, svl, svm, svn, svo, svp, svq, svr, svs, svu, svw, u, uball,
+    ubirthday, uchain, urealtime, uwep
+} from './decl.js';
+import {
+    free_omid, new_omailcmd, newoextra, newomid, newomonst, next_ident, place_object
+} from './mkobj.js';
 import { setworn } from './worn.js';
 import { You, gamelog_add, impossible, pline } from './pline.js';
 import { xname } from './objnam.js';
 import { useup } from './invent.js';
-import { sfi_cemetery, sfi_char, sfi_context_info, sfi_damage, sfi_dest_area, sfi_ebones, sfi_edog, sfi_egd, sfi_emin, sfi_epri, sfi_eshk, sfi_flag, sfi_fruit, sfi_gamelog_line, sfi_int, sfi_int32, sfi_levelflags, sfi_long, sfi_monst, sfi_mvitals, sfi_nhcoord, sfi_obj, sfi_q_score, sfi_rm, sfi_s_level, sfi_schar, sfi_spell, sfi_stairway, sfi_trap, sfi_ulong, sfi_unsigned, sfi_xint8, sfi_you } from './sfbase.js';
+import {
+    sfi_cemetery, sfi_char, sfi_context_info, sfi_damage, sfi_dest_area, sfi_ebones, sfi_edog,
+    sfi_egd, sfi_emin, sfi_epri, sfi_eshk, sfi_flag, sfi_fruit, sfi_gamelog_line, sfi_int,
+    sfi_int32, sfi_levelflags, sfi_long, sfi_monst, sfi_mvitals, sfi_nhcoord, sfi_obj, sfi_q_score,
+    sfi_rm, sfi_s_level, sfi_schar, sfi_spell, sfi_stairway, sfi_trap, sfi_ulong, sfi_unsigned,
+    sfi_xint8, sfi_you
+} from './sfbase.js';
 import { alloc } from './alloc.js';
 import { new_mgivenname, new_oname } from './do_name.js';
 import { newmextra, peace_minded, propagate, set_malign } from './makemon.js';
@@ -39,7 +54,9 @@ import { role_init } from './role.js';
 import { getnow, time_from_yyyymmddhhmmss } from './calendar.js';
 import { set_uasmon } from './polyself.js';
 import { add_menu, add_menu_str, select_menu, windowprocs } from './windows.js';
-import { Is_branchlev, assign_level, ledger_no, load_exclusions, on_level, restore_dungeon } from './dungeon.js';
+import {
+    Is_branchlev, assign_level, ledger_no, load_exclusions, on_level, restore_dungeon
+} from './dungeon.js';
 import { done, panic, restore_killers } from './end.js';
 import { relink_timers, restore_timers, run_timers } from './timeout.js';
 import { relink_light_sources, restore_light_sources } from './light.js';
@@ -49,7 +66,10 @@ import { restore_oracles } from './rumors.js';
 import { init_oclass_probs, restnames } from './o_init.js';
 import { restore_luadata } from './nhlua.js';
 import { adj_erinys, hide_monst, hideunder, restore_cham, set_ustuck } from './mon.js';
-import { close_nhfile, create_levelfile, debugcore, delete_savefile, free_saved_games, get_freeing_nhfile, get_saved_games, rewind_nhfile } from './files.js';
+import {
+    close_nhfile, create_levelfile, debugcore, delete_savefile, free_saved_games,
+    get_freeing_nhfile, get_saved_games, rewind_nhfile
+} from './files.js';
 import { bufon, restoreinfo } from './sfstruct.js';
 import { savelev, savestateinlock } from './save.js';
 import { copyright_banner_line, validate } from './version.js';
@@ -73,105 +93,119 @@ import { deltrap } from './trap.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $NHFILE_eof = FLD.NHFILE_eof, $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mode = FLD.NHFILE_mode,
-    $align_abuse = FLD.align_abuse, $book_info_o_id = FLD.book_info_o_id, $branch_end1 = FLD.branch_end1,
-    $branch_end2 = FLD.branch_end2, $branch_type = FLD.branch_type, $bucket_map = FLD.bucket_map,
-    $const_globals_zeroany = FLD.const_globals_zeroany,
-    $const_globals_zeromonst = FLD.const_globals_zeromonst, $context_info_digging = FLD.context_info_digging,
-    $context_info_polearm = FLD.context_info_polearm, $context_info_seer_turn = FLD.context_info_seer_turn,
-    $context_info_spbook = FLD.context_info_spbook, $context_info_tin = FLD.context_info_tin,
-    $context_info_victual = FLD.context_info_victual, $context_info_warntype = FLD.context_info_warntype,
-    $d_level_dlevel = FLD.d_level_dlevel, $damage_when = FLD.damage_when,
-    $dgn_topology_d_medusa_level = FLD.dgn_topology_d_medusa_level,
-    $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
-    $dgn_topology_d_stronghold_level = FLD.dgn_topology_d_stronghold_level,
-    $dgn_topology_d_wiz1_level = FLD.dgn_topology_d_wiz1_level,
-    $dig_info_lastdigtime = FLD.dig_info_lastdigtime, $dlevel_t_bonesinfo = FLD.dlevel_t_bonesinfo,
-    $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist, $dlevel_t_damagelist = FLD.dlevel_t_damagelist,
-    $dlevel_t_flags = FLD.dlevel_t_flags, $dlevel_t_monlist = FLD.dlevel_t_monlist,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters, $dlevel_t_objects = FLD.dlevel_t_objects,
-    $dlevel_t_objlist = FLD.dlevel_t_objlist, $edog_apport = FLD.edog_apport,
-    $edog_droptime = FLD.edog_droptime, $edog_hungrytime = FLD.edog_hungrytime, $flag_debug = FLD.flag_debug,
-    $flag_explore = FLD.flag_explore, $fruit_fid = FLD.fruit_fid, $fruit_nextf = FLD.fruit_nextf,
-    $gamelog_line_flags = FLD.gamelog_line_flags, $instance_flags_deferred_X = FLD.instance_flags_deferred_X,
-    $instance_flags_explore_error_flag = FLD.instance_flags_explore_error_flag,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_perm_invent = FLD.instance_flags_perm_invent,
-    $instance_globals_b_billobjs = FLD.instance_globals_b_billobjs,
-    $instance_globals_c_converted_savefile_loaded = FLD.instance_globals_c_converted_savefile_loaded,
-    $instance_globals_d_defer_see_monsters = FLD.instance_globals_d_defer_see_monsters,
-    $instance_globals_e_early_raw_messages = FLD.instance_globals_e_early_raw_messages,
-    $instance_globals_f_ffruit = FLD.instance_globals_f_ffruit,
-    $instance_globals_h_hero_seq = FLD.instance_globals_h_hero_seq,
-    $instance_globals_i_id_map = FLD.instance_globals_i_id_map,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_m_migrating_mons = FLD.instance_globals_m_migrating_mons,
-    $instance_globals_m_migrating_objs = FLD.instance_globals_m_migrating_objs,
-    $instance_globals_n_n_ids_mapped = FLD.instance_globals_n_n_ids_mapped,
-    $instance_globals_o_oldfruit = FLD.instance_globals_o_oldfruit,
-    $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
-    $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
-    $instance_globals_saved_d_doors = FLD.instance_globals_saved_d_doors,
-    $instance_globals_saved_d_doors_alloc = FLD.instance_globals_saved_d_doors_alloc,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
-    $instance_globals_saved_n_nhuuid = FLD.instance_globals_saved_n_nhuuid,
-    $instance_globals_saved_n_nroom = FLD.instance_globals_saved_n_nroom,
-    $instance_globals_saved_o_omoves = FLD.instance_globals_saved_o_omoves,
-    $instance_globals_saved_p_pl_character = FLD.instance_globals_saved_p_pl_character,
-    $instance_globals_saved_p_pl_fruit = FLD.instance_globals_saved_p_pl_fruit,
-    $instance_globals_saved_s_sp_levchn = FLD.instance_globals_saved_s_sp_levchn,
-    $instance_globals_saved_w_wtreserved = FLD.instance_globals_saved_w_wtreserved,
-    $instance_globals_u_unweapon = FLD.instance_globals_u_unweapon,
-    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_name = FLD.kinfo_name,
-    $levelflags_stasis_until = FLD.levelflags_stasis_until, $mextra_ebones = FLD.mextra_ebones,
-    $mextra_edog = FLD.mextra_edog, $mextra_egd = FLD.mextra_egd, $mextra_emin = FLD.mextra_emin,
-    $mextra_epri = FLD.mextra_epri, $mextra_eshk = FLD.mextra_eshk, $mextra_mcorpsenm = FLD.mextra_mcorpsenm,
-    $mkroom_doorct = FLD.mkroom_doorct, $mkroom_fdoor = FLD.mkroom_fdoor, $monst_cham = FLD.monst_cham,
-    $monst_data = FLD.monst_data, $monst_ispriest = FLD.monst_ispriest, $monst_isshk = FLD.monst_isshk,
-    $monst_m_id = FLD.monst_m_id, $monst_mextra = FLD.monst_mextra, $monst_mhpmax = FLD.monst_mhpmax,
-    $monst_minvent = FLD.monst_minvent, $monst_mnum = FLD.monst_mnum, $monst_mpeaceful = FLD.monst_mpeaceful,
-    $monst_mtame = FLD.monst_mtame, $monst_mundetected = FLD.monst_mundetected, $monst_mw = FLD.monst_mw,
-    $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $monst_wormno = FLD.monst_wormno,
-    $nhcoord_y = FLD.nhcoord_y, $obj_age = FLD.obj_age, $obj_bypass = FLD.obj_bypass,
-    $obj_cobj = FLD.obj_cobj, $obj_in_use = FLD.obj_in_use, $obj_lua_ref_cnt = FLD.obj_lua_ref_cnt,
-    $obj_o_id = FLD.obj_o_id, $obj_oextra = FLD.obj_oextra, $obj_otyp = FLD.obj_otyp,
-    $obj_owornmask = FLD.obj_owornmask, $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_spe = FLD.obj_spe,
-    $obj_v = FLD.obj_v, $obj_where = FLD.obj_where, $oextra_omid = FLD.oextra_omid,
-    $oextra_omonst = FLD.oextra_omonst, $permonst_maligntyp = FLD.permonst_maligntyp,
-    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
-    $permonst_mlet = FLD.permonst_mlet, $permonst_pmidx = FLD.permonst_pmidx,
-    $polearm_info_m_id = FLD.polearm_info_m_id, $restore_info_mread_flags = FLD.restore_info_mread_flags,
-    $rm_typ = FLD.rm_typ, $sinfo_beyond_savefile_load = FLD.sinfo_beyond_savefile_load,
-    $sinfo_in_getlev = FLD.sinfo_in_getlev, $sinfo_restoring = FLD.sinfo_restoring,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_mkroom = FLD.sizeof_mkroom,
-    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_permonst = FLD.sizeof_permonst, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_spell = FLD.sizeof_spell,
-    $stairway_isladder = FLD.stairway_isladder, $stairway_next = FLD.stairway_next,
-    $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
-    $stairway_u_traversed = FLD.stairway_u_traversed, $stairway_up = FLD.stairway_up,
-    $sysopt_s_check_save_uid = FLD.sysopt_s_check_save_uid, $tin_info_o_id = FLD.tin_info_o_id,
-    $trap_dst = FLD.trap_dst, $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx,
-    $u_realtime_start_timing = FLD.u_realtime_start_timing, $victual_info_o_id = FLD.victual_info_o_id,
-    $warntype_info_species = FLD.warntype_info_species,
-    $warntype_info_speciesidx = FLD.warntype_info_speciesidx,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch, $you_mcham = FLD.you_mcham,
-    $you_mh = FLD.you_mh, $you_ualign = FLD.you_ualign, $you_uhp = FLD.you_uhp,
-    $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_usteed = FLD.you_usteed,
-    $you_usteed_mid = FLD.you_usteed_mid, $you_ustuck = FLD.you_ustuck, $you_ustuck_mid = FLD.you_ustuck_mid,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
+const $NHFILE_eof = FLD.NHFILE_eof, $NHFILE_ftype = FLD.NHFILE_ftype,
+      $NHFILE_mode = FLD.NHFILE_mode, $align_abuse = FLD.align_abuse,
+      $book_info_o_id = FLD.book_info_o_id, $branch_end1 = FLD.branch_end1,
+      $branch_end2 = FLD.branch_end2, $branch_type = FLD.branch_type, $bucket_map = FLD.bucket_map,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $const_globals_zeromonst = FLD.const_globals_zeromonst,
+      $context_info_digging = FLD.context_info_digging,
+      $context_info_polearm = FLD.context_info_polearm,
+      $context_info_seer_turn = FLD.context_info_seer_turn,
+      $context_info_spbook = FLD.context_info_spbook, $context_info_tin = FLD.context_info_tin,
+      $context_info_victual = FLD.context_info_victual,
+      $context_info_warntype = FLD.context_info_warntype, $d_level_dlevel = FLD.d_level_dlevel,
+      $damage_when = FLD.damage_when,
+      $dgn_topology_d_medusa_level = FLD.dgn_topology_d_medusa_level,
+      $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
+      $dgn_topology_d_stronghold_level = FLD.dgn_topology_d_stronghold_level,
+      $dgn_topology_d_wiz1_level = FLD.dgn_topology_d_wiz1_level,
+      $dig_info_lastdigtime = FLD.dig_info_lastdigtime,
+      $dlevel_t_bonesinfo = FLD.dlevel_t_bonesinfo,
+      $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist,
+      $dlevel_t_damagelist = FLD.dlevel_t_damagelist, $dlevel_t_flags = FLD.dlevel_t_flags,
+      $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_monsters = FLD.dlevel_t_monsters,
+      $dlevel_t_objects = FLD.dlevel_t_objects, $dlevel_t_objlist = FLD.dlevel_t_objlist,
+      $edog_apport = FLD.edog_apport, $edog_droptime = FLD.edog_droptime,
+      $edog_hungrytime = FLD.edog_hungrytime, $flag_debug = FLD.flag_debug,
+      $flag_explore = FLD.flag_explore, $fruit_fid = FLD.fruit_fid, $fruit_nextf = FLD.fruit_nextf,
+      $gamelog_line_flags = FLD.gamelog_line_flags,
+      $instance_flags_deferred_X = FLD.instance_flags_deferred_X,
+      $instance_flags_explore_error_flag = FLD.instance_flags_explore_error_flag,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_perm_invent = FLD.instance_flags_perm_invent,
+      $instance_globals_b_billobjs = FLD.instance_globals_b_billobjs,
+      $instance_globals_c_converted_savefile_loaded = FLD.instance_globals_c_converted_savefile_loaded,
+      $instance_globals_d_defer_see_monsters = FLD.instance_globals_d_defer_see_monsters,
+      $instance_globals_e_early_raw_messages = FLD.instance_globals_e_early_raw_messages,
+      $instance_globals_f_ffruit = FLD.instance_globals_f_ffruit,
+      $instance_globals_h_hero_seq = FLD.instance_globals_h_hero_seq,
+      $instance_globals_i_id_map = FLD.instance_globals_i_id_map,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_m_migrating_mons = FLD.instance_globals_m_migrating_mons,
+      $instance_globals_m_migrating_objs = FLD.instance_globals_m_migrating_objs,
+      $instance_globals_n_n_ids_mapped = FLD.instance_globals_n_n_ids_mapped,
+      $instance_globals_o_oldfruit = FLD.instance_globals_o_oldfruit,
+      $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
+      $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
+      $instance_globals_saved_d_doors = FLD.instance_globals_saved_d_doors,
+      $instance_globals_saved_d_doors_alloc = FLD.instance_globals_saved_d_doors_alloc,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+      $instance_globals_saved_n_nhuuid = FLD.instance_globals_saved_n_nhuuid,
+      $instance_globals_saved_n_nroom = FLD.instance_globals_saved_n_nroom,
+      $instance_globals_saved_o_omoves = FLD.instance_globals_saved_o_omoves,
+      $instance_globals_saved_p_pl_character = FLD.instance_globals_saved_p_pl_character,
+      $instance_globals_saved_p_pl_fruit = FLD.instance_globals_saved_p_pl_fruit,
+      $instance_globals_saved_s_sp_levchn = FLD.instance_globals_saved_s_sp_levchn,
+      $instance_globals_saved_w_wtreserved = FLD.instance_globals_saved_w_wtreserved,
+      $instance_globals_u_unweapon = FLD.instance_globals_u_unweapon,
+      $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_name = FLD.kinfo_name,
+      $levelflags_stasis_until = FLD.levelflags_stasis_until, $mextra_ebones = FLD.mextra_ebones,
+      $mextra_edog = FLD.mextra_edog, $mextra_egd = FLD.mextra_egd, $mextra_emin = FLD.mextra_emin,
+      $mextra_epri = FLD.mextra_epri, $mextra_eshk = FLD.mextra_eshk,
+      $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $mkroom_doorct = FLD.mkroom_doorct,
+      $mkroom_fdoor = FLD.mkroom_fdoor, $monst_cham = FLD.monst_cham, $monst_data = FLD.monst_data,
+      $monst_ispriest = FLD.monst_ispriest, $monst_isshk = FLD.monst_isshk,
+      $monst_m_id = FLD.monst_m_id, $monst_mextra = FLD.monst_mextra,
+      $monst_mhpmax = FLD.monst_mhpmax, $monst_minvent = FLD.monst_minvent,
+      $monst_mnum = FLD.monst_mnum, $monst_mpeaceful = FLD.monst_mpeaceful,
+      $monst_mtame = FLD.monst_mtame, $monst_mundetected = FLD.monst_mundetected,
+      $monst_mw = FLD.monst_mw, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
+      $monst_wormno = FLD.monst_wormno, $nhcoord_y = FLD.nhcoord_y, $obj_age = FLD.obj_age,
+      $obj_bypass = FLD.obj_bypass, $obj_cobj = FLD.obj_cobj, $obj_in_use = FLD.obj_in_use,
+      $obj_lua_ref_cnt = FLD.obj_lua_ref_cnt, $obj_o_id = FLD.obj_o_id,
+      $obj_oextra = FLD.obj_oextra, $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask,
+      $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_spe = FLD.obj_spe, $obj_v = FLD.obj_v,
+      $obj_where = FLD.obj_where, $oextra_omid = FLD.oextra_omid,
+      $oextra_omonst = FLD.oextra_omonst, $permonst_maligntyp = FLD.permonst_maligntyp,
+      $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
+      $permonst_mlet = FLD.permonst_mlet, $permonst_pmidx = FLD.permonst_pmidx,
+      $polearm_info_m_id = FLD.polearm_info_m_id,
+      $restore_info_mread_flags = FLD.restore_info_mread_flags, $rm_typ = FLD.rm_typ,
+      $sinfo_beyond_savefile_load = FLD.sinfo_beyond_savefile_load,
+      $sinfo_in_getlev = FLD.sinfo_in_getlev, $sinfo_restoring = FLD.sinfo_restoring,
+      $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+      $sizeof_mkroom = FLD.sizeof_mkroom, $sizeof_mvitals = FLD.sizeof_mvitals,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_spell = FLD.sizeof_spell,
+      $stairway_isladder = FLD.stairway_isladder, $stairway_next = FLD.stairway_next,
+      $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
+      $stairway_u_traversed = FLD.stairway_u_traversed, $stairway_up = FLD.stairway_up,
+      $sysopt_s_check_save_uid = FLD.sysopt_s_check_save_uid, $tin_info_o_id = FLD.tin_info_o_id,
+      $trap_dst = FLD.trap_dst, $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx,
+      $u_realtime_start_timing = FLD.u_realtime_start_timing,
+      $victual_info_o_id = FLD.victual_info_o_id,
+      $warntype_info_species = FLD.warntype_info_species,
+      $warntype_info_speciesidx = FLD.warntype_info_speciesidx,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch, $you_mcham = FLD.you_mcham,
+      $you_mh = FLD.you_mh, $you_ualign = FLD.you_ualign, $you_uhp = FLD.you_uhp,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_usteed = FLD.you_usteed, $you_usteed_mid = FLD.you_usteed_mid,
+      $you_ustuck = FLD.you_ustuck, $you_ustuck_mid = FLD.you_ustuck_mid, $you_uy = FLD.you_uy,
+      $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_finishing_off_s = cptr.lit("Finishing off %s...");
@@ -288,14 +322,25 @@ function* find_lev_obj() {
 
     for (x = 0; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++)
-            cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects, null);
+            cptr.stPtro3(
+                svl,
+                x,
+                168,
+                y,
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_objects,
+                null
+            );
 
     /*
      * Reverse the entire fobj chain, which is necessary so that we can
      * place the objects in the proper order.  Make all obj in chain
      * OBJ_FREE so place_object will work correctly.
      */
-    while ((otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist)) !== null) {
+    while ((otmp = cptr.ldPtro(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_objlist
+    )) !== null) {
         cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist, cptr.ldPtr(otmp));
         cptr.stPtr(otmp, fobjtmp);
         cptr.st1o(otmp, $obj_where, NHM.OBJ_FREE);
@@ -352,7 +397,11 @@ function* restlevchn(nhfp) {
         if (!cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn))
             cptr.stPtro(svs, $instance_globals_saved_s_sp_levchn, tmplev);
         else {
-            for (x = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); cptr.ldPtr(x); x = cptr.ldPtr(x))
+            for (
+                x = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn);
+                cptr.ldPtr(x);
+                x = cptr.ldPtr(x)
+            )
                 ;
             cptr.stPtr(x, tmplev);
         }
@@ -378,9 +427,21 @@ function* restdamage(nhfp) {
 
         (yield* sfi_damage(nhfp, tmp_dam, __s_damage));
         if (ghostly)
-            cptr.stI64o(tmp_dam, $damage_when, cptr.ldI64o(tmp_dam, $damage_when) + (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(svo, $instance_globals_saved_o_omoves))));
+            cptr.stI64o(
+                tmp_dam,
+                $damage_when,
+                cptr.ldI64o(tmp_dam, $damage_when) +
+                    (BigInt.asIntN(
+                        64,
+                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                            cptr.ldI64o(svo, $instance_globals_saved_o_omoves)
+                    ))
+            );
 
-        cptr.stPtr(tmp_dam, cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist));
+        cptr.stPtr(
+            tmp_dam,
+            cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist)
+        );
         cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_damagelist, tmp_dam);
     } while (--counter > 0);
 }
@@ -437,7 +498,12 @@ function* restobj(nhfp, otmp) {
     }
 }
 
-/** C ref: restore.c:231 — @param {CPtr<NHFILE>} nhfp @param {CInt} frozen @returns {CPtr<struct obj>} */
+/**
+ * C ref: restore.c:231
+ * @param {CPtr<NHFILE>} nhfp
+ * @param {CInt} frozen
+ * @returns {CPtr<struct obj>}
+ */
 function* restobjchn(nhfp, frozen) {
     let otmp;
     let otmp2 = null;
@@ -452,7 +518,9 @@ function* restobjchn(nhfp, frozen) {
             break;
 
         otmp = (yield* alloc(216));
-        (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__s_restobjchn, __s_restore_c, 246, __s_otmp_0) : void 0);
+        (__builtin_expect(BigInt((!(otmp !== null))), 0n)
+                ? __assert_rtn(__s_restobjchn, __s_restore_c, 246, __s_otmp_0)
+                : void 0);
         (yield* restobj(nhfp, otmp));
         if (!first)
             first = otmp;
@@ -471,13 +539,29 @@ function* restobjchn(nhfp, frozen) {
          * immediately after old player died.
          */
         if (ghostly && !frozen && !age_is_relative(otmp))
-            cptr.stI64o(otmp, $obj_age, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(svo, $instance_globals_saved_o_omoves)) + cptr.ldI64o(otmp, $obj_age)));
+            cptr.stI64o(
+                otmp,
+                $obj_age,
+                BigInt.asIntN(
+                    64,
+                    BigInt.asIntN(
+                        64,
+                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                            cptr.ldI64o(svo, $instance_globals_saved_o_omoves)
+                    ) +
+                        cptr.ldI64o(otmp, $obj_age)
+                )
+            );
 
         /* get contents of a container or statue */
         if ((cptr.ldPtro((otmp), $obj_cobj) !== null)) {
             let otmp3;
 
-            cptr.stPtro(otmp, $obj_cobj, (yield* restobjchn(nhfp, schar((cptr.ldI16o((otmp), $obj_otyp) == NHC.ICE_BOX ? 1 : 0)))));
+            cptr.stPtro(
+                otmp,
+                $obj_cobj,
+                (yield* restobjchn(nhfp, schar((cptr.ldI16o((otmp), $obj_otyp) == NHC.ICE_BOX ? 1 : 0))))
+            );
             /* restore container back pointers */
             for (otmp3 = cptr.ldPtro(otmp, $obj_cobj); otmp3; otmp3 = cptr.ldPtr(otmp3))
                 cptr.stPtro(otmp3, $obj_v, otmp);
@@ -486,11 +570,14 @@ function* restobjchn(nhfp, frozen) {
             cptr.stI32o(otmp, $obj_bypass, 0);
         if (!ghostly) {
             /* fix the pointers */
-            if (cptr.ldI32o(otmp, $obj_o_id) == cptr.ldI32o(svc, $context_info_victual + $victual_info_o_id))
+            if (cptr.ldI32o(otmp, $obj_o_id) ==
+                    cptr.ldI32o(svc, $context_info_victual + $victual_info_o_id))
                 cptr.stPtro(svc, $context_info_victual, otmp);
-            if (cptr.ldI32o(otmp, $obj_o_id) == cptr.ldI32o(svc, $context_info_tin + $tin_info_o_id))
+            if (cptr.ldI32o(otmp, $obj_o_id) ==
+                    cptr.ldI32o(svc, $context_info_tin + $tin_info_o_id))
                 cptr.stPtro(svc, $context_info_tin, otmp);
-            if (cptr.ldI32o(otmp, $obj_o_id) == cptr.ldI32o(svc, $context_info_spbook + $book_info_o_id))
+            if (cptr.ldI32o(otmp, $obj_o_id) ==
+                    cptr.ldI32o(svc, $context_info_spbook + $book_info_o_id))
                 cptr.stPtro(svc, $context_info_spbook, otmp);
         }
         otmp2 = otmp;
@@ -521,48 +608,86 @@ function* restmon(nhfp, mtmp) {
         ;
         if (buflen.v > 0) {
             (yield* new_mgivenname(mtmp, buflen.v));
-            (yield* sfi_char(nhfp, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))), __s_monst_mgivenname, buflen.v));
+            (yield* sfi_char(
+                nhfp,
+                (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))),
+                __s_monst_mgivenname,
+                buflen.v
+            ));
         }
         /* egd - vault guard */
         (yield* sfi_int(nhfp, buflen, __s_monst_egd_length));
         ;
         if (buflen.v > 0) {
             (yield* newegd(mtmp));
-            (yield* sfi_egd(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), __s_monst_egd));
+            (yield* sfi_egd(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)),
+                __s_monst_egd
+            ));
         }
         /* epri - temple priest */
         (yield* sfi_int(nhfp, buflen, __s_monst_epri_length));
         ;
         if (buflen.v > 0) {
             (yield* newepri(mtmp));
-            (yield* sfi_epri(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), __s_monst_epri));
+            (yield* sfi_epri(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)),
+                __s_monst_epri
+            ));
         }
         /* eshk - shopkeeper */
         (yield* sfi_int(nhfp, buflen, __s_monst_eshk_length));
         ;
         if (buflen.v > 0) {
             (yield* neweshk(mtmp));
-            (yield* sfi_eshk(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), __s_monst_eshk));
+            (yield* sfi_eshk(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
+                __s_monst_eshk
+            ));
         }
         /* emin - minion */
         (yield* sfi_int(nhfp, buflen, __s_monst_emin_length));
         ;
         if (buflen.v > 0) {
             (yield* newemin(mtmp));
-            (yield* sfi_emin(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), __s_monst_emin));
+            (yield* sfi_emin(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)),
+                __s_monst_emin
+            ));
         }
         /* edog - pet */
         (yield* sfi_int(nhfp, buflen, __s_monst_edog_length));
         ;
         if (buflen.v > 0) {
             (yield* newedog(mtmp));
-            (yield* sfi_edog(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), __s_monst_edog));
+            (yield* sfi_edog(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                __s_monst_edog
+            ));
             /* save or bones held a relative time */
-            relative_time_to_moves(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_droptime));
-            relative_time_to_moves(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime));
+            relative_time_to_moves(cptr.add(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                $edog_droptime
+            ));
+            relative_time_to_moves(cptr.add(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                $edog_hungrytime
+            ));
             /* sanity check to prevent rn2(0) */
-            if (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_apport) <= 0) {
-                cptr.stI32o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_apport, 1);
+            if (cptr.ldI32o(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                $edog_apport
+            ) <= 0) {
+                cptr.stI32o(
+                    (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                    $edog_apport,
+                    1
+                );
             }
         }
         /* ebones */
@@ -570,7 +695,11 @@ function* restmon(nhfp, mtmp) {
         ;
         if (buflen.v > 0) {
             (yield* newebones(mtmp));
-            (yield* sfi_ebones(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), __s_monst_ebones));
+            (yield* sfi_ebones(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
+                __s_monst_ebones
+            ));
         }
         /* mcorpsenm - obj->corpsenm for mimic posing as corpse or
            statue (inline int rather than pointer to something) */
@@ -596,7 +725,9 @@ function* restmonchn(nhfp) {
             break;
 
         mtmp = (yield* alloc(320));
-        (__builtin_expect(BigInt((!(mtmp !== null))), 0n) ? __assert_rtn(__s_restmonchn, __s_restore_c, 392, __s_mtmp_0) : void 0);
+        (__builtin_expect(BigInt((!(mtmp !== null))), 0n)
+                ? __assert_rtn(__s_restmonchn, __s_restore_c, 392, __s_mtmp_0)
+                : void 0);
         (yield* restmon(nhfp, mtmp));
         if (!first)
             first = mtmp;
@@ -611,7 +742,9 @@ function* restmonchn(nhfp) {
         offset = cptr.ldI16o(mtmp, $monst_mnum);
         cptr.stPtro(mtmp, $monst_data, cptr.add(mons, offset, $sizeof_permonst));
         if (ghostly) {
-            let mndx = (cptr.ldI16o(mtmp, $monst_cham) == NHC.NON_PM) ? (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)) : cptr.ldI16o(mtmp, $monst_cham);
+            let mndx = (cptr.ldI16o(mtmp, $monst_cham) == NHC.NON_PM)
+                    ? (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx))
+                    : cptr.ldI16o(mtmp, $monst_cham);
 
             if ((yield* propagate(mndx, 1, ghostly)) == 0) {
                 /* cookie to trigger purge in getbones() */
@@ -646,7 +779,8 @@ function* restmonchn(nhfp) {
             restpriest(mtmp, ghostly);
 
         if (!ghostly) {
-            if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(svc, $context_info_polearm + $polearm_info_m_id))
+            if (cptr.ldI32o(mtmp, $monst_m_id) ==
+                    cptr.ldI32o(svc, $context_info_polearm + $polearm_info_m_id))
                 cptr.stPtro(svc, $context_info_polearm, mtmp);
         }
         mtmp2 = mtmp;
@@ -692,7 +826,11 @@ function freefruitchn(flist) {
 function* ghostfruit(otmp) {
     let oldf;
 
-    for (oldf = cptr.ldPtro(go, $instance_globals_o_oldfruit); oldf; oldf = cptr.ldPtro(oldf, $fruit_nextf))
+    for (
+        oldf = cptr.ldPtro(go, $instance_globals_o_oldfruit);
+        oldf;
+        oldf = cptr.ldPtro(oldf, $fruit_nextf)
+    )
         if (cptr.ldI32o(oldf, $fruit_fid) == cptr.ld1so(otmp, $obj_spe))
             break;
 
@@ -735,7 +873,17 @@ function* restgamestate(nhfp) {
     (yield* sfi_context_info(nhfp, svc, __s_gamestate_context));
     relative_time_to_moves(cptr.add(svc, $context_info_seer_turn));
     relative_time_to_moves(cptr.add(svc, $context_info_digging + $dig_info_lastdigtime));
-    cptr.stPtro(svc, $context_info_warntype + $warntype_info_species, (ismnum(cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx))) ? cptr.add(mons, cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx), $sizeof_permonst) : null);
+    cptr.stPtro(
+        svc,
+        $context_info_warntype + $warntype_info_species,
+        (ismnum(cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx)))
+            ? cptr.add(
+                mons,
+                cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx),
+                $sizeof_permonst
+            )
+            : null
+    );
     /* context.victual.piece, .tin.tin, .spellbook.book, and .polearm.hitmon
        are pointers which get set to Null during save and will be recovered
        via corresponding o_id or m_id while objs or mons are being restored */
@@ -758,11 +906,16 @@ function* restgamestate(nhfp) {
        player might be overriding the save file values for them;
        in the discover case, we don't want to set that for a normal
        game until after the save file has been removed */
-    cptr.st1o(iflags, $instance_flags_deferred_X, schar((cptr.ld1so(newgameflags, $flag_explore) && !discover() ? 1 : 0)));
+    cptr.st1o(
+        iflags,
+        $instance_flags_deferred_X,
+        schar((cptr.ld1so(newgameflags, $flag_explore) && !discover() ? 1 : 0))
+    );
     restoring_special = schar((wizard() || discover() ? 1 : 0));
     if (cptr.ld1so(newgameflags, $flag_debug)) {
         /* authorized by startup code; wizard mode exists and is allowed */
-        cptr.st1o(flags, $flag_debug, 1), cptr.st1o(flags, $flag_explore, cptr.st1o(iflags, $instance_flags_deferred_X, 0));
+        cptr.st1o(flags, $flag_debug, 1),
+                cptr.st1o(flags, $flag_explore, cptr.st1o(iflags, $instance_flags_deferred_X, 0));
     } else if (restoring_special) {
         /* specified by save file; check authorization now. */
         set_playmode();
@@ -800,7 +953,14 @@ function* restgamestate(nhfp) {
         /* wiz1_level.dlevel is used by mklev.c to see if lots of stuff is
          * uninitialized, so we only have to set it and not the other stuff.
          */
-        cptr.stI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel, 0);
+        cptr.stI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level
+            )),
+            $d_level_dlevel,
+            0
+        );
         cptr.stI16o(u, $you_uz, 0);
         cptr.stI16o(u, $you_uz + $d_level_dlevel, 1);
         /* revert to pre-restore option settings */
@@ -808,7 +968,11 @@ function* restgamestate(nhfp) {
         cptr.st1o(iflags, $instance_flags_perm_invent, defer_perm_invent);
         cptr.memcpy(flags, newgameflags, 208);
         cptr.memcpy(svc, newgamecontext, 720);
-        cptr.memcpy(cptr.add(gy, $instance_globals_y_youmonst), cptr.add(cg, $const_globals_zeromonst), 320);
+        cptr.memcpy(
+            cptr.add(gy, $instance_globals_y_youmonst),
+            cptr.add(cg, $const_globals_zeromonst),
+            320
+        );
         return 0;
     }
     /* in case hangup save occurred in midst of level change */
@@ -835,7 +999,11 @@ function* restgamestate(nhfp) {
     cptr.stPtro(gm, $instance_globals_m_migrating_mons, (yield* restmonchn(nhfp)));
 
     for (i = 0; i < NHC.NUMMONS; ++i) {
-        (yield* sfi_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, $sizeof_mvitals), __s_gamestate_mvitals));
+        (yield* sfi_mvitals(
+            nhfp,
+            cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, $sizeof_mvitals),
+            __s_gamestate_mvitals
+        ));
     }
     /*
      * There are some things after this that can have unintended display
@@ -856,13 +1024,19 @@ function* restgamestate(nhfp) {
     otmp = uwep.v;  /* `uwep' usually init'd by setworn() in loop above */
     uwep.v = null;  /* clear it and have setuwep() reinit */
     (yield* setuwep(otmp));  /* (don't need any null check here) */
-    if (!uwep.v || cptr.ldI16o(uwep.v, $obj_otyp) == NHC.PICK_AXE || cptr.ldI16o(uwep.v, $obj_otyp) == NHC.GRAPPLING_HOOK)
+    if (!uwep.v ||
+            cptr.ldI16o(uwep.v, $obj_otyp) == NHC.PICK_AXE ||
+            cptr.ldI16o(uwep.v, $obj_otyp) == NHC.GRAPPLING_HOOK)
         cptr.st1o(gu, $instance_globals_u_unweapon, 1);
 
     (yield* restore_dungeon(nhfp));
     (yield* restlevchn(nhfp));
     /* hero_seq isn't saved and restored because it can be recalculated */
-    cptr.stI64o(gh, $instance_globals_h_hero_seq, cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n);  /* normally handled in moveloop() */
+    cptr.stI64o(
+        gh,
+        $instance_globals_h_hero_seq,
+        cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n
+    );  /* normally handled in moveloop() */
     (yield* sfi_q_score(nhfp, svq, __s_gamestate_quest_status));
 
     for (i = 0; i < ((NHC.MAXSPELL + 1) | 0); ++i) {
@@ -870,7 +1044,12 @@ function* restgamestate(nhfp) {
     }
     (yield* restore_artifacts(nhfp));
     (yield* restore_oracles(nhfp));
-    (yield* sfi_char(nhfp, cptr.add(svp, $instance_globals_saved_p_pl_character), __s_gamestate_pl_character, 32));
+    (yield* sfi_char(
+        nhfp,
+        cptr.add(svp, $instance_globals_saved_p_pl_character),
+        __s_gamestate_pl_character,
+        32
+    ));
     (yield* sfi_char(nhfp, cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_gamestate_pl_fruit, 32));
     freefruitchn(cptr.ldPtro(gf, $instance_globals_f_ffruit));  /* clean up fruit(s) made by initoptions() */
     cptr.stPtro(gf, $instance_globals_f_ffruit, (yield* loadfruitchn(nhfp)));
@@ -1015,7 +1194,21 @@ export function* dorecover(nhfp) {
 
     if (!wizard() && !discover())
         void (yield* delete_savefile());
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
+    if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )
+            ))))
         assign_graphics(NHC.ROGUESET);
     reset_glyphmap(NHC.gm_levelchange);
     max_rank_sz();  /* to recompute gm.mrank_sz (botl.c) */
@@ -1043,7 +1236,8 @@ export function* dorecover(nhfp) {
     (yield* run_timers());  /* expire all timers that have gone off while away */
     cptr.stI32o(program_state, $sinfo_restoring, 0);  /* affects bot() so clear before docrt() */
 
-    if (cptr.ldI32o(ge, $instance_globals_e_early_raw_messages) && !cptr.ldI32o(program_state, $sinfo_beyond_savefile_load)) {
+    if (cptr.ldI32o(ge, $instance_globals_e_early_raw_messages) &&
+            !cptr.ldI32o(program_state, $sinfo_beyond_savefile_load)) {
         /*
          * We're about to obliterate some potentially important
          * startup messages, so give the player a chance to see them.
@@ -1076,18 +1270,34 @@ function* rest_stairs(nhfp) {
             break;
 
         (yield* sfi_stairway(nhfp, stway, __s_stairs_stairway));
-        if (cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE && cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz)) {
+        if (cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE &&
+                cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz)) {
             /* stairway dlevel is relative, make it absolute */
-            cptr.stI16o(stway, $stairway_tolev + $d_level_dlevel, cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel) + cptr.ldI16o(u, $you_uz + $d_level_dlevel));
+            cptr.stI16o(
+                stway,
+                $stairway_tolev + $d_level_dlevel,
+                cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel) +
+                    cptr.ldI16o(u, $you_uz + $d_level_dlevel)
+            );
         }
-        (yield* stairway_add(cptr.ldI16(stway), cptr.ldI16o(stway, $stairway_sy), cptr.ld1so(stway, $stairway_up), cptr.ld1so(stway, $stairway_isladder), cptr.add(stway, $stairway_tolev)));
+        (yield* stairway_add(
+            cptr.ldI16(stway),
+            cptr.ldI16o(stway, $stairway_sy),
+            cptr.ld1so(stway, $stairway_up),
+            cptr.ld1so(stway, $stairway_isladder),
+            cptr.add(stway, $stairway_tolev)
+        ));
         newst = stairway_at(cptr.ldI16(stway), cptr.ldI16o(stway, $stairway_sy));
         if (newst)
             cptr.st1o(newst, $stairway_u_traversed, cptr.ld1so(stway, $stairway_u_traversed));
     }
 }
 
-/** C ref: restore.c:988 — @param {CPtr<NHFILE>} nhfp @param {CPtr<struct cemetery *>} cemeteryaddr */
+/**
+ * C ref: restore.c:988
+ * @param {CPtr<NHFILE>} nhfp
+ * @param {CPtr<struct cemetery *>} cemeteryaddr
+ */
 export function* restcemetery(nhfp, cemeteryaddr) {
     let bonesinfo;
     let bonesaddr;
@@ -1106,7 +1316,8 @@ export function* restcemetery(nhfp, cemeteryaddr) {
     } else {
         cptr.stPtr(cemeteryaddr, null);
     }
-    if (((cptr.ldI32o(nhfp, $NHFILE_mode) & NHM.CONVERTING) != 0) || ((cptr.ldI32o(nhfp, $NHFILE_mode) & NHM.UNCONVERTING) != 0)) {
+    if (((cptr.ldI32o(nhfp, $NHFILE_mode) & NHM.CONVERTING) != 0) ||
+            ((cptr.ldI32o(nhfp, $NHFILE_mode) & NHM.UNCONVERTING) != 0)) {
         let thisbones;
         let nextbones;
 
@@ -1128,7 +1339,15 @@ function* rest_levl(nhfp) {
 
     for (c = 0; c < NHM.COLNO; ++c) {
         for (r = 0; r < NHM.ROWNO; ++r) {
-            (yield* sfi_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), c, $sizeof_rm_x21), r, $sizeof_rm), __s_location_rm));
+            (yield* sfi_rm(
+                nhfp,
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), c, $sizeof_rm_x21),
+                    r,
+                    $sizeof_rm
+                ),
+                __s_location_rm
+            ));
         }
     }
 }
@@ -1179,7 +1398,12 @@ export function* getlev(nhfp, pid, lev) {
         let trickbuf = new Uint8Array(256);
 
         if (pid && pid != hpid.v)
-            void cptr.sprintf(cptr.decay(trickbuf), __s_pid_d_doesn_t_match_saved_pid_d, hpid.v, pid);
+            void cptr.sprintf(
+                cptr.decay(trickbuf),
+                __s_pid_d_doesn_t_match_saved_pid_d,
+                hpid.v,
+                pid
+            );
         else
             void cptr.sprintf(cptr.decay(trickbuf), __s_this_is_level_d_not_d, dlvl.v, lev);
         if (wizard())
@@ -1196,12 +1420,20 @@ export function* getlev(nhfp, pid, lev) {
     }
     (yield* sfi_long(nhfp, cptr.add(svo, $instance_globals_saved_o_omoves), __s_lev_timestmp));
     ;
-    elapsed = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(svo, $instance_globals_saved_o_omoves)));
+    elapsed = (BigInt.asIntN(
+        64,
+        cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+            cptr.ldI64o(svo, $instance_globals_saved_o_omoves)
+    ));
 
     (yield* rest_stairs(nhfp));
     (yield* sfi_dest_area(nhfp, svu, __s_lev_updest));
     (yield* sfi_dest_area(nhfp, cptr.add(svd, $instance_globals_saved_d_dndest), __s_lev_dndest));
-    (yield* sfi_levelflags(nhfp, cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags), __s_lev_level_flags));
+    (yield* sfi_levelflags(
+        nhfp,
+        cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags),
+        __s_lev_level_flags
+    ));
     rest_adjust_levelflags();
     if (cptr.ldPtro(svd, $instance_globals_saved_d_doors)) {
         cptr.free(cptr.ldPtro(svd, $instance_globals_saved_d_doors));
@@ -1211,7 +1443,20 @@ export function* getlev(nhfp, pid, lev) {
     (yield* sfi_int(nhfp, cptr.add(svd, $instance_globals_saved_d_doors_alloc), __s_lev_doors_alloc));
     ;
     if (cptr.ldI32o(svd, $instance_globals_saved_d_doors_alloc)) {
-        cptr.stPtro(svd, $instance_globals_saved_d_doors, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o(svd, $instance_globals_saved_d_doors_alloc))) * 4n))))));
+        cptr.stPtro(
+            svd,
+            $instance_globals_saved_d_doors,
+            (yield* alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(
+                    64,
+                    BigInt.asUintN(
+                        64,
+                        BigInt(cptr.ldI32o(svd, $instance_globals_saved_d_doors_alloc))
+                    ) * 4n
+                )
+            ))))
+        );
         tmpc = cptr.ldPtro(svd, $instance_globals_saved_d_doors);
         for (i = 0; i < cptr.ldI32o(svd, $instance_globals_saved_d_doors_alloc); ++i) {
             (yield* sfi_nhcoord(nhfp, tmpc, __s_lev_doors));
@@ -1220,7 +1465,21 @@ export function* getlev(nhfp, pid, lev) {
     }
     (yield* rest_rooms(nhfp));  /* No joke :-) */
     if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom)) {
-        cptr.stI32(gd, (cptr.ldI32o2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom, $mkroom_fdoor) + cptr.ld1so2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom, $mkroom_doorct)) | 0);
+        cptr.stI32(
+            gd,
+            (cptr.ldI32o2(
+                svr,
+                (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0,
+                $sizeof_mkroom,
+                $mkroom_fdoor
+            ) +
+                cptr.ld1so2(
+                    svr,
+                    (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0,
+                    $sizeof_mkroom,
+                    $mkroom_doorct
+                )) | 0
+        );
     } else {
         cptr.stI32(gd, 0);
     }
@@ -1235,9 +1494,15 @@ export function* getlev(nhfp, pid, lev) {
         trap = (yield* alloc(40));
         (yield* sfi_trap(nhfp, trap, __s_trap));
         if (cptr.ldI16o(trap, $trap_tx) != 0) {
-            if (cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE && cptr.ldI16o(trap, $trap_dst) == cptr.ldI16o(u, $you_uz)) {
+            if (cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE &&
+                    cptr.ldI16o(trap, $trap_dst) == cptr.ldI16o(u, $you_uz)) {
                 /* convert relative destination to absolute */
-                cptr.stI16o(trap, $trap_dst + $d_level_dlevel, cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) + cptr.ldI16o(u, $you_uz + $d_level_dlevel));
+                cptr.stI16o(
+                    trap,
+                    $trap_dst + $d_level_dlevel,
+                    cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) +
+                        cptr.ldI16o(u, $you_uz + $d_level_dlevel)
+                );
             }
             cptr.stPtr(trap, cptr.ldPtr(gf));
             cptr.stPtr(gf, trap);
@@ -1250,14 +1515,30 @@ export function* getlev(nhfp, pid, lev) {
     (yield* find_lev_obj());
     /* restobjchn()'s `frozen' argument probably ought to be a callback
        routine so that we can check for objects being buried under ice */
-    cptr.stPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist, (yield* restobjchn(nhfp, 0)));
+    cptr.stPtro(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_buriedobjlist,
+        (yield* restobjchn(nhfp, 0))
+    );
     cptr.stPtro(gb, $instance_globals_b_billobjs, (yield* restobjchn(nhfp, 0)));
     (yield* rest_engravings(nhfp));
     /* reset level.monsters for new level */
     for (x = 0; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++)
-            cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
-    for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+            cptr.stPtro3(
+                svl,
+                x,
+                168,
+                y,
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters,
+                null
+            );
+    for (
+        mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+        mtmp;
+        mtmp = cptr.ldPtr(mtmp)
+    ) {
         if ((cptr.ldI32o(mtmp, $monst_isshk) & 1))
             set_residency(mtmp, 0);
         if (cptr.ldI32o(mtmp, $monst_m_id) == cptr.ldI32o(u, $you_usteed_mid)) {
@@ -1272,18 +1553,28 @@ export function* getlev(nhfp, pid, lev) {
             (yield* place_monster(mtmp, cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)));
             if ((cptr.ldI32o(mtmp, $monst_wormno) & 31))
                 (yield* place_wsegs(mtmp, null));
-            if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) && (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0)
+            if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 128n) != 0n) &&
+                    (cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0)
                 void (yield* hideunder(mtmp));
         }
 
         /* regenerate monsters while on another level */
-        if (!cptr.ldI16o(u, $you_uz + $d_level_dlevel) || cptr.ldI32o(program_state, $sinfo_restoring) == NHC.REST_LEVELS)
+        if (!cptr.ldI16o(u, $you_uz + $d_level_dlevel) ||
+                cptr.ldI32o(program_state, $sinfo_restoring) == NHC.REST_LEVELS)
             continue;
         if (ghostly) {
             /* reset peaceful/malign relative to new character;
                shopkeepers will reset based on name */
             if (!(cptr.ldI32o(mtmp, $monst_isshk) & 1))
-                cptr.stI32o(mtmp, $monst_mpeaceful, ((is_unicorn(cptr.ldPtro(mtmp, $monst_data)) && (sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))) ? 1 : peace_minded(cptr.ldPtro(mtmp, $monst_data))) >>> 0);
+                cptr.stI32o(
+                    mtmp,
+                    $monst_mpeaceful,
+                    ((is_unicorn(cptr.ldPtro(mtmp, $monst_data)) &&
+                        (sgn(cptr.ld1so(u, $you_ualign)) ==
+                            sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp))))
+                        ? 1
+                        : peace_minded(cptr.ldPtro(mtmp, $monst_data))) >>> 0
+                );
             set_malign(mtmp);
         } else if (elapsed > 0n) {
             (yield* mon_catchup_elapsed_time(mtmp, elapsed));
@@ -1304,24 +1595,50 @@ export function* getlev(nhfp, pid, lev) {
     if (ghostly) {
         let stway = cptr.ldPtro(gs, $instance_globals_s_stairs);
         while (stway) {
-            if (!cptr.ld1so(stway, $stairway_isladder) && !cptr.ld1so(stway, $stairway_up) && cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz))
+            if (!cptr.ld1so(stway, $stairway_isladder) &&
+                    !cptr.ld1so(stway, $stairway_up) &&
+                    cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz))
                 break;
             stway = cptr.ldPtro(stway, $stairway_next);
         }
 
         /* Now get rid of all the temp fruits... */
-        freefruitchn(cptr.ldPtro(go, $instance_globals_o_oldfruit)), cptr.stPtro(go, $instance_globals_o_oldfruit, null);
+        freefruitchn(cptr.ldPtro(go, $instance_globals_o_oldfruit)),
+                cptr.stPtro(go, $instance_globals_o_oldfruit, null);
 
-        if (lev > ledger_no(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)) && lev < ledger_no(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)) && !stway) {
+        if (lev >
+            ledger_no(cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level
+            )) &&
+                lev <
+                    ledger_no(cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology +
+                            $dgn_topology_d_stronghold_level
+                    )) &&
+                !stway) {
             let cc = cptr.alloc(4);
             let dest = cptr.alloc(4);
 
             cptr.stI16(dest, cptr.ldI16o(u, $you_uz));
-            cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1) | 0)));
+            cptr.stI16o(
+                dest,
+                $d_level_dlevel,
+                i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1) | 0))
+            );
 
             (yield* mazexy(cc));
             (yield* stairway_add(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), 0, 0, dest));
-            cptr.st1o3(svl, cptr.ldI16(cc), $sizeof_rm_x21, cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.STAIRS);
+            cptr.st1o3(
+                svl,
+                cptr.ldI16(cc),
+                $sizeof_rm_x21,
+                cptr.ldI16o(cc, $nhcoord_y),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                NHC.STAIRS
+            );
         }
 
         br = Is_branchlev(cptr.add(u, $you_uz));
@@ -1380,26 +1697,40 @@ export function* getlev(nhfp, pid, lev) {
 /** C ref: restore.c:1314 */
 export function rest_adjust_levelflags() {
     /* adjust timestamps */
-    relative_time_to_moves(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until));
+    relative_time_to_moves(cptr.add(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until
+    ));
 }
 
 /** C ref: restore.c:1320 — @param {CPtr<long>} timestamp */
 export function moves_to_relative_time(timestamp) {
     let prevts = cptr.ldI64(timestamp);
 
-    cptr.stI64(timestamp, BigInt.asIntN(64, prevts - cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
+    cptr.stI64(
+        timestamp,
+        BigInt.asIntN(64, prevts - cptr.ldI64o(svm, $instance_globals_saved_m_moves))
+    );
 }
 
 /** C ref: restore.c:1328 — @param {CPtr<long>} timestamp */
 export function relative_time_to_moves(timestamp) {
     let prevts = cptr.ldI64(timestamp);
 
-    cptr.stI64(timestamp, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + prevts));
+    cptr.stI64(
+        timestamp,
+        BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + prevts)
+    );
 }
 
 /* "name-role-race-gend-algn" occurs very early in a save file; sometimes we
    want the whole thing, other times just "name" (for svp.plname[]) */
-/** C ref: restore.c:1338 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} outbuf @param {CInt} name_only */
+/**
+ * C ref: restore.c:1338
+ * @param {CPtr<NHFILE>} nhfp
+ * @param {CPtr<char>} outbuf
+ * @param {CInt} name_only
+ */
 export function* get_plname_from_file(nhfp, outbuf, name_only) {
     let plbuf = new Uint8Array(49);
     let pltmpsiz = cptr.box(0);
@@ -1514,7 +1845,12 @@ function* add_id_mapping(gid, nid) {
 
     cptr.stI32o2(cptr.ldPtro(gi, $instance_globals_i_id_map), idx, 8, $bucket_map, gid);
     cptr.stI32o2(cptr.ldPtro(gi, $instance_globals_i_id_map), idx, 8, $bucket_map + 4, nid);
-    (cptr.stI32o(gn, $instance_globals_n_n_ids_mapped, cptr.ldI32o(gn, $instance_globals_n_n_ids_mapped) + 1)) - (1);
+    (cptr.stI32o(
+        gn,
+        $instance_globals_n_n_ids_mapped,
+        cptr.ldI32o(gn, $instance_globals_n_n_ids_mapped) + 1
+    )) -
+            (1);
 }
 
 /*
@@ -1553,7 +1889,11 @@ function reset_oattached_mids(ghostly) {
     let oldid;
     let nid = cptr.box(0);
 
-    for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist); otmp; otmp = cptr.ldPtr(otmp)) {
+    for (
+        otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_objlist);
+        otmp;
+        otmp = cptr.ldPtr(otmp)
+    ) {
         if (ghostly && has_omonst(otmp)) {
             let mtmp = (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst));
 
@@ -1620,14 +1960,46 @@ export function* restore_menu(bannerwin) {
                 void cptr.sprintf(cptr.decay(menutext), __s_pct_dot_star_s, 48, next);
             else
                 void cptr.sprintf(cptr.decay(menutext), __s_c_s, mode, 48, next);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(menutext), NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS));
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                0,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                cptr.decay(menutext),
+                NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS
+            ));
         }
         clet = (k <= 13) ? 110 : ((k <= 39) ? 78 : 0);
         cptr.stI32(any, -1);  /* not >= 0 */
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 78, NHM.ATR_NONE, clr, __s_start_a_new_character, NHM.MENU_ITEMFLAGS_NONE));
-        clet = (((k + 1) | 0) <= 16 && clet == 110) ? 113 : ((((k + 1) | 0) <= 42 && clet == 78) ? 81 : 0);
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            schar(clet),
+            78,
+            NHM.ATR_NONE,
+            clr,
+            __s_start_a_new_character,
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
+        clet = (((k + 1) | 0) <= 16 && clet == 110)
+                ? 113
+                : ((((k + 1) | 0) <= 42 && clet == 78) ? 81 : 0);
         cptr.stI32(any, -2);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(clet), 81, NHM.ATR_NONE, clr, __s_never_mind_quit, NHM.MENU_ITEMFLAGS_SELECTED));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            schar(clet),
+            81,
+            NHM.ATR_NONE,
+            clr,
+            __s_never_mind_quit,
+            NHM.MENU_ITEMFLAGS_SELECTED
+        ));
         /* no prompt on end_menu, as we've done our own at the top */
         (yield* Y.icall(end_menu()(tmpwin, null)));
         if ((yield* select_menu(tmpwin, NHM.PICK_ONE, chosen_game)) > 0) {

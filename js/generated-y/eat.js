@@ -13,33 +13,74 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { canspotmon, cantwield, flesh_petrifies, is_metallic, is_rider, ismnum, ofood, slimeproof, telepathic, vegan, vegetarian } from './nhmacrofn.js';
-import { Acid_resistance, BInvis, Blind, BlindedTimeout, Breathless, Deaf, Displaced, EConflict, EInvis, EProtection, ERegeneration, ESee_invisible, Fixed_abil, Flying, Glib, HCold_resistance, HConflict, HConfusion, HDisint_resistance, HFast, HFire_resistance, HHallucination, HInvis, HPoison_resistance, HRegeneration, HShock_resistance, HSleep_resistance, HSleepy, HStun, HTelepat, HTeleport_control, HTeleportation, Hallucination, Hunger, Invis, Levitation, Lifesaved, Poison_resistance, See_invisible, Sick, Sleep_resistance, Slimed, Slow_digestion, Stone_resistance, Stoned, Strangled, U_AP_TYPE, Ugender, Unchanging, Upolyd, Vomiting, display_nhwindow } from './nhprop.js';
+import {
+    canspotmon, cantwield, flesh_petrifies, is_metallic, is_rider, ismnum, ofood, slimeproof,
+    telepathic, vegan, vegetarian
+} from './nhmacrofn.js';
+import {
+    Acid_resistance, BInvis, Blind, BlindedTimeout, Breathless, Deaf, Displaced, EConflict, EInvis,
+    EProtection, ERegeneration, ESee_invisible, Fixed_abil, Flying, Glib, HCold_resistance,
+    HConflict, HConfusion, HDisint_resistance, HFast, HFire_resistance, HHallucination, HInvis,
+    HPoison_resistance, HRegeneration, HShock_resistance, HSleep_resistance, HSleepy, HStun,
+    HTelepat, HTeleport_control, HTeleportation, Hallucination, Hunger, Invis, Levitation,
+    Lifesaved, Poison_resistance, See_invisible, Sick, Sleep_resistance, Slimed, Slow_digestion,
+    Stone_resistance, Stoned, Strangled, U_AP_TYPE, Ugender, Unchanging, Upolyd, Vomiting,
+    display_nhwindow
+} from './nhprop.js';
 import { objects } from './objects.js';
-import { WIN_MAP, c_color_names, c_common_strings, disp, flags, ga, gc, ge, gf, gm, gn, go, gu, gy, hands_obj, iflags, sa_victual, svc, svd, svk, svl, svm, u, uamul, uball, uchain, uleft, uquiver, uright, uswapwep, uwep, ynchars, ynqchars } from './decl.js';
+import {
+    WIN_MAP, c_color_names, c_common_strings, disp, flags, ga, gc, ge, gf, gm, gn, go, gu, gy,
+    hands_obj, iflags, sa_victual, svc, svd, svk, svl, svm, u, uamul, uball, uchain, uleft, uquiver,
+    uright, uswapwep, uwep, ynchars, ynqchars
+} from './decl.js';
 import { mons } from './monst.js';
-import { bcsign, costly_alteration, is_flammable, is_rottable, mksobj, obj_extract_self, peek_at_iced_corpse_age, set_bknown, splitobj, weight } from './mkobj.js';
+import {
+    bcsign, costly_alteration, is_flammable, is_rottable, mksobj, obj_extract_self,
+    peek_at_iced_corpse_age, set_bknown, splitobj, weight
+} from './mkobj.js';
 import { encumber_msg } from './pickup.js';
-import { canseemon, curs_on_u, newsym, see_monsters, sensemon, set_mimic_blocking } from './display.js';
+import {
+    canseemon, curs_on_u, newsym, see_monsters, sensemon, set_mimic_blocking
+} from './display.js';
 import { Strlen_ } from './strutil.js';
 import { alloc, dupstr, fmt_ptr } from './alloc.js';
-import { Tobjnam, an, ansimpleoname, corpse_xname, doname, killer_xname, makeplural, obj_is_pname, otense, safe_qbuf, singular, the, the_unique_pm, thesimpleoname, xname, yobjnam } from './objnam.js';
-import { acurr, acurrstr, adjalign, adjattrib, change_luck, exercise, gainstr, poison_strdmg, setuhpmax } from './attrib.js';
-import { You, You_cant, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The, verbalize } from './pline.js';
+import {
+    Tobjnam, an, ansimpleoname, corpse_xname, doname, killer_xname, makeplural, obj_is_pname,
+    otense, safe_qbuf, singular, the, the_unique_pm, thesimpleoname, xname, yobjnam
+} from './objnam.js';
+import {
+    acurr, acurrstr, adjalign, adjattrib, change_luck, exercise, gainstr, poison_strdmg, setuhpmax
+} from './attrib.js';
+import {
+    You, You_cant, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The, verbalize
+} from './pline.js';
 import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { delayed_killer, done } from './end.js';
 import { debugcore } from './files.js';
-import { addinv_nomerge, carrying, feel_cockatrice, freeinv, g_at, getobj, obj_here, stackobj, useup, useupall, useupf, will_feel_cockatrice } from './invent.js';
-import { check_capacity, end_running, inv_cnt, losehp, near_capacity, nomul, rounddiv, still_chewing, unmul } from './hack.js';
+import {
+    addinv_nomerge, carrying, feel_cockatrice, freeinv, g_at, getobj, obj_here, stackobj, useup,
+    useupall, useupf, will_feel_cockatrice
+} from './invent.js';
+import {
+    check_capacity, end_running, inv_cnt, losehp, near_capacity, nomul, rounddiv, still_chewing,
+    unmul
+} from './hack.js';
 import { costly_spot, sellobj_state } from './shk.js';
 import { donull, dropx, dropy, heal_legs, revive_corpse, trycall } from './do.js';
 import { fall_asleep, obj_stop_timers } from './timeout.js';
 import { stop_occupation } from './allmain.js';
 import { dist2, eos, nh_snprintf, s_suffix, sgn, strncmpi } from './hacklib.js';
 import { Mgender, Monnam, hcolor, mon_nam, pmname, rndmonnam } from './do_name.js';
-import { dopotion, incr_itimeout, make_blinded, make_confused, make_deaf, make_glib, make_hallucinated, make_sick, make_slimed, make_stoned, make_stunned, make_vomiting, self_invis_message, set_itimeout } from './potion.js';
+import {
+    dopotion, incr_itimeout, make_blinded, make_confused, make_deaf, make_glib, make_hallucinated,
+    make_sick, make_slimed, make_stoned, make_stunned, make_vomiting, self_invis_message,
+    set_itimeout
+} from './potion.js';
 import { iter_mons, mondied, monstone, pm_to_cham, rescham } from './mon.js';
-import { attacktype, attacktype_fordmg, cantvomit, defended, dmgtype, olfaction, poly_when_stoned, same_race } from './mondata.js';
+import {
+    attacktype, attacktype_fordmg, cantvomit, defended, dmgtype, olfaction, poly_when_stoned,
+    same_race
+} from './mondata.js';
 import { set_ulycn, were_beastie, you_unwere } from './were.js';
 import { body_part, change_sex, polymon, polyself, rehumanize, uasmon_maxStr } from './polyself.js';
 import { more_experienced, newexplevel, pluslvl } from './exper.js';
@@ -68,85 +109,96 @@ import { altar_wrath } from './pray.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $Race_attrmax = FLD.Race_attrmax, $Race_attrmin = FLD.Race_attrmin, $Race_mnum = FLD.Race_mnum,
-    $Race_selfmask = FLD.Race_selfmask, $Role_mnum = FLD.Role_mnum,
-    $c_color_names_c_green = FLD.c_color_names_c_green,
-    $c_common_strings_c_You_can_move_again = FLD.c_common_strings_c_You_can_move_again,
-    $c_common_strings_c_something = FLD.c_common_strings_c_something,
-    $c_common_strings_c_vision_clears = FLD.c_common_strings_c_vision_clears,
-    $context_info_current_fruit = FLD.context_info_current_fruit,
-    $context_info_digging = FLD.context_info_digging, $context_info_tin = FLD.context_info_tin,
-    $context_info_victual = FLD.context_info_victual, $d_level_dlevel = FLD.d_level_dlevel,
-    $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
-    $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level, $dig_info_chew = FLD.dig_info_chew,
-    $dig_info_level = FLD.dig_info_level, $dig_info_pos = FLD.dig_info_pos,
-    $dlevel_t_objects = FLD.dlevel_t_objects, $edog_hungrytime = FLD.edog_hungrytime,
-    $flag_female = FLD.flag_female, $flag_paranoia_bits = FLD.flag_paranoia_bits,
-    $flag_verbose = FLD.flag_verbose, $instance_flags_debug_hunger = FLD.instance_flags_debug_hunger,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
-    $instance_flags_override_ID = FLD.instance_flags_override_ID,
-    $instance_globals_c_corpsenm_digested = FLD.instance_globals_c_corpsenm_digested,
-    $instance_globals_e_eatmbuf = FLD.instance_globals_e_eatmbuf,
-    $instance_globals_f_force_save_hs = FLD.instance_globals_f_force_save_hs,
-    $instance_globals_m_multi = FLD.instance_globals_m_multi,
-    $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
-    $instance_globals_n_nomovemsg = FLD.instance_globals_n_nomovemsg,
-    $instance_globals_o_occupation = FLD.instance_globals_o_occupation,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_format = FLD.kinfo_format,
-    $kinfo_name = FLD.kinfo_name, $mextra_edog = FLD.mextra_edog, $monst_data = FLD.monst_data,
-    $monst_isminion = FLD.monst_isminion, $monst_m_ap_type = FLD.monst_m_ap_type,
-    $monst_mappearance = FLD.monst_mappearance, $monst_mconf = FLD.monst_mconf,
-    $monst_mextra = FLD.monst_mextra, $monst_mhp = FLD.monst_mhp, $monst_mtame = FLD.monst_mtame,
-    $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y, $obj_age = FLD.obj_age,
-    $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed, $obj_cknown = FLD.obj_cknown,
-    $obj_cobj = FLD.obj_cobj, $obj_corpsenm = FLD.obj_corpsenm, $obj_cursed = FLD.obj_cursed,
-    $obj_dknown = FLD.obj_dknown, $obj_globby = FLD.obj_globby, $obj_in_use = FLD.obj_in_use,
-    $obj_known = FLD.obj_known, $obj_no_charge = FLD.obj_no_charge, $obj_o_id = FLD.obj_o_id,
-    $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass, $obj_oeaten = FLD.obj_oeaten,
-    $obj_oeroded = FLD.obj_oeroded, $obj_oerodeproof = FLD.obj_oerodeproof, $obj_otrapped = FLD.obj_otrapped,
-    $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt,
-    $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan, $obj_rknown = FLD.obj_rknown,
-    $obj_spe = FLD.obj_spe, $obj_timed = FLD.obj_timed, $obj_unpaid = FLD.obj_unpaid, $obj_v = FLD.obj_v,
-    $obj_where = FLD.obj_where, $objclass_oc_charged = FLD.objclass_oc_charged,
-    $objclass_oc_delay = FLD.objclass_oc_delay, $objclass_oc_material = FLD.objclass_oc_material,
-    $objclass_oc_nutrition = FLD.objclass_oc_nutrition, $objclass_oc_oprop = FLD.objclass_oc_oprop,
-    $objclass_oc_unique = FLD.objclass_oc_unique, $permonst_cnutrit = FLD.permonst_cnutrit,
-    $permonst_cwt = FLD.permonst_cwt, $permonst_mconveys = FLD.permonst_mconveys,
-    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
-    $permonst_mlet = FLD.permonst_mlet, $permonst_mlevel = FLD.permonst_mlevel,
-    $permonst_msize = FLD.permonst_msize, $permonst_pmidx = FLD.permonst_pmidx,
-    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags,
-    $rm_typ = FLD.rm_typ, $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $sizeof_victual_info = FLD.sizeof_victual_info, $tin_info_o_id = FLD.tin_info_o_id,
-    $tin_info_reqtime = FLD.tin_info_reqtime, $tin_info_usedtime = FLD.tin_info_usedtime,
-    $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp, $u_conduct_food = FLD.u_conduct_food,
-    $u_conduct_literate = FLD.u_conduct_literate, $u_conduct_polyselfs = FLD.u_conduct_polyselfs,
-    $u_conduct_unvegan = FLD.u_conduct_unvegan, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $victual_info_canchoke = FLD.victual_info_canchoke, $victual_info_doreset = FLD.victual_info_doreset,
-    $victual_info_eating = FLD.victual_info_eating, $victual_info_fullwarn = FLD.victual_info_fullwarn,
-    $victual_info_nmod = FLD.victual_info_nmod, $victual_info_o_id = FLD.victual_info_o_id,
-    $victual_info_reqtime = FLD.victual_info_reqtime, $victual_info_usedtime = FLD.victual_info_usedtime,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow, $you_acurr = FLD.you_acurr,
-    $you_amax = FLD.you_amax, $you_atemp = FLD.you_atemp, $you_mfemale = FLD.you_mfemale,
-    $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax, $you_ualign = FLD.you_ualign,
-    $you_ublessed = FLD.you_ublessed, $you_uconduct = FLD.you_uconduct, $you_ucreamed = FLD.you_ucreamed,
-    $you_udaminc = FLD.you_udaminc, $you_uedibility = FLD.you_uedibility, $you_uen = FLD.you_uen,
-    $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak, $you_uhave = FLD.you_uhave,
-    $you_uhitinc = FLD.you_uhitinc, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
-    $you_uhs = FLD.you_uhs, $you_uhunger = FLD.you_uhunger, $you_uinvulnerable = FLD.you_uinvulnerable,
-    $you_ulycn = FLD.you_ulycn, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-    $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_usick_type = FLD.you_usick_type,
-    $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
-    $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy,
-    $you_uz = FLD.you_uz;
+const $Race_attrmax = FLD.Race_attrmax, $Race_attrmin = FLD.Race_attrmin,
+      $Race_mnum = FLD.Race_mnum, $Race_selfmask = FLD.Race_selfmask, $Role_mnum = FLD.Role_mnum,
+      $c_color_names_c_green = FLD.c_color_names_c_green,
+      $c_common_strings_c_You_can_move_again = FLD.c_common_strings_c_You_can_move_again,
+      $c_common_strings_c_something = FLD.c_common_strings_c_something,
+      $c_common_strings_c_vision_clears = FLD.c_common_strings_c_vision_clears,
+      $context_info_current_fruit = FLD.context_info_current_fruit,
+      $context_info_digging = FLD.context_info_digging, $context_info_tin = FLD.context_info_tin,
+      $context_info_victual = FLD.context_info_victual, $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
+      $dig_info_chew = FLD.dig_info_chew, $dig_info_level = FLD.dig_info_level,
+      $dig_info_pos = FLD.dig_info_pos, $dlevel_t_objects = FLD.dlevel_t_objects,
+      $edog_hungrytime = FLD.edog_hungrytime, $flag_female = FLD.flag_female,
+      $flag_paranoia_bits = FLD.flag_paranoia_bits, $flag_verbose = FLD.flag_verbose,
+      $instance_flags_debug_hunger = FLD.instance_flags_debug_hunger,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
+      $instance_flags_override_ID = FLD.instance_flags_override_ID,
+      $instance_globals_c_corpsenm_digested = FLD.instance_globals_c_corpsenm_digested,
+      $instance_globals_e_eatmbuf = FLD.instance_globals_e_eatmbuf,
+      $instance_globals_f_force_save_hs = FLD.instance_globals_f_force_save_hs,
+      $instance_globals_m_multi = FLD.instance_globals_m_multi,
+      $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
+      $instance_globals_n_nomovemsg = FLD.instance_globals_n_nomovemsg,
+      $instance_globals_o_occupation = FLD.instance_globals_o_occupation,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+      $kinfo_format = FLD.kinfo_format, $kinfo_name = FLD.kinfo_name,
+      $mextra_edog = FLD.mextra_edog, $monst_data = FLD.monst_data,
+      $monst_isminion = FLD.monst_isminion, $monst_m_ap_type = FLD.monst_m_ap_type,
+      $monst_mappearance = FLD.monst_mappearance, $monst_mconf = FLD.monst_mconf,
+      $monst_mextra = FLD.monst_mextra, $monst_mhp = FLD.monst_mhp, $monst_mtame = FLD.monst_mtame,
+      $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y,
+      $obj_age = FLD.obj_age, $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed,
+      $obj_cknown = FLD.obj_cknown, $obj_cobj = FLD.obj_cobj, $obj_corpsenm = FLD.obj_corpsenm,
+      $obj_cursed = FLD.obj_cursed, $obj_dknown = FLD.obj_dknown, $obj_globby = FLD.obj_globby,
+      $obj_in_use = FLD.obj_in_use, $obj_known = FLD.obj_known, $obj_no_charge = FLD.obj_no_charge,
+      $obj_o_id = FLD.obj_o_id, $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass,
+      $obj_oeaten = FLD.obj_oeaten, $obj_oeroded = FLD.obj_oeroded,
+      $obj_oerodeproof = FLD.obj_oerodeproof, $obj_otrapped = FLD.obj_otrapped,
+      $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt,
+      $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan,
+      $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe, $obj_timed = FLD.obj_timed,
+      $obj_unpaid = FLD.obj_unpaid, $obj_v = FLD.obj_v, $obj_where = FLD.obj_where,
+      $objclass_oc_charged = FLD.objclass_oc_charged, $objclass_oc_delay = FLD.objclass_oc_delay,
+      $objclass_oc_material = FLD.objclass_oc_material,
+      $objclass_oc_nutrition = FLD.objclass_oc_nutrition,
+      $objclass_oc_oprop = FLD.objclass_oc_oprop, $objclass_oc_unique = FLD.objclass_oc_unique,
+      $permonst_cnutrit = FLD.permonst_cnutrit, $permonst_cwt = FLD.permonst_cwt,
+      $permonst_mconveys = FLD.permonst_mconveys, $permonst_mflags1 = FLD.permonst_mflags1,
+      $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
+      $permonst_mlevel = FLD.permonst_mlevel, $permonst_msize = FLD.permonst_msize,
+      $permonst_pmidx = FLD.permonst_pmidx, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_victual_info = FLD.sizeof_victual_info,
+      $tin_info_o_id = FLD.tin_info_o_id, $tin_info_reqtime = FLD.tin_info_reqtime,
+      $tin_info_usedtime = FLD.tin_info_usedtime, $trap_tseen = FLD.trap_tseen,
+      $trap_ttyp = FLD.trap_ttyp, $u_conduct_food = FLD.u_conduct_food,
+      $u_conduct_literate = FLD.u_conduct_literate, $u_conduct_polyselfs = FLD.u_conduct_polyselfs,
+      $u_conduct_unvegan = FLD.u_conduct_unvegan, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $victual_info_canchoke = FLD.victual_info_canchoke,
+      $victual_info_doreset = FLD.victual_info_doreset,
+      $victual_info_eating = FLD.victual_info_eating,
+      $victual_info_fullwarn = FLD.victual_info_fullwarn,
+      $victual_info_nmod = FLD.victual_info_nmod, $victual_info_o_id = FLD.victual_info_o_id,
+      $victual_info_reqtime = FLD.victual_info_reqtime,
+      $victual_info_usedtime = FLD.victual_info_usedtime,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $you_acurr = FLD.you_acurr, $you_amax = FLD.you_amax, $you_atemp = FLD.you_atemp,
+      $you_mfemale = FLD.you_mfemale, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
+      $you_ualign = FLD.you_ualign, $you_ublessed = FLD.you_ublessed,
+      $you_uconduct = FLD.you_uconduct, $you_ucreamed = FLD.you_ucreamed,
+      $you_udaminc = FLD.you_udaminc, $you_uedibility = FLD.you_uedibility, $you_uen = FLD.you_uen,
+      $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak, $you_uhave = FLD.you_uhave,
+      $you_uhitinc = FLD.you_uhitinc, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
+      $you_uhs = FLD.you_uhs, $you_uhunger = FLD.you_uhunger,
+      $you_uinvulnerable = FLD.you_uinvulnerable, $you_ulycn = FLD.you_ulycn,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_usick_type = FLD.you_usick_type, $you_usteed = FLD.you_usteed,
+      $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
+      $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_satiated = cptr.lit("Satiated");
@@ -603,22 +655,59 @@ let getobj_else = 0;
 export function is_edible(obj) {
     /* protect invocation tools but not Rider corpses (handled elsewhere)*/
     /* if (obj->oclass != FOOD_CLASS && obj_resists(obj, 0, 0)) */
-    if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_unique) & 1))
+    if ((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_unique
+    ) & 1))
         return 0;
     /* above also prevents the Amulet from being eaten, so we must never
        allow fake amulets to be eaten either [which is already the case] */
 
-    if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, $sizeof_permonst)) && is_flammable(obj))
+    if (cptr.eq(
+        cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+        cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, $sizeof_permonst)
+    ) &&
+            is_flammable(obj))
         return 1;
 
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n) && is_metallic(obj) && (!cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)) || (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.IRON)))
+    if (((cptr.ldU64o(
+        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+        $permonst_mflags1
+    ) &
+        2147483648n) != 0n) &&
+            is_metallic(obj) &&
+            (!cptr.eq(
+                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)
+            ) ||
+                (((cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_material
+                ) & 31) | 0) ==
+                    NHC.IRON)))
         return 1;
 
     /* Ghouls only eat non-veggy corpses or eggs (see dogfood()) */
     if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GHOUL)
-        return schar(((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE && !vegan(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst))) || (cptr.ldI16o(obj, $obj_otyp) == NHC.EGG) ? 1 : 0));
+        return schar(((cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE &&
+            !vegan(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst))) ||
+            (cptr.ldI16o(obj, $obj_otyp) == NHC.EGG)
+                ? 1
+                : 0));
 
-    if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GELATINOUS_CUBE && (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) <= NHC.WOOD) && !(cptr.ldPtro((obj), $obj_cobj) !== null))
+    if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GELATINOUS_CUBE &&
+            (((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) & 31) | 0) <=
+                NHC.WOOD) &&
+            !(cptr.ldPtro((obj), $obj_cobj) !== null))
         return 1;
 
     return schar((cptr.ld1so(obj, $obj_oclass) == NHC.FOOD_CLASS));
@@ -628,7 +717,13 @@ export function is_edible(obj) {
    starving, fix weak from hunger, or golden glow boon (if u.uhunger < 900) */
 /** C ref: eat.c:126 */
 export function* init_uhunger() {
-    cptr.st1(disp, schar((cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY || (cptr.ld1so2(u, NHC.A_STR, 1, $you_atemp)) < 0 ? 1 : 0)));
+    cptr.st1(
+        disp,
+        schar((cptr.ldI32o(u, $you_uhs) != NHC.NOT_HUNGRY ||
+            (cptr.ld1so2(u, NHC.A_STR, 1, $you_atemp)) < 0
+            ? 1
+            : 0))
+    );
     cptr.stI32o(u, $you_uhunger, 900);
     cptr.stI32o(u, $you_uhs, NHC.NOT_HUNGRY);
     if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_atemp)) < 0) {
@@ -712,9 +807,13 @@ cptr.stI32o(tintxts, 376, 0);
 function* eatmdone() {
     /* release `eatmbuf' */
     if (cptr.ldPtro(ge, $instance_globals_e_eatmbuf)) {
-        if (cptr.eq(cptr.ldPtro(gn, $instance_globals_n_nomovemsg), cptr.ldPtro(ge, $instance_globals_e_eatmbuf)))
+        if (cptr.eq(
+            cptr.ldPtro(gn, $instance_globals_n_nomovemsg),
+            cptr.ldPtro(ge, $instance_globals_e_eatmbuf)
+        ))
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
-        cptr.free(cptr.ldPtro(ge, $instance_globals_e_eatmbuf)), cptr.stPtro(ge, $instance_globals_e_eatmbuf, null);
+        cptr.free(cptr.ldPtro(ge, $instance_globals_e_eatmbuf)),
+                cptr.stPtro(ge, $instance_globals_e_eatmbuf, null);
     }
     /* update display */
     if (U_AP_TYPE()) {
@@ -730,14 +829,28 @@ export function* eatmupdate() {
     let altmsg = null;
     let altapp = 0;  /* lint suppression */
 
-    if (!cptr.ldPtro(ge, $instance_globals_e_eatmbuf) || !cptr.eq(cptr.ldPtro(gn, $instance_globals_n_nomovemsg), cptr.ldPtro(ge, $instance_globals_e_eatmbuf)))
+    if (!cptr.ldPtro(ge, $instance_globals_e_eatmbuf) ||
+            !cptr.eq(
+                cptr.ldPtro(gn, $instance_globals_n_nomovemsg),
+                cptr.ldPtro(ge, $instance_globals_e_eatmbuf)
+            ))
         return;
 
-    if (((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.ORANGE) && !Hallucination()) {
+    if (((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) &
+        NHM.M_AP_TYPMASK) ==
+        NHC.M_AP_OBJECT &&
+        cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) ==
+            NHC.ORANGE) &&
+            !Hallucination()) {
         /* revert from hallucinatory to "normal" mimicking */
         altmsg = __s_you_now_prefer_mimicking_yourself;
         altapp = NHC.GOLD_PIECE;
-    } else if (((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) == NHC.GOLD_PIECE) && Hallucination()) {
+    } else if (((cptr.ld1uo((cptr.add(gy, $instance_globals_y_youmonst)), $monst_m_ap_type) &
+        NHM.M_AP_TYPMASK) ==
+        NHC.M_AP_OBJECT &&
+        cptr.ldI32o((cptr.add(gy, $instance_globals_y_youmonst)), $monst_mappearance) ==
+            NHC.GOLD_PIECE) &&
+            Hallucination()) {
         /* won't happen; anything which might make immobilized
            hero begin hallucinating (black light attack, theft
            of Grayswandir) will terminate the mimicry first */
@@ -752,7 +865,11 @@ export function* eatmupdate() {
             cptr.free(cptr.ldPtro(ge, $instance_globals_e_eatmbuf));
             cptr.stPtro(ge, $instance_globals_e_eatmbuf, (yield* alloc((amlen + 1) >>> 0)));
         }
-        cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.strcpy(cptr.ldPtro(ge, $instance_globals_e_eatmbuf), altmsg));
+        cptr.stPtro(
+            gn,
+            $instance_globals_n_nomovemsg,
+            cptr.strcpy(cptr.ldPtro(ge, $instance_globals_e_eatmbuf), altmsg)
+        );
         /* update current image */
         cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, altapp >>> 0);
         (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
@@ -765,10 +882,18 @@ function* food_xname(food, the_pfx) {
     let result;
 
     if (cptr.ldI16o(food, $obj_otyp) == NHC.CORPSE) {
-        result = (yield* corpse_xname(food, null, (NHM.CXN_SINGULAR | (the_pfx ? NHM.CXN_PFX_THE : 0)) >>> 0));
+        result = (yield* corpse_xname(
+            food,
+            null,
+            (NHM.CXN_SINGULAR | (the_pfx ? NHM.CXN_PFX_THE : 0)) >>> 0
+        ));
         /* not strictly needed since pname values are capitalized
            and the() is a no-op for them */
-        if (((cptr.ldU64o((cptr.add(mons, cptr.ldI32o(food, $obj_corpsenm), $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n))
+        if (((cptr.ldU64o(
+            (cptr.add(mons, cptr.ldI32o(food, $obj_corpsenm), $sizeof_permonst)),
+            $permonst_mflags2
+        ) &
+                524288n) != 0n))
             the_pfx = 0;
     } else {
         /* the ordinary case */
@@ -792,7 +917,8 @@ function* choke(food) {
     if (cptr.ldI32o(u, $you_uhs) != NHC.SATIATED) {
         if (!food || cptr.ldI16o(food, $obj_otyp) != NHC.AMULET_OF_STRANGULATION)
             return;
-    } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL) {
+    } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) &&
+            cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL) {
         adjalign(-1);  /* gluttony is unchivalrous */
         (yield* You_feel(__s_like_a_glutton));
     }
@@ -850,7 +976,11 @@ function* recalc_wt() {
     {
         if ((yield* debugcore(__s_eat_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__s_used_time_d_req_d_time_d, cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime), cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)));
+            (yield* pline(
+                __s_used_time_d_req_d_time_d,
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime),
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)
+            ));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -870,7 +1000,8 @@ export function* reset_eat() {
     /* we only set a flag here - the actual reset process is done after
      * the round is spent eating.
      */
-    if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) | 0 && !(cptr.ldI32o(svc, $context_info_victual + $victual_info_doreset) & 1)) {
+    if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) | 0 &&
+            !(cptr.ldI32o(svc, $context_info_victual + $victual_info_doreset) & 1)) {
         {
             if ((yield* debugcore(__s_eat_c, 1))) {
                 let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
@@ -888,7 +1019,21 @@ export function* reset_eat() {
    its affect on weight() */
 /** C ref: eat.c:325 — @param {CPtr<struct obj>} otmp @returns {CUInt} */
 export function obj_nutrition(otmp) {
-    let nut = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE) ? cptr.ldU16o2(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, $permonst_cnutrit) : ((cptr.ldI32o(otmp, $obj_globby) & 1) | 0 ? cptr.ldI32o(otmp, $obj_owt) : cptr.ldU16o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_nutrition));
+    let nut = (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
+            ? cptr.ldU16o2(
+                mons,
+                cptr.ldI32o(otmp, $obj_corpsenm),
+                $sizeof_permonst,
+                $permonst_cnutrit
+            )
+            : ((cptr.ldI32o(otmp, $obj_globby) & 1) | 0
+                ? cptr.ldI32o(otmp, $obj_owt)
+                : cptr.ldU16o2(
+                    objects,
+                    cptr.ldI16o(otmp, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_nutrition
+                ));
 
     return nut;
 }
@@ -902,14 +1047,31 @@ function adj_victual_nutrition() {
     /* note: adj_victual_nutrition() is only called when 'nmod' is negative */
     let nut = -cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod);  /* convert 'nmod' to positive */
 
-    (__builtin_expect(BigInt((!(nut > 0))), 0n) ? __assert_rtn(__s_adj_victual_nutrition, __s_eat_c, 344, __s_nut_0) : void 0);
+    (__builtin_expect(BigInt((!(nut > 0))), 0n)
+            ? __assert_rtn(__s_adj_victual_nutrition, __s_eat_c, 344, __s_nut_0)
+            : void 0);
     if (otyp == NHC.LEMBAS_WAFER) {
-        if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 16n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))))
+        if ((Upolyd()
+                ? (((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags2
+                ) & 16n) != 0n))
+                : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF))))
             nut = (nut + ((((nut + 2) | 0) / 4) | 0)) | 0;  /* 800 -> 1000 */
-        else if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 128n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC))))
+        else if ((Upolyd()
+                ? (((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags2
+                ) & 128n) != 0n))
+                : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC))))
             nut = (nut - ((((nut + 2) | 0) / 4) | 0)) | 0;  /* 800 -> 600 */
     } else if (otyp == NHC.CRAM_RATION) {
-        if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 32n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF))))
+        if ((Upolyd()
+                ? (((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags2
+                ) & 32n) != 0n))
+                : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF))))
             nut = (nut + ((((nut + 3) | 0) / 6) | 0)) | 0;  /* 600 -> 700 */
     }
     nut = ((nut) > 1 ? (nut) : 1);
@@ -974,7 +1136,11 @@ export function* food_disappears(obj) {
 export function food_substitution(old_obj, new_obj) {
     if (cptr.eq(old_obj, cptr.ldPtro(svc, $context_info_victual))) {
         cptr.stPtro(svc, $context_info_victual, new_obj);
-        cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, cptr.ldI32o(new_obj, $obj_o_id));
+        cptr.stI32o(
+            svc,
+            $context_info_victual + $victual_info_o_id,
+            cptr.ldI32o(new_obj, $obj_o_id)
+        );
     }
     if (cptr.eq(old_obj, cptr.ldPtro(svc, $context_info_tin))) {
         cptr.stPtro(svc, $context_info_tin, new_obj);
@@ -998,11 +1164,23 @@ function* do_reset_eat() {
         otmp = (yield* touchfood(cptr.ldPtro(svc, $context_info_victual)));
         cptr.stPtro(svc, $context_info_victual, otmp);
         if (otmp) {
-            cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, cptr.ldI32o(otmp, $obj_o_id));
+            cptr.stI32o(
+                svc,
+                $context_info_victual + $victual_info_o_id,
+                cptr.ldI32o(otmp, $obj_o_id)
+            );
             (yield* recalc_wt());
         }
     }
-    cptr.stI32o(svc, $context_info_victual + $victual_info_fullwarn, cptr.stI32o(svc, $context_info_victual + $victual_info_eating, cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 0)));
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_fullwarn,
+        cptr.stI32o(
+            svc,
+            $context_info_victual + $victual_info_eating,
+            cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 0)
+        )
+    );
     /* Do not set canchoke to FALSE; if we continue eating the same object
      * we need to know if canchoke was set when they started eating it the
      * previous time.  And if we don't continue eating the same object
@@ -1020,7 +1198,10 @@ export function temp_resist(prop) {
     let p = cptr.add(cptr.add(u, $you_uprops), prop, $sizeof_prop);
     let timeout = cptr.ldI64o(p, $prop_intrinsic) & 16777215n;
 
-    if (timeout && (cptr.ldI64o(p, $prop_intrinsic) & -16777216n) == 0n && !cptr.ldI64(p) && !cptr.ldI64o(p, $prop_blocked)) {
+    if (timeout &&
+            (cptr.ldI64o(p, $prop_intrinsic) & -16777216n) == 0n &&
+            !cptr.ldI64(p) &&
+            !cptr.ldI64o(p, $prop_blocked)) {
         return timeout;
     }
     return 0n;
@@ -1034,9 +1215,16 @@ export function eating_dangerous_corpse(res) {
     let food;
     let mnum;
 
-    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood && (food = cptr.ldPtro(svc, $context_info_victual)) !== null && cptr.ldI16o(food, $obj_otyp) == NHC.CORPSE && (mnum = cptr.ldI32o(food, $obj_corpsenm)) >= NHC.LOW_PM && ((cptr.ld1so((food), $obj_where) == NHM.OBJ_INVENT) || obj_here(food, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
+    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood &&
+            (food = cptr.ldPtro(svc, $context_info_victual)) !== null &&
+            cptr.ldI16o(food, $obj_otyp) == NHC.CORPSE &&
+            (mnum = cptr.ldI32o(food, $obj_corpsenm)) >= NHC.LOW_PM &&
+            ((cptr.ld1so((food), $obj_where) == NHM.OBJ_INVENT) ||
+                obj_here(food, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) {
 
-        if (res == NHC.ACID_RES && ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 134217728n) != 0n))
+        if (res == NHC.ACID_RES &&
+                ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) &
+                    134217728n) != 0n))
             return 1;
         /* flesh_petrifies() includes Medusa as well as touch_petrifies() */
         if (res == NHC.STONE_RES && flesh_petrifies(cptr.add(mons, mnum, $sizeof_permonst)))
@@ -1050,7 +1238,9 @@ export function eating_dangerous_corpse(res) {
 function* eatfood() {
     let food = cptr.ldPtro(svc, $context_info_victual);
 
-    if (food && !(cptr.ld1so((food), $obj_where) == NHM.OBJ_INVENT) && !obj_here(food, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
+    if (food &&
+            !(cptr.ld1so((food), $obj_where) == NHM.OBJ_INVENT) &&
+            !obj_here(food, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         food = null;
     if (!food) {
         /* maybe it was stolen? */
@@ -1060,7 +1250,12 @@ function* eatfood() {
     if (!(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1))
         return 0;
 
-    if (cptr.stI32o(svc, $context_info_victual + $victual_info_usedtime, cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) + 1) <= cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) {
+    if (cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_usedtime,
+        cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) + 1
+    ) <=
+            cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) {
         if ((yield* bite()))
             return 0;
         return 1;  /* still busy */
@@ -1082,7 +1277,16 @@ function* done_eating(message) {
             (yield* pline(__s_pct_s, cptr.ldPtro(gn, $instance_globals_n_nomovemsg)));
         cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
     } else if (message) {
-        (yield* You(__s_finish_s_s, (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, $sizeof_permonst))) ? __s_consuming : __s_eating, (yield* food_xname(piece, 1))));
+        (yield* You(
+            __s_finish_s_s,
+            (cptr.eq(
+                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                cptr.add(mons, NHC.PM_FIRE_ELEMENTAL, $sizeof_permonst)
+            ))
+                ? __s_consuming
+                : __s_eating,
+            (yield* food_xname(piece, 1))
+        ));
     }
 
     if (cptr.ldI16o(piece, $obj_otyp) == NHC.CORPSE || (cptr.ldI32o(piece, $obj_globby) & 1) | 0)
@@ -1102,19 +1306,38 @@ function* done_eating(message) {
 export function* eating_conducts(pd) {
     let ll_conduct = 0;
 
-    if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_food, cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n)) - (1n))) {
+    if (!((cptr.stI64o(
+        u,
+        $you_uconduct + $u_conduct_food,
+        cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n
+    )) -
+            (1n))) {
         (yield* livelog_printf(32n, __s_ate_for_the_first_time_s, cptr.ldPtro(pd, NHC.NEUTRAL, 8)));
         ll_conduct++;
     }
     if (!vegan(pd)) {
-        if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_unvegan, cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n)) - (1n)) && !ll_conduct) {
-            (yield* livelog_printf(32n, __s_consumed_animal_products_s_for_the, cptr.ldPtro(pd, NHC.NEUTRAL, 8)));
+        if (!((cptr.stI64o(
+            u,
+            $you_uconduct + $u_conduct_unvegan,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n
+        )) -
+            (1n)) &&
+                !ll_conduct) {
+            (yield* livelog_printf(
+                32n,
+                __s_consumed_animal_products_s_for_the,
+                cptr.ldPtro(pd, NHC.NEUTRAL, 8)
+            ));
             ll_conduct++;
         }
     }
     if (!vegetarian(pd)) {
         if (!cptr.ldI64o(u, $you_uconduct) && !ll_conduct)
-            (yield* livelog_printf(32n, __s_tasted_meat_s_for_the_first_time, cptr.ldPtro(pd, NHC.NEUTRAL, 8)));
+            (yield* livelog_printf(
+                32n,
+                __s_tasted_meat_s_for_the_first_time,
+                cptr.ldPtro(pd, NHC.NEUTRAL, 8)
+            ));
         (yield* violated_vegetarian());
     }
 }
@@ -1122,7 +1345,14 @@ export function* eating_conducts(pd) {
 /* handle side-effects of mind flayer's tentacle attack */
 const __static_eat_brains_brainlessness = cptr.bytes("brainlessness"); /** C ref: eat.c:699 — char[14] (function-static) */
 
-/** C ref: eat.c:603 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CInt} visflag @param {CPtr<int>} dmg_p @returns {CInt} */
+/**
+ * C ref: eat.c:603
+ * @param {CPtr<struct monst>} magr
+ * @param {CPtr<struct monst>} mdef
+ * @param {CInt} visflag
+ * @param {CPtr<int>} dmg_p
+ * @returns {CInt}
+ */
 export function* eat_brains(magr, mdef, visflag, dmg_p) {
     let pd = cptr.ldPtro(mdef, $monst_data);
     let give_nutrit = 0;
@@ -1131,13 +1361,19 @@ export function* eat_brains(magr, mdef, visflag, dmg_p) {
 
     /* previous tentacle attack might have triggered fatal passive
        counterattack [callers ought to be updated to avoid this situation] */
-    if (!cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)) && (cptr.ldI32o((magr), $monst_mhp) < 1)) {
+    if (!cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst)) &&
+            (cptr.ldI32o((magr), $monst_mhp) < 1)) {
         return NHM.M_ATTK_AGR_DIED;
     }
 
     if ((cptr.ld1so((pd), $permonst_mlet) == NHC.S_GHOST)) {
         if (visflag)
-            (yield* pline(__s_s_brain_is_unharmed, (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) ? __s_your : (yield* s_suffix((yield* Monnam(mdef))))));
+            (yield* pline(
+                __s_s_brain_is_unharmed,
+                (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst)))
+                    ? __s_your
+                    : (yield* s_suffix((yield* Monnam(mdef))))
+            ));
         return NHM.M_ATTK_MISS;  /* side-effects can't occur */
     } else if (cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))) {
         (yield* You(__s_eat_s_brain, (yield* s_suffix((yield* mon_nam(mdef))))));
@@ -1184,7 +1420,11 @@ export function* eat_brains(magr, mdef, visflag, dmg_p) {
             return NHM.M_ATTK_MISS;
         } else if (is_rider(pd)) {
             (yield* pline(__s_ingesting_that_is_fatal));
-            void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_unwisely_ate_the_brain_of_s, pmname(pd, Mgender(mdef)));
+            void cptr.sprintf(
+                cptr.add(svk, $kinfo_name),
+                __s_unwisely_ate_the_brain_of_s,
+                pmname(pd, Mgender(mdef))
+            );
             cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
             (yield* done(NHC.DIED));
             /* life-saving needed to reach here */
@@ -1192,11 +1432,25 @@ export function* eat_brains(magr, mdef, visflag, dmg_p) {
             cptr.stI32(dmg_p, (cptr.ldI32(dmg_p) + xtra_dmg) | 0);  /* Rider takes extra damage */
         } else {
             (yield* morehungry(-rnd(30)));  /* cannot choke */
-            if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) < (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax))) {
+            if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) <
+                    (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax))) {
                 /* recover lost Int; won't increase current max */
-                cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr) + rnd(4));
-                if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) > (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax)))
-                    cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax)));
+                cptr.st1o2(
+                    u,
+                    NHC.A_INT,
+                    1,
+                    $you_acurr,
+                    cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr) + rnd(4)
+                );
+                if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) >
+                        (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax)))
+                    cptr.st1o2(
+                        u,
+                        NHC.A_INT,
+                        1,
+                        $you_acurr,
+                        (cptr.ld1so2(u, NHC.A_INT, 1, $you_amax))
+                    );
                 cptr.st1(disp, 1);
             }
             (yield* exercise(NHC.A_WIS, 1));
@@ -1211,25 +1465,49 @@ export function* eat_brains(magr, mdef, visflag, dmg_p) {
          * monster mind flayer is eating hero's brain
          */
         /* no such thing as mindless players */
-        if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) <= (cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmin))) {
+        if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) <=
+                (cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmin))) {
 
             if (Lifesaved()) {
-                void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(__static_eat_brains_brainlessness));
+                void cptr.strcpy(
+                    cptr.add(svk, $kinfo_name),
+                    cptr.decay(__static_eat_brains_brainlessness)
+                );
                 cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
                 (yield* done(NHC.DIED));
                 /* amulet of life saving has now been used up */
                 (yield* pline(__s_unfortunately_your_brain_is_still_gone));
                 /* sanity check against adding other forms of life-saving */
-                cptr.stI64o2(u, NHC.LIFESAVED, $sizeof_prop, $you_uprops, cptr.stI64o2(u, NHC.LIFESAVED, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n));
+                cptr.stI64o2(
+                    u,
+                    NHC.LIFESAVED,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.stI64o2(u, NHC.LIFESAVED, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n)
+                );
             } else {
                 (yield* Your(__s_last_thought_fades_away));
             }
-            void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(__static_eat_brains_brainlessness));
+            void cptr.strcpy(
+                cptr.add(svk, $kinfo_name),
+                cptr.decay(__static_eat_brains_brainlessness)
+            );
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
             (yield* done(NHC.DIED));
             /* can only get here when in wizard or explore mode and user has
                explicitly chosen not to die; arbitrarily boost intelligence */
-            cptr.st1o2(u, NHC.A_INT, 1, $you_acurr, schar((((cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmin)) + 2) | 0)));
+            cptr.st1o2(
+                u,
+                NHC.A_INT,
+                1,
+                $you_acurr,
+                schar((((cptr.ldI16o2(
+                    gu,
+                    NHC.A_INT,
+                    2,
+                    $instance_globals_u_urace + $Race_attrmin
+                )) + 2) | 0))
+            );
             (yield* You_feel(__s_like_a_scarecrow));
         }
         give_nutrit = 1;  /* in case a conflicted pet is doing this */
@@ -1258,8 +1536,18 @@ export function* eat_brains(magr, mdef, visflag, dmg_p) {
         }
     }
 
-    if (give_nutrit && cptr.ld1so(magr, $monst_mtame) && !(cptr.ldI32o(magr, $monst_isminion) & 1)) {
-        cptr.stI64o((cptr.ldPtro(cptr.ldPtro((magr), $monst_mextra), $mextra_edog)), $edog_hungrytime, cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((magr), $monst_mextra), $mextra_edog)), $edog_hungrytime) + BigInt(rnd(60)));
+    if (give_nutrit &&
+            cptr.ld1so(magr, $monst_mtame) &&
+            !(cptr.ldI32o(magr, $monst_isminion) & 1)) {
+        cptr.stI64o(
+            (cptr.ldPtro(cptr.ldPtro((magr), $monst_mextra), $mextra_edog)),
+            $edog_hungrytime,
+            cptr.ldI64o(
+                (cptr.ldPtro(cptr.ldPtro((magr), $monst_mextra), $mextra_edog)),
+                $edog_hungrytime
+            ) +
+                BigInt(rnd(60))
+        );
         cptr.stI32o(magr, $monst_mconf, 0);
     }
 
@@ -1280,13 +1568,35 @@ function* maybe_cannibal(pm, allowmsg) {
         return 0;
     __static_maybe_cannibal_ate_brains = cptr.ldI64o(svm, $instance_globals_saved_m_moves);  /* ate_anything, not just brains... */
 
-    if (!((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)) && (((cptr.ldU64o((fptr), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n) || (Upolyd() && same_race(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), fptr)) || (ismnum(cptr.ldI32o(u, $you_ulycn)) && were_beastie(pm) == cptr.ldI32o(u, $you_ulycn)))) {
+    if (!((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) ||
+        (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)) &&
+            (((cptr.ldU64o((fptr), $permonst_mflags2) &
+                BigInt.asUintN(
+                    64,
+                    BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
+                )) != 0n) ||
+                (Upolyd() &&
+                    same_race(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), fptr)) ||
+                (ismnum(cptr.ldI32o(u, $you_ulycn)) &&
+                    were_beastie(pm) == cptr.ldI32o(u, $you_ulycn)))) {
         if (allowmsg) {
-            if (Upolyd() && ((cptr.ldU64o((fptr), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n))
+            if (Upolyd() &&
+                    ((cptr.ldU64o((fptr), $permonst_mflags2) &
+                        BigInt.asUintN(
+                            64,
+                            BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
+                        )) != 0n))
                 (yield* You(__s_have_a_bad_feeling_deep_inside));
             (yield* You(__s_cannibal_you_will_regret_this));
         }
-        cptr.stI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+        cptr.stI64o2(
+            u,
+            NHC.AGGRAVATE_MONSTER,
+            $sizeof_prop,
+            $you_uprops + $prop_intrinsic,
+            cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                67108864n
+        );
         change_luck(schar((-((rn2(4) + 2) | 0))));  /* -5..-2 */
         return 1;
     }
@@ -1297,12 +1607,18 @@ function* maybe_cannibal(pm, allowmsg) {
 function* cprefx(pm) {
     void (yield* maybe_cannibal(pm, 1));
     if (flesh_petrifies(cptr.add(mons, pm, $sizeof_permonst))) {
-        if (!Stone_resistance() && !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM)))) {
+        if (!Stone_resistance() &&
+                !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
+                    (yield* polymon(NHC.PM_STONE_GOLEM)))) {
             /* if food was a tin, use it up early to keep it out of bones */
             if (cptr.ldPtro(svc, $context_info_tin))
                 (yield* use_up_tin(cptr.ldPtro(svc, $context_info_tin)));
 
-            void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_tasting_s_meat, cptr.ldPtro3(mons, pm, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
+            void cptr.sprintf(
+                cptr.add(svk, $kinfo_name),
+                __s_tasting_s_meat,
+                cptr.ldPtro3(mons, pm, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+            );
             cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
             (yield* You(__s_turn_to_stone));
             (yield* done(NHC.STONING));
@@ -1320,9 +1636,25 @@ function* cprefx(pm) {
         case NHC.PM_HOUSECAT:
         case NHC.PM_LARGE_CAT:
         /* cannibals are allowed to eat domestic animals without penalty */
-        if (!((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC))) {
-            (yield* You_feel(__s_that_eating_the_s_was_a_bad_idea, cptr.ldPtro3(mons, pm, $sizeof_permonst, NHC.NEUTRAL, 8, 0)));
-            cptr.stI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+        if (!((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) ||
+                (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC))) {
+            (yield* You_feel(
+                __s_that_eating_the_s_was_a_bad_idea,
+                cptr.ldPtro3(mons, pm, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+            ));
+            cptr.stI64o2(
+                u,
+                NHC.AGGRAVATE_MONSTER,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(
+                    u,
+                    NHC.AGGRAVATE_MONSTER,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic
+                ) |
+                    67108864n
+            );
         }
         break;
         case NHC.PM_LIZARD:
@@ -1334,7 +1666,11 @@ function* cprefx(pm) {
         case NHC.PM_FAMINE:
         {
             (yield* pline(__s_eating_that_is_instantly_fatal));
-            void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_unwisely_ate_the_body_of_s, cptr.ldPtro3(mons, pm, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
+            void cptr.sprintf(
+                cptr.add(svk, $kinfo_name),
+                __s_unwisely_ate_the_body_of_s,
+                cptr.ldPtro3(mons, pm, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+            );
             cptr.stI32o(svk, $kinfo_format, NHM.NO_KILLER_PREFIX);
             (yield* done(NHC.DIED));
             /* life-saving needed to reach here */
@@ -1343,12 +1679,16 @@ function* cprefx(pm) {
                5.0: this used to assume that such tins were impossible but
                they can be wished for in wizard mode; they can't make it
                to normal play though because bones creation empties them */
-            if (cptr.ldPtro(svc, $context_info_victual) && cptr.ldI16o(cptr.ldPtro(svc, $context_info_victual), $obj_otyp) == NHC.CORPSE && (yield* revive_corpse(cptr.ldPtro(svc, $context_info_victual))))
+            if (cptr.ldPtro(svc, $context_info_victual) &&
+                    cptr.ldI16o(cptr.ldPtro(svc, $context_info_victual), $obj_otyp) == NHC.CORPSE &&
+                    (yield* revive_corpse(cptr.ldPtro(svc, $context_info_victual))))
                 cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece=0, .o_id=0 */
             return;
         }
         case NHC.PM_GREEN_SLIME:
-        if (!Slimed() && !Unchanging() && !slimeproof(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+        if (!Slimed() &&
+                !Unchanging() &&
+                !slimeproof(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
             (yield* You(__s_don_t_feel_very_well));
             (yield* make_slimed(10n, null));
             (yield* delayed_killer(NHC.SLIMED, NHM.KILLED_BY_AN, __s_empty));
@@ -1356,7 +1696,9 @@ function* cprefx(pm) {
         // @FallThrough
         ;
         default:
-        if (((cptr.ldU64o((cptr.add(mons, pm, $sizeof_permonst)), $permonst_mflags1) & 134217728n) != 0n) && Stoned())
+        if (((cptr.ldU64o((cptr.add(mons, pm, $sizeof_permonst)), $permonst_mflags1) &
+            134217728n) != 0n) &&
+                Stoned())
             (yield* fix_petrification());
         break;
     }
@@ -1367,7 +1709,11 @@ export function* fix_petrification() {
     let buf = new Uint8Array(256);
 
     if (Hallucination())
-        void cptr.sprintf(cptr.decay(buf), __s_what_a_pity_you_just_ruined_a_future, (acurr(NHC.A_CHA)) > 15 ? __s_fine : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_what_a_pity_you_just_ruined_a_future,
+            (acurr(NHC.A_CHA)) > 15 ? __s_fine : __s_empty
+        );
     else
         void cptr.strcpy(cptr.decay(buf), __s_you_feel_limber);
     (yield* make_stoned(0n, cptr.decay(buf), 0, null));
@@ -1548,7 +1894,9 @@ export function should_givit(type, ptr) {
     /* some intrinsics are easier to get than others */
     switch (type) {
         case NHC.POISON_RES:
-        if ((cptr.eq(ptr, cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) || cptr.eq(ptr, cptr.add(mons, NHC.PM_SCORPION, $sizeof_permonst))) && !rn2(4))
+        if ((cptr.eq(ptr, cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) ||
+            cptr.eq(ptr, cptr.add(mons, NHC.PM_SCORPION, $sizeof_permonst))) &&
+                !rn2(4))
             chance = 1;
         else
             chance = 15;
@@ -1604,7 +1952,14 @@ function* givit(type, ptr) {
         }
         if (!(HFire_resistance() & 67108864n)) {
             (yield* You(Hallucination() ? __s_be_chillin : __s_feel_a_momentary_chill));
-            cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.FIRE_RES,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         break;
         case NHC.SLEEP_RES:
@@ -1617,7 +1972,14 @@ function* givit(type, ptr) {
         }
         if (!(HSleep_resistance() & 67108864n)) {
             (yield* You_feel(__s_wide_awake));
-            cptr.stI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.SLEEP_RES,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         break;
         case NHC.COLD_RES:
@@ -1630,7 +1992,14 @@ function* givit(type, ptr) {
         }
         if (!(HCold_resistance() & 67108864n)) {
             (yield* You_feel(__s_full_of_hot_air));
-            cptr.stI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.COLD_RES,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         break;
         case NHC.DISINT_RES:
@@ -1643,7 +2012,14 @@ function* givit(type, ptr) {
         }
         if (!(HDisint_resistance() & 67108864n)) {
             (yield* You_feel(Hallucination() ? __s_totally_together_man : __s_very_firm));
-            cptr.stI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.DISINT_RES,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.DISINT_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         break;
         case NHC.SHOCK_RES:
@@ -1659,7 +2035,14 @@ function* givit(type, ptr) {
                 (yield* You_feel(__s_grounded_in_reality));
             else
                 (yield* Your(__s_health_currently_feels_amplified));
-            cptr.stI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.SHOCK_RES,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         break;
         case NHC.POISON_RES:
@@ -1672,7 +2055,14 @@ function* givit(type, ptr) {
         }
         if (!(HPoison_resistance() & 67108864n)) {
             (yield* You_feel(Poison_resistance() ? __s_especially_healthy : __s_healthy));
-            cptr.stI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.POISON_RES,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         break;
         case NHC.TELEPORT:
@@ -1685,7 +2075,14 @@ function* givit(type, ptr) {
         }
         if (!(HTeleportation() & 67108864n)) {
             (yield* You_feel(Hallucination() ? __s_diffuse : __s_very_jumpy));
-            cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.TELEPORT,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         break;
         case NHC.TELEPORT_CONTROL:
@@ -1697,8 +2094,17 @@ function* givit(type, ptr) {
             }
         }
         if (!(HTeleport_control() & 67108864n)) {
-            (yield* You_feel(Hallucination() ? __s_centered_in_your_personal_space : __s_in_control_of_yourself));
-            cptr.stI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            (yield* You_feel(Hallucination()
+                    ? __s_centered_in_your_personal_space
+                    : __s_in_control_of_yourself));
+            cptr.stI64o2(
+                u,
+                NHC.TELEPORT_CONTROL,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         break;
         case NHC.TELEPAT:
@@ -1711,7 +2117,14 @@ function* givit(type, ptr) {
         }
         if (!(HTelepat() & 67108864n)) {
             (yield* You_feel(Hallucination() ? __s_in_touch_with_the_cosmos : __s_a_strange_mental_acuity));
-            cptr.stI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.TELEPAT,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
             /* If blind, make sure monsters show up. */
             if (Blind())
                 (yield* see_monsters());
@@ -1726,8 +2139,19 @@ function* givit(type, ptr) {
             }
         }
         if (!Acid_resistance())
-            (yield* You_feel(__s_pct_s_dot, Hallucination() ? __s_secure_from_flashbacks : __s_less_concerned_about_being_harmed_by));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.ACID_RES, $sizeof_prop), $prop_intrinsic), d(3, 6));
+            (yield* You_feel(
+                __s_pct_s_dot,
+                Hallucination()
+                    ? __s_secure_from_flashbacks
+                    : __s_less_concerned_about_being_harmed_by
+            ));
+        incr_itimeout(
+            cptr.add(
+                cptr.add(cptr.add(u, $you_uprops), NHC.ACID_RES, $sizeof_prop),
+                $prop_intrinsic
+            ),
+            d(3, 6)
+        );
         break;
         case NHC.STONE_RES:
         {
@@ -1738,8 +2162,17 @@ function* givit(type, ptr) {
             }
         }
         if (!Stone_resistance())
-            (yield* You_feel(__s_pct_s_dot, Hallucination() ? __s_unusually_limber : __s_less_concerned_about_becoming_petrified));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.STONE_RES, $sizeof_prop), $prop_intrinsic), d(3, 6));
+            (yield* You_feel(
+                __s_pct_s_dot,
+                Hallucination() ? __s_unusually_limber : __s_less_concerned_about_becoming_petrified
+            ));
+        incr_itimeout(
+            cptr.add(
+                cptr.add(cptr.add(u, $you_uprops), NHC.STONE_RES, $sizeof_prop),
+                $prop_intrinsic
+            ),
+            d(3, 6)
+        );
         break;
         default:
         {
@@ -1756,7 +2189,8 @@ function* givit(type, ptr) {
 /** C ref: eat.c:1103 */
 function* eye_of_newt_buzz() {
     /* MRKR: "eye of newt" may give small magical energy boost */
-    if (rn2(3) || Math.imul(3, cptr.ldI32o(u, $you_uen)) <= Math.imul(2, cptr.ldI32o(u, $you_uenmax))) {
+    if (rn2(3) ||
+            Math.imul(3, cptr.ldI32o(u, $you_uen)) <= Math.imul(2, cptr.ldI32o(u, $you_uenmax))) {
         let old_uen = cptr.ldI32o(u, $you_uen);
 
         cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + rnd(3)) | 0);
@@ -1811,14 +2245,33 @@ function* cpostfx(pm) {
         break;
         case NHC.PM_STALKER:
         if (!Invis()) {
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.INVIS, $sizeof_prop), $prop_intrinsic), BigInt(((rn2(100) + 50) | 0)));
+            set_itimeout(
+                cptr.add(
+                    cptr.add(cptr.add(u, $you_uprops), NHC.INVIS, $sizeof_prop),
+                    $prop_intrinsic
+                ),
+                BigInt(((rn2(100) + 50) | 0))
+            );
             if (!Blind() && !BInvis())
                 (yield* self_invis_message());
         } else {
             if (!(HInvis() & 117440512n))
                 (yield* You_feel(__s_hidden));
-            cptr.stI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-            cptr.stI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.INVIS,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+            );
+            cptr.stI64o2(
+                u,
+                NHC.SEE_INVIS,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
         }
         (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         // @FallThrough
@@ -1841,11 +2294,21 @@ function* cpostfx(pm) {
         ;
         case NHC.PM_SMALL_MIMIC:
         tmp = (tmp + 20) | 0;
-        if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) != NHC.S_MIMIC && !Unchanging()) {
+        if (cptr.ld1so(
+            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+            $permonst_mlet
+        ) !=
+            NHC.S_MIMIC &&
+                !Unchanging()) {
             let buf = new Uint8Array(256);
             let tempshape = !Hallucination() ? __s_a_pile_of_gold : __s_an_orange;
 
-            if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_polyselfs, cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs) + 1n)) - (1n)))
+            if (!((cptr.stI64o(
+                u,
+                $you_uconduct + $u_conduct_polyselfs,
+                cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs) + 1n
+            )) -
+                    (1n)))
                 (yield* livelog_printf(32n, __s_changed_form_for_the_first_time_by, tempshape));
             (yield* You_cant(__s_resist_the_temptation_to_mimic_s, tempshape));
             /* A pile of gold can't ride. */
@@ -1853,13 +2316,29 @@ function* cpostfx(pm) {
                 (yield* dismount_steed(NHC.DISMOUNT_FELL));
             nomul(-tmp);
             cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_pretending_to_be_a_pile_of_gold);
-            void cptr.sprintf(cptr.decay(buf), Hallucination() ? __s_you_suddenly_dread_being_peeled_and : __s_you_now_prefer_mimicking_s_again, (yield* an(Upolyd() ? pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), Ugender()) : cptr.ldPtro(gu, $instance_globals_u_urace))));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                Hallucination()
+                    ? __s_you_suddenly_dread_being_peeled_and
+                    : __s_you_now_prefer_mimicking_s_again,
+                (yield* an(Upolyd()
+                    ? pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), Ugender())
+                    : cptr.ldPtro(gu, $instance_globals_u_urace)))
+            );
             cptr.stPtro(ge, $instance_globals_e_eatmbuf, (yield* dupstr(cptr.decay(buf))));
-            cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.ldPtro(ge, $instance_globals_e_eatmbuf));
+            cptr.stPtro(
+                gn,
+                $instance_globals_n_nomovemsg,
+                cptr.ldPtro(ge, $instance_globals_e_eatmbuf)
+            );
             cptr.stPtr(ga, eatmdone);
             /* ??? what if this was set before? */
             cptr.st1o(gy, $instance_globals_y_youmonst + $monst_m_ap_type, NHC.M_AP_OBJECT);
-            cptr.stI32o(gy, $instance_globals_y_youmonst + $monst_mappearance, (Hallucination() ? NHC.ORANGE : NHC.GOLD_PIECE) >>> 0);
+            cptr.stI32o(
+                gy,
+                $instance_globals_y_youmonst + $monst_mappearance,
+                (Hallucination() ? NHC.ORANGE : NHC.GOLD_PIECE) >>> 0
+            );
             (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
             (yield* curs_on_u());
             /* make gold symbol show up now */
@@ -1869,10 +2348,23 @@ function* cpostfx(pm) {
         case NHC.PM_QUANTUM_MECHANIC:
         (yield* Your(__s_velocity_suddenly_seems_very_uncertain));
         if (HFast() & 117440512n) {
-            cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-117440513n));
+            cptr.stI64o2(
+                u,
+                NHC.FAST,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) &
+                    (-117440513n)
+            );
             (yield* You(__s_seem_slower));
         } else {
-            cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.FAST,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+            );
             (yield* You(__s_seem_faster));
         }
         break;
@@ -1895,17 +2387,35 @@ function* cpostfx(pm) {
             if (cptr.ldPtro(svc, $context_info_tin)) {
                 (yield* use_up_tin(cptr.ldPtro(svc, $context_info_tin)));
                 /* most tin effects end up being skipped */
-                (yield* lesshungry((200 + (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n) ? 5 : 0)) | 0));
+                (yield* lesshungry((200 +
+                        (((cptr.ldU64o(
+                            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                            $permonst_mflags1
+                        ) &
+                            2147483648n) != 0n)
+                            ? 5
+                            : 0)) | 0));
             }
 
-            (yield* You(__s_pct_s_dot, (pm == NHC.PM_GENETIC_ENGINEER) ? __s_undergo_a_freakish_metamorphosis : __s_feel_a_change_coming_over_you));
+            (yield* You(
+                __s_pct_s_dot,
+                (pm == NHC.PM_GENETIC_ENGINEER)
+                    ? __s_undergo_a_freakish_metamorphosis
+                    : __s_feel_a_change_coming_over_you
+            ));
             (yield* polyself(NHC.POLY_NOFLAGS));
         }
         break;
         case NHC.PM_DISPLACER_BEAST:
         if (!Displaced())
             (yield* toggle_displacement(null, 0n, 1));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DISPLACED, $sizeof_prop), $prop_intrinsic), d(6, 6));
+        incr_itimeout(
+            cptr.add(
+                cptr.add(cptr.add(u, $you_uprops), NHC.DISPLACED, $sizeof_prop),
+                $prop_intrinsic
+            ),
+            d(6, 6)
+        );
         break;
         case NHC.PM_DISENCHANTER:
         {
@@ -1926,7 +2436,8 @@ function* cpostfx(pm) {
         break;
         case NHC.PM_MIND_FLAYER:
         case NHC.PM_MASTER_MIND_FLAYER:
-        if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) < (cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmax))) {
+        if ((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) <
+                (cptr.ldI16o2(gu, NHC.A_INT, 2, $instance_globals_u_urace + $Race_attrmax))) {
             if (!rn2(2)) {
                 (yield* pline(__s_yum_that_was_real_brain_food));
                 void (yield* adjattrib(NHC.A_INT, 1, 0));
@@ -2041,7 +2552,12 @@ export function* violated_vegetarian() {
 function* costly_tin(alter_type) {
     let tin = cptr.ldPtro(svc, $context_info_tin);
 
-    if ((cptr.ld1so((tin), $obj_where) == NHM.OBJ_INVENT) ? (cptr.ldI32o(tin, $obj_unpaid) & 1) | 0 : ((yield* costly_spot(cptr.ldI16o(tin, $obj_ox), cptr.ldI16o(tin, $obj_oy))) && !(cptr.ldI32o(tin, $obj_no_charge) & 1) ? 1 : 0)) {
+    if ((cptr.ld1so((tin), $obj_where) == NHM.OBJ_INVENT)
+            ? (cptr.ldI32o(tin, $obj_unpaid) & 1) | 0
+            : ((yield* costly_spot(cptr.ldI16o(tin, $obj_ox), cptr.ldI16o(tin, $obj_oy))) &&
+                !(cptr.ldI32o(tin, $obj_no_charge) & 1)
+                ? 1
+                : 0)) {
         if (cptr.ldI64o(tin, $obj_quan) > 1n) {
             tin = cptr.stPtro(svc, $context_info_tin, (yield* splitobj(tin, 1n)));
             cptr.stI32o(svc, $context_info_tin + $tin_info_o_id, cptr.ldI32o(tin, $obj_o_id));
@@ -2060,7 +2576,9 @@ export function* tin_variety_txt(s, tinvariety) {
         cptr.stI32(tinvariety, -1);
         for (k = 0; k < ((16 - 1) | 0); ++k) {
             l = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(tintxts, k, 24))));
-            if (!(yield* strncmpi(s, cptr.ldPtro(tintxts, k, 24), l)) && (Number(BigInt.asIntN(32, cptr.strlen(s))) > l) && cptr.ld1so(s, l) == 32) {
+            if (!(yield* strncmpi(s, cptr.ldPtro(tintxts, k, 24), l)) &&
+                    (Number(BigInt.asIntN(32, cptr.strlen(s))) > l) &&
+                    cptr.ld1so(s, l) == 32) {
                 cptr.stI32(tinvariety, k);
                 return ((l + 1) | 0);
             }
@@ -2087,7 +2605,9 @@ export function tin_details(obj, mnum, buf) {
     else if (mnum == NHC.NON_PM)
         void cptr.strcpy(buf, __s_empty_tin);
     else {
-        if (((cptr.ldI32o(obj, $obj_cknown) & 1) | 0 || cptr.ldI32o(iflags, $instance_flags_override_ID)) && cptr.ld1so(obj, $obj_spe) < 0) {
+        if (((cptr.ldI32o(obj, $obj_cknown) & 1) | 0 ||
+            cptr.ldI32o(iflags, $instance_flags_override_ID)) &&
+                cptr.ld1so(obj, $obj_spe) < 0) {
             if (r == NHM.ROTTEN_TIN || r == NHM.HOMEMADE_TIN) {
                 /* put these before the word tin */
                 void cptr.sprintf(cptr.decay(buf2), __s_s_s_of, cptr.ldPtro(tintxts, r, 24), buf);
@@ -2099,9 +2619,17 @@ export function tin_details(obj, mnum, buf) {
             void cptr.strcpy(eos(buf), __s_of);
         }
         if (vegetarian(cptr.add(mons, mnum, $sizeof_permonst)))
-            void cptr.sprintf(eos(buf), __s_pct_s, cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
+            void cptr.sprintf(
+                eos(buf),
+                __s_pct_s,
+                cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+            );
         else
-            void cptr.sprintf(eos(buf), __s_s_meat, cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
+            void cptr.sprintf(
+                eos(buf),
+                __s_s_meat,
+                cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+            );
     }
 }
 
@@ -2110,7 +2638,9 @@ export function set_tin_variety(obj, forcetype) {
     let r;
     let mnum = cptr.ldI32o(obj, $obj_corpsenm);
 
-    if (forcetype == -1 || (forcetype == -3 && (mnum == NHC.NON_PM || !vegetarian(cptr.add(mons, mnum, $sizeof_permonst))))) {
+    if (forcetype == -1 ||
+            (forcetype == -3 &&
+                (mnum == NHC.NON_PM || !vegetarian(cptr.add(mons, mnum, $sizeof_permonst))))) {
         cptr.stI32o(obj, $obj_corpsenm, NHC.NON_PM);  /* not based on any monster */
         cptr.st1o(obj, $obj_spe, 1);  /* spinach */
         return;
@@ -2118,13 +2648,19 @@ export function set_tin_variety(obj, forcetype) {
         r = tin_variety(obj, 0);
         if (r < 0 || r >= 16)
             r = NHM.ROTTEN_TIN;  /* shouldn't happen */
-        while ((r == NHM.ROTTEN_TIN && !(cptr.ldI32o(obj, $obj_cursed) & 1)) || !(cptr.ldI32o2(tintxts, r, 24, 12) & 1))
+        while ((r == NHM.ROTTEN_TIN && !(cptr.ldI32o(obj, $obj_cursed) & 1)) ||
+                !(cptr.ldI32o2(tintxts, r, 24, 12) & 1))
             r = rn2((16 - 1) | 0);
     } else if (forcetype >= 0 && forcetype < ((16 - 1) | 0)) {
         r = forcetype;
     } else {
         r = rn2((16 - 1) | 0);  /* take your pick */
-        if (r == NHM.ROTTEN_TIN && (ismnum(mnum) && ((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB)))
+        if (r == NHM.ROTTEN_TIN &&
+                (ismnum(mnum) &&
+                    ((mnum) == NHC.PM_LIZARD ||
+                        (mnum) == NHC.PM_LICHEN ||
+                        is_rider(cptr.add(mons, mnum, $sizeof_permonst)) ||
+                        (mnum) == NHC.PM_ACID_BLOB)))
             r = NHM.HOMEMADE_TIN;  /* lizards don't rot */
     }
     cptr.st1o(obj, $obj_spe, schar((-((r + 1) | 0))));  /* offset by 1 to allow index 0 */
@@ -2149,7 +2685,12 @@ function tin_variety(obj, displ) {
     if (!displ && r == NHM.HOMEMADE_TIN && !(cptr.ldI32o(obj, $obj_blessed) & 1) && !rn2(7))
         r = NHM.ROTTEN_TIN;  /* some homemade tins go bad */
 
-    if (r == NHM.ROTTEN_TIN && (ismnum(mnum) && ((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB)))
+    if (r == NHM.ROTTEN_TIN &&
+            (ismnum(mnum) &&
+                ((mnum) == NHC.PM_LIZARD ||
+                    (mnum) == NHC.PM_LICHEN ||
+                    is_rider(cptr.add(mons, mnum, $sizeof_permonst)) ||
+                    (mnum) == NHC.PM_ACID_BLOB)))
         r = NHM.HOMEMADE_TIN;  /* lizards don't rot */
     return r;
 }
@@ -2174,11 +2715,16 @@ function* consume_tin(mesg) {
     let r;
     let nutamt;
     /* if you've eaten tin itself, chance to not eat contents gets bypassed */
-    let always_eat = schar(((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n));
+    let always_eat = schar(((cptr.ldU64o(
+        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+        $permonst_mflags1
+    ) &
+            2147483648n) != 0n));
     let tin = cptr.ldPtro(svc, $context_info_tin);
 
     r = tin_variety(tin, 0);
-    if ((cptr.ldI32o(tin, $obj_otrapped) & 1) | 0 || ((cptr.ldI32o(tin, $obj_cursed) & 1) | 0 && r != NHM.HOMEMADE_TIN && !rn2(8))) {
+    if ((cptr.ldI32o(tin, $obj_otrapped) & 1) | 0 ||
+            ((cptr.ldI32o(tin, $obj_cursed) & 1) | 0 && r != NHM.HOMEMADE_TIN && !rn2(8))) {
         (yield* b_trapped(__s_tin, NHC.NO_PART));
         tin = (yield* costly_tin(NHC.COST_DSTROY));
         (yield* use_up_tin(tin));
@@ -2191,7 +2737,10 @@ function* consume_tin(mesg) {
         mnum = cptr.ldI32o(tin, $obj_corpsenm);
         if (mnum == NHC.NON_PM) {
             if (Hallucination())
-                (yield* pline(__s_it_s_full_of_s, rn2(2) ? __s_air_elemental_souffle : __s_dehydrated_water));
+                (yield* pline(
+                    __s_it_s_full_of_s,
+                    rn2(2) ? __s_air_elemental_souffle : __s_dehydrated_water
+                ));
             else
                 (yield* pline(__s_it_turns_out_to_be_empty));
             (yield* observe_object(tin));
@@ -2204,7 +2753,8 @@ function* consume_tin(mesg) {
         }
 
         which = 0;  /* 0=>plural, 1=>as-is, 2=>"the" prefix */
-        if ((mnum == NHC.PM_COCKATRICE || mnum == NHC.PM_CHICKATRICE) && (Stone_resistance() || Hallucination())) {
+        if ((mnum == NHC.PM_COCKATRICE || mnum == NHC.PM_CHICKATRICE) &&
+                (Stone_resistance() || Hallucination())) {
             what = __s_chicken;
             which = 1;  /* suppress pluralization */
         } else if (Hallucination()) {
@@ -2213,7 +2763,8 @@ function* consume_tin(mesg) {
             what = cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0);
             if (the_unique_pm(cptr.add(mons, mnum, $sizeof_permonst)))
                 which = 2;
-            else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n))
+            else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags2) &
+                    524288n) != 0n))
                 which = 1;
         }
         if (which == 0)
@@ -2239,7 +2790,11 @@ function* consume_tin(mesg) {
         /* in case stop_occupation() was called on previous meal */
         cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece = 0, .o_id = 0 */
 
-        (yield* You(__s_consume_s_s, cptr.ldPtro(tintxts, r, 24), cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0)));
+        (yield* You(
+            __s_consume_s_s,
+            cptr.ldPtro(tintxts, r, 24),
+            cptr.ldPtro3(mons, mnum, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+        ));
 
         (yield* eating_conducts(cptr.add(mons, mnum, $sizeof_permonst)));
 
@@ -2263,7 +2818,8 @@ function* consume_tin(mesg) {
                shouldn't be more than nutrition from the corresponding
                corpse; other tinning modes might use more than one corpse
                or add extra ingredients so aren't similarly restricted */
-            if (r == NHM.HOMEMADE_TIN && nutamt > cptr.ldU16o2(mons, mnum, $sizeof_permonst, $permonst_cnutrit))
+            if (r == NHM.HOMEMADE_TIN &&
+                    nutamt > cptr.ldU16o2(mons, mnum, $sizeof_permonst, $permonst_cnutrit))
                 nutamt = cptr.ldU16o2(mons, mnum, $sizeof_permonst, $permonst_cnutrit);
             if (always_eat)
                 nutamt = (nutamt + 5) | 0;  /* metallivorous hero ate the tin itself */
@@ -2280,12 +2836,21 @@ function* consume_tin(mesg) {
             let alreadyglib = Number(BigInt.asIntN(32, (Glib() & 16777215n)));
 
             (yield* make_glib((alreadyglib + ((rn2(11) + 5) | 0)) | 0));  /* 5..15 */
-            (yield* pline(__s_eating_s_food_made_your_s_s_slippery, cptr.ldPtro(tintxts, r, 24), (yield* fingers_or_gloves(1)), alreadyglib ? __s_even_more : __s_very));
+            (yield* pline(
+                __s_eating_s_food_made_your_s_s_slippery,
+                cptr.ldPtro(tintxts, r, 24),
+                (yield* fingers_or_gloves(1)),
+                alreadyglib ? __s_even_more : __s_very
+            ));
         }
 
     } else {
         if ((cptr.ldI32o(tin, $obj_cursed) & 1)) {
-            (yield* pline(__s_it_contains_some_decaying_s_s_substance, Blind() ? __s_empty : __s_sp, Blind() ? __s_empty : hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_green))));
+            (yield* pline(
+                __s_it_contains_some_decaying_s_s_substance,
+                Blind() ? __s_empty : __s_sp,
+                Blind() ? __s_empty : hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_green))
+            ));
         } else {
             (yield* pline(__s_it_contains_spinach));
             (yield* observe_object(tin));
@@ -2305,14 +2870,30 @@ function* consume_tin(mesg) {
          * conduct update, side-effects, shop handling, and nutrition.
          */
         /* don't need vegetarian checks for spinach */
-        if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_food, cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n)) - (1n)))
+        if (!((cptr.stI64o(
+            u,
+            $you_uconduct + $u_conduct_food,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n
+        )) -
+                (1n)))
             (yield* livelog_printf(32n, __s_ate_for_the_first_time_spinach));
         if (!(cptr.ldI32o(tin, $obj_cursed) & 1))
-            (yield* pline(__s_this_makes_you_feel_like_s, Hallucination() ? __s_swee_pea : (!Fixed_abil() ? __s_popeye : (cptr.ld1so(flags, $flag_female) ? __s_olive_oyl : __s_bluto))));
+            (yield* pline(
+                __s_this_makes_you_feel_like_s,
+                Hallucination()
+                    ? __s_swee_pea
+                    : (!Fixed_abil()
+                        ? __s_popeye
+                        : (cptr.ld1so(flags, $flag_female) ? __s_olive_oyl : __s_bluto))
+            ));
         (yield* gainstr(tin, 0, 0));
 
         tin = cptr.stPtro(svc, $context_info_tin, (yield* costly_tin(NHC.COST_OPEN)));
-        nutamt = ((cptr.ldI32o(tin, $obj_blessed) & 1) | 0 ? 600 : (!(cptr.ldI32o(tin, $obj_cursed) & 1) ? ((400 + rnd(200)) | 0) : ((200 + rnd(400)) | 0)));  /* cursed */
+        nutamt = ((cptr.ldI32o(tin, $obj_blessed) & 1) | 0
+                ? 600
+                : (!(cptr.ldI32o(tin, $obj_cursed) & 1)
+                    ? ((400 + rnd(200)) | 0)
+                    : ((200 + rnd(400)) | 0)));  /* cursed */
         if (always_eat)
             nutamt = (nutamt + 5) | 0;  /* metallivorous hero also eats the tin itself */
         /* use up tin first; lesshungry() could be fatal and produce bones */
@@ -2328,13 +2909,25 @@ function* consume_tin(mesg) {
 /** C ref: eat.c:1703 @returns {CInt} */
 function* opentin() {
     /* perhaps it was stolen (although that should cause interruption) */
-    if (!(cptr.ld1so((cptr.ldPtro(svc, $context_info_tin)), $obj_where) == NHM.OBJ_INVENT) && (!obj_here(cptr.ldPtro(svc, $context_info_tin), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || !can_reach_floor(1)))
+    if (!(cptr.ld1so((cptr.ldPtro(svc, $context_info_tin)), $obj_where) == NHM.OBJ_INVENT) &&
+            (!obj_here(
+                cptr.ldPtro(svc, $context_info_tin),
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy)
+            ) ||
+                !can_reach_floor(1)))
         return 0;  /* %% probably we should use tinoid */
-    if ((cptr.stI32o(svc, $context_info_tin + $tin_info_usedtime, cptr.ldI32o(svc, $context_info_tin + $tin_info_usedtime) + 1)) - (1) >= 50) {
+    if ((cptr.stI32o(
+        svc,
+        $context_info_tin + $tin_info_usedtime,
+        cptr.ldI32o(svc, $context_info_tin + $tin_info_usedtime) + 1
+    )) -
+            (1) >= 50) {
         (yield* You(__s_give_up_your_attempt_to_open_the_tin));
         return 0;
     }
-    if (cptr.ldI32o(svc, $context_info_tin + $tin_info_usedtime) < cptr.ldI32o(svc, $context_info_tin + $tin_info_reqtime))
+    if (cptr.ldI32o(svc, $context_info_tin + $tin_info_usedtime) <
+            cptr.ldI32o(svc, $context_info_tin + $tin_info_reqtime))
         return 1;  /* still busy */
 
     (yield* consume_tin(__s_you_succeed_in_opening_the_tin));
@@ -2349,7 +2942,11 @@ function* start_tin(otmp) {
     __skip_no_opener: {
         mesg = null;
 
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n)) {
+        if (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags1
+        ) &
+                2147483648n) != 0n)) {
             mesg = __s_you_bite_right_into_the_metal_tin;
             tmp = 0;
         } else if (cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
@@ -2361,7 +2958,11 @@ function* start_tin(otmp) {
                access); 1 turn delay case is non-deterministic:  getting
                interrupted and retrying might yield another 1 turn delay
                or might open immediately on 2nd (or 3rd, 4th, ...) try */
-            tmp = (uwep.v && (cptr.ldI32o(uwep.v, $obj_blessed) & 1) | 0 && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.TIN_OPENER) ? 0 : rn2(2);
+            tmp = (uwep.v &&
+                (cptr.ldI32o(uwep.v, $obj_blessed) & 1) | 0 &&
+                cptr.ldI16o(uwep.v, $obj_otyp) == NHC.TIN_OPENER)
+                    ? 0
+                    : rn2(2);
             if (!tmp)
                 mesg = __s_the_tin_opens_like_magic;
             else
@@ -2370,7 +2971,9 @@ function* start_tin(otmp) {
             switch (cptr.ldI16o(uwep.v, $obj_otyp)) {
                 case NHC.TIN_OPENER:
                 mesg = __s_you_easily_open_the_tin;  /* iff tmp==0 */
-                tmp = rn2((cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0 ? 3 : (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) ? 2 : 1));
+                tmp = rn2((cptr.ldI32o(uwep.v, $obj_cursed) & 1) | 0
+                        ? 3
+                        : (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1) ? 2 : 1));
                 break;
                 case NHC.DAGGER:
                 case NHC.SILVER_DAGGER:
@@ -2407,7 +3010,13 @@ function* start_tin(otmp) {
                 (yield* stackobj(otmp));
             return;
         }
-        tmp = (((rng_log_enabled() ? (rng_log_set_caller(__s_eat_c, 1784, __s_start_tin), rn2((1 + ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0)) : rn2((1 + ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0)) + 10) | 0);
+        tmp = (((rng_log_enabled()
+                ? (
+                    rng_log_set_caller(__s_eat_c, 1784, __s_start_tin),
+                    rn2((1 + ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0)
+                )
+                : rn2((1 +
+                    ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0)) + 10) | 0);
     }
 
     cptr.stPtro(svc, $context_info_tin, otmp);
@@ -2457,12 +3066,54 @@ function* rottenfood(obj) {
 
         if (!Blind())
             what = __s_goes, where = __s_dark;
-        else if (Levitation() || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
+        else if (Levitation() ||
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                        )
+                    ))) ||
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )
+                    ))))
             what = __s_you_lose_control_of, where = __s_yourself;
         else
-            what = __s_you_slap_against_the, where = (cptr.ldPtro(u, $you_usteed)) ? __s_saddle : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+            what = __s_you_slap_against_the,
+                    where = (cptr.ldPtro(u, $you_usteed))
+                        ? __s_saddle
+                        : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         (yield* pline_The(__s_world_spins_and_s_s, what, where));
-        incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), duration);
+        incr_itimeout(
+            cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic),
+            duration
+        );
         cptr.st1(disp, 1);
         nomul(-duration);
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_unconscious_from_rotten_food);
@@ -2489,16 +3140,36 @@ function* eatcorpse(otmp) {
     let rotted = 0n;
     let ll_conduct = 0;
     let stoneable;
-    let slimeable = schar((mnum == NHC.PM_GREEN_SLIME && !Slimed() && !Unchanging() && !slimeproof(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
+    let slimeable = schar((mnum == NHC.PM_GREEN_SLIME &&
+        !Slimed() &&
+        !Unchanging() &&
+        !slimeproof(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))
+            ? 1
+            : 0));
     let glob = schar(((cptr.ldI32o(otmp, $obj_globby) & 1) | 0 ? 1 : 0));
 
-    (__builtin_expect(BigInt((!(ismnum(mnum)))), 0n) ? __assert_rtn(__s_eatcorpse, __s_eat_c, 1865, __s_ismnum_mnum) : void 0);
-    stoneable = schar((flesh_petrifies(cptr.add(mons, mnum, $sizeof_permonst)) && !Stone_resistance() && !poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
+    (__builtin_expect(BigInt((!(ismnum(mnum)))), 0n)
+            ? __assert_rtn(__s_eatcorpse, __s_eat_c, 1865, __s_ismnum_mnum)
+            : void 0);
+    stoneable = schar((flesh_petrifies(cptr.add(mons, mnum, $sizeof_permonst)) &&
+        !Stone_resistance() &&
+        !poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))
+            ? 1
+            : 0));
 
     /* KMH, conduct */
     if (!vegan(cptr.add(mons, mnum, $sizeof_permonst)))
-        if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_unvegan, cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n)) - (1n))) {
-            (yield* livelog_printf(32n, __s_consumed_animal_products_for_the_first, (yield* an((yield* food_xname(otmp, 0))))));
+        if (!((cptr.stI64o(
+            u,
+            $you_uconduct + $u_conduct_unvegan,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n
+        )) -
+                (1n))) {
+            (yield* livelog_printf(
+                32n,
+                __s_consumed_animal_products_for_the_first,
+                (yield* an((yield* food_xname(otmp, 0))))
+            ));
             ll_conduct++;
         }
     if (!vegetarian(cptr.add(mons, mnum, $sizeof_permonst))) {
@@ -2506,10 +3177,14 @@ function* eatcorpse(otmp) {
             (yield* livelog_printf(32n, __s_tasted_meat_for_the_first_time_by, (yield* an((yield* food_xname(otmp, 0))))));
         (yield* violated_vegetarian());
     }
-    if (!((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB)) {
+    if (!((mnum) == NHC.PM_LIZARD ||
+            (mnum) == NHC.PM_LICHEN ||
+            is_rider(cptr.add(mons, mnum, $sizeof_permonst)) ||
+            (mnum) == NHC.PM_ACID_BLOB)) {
         let age = (yield* peek_at_iced_corpse_age(otmp));
 
-        rotted = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age)) / (BigInt.asIntN(64, 10n + BigInt(rn2(20))));
+        rotted = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age)) /
+                (BigInt.asIntN(64, 10n + BigInt(rn2(20))));
         if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
             rotted += 2n;
         else if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
@@ -2521,8 +3196,16 @@ function* eatcorpse(otmp) {
         let cannibal = (yield* maybe_cannibal(mnum, 0));
 
         /* tp++; -- early return makes this unnecessary */
-        (yield* pline(__s_ulch_that_s_was_tainted_s, (cptr.ld1so2(mons, mnum, $sizeof_permonst, $permonst_mlet) == NHC.S_FUNGUS) ? __s_fungoid_vegetation : (vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) ? __s_protoplasm : __s_meat), cannibal ? __s_you_cannibal : __s_empty));
-        if ((cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
+        (yield* pline(
+            __s_ulch_that_s_was_tainted_s,
+            (cptr.ld1so2(mons, mnum, $sizeof_permonst, $permonst_mlet) == NHC.S_FUNGUS)
+                ? __s_fungoid_vegetation
+                : (vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) ? __s_protoplasm : __s_meat),
+            cannibal ? __s_you_cannibal : __s_empty
+        ));
+        if ((cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+                cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) ||
+                (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
             (yield* pline(__s_it_doesn_t_seem_at_all_sickening_though));
         } else {
             let sick_time;
@@ -2531,7 +3214,12 @@ function* eatcorpse(otmp) {
             /* make sure new ill doesn't result in improvement */
             if (Sick() && (sick_time > Sick()))
                 sick_time = (Sick() > 1n) ? BigInt.asIntN(64, Sick() - 1n) : 1n;
-            (yield* make_sick(sick_time, (yield* corpse_xname(otmp, __s_rotted, NHM.CXN_NORMAL)), 1, NHM.SICK_VOMITABLE));
+            (yield* make_sick(
+                sick_time,
+                (yield* corpse_xname(otmp, __s_rotted, NHM.CXN_NORMAL)),
+                1,
+                NHM.SICK_VOMITABLE
+            ));
 
             (yield* pline(__s_it_must_have_died_too_long_ago_to_be));
         }
@@ -2540,29 +3228,53 @@ function* eatcorpse(otmp) {
         else
             (yield* useupf(otmp, 1n));
         return 2;
-    } else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 134217728n) != 0n) && !Acid_resistance()) {
+    } else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) &
+        134217728n) != 0n) &&
+            !Acid_resistance()) {
         tp++;
         (yield* You(__s_have_a_very_bad_case_of_stomach_acid));  /* not body_part() */
         (yield* losehp(rnd(15), !glob ? __s_acidic_corpse : __s_acidic_glob, NHM.KILLED_BY_AN));  /* acid damage */
-    } else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 268435456n) != 0n) && rn2(5)) {
+    } else if (((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) &
+        268435456n) != 0n) &&
+            rn2(5)) {
         tp++;
         (yield* pline(__s_ecch_that_must_have_been_poisonous));
         if (!Poison_resistance()) {
-            (yield* poison_strdmg(rnd(4), rnd(15), !glob ? __s_poisonous_corpse : __s_poisonous_glob, NHM.KILLED_BY_AN));
+            (yield* poison_strdmg(
+                rnd(4),
+                rnd(15),
+                !glob ? __s_poisonous_corpse : __s_poisonous_glob,
+                NHM.KILLED_BY_AN
+            ));
         } else
             (yield* You(__s_seem_unaffected_by_the_poison));
 
         /* now any corpse left too long will make you mildly ill */
-    } else if ((rotted > 5n || (rotted > 3n && rn2(5))) && !(cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
+    } else if ((rotted > 5n || (rotted > 3n && rn2(5))) &&
+            !(cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+                cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) ||
+                (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
         tp++;
         (yield* You_feel(__s_ssick, (Sick()) ? __s_very__2 : __s_empty));
         (yield* losehp(rnd(8), !glob ? __s_cadaver : __s_rotted_glob, NHM.KILLED_BY_AN));
     }
 
     /* delay is weight dependent */
-    cptr.stI32o(svc, $context_info_victual + $victual_info_reqtime, ((3 + ((!glob ? cptr.ldI32o2(mons, mnum, $sizeof_permonst, $permonst_cwt) : cptr.ldI32o(otmp, $obj_owt)) >>> 6)) >>> 0) | 0);
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_reqtime,
+        ((3 +
+            ((!glob
+                ? cptr.ldI32o2(mons, mnum, $sizeof_permonst, $permonst_cwt)
+                : cptr.ldI32o(otmp, $obj_owt)) >>> 6)) >>> 0) | 0
+    );
 
-    if (!tp && !((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB) && ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || !rn2(7))) {
+    if (!tp &&
+            !((mnum) == NHC.PM_LIZARD ||
+                (mnum) == NHC.PM_LICHEN ||
+                is_rider(cptr.add(mons, mnum, $sizeof_permonst)) ||
+                (mnum) == NHC.PM_ACID_BLOB) &&
+            ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || !rn2(7))) {
         if ((yield* rottenfood(otmp))) {
             cptr.stI32o(otmp, $obj_oeroded, 1);
             otmp = (yield* touchfood(otmp));
@@ -2571,7 +3283,12 @@ function* eatcorpse(otmp) {
             retcode = 1;
         }
 
-        if (!cptr.ldU16o2(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, $permonst_cnutrit)) {
+        if (!cptr.ldU16o2(
+            mons,
+            cptr.ldI32o(otmp, $obj_corpsenm),
+            $sizeof_permonst,
+            $permonst_cnutrit
+        )) {
             /* no nutrition: rots away, no message if you passed out */
             if (!retcode)
                 (yield* pline_The(__s_corpse_rots_away_completely));
@@ -2584,7 +3301,8 @@ function* eatcorpse(otmp) {
 
         if (!retcode)
             (yield* consume_oeaten(otmp, 2));  /* oeaten >>= 2 */
-    } else if ((mnum == NHC.PM_COCKATRICE || mnum == NHC.PM_CHICKATRICE) && (Stone_resistance() || Hallucination())) {
+    } else if ((mnum == NHC.PM_COCKATRICE || mnum == NHC.PM_CHICKATRICE) &&
+            (Stone_resistance() || Hallucination())) {
         (yield* pline(__s_this_tastes_just_like_chicken));
     } else if (mnum == NHC.PM_FLOATING_EYE && cptr.ldI32o(u, $you_umonnum) == NHC.PM_RAVEN) {
         (yield* You(__s_peck_the_eyeball_with_delight));
@@ -2592,8 +3310,46 @@ function* eatcorpse(otmp) {
         ;  /* we've already delivered a message; don't add "it tastes okay" */
     } else {
         /* yummy is always False for omnivores, palatable always True */
-        let yummy = schar((vegan(cptr.add(mons, mnum, $sizeof_permonst)) ? (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) ? 1 : 0) : (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) ? 1 : 0)));
-        let palatable = schar(((vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) ? ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) : ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n)) && rn2(10) && (rotted < 1n || !rn2((Number(BigInt.asIntN(32, rotted)) + 1) | 0)) ? 1 : 0));
+        let yummy = schar((vegan(cptr.add(mons, mnum, $sizeof_permonst))
+                ? (!((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                    536870912n) != 0n) &&
+                    ((cptr.ldU64o(
+                        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                        $permonst_mflags1
+                    ) &
+                        1073741824n) != 0n)
+                    ? 1
+                    : 0)
+                : (((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                    536870912n) != 0n) &&
+                    !((cptr.ldU64o(
+                        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                        $permonst_mflags1
+                    ) &
+                        1073741824n) != 0n)
+                    ? 1
+                    : 0)));
+        let palatable = schar(((vegetarian(cptr.add(mons, mnum, $sizeof_permonst))
+            ? ((cptr.ldU64o(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mflags1
+            ) &
+                1073741824n) != 0n)
+            : ((cptr.ldU64o(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mflags1
+            ) &
+                536870912n) != 0n)) &&
+            rn2(10) &&
+            (rotted < 1n || !rn2((Number(BigInt.asIntN(32, rotted)) + 1) | 0))
+                ? 1
+                : 0));
         let pmxnam = (yield* food_xname(otmp, 0));
         let idx = vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) ? 0 : rn2(5);
         let palat_msg = cptr.ldPtro(__static_eatcorpse_palatable_msgs, idx, 8);
@@ -2601,7 +3357,21 @@ function* eatcorpse(otmp) {
 
         if (!(yield* strncmpi(pmxnam, __s_the, 4)))
             pmxnam = cptr.add(pmxnam, 4);
-        (yield* pline(__s_s_s_s_s_c, ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n) ? __s_empty : (the_unique_pm(cptr.add(mons, mnum, $sizeof_permonst)) ? __s_the__2 : __s_this), pmxnam, use_is ? __s_is : __s_tastes, Hallucination() ? (yummy ? ((cptr.ldI32o(u, $you_umonnum) == NHC.PM_TIGER) ? __s_gr_r_reat : __s_gnarly) : (palatable ? __s_copacetic : __s_grody)) : (yummy ? __s_delicious : (palatable ? cptr.add(palat_msg, 1) : __s_terrible)), (yummy || !palatable) ? 33 : 46));
+        (yield* pline(
+            __s_s_s_s_s_c,
+            ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags2) &
+                524288n) != 0n)
+                ? __s_empty
+                : (the_unique_pm(cptr.add(mons, mnum, $sizeof_permonst)) ? __s_the__2 : __s_this),
+            pmxnam,
+            use_is ? __s_is : __s_tastes,
+            Hallucination()
+                ? (yummy
+                    ? ((cptr.ldI32o(u, $you_umonnum) == NHC.PM_TIGER) ? __s_gr_r_reat : __s_gnarly)
+                    : (palatable ? __s_copacetic : __s_grody))
+                : (yummy ? __s_delicious : (palatable ? cptr.add(palat_msg, 1) : __s_terrible)),
+            (yummy || !palatable) ? 33 : 46
+        ));
     }
 
     return retcode;
@@ -2618,7 +3388,11 @@ function* start_eating(otmp, already_partly_eaten) {
         if ((yield* debugcore(__s_eat_c, 1))) {
 
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__s_start_eating_s_victual_s, fmt_ptr(otmp), fmt_ptr(cptr.ldPtro(svc, $context_info_victual))));
+            (yield* pline(
+                __s_start_eating_s_victual_s,
+                fmt_ptr(otmp),
+                fmt_ptr(cptr.ldPtro(svc, $context_info_victual))
+            ));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -2632,7 +3406,15 @@ function* start_eating(otmp, already_partly_eaten) {
     {
         if ((yield* debugcore(__s_eat_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__s_original_reqtime_d, cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_delay)));
+            (yield* pline(
+                __s_original_reqtime_d,
+                cptr.ld1so2(
+                    objects,
+                    cptr.ldI16o(otmp, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_delay
+                )
+            ));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -2650,12 +3432,17 @@ function* start_eating(otmp, already_partly_eaten) {
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
-    cptr.stI32o(svc, $context_info_victual + $victual_info_fullwarn, cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 0));
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_fullwarn,
+        cptr.stI32o(svc, $context_info_victual + $victual_info_doreset, 0)
+    );
     cptr.stI32o(svc, $context_info_victual + $victual_info_eating, 1);
 
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE || (cptr.ldI32o(otmp, $obj_globby) & 1) | 0) {
         (yield* cprefx(cptr.ldI32o(cptr.ldPtro(svc, $context_info_victual), $obj_corpsenm)));
-        if (!cptr.ldPtro(svc, $context_info_victual) || !(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1)) {
+        if (!cptr.ldPtro(svc, $context_info_victual) ||
+                !(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1)) {
             /* rider revived, or hero died and was lifesaved */
             return;
         }
@@ -2665,7 +3452,12 @@ function* start_eating(otmp, already_partly_eaten) {
     if ((yield* bite())) {
         /* survived choking, finish off food that's nearly done;
            need this to handle cockatrice eggs, fortune cookies, etc */
-        if (cptr.stI32o(svc, $context_info_victual + $victual_info_usedtime, cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) + 1) >= cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) {
+        if (cptr.stI32o(
+            svc,
+            $context_info_victual + $victual_info_usedtime,
+            cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) + 1
+        ) >=
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) {
             /* don't want done_eating() to issue gn.nomovemsg if it
                is due to vomit() called by bite() */
             save_nomovemsg = cptr.ldPtro(gn, $instance_globals_n_nomovemsg);
@@ -2678,9 +3470,17 @@ function* start_eating(otmp, already_partly_eaten) {
         return;
     }
 
-    if (cptr.stI32o(svc, $context_info_victual + $victual_info_usedtime, cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) + 1) >= cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) {
+    if (cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_usedtime,
+        cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) + 1
+    ) >=
+            cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) {
         /* print "finish eating" message if they just resumed -dlc */
-        (yield* done_eating(schar(((cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) > 1 || already_partly_eaten) ? 1 : 0))));
+        (yield* done_eating(schar(((cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) > 1 ||
+            already_partly_eaten)
+                ? 1
+                : 0))));
         return;
     }
 
@@ -2691,13 +3491,22 @@ function* start_eating(otmp, already_partly_eaten) {
 /* used by shrink_glob() timer routine */
 /** C ref: eat.c:2078 — @param {CPtr<struct obj>} glob @returns {CInt} */
 export function eating_glob(glob) {
-    return schar((cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood && cptr.eq(glob, cptr.ldPtro(svc, $context_info_victual)) ? 1 : 0));
+    return schar((cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood &&
+        cptr.eq(glob, cptr.ldPtro(svc, $context_info_victual))
+            ? 1
+            : 0));
 }
 
 /* scare nearby monster when hero eats garlic */
 /** C ref: eat.c:2085 — @param {CPtr<struct monst>} mtmp */
 function* garlic_breath(mtmp) {
-    if (olfaction(cptr.ldPtro(mtmp, $monst_data)) && dist2((cptr.ldI16o(mtmp, $monst_mx)), (cptr.ldI16o(mtmp, $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 7)
+    if (olfaction(cptr.ldPtro(mtmp, $monst_data)) &&
+            dist2(
+                (cptr.ldI16o(mtmp, $monst_mx)),
+                (cptr.ldI16o(mtmp, $monst_my)),
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy)
+            ) < 7)
         (yield* monflee(mtmp, 0, 0, 0));
 }
 
@@ -2719,7 +3528,10 @@ function* fprefx(otmp) {
                 (yield* useupf(otmp, 1n));
             (yield* explode(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), -11, d(3, 6), 0, NHC.EXPL_FIERY));
             return 0;
-        } else if (((BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o((otmp), $obj_age))) > 400n)) {
+        } else if (((BigInt.asIntN(
+            64,
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o((otmp), $obj_age)
+        )) > 400n)) {
             (yield* pline(__s_ugh_rotten_egg));  /* perhaps others like it */
             /* increasing existing nausea means that it will take longer
                before eventual vomit, but also means that constitution
@@ -2727,22 +3539,49 @@ function* fprefx(otmp) {
             (yield* make_vomiting(BigInt.asIntN(64, (Vomiting() & 16777215n) + BigInt(d(10, 4))), 1));
         } else
             {
-                (yield* pline(__s_this_s_is_s, (yield* singular(otmp, xname)), (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? (Hallucination() ? __s_grody__2 : __s_terrible__2) : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION) ? __s_bland : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))));
+                (yield* pline(
+                    __s_this_s_is_s,
+                    (yield* singular(otmp, xname)),
+                    (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0
+                        ? (Hallucination() ? __s_grody__2 : __s_terrible__2)
+                        : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION ||
+                            cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION ||
+                            cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION)
+                            ? __s_bland
+                            : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
+                ));
                 break;  /* default */
             }
         break;
         case NHC.FOOD_RATION:
         /* 200+800 remains below 1000+1, the satiation threshold */
         if (cptr.ldI32o(u, $you_uhunger) <= 200)
-            (yield* pline(__s_pct_s_bang, Hallucination() ? __s_oh_wow_like_superior_man : __s_this_food_really_hits_the_spot));
+            (yield* pline(
+                __s_pct_s_bang,
+                Hallucination() ? __s_oh_wow_like_superior_man : __s_this_food_really_hits_the_spot
+            ));
         else if (cptr.ldI32o(u, $you_uhunger) < 700)
             (yield* pline(__s_this_satiates_your_s, (yield* body_part(NHC.STOMACH))));
         /* [satiation message may be inaccurate if eating gets interrupted] */
         break;
         case NHC.TRIPE_RATION:
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n)) {
+        if (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags1
+        ) &
+            536870912n) != 0n) &&
+                !((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                    131072n) != 0n)) {
             (yield* pline(__s_this_tripe_ration_is_surprisingly_good));
-        } else if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 128n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))) {
+        } else if ((Upolyd()
+                ? (((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags2
+                ) & 128n) != 0n))
+                : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))) {
             (yield* pline(Hallucination() ? __s_tastes_great_less_filling : __s_mmm_tripe_not_bad));
         } else {
             (yield* pline(__s_yak_dog_food));
@@ -2750,20 +3589,49 @@ function* fprefx(otmp) {
             (yield* newexplevel());
             /* not cannibalism, but we use similar criteria
                for deciding whether to be sickened by this meal */
-            if (rn2(2) && !((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CAVE_DWELLER) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))
-                (yield* make_vomiting(BigInt(((rn2(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) + 14) | 0)), 0));
+            if (rn2(2) &&
+                    !((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                        NHC.PM_CAVE_DWELLER) ||
+                        (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))
+                (yield* make_vomiting(
+                    BigInt(((rn2(cptr.ldI32o(
+                        svc,
+                        $context_info_victual + $victual_info_reqtime
+                    )) + 14) | 0)),
+                    0
+                ));
         }
         break;
         case NHC.LEMBAS_WAFER:
-        if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 128n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))) {
+        if ((Upolyd()
+                ? (((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags2
+                ) & 128n) != 0n))
+                : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)))) {
             (yield* pline(__s_pct_s, __s_elf_kibble));
             break;
-        } else if ((Upolyd() ? (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 16n) != 0n)) : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF)))) {
+        } else if ((Upolyd()
+                ? (((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags2
+                ) & 16n) != 0n))
+                : ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF)))) {
             (yield* pline(__s_a_little_goes_a_long_way));
             break;
         }
         {
-            (yield* pline(__s_this_s_is_s, (yield* singular(otmp, xname)), (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? (Hallucination() ? __s_grody__2 : __s_terrible__2) : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION) ? __s_bland : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))));
+            (yield* pline(
+                __s_this_s_is_s,
+                (yield* singular(otmp, xname)),
+                (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0
+                    ? (Hallucination() ? __s_grody__2 : __s_terrible__2)
+                    : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION)
+                        ? __s_bland
+                        : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
+            ));
             break;
         }
         case NHC.MEATBALL:
@@ -2771,38 +3639,79 @@ function* fprefx(otmp) {
         case NHC.ENORMOUS_MEATBALL:
         case NHC.MEAT_RING:
         {
-            (yield* pline(__s_this_s_is_s, (yield* singular(otmp, xname)), (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? (Hallucination() ? __s_grody__2 : __s_terrible__2) : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION) ? __s_bland : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))));
+            (yield* pline(
+                __s_this_s_is_s,
+                (yield* singular(otmp, xname)),
+                (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0
+                    ? (Hallucination() ? __s_grody__2 : __s_terrible__2)
+                    : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION)
+                        ? __s_bland
+                        : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
+            ));
             break;
         }
         case NHC.CLOVE_OF_GARLIC:
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n)) {
-            (yield* make_vomiting(BigInt(((rn2(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) + 5) | 0)), 0));
+        if (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags2
+        ) & 2n) != 0n)) {
+            (yield* make_vomiting(
+                BigInt(((rn2(cptr.ldI32o(
+                    svc,
+                    $context_info_victual + $victual_info_reqtime
+                )) + 5) | 0)),
+                0
+            ));
             break;
         }
         (yield* iter_mons(garlic_breath));
         // @FallThrough
         ;
         default:
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD && !(cptr.ldI32o(otmp, $obj_cursed) & 1) && cptr.ld1so(otmp, $obj_spe) == cptr.ldI32o(svc, $context_info_current_fruit)) {
-            (yield* pline(__s_my_this_is_a_s_s, Hallucination() ? __s_primo : __s_yummy, (yield* singular(otmp, xname))));
-        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.APPLE && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && !Sleep_resistance()) {
+        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SLIME_MOLD &&
+                !(cptr.ldI32o(otmp, $obj_cursed) & 1) &&
+                cptr.ld1so(otmp, $obj_spe) == cptr.ldI32o(svc, $context_info_current_fruit)) {
+            (yield* pline(
+                __s_my_this_is_a_s_s,
+                Hallucination() ? __s_primo : __s_yummy,
+                (yield* singular(otmp, xname))
+            ));
+        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.APPLE &&
+                (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
+                !Sleep_resistance()) {
             ;  /* skip core joke; feedback deferred til fpostfx() */
             /* KMH -- Why should Unix have all the fun?
                We check MACOS before UNIX to get the Apple-specific apple
                message; the '#if UNIX' code will still kick in for pear. */
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.APPLE) {
             (yield* pline(__s_delicious_must_be_a_macintosh));
-        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.APPLE || cptr.ldI16o(otmp, $obj_otyp) == NHC.PEAR) {
+        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.APPLE ||
+                cptr.ldI16o(otmp, $obj_otyp) == NHC.PEAR) {
             if (!Hallucination()) {
                 (yield* pline(__s_core_dumped));
             } else {
                 /* based on an old Usenet joke, a fake a.out manual page */
                 let x = rnd(100);
 
-                (yield* pline(__s_s_core_dumped, (x <= 75) ? __s_segmentation_fault : ((x <= 99) ? __s_bus_error : __s_yo_mama)));
+                (yield* pline(
+                    __s_s_core_dumped,
+                    (x <= 75) ? __s_segmentation_fault : ((x <= 99) ? __s_bus_error : __s_yo_mama)
+                ));
             }
         } else {
-            (yield* pline(__s_this_s_is_s, (yield* singular(otmp, xname)), (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? (Hallucination() ? __s_grody__2 : __s_terrible__2) : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION || cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION) ? __s_bland : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))));
+            (yield* pline(
+                __s_this_s_is_s,
+                (yield* singular(otmp, xname)),
+                (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0
+                    ? (Hallucination() ? __s_grody__2 : __s_terrible__2)
+                    : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CRAM_RATION ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.K_RATION ||
+                        cptr.ldI16o(otmp, $obj_otyp) == NHC.C_RATION)
+                        ? __s_bland
+                        : (Hallucination() ? __s_gnarly__2 : __s_delicious__2))
+            ));
         }
         break;
     }  /* switch */
@@ -2851,7 +3760,10 @@ function bounded_increase(old, inc, typ) {
 
 /** C ref: eat.c:2258 — @param {CPtr<struct obj>} otmp */
 function* accessory_has_effect(otmp) {
-    (yield* pline(__s_magic_spreads_through_your_body_as_you, (cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) ? __s_ring : __s_amulet));
+    (yield* pline(
+        __s_magic_spreads_through_your_body_as_you,
+        (cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) ? __s_ring : __s_amulet
+    ));
 }
 
 /** C ref: eat.c:2265 — @param {CPtr<struct obj>} otmp */
@@ -2861,7 +3773,12 @@ function* eataccessory(otmp) {
 
     /* Note: rings are not so common that this is unbalancing. */
     /* (How often do you even _find_ 3 rings of polymorph in a game?) */
-    oldprop = cptr.ldI64o2(u, cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops + $prop_intrinsic);
+    oldprop = cptr.ldI64o2(
+        u,
+        cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop),
+        $sizeof_prop,
+        $you_uprops + $prop_intrinsic
+    );
     if (cptr.eq(otmp, uleft.v) || cptr.eq(otmp, uright.v)) {
         (yield* Ring_gone(otmp));
         if (cptr.ldI32o(u, $you_uhp) <= 0)
@@ -2875,16 +3792,42 @@ function* eataccessory(otmp) {
             if (!cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop))
                 break;  /* should never happen */
 
-            if (!(cptr.ldI64o2(u, cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops + $prop_intrinsic) & 67108864n))
+            if (!(cptr.ldI64o2(
+                u,
+                cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop),
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic
+            ) &
+                    67108864n))
                 (yield* accessory_has_effect(otmp));
 
-            cptr.stI64o2(u, cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop), $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop),
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(
+                    u,
+                    cptr.ld1uo2(objects, typ, $sizeof_objclass, $objclass_oc_oprop),
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic
+                ) |
+                    67108864n
+            );
 
             switch (typ) {
                 case NHC.RIN_SEE_INVISIBLE:
                 (yield* set_mimic_blocking());
                 (yield* see_monsters());
-                if (Invis() && !oldprop && !ESee_invisible() && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16777216n) != 0n) && !Blind()) {
+                if (Invis() &&
+                        !oldprop &&
+                        !ESee_invisible() &&
+                        !((cptr.ldU64o(
+                            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                            $permonst_mflags1
+                        ) &
+                            16777216n) != 0n) &&
+                        !Blind()) {
                     (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
                     (yield* pline(__s_suddenly_you_can_see_yourself));
                     (yield* discover_object((typ), 1, 1, 1));
@@ -2893,7 +3836,10 @@ function* eataccessory(otmp) {
                 case NHC.RIN_INVISIBILITY:
                 if (!oldprop && !EInvis() && !BInvis() && !See_invisible() && !Blind()) {
                     (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-                    (yield* Your(__s_body_takes_on_a_s_transparency, Hallucination() ? __s_normal : __s_strange));
+                    (yield* Your(
+                        __s_body_takes_on_a_s_transparency,
+                        Hallucination() ? __s_normal : __s_strange
+                    ));
                     (yield* discover_object((typ), 1, 1, 1));
                 }
                 break;
@@ -2902,10 +3848,22 @@ function* eataccessory(otmp) {
                 break;
                 case NHC.RIN_LEVITATION:
                 /* undo the `.intrinsic |= FROMOUTSIDE' done above */
-                cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, oldprop);
+                cptr.stI64o2(
+                    u,
+                    NHC.LEVITATION,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    oldprop
+                );
                 if (!Levitation()) {
                     (yield* float_up());
-                    incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), $prop_intrinsic), d(10, 20));
+                    incr_itimeout(
+                        cptr.add(
+                            cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop),
+                            $prop_intrinsic
+                        ),
+                        d(10, 20)
+                    );
                     (yield* discover_object((typ), 1, 1, 1));
                 }
                 break;
@@ -2928,17 +3886,48 @@ function* eataccessory(otmp) {
             break;
             case NHC.RIN_INCREASE_ACCURACY:
             (yield* accessory_has_effect(otmp));
-            cptr.st1o(u, $you_uhitinc, schar(bounded_increase(cptr.ld1so(u, $you_uhitinc), cptr.ld1so(otmp, $obj_spe), NHC.RIN_INCREASE_ACCURACY)));
+            cptr.st1o(
+                u,
+                $you_uhitinc,
+                schar(bounded_increase(
+                    cptr.ld1so(u, $you_uhitinc),
+                    cptr.ld1so(otmp, $obj_spe),
+                    NHC.RIN_INCREASE_ACCURACY
+                ))
+            );
             break;
             case NHC.RIN_INCREASE_DAMAGE:
             (yield* accessory_has_effect(otmp));
-            cptr.st1o(u, $you_udaminc, schar(bounded_increase(cptr.ld1so(u, $you_udaminc), cptr.ld1so(otmp, $obj_spe), NHC.RIN_INCREASE_DAMAGE)));
+            cptr.st1o(
+                u,
+                $you_udaminc,
+                schar(bounded_increase(
+                    cptr.ld1so(u, $you_udaminc),
+                    cptr.ld1so(otmp, $obj_spe),
+                    NHC.RIN_INCREASE_DAMAGE
+                ))
+            );
             break;
             case NHC.RIN_PROTECTION:
             case NHC.AMULET_OF_GUARDING:
             (yield* accessory_has_effect(otmp));
-            cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-            cptr.stI32o(u, $you_ublessed, bounded_increase(cptr.ldI32o(u, $you_ublessed), (typ == NHC.RIN_PROTECTION) ? cptr.ld1so(otmp, $obj_spe) : 2, typ));
+            cptr.stI64o2(
+                u,
+                NHC.PROTECTION,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
+            cptr.stI32o(
+                u,
+                $you_ublessed,
+                bounded_increase(
+                    cptr.ldI32o(u, $you_ublessed),
+                    (typ == NHC.RIN_PROTECTION) ? cptr.ld1so(otmp, $obj_spe) : 2,
+                    typ
+                )
+            );
             cptr.st1(disp, 1);
             break;
             case NHC.RIN_FREE_ACTION:
@@ -2947,13 +3936,23 @@ function* eataccessory(otmp) {
                 (yield* accessory_has_effect(otmp));
             if (!Sleep_resistance())
                 (yield* You_feel(__s_wide_awake));
-            cptr.stI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.SLEEP_RES,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
             break;
             case NHC.AMULET_OF_CHANGE:
             (yield* accessory_has_effect(otmp));
             (yield* discover_object((typ), 1, 1, 1));
             (yield* change_sex());
-            (yield* You(__s_are_suddenly_very_s, cptr.ld1so(flags, $flag_female) ? __s_feminine : __s_masculine));
+            (yield* You(
+                __s_are_suddenly_very_s,
+                cptr.ld1so(flags, $flag_female) ? __s_feminine : __s_masculine
+            ));
             cptr.st1(disp, 1);
             break;
             case NHC.AMULET_OF_UNCHANGING:
@@ -2975,10 +3974,23 @@ function* eataccessory(otmp) {
 
                 if (!(HSleepy() & 67108864n))
                     (yield* accessory_has_effect(otmp));
-                cptr.stI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+                cptr.stI64o2(
+                    u,
+                    NHC.SLEEPY,
+                    $sizeof_prop,
+                    $you_uprops + $prop_intrinsic,
+                    cptr.ldI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                        67108864n
+                );
                 /* might also be wearing one; use shorter of two timeouts */
                 if (newnap < oldnap || oldnap == 0n)
-                    cptr.stI64o2(u, NHC.SLEEPY, $sizeof_prop, $you_uprops + $prop_intrinsic, (HSleepy() & -16777216n) | newnap);
+                    cptr.stI64o2(
+                        u,
+                        NHC.SLEEPY,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic,
+                        (HSleepy() & -16777216n) | newnap
+                    );
                 break;
             }
             case NHC.RIN_SUSTAIN_ABILITY:
@@ -3012,14 +4024,21 @@ function* eatspecial() {
         (yield* vault_gd_watching(NHM.GD_EATGOLD));
         return;
     }
-    if (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.PAPER) {
+    if (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) & 31) | 0) ==
+            NHC.PAPER) {
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SCR_MAIL)
             /* no nutrition */
             (yield* pline(__s_this_junk_mail_is_less_than_satisfying));
         else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SCR_SCARE_MONSTER)
             /* to eat scroll, hero is currently polymorphed into a monster */
             (yield* pline(__s_yuck_c, (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? 33 : 46));
-        else if (cptr.ld1so(otmp, $obj_oclass) == NHC.SCROLL_CLASS && (yield* objdescr_is(otmp, __s_yum_yum)))
+        else if (cptr.ld1so(otmp, $obj_oclass) == NHC.SCROLL_CLASS &&
+                (yield* objdescr_is(otmp, __s_yum_yum)))
             (yield* pline(__s_yum_c, (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? 33 : 46));
         else
             (yield* pline(__s_needs_salt));
@@ -3027,7 +4046,8 @@ function* eatspecial() {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
         (cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + 1n)) - (1n);  /* dopotion() does a useup() */
         void (yield* dopotion(otmp));
-    } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.AMULET_CLASS) {
+    } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS ||
+            cptr.ld1so(otmp, $obj_oclass) == NHC.AMULET_CLASS) {
         (yield* eataccessory(otmp));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LEASH && cptr.ldI32o(otmp, $obj_corpsenm)) {
         (yield* o_unleash(otmp));
@@ -3036,7 +4056,9 @@ function* eatspecial() {
     /* KMH -- idea by "Tommy the Terrorist" */
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TRIDENT && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         /* sugarless chewing gum which used to be heavily advertised on TV */
-        (yield* pline(Hallucination() ? __s_four_out_of_five_dentists_agree : __s_that_was_pure_chewing_satisfaction));
+        (yield* pline(Hallucination()
+                ? __s_four_out_of_five_dentists_agree
+                : __s_that_was_pure_chewing_satisfaction));
         (yield* exercise(NHC.A_WIS, 1));
     }
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.FLINT && !(cptr.ldI32o(otmp, $obj_cursed) & 1)) {
@@ -3093,9 +4115,26 @@ cptr.stPtro(foodwords, 168, __s_stone);
 function* foodword(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS)
         return __s_food;
-    if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS && ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.GLASS && (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0)
+    if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS &&
+            ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_material
+            ) & 31) | 0) ==
+                NHC.GLASS &&
+            (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0)
         (yield* discover_object((cptr.ldI16o(otmp, $obj_otyp)), 1, 1, 1));
-    return cptr.ldPtro(foodwords, (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31), 8);
+    return cptr.ldPtro(
+        foodwords,
+        (cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) & 31),
+        8
+    );
 }
 
 /* called after consuming (non-corpse) food */
@@ -3103,27 +4142,52 @@ function* foodword(otmp) {
 function* fpostfx(otmp) {
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.SPRIG_OF_WOLFSBANE:
-        if (ismnum(cptr.ldI32o(u, $you_ulycn)) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 4n) != 0n))
+        if (ismnum(cptr.ldI32o(u, $you_ulycn)) ||
+                ((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags2
+                ) & 4n) != 0n))
             (yield* you_unwere(1));
         break;
         case NHC.CARROT:
-        if (!(cptr.ldI32o(u, $you_uswallow) & 1) || !attacktype_fordmg(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AT_ENGL, NHM.AD_BLND))
+        if (!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+                !attacktype_fordmg(
+                    cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
+                    NHM.AT_ENGL,
+                    NHM.AD_BLND
+                ))
             (yield* make_blinded(BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0), 1));
         break;
         case NHC.FORTUNE_COOKIE:
         (yield* outrumor(bcsign(otmp), NHM.BY_COOKIE));
         if (!Blind())
-            if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
+            if (!((cptr.stI64o(
+                u,
+                $you_uconduct + $u_conduct_literate,
+                cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n
+            )) -
+                    (1n)))
                 (yield* livelog_printf(32n, __s_became_literate_by_reading_the_fortune));
         break;
         case NHC.LUMP_OF_ROYAL_JELLY:
-        if (cptr.eq(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)) && !Unchanging() && (yield* polymon(NHC.PM_QUEEN_BEE)))
+        if (cptr.eq(
+            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+            cptr.add(mons, NHC.PM_KILLER_BEE, $sizeof_permonst)
+        ) &&
+                !Unchanging() &&
+                (yield* polymon(NHC.PM_QUEEN_BEE)))
             break;
 
         /* This stuff seems to be VERY healthy! */
         (yield* gainstr(otmp, 1, 1));
         if (Upolyd()) {
-            cptr.stI32o(u, $you_mh, (cptr.ldI32o(u, $you_mh) + ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? -rnd(20) : rnd(20))) | 0), cptr.st1(disp, 1);
+            cptr.stI32o(
+                u,
+                $you_mh,
+                (cptr.ldI32o(u, $you_mh) +
+                    ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? -rnd(20) : rnd(20))) | 0
+            ),
+                    cptr.st1(disp, 1);
             if (cptr.ldI32o(u, $you_mh) > cptr.ldI32o(u, $you_mhmax)) {
                 if (!rn2(17))
                     setuhpmax((cptr.ldI32o(u, $you_mhmax) + 1) | 0, 0);
@@ -3132,7 +4196,13 @@ function* fpostfx(otmp) {
                 (yield* rehumanize());
             }
         } else {
-            cptr.stI32o(u, $you_uhp, (cptr.ldI32o(u, $you_uhp) + ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? -rnd(20) : rnd(20))) | 0), cptr.st1(disp, 1);
+            cptr.stI32o(
+                u,
+                $you_uhp,
+                (cptr.ldI32o(u, $you_uhp) +
+                    ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? -rnd(20) : rnd(20))) | 0
+            ),
+                    cptr.st1(disp, 1);
             if (cptr.ldI32o(u, $you_uhp) > cptr.ldI32o(u, $you_uhpmax)) {
                 if (!rn2(17))
                     setuhpmax((cptr.ldI32o(u, $you_uhpmax) + 1) | 0, 0);
@@ -3147,10 +4217,31 @@ function* fpostfx(otmp) {
             (yield* heal_legs(0));
         break;
         case NHC.EGG:
-        if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) && flesh_petrifies(cptr.add(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst))) {
-            if (!Stone_resistance() && !(poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && (yield* polymon(NHC.PM_STONE_GOLEM)))) {
+        if (ismnum(cptr.ldI32o(otmp, $obj_corpsenm)) &&
+                flesh_petrifies(cptr.add(
+                    mons,
+                    cptr.ldI32o(otmp, $obj_corpsenm),
+                    $sizeof_permonst
+                ))) {
+            if (!Stone_resistance() &&
+                    !(poly_when_stoned(cptr.ldPtro(
+                        gy,
+                        $instance_globals_y_youmonst + $monst_data
+                    )) &&
+                        (yield* polymon(NHC.PM_STONE_GOLEM)))) {
                 if (!Stoned()) {
-                    void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_s_egg, cptr.ldPtro3(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, NHC.NEUTRAL, 8, 0));
+                    void cptr.sprintf(
+                        cptr.add(svk, $kinfo_name),
+                        __s_s_egg,
+                        cptr.ldPtro3(
+                            mons,
+                            cptr.ldI32o(otmp, $obj_corpsenm),
+                            $sizeof_permonst,
+                            NHC.NEUTRAL,
+                            8,
+                            0
+                        )
+                    );
                     (yield* make_stoned(5n, null, NHM.KILLED_BY_AN, cptr.add(svk, $kinfo_name)));
                 }
             }
@@ -3168,7 +4259,8 @@ function* fpostfx(otmp) {
             /* Snow White; 'poisoned' applies to [a subset of] weapons,
                not food, so we substitute cursed; fortunately our hero
                won't have to wait for a prince to be rescued/revived */
-            if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF) && Hallucination()) {
+            if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF) &&
+                    Hallucination()) {
                 (yield* verbalize(__s_heigh_ho_ho_hum_i_think_i_ll_skip_work));
             } else if (Deaf() || !cptr.ld1s(flags)) {
                 (yield* You(__s_fall_asleep));
@@ -3200,26 +4292,51 @@ function* edibility_prompts(otmp) {
     /* 5.0: decaying globs don't become tainted anymore; in 3.6, they did */
     let cadaver = schar((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE));
     let stoneorslime = 0;
-    let material = (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0;
+    let material = (cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) & 31) |
+            0;
     let mnum = cptr.ldI32o(otmp, $obj_corpsenm);
     let rotted = 0n;
 
     void cptr.strcpy(cptr.decay(foodsmell), (yield* Tobjnam(otmp, __s_smell)));
-    void cptr.strcpy(cptr.decay(it_or_they), (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_they);
+    void cptr.strcpy(
+        cptr.decay(it_or_they),
+        (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_they
+    );
 
-    if (cadaver || cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG || cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN || cptr.ldI16o(otmp, $obj_otyp) == NHC.GLOB_OF_GREEN_SLIME) {
+    if (cadaver ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.EGG ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.GLOB_OF_GREEN_SLIME) {
         /* These checks must match those in eatcorpse() */
-        stoneorslime = schar((ismnum(mnum) && flesh_petrifies(cptr.add(mons, mnum, $sizeof_permonst)) && !Stone_resistance() && !poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
+        stoneorslime = schar((ismnum(mnum) &&
+            flesh_petrifies(cptr.add(mons, mnum, $sizeof_permonst)) &&
+            !Stone_resistance() &&
+            !poly_when_stoned(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))
+                ? 1
+                : 0));
 
         if (mnum == NHC.PM_GREEN_SLIME || cptr.ldI16o(otmp, $obj_otyp) == NHC.GLOB_OF_GREEN_SLIME)
-            stoneorslime = schar((!Unchanging() && !slimeproof(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
+            stoneorslime = schar((!Unchanging() &&
+                !slimeproof(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))
+                    ? 1
+                    : 0));
 
-        if (cadaver && !((mnum) == NHC.PM_LIZARD || (mnum) == NHC.PM_LICHEN || is_rider(cptr.add(mons, mnum, $sizeof_permonst)) || (mnum) == NHC.PM_ACID_BLOB)) {
+        if (cadaver &&
+                !((mnum) == NHC.PM_LIZARD ||
+                    (mnum) == NHC.PM_LICHEN ||
+                    is_rider(cptr.add(mons, mnum, $sizeof_permonst)) ||
+                    (mnum) == NHC.PM_ACID_BLOB)) {
             let age = (yield* peek_at_iced_corpse_age(otmp));
 
             /* worst case rather than random
                in this calculation to force prompt */
-            rotted = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age)) / 10n;
+            rotted = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age)) /
+                    10n;
             if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
                 rotted += 2n;
             else if ((cptr.ldI32o(otmp, $obj_blessed) & 1))
@@ -3232,44 +4349,163 @@ function* edibility_prompts(otmp) {
      * order from most detrimental to least detrimental.
      */
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
-    if (cadaver && rotted > 5n && !(cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
+    if (cadaver &&
+            rotted > 5n &&
+            !(cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+                cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) ||
+                (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
         /* Tainted meat */
-        nh_snprintf(__s_edibility_prompts, 2675, cptr.decay(buf), 256n, __s_s_like_s_could_be_tainted, cptr.decay(foodsmell), cptr.decay(it_or_they));
+        nh_snprintf(
+            __s_edibility_prompts,
+            2675,
+            cptr.decay(buf),
+            256n,
+            __s_s_like_s_could_be_tainted,
+            cptr.decay(foodsmell),
+            cptr.decay(it_or_they)
+        );
     } else if (stoneorslime) {
-        nh_snprintf(__s_edibility_prompts, 2679, cptr.decay(buf), 256n, __s_s_like_s_could_be_something_very, cptr.decay(foodsmell), cptr.decay(it_or_they));
-    } else if (cadaver && rotted > 5n && (cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
+        nh_snprintf(
+            __s_edibility_prompts,
+            2679,
+            cptr.decay(buf),
+            256n,
+            __s_s_like_s_could_be_something_very,
+            cptr.decay(foodsmell),
+            cptr.decay(it_or_they)
+        );
+    } else if (cadaver &&
+            rotted > 5n &&
+            (cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+                cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) ||
+                (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE)))) {
         /* Tainted meat with Sick_resistance (testing for that is
            redundant; we don't get this far for !Sick_resistance)
            needs to be done now even though there is no danger because
            it can't match after the rotten (cadaver && rotted > 3) test */
-        nh_snprintf(__s_edibility_prompts, 2686, cptr.decay(buf), 256n, __s_s_like_s_could_be_tainted__2, cptr.decay(foodsmell), cptr.decay(it_or_they));
+        nh_snprintf(
+            __s_edibility_prompts,
+            2686,
+            cptr.decay(buf),
+            256n,
+            __s_s_like_s_could_be_tainted__2,
+            cptr.decay(foodsmell),
+            cptr.decay(it_or_they)
+        );
     } else if ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 || (cadaver && rotted > 3n)) {
         /* Rotten */
-        nh_snprintf(__s_edibility_prompts, 2690, cptr.decay(buf), 256n, __s_s_like_s_could_be_rotten, cptr.decay(foodsmell), cptr.decay(it_or_they));
-    } else if (cadaver && ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 268435456n) != 0n) && !Poison_resistance()) {
+        nh_snprintf(
+            __s_edibility_prompts,
+            2690,
+            cptr.decay(buf),
+            256n,
+            __s_s_like_s_could_be_rotten,
+            cptr.decay(foodsmell),
+            cptr.decay(it_or_they)
+        );
+    } else if (cadaver &&
+            ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) &
+                268435456n) != 0n) &&
+            !Poison_resistance()) {
         /* poisonous */
-        nh_snprintf(__s_edibility_prompts, 2694, cptr.decay(buf), 256n, __s_s_like_s_might_be_poisonous, cptr.decay(foodsmell), cptr.decay(it_or_they));
-    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.APPLE && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && !Sleep_resistance()) {
+        nh_snprintf(
+            __s_edibility_prompts,
+            2694,
+            cptr.decay(buf),
+            256n,
+            __s_s_like_s_might_be_poisonous,
+            cptr.decay(foodsmell),
+            cptr.decay(it_or_they)
+        );
+    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.APPLE &&
+            (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
+            !Sleep_resistance()) {
         /* causes sleep, for long enough to be dangerous */
-        nh_snprintf(__s_edibility_prompts, 2698, cptr.decay(buf), 256n, __s_s_like_s_might_have_been_poisoned, cptr.decay(foodsmell), cptr.decay(it_or_they));
-    } else if (cadaver && !vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) && !cptr.ldI64o(u, $you_uconduct) && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) {
-        nh_snprintf(__s_edibility_prompts, 2701, cptr.decay(buf), 256n, __s_s_unhealthy, cptr.decay(foodsmell));
-    } else if (cadaver && ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) & 134217728n) != 0n) && !Acid_resistance()) {
-        nh_snprintf(__s_edibility_prompts, 2703, cptr.decay(buf), 256n, __s_s_rather_acidic, cptr.decay(foodsmell));
-    } else if (Upolyd() && cptr.ldI32o(u, $you_umonnum) == NHC.PM_RUST_MONSTER && is_metallic(otmp) && (cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) {
-        nh_snprintf(__s_edibility_prompts, 2707, cptr.decay(buf), 256n, __s_s_disgusting_to_you_right_now, cptr.decay(foodsmell));
+        nh_snprintf(
+            __s_edibility_prompts,
+            2698,
+            cptr.decay(buf),
+            256n,
+            __s_s_like_s_might_have_been_poisoned,
+            cptr.decay(foodsmell),
+            cptr.decay(it_or_they)
+        );
+    } else if (cadaver &&
+            !vegetarian(cptr.add(mons, mnum, $sizeof_permonst)) &&
+            !cptr.ldI64o(u, $you_uconduct) &&
+            (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) {
+        nh_snprintf(
+            __s_edibility_prompts,
+            2701,
+            cptr.decay(buf),
+            256n,
+            __s_s_unhealthy,
+            cptr.decay(foodsmell)
+        );
+    } else if (cadaver &&
+            ((cptr.ldU64o((cptr.add(mons, mnum, $sizeof_permonst)), $permonst_mflags1) &
+                134217728n) != 0n) &&
+            !Acid_resistance()) {
+        nh_snprintf(
+            __s_edibility_prompts,
+            2703,
+            cptr.decay(buf),
+            256n,
+            __s_s_rather_acidic,
+            cptr.decay(foodsmell)
+        );
+    } else if (Upolyd() &&
+            cptr.ldI32o(u, $you_umonnum) == NHC.PM_RUST_MONSTER &&
+            is_metallic(otmp) &&
+            (cptr.ldI32o(otmp, $obj_oerodeproof) & 1) | 0) {
+        nh_snprintf(
+            __s_edibility_prompts,
+            2707,
+            cptr.decay(buf),
+            256n,
+            __s_s_disgusting_to_you_right_now,
+            cptr.decay(foodsmell)
+        );
 
         /*
          * Breaks conduct, but otherwise safe.
          */
-    } else if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) && ((material == NHC.LEATHER || material == NHC.BONE || material == NHC.DRAGON_HIDE || material == NHC.WAX) || (cadaver && !vegan(cptr.add(mons, mnum, $sizeof_permonst))))) {
-        nh_snprintf(__s_edibility_prompts, 2717, cptr.decay(buf), 256n, __s_s_foul_and_unfamiliar_to_you, cptr.decay(foodsmell));
-    } else if (!cptr.ldI64o(u, $you_uconduct) && ((material == NHC.LEATHER || material == NHC.BONE || material == NHC.DRAGON_HIDE) || (cadaver && !vegetarian(cptr.add(mons, mnum, $sizeof_permonst))))) {
-        nh_snprintf(__s_edibility_prompts, 2722, cptr.decay(buf), 256n, __s_s_unfamiliar_to_you, cptr.decay(foodsmell));
+    } else if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) &&
+            ((material == NHC.LEATHER ||
+                material == NHC.BONE ||
+                material == NHC.DRAGON_HIDE ||
+                material == NHC.WAX) ||
+                (cadaver && !vegan(cptr.add(mons, mnum, $sizeof_permonst))))) {
+        nh_snprintf(
+            __s_edibility_prompts,
+            2717,
+            cptr.decay(buf),
+            256n,
+            __s_s_foul_and_unfamiliar_to_you,
+            cptr.decay(foodsmell)
+        );
+    } else if (!cptr.ldI64o(u, $you_uconduct) &&
+            ((material == NHC.LEATHER || material == NHC.BONE || material == NHC.DRAGON_HIDE) ||
+                (cadaver && !vegetarian(cptr.add(mons, mnum, $sizeof_permonst))))) {
+        nh_snprintf(
+            __s_edibility_prompts,
+            2722,
+            cptr.decay(buf),
+            256n,
+            __s_s_unfamiliar_to_you,
+            cptr.decay(foodsmell)
+        );
     }
 
     if (cptr.ld1s(cptr.decay(buf))) {
-        nh_snprintf(__s_edibility_prompts, 2727, eos(cptr.decay(buf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(buf))), __s_eat_s_anyway, (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_one);
+        nh_snprintf(
+            __s_edibility_prompts,
+            2727,
+            eos(cptr.decay(buf)),
+            BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(buf))),
+            __s_eat_s_anyway,
+            (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_one
+        );
         return ((yield* yn_function(cptr.decay(buf), cptr.decay(ynchars), 110, 1)) == 110) ? 1 : 2;
     }
     return 0;
@@ -3287,15 +4523,27 @@ function* doeat_nonfood(otmp) {
     cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, cptr.ldI32o(otmp, $obj_o_id));
     /* Don't split it, we don't need to if it's 1 move */
     cptr.stI32o(svc, $context_info_victual + $victual_info_usedtime, 0);
-    cptr.stI32o(svc, $context_info_victual + $victual_info_canchoke, (cptr.ldI32o(u, $you_uhs) == NHC.SATIATED) >>> 0);
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_canchoke,
+        (cptr.ldI32o(u, $you_uhs) == NHC.SATIATED) >>> 0
+    );
     /* Note: gold weighs 1 pt. for each 1000 pieces (see
        pickup.c) so gold and non-gold is consistent. */
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
-        basenutrit = ((cptr.ldI64o(otmp, $obj_quan) > 200000n) ? 2000 : Number(BigInt.asIntN(32, (cptr.ldI64o(otmp, $obj_quan) / 100n))));
-    else if (cptr.ld1so(otmp, $obj_oclass) == NHC.BALL_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.CHAIN_CLASS)
+        basenutrit = ((cptr.ldI64o(otmp, $obj_quan) > 200000n)
+                ? 2000
+                : Number(BigInt.asIntN(32, (cptr.ldI64o(otmp, $obj_quan) / 100n))));
+    else if (cptr.ld1so(otmp, $obj_oclass) == NHC.BALL_CLASS ||
+            cptr.ld1so(otmp, $obj_oclass) == NHC.CHAIN_CLASS)
         basenutrit = (yield* weight(otmp));
     else
-        basenutrit = cptr.ldU16o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_nutrition);
+        basenutrit = cptr.ldU16o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_nutrition
+        );
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SCR_MAIL) {
         basenutrit = 0;
         nodelicious = 1;
@@ -3303,19 +4551,47 @@ function* doeat_nonfood(otmp) {
     cptr.stI32o(svc, $context_info_victual + $victual_info_nmod, basenutrit);
     cptr.stI32o(svc, $context_info_victual + $victual_info_eating, 1);  /* needed for lesshungry() */
 
-    if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_food, cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n)) - (1n))) {
+    if (!((cptr.stI64o(
+        u,
+        $you_uconduct + $u_conduct_food,
+        cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n
+    )) -
+            (1n))) {
         ll_conduct++;
         (yield* livelog_printf(32n, __s_ate_for_the_first_time_s__2, (yield* food_xname(otmp, 0))));
     }
-    material = (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0;
-    if (material == NHC.LEATHER || material == NHC.BONE || material == NHC.DRAGON_HIDE || material == NHC.WAX) {
-        if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_unvegan, cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n)) - (1n)) && !ll_conduct) {
-            (yield* livelog_printf(32n, __s_consumed_animal_products_for_the_first, (yield* an((yield* food_xname(otmp, 0))))));
+    material = (cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) & 31) |
+            0;
+    if (material == NHC.LEATHER ||
+            material == NHC.BONE ||
+            material == NHC.DRAGON_HIDE ||
+            material == NHC.WAX) {
+        if (!((cptr.stI64o(
+            u,
+            $you_uconduct + $u_conduct_unvegan,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n
+        )) -
+            (1n)) &&
+                !ll_conduct) {
+            (yield* livelog_printf(
+                32n,
+                __s_consumed_animal_products_for_the_first,
+                (yield* an((yield* food_xname(otmp, 0))))
+            ));
             ll_conduct++;
         }
         if (material != NHC.WAX) {
             if (!cptr.ldI64o(u, $you_uconduct) && !ll_conduct)
-                (yield* livelog_printf(32n, __s_tasted_meat_by_products_for_the_first, (yield* an((yield* food_xname(otmp, 0))))));
+                (yield* livelog_printf(
+                    32n,
+                    __s_tasted_meat_by_products_for_the_first,
+                    (yield* an((yield* food_xname(otmp, 0))))
+                ));
             (yield* violated_vegetarian());
         }
     }
@@ -3323,17 +4599,32 @@ function* doeat_nonfood(otmp) {
     if ((cptr.ldI32o(otmp, $obj_cursed) & 1)) {
         void (yield* rottenfood(otmp));
         nodelicious = 1;
-    } else if (((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.PAPER)
+    } else if (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(otmp, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) & 31) | 0) ==
+            NHC.PAPER)
         nodelicious = 1;
 
-    if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS && (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0) {
+    if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS &&
+            (cptr.ldI32o(otmp, $obj_otrapped) & 1) | 0) {
         (yield* pline(__s_ecch_that_must_have_been_poisonous));
         if (!Poison_resistance()) {
             (yield* poison_strdmg(rnd(4), rnd(15), (yield* xname(otmp)), NHM.KILLED_BY_AN));
         } else
             (yield* You(__s_seem_unaffected_by_the_poison));
     } else if (!nodelicious) {
-        (yield* pline(__s_s_s_is_delicious, (obj_is_pname(otmp) && cptr.ld1so(otmp, $obj_oartifact) < NHC.ART_ORB_OF_DETECTION) ? __s_empty : __s_this, (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) ? (yield* foodword(otmp)) : (yield* singular(otmp, xname))));
+        (yield* pline(
+            __s_s_s_is_delicious,
+            (obj_is_pname(otmp) && cptr.ld1so(otmp, $obj_oartifact) < NHC.ART_ORB_OF_DETECTION)
+                ? __s_empty
+                : __s_this,
+            (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS)
+                ? (yield* foodword(otmp))
+                : (yield* singular(otmp, xname))
+        ));
     }
     (yield* eatspecial());
     return NHM.ECMD_TIME;
@@ -3373,7 +4664,16 @@ export function* doeat() {
         /* hero in metallivore form is eating [diggable] iron bars
            at current location so skip the other assorted checks;
            operates as if digging rather than via the eat occupation */
-        if ((yield* still_chewing(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) && cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS) {
+        if ((yield* still_chewing(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) &&
+                cptr.ld1so3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                ) ==
+                    NHC.IRONBARS) {
             /* this is verbose, but player will see the hero rather than the
                bars so wouldn't know that more turns of eating are required */
             (yield* You(__s_pause_to_swallow));
@@ -3390,12 +4690,19 @@ export function* doeat() {
         return NHM.ECMD_OK;
     } else if ((cptr.ldI64o(otmp.v, $obj_owornmask) & 1638527n) != 0n) {
         /* let them eat rings */
-        (yield* You_cant(__s_eat_s_you_re_wearing, cptr.ldPtro(c_common_strings, $c_common_strings_c_something)));
+        (yield* You_cant(
+            __s_eat_s_you_re_wearing,
+            cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
+        ));
         return NHM.ECMD_OK;
-    } else if (!((cptr.ld1so((otmp.v), $obj_where) == NHM.OBJ_INVENT) ? (yield* retouch_object(otmp, 0)) : (yield* touch_artifact(otmp.v, cptr.add(gy, $instance_globals_y_youmonst))))) {
+    } else if (!((cptr.ld1so((otmp.v), $obj_where) == NHM.OBJ_INVENT)
+            ? (yield* retouch_object(otmp, 0))
+            : (yield* touch_artifact(otmp.v, cptr.add(gy, $instance_globals_y_youmonst))))) {
         return NHM.ECMD_TIME;  /* got blasted so use a turn */
     }
-    if (is_metallic(otmp.v) && cptr.ldI32o(u, $you_umonnum) == NHC.PM_RUST_MONSTER && (cptr.ldI32o(otmp.v, $obj_oerodeproof) & 1) | 0) {
+    if (is_metallic(otmp.v) &&
+            cptr.ldI32o(u, $you_umonnum) == NHC.PM_RUST_MONSTER &&
+            (cptr.ldI32o(otmp.v, $obj_oerodeproof) & 1) | 0) {
         cptr.stI32o(otmp.v, $obj_rknown, 1);
         if (cptr.ldI64o(otmp.v, $obj_quan) > 1n) {
             if (!(cptr.ld1so((otmp.v), $obj_where) == NHM.OBJ_INVENT))
@@ -3412,11 +4719,17 @@ export function* doeat() {
          * or wearing cursed rings which were rustproofed, but guard
          * against the possibility just in case.
          */
-        if ((yield* welded(otmp.v)) || ((cptr.ldI32o(otmp.v, $obj_cursed) & 1) | 0 && (cptr.ldI64o(otmp.v, $obj_owornmask) & 393216n))) {
+        if ((yield* welded(otmp.v)) ||
+                ((cptr.ldI32o(otmp.v, $obj_cursed) & 1) | 0 &&
+                    (cptr.ldI64o(otmp.v, $obj_owornmask) & 393216n))) {
             (yield* set_bknown(otmp.v, 1));  /* for ring; welded() does this for weapon */
             (yield* You(__s_spit_out_s, (yield* the((yield* xname(otmp.v))))));
         } else {
-            (yield* You(__s_spit_s_out_onto_the_s, (yield* the((yield* xname(otmp.v)))), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
+            (yield* You(
+                __s_spit_s_out_onto_the_s,
+                (yield* the((yield* xname(otmp.v)))),
+                surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+            ));
             if ((cptr.ld1so((otmp.v), $obj_where) == NHM.OBJ_INVENT)) {
                 /* no need to check for leash in use; it's not metallic */
                 if (cptr.ldI64o(otmp.v, $obj_owornmask))
@@ -3440,7 +4753,11 @@ export function* doeat() {
         return (yield* doeat_nonfood(otmp.v));
 
     if (cptr.eq(otmp.v, cptr.ldPtro(svc, $context_info_victual))) {
-        let one_bite_left = schar((((cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) + 1) | 0) >= cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)));
+        let one_bite_left = schar((((cptr.ldI32o(
+            svc,
+            $context_info_victual + $victual_info_usedtime
+        ) + 1) | 0) >=
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)));
 
         /* If they weren't able to choke, they don't suddenly become able to
          * choke just because they were interrupted.  On the other hand, if
@@ -3453,7 +4770,11 @@ export function* doeat() {
         otmp.v = (yield* touchfood(otmp.v));
         if (otmp.v) {
             cptr.stPtro(svc, $context_info_victual, otmp.v);
-            cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, cptr.ldI32o(otmp.v, $obj_o_id));
+            cptr.stI32o(
+                svc,
+                $context_info_victual + $victual_info_o_id,
+                cptr.ldI32o(otmp.v, $obj_o_id)
+            );
         } else {
             (yield* do_reset_eat());
         }
@@ -3476,7 +4797,12 @@ export function* doeat() {
     }
 
     /* KMH, conduct */
-    if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_food, cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n)) - (1n))) {
+    if (!((cptr.stI64o(
+        u,
+        $you_uconduct + $u_conduct_food,
+        cptr.ldI64o(u, $you_uconduct + $u_conduct_food) + 1n
+    )) -
+            (1n))) {
         (yield* livelog_printf(32n, __s_ate_for_the_first_time_s, (yield* food_xname(otmp.v, 0))));
         ll_conduct++;
     }
@@ -3485,7 +4811,11 @@ export function* doeat() {
     otmp.v = (yield* touchfood(otmp.v));
     if (otmp.v) {
         cptr.stPtro(svc, $context_info_victual, otmp.v);
-        cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, cptr.ldI32o(otmp.v, $obj_o_id));
+        cptr.stI32o(
+            svc,
+            $context_info_victual + $victual_info_o_id,
+            cptr.ldI32o(otmp.v, $obj_o_id)
+        );
         cptr.stI32o(svc, $context_info_victual + $victual_info_usedtime, 0);
     } else {
         (yield* do_reset_eat());
@@ -3497,7 +4827,8 @@ export function* doeat() {
      * for normal vs. rotten food.  The reqtime and nutrit values are
      * then adjusted in accordance with the amount of food left.
      */
-    if (cptr.ldI16o(otmp.v, $obj_otyp) == NHC.CORPSE || (cptr.ldI32o(otmp.v, $obj_globby) & 1) | 0) {
+    if (cptr.ldI16o(otmp.v, $obj_otyp) == NHC.CORPSE ||
+            (cptr.ldI32o(otmp.v, $obj_globby) & 1) | 0) {
         let tmp = (yield* eatcorpse(otmp.v));
 
         if (tmp == 2) {
@@ -3511,28 +4842,80 @@ export function* doeat() {
         /* No checks for WAX, LEATHER, BONE, DRAGON_HIDE.  These are
          * all handled in the != FOOD_CLASS case, above.
          */
-        switch ((cptr.ldI32o2(objects, cptr.ldI16o(otmp.v, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) {
+        switch ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(otmp.v, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) & 31) | 0) {
             case NHC.FLESH:
-            if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_unvegan, cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n)) - (1n)) && !ll_conduct) {
-                (yield* livelog_printf(32n, __s_consumed_animal_products_for_the_first, (yield* an((yield* food_xname(otmp.v, 0))))));
+            if (!((cptr.stI64o(
+                u,
+                $you_uconduct + $u_conduct_unvegan,
+                cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n
+            )) -
+                (1n)) &&
+                    !ll_conduct) {
+                (yield* livelog_printf(
+                    32n,
+                    __s_consumed_animal_products_for_the_first,
+                    (yield* an((yield* food_xname(otmp.v, 0))))
+                ));
                 ll_conduct++;
             }
             if (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.EGG) {
                 if (!cptr.ldI64o(u, $you_uconduct) && !ll_conduct)
-                    (yield* livelog_printf(32n, __s_tasted_meat_for_the_first_time_by, (yield* an((yield* food_xname(otmp.v, 0))))));
+                    (yield* livelog_printf(
+                        32n,
+                        __s_tasted_meat_for_the_first_time_by,
+                        (yield* an((yield* food_xname(otmp.v, 0))))
+                    ));
 
                 (yield* violated_vegetarian());
             }
             break;
             default:
-            if (cptr.ldI16o(otmp.v, $obj_otyp) == NHC.PANCAKE || cptr.ldI16o(otmp.v, $obj_otyp) == NHC.FORTUNE_COOKIE || cptr.ldI16o(otmp.v, $obj_otyp) == NHC.CREAM_PIE || cptr.ldI16o(otmp.v, $obj_otyp) == NHC.CANDY_BAR || cptr.ldI16o(otmp.v, $obj_otyp) == NHC.LUMP_OF_ROYAL_JELLY)
-                if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_unvegan, cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n)) - (1n)) && !ll_conduct)
-                    (yield* livelog_printf(32n, __s_consumed_animal_products_s_for_the, (yield* food_xname(otmp.v, 0))));
+            if (cptr.ldI16o(otmp.v, $obj_otyp) == NHC.PANCAKE ||
+                    cptr.ldI16o(otmp.v, $obj_otyp) == NHC.FORTUNE_COOKIE ||
+                    cptr.ldI16o(otmp.v, $obj_otyp) == NHC.CREAM_PIE ||
+                    cptr.ldI16o(otmp.v, $obj_otyp) == NHC.CANDY_BAR ||
+                    cptr.ldI16o(otmp.v, $obj_otyp) == NHC.LUMP_OF_ROYAL_JELLY)
+                if (!((cptr.stI64o(
+                    u,
+                    $you_uconduct + $u_conduct_unvegan,
+                    cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan) + 1n
+                )) -
+                    (1n)) &&
+                        !ll_conduct)
+                    (yield* livelog_printf(
+                        32n,
+                        __s_consumed_animal_products_s_for_the,
+                        (yield* food_xname(otmp.v, 0))
+                    ));
             break;
         }
 
-        cptr.stI32o(svc, $context_info_victual + $victual_info_reqtime, cptr.ld1so2(objects, cptr.ldI16o(otmp.v, $obj_otyp), $sizeof_objclass, $objclass_oc_delay));
-        if (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.FORTUNE_COOKIE && ((cptr.ldI32o(otmp.v, $obj_cursed) & 1) | 0 || (!((cptr.ldI16o(otmp.v, $obj_otyp)) == NHC.LEMBAS_WAFER || (cptr.ldI16o(otmp.v, $obj_otyp)) == NHC.CRAM_RATION) && (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(otmp.v, $obj_age))) > ((cptr.ldI32o(otmp.v, $obj_blessed) & 1) | 0 ? 50n : 30n) && ((cptr.ldI32o(otmp.v, $obj_oeroded) & 3) | 0 || !rn2(7))))) {
+        cptr.stI32o(
+            svc,
+            $context_info_victual + $victual_info_reqtime,
+            cptr.ld1so2(
+                objects,
+                cptr.ldI16o(otmp.v, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_delay
+            )
+        );
+        if (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.FORTUNE_COOKIE &&
+                ((cptr.ldI32o(otmp.v, $obj_cursed) & 1) | 0 ||
+                    (!((cptr.ldI16o(otmp.v, $obj_otyp)) == NHC.LEMBAS_WAFER ||
+                        (cptr.ldI16o(otmp.v, $obj_otyp)) == NHC.CRAM_RATION) &&
+                        (BigInt.asIntN(
+                            64,
+                            cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                                cptr.ldI64o(otmp.v, $obj_age)
+                        )) >
+                            ((cptr.ldI32o(otmp.v, $obj_blessed) & 1) | 0 ? 50n : 30n) &&
+                        ((cptr.ldI32o(otmp.v, $obj_oeroded) & 3) | 0 || !rn2(7))))) {
             if ((yield* rottenfood(otmp.v))) {
                 cptr.stI32o(otmp.v, $obj_oeroded, 1);
                 dont_start = 1;
@@ -3544,7 +4927,13 @@ export function* doeat() {
                 return NHM.ECMD_TIME;
             }
         } else {
-            (yield* You(__s_s_s, (cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) == 1) ? __s_eat : __s_begin_eating, (yield* doname(otmp.v))));
+            (yield* You(
+                __s_s_s,
+                (cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) == 1)
+                    ? __s_eat
+                    : __s_begin_eating,
+                (yield* doname(otmp.v))
+            ));
         }
     }
 
@@ -3554,17 +4943,38 @@ export function* doeat() {
         if ((yield* debugcore(__s_eat_c, 1))) {
 
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__s_before_rounddiv_victual_reqtime_d, cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime), cptr.ldI32o(otmp.v, $obj_oeaten), basenutrit));
+            (yield* pline(
+                __s_before_rounddiv_victual_reqtime_d,
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime),
+                cptr.ldI32o(otmp.v, $obj_oeaten),
+                basenutrit
+            ));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
 
-    cptr.stI32o(svc, $context_info_victual + $victual_info_reqtime, (basenutrit == 0) ? 0 : (yield* rounddiv(BigInt.asIntN(64, BigInt(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) * BigInt(cptr.ldI32o(otmp.v, $obj_oeaten) >>> 0)), basenutrit)));
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_reqtime,
+        (basenutrit == 0)
+            ? 0
+            : (yield* rounddiv(
+                BigInt.asIntN(
+                    64,
+                    BigInt(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) *
+                        BigInt(cptr.ldI32o(otmp.v, $obj_oeaten) >>> 0)
+                ),
+                basenutrit
+            ))
+    );
     {
         if ((yield* debugcore(__s_eat_c, 1))) {
 
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__s_after_rounddiv_victual_reqtime_d, cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)));
+            (yield* pline(
+                __s_after_rounddiv_victual_reqtime_d,
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)
+            ));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -3574,14 +4984,32 @@ export function* doeat() {
      *       to this method.
      * TODO: add in a "remainder" value to be given at the end of the meal.
      */
-    if (cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) == 0 || cptr.ldI32o(otmp.v, $obj_oeaten) == 0)
+    if (cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) == 0 ||
+            cptr.ldI32o(otmp.v, $obj_oeaten) == 0)
         /* possible if most has been eaten before */
         cptr.stI32o(svc, $context_info_victual + $victual_info_nmod, 0);
-    else if ((cptr.ldI32o(otmp.v, $obj_oeaten) | 0) >= cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))
-        cptr.stI32o(svc, $context_info_victual + $victual_info_nmod, -(((cptr.ldI32o(otmp.v, $obj_oeaten) | 0) / cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) | 0));
+    else if ((cptr.ldI32o(otmp.v, $obj_oeaten) | 0) >=
+            cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime))
+        cptr.stI32o(
+            svc,
+            $context_info_victual + $victual_info_nmod,
+            -(((cptr.ldI32o(otmp.v, $obj_oeaten) | 0) /
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) | 0)
+        );
     else
-        cptr.stI32o(svc, $context_info_victual + $victual_info_nmod, u32mod(cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) >>> 0, cptr.ldI32o(otmp.v, $obj_oeaten)) | 0);
-    cptr.stI32o(svc, $context_info_victual + $victual_info_canchoke, (cptr.ldI32o(u, $you_uhs) == NHC.SATIATED) >>> 0);
+        cptr.stI32o(
+            svc,
+            $context_info_victual + $victual_info_nmod,
+            u32mod(
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) >>> 0,
+                cptr.ldI32o(otmp.v, $obj_oeaten)
+            ) | 0
+        );
+    cptr.stI32o(
+        svc,
+        $context_info_victual + $victual_info_canchoke,
+        (cptr.ldI32o(u, $you_uhs) == NHC.SATIATED) >>> 0
+    );
 
     if (!dont_start)
         (yield* start_eating(otmp.v, already_partly_eaten));
@@ -3613,7 +5041,20 @@ export function* use_tin_opener(obj) {
         if ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 && (cptr.ldI32o(obj, $obj_bknown) & 1) | 0) {
             let qbuf = new Uint8Array(128);
 
-            if ((yield* yn_function((yield* safe_qbuf(cptr.decay(qbuf), __s_really_wield, __s_query, obj, doname, thesimpleoname, __s_that)), cptr.decay(ynqchars), 113, 1)) != 121)
+            if ((yield* yn_function(
+                (yield* safe_qbuf(
+                    cptr.decay(qbuf),
+                    __s_really_wield,
+                    __s_query,
+                    obj,
+                    doname,
+                    thesimpleoname,
+                    __s_that
+                )),
+                cptr.decay(ynqchars),
+                113,
+                1
+            )) != 121)
                 return NHM.ECMD_OK;
         }
         if (!(yield* wield_tool(obj, __s_use)))
@@ -3637,7 +5078,8 @@ function* bite() {
     /* hack to pacify static analyzer incorporated into gcc 12.2 */
     sa_victual(cptr.add(svc, $context_info_victual));
 
-    if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0 && cptr.ldI32o(u, $you_uhunger) >= 2000) {
+    if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0 &&
+            cptr.ldI32o(u, $you_uhunger) >= 2000) {
         (yield* choke(cptr.ldPtro(svc, $context_info_victual)));
         return 1;
     }
@@ -3648,8 +5090,13 @@ function* bite() {
     cptr.st1o(gf, $instance_globals_f_force_save_hs, 1);
     if (cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod) < 0) {
         (yield* lesshungry(adj_victual_nutrition()));
-        (yield* consume_oeaten(cptr.ldPtro(svc, $context_info_victual), cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod)));  /* -= -nmod */
-    } else if (cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod) > 0 && (cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) % cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod))) {
+        (yield* consume_oeaten(
+            cptr.ldPtro(svc, $context_info_victual),
+            cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod)
+        ));  /* -= -nmod */
+    } else if (cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod) > 0 &&
+            (cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) %
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_nmod))) {
         (yield* lesshungry(1));
         (yield* consume_oeaten(cptr.ldPtro(svc, $context_info_victual), -1));  /* -= 1 */
     }
@@ -3663,14 +5110,32 @@ function* bite() {
 export function* gethungry() {
     let accessorytime;
 
-    if ((cptr.ldI32o(u, $you_uinvulnerable) & 1) | 0 || cptr.ld1so(iflags, $instance_flags_debug_hunger))
+    if ((cptr.ldI32o(u, $you_uinvulnerable) & 1) | 0 ||
+            cptr.ld1so(iflags, $instance_flags_debug_hunger))
         return;  /* you don't feel hungrier */
 
     /* being polymorphed into a creature which doesn't eat prevents
        this first uhunger decrement, but to stay in such form the hero
        will need to wear an Amulet of Unchanging so still burn a small
        amount of nutrition in the 'moves % 20' ring/amulet check below */
-    if ((!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) || !rn2(10)) && (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 536870912n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1073741824n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 2147483648n) != 0n)) && !Slow_digestion())
+    if ((!(cptr.ldI64o(gm, $instance_globals_m_multi) < 0n && (unconscious() || is_fainted())) ||
+        !rn2(10)) &&
+            (((cptr.ldU64o(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mflags1
+            ) &
+                536870912n) != 0n) ||
+                ((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                    1073741824n) != 0n) ||
+                ((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                    2147483648n) != 0n)) &&
+            !Slow_digestion())
         (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);  /* ordinary food consumption */
 
     /*
@@ -3723,11 +5188,27 @@ export function* gethungry() {
                turns; because of that, wearing two (non-slow digestion)
                rings plus the armor consumes more nutrition that one
                non-slow digestion ring plus ring of slow digestion */
-            if (Slow_digestion() && (!uright.v || cptr.ldI16o(uright.v, $obj_otyp) != NHC.RIN_SLOW_DIGESTION) && (!uleft.v || cptr.ldI16o(uleft.v, $obj_otyp) != NHC.RIN_SLOW_DIGESTION))
+            if (Slow_digestion() &&
+                    (!uright.v || cptr.ldI16o(uright.v, $obj_otyp) != NHC.RIN_SLOW_DIGESTION) &&
+                    (!uleft.v || cptr.ldI16o(uleft.v, $obj_otyp) != NHC.RIN_SLOW_DIGESTION))
                 (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
             break;
             case 4:
-            if (uleft.v && cptr.ldI16o(uleft.v, $obj_otyp) != NHC.MEAT_RING && (cptr.ld1so(uleft.v, $obj_spe) || !(cptr.ldI32o2(objects, cptr.ldI16o(uleft.v, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1) || (cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_PROTECTION && ((EProtection() & -131073n) == 0n || ((EProtection() & -131073n) == 262144n && uright.v && cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION && !cptr.ld1so(uright.v, $obj_spe))))))
+            if (uleft.v &&
+                    cptr.ldI16o(uleft.v, $obj_otyp) != NHC.MEAT_RING &&
+                    (cptr.ld1so(uleft.v, $obj_spe) ||
+                        !(cptr.ldI32o2(
+                            objects,
+                            cptr.ldI16o(uleft.v, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_charged
+                        ) & 1) ||
+                        (cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_PROTECTION &&
+                            ((EProtection() & -131073n) == 0n ||
+                                ((EProtection() & -131073n) == 262144n &&
+                                    uright.v &&
+                                    cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION &&
+                                    !cptr.ld1so(uright.v, $obj_spe))))))
                 (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
             break;
             case 8:
@@ -3735,7 +5216,17 @@ export function* gethungry() {
                 (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
             break;
             case 12:
-            if (uright.v && cptr.ldI16o(uright.v, $obj_otyp) != NHC.MEAT_RING && (cptr.ld1so(uright.v, $obj_spe) || !(cptr.ldI32o2(objects, cptr.ldI16o(uright.v, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1) || (cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION && (EProtection() & -262145n) == 0n)))
+            if (uright.v &&
+                    cptr.ldI16o(uright.v, $obj_otyp) != NHC.MEAT_RING &&
+                    (cptr.ld1so(uright.v, $obj_spe) ||
+                        !(cptr.ldI32o2(
+                            objects,
+                            cptr.ldI16o(uright.v, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_charged
+                        ) & 1) ||
+                        (cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_PROTECTION &&
+                            (EProtection() & -262145n) == 0n)))
                 (cptr.stI32o(u, $you_uhunger, cptr.ldI32o(u, $you_uhunger) + -1)) - (-1);
             break;
             case 16:
@@ -3760,7 +5251,10 @@ export function* morehungry(num) {
 /** C ref: eat.c:3289 — @param {CInt} num */
 export function* lesshungry(num) {
     /* See comments in newuhs() for discussion on force_save_hs */
-    let iseating = schar(((cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood) || cptr.ld1so(gf, $instance_globals_f_force_save_hs) ? 1 : 0));
+    let iseating = schar(((cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood) ||
+        cptr.ld1so(gf, $instance_globals_f_force_save_hs)
+            ? 1
+            : 0));
     {
         if ((yield* debugcore(__s_eat_c, 1))) {
 
@@ -3771,12 +5265,15 @@ export function* lesshungry(num) {
     }
     cptr.stI32o(u, $you_uhunger, (cptr.ldI32o(u, $you_uhunger) + num) | 0);
     if (cptr.ldI32o(u, $you_uhunger) >= 2000) {
-        if (!iseating || (cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0) {
+        if (!iseating ||
+                (cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0) {
             if (iseating) {
                 (yield* choke(cptr.ldPtro(svc, $context_info_victual)));
                 (yield* reset_eat());
             } else {
-                (yield* choke((cptr.ldPtro(go, $instance_globals_o_occupation) === opentin) ? cptr.ldPtro(svc, $context_info_tin) : null));
+                (yield* choke((cptr.ldPtro(go, $instance_globals_o_occupation) === opentin)
+                        ? cptr.ldPtro(svc, $context_info_tin)
+                        : null));
                 /* no reset_eat() */
             }
         }
@@ -3784,16 +5281,29 @@ export function* lesshungry(num) {
         /* Have lesshungry() report when you're nearly full so all eating
          * warns when you're about to choke.
          */
-        if (cptr.ldI32o(u, $you_uhunger) >= 1500 && !Hunger() && (!(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) || ((cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) | 0 && !(cptr.ldI32o(svc, $context_info_victual + $victual_info_fullwarn) & 1)))) {
+        if (cptr.ldI32o(u, $you_uhunger) >= 1500 &&
+                !Hunger() &&
+                (!(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) ||
+                    ((cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1) | 0 &&
+                        !(cptr.ldI32o(svc, $context_info_victual + $victual_info_fullwarn) & 1)))) {
             (yield* pline(__s_you_re_having_a_hard_time_getting_all));
             cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_you_re_finally_finished);
             if (!(cptr.ldI32o(svc, $context_info_victual + $victual_info_eating) & 1)) {
                 cptr.stI64o(gm, $instance_globals_m_multi, -2n);
             } else {
                 cptr.stI32o(svc, $context_info_victual + $victual_info_fullwarn, 1);
-                if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0 && ((cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) - cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime)) | 0) > 1) {
+                if ((cptr.ldI32o(svc, $context_info_victual + $victual_info_canchoke) & 1) | 0 &&
+                        ((cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime) -
+                            cptr.ldI32o(
+                                svc,
+                                $context_info_victual + $victual_info_usedtime
+                            )) | 0) > 1) {
                     /* food with one bite left will not survive a stop */
-                    if (!(yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_EATING) >>> 0) != 0)), __s_continue_eating))) {
+                    if (!(yield* paranoid_query(
+                        schar((((cptr.ldI32o(flags, $flag_paranoia_bits) &
+                            NHM.PARANOID_EATING) >>> 0) != 0)),
+                        __s_continue_eating
+                    ))) {
                         (yield* reset_eat());
                         cptr.stPtro(gn, $instance_globals_n_nomovemsg, null);
                     }
@@ -3835,7 +5345,12 @@ export function* newuhs(incr) {
     let newhs;
     let h = cptr.ldI32o(u, $you_uhunger);
 
-    newhs = ((h > 1000) ? NHC.SATIATED : ((h > 150) ? NHC.NOT_HUNGRY : ((h > 50) ? NHC.HUNGRY : ((h > 0) ? NHC.WEAK : NHC.FAINTING)))) >>> 0;
+    newhs = ((h > 1000)
+        ? NHC.SATIATED
+        : ((h > 150)
+            ? NHC.NOT_HUNGRY
+            : ((h > 50) ? NHC.HUNGRY : ((h > 0) ? NHC.WEAK : NHC.FAINTING)))) >>>
+            0;
 
     /* While you're eating, you may pass from WEAK to HUNGRY to NOT_HUNGRY.
      * This should not produce the message "you only feel hungry now";
@@ -3859,7 +5374,8 @@ export function* newuhs(incr) {
      * were added or if HUNGRY and WEAK were separated by a big enough
      * gap to fit two bites.
      */
-    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood || cptr.ld1so(gf, $instance_globals_f_force_save_hs)) {
+    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood ||
+            cptr.ld1so(gf, $instance_globals_f_force_save_hs)) {
         if (!__static_newuhs_saved_hs) {
             __static_newuhs_save_hs = cptr.ldI32o(u, $you_uhs);
             __static_newuhs_saved_hs = 1;
@@ -3875,7 +5391,10 @@ export function* newuhs(incr) {
 
     if (newhs == NHC.FAINTING) {
         /* u,uhunger is likely to be negative at this point */
-        let uhunger_div_by_10 = Math.imul(sgn(cptr.ldI32o(u, $you_uhunger)), ((((Math.abs(cptr.ldI32o(u, $you_uhunger)) + 5) | 0) / 10) | 0));
+        let uhunger_div_by_10 = Math.imul(
+            sgn(cptr.ldI32o(u, $you_uhunger)),
+            ((((Math.abs(cptr.ldI32o(u, $you_uhunger)) + 5) | 0) / 10) | 0)
+        );
 
         if (is_fainted())
             newhs = NHC.FAINTED;
@@ -3886,7 +5405,13 @@ export function* newuhs(incr) {
                 /* stop what you're doing, then faint */
                 (yield* stop_occupation());
                 (yield* You(__s_faint_from_lack_of_food));
-                incr_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop), $prop_intrinsic), duration);
+                incr_itimeout(
+                    cptr.add(
+                        cptr.add(cptr.add(u, $you_uprops), NHC.DEAF, $sizeof_prop),
+                        $prop_intrinsic
+                    ),
+                    duration
+                );
                 cptr.st1(disp, 1);
                 nomul(-duration);
                 cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_fainted_from_lack_of_food);
@@ -3900,7 +5425,8 @@ export function* newuhs(incr) {
             /* this used to be -(200 + 20 * Con) but that was when being asleep
                suppressed per-turn uhunger decrement but being fainted didn't;
                now uhunger becomes more negative at a slower rate */
-        } else if (cptr.ldI32o(u, $you_uhunger) < -((100 + Math.imul(10, (acurr(NHC.A_CON)))) | 0)) {
+        } else if (cptr.ldI32o(u, $you_uhunger) <
+                -((100 + Math.imul(10, (acurr(NHC.A_CON)))) | 0)) {
             cptr.stI32o(u, $you_uhs, NHC.STARVED);
             cptr.st1(disp, 1);
             (yield* bot());
@@ -3934,21 +5460,56 @@ export function* newuhs(incr) {
         switch (newhs) {
             case NHC.HUNGRY:
             if (Hallucination()) {
-                (yield* You(!incr ? __s_now_have_a_lesser_case_of_the_munchies : __s_are_getting_the_munchies));
+                (yield* You(!incr
+                        ? __s_now_have_a_lesser_case_of_the_munchies
+                        : __s_are_getting_the_munchies));
             } else
-                (yield* You(__s_pct_s_dot, !incr ? __s_only_feel_hungry_now : ((cptr.ldI32o(u, $you_uhunger) < 145) ? __s_feel_hungry : __s_are_beginning_to_feel_hungry)));
-            if (incr && cptr.ldPtro(go, $instance_globals_o_occupation) && (cptr.ldPtro(go, $instance_globals_o_occupation) !== eatfood && cptr.ldPtro(go, $instance_globals_o_occupation) !== opentin))
+                (yield* You(
+                    __s_pct_s_dot,
+                    !incr
+                        ? __s_only_feel_hungry_now
+                        : ((cptr.ldI32o(u, $you_uhunger) < 145)
+                            ? __s_feel_hungry
+                            : __s_are_beginning_to_feel_hungry)
+                ));
+            if (incr &&
+                    cptr.ldPtro(go, $instance_globals_o_occupation) &&
+                    (cptr.ldPtro(go, $instance_globals_o_occupation) !== eatfood &&
+                        cptr.ldPtro(go, $instance_globals_o_occupation) !== opentin))
                 (yield* stop_occupation());
             end_running(1);
             break;
             case NHC.WEAK:
             if (Hallucination())
-                (yield* pline(!incr ? __s_you_still_have_the_munchies : __s_the_munchies_are_interfering_with_your));
-            else if (incr && ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_VALKYRIE)))
-                (yield* pline(__s_s_needs_food_badly, ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_VALKYRIE)) ? cptr.ldPtro(gu, $instance_globals_u_urole) : __s_elf));
+                (yield* pline(!incr
+                        ? __s_you_still_have_the_munchies
+                        : __s_the_munchies_are_interfering_with_your));
+            else if (incr &&
+                    ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ||
+                        (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF) ||
+                        (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                            NHC.PM_VALKYRIE)))
+                (yield* pline(
+                    __s_s_needs_food_badly,
+                    ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ||
+                        (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                            NHC.PM_VALKYRIE))
+                        ? cptr.ldPtro(gu, $instance_globals_u_urole)
+                        : __s_elf
+                ));
             else
-                (yield* You(__s_s_weak, !incr ? __s_are_still : ((cptr.ldI32o(u, $you_uhunger) < 45) ? __s_feel : __s_are_beginning_to_feel)));
-            if (incr && cptr.ldPtro(go, $instance_globals_o_occupation) && (cptr.ldPtro(go, $instance_globals_o_occupation) !== eatfood && cptr.ldPtro(go, $instance_globals_o_occupation) !== opentin))
+                (yield* You(
+                    __s_s_weak,
+                    !incr
+                        ? __s_are_still
+                        : ((cptr.ldI32o(u, $you_uhunger) < 45)
+                            ? __s_feel
+                            : __s_are_beginning_to_feel)
+                ));
+            if (incr &&
+                    cptr.ldPtro(go, $instance_globals_o_occupation) &&
+                    (cptr.ldPtro(go, $instance_globals_o_occupation) !== eatfood &&
+                        cptr.ldPtro(go, $instance_globals_o_occupation) !== opentin))
                 (yield* stop_occupation());
             end_running(1);
             break;
@@ -3993,15 +5554,32 @@ function offer_ok(obj) {
     if (!obj)
         return getobj_else ? NHC.GETOBJ_EXCLUDE_NONINVENT : NHC.GETOBJ_EXCLUDE;
 
-    if (cptr.ld1so(obj, $obj_oclass) != NHC.FOOD_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.AMULET_CLASS)
+    if (cptr.ld1so(obj, $obj_oclass) != NHC.FOOD_CLASS &&
+            cptr.ld1so(obj, $obj_oclass) != NHC.AMULET_CLASS)
         return NHC.GETOBJ_EXCLUDE;
 
-    if (cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE && cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR && cptr.ldI16o(obj, $obj_otyp) != NHC.FAKE_AMULET_OF_YENDOR)
+    if (cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE &&
+            cptr.ldI16o(obj, $obj_otyp) != NHC.AMULET_OF_YENDOR &&
+            cptr.ldI16o(obj, $obj_otyp) != NHC.FAKE_AMULET_OF_YENDOR)
         return NHC.GETOBJ_EXCLUDE_SELECTABLE;
 
     /* suppress corpses on astral, amulets elsewhere
      * (!astral && amulet) || (astral && !amulet) */
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)) ? 1 : 0)) ^ (cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS))
+    if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+        )))) &&
+        on_level(
+            cptr.add(u, $you_uz),
+            cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)
+        )
+        ? 1
+        : 0)) ^
+            (cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS))
         return NHC.GETOBJ_DOWNPLAY;
 
     return NHC.GETOBJ_SUGGEST;
@@ -4025,7 +5603,12 @@ function tin_ok(obj) {
 /* Returns an object representing food.
  * Object may be either on floor or in inventory.
  */
-/** C ref: eat.c:3579 — @param {CPtr<char>} verb @param {CInt} corpsecheck @returns {CPtr<struct obj>} */
+/**
+ * C ref: eat.c:3579
+ * @param {CPtr<char>} verb
+ * @param {CInt} corpsecheck
+ * @returns {CPtr<struct obj>}
+ */
 export function* floorfood(verb, corpsecheck) {
     let otmp;
     let qbuf = new Uint8Array(128);
@@ -4038,20 +5621,57 @@ export function* floorfood(verb, corpsecheck) {
         getobj_else = 0;
         /* if we can't touch floor objects then use invent food only;
            same when 'm' prefix is used--for #eat, it means "skip floor food" */
-        if (cptr.ld1so(iflags, $instance_flags_menu_requested) || !can_reach_floor(1) || (feeding && cptr.ldPtro(u, $you_usteed)) || (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && (((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 16n) != 0n) || (Flying() && !Breathless()))))
+        if (cptr.ld1so(iflags, $instance_flags_menu_requested) ||
+                !can_reach_floor(1) ||
+                (feeding && cptr.ldPtro(u, $you_usteed)) ||
+                (is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
+                    (((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+                        cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) &&
+                        !(((cptr.ldI16o(
+                            (cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_water_level
+                            )),
+                            $d_level_dlevel
+                        ) ||
+                            cptr.ldI16((cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_water_level
+                            )))) &&
+                            on_level(
+                                cptr.add(u, $you_uz),
+                                cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_water_level
+                                )
+                            )))) ||
+                        ((cptr.ldU64o((uptr), $permonst_mflags1) & 16n) != 0n) ||
+                        (Flying() && !Breathless()))))
             break __lbl_skipfloor;
 
         if (feeding && ((cptr.ldU64o((uptr), $permonst_mflags1) & 2147483648n) != 0n)) {
             let gold;
             let ttmp = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 
-            if (ttmp && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 && ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP) {
-                let u_in_beartrap = schar((cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP ? 1 : 0));
+            if (ttmp &&
+                    (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 &&
+                    ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.BEAR_TRAP) {
+                let u_in_beartrap = schar((cptr.ldI32o(u, $you_utrap) &&
+                    cptr.ldI32o(u, $you_utraptype) == NHC.TT_BEARTRAP
+                        ? 1
+                        : 0));
 
                 /* If not already stuck in the trap, perhaps there should
                    be a chance to becoming trapped?  Probably not, because
                    then the trap would just get eaten on the _next_ turn... */
-                void cptr.sprintf(cptr.decay(qbuf), __s_there_is_a_bear_trap_here_s_eat_it, u_in_beartrap ? __s_holding_you : __s_armed);
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_there_is_a_bear_trap_here_s_eat_it,
+                    u_in_beartrap ? __s_holding_you : __s_armed
+                );
                 if ((c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 110, 1))) == 121) {
                     let beartrap;
 
@@ -4059,7 +5679,11 @@ export function* floorfood(verb, corpsecheck) {
                     if (u_in_beartrap)
                         (yield* reset_utrap(1));
                     beartrap = (yield* mksobj(NHC.BEARTRAP, 1, 0));
-                    void cptr.sprintf(cptr.decay(qbuf), __s_you_only_manage_to_s_the_bear_trap, u_in_beartrap ? __s_free_yourself_from : __s_disarm);
+                    void cptr.sprintf(
+                        cptr.decay(qbuf),
+                        __s_you_only_manage_to_s_the_bear_trap,
+                        u_in_beartrap ? __s_free_yourself_from : __s_disarm
+                    );
                     if ((yield* check_capacity(cptr.decay(qbuf))) && beartrap) {
                         (yield* obj_extract_self(beartrap));
                         (yield* dropy(beartrap));  /* put it on the floor */
@@ -4071,16 +5695,52 @@ export function* floorfood(verb, corpsecheck) {
                 }
                 ++getobj_else;
             }
-            if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.IRONBARS) {
+            if (cptr.ld1so3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                    NHC.IRONBARS) {
                 /* already verified that hero is metallivorous above */
-                let nodig = schar(((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.W_NONDIGGABLE) != 0));
+                let nodig = schar(((((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                        NHM.W_NONDIGGABLE) != 0));
 
                 c = 110;
                 void cptr.strcpy(cptr.decay(qbuf), __s_there_are_iron_bars_here);
                 if (nodig || cptr.ldI32o(u, $you_uhunger) > 1500) {
-                    (yield* pline(__s_s_but_you_s_eat_them, cptr.decay(qbuf), nodig ? __s_cannot : __s_are_too_full_to));
+                    (yield* pline(
+                        __s_s_but_you_s_eat_them,
+                        cptr.decay(qbuf),
+                        nodig ? __s_cannot : __s_are_too_full_to
+                    ));
                 } else {
-                    void cptr.strcat(cptr.decay(qbuf), (!cptr.ld1so(svc, $context_info_digging + $dig_info_chew) || !((cptr.ldI16o(svc, $context_info_digging + $dig_info_pos)) == cptr.ldI16(u) && (cptr.ldI16o(svc, $context_info_digging + $dig_info_pos + $nhcoord_y)) == cptr.ldI16o(u, $you_uy)) || !on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz))) ? __s_eat_them : __s_resume_eating_them);
+                    void cptr.strcat(
+                        cptr.decay(qbuf),
+                        (!cptr.ld1so(svc, $context_info_digging + $dig_info_chew) ||
+                            !((cptr.ldI16o(svc, $context_info_digging + $dig_info_pos)) ==
+                                cptr.ldI16(u) &&
+                                (cptr.ldI16o(
+                                    svc,
+                                    $context_info_digging + $dig_info_pos + $nhcoord_y
+                                )) ==
+                                    cptr.ldI16o(u, $you_uy)) ||
+                            !on_level(
+                                cptr.add(svc, $context_info_digging + $dig_info_level),
+                                cptr.add(u, $you_uz)
+                            ))
+                            ? __s_eat_them
+                            : __s_resume_eating_them
+                    );
                     c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 110, 1));
                 }
                 if (c == 121)
@@ -4089,11 +5749,16 @@ export function* floorfood(verb, corpsecheck) {
                     return null;
                 ++getobj_else;
             }
-            if (!cptr.eq(uptr, cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)) && (gold = g_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null) {
+            if (!cptr.eq(uptr, cptr.add(mons, NHC.PM_RUST_MONSTER, $sizeof_permonst)) &&
+                    (gold = g_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null) {
                 if (cptr.ldI64o(gold, $obj_quan) == 1n)
                     void cptr.sprintf(cptr.decay(qbuf), __s_there_is_1_gold_piece_here_eat_it);
                 else
-                    void cptr.sprintf(cptr.decay(qbuf), __s_there_are_ld_gold_pieces_here_eat_them, cptr.ldI64o(gold, $obj_quan));
+                    void cptr.sprintf(
+                        cptr.decay(qbuf),
+                        __s_there_are_ld_gold_pieces_here_eat_them,
+                        cptr.ldI64o(gold, $obj_quan)
+                    );
                 if ((c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 110, 1))) == 121) {
                     return gold;
                 } else if (c == 113) {
@@ -4104,8 +5769,28 @@ export function* floorfood(verb, corpsecheck) {
         }
 
         /* Is there some food (probably a heavy corpse) here on the ground? */
-        for (otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
-            if (corpsecheck ? (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && (corpsecheck == 1 || tinnable(otmp)) ? 1 : 0) : (feeding ? (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS && is_edible(otmp) ? 1 : 0) : cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS)) {
+        for (
+            otmp = cptr.ldPtro3(
+                svl,
+                cptr.ldI16(u),
+                168,
+                cptr.ldI16o(u, $you_uy),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_objects
+            );
+            otmp;
+            otmp = cptr.ldPtro(otmp, $obj_v)
+        ) {
+            if (corpsecheck
+                    ? (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE &&
+                        (corpsecheck == 1 || tinnable(otmp))
+                        ? 1
+                        : 0)
+                    : (feeding
+                        ? (cptr.ld1so(otmp, $obj_oclass) != NHC.COIN_CLASS && is_edible(otmp)
+                            ? 1
+                            : 0)
+                        : cptr.ld1so(otmp, $obj_oclass) == NHC.FOOD_CLASS)) {
                 let qsfx = new Uint8Array(128);
                 let one = schar((cptr.ldI64o(otmp, $obj_quan) == 1n));
 
@@ -4123,7 +5808,15 @@ export function* floorfood(verb, corpsecheck) {
                    "There are <N objects> here; <verb> one?" */
                 void cptr.sprintf(cptr.decay(qbuf), __s_there_s, (yield* otense(otmp, __s_are)));
                 void cptr.sprintf(cptr.decay(qsfx), __s_here_s_s, verb, one ? __s_it : __s_one);
-                void (yield* safe_qbuf(cptr.decay(qbuf), cptr.decay(qbuf), cptr.decay(qsfx), otmp, doname, ansimpleoname, one ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something) : __s_things));
+                void (yield* safe_qbuf(
+                    cptr.decay(qbuf),
+                    cptr.decay(qbuf),
+                    cptr.decay(qsfx),
+                    otmp,
+                    doname,
+                    ansimpleoname,
+                    one ? cptr.ldPtro(c_common_strings, $c_common_strings_c_something) : __s_things
+                ));
                 if ((c = (yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 110, 1))) == 121)
                     return otmp;
                 else if (c == 113)
@@ -4184,11 +5877,19 @@ export function* vomit() {
     if (cptr.ldI64o(gm, $instance_globals_m_multi) >= -2n) {
         nomul(-2);
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_vomiting);
-        cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again));
+        cptr.stPtro(
+            gn,
+            $instance_globals_n_nomovemsg,
+            cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again)
+        );
     }
 
     if (spewed) {
-        let mattk = attacktype_fordmg(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), NHM.AT_BREA, NHM.AD_ACID);
+        let mattk = attacktype_fordmg(
+            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+            NHM.AT_BREA,
+            NHM.AD_ACID
+        );
 
         /* currently, only yellow dragons can breathe acid */
         if (mattk) {
@@ -4196,13 +5897,29 @@ export function* vomit() {
             (yield* ubreatheu(mattk));
         }
         /* vomiting on an altar is, all things considered, rather impolite */
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
+        if (((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.ALTAR))
             (yield* altar_wrath(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
         /* if poly'd into acidic form, stomach acid is stronger than normal */
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 134217728n) != 0n)) {
+        if (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags1
+        ) &
+                134217728n) != 0n)) {
             /* TODO: if there's a web here, destroy that too (before ice) */
             if (is_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-                (yield* melt_ice(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), __s_your_stomach_acid_melts_straight));
+                (yield* melt_ice(
+                    cptr.ldI16(u),
+                    cptr.ldI16o(u, $you_uy),
+                    __s_your_stomach_acid_melts_straight
+                ));
         }
     }
 }
@@ -4220,7 +5937,10 @@ export function* eaten_stat(base, obj) {
         uneaten_amt = full_amount;
     }
 
-    base = Number(BigInt.asIntN(32, (full_amount ? BigInt.asIntN(64, BigInt(base) * uneaten_amt) / full_amount : 0n)));
+    base = Number(BigInt.asIntN(
+        32,
+        (full_amount ? BigInt.asIntN(64, BigInt(base) * uneaten_amt) / full_amount : 0n)
+    ));
     return (base < 1) ? 1 : base;
 }
 
@@ -4232,8 +5952,17 @@ export function* consume_oeaten(obj, amt) {
         let otyp = cptr.ldI16o(obj, $obj_otyp);
 
         if (otyp == NHC.CORPSE || otyp == NHC.EGG || otyp == NHC.TIN) {
-            void cptr.strcpy(cptr.decay(itembuf), (otyp == NHC.CORPSE) ? __s_corpse : ((otyp == NHC.EGG) ? __s_egg : ((otyp == NHC.TIN) ? __s_tin : __s_other)));
-            void cptr.sprintf(eos(cptr.decay(itembuf)), __s_sp_lbrack_pct_d_rbrack, cptr.ldI32o(obj, $obj_corpsenm));
+            void cptr.strcpy(
+                cptr.decay(itembuf),
+                (otyp == NHC.CORPSE)
+                    ? __s_corpse
+                    : ((otyp == NHC.EGG) ? __s_egg : ((otyp == NHC.TIN) ? __s_tin : __s_other))
+            );
+            void cptr.sprintf(
+                eos(cptr.decay(itembuf)),
+                __s_sp_lbrack_pct_d_rbrack,
+                cptr.ldI32o(obj, $obj_corpsenm)
+            );
         } else {
             void cptr.sprintf(cptr.decay(itembuf), __s_pct_d, otyp);
         }
@@ -4282,7 +6011,11 @@ export function* consume_oeaten(obj, amt) {
        become restored to untouched; set to no bites left */
     if (cptr.ldI32o(obj, $obj_oeaten) == 0) {
         if (cptr.eq(obj, cptr.ldPtro(svc, $context_info_victual)))
-            cptr.stI32o(svc, $context_info_victual + $victual_info_reqtime, cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime));
+            cptr.stI32o(
+                svc,
+                $context_info_victual + $victual_info_reqtime,
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime)
+            );
         cptr.stI32o(obj, $obj_oeaten, 1);  /* smallest possible positive value */
     }
 }
@@ -4292,7 +6025,9 @@ export function* consume_oeaten(obj, amt) {
 /** C ref: eat.c:3877 — @param {CInt} stopping @returns {CInt} */
 export function* maybe_finished_meal(stopping) {
     /* in case consume_oeaten() has decided that the food is all gone */
-    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood && cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) >= cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) {
+    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood &&
+            cptr.ldI32o(svc, $context_info_victual + $victual_info_usedtime) >=
+                cptr.ldI32o(svc, $context_info_victual + $victual_info_reqtime)) {
         if (stopping)
             cptr.stPtro(go, $instance_globals_o_occupation, null);  /* for do_reset_eat */
         /* eatfood() calls done_eating() to use up svc.context.victual.piece */
@@ -4312,7 +6047,8 @@ export function* cant_finish_meal(corpse) {
      * left for another bite.  revive() needs continued access to the
      * corpse and will delete it when done.
      */
-    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood && cptr.eq(cptr.ldPtro(svc, $context_info_victual), corpse)) {
+    if (cptr.ldPtro(go, $instance_globals_o_occupation) === eatfood &&
+            cptr.eq(cptr.ldPtro(svc, $context_info_victual), corpse)) {
         /* normally performed by done_eating() */
         cptr.memcpy(cptr.add(svc, $context_info_victual), zero_victual, 40);  /* victual.piece = 0, .o_id = 0 */
 
@@ -4338,7 +6074,8 @@ export function Popeye(threat) {
         return 0;
     otin = cptr.ldPtro(svc, $context_info_tin);
     /* make sure hero still has access to tin */
-    if (!(cptr.ld1so((otin), $obj_where) == NHM.OBJ_INVENT) && (!obj_here(otin, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || !can_reach_floor(1)))
+    if (!(cptr.ld1so((otin), $obj_where) == NHM.OBJ_INVENT) &&
+            (!obj_here(otin, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) || !can_reach_floor(1)))
         return 0;
     /* unknown tin is assumed to be helpful */
     if (!(cptr.ldI32o(otin, $obj_known) & 1))
@@ -4349,9 +6086,22 @@ export function Popeye(threat) {
         case NHC.HUNGER:
         return schar((mndx != NHC.NON_PM || cptr.ld1so(otin, $obj_spe) == 1 ? 1 : 0));
         case NHC.STONED:
-        return schar((ismnum(mndx) && (mndx == NHC.PM_LIZARD || ((cptr.ldU64o((cptr.add(mons, mndx, $sizeof_permonst)), $permonst_mflags1) & 134217728n) != 0n)) ? 1 : 0));
+        return schar((ismnum(mndx) &&
+            (mndx == NHC.PM_LIZARD ||
+                ((cptr.ldU64o((cptr.add(mons, mndx, $sizeof_permonst)), $permonst_mflags1) &
+                    134217728n) != 0n))
+                ? 1
+                : 0));
         case NHC.SLIMED:
-        return schar((ofood(otin) && cptr.ldI32o((otin), $obj_corpsenm) >= NHC.LOW_PM && (pm_to_cham(cptr.ldI32o((otin), $obj_corpsenm)) != NHC.NON_PM || dmgtype(cptr.add(mons, cptr.ldI32o((otin), $obj_corpsenm), $sizeof_permonst), NHM.AD_POLY)) ? 1 : 0));
+        return schar((ofood(otin) &&
+            cptr.ldI32o((otin), $obj_corpsenm) >= NHC.LOW_PM &&
+            (pm_to_cham(cptr.ldI32o((otin), $obj_corpsenm)) != NHC.NON_PM ||
+                dmgtype(
+                    cptr.add(mons, cptr.ldI32o((otin), $obj_corpsenm), $sizeof_permonst),
+                    NHM.AD_POLY
+                ))
+                ? 1
+                : 0));
         case NHC.SICK:
         case NHC.VOMITING:
         break;
@@ -4376,7 +6126,14 @@ export function* Finish_digestion() {
 // 11 bindings: 1 rebound+refilled, 4 rebound, 6 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(hu_stat), S(zero_victual), S(getobj_else), S(tintxts), S(__static_eat_brains_brainlessness), S(__static_maybe_cannibal_ate_brains), S(__static_eatcorpse_palatable_msgs), S(__static_start_eating_msgbuf), S(foodwords), S(__static_newuhs_save_hs), S(__static_newuhs_saved_hs)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(hu_stat), S(zero_victual), S(getobj_else), S(tintxts),
+        S(__static_eat_brains_brainlessness), S(__static_maybe_cannibal_ate_brains),
+        S(__static_eatcorpse_palatable_msgs), S(__static_start_eating_msgbuf), S(foodwords),
+        S(__static_newuhs_save_hs), S(__static_newuhs_saved_hs)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("eat.js: __resetState before __captureState");

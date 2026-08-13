@@ -19,36 +19,40 @@ import { luaC_step } from './lgc.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $AbsLineInfo_line = FLD.AbsLineInfo_line, $CClosure_nupvalues = FLD.CClosure_nupvalues,
-    $CClosure_tt = FLD.CClosure_tt, $CallInfo_callstatus = FLD.CallInfo_callstatus,
-    $CallInfo_next = FLD.CallInfo_next, $CallInfo_previous = FLD.CallInfo_previous,
-    $CallInfo_top = FLD.CallInfo_top, $CallInfo_u = FLD.CallInfo_u, $CallInfo_u2 = FLD.CallInfo_u2,
-    $LClosure_nupvalues = FLD.LClosure_nupvalues, $LClosure_p = FLD.LClosure_p,
-    $LClosure_upvals = FLD.LClosure_upvals, $Proto_abslineinfo = FLD.Proto_abslineinfo,
-    $Proto_code = FLD.Proto_code, $Proto_is_vararg = FLD.Proto_is_vararg, $Proto_k = FLD.Proto_k,
-    $Proto_lastlinedefined = FLD.Proto_lastlinedefined, $Proto_linedefined = FLD.Proto_linedefined,
-    $Proto_lineinfo = FLD.Proto_lineinfo, $Proto_numparams = FLD.Proto_numparams,
-    $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo, $Proto_sizecode = FLD.Proto_sizecode,
-    $Proto_sizelineinfo = FLD.Proto_sizelineinfo, $Proto_source = FLD.Proto_source,
-    $Proto_upvalues = FLD.Proto_upvalues, $TString_contents = FLD.TString_contents,
-    $TString_shrlen = FLD.TString_shrlen, $TString_u = FLD.TString_u, $TValue_tt_ = FLD.TValue_tt_,
-    $UpVal_v = FLD.UpVal_v, $global_State_GCdebt = FLD.global_State_GCdebt,
-    $global_State_tmname = FLD.global_State_tmname, $lua_Debug_currentline = FLD.lua_Debug_currentline,
-    $lua_Debug_ftransfer = FLD.lua_Debug_ftransfer, $lua_Debug_i_ci = FLD.lua_Debug_i_ci,
-    $lua_Debug_istailcall = FLD.lua_Debug_istailcall, $lua_Debug_isvararg = FLD.lua_Debug_isvararg,
-    $lua_Debug_lastlinedefined = FLD.lua_Debug_lastlinedefined,
-    $lua_Debug_linedefined = FLD.lua_Debug_linedefined, $lua_Debug_name = FLD.lua_Debug_name,
-    $lua_Debug_namewhat = FLD.lua_Debug_namewhat, $lua_Debug_nparams = FLD.lua_Debug_nparams,
-    $lua_Debug_ntransfer = FLD.lua_Debug_ntransfer, $lua_Debug_nups = FLD.lua_Debug_nups,
-    $lua_Debug_short_src = FLD.lua_Debug_short_src, $lua_Debug_source = FLD.lua_Debug_source,
-    $lua_Debug_srclen = FLD.lua_Debug_srclen, $lua_Debug_what = FLD.lua_Debug_what,
-    $lua_State_base_ci = FLD.lua_State_base_ci, $lua_State_basehookcount = FLD.lua_State_basehookcount,
-    $lua_State_ci = FLD.lua_State_ci, $lua_State_errfunc = FLD.lua_State_errfunc,
-    $lua_State_hook = FLD.lua_State_hook, $lua_State_hookcount = FLD.lua_State_hookcount,
-    $lua_State_hookmask = FLD.lua_State_hookmask, $lua_State_l_G = FLD.lua_State_l_G,
-    $lua_State_oldpc = FLD.lua_State_oldpc, $lua_State_stack = FLD.lua_State_stack,
-    $lua_State_status = FLD.lua_State_status, $lua_State_top = FLD.lua_State_top,
-    $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_TValue = FLD.sizeof_TValue,
-    $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
+      $CClosure_tt = FLD.CClosure_tt, $CallInfo_callstatus = FLD.CallInfo_callstatus,
+      $CallInfo_next = FLD.CallInfo_next, $CallInfo_previous = FLD.CallInfo_previous,
+      $CallInfo_top = FLD.CallInfo_top, $CallInfo_u = FLD.CallInfo_u,
+      $CallInfo_u2 = FLD.CallInfo_u2, $LClosure_nupvalues = FLD.LClosure_nupvalues,
+      $LClosure_p = FLD.LClosure_p, $LClosure_upvals = FLD.LClosure_upvals,
+      $Proto_abslineinfo = FLD.Proto_abslineinfo, $Proto_code = FLD.Proto_code,
+      $Proto_is_vararg = FLD.Proto_is_vararg, $Proto_k = FLD.Proto_k,
+      $Proto_lastlinedefined = FLD.Proto_lastlinedefined,
+      $Proto_linedefined = FLD.Proto_linedefined, $Proto_lineinfo = FLD.Proto_lineinfo,
+      $Proto_numparams = FLD.Proto_numparams, $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo,
+      $Proto_sizecode = FLD.Proto_sizecode, $Proto_sizelineinfo = FLD.Proto_sizelineinfo,
+      $Proto_source = FLD.Proto_source, $Proto_upvalues = FLD.Proto_upvalues,
+      $TString_contents = FLD.TString_contents, $TString_shrlen = FLD.TString_shrlen,
+      $TString_u = FLD.TString_u, $TValue_tt_ = FLD.TValue_tt_, $UpVal_v = FLD.UpVal_v,
+      $global_State_GCdebt = FLD.global_State_GCdebt,
+      $global_State_tmname = FLD.global_State_tmname,
+      $lua_Debug_currentline = FLD.lua_Debug_currentline,
+      $lua_Debug_ftransfer = FLD.lua_Debug_ftransfer, $lua_Debug_i_ci = FLD.lua_Debug_i_ci,
+      $lua_Debug_istailcall = FLD.lua_Debug_istailcall,
+      $lua_Debug_isvararg = FLD.lua_Debug_isvararg,
+      $lua_Debug_lastlinedefined = FLD.lua_Debug_lastlinedefined,
+      $lua_Debug_linedefined = FLD.lua_Debug_linedefined, $lua_Debug_name = FLD.lua_Debug_name,
+      $lua_Debug_namewhat = FLD.lua_Debug_namewhat, $lua_Debug_nparams = FLD.lua_Debug_nparams,
+      $lua_Debug_ntransfer = FLD.lua_Debug_ntransfer, $lua_Debug_nups = FLD.lua_Debug_nups,
+      $lua_Debug_short_src = FLD.lua_Debug_short_src, $lua_Debug_source = FLD.lua_Debug_source,
+      $lua_Debug_srclen = FLD.lua_Debug_srclen, $lua_Debug_what = FLD.lua_Debug_what,
+      $lua_State_base_ci = FLD.lua_State_base_ci,
+      $lua_State_basehookcount = FLD.lua_State_basehookcount, $lua_State_ci = FLD.lua_State_ci,
+      $lua_State_errfunc = FLD.lua_State_errfunc, $lua_State_hook = FLD.lua_State_hook,
+      $lua_State_hookcount = FLD.lua_State_hookcount, $lua_State_hookmask = FLD.lua_State_hookmask,
+      $lua_State_l_G = FLD.lua_State_l_G, $lua_State_oldpc = FLD.lua_State_oldpc,
+      $lua_State_stack = FLD.lua_State_stack, $lua_State_status = FLD.lua_State_status,
+      $lua_State_top = FLD.lua_State_top, $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo,
+      $sizeof_TValue = FLD.sizeof_TValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_query = cptr.lit("?");
@@ -90,7 +94,16 @@ const strupval = cptr.bytes("upvalue");
 /** C ref: ldebug.c:44 — @param {CPtr<CallInfo>} ci @returns {CInt} */
 function currentpc(ci) {
     (void 0);
-    return (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, $CallInfo_u)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p)), $Proto_code)) / 4n))))) - 1) | 0);
+    return (((Number(BigInt.asIntN(
+        32,
+        ((cptr.diff(
+            (cptr.ldPtro(ci, $CallInfo_u)),
+            cptr.ldPtro(
+                (cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p)),
+                $Proto_code
+            )
+        ) / 4n))
+    ))) - 1) | 0);
 }
 
 /*
@@ -106,19 +119,37 @@ function currentpc(ci) {
 ** value for MAXIWTHABS or smaller. (Previous releases use a little
 ** smaller value.)
 */
-/** C ref: ldebug.c:63 — @param {CPtr<Proto>} f @param {CInt} pc @param {CPtr<int>} basepc @returns {CInt} */
+/**
+ * C ref: ldebug.c:63
+ * @param {CPtr<Proto>} f
+ * @param {CInt} pc
+ * @param {CPtr<int>} basepc
+ * @returns {CInt}
+ */
 function getbaseline(f, pc, basepc) {
-    if (cptr.ldI32o(f, $Proto_sizeabslineinfo) == 0 || pc < cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), 0, $sizeof_AbsLineInfo)) {
+    if (cptr.ldI32o(f, $Proto_sizeabslineinfo) == 0 ||
+            pc < cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), 0, $sizeof_AbsLineInfo)) {
         cptr.stI32(basepc, -1);  /* start from the beginning */
         return cptr.ldI32o(f, $Proto_linedefined);
     } else {
         let i = ((u32div((((pc)) >>> 0), 128) - 1) >>> 0) | 0;  /* get an estimate */
         /* estimate must be a lower bound of the correct base */
         (void 0);
-        while (((i + 1) | 0) < cptr.ldI32o(f, $Proto_sizeabslineinfo) && pc >= cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), (i + 1) | 0, $sizeof_AbsLineInfo))
+        while (((i + 1) | 0) < cptr.ldI32o(f, $Proto_sizeabslineinfo) &&
+                pc >=
+                    cptr.ldI32o(
+                        cptr.ldPtro(f, $Proto_abslineinfo),
+                        (i + 1) | 0,
+                        $sizeof_AbsLineInfo
+                    ))
             i++;  /* low estimate; adjust it */
         cptr.stI32(basepc, cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo));
-        return cptr.ldI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo, $AbsLineInfo_line);
+        return cptr.ldI32o2(
+            cptr.ldPtro(f, $Proto_abslineinfo),
+            i,
+            $sizeof_AbsLineInfo,
+            $AbsLineInfo_line
+        );
     }
 }
 
@@ -144,7 +175,10 @@ export function luaG_getfuncline(f, pc) {
 
 /** C ref: ldebug.c:101 — @param {CPtr<CallInfo>} ci @returns {CInt} */
 function getcurrentline(ci) {
-    return luaG_getfuncline(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), currentpc(ci));
+    return luaG_getfuncline(
+        cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p),
+        currentpc(ci)
+    );
 }
 
 /*
@@ -175,7 +209,13 @@ function settraps(ci) {
 ** for all platforms where it runs). Moreover, 'hook' is always checked
 ** before being called (see 'luaD_hook').
 */
-/** C ref: ldebug.c:134 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} mask @param {CInt} count */
+/**
+ * C ref: ldebug.c:134
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr} func
+ * @param {CInt} mask
+ * @param {CInt} count
+ */
 export function lua_sethook(L, func, mask, count) {
     if (func === (null) || mask == 0) {
         mask = 0;
@@ -204,14 +244,24 @@ export function lua_gethookcount(L) {
     return cptr.ldI32o(L, $lua_State_basehookcount);
 }
 
-/** C ref: ldebug.c:163 — @param {CPtr<lua_State>} L @param {CInt} level @param {CPtr<lua_Debug>} ar @returns {CInt} */
+/**
+ * C ref: ldebug.c:163
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} level
+ * @param {CPtr<lua_Debug>} ar
+ * @returns {CInt}
+ */
 export function lua_getstack(L, level, ar) {
     let status;
     let ci;
     if (level < 0)
         return 0;  /* invalid (negative) level */
     (void 0);
-    for (ci = cptr.ldPtro(L, $lua_State_ci); level > 0 && !cptr.eq(ci, cptr.add(L, $lua_State_base_ci)); ci = cptr.ldPtro(ci, $CallInfo_previous))
+    for (
+        ci = cptr.ldPtro(L, $lua_State_ci);
+        level > 0 && !cptr.eq(ci, cptr.add(L, $lua_State_base_ci));
+        ci = cptr.ldPtro(ci, $CallInfo_previous)
+    )
         level--;
     if (level == 0 && !cptr.eq(ci, cptr.add(L, $lua_State_base_ci))) {
         status = 1;
@@ -231,19 +281,38 @@ function upvalname(p, uv) {
         return (cptr.add((s), $TString_contents));
 }
 
-/** C ref: ldebug.c:187 — @param {CPtr<CallInfo>} ci @param {CInt} n @param {CPtr<StkId>} pos @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:187
+ * @param {CPtr<CallInfo>} ci
+ * @param {CInt} n
+ * @param {CPtr<StkId>} pos
+ * @returns {CPtr<char>}
+ */
 function findvararg(ci, n, pos) {
-    if (cptr.ld1uo(cptr.ldPtro(((((((cptr.ldPtr(((((cptr.ldPtr(ci)))))))))))), $LClosure_p), $Proto_is_vararg)) {
+    if (cptr.ld1uo(
+        cptr.ldPtro(((((((cptr.ldPtr(((((cptr.ldPtr(ci)))))))))))), $LClosure_p),
+        $Proto_is_vararg
+    )) {
         let nextra = cptr.ldI32o(ci, $CallInfo_u + 12);
         if (n >= -nextra) {
-            cptr.stPtr(pos, cptr.add(cptr.add(cptr.ldPtr(ci), -(nextra), 16), -(((n + 1) | 0)), 16));
+            cptr.stPtr(
+                pos,
+                cptr.add(cptr.add(cptr.ldPtr(ci), -(nextra), 16), -(((n + 1) | 0)), 16)
+            );
             return __s_vararg;  /* generic name for any vararg */
         }
     }
     return null;  /* no such vararg */
 }
 
-/** C ref: ldebug.c:199 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CInt} n @param {CPtr<StkId>} pos @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:199
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<CallInfo>} ci
+ * @param {CInt} n
+ * @param {CPtr<StkId>} pos
+ * @returns {CPtr<char>}
+ */
 export function luaG_findlocal(L, ci, n, pos) {
     let base = cptr.add(cptr.ldPtr(ci), 1, 16);
     let name = null;
@@ -251,13 +320,21 @@ export function luaG_findlocal(L, ci, n, pos) {
         if (n < 0)
             return findvararg(ci, n, pos);
         else
-            name = luaF_getlocalname(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), n, currentpc(ci));
+            name = luaF_getlocalname(
+                cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p),
+                n,
+                currentpc(ci)
+            );
     }
     if (cptr.eq(name, (null))) {
-        let limit = (cptr.eq(ci, cptr.ldPtro(L, $lua_State_ci))) ? cptr.ldPtro(L, $lua_State_top) : cptr.ldPtr(cptr.ldPtro(ci, $CallInfo_next));
+        let limit = (cptr.eq(ci, cptr.ldPtro(L, $lua_State_ci)))
+                ? cptr.ldPtro(L, $lua_State_top)
+                : cptr.ldPtr(cptr.ldPtro(ci, $CallInfo_next));
         if (cptr.diff(limit, base) / 16n >= BigInt(n) && n > 0) {
             /* generic name for any valid slot */
-            name = (!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)) ? __s_temporary : __s_c_temporary;
+            name = (!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))
+                    ? __s_temporary
+                    : __s_c_temporary;
         } else
             return null;  /* no name */
     }
@@ -266,15 +343,35 @@ export function luaG_findlocal(L, ci, n, pos) {
     return name;
 }
 
-/** C ref: ldebug.c:223 — @param {CPtr<lua_State>} L @param {CPtr<lua_Debug>} ar @param {CInt} n @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:223
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<lua_Debug>} ar
+ * @param {CInt} n
+ * @returns {CPtr<char>}
+ */
 export function lua_getlocal(L, ar, n) {
     let name;
     (void 0);
     if (cptr.eq(ar, (null))) {
-        if (!((cptr.ld1uo(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))), $TValue_tt_)) == 70))
+        if (!((cptr.ld1uo(
+            ((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))))),
+            $TValue_tt_
+        )) == 70))
             name = null;
         else
-            name = luaF_getlocalname(cptr.ldPtro(((((((cptr.ldPtr(((((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)))))))))))), $LClosure_p), n, 0);
+            name = luaF_getlocalname(
+                cptr.ldPtro(
+                    ((((((cptr.ldPtr(((((cptr.add(
+                        cptr.ldPtro(L, $lua_State_top),
+                        -(1),
+                        16
+                    )))))))))))),
+                    $LClosure_p
+                ),
+                n,
+                0
+            );
     } else {
         let pos = cptr.box(null);  /* to avoid warnings */
         name = luaG_findlocal(L, cptr.ldPtro(ar, $lua_Debug_i_ci), n, pos);
@@ -289,7 +386,11 @@ export function lua_getlocal(L, ar, n) {
             }
             ;
             {
-                cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+                cptr.postinc(
+                    () => cptr.ldPtro(L, $lua_State_top),
+                    (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                    16
+                );
                 (void L, (void 0));
             }
             ;
@@ -299,7 +400,13 @@ export function lua_getlocal(L, ar, n) {
     return name;
 }
 
-/** C ref: ldebug.c:245 — @param {CPtr<lua_State>} L @param {CPtr<lua_Debug>} ar @param {CInt} n @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:245
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<lua_Debug>} ar
+ * @param {CInt} n
+ * @returns {CPtr<char>}
+ */
 export function lua_setlocal(L, ar, n) {
     let pos = cptr.box(null);  /* to avoid warnings */
     let name;
@@ -315,7 +422,11 @@ export function lua_setlocal(L, ar, n) {
             (void 0);
         }
         ;
-        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pop value */
+        cptr.postdec(
+            () => cptr.ldPtro(L, $lua_State_top),
+            (v) => { cptr.stPtro(L, $lua_State_top, v); },
+            16
+        );  /* pop value */
     }
     (void 0);
     return name;
@@ -332,20 +443,44 @@ function funcinfo(ar, cl) {
     } else {
         let p = cptr.ldPtro(cl, $LClosure_p);
         if (cptr.ldPtro(p, $Proto_source)) {
-            cptr.stPtro(ar, $lua_Debug_source, (cptr.add((cptr.ldPtro(p, $Proto_source)), $TString_contents)));
-            cptr.stU64o(ar, $lua_Debug_srclen, (cptr.ld1uo((cptr.ldPtro(p, $Proto_source)), $TString_shrlen) != 255 ? BigInt(cptr.ld1uo((cptr.ldPtro(p, $Proto_source)), $TString_shrlen) >>> 0) : cptr.ldU64o((cptr.ldPtro(p, $Proto_source)), $TString_u)));
+            cptr.stPtro(
+                ar,
+                $lua_Debug_source,
+                (cptr.add((cptr.ldPtro(p, $Proto_source)), $TString_contents))
+            );
+            cptr.stU64o(
+                ar,
+                $lua_Debug_srclen,
+                (cptr.ld1uo((cptr.ldPtro(p, $Proto_source)), $TString_shrlen) != 255
+                    ? BigInt(cptr.ld1uo((cptr.ldPtro(p, $Proto_source)), $TString_shrlen) >>> 0)
+                    : cptr.ldU64o((cptr.ldPtro(p, $Proto_source)), $TString_u))
+            );
         } else {
             cptr.stPtro(ar, $lua_Debug_source, __s_eq_query);
             cptr.stU64o(ar, $lua_Debug_srclen, (BigInt.asUintN(64, 3n / 1n - 1n)));
         }
         cptr.stI32o(ar, $lua_Debug_linedefined, cptr.ldI32o(p, $Proto_linedefined));
         cptr.stI32o(ar, $lua_Debug_lastlinedefined, cptr.ldI32o(p, $Proto_lastlinedefined));
-        cptr.stPtro(ar, $lua_Debug_what, (cptr.ldI32o(ar, $lua_Debug_linedefined) == 0) ? __s_main : __s_lua);
+        cptr.stPtro(
+            ar,
+            $lua_Debug_what,
+            (cptr.ldI32o(ar, $lua_Debug_linedefined) == 0) ? __s_main : __s_lua
+        );
     }
-    luaO_chunkid(cptr.add(ar, $lua_Debug_short_src), cptr.ldPtro(ar, $lua_Debug_source), cptr.ldU64o(ar, $lua_Debug_srclen));
+    luaO_chunkid(
+        cptr.add(ar, $lua_Debug_short_src),
+        cptr.ldPtro(ar, $lua_Debug_source),
+        cptr.ldU64o(ar, $lua_Debug_srclen)
+    );
 }
 
-/** C ref: ldebug.c:285 — @param {CPtr<Proto>} p @param {CInt} currentline @param {CInt} pc @returns {CInt} */
+/**
+ * C ref: ldebug.c:285
+ * @param {CPtr<Proto>} p
+ * @param {CInt} currentline
+ * @param {CInt} pc
+ * @returns {CInt}
+ */
 function nextline(p, currentline, pc) {
     if (cptr.ld1uo(cptr.ldPtro(p, $Proto_lineinfo), pc) != -128)
         return (currentline + cptr.ld1uo(cptr.ldPtro(p, $Proto_lineinfo), pc)) | 0;
@@ -358,7 +493,11 @@ function collectvalidlines(L, f) {
     if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), $CClosure_tt) == 6)) {
         (cptr.st1o((((cptr.ldPtro(L, $lua_State_top)))), $TValue_tt_, 0));
         {
-            cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+            cptr.postinc(
+                () => cptr.ldPtro(L, $lua_State_top),
+                (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                16
+            );
             (void L, (void 0));
         }
         ;
@@ -375,7 +514,11 @@ function collectvalidlines(L, f) {
         }
         ;
         {
-            cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+            cptr.postinc(
+                () => cptr.ldPtro(L, $lua_State_top),
+                (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                16
+            );
             (void L, (void 0));
         }
         ;
@@ -398,7 +541,13 @@ function collectvalidlines(L, f) {
     }
 }
 
-/** C ref: ldebug.c:324 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr<char *>} name @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:324
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<CallInfo>} ci
+ * @param {CPtr<char *>} name
+ * @returns {CPtr<char>}
+ */
 function getfuncname(L, ci, name) {
     /* calling function is a known function? */
     if (!cptr.eq(ci, (null)) && !(cptr.ldU16o(ci, $CallInfo_callstatus) & 32))
@@ -407,7 +556,15 @@ function getfuncname(L, ci, name) {
         return null;  /* no way to find a name */
 }
 
-/** C ref: ldebug.c:332 — @param {CPtr<lua_State>} L @param {CPtr<char>} what @param {CPtr<lua_Debug>} ar @param {CPtr<Closure>} f @param {CPtr<CallInfo>} ci @returns {CInt} */
+/**
+ * C ref: ldebug.c:332
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} what
+ * @param {CPtr<lua_Debug>} ar
+ * @param {CPtr<Closure>} f
+ * @param {CPtr<CallInfo>} ci
+ * @returns {CInt}
+ */
 function auxgetinfo(L, what, ar, f, ci) {
     let status = 1;
     for (; cptr.ld1s(what); what = cptr.add(what, 1)) {
@@ -419,29 +576,55 @@ function auxgetinfo(L, what, ar, f, ci) {
             }
             case 108:
             {
-                cptr.stI32o(ar, $lua_Debug_currentline, (ci && (!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) ? getcurrentline(ci) : -1);
+                cptr.stI32o(
+                    ar,
+                    $lua_Debug_currentline,
+                    (ci && (!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
+                        ? getcurrentline(ci)
+                        : -1
+                );
                 break;
             }
             case 117:
             {
-                cptr.st1o(ar, $lua_Debug_nups, uchar(((cptr.eq(f, (null))) ? 0 : cptr.ld1uo(f, $CClosure_nupvalues))));
+                cptr.st1o(
+                    ar,
+                    $lua_Debug_nups,
+                    uchar(((cptr.eq(f, (null))) ? 0 : cptr.ld1uo(f, $CClosure_nupvalues)))
+                );
                 if (!(!cptr.eq((f), (null)) && cptr.ld1uo((f), $CClosure_tt) == 6)) {
                     cptr.st1o(ar, $lua_Debug_isvararg, 1);
                     cptr.st1o(ar, $lua_Debug_nparams, 0);
                 } else {
-                    cptr.st1o(ar, $lua_Debug_isvararg, schar(cptr.ld1uo(cptr.ldPtro(f, $LClosure_p), $Proto_is_vararg)));
-                    cptr.st1o(ar, $lua_Debug_nparams, cptr.ld1uo(cptr.ldPtro(f, $LClosure_p), $Proto_numparams));
+                    cptr.st1o(
+                        ar,
+                        $lua_Debug_isvararg,
+                        schar(cptr.ld1uo(cptr.ldPtro(f, $LClosure_p), $Proto_is_vararg))
+                    );
+                    cptr.st1o(
+                        ar,
+                        $lua_Debug_nparams,
+                        cptr.ld1uo(cptr.ldPtro(f, $LClosure_p), $Proto_numparams)
+                    );
                 }
                 break;
             }
             case 116:
             {
-                cptr.st1o(ar, $lua_Debug_istailcall, schar(((ci) ? cptr.ldU16o(ci, $CallInfo_callstatus) & 32 : 0)));
+                cptr.st1o(
+                    ar,
+                    $lua_Debug_istailcall,
+                    schar(((ci) ? cptr.ldU16o(ci, $CallInfo_callstatus) & 32 : 0))
+                );
                 break;
             }
             case 110:
             {
-                cptr.stPtro(ar, $lua_Debug_namewhat, getfuncname(L, ci, cptr.add(ar, $lua_Debug_name)));
+                cptr.stPtro(
+                    ar,
+                    $lua_Debug_namewhat,
+                    getfuncname(L, ci, cptr.add(ar, $lua_Debug_name))
+                );
                 if (cptr.eq(cptr.ldPtro(ar, $lua_Debug_namewhat), (null))) {
                     cptr.stPtro(ar, $lua_Debug_namewhat, __s_empty);  /* not found */
                     cptr.stPtro(ar, $lua_Debug_name, null);
@@ -468,7 +651,13 @@ function auxgetinfo(L, what, ar, f, ci) {
     return status;
 }
 
-/** C ref: ldebug.c:388 — @param {CPtr<lua_State>} L @param {CPtr<char>} what @param {CPtr<lua_Debug>} ar @returns {CInt} */
+/**
+ * C ref: ldebug.c:388
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} what
+ * @param {CPtr<lua_Debug>} ar
+ * @returns {CInt}
+ */
 export function lua_getinfo(L, what, ar) {
     let status;
     let cl;
@@ -480,13 +669,20 @@ export function lua_getinfo(L, what, ar) {
         func = ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)));
         (void L, (void 0));
         what = cptr.add(what, 1);  /* skip the '>' */
-        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pop function */
+        cptr.postdec(
+            () => cptr.ldPtro(L, $lua_State_top),
+            (v) => { cptr.stPtro(L, $lua_State_top, v); },
+            16
+        );  /* pop function */
     } else {
         ci = cptr.ldPtro(ar, $lua_Debug_i_ci);
         func = ((cptr.ldPtr(ci)));
         (void 0);
     }
-    cl = (((cptr.ld1uo(((func)), $TValue_tt_)) == 70) || ((cptr.ld1uo(((func)), $TValue_tt_)) == 102)) ? ((((((cptr.ldPtr(((func))))))))) : null;
+    cl = (((cptr.ld1uo(((func)), $TValue_tt_)) == 70) ||
+        ((cptr.ld1uo(((func)), $TValue_tt_)) == 102))
+            ? ((((((cptr.ldPtr(((func)))))))))
+            : null;
     status = auxgetinfo(L, what, ar, cl, ci);
     if (cptr.strchr(what, 102)) {
         {
@@ -499,7 +695,11 @@ export function lua_getinfo(L, what, ar) {
         }
         ;
         {
-            cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+            cptr.postinc(
+                () => cptr.ldPtro(L, $lua_State_top),
+                (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                16
+            );
             (void L, (void 0));
         }
         ;
@@ -527,12 +727,23 @@ function filterpc(pc, jmptarget) {
 /*
 ** Try to find last instruction before 'lastpc' that modified register 'reg'.
 */
-/** C ref: ldebug.c:436 — @param {CPtr<Proto>} p @param {CInt} lastpc @param {CInt} reg @returns {CInt} */
+/**
+ * C ref: ldebug.c:436
+ * @param {CPtr<Proto>} p
+ * @param {CInt} lastpc
+ * @param {CInt} reg
+ * @returns {CInt}
+ */
 function findsetreg(p, lastpc, reg) {
     let pc;
     let setreg = -1;  /* keep last instruction that changed 'reg' */
     let jmptarget = 0;  /* any code before this address is conditional */
-    if ((cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), lastpc, 4)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 128))
+    if ((cptr.ld1uo(
+        cptr.decay(luaP_opmodes),
+        ((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), lastpc, 4)) >>> 0) &
+            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+        1
+    ) & 128))
         lastpc--;  /* previous instruction was not actually executed */
     for (pc = 0; pc < lastpc; pc++) {
         let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);
@@ -559,7 +770,8 @@ function findsetreg(p, lastpc, reg) {
             }
             case NHC.OP_JMP:
             {
-                let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) - 16777215) | 0);
+                let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                        16777215) | 0);
                 let dest = (((pc + 1) | 0) + b) | 0;
                 /* jump does not skip 'lastpc' and is larger than current one? */
                 if (dest <= lastpc && dest > jmptarget)
@@ -580,7 +792,13 @@ function findsetreg(p, lastpc, reg) {
 /*
 ** Find a "name" for the constant 'c'.
 */
-/** C ref: ldebug.c:485 — @param {CPtr<Proto>} p @param {CInt} index @param {CPtr<char *>} name @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:485
+ * @param {CPtr<Proto>} p
+ * @param {CInt} index
+ * @param {CPtr<char *>} name
+ * @returns {CPtr<char>}
+ */
 function kname(p, index, name) {
     let kvalue = cptr.add(cptr.ldPtro(p, $Proto_k), index, $sizeof_TValue);
     if ((((((cptr.ld1uo(((kvalue)), $TValue_tt_))) & 15)) == 4)) {
@@ -592,7 +810,14 @@ function kname(p, index, name) {
     }
 }
 
-/** C ref: ldebug.c:498 — @param {CPtr<Proto>} p @param {CPtr<int>} ppc @param {CInt} reg @param {CPtr<char *>} name @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:498
+ * @param {CPtr<Proto>} p
+ * @param {CPtr<int>} ppc
+ * @param {CInt} reg
+ * @param {CPtr<char *>} name
+ * @returns {CPtr<char>}
+ */
 function basicgetobjname(p, ppc, reg, name) {
     let pc = cptr.ldI32(ppc);
     cptr.stPtr(name, luaF_getlocalname(p, (reg + 1) | 0, pc));
@@ -613,13 +838,28 @@ function basicgetobjname(p, ppc, reg, name) {
             }
             case NHC.OP_GETUPVAL:
             {
-                cptr.stPtr(name, upvalname(p, ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))));
+                cptr.stPtr(
+                    name,
+                    upvalname(
+                        p,
+                        ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)))
+                    )
+                );
                 return cptr.decay(strupval);
             }
             case NHC.OP_LOADK:
-            return kname(p, ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), name);
+            return kname(
+                p,
+                ((((((((i) >>> 15) & (((~(((~0) << 17) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                name
+            );
             case NHC.OP_LOADKX:
-            return kname(p, ((((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), (pc + 1) | 0, 4)) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))), name);
+            return kname(
+                p,
+                ((((((((cptr.ldI32o(cptr.ldPtro(p, $Proto_code), (pc + 1) | 0, 4)) >>> 7) &
+                    (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))),
+                name
+            );
             default:
             break;
         }
@@ -630,7 +870,13 @@ function basicgetobjname(p, ppc, reg, name) {
 /*
 ** Find a "name" for the register 'c'.
 */
-/** C ref: ldebug.c:532 — @param {CPtr<Proto>} p @param {CInt} pc @param {CInt} c @param {CPtr<char *>} name */
+/**
+ * C ref: ldebug.c:532
+ * @param {CPtr<Proto>} p
+ * @param {CInt} pc
+ * @param {CInt} c
+ * @param {CPtr<char *>} name
+ */
 function rname(p, pc, c, name) {
     pc = cptr.box(pc);
     let what = basicgetobjname(p, pc, c, name);  /* search for 'c' */
@@ -641,7 +887,13 @@ function rname(p, pc, c, name) {
 /*
 ** Find a "name" for a 'C' value in an RK instruction.
 */
-/** C ref: ldebug.c:542 — @param {CPtr<Proto>} p @param {CInt} pc @param {CUInt} i @param {CPtr<char *>} name */
+/**
+ * C ref: ldebug.c:542
+ * @param {CPtr<Proto>} p
+ * @param {CInt} pc
+ * @param {CUInt} i
+ * @param {CPtr<char *>} name
+ */
 function rkname(p, pc, i, name) {
     let c = ((((((((i) >>> 24) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* key index */
     if (((((((((i) >>> 15) & (((~(((~0) << 1) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))))
@@ -657,7 +909,14 @@ function rkname(p, pc, i, name) {
 ** that name is the name of a local variable (and not, for instance,
 ** a string). Then check that, if there is a name, it is '_ENV'.
 */
-/** C ref: ldebug.c:558 — @param {CPtr<Proto>} p @param {CInt} pc @param {CUInt} i @param {CInt} isup @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:558
+ * @param {CPtr<Proto>} p
+ * @param {CInt} pc
+ * @param {CUInt} i
+ * @param {CInt} isup
+ * @returns {CPtr<char>}
+ */
 function isEnv(p, pc, i, isup) {
     pc = cptr.box(pc);
     let t = ((((((((i) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)));  /* table index */
@@ -675,7 +934,14 @@ function isEnv(p, pc, i, isup) {
 /*
 ** Extend 'basicgetobjname' to handle table accesses
 */
-/** C ref: ldebug.c:575 — @param {CPtr<Proto>} p @param {CInt} lastpc @param {CInt} reg @param {CPtr<char *>} name @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:575
+ * @param {CPtr<Proto>} p
+ * @param {CInt} lastpc
+ * @param {CInt} reg
+ * @param {CPtr<char *>} name
+ * @returns {CPtr<char>}
+ */
 function getobjname(p, lastpc, reg, name) {
     lastpc = cptr.box(lastpc);
     let kind = basicgetobjname(p, lastpc, reg, name);
@@ -726,14 +992,26 @@ function getobjname(p, lastpc, reg, name) {
 ** Returns what the name is (e.g., "for iterator", "method",
 ** "metamethod") and sets '*name' to point to the name.
 */
-/** C ref: ldebug.c:620 — @param {CPtr<lua_State>} L @param {CPtr<Proto>} p @param {CInt} pc @param {CPtr<char *>} name @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:620
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<Proto>} p
+ * @param {CInt} pc
+ * @param {CPtr<char *>} name
+ * @returns {CPtr<char>}
+ */
 function funcnamefromcode(L, p, pc, name) {
     let tm = 0;  /* (initial value avoids warnings) */
     let i = cptr.ldI32o(cptr.ldPtro(p, $Proto_code), pc, 4);  /* calling instruction */
     switch (((((((i) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)))) {
         case NHC.OP_CALL:
         case NHC.OP_TAILCALL:
-        return getobjname(p, pc, (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)), name);  /* get function name */
+        return getobjname(
+            p,
+            pc,
+            (((((((i) >>> 7) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)),
+            name
+        );  /* get function name */
         case NHC.OP_TFORCALL:
         {
             cptr.stPtr(name, __s_for_iterator);
@@ -792,14 +1070,29 @@ function funcnamefromcode(L, p, pc, name) {
         default:
         return null;  /* cannot find a reasonable name */
     }
-    cptr.stPtr(name, cptr.add((cptr.add((cptr.ldPtro2((cptr.ldPtro(L, $lua_State_l_G)), tm, 8, $global_State_tmname)), $TString_contents)), 2));
+    cptr.stPtr(
+        name,
+        cptr.add(
+            (cptr.add(
+                (cptr.ldPtro2((cptr.ldPtro(L, $lua_State_l_G)), tm, 8, $global_State_tmname)),
+                $TString_contents
+            )),
+            2
+        )
+    );
     return __s_metamethod;
 }
 
 /*
 ** Try to find a name for a function based on how it was called.
 */
-/** C ref: ldebug.c:664 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr<char *>} name @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:664
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<CallInfo>} ci
+ * @param {CPtr<char *>} name
+ * @returns {CPtr<char>}
+ */
 function funcnamefromcall(L, ci, name) {
     if (cptr.ldU16o(ci, $CallInfo_callstatus) & 8) {
         cptr.stPtr(name, __s_query);
@@ -808,7 +1101,12 @@ function funcnamefromcall(L, ci, name) {
         cptr.stPtr(name, __s_gc);
         return __s_metamethod;  /* report it as such */
     } else if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
-        return funcnamefromcode(L, cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), currentpc(ci), name);
+        return funcnamefromcode(
+            L,
+            cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p),
+            currentpc(ci),
+            name
+        );
     else
         return null;
 }
@@ -837,7 +1135,13 @@ function instack(ci, o) {
 ** with instructions OP_GETTABUP/OP_SETTABUP, which operate directly on
 ** upvalues.)
 */
-/** C ref: ldebug.c:706 — @param {CPtr<CallInfo>} ci @param {CPtr<TValue>} o @param {CPtr<char *>} name @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:706
+ * @param {CPtr<CallInfo>} ci
+ * @param {CPtr<TValue>} o
+ * @param {CPtr<char *>} name
+ * @returns {CPtr<char>}
+ */
 function getupvalname(ci, o, name) {
     let c = (((((((cptr.ldPtr(((((cptr.ldPtr((ci))))))))))))));
     let i;
@@ -850,7 +1154,13 @@ function getupvalname(ci, o, name) {
     return null;
 }
 
-/** C ref: ldebug.c:720 — @param {CPtr<lua_State>} L @param {CPtr<char>} kind @param {CPtr<char>} name @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:720
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} kind
+ * @param {CPtr<char>} name
+ * @returns {CPtr<char>}
+ */
 function formatvarinfo(L, kind, name) {
     if (cptr.eq(kind, (null)))
         return __s_empty;  /* no information */
@@ -862,7 +1172,12 @@ function formatvarinfo(L, kind, name) {
 ** Build a string with a "description" for the value 'o', such as
 ** "variable 'x'" or "upvalue 'y'".
 */
-/** C ref: ldebug.c:732 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:732
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<TValue>} o
+ * @returns {CPtr<char>}
+ */
 function varinfo(L, o) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let name = cptr.box(null);  /* to avoid warnings */
@@ -872,7 +1187,12 @@ function varinfo(L, o) {
         if (!kind) {
             let reg = instack(ci, o);  /* try a register */
             if (reg >= 0)
-                kind = getobjname(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), currentpc(ci), reg, name);
+                kind = getobjname(
+                    cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p),
+                    currentpc(ci),
+                    reg,
+                    name
+                );
         }
     }
     return formatvarinfo(L, kind, name.v);
@@ -881,7 +1201,13 @@ function varinfo(L, o) {
 /*
 ** Raise a type error
 */
-/** C ref: ldebug.c:751 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {CPtr<char>} op @param {CPtr<char>} extra */
+/**
+ * C ref: ldebug.c:751
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<TValue>} o
+ * @param {CPtr<char>} op
+ * @param {CPtr<char>} extra
+ */
 function typeerror(L, o, op, extra) {
     let t = luaT_objtypename(L, o);
     luaG_runerror(L, __s_attempt_to_s_a_s_value_s, op, t, extra);
@@ -891,7 +1217,12 @@ function typeerror(L, o, op, extra) {
 ** Raise a type error with "standard" information about the faulty
 ** object 'o' (using 'varinfo').
 */
-/** C ref: ldebug.c:762 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {CPtr<char>} op */
+/**
+ * C ref: ldebug.c:762
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<TValue>} o
+ * @param {CPtr<char>} op
+ */
 export function luaG_typeerror(L, o, op) {
     typeerror(L, o, op, varinfo(L, o));
 }
@@ -910,19 +1241,36 @@ export function luaG_callerror(L, o) {
     typeerror(L, o, __s_call, extra);
 }
 
-/** C ref: ldebug.c:781 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} o @param {CPtr<char>} what */
+/**
+ * C ref: ldebug.c:781
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<TValue>} o
+ * @param {CPtr<char>} what
+ */
 export function luaG_forerror(L, o, what) {
     luaG_runerror(L, __s_bad_for_s_number_expected_got_s, what, luaT_objtypename(L, o));
 }
 
-/** C ref: ldebug.c:787 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 */
+/**
+ * C ref: ldebug.c:787
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<TValue>} p1
+ * @param {CPtr<TValue>} p2
+ */
 export function luaG_concaterror(L, p1, p2) {
-    if ((((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 4) || (((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 3))
+    if ((((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 4) ||
+            (((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 3))
         p1 = p2;
     luaG_typeerror(L, p1, __s_concatenate);
 }
 
-/** C ref: ldebug.c:793 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 @param {CPtr<char>} msg */
+/**
+ * C ref: ldebug.c:793
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<TValue>} p1
+ * @param {CPtr<TValue>} p2
+ * @param {CPtr<char>} msg
+ */
 export function luaG_opinterror(L, p1, p2, msg) {
     if (!(((((cptr.ld1uo(((p1)), $TValue_tt_))) & 15)) == 3))
         p2 = p1;  /* now second is wrong */
@@ -932,7 +1280,12 @@ export function luaG_opinterror(L, p1, p2, msg) {
 /*
 ** Error when both values are convertible to numbers, but not to integers
 */
-/** C ref: ldebug.c:804 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 */
+/**
+ * C ref: ldebug.c:804
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<TValue>} p1
+ * @param {CPtr<TValue>} p2
+ */
 export function luaG_tointerror(L, p1, p2) {
     let temp = cptr.box(0n);
     if (!luaV_tointegerns(p1, temp, NHC.F2Ieq))
@@ -940,7 +1293,12 @@ export function luaG_tointerror(L, p1, p2) {
     luaG_runerror(L, __s_number_s_has_no_integer_representation, varinfo(L, p2));
 }
 
-/** C ref: ldebug.c:812 — @param {CPtr<lua_State>} L @param {CPtr<TValue>} p1 @param {CPtr<TValue>} p2 */
+/**
+ * C ref: ldebug.c:812
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<TValue>} p1
+ * @param {CPtr<TValue>} p2
+ */
 export function luaG_ordererror(L, p1, p2) {
     let t1 = luaT_objtypename(L, p1);
     let t2 = luaT_objtypename(L, p2);
@@ -951,11 +1309,24 @@ export function luaG_ordererror(L, p1, p2) {
 }
 
 /* add src:line information to 'msg' */
-/** C ref: ldebug.c:823 — @param {CPtr<lua_State>} L @param {CPtr<char>} msg @param {CPtr<TString>} src @param {CInt} line @returns {CPtr<char>} */
+/**
+ * C ref: ldebug.c:823
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} msg
+ * @param {CPtr<TString>} src
+ * @param {CInt} line
+ * @returns {CPtr<char>}
+ */
 export function luaG_addinfo(L, msg, src, line) {
     let buff = new Uint8Array(60);
     if (src)
-        luaO_chunkid(cptr.decay(buff), (cptr.add((src), $TString_contents)), (cptr.ld1uo((src), $TString_shrlen) != 255 ? BigInt(cptr.ld1uo((src), $TString_shrlen) >>> 0) : cptr.ldU64o((src), $TString_u)));
+        luaO_chunkid(
+            cptr.decay(buff),
+            (cptr.add((src), $TString_contents)),
+            (cptr.ld1uo((src), $TString_shrlen) != 255
+                ? BigInt(cptr.ld1uo((src), $TString_shrlen) >>> 0)
+                : cptr.ldU64o((src), $TString_u))
+        );
     else {
         cptr.st1o(cptr.decay(buff), 0, 63, 1);
         cptr.st1o(cptr.decay(buff), 1, 0, 1);
@@ -966,7 +1337,10 @@ export function luaG_addinfo(L, msg, src, line) {
 /** C ref: ldebug.c:835 — @param {CPtr<lua_State>} L */
 export function luaG_errormsg(L) {
     if (cptr.ldI64o(L, $lua_State_errfunc) != 0n) {
-        let errfunc = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(L, $lua_State_errfunc)))));
+        let errfunc = ((cptr.add(
+            (((cptr.ldPtro(L, $lua_State_stack)))),
+            (cptr.ldI64o(L, $lua_State_errfunc))
+        )));
         (void 0);
         {
             let io1 = (((cptr.ldPtro(L, $lua_State_top))));  /* move argument */
@@ -986,7 +1360,11 @@ export function luaG_errormsg(L) {
             (void 0);
         }
         ;
-        cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* assume EXTRA_STACK */
+        cptr.postinc(
+            () => cptr.ldPtro(L, $lua_State_top),
+            (v) => { cptr.stPtro(L, $lua_State_top, v); },
+            16
+        );  /* assume EXTRA_STACK */
         luaD_callnoyield(L, cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16), 1);  /* call it */
     }
     luaD_throw(L, 2);
@@ -1011,7 +1389,15 @@ export function luaG_runerror(L, fmt, ...__va) {
     msg = luaO_pushvfstring(L, fmt, argp);  /* format message */
     argp = null;
     if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) {
-        luaG_addinfo(L, msg, cptr.ldPtro(cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p), $Proto_source), getcurrentline(ci));
+        luaG_addinfo(
+            L,
+            msg,
+            cptr.ldPtro(
+                cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p),
+                $Proto_source
+            ),
+            getcurrentline(ci)
+        );
         {
             let io1 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(2), 16))));  /* remove 'msg' */
             let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
@@ -1021,7 +1407,11 @@ export function luaG_runerror(L, fmt, ...__va) {
             (void 0);
         }
         ;
-        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+        cptr.postdec(
+            () => cptr.ldPtro(L, $lua_State_top),
+            (v) => { cptr.stPtro(L, $lua_State_top, v); },
+            16
+        );
     }
     luaG_errormsg(L);
 }
@@ -1034,7 +1424,13 @@ export function luaG_runerror(L, fmt, ...__va) {
 ** too far apart, there is a good chance of a ABSLINEINFO in the way,
 ** so it goes directly to 'luaG_getfuncline'.
 */
-/** C ref: ldebug.c:873 — @param {CPtr<Proto>} p @param {CInt} oldpc @param {CInt} newpc @returns {CInt} */
+/**
+ * C ref: ldebug.c:873
+ * @param {CPtr<Proto>} p
+ * @param {CInt} oldpc
+ * @param {CInt} newpc
+ * @returns {CInt}
+ */
 function changedline(p, oldpc, newpc) {
     if (cptr.eq(cptr.ldPtro(p, $Proto_lineinfo), (null)))
         return 0;
@@ -1089,7 +1485,12 @@ export function luaG_tracecall(L) {
 ** This function is not "Protected" when called, so it should correct
 ** 'L->top.p' before calling anything that can run the GC.
 */
-/** C ref: ldebug.c:928 — @param {CPtr<lua_State>} L @param {CPtr<Instruction>} pc @returns {CInt} */
+/**
+ * C ref: ldebug.c:928
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<Instruction>} pc
+ * @returns {CInt}
+ */
 export function luaG_traceexec(L, pc) {
     let ci = cptr.ldPtro(L, $lua_State_ci);
     let mask = uchar(cptr.ldI32o(L, $lua_State_hookmask));
@@ -1101,7 +1502,10 @@ export function luaG_traceexec(L, pc) {
     }
     pc = cptr.add(pc, 1, 4);  /* reference is always next instruction */
     cptr.stPtro(ci, $CallInfo_u, pc);  /* save 'pc' */
-    counthook = (mask & 8) && (cptr.stI32o(L, $lua_State_hookcount, cptr.ldI32o(L, $lua_State_hookcount) + -1) == 0) ? 1 : 0;
+    counthook = (mask & 8) &&
+        (cptr.stI32o(L, $lua_State_hookcount, cptr.ldI32o(L, $lua_State_hookcount) + -1) == 0)
+            ? 1
+            : 0;
     if (counthook)
         (cptr.stI32o(L, $lua_State_hookcount, cptr.ldI32o(L, $lua_State_basehookcount)));  /* reset count */
     else if (!(mask & 4))
@@ -1110,14 +1514,26 @@ export function luaG_traceexec(L, pc) {
         cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) & -65);  /* erase mark */
         return 1;  /* do not call hook again (VM yielded, so it did not move) */
     }
-    if (!((cptr.ld1uo(cptr.decay(luaP_opmodes), ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))), 1) & 32) && ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 16) & (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) == 0))
+    if (!((cptr.ld1uo(
+        cptr.decay(luaP_opmodes),
+        ((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 0) &
+            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))),
+        1
+    ) & 32) &&
+            ((((((((cptr.ldI32((cptr.add(cptr.ldPtro(ci, $CallInfo_u), -(1), 4)))) >>> 16) &
+                (((~(((~0) << 8) >>> 0)) << 0) >>> 0)) >>> 0)) | 0))) == 0))
         cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* correct top */
     if (counthook)
         luaD_hook(L, 3, -1, 0, 0);  /* call count hook */
     if (mask & 4) {
         /* 'L->oldpc' may be invalid; use zero in this case */
-        let oldpc = (cptr.ldI32o(L, $lua_State_oldpc) < cptr.ldI32o(p, $Proto_sizecode)) ? cptr.ldI32o(L, $lua_State_oldpc) : 0;
-        let npci = (((Number(BigInt.asIntN(32, ((cptr.diff((pc), cptr.ldPtro((p), $Proto_code)) / 4n))))) - 1) | 0);
+        let oldpc = (cptr.ldI32o(L, $lua_State_oldpc) < cptr.ldI32o(p, $Proto_sizecode))
+                ? cptr.ldI32o(L, $lua_State_oldpc)
+                : 0;
+        let npci = (((Number(BigInt.asIntN(
+            32,
+            ((cptr.diff((pc), cptr.ldPtro((p), $Proto_code)) / 4n))
+        ))) - 1) | 0);
         if (npci <= oldpc || changedline(p, oldpc, npci)) {
             let newline = luaG_getfuncline(p, npci);
             luaD_hook(L, 2, newline, 0, 0);  /* call line hook */

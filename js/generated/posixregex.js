@@ -69,7 +69,12 @@ export function regex_init() {
     return alloc(40);
 }
 
-/** C ref: posixregex.c:66 — @param {CPtr<char>} s @param {CPtr<struct nhregex>} re @returns {CInt} */
+/**
+ * C ref: posixregex.c:66
+ * @param {CPtr<char>} s
+ * @param {CPtr<struct nhregex>} re
+ * @returns {CInt}
+ */
 export function regex_compile(s, re) {
     if (!re)
         return 0;
@@ -78,7 +83,12 @@ export function regex_compile(s, re) {
     return 1;
 }
 
-/** C ref: posixregex.c:76 — @param {CPtr<struct nhregex>} re @param {CPtr<char>} errbuf @returns {CPtr<char>} */
+/**
+ * C ref: posixregex.c:76
+ * @param {CPtr<struct nhregex>} re
+ * @param {CPtr<char>} errbuf
+ * @returns {CPtr<char>}
+ */
 export function regex_error_desc(re, errbuf) {
     if (!re) {
         void cptr.strcpy(errbuf, __s_no_regexp);
@@ -93,7 +103,12 @@ export function regex_error_desc(re, errbuf) {
     return errbuf;
 }
 
-/** C ref: posixregex.c:92 — @param {CPtr<char>} s @param {CPtr<struct nhregex>} re @returns {CInt} */
+/**
+ * C ref: posixregex.c:92
+ * @param {CPtr<char>} s
+ * @param {CPtr<struct nhregex>} re
+ * @returns {CInt}
+ */
 export function regex_match(s, re) {
     let result;
 

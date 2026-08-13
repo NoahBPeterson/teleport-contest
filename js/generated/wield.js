@@ -8,20 +8,36 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { ammo_and_launcher, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_elven_weapon, is_launcher, is_missile, is_plural, is_pole, is_sword, is_weptool, is_wet_towel, pair_of, touch_petrifies } from './nhmacrofn.js';
+import {
+    ammo_and_launcher, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_elven_weapon,
+    is_launcher, is_missile, is_plural, is_pole, is_sword, is_weptool, is_wet_towel, pair_of,
+    touch_petrifies
+} from './nhmacrofn.js';
 import { Blind, Glib, Hallucination, Stone_resistance, URIGHTY, Upolyd } from './nhprop.js';
-import { c_color_names, disp, flags, gi, gm, gu, gy, hands_obj, svc, u, uarmg, uarms, uquiver, uswapwep, uwep, ynqchars } from './decl.js';
+import {
+    c_color_names, disp, flags, gi, gm, gu, gy, hands_obj, svc, u, uarmg, uarms, uquiver, uswapwep,
+    uwep, ynqchars
+} from './decl.js';
 import { setworn } from './worn.js';
-import { arti_speak, artifact_light, is_art, restrict_name, retouch_object, undiscovered_artifact } from './artifact.js';
+import {
+    arti_speak, artifact_light, is_art, restrict_name, retouch_object, undiscovered_artifact
+} from './artifact.js';
 import { begin_burn, end_burn } from './timeout.js';
 import { You, You_cant, Your, pline } from './pline.js';
-import { The, Tobjnam, Yname2, Yobjnam2, an, aobjnam, corpse_xname, doname, killer_xname, makeplural, otense, simpleonames, vtense, xname, yname, yobjnam } from './objnam.js';
+import {
+    The, Tobjnam, Yname2, Yobjnam2, an, aobjnam, corpse_xname, doname, killer_xname, makeplural,
+    otense, simpleonames, vtense, xname, yname, yobjnam
+} from './objnam.js';
 import { objects } from './objects.js';
 import { mons } from './monst.js';
 import { body_part } from './polyself.js';
 import { instapetrify } from './trap.js';
-import { clear_splitobjs, costly_alteration, set_bknown, splitobj, uncurse, unsplitobj, weight } from './mkobj.js';
-import { addinv_nomerge, freeinv, getobj, prinv, splittable, update_inventory, useupall } from './invent.js';
+import {
+    clear_splitobjs, costly_alteration, set_bknown, splitobj, uncurse, unsplitobj, weight
+} from './mkobj.js';
+import {
+    addinv_nomerge, freeinv, getobj, prinv, splittable, update_inventory, useupall
+} from './invent.js';
 import { arti_light_description } from './light.js';
 import { Shk_Your, alter_cost, inside_shop, shop_keeper } from './shk.js';
 import { shkname } from './shknam.js';
@@ -41,28 +57,32 @@ import { encumber_msg } from './pickup.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $RoleName_f = FLD.RoleName_f, $c_color_names_c_amber = FLD.c_color_names_c_amber,
-    $c_color_names_c_blue = FLD.c_color_names_c_blue, $condtests_t_enabled = FLD.condtests_t_enabled,
-    $context_info_objsplit = FLD.context_info_objsplit, $flag_female = FLD.flag_female,
-    $flag_pushweapon = FLD.flag_pushweapon, $flag_verbose = FLD.flag_verbose,
-    $flag_weaponstatus = FLD.flag_weaponstatus, $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_m_multi = FLD.instance_globals_m_multi,
-    $instance_globals_u_unweapon = FLD.instance_globals_u_unweapon,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
-    $obj_bknown = FLD.obj_bknown, $obj_corpsenm = FLD.obj_corpsenm, $obj_cursed = FLD.obj_cursed,
-    $obj_known = FLD.obj_known, $obj_lamplit = FLD.obj_lamplit, $obj_o_id = FLD.obj_o_id,
-    $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass, $obj_oerodeproof = FLD.obj_oerodeproof,
-    $obj_oextra = FLD.obj_oextra, $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask,
-    $obj_owt = FLD.obj_owt, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
-    $obj_split_child_oid = FLD.obj_split_child_oid, $obj_unpaid = FLD.obj_unpaid,
-    $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
-    $permonst_mattk = FLD.permonst_mattk, $permonst_mflags1 = FLD.permonst_mflags1,
-    $permonst_msize = FLD.permonst_msize, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $sizeof_attack = FLD.sizeof_attack,
-    $sizeof_condtests_t = FLD.sizeof_condtests_t, $sizeof_objclass = FLD.sizeof_objclass,
-    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $you_twoweap = FLD.you_twoweap,
-    $you_uhandedness = FLD.you_uhandedness, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-    $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed, $you_uy = FLD.you_uy;
+      $c_color_names_c_blue = FLD.c_color_names_c_blue,
+      $condtests_t_enabled = FLD.condtests_t_enabled,
+      $context_info_objsplit = FLD.context_info_objsplit, $flag_female = FLD.flag_female,
+      $flag_pushweapon = FLD.flag_pushweapon, $flag_verbose = FLD.flag_verbose,
+      $flag_weaponstatus = FLD.flag_weaponstatus,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_m_multi = FLD.instance_globals_m_multi,
+      $instance_globals_u_unweapon = FLD.instance_globals_u_unweapon,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
+      $obj_bknown = FLD.obj_bknown, $obj_corpsenm = FLD.obj_corpsenm, $obj_cursed = FLD.obj_cursed,
+      $obj_known = FLD.obj_known, $obj_lamplit = FLD.obj_lamplit, $obj_o_id = FLD.obj_o_id,
+      $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass,
+      $obj_oerodeproof = FLD.obj_oerodeproof, $obj_oextra = FLD.obj_oextra,
+      $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt,
+      $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
+      $obj_split_child_oid = FLD.obj_split_child_oid, $obj_unpaid = FLD.obj_unpaid,
+      $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
+      $permonst_mattk = FLD.permonst_mattk, $permonst_mflags1 = FLD.permonst_mflags1,
+      $permonst_msize = FLD.permonst_msize, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $sizeof_attack = FLD.sizeof_attack,
+      $sizeof_condtests_t = FLD.sizeof_condtests_t, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $you_twoweap = FLD.you_twoweap, $you_uhandedness = FLD.you_uhandedness,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_s_shining = cptr.lit("%s shining.");
@@ -217,23 +237,41 @@ export function setuwep(obj) {
     setworn(obj, 256n);
     /* handle Ogresmasher before Sunsword; even though they can't be happening
        at the same time, botl flag update should come before pline message */
-    if (cptr.eq(uwep.v, obj) && ((uwep.v && cptr.ld1so(uwep.v, $obj_oartifact) == NHC.ART_OGRESMASHER) || (olduwep && cptr.ld1so(olduwep, $obj_oartifact) == NHC.ART_OGRESMASHER)))
+    if (cptr.eq(uwep.v, obj) &&
+            ((uwep.v && cptr.ld1so(uwep.v, $obj_oartifact) == NHC.ART_OGRESMASHER) ||
+                (olduwep && cptr.ld1so(olduwep, $obj_oartifact) == NHC.ART_OGRESMASHER)))
         cptr.st1(disp, 1);  /* gaining or losing Con bonus */
     /* This message isn't printed in the caller because it happens
      * *whenever* Sunsword is unwielded, from whatever cause. */
-    if (cptr.eq(uwep.v, obj) && artifact_light(olduwep) && (cptr.ldI32o(olduwep, $obj_lamplit) & 1) | 0) {
+    if (cptr.eq(uwep.v, obj) &&
+            artifact_light(olduwep) &&
+            (cptr.ldI32o(olduwep, $obj_lamplit) & 1) | 0) {
         end_burn(olduwep, 0);
         if (!Blind())
             pline(__s_s_shining, Tobjnam(olduwep, __s_stop));
     }
-    if (cptr.eq(uwep.v, obj) && (is_art(uwep.v, NHC.ART_OGRESMASHER) || is_art(olduwep, NHC.ART_OGRESMASHER)))
+    if (cptr.eq(uwep.v, obj) &&
+            (is_art(uwep.v, NHC.ART_OGRESMASHER) || is_art(olduwep, NHC.ART_OGRESMASHER)))
         cptr.st1(disp, 1);
     /* Note: Explicitly wielding a pick-axe will not give a "bashing"
      * message.  Wielding one via 'a'pplying it will.
      * 3.2.2:  Wielding arbitrary objects will give bashing message too.
      */
     if (obj) {
-        cptr.st1o(gu, $instance_globals_u_unweapon, schar(((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) ? is_launcher(obj) || is_ammo(obj) || is_missile(obj) || (is_pole(obj) && !cptr.ldPtro(u, $you_usteed) && !is_art(obj, NHC.ART_SNICKERSNEE)) ? 1 : 0 : (!is_weptool(obj) && !is_wet_towel(obj) ? 1 : 0))));
+        cptr.st1o(
+            gu,
+            $instance_globals_u_unweapon,
+            schar(((cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS)
+                ? is_launcher(obj) ||
+                    is_ammo(obj) ||
+                    is_missile(obj) ||
+                    (is_pole(obj) &&
+                        !cptr.ldPtro(u, $you_usteed) &&
+                        !is_art(obj, NHC.ART_SNICKERSNEE))
+                    ? 1
+                    : 0
+                : (!is_weptool(obj) && !is_wet_towel(obj) ? 1 : 0)))
+        );
     } else
         cptr.st1o(gu, $instance_globals_u_unweapon, 1);  /* for "bare hands" message */
 }
@@ -242,11 +280,18 @@ export function setuwep(obj) {
 function cant_wield_corpse(obj) {
     let kbuf = new Uint8Array(256);
 
-    if (uarmg.v || cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE || !touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)) || Stone_resistance())
+    if (uarmg.v ||
+            cptr.ldI16o(obj, $obj_otyp) != NHC.CORPSE ||
+            !touch_petrifies(cptr.add(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst)) ||
+            Stone_resistance())
         return 0;
 
     /* Prevent wielding cockatrice when not wearing gloves --KAA */
-    You(__s_wield_s_in_your_bare_s, corpse_xname(obj, null, NHM.CXN_PFX_THE), makeplural(body_part(NHC.HAND)));
+    You(
+        __s_wield_s_in_your_bare_s,
+        corpse_xname(obj, null, NHM.CXN_PFX_THE),
+        makeplural(body_part(NHC.HAND))
+    );
     void cptr.sprintf(cptr.decay(kbuf), __s_wielding_s_bare_handed, killer_xname(obj));
     instapetrify(cptr.decay(kbuf));
     return 1;
@@ -256,7 +301,15 @@ function cant_wield_corpse(obj) {
    by #seeweapon (')'), #attributes (^X), and #takeoffall ('A') */
 /** C ref: wield.c:158 @returns {CPtr<char>} */
 export function empty_handed() {
-    return uarmg.v ? __s_empty_handed : (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 131072n) != 0n) ? __s_bare_handed : __s_not_wielding_anything);
+    return uarmg.v
+            ? __s_empty_handed
+            : (((cptr.ldU64o(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mflags1
+            ) &
+                131072n) != 0n)
+                ? __s_bare_handed
+                : __s_not_wielding_anything);
 }
 
 /** C ref: wield.c:169 — @param {CPtr<struct obj>} wep @returns {CInt} */
@@ -279,14 +332,24 @@ function ready_weapon(wep) {
         /* hero must have been life-saved to get here; use a turn */
         res = NHM.ECMD_TIME;  /* corpse won't be wielded */
     } else if (uarms.v && bimanual(wep.v)) {
-        You(__s_cannot_wield_a_two_handed_s_while, is_sword(wep.v) ? __s_sword : (cptr.ldI16o(wep.v, $obj_otyp) == NHC.BATTLE_AXE ? __s_axe : __s_weapon));
+        You(
+            __s_cannot_wield_a_two_handed_s_while,
+            is_sword(wep.v)
+                ? __s_sword
+                : (cptr.ldI16o(wep.v, $obj_otyp) == NHC.BATTLE_AXE ? __s_axe : __s_weapon)
+        );
         res = NHM.ECMD_FAIL;
     } else if (!retouch_object(wep, 0)) {
         res = NHM.ECMD_TIME;  /* takes a turn even though it doesn't get wielded */
     } else {
         /* Weapon WILL be wielded after this point */
         res = NHM.ECMD_TIME;
-        if (((cptr.ldI32o((wep.v), $obj_cursed) & 1) | 0 && ((cptr.ld1so((wep.v), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(wep.v) || cptr.ldI16o((wep.v), $obj_otyp) == NHC.HEAVY_IRON_BALL || cptr.ldI16o((wep.v), $obj_otyp) == NHC.IRON_CHAIN) || cptr.ldI16o((wep.v), $obj_otyp) == NHC.TIN_OPENER))) {
+        if (((cptr.ldI32o((wep.v), $obj_cursed) & 1) | 0 &&
+                ((cptr.ld1so((wep.v), $obj_oclass) == NHC.WEAPON_CLASS ||
+                    is_weptool(wep.v) ||
+                    cptr.ldI16o((wep.v), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
+                    cptr.ldI16o((wep.v), $obj_otyp) == NHC.IRON_CHAIN) ||
+                    cptr.ldI16o((wep.v), $obj_otyp) == NHC.TIN_OPENER))) {
             let tmp = xname(wep.v);
             let thestr = __s_the;
 
@@ -294,7 +357,14 @@ function ready_weapon(wep) {
                 tmp = thestr;
             else
                 tmp = __s_empty;
-            pline(__s_s_s_s_to_your_s_s, tmp, aobjnam(wep.v, __s_weld), (cptr.ldI64o(wep.v, $obj_quan) == 1n) ? __s_itself : __s_themselves, bimanual(wep.v) ? __s_empty : (URIGHTY() ? __s_dominant_right : __s_dominant_left), bimanual(wep.v) ? makeplural(body_part(NHC.HAND)) : body_part(NHC.HAND));
+            pline(
+                __s_s_s_s_to_your_s_s,
+                tmp,
+                aobjnam(wep.v, __s_weld),
+                (cptr.ldI64o(wep.v, $obj_quan) == 1n) ? __s_itself : __s_themselves,
+                bimanual(wep.v) ? __s_empty : (URIGHTY() ? __s_dominant_right : __s_dominant_left),
+                bimanual(wep.v) ? makeplural(body_part(NHC.HAND)) : body_part(NHC.HAND)
+            );
             set_bknown(wep.v, 1);
         } else {
             /* The message must be printed before setuwep (since
@@ -310,7 +380,8 @@ function ready_weapon(wep) {
             let dummy = cptr.ldI64o(wep.v, $obj_owornmask);
 
             cptr.stI64o(wep.v, $obj_owornmask, cptr.ldI64o(wep.v, $obj_owornmask) | 256n);
-            if (cptr.ldI16o(wep.v, $obj_otyp) == NHC.AKLYS && (cptr.ldI64o(wep.v, $obj_owornmask) & 256n) != 0n)
+            if (cptr.ldI16o(wep.v, $obj_otyp) == NHC.AKLYS &&
+                    (cptr.ldI64o(wep.v, $obj_owornmask) & 256n) != 0n)
                 You(__s_secure_the_tether);
             prinv(null, wep.v, 0n);
             cptr.stI64o(wep.v, $obj_owornmask, dummy);
@@ -321,7 +392,15 @@ function ready_weapon(wep) {
             /* skip this message if we already got "empty handed" one above;
                also, Null is not safe for neither TWOWEAPOK() or bimanual() */
             if (uwep.v)
-                You(__s_pct_s_dot, ((((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS) ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v)) : is_weptool(uwep.v)) && !bimanual(uwep.v)) ? cptr.decay(are_no_longer_twoweap) : cptr.decay(can_no_longer_twoweap)));
+                You(
+                    __s_pct_s_dot,
+                    ((((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS)
+                        ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v))
+                        : is_weptool(uwep.v)) &&
+                        !bimanual(uwep.v))
+                        ? cptr.decay(are_no_longer_twoweap)
+                        : cptr.decay(can_no_longer_twoweap))
+                );
         }
 
         /* KMH -- Talking artifacts are finally implemented */
@@ -337,12 +416,16 @@ function ready_weapon(wep) {
         if ((cptr.ldI32o(wep.v, $obj_unpaid) & 1)) {
             let this_shkp;
 
-            if ((this_shkp = shop_keeper(inside_shop(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))) !== null) {
+            if ((this_shkp = shop_keeper(inside_shop(
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy)
+            ))) !== null) {
                 pline(__s_s_says_you_be_careful_with_my_s, shkname(this_shkp), xname(wep.v));
             }
         }
     }
-    if ((had_wep != (uwep.v !== null)) && cptr.ld1so2(condtests, NHC.bl_bareh, $sizeof_condtests_t, $condtests_t_enabled))
+    if ((had_wep != (uwep.v !== null)) &&
+            cptr.ld1so2(condtests, NHC.bl_bareh, $sizeof_condtests_t, $condtests_t_enabled))
         cptr.st1(disp, 1);
     return res;
 }
@@ -373,11 +456,15 @@ function ready_ok(obj) {
         return (cptr.ldI64o(obj, $obj_quan) == 1n) ? NHC.GETOBJ_DOWNPLAY : NHC.GETOBJ_SUGGEST;
 
     if (is_ammo(obj)) {
-        return ((uwep.v && ammo_and_launcher(obj, uwep.v)) || (uswapwep.v && ammo_and_launcher(obj, uswapwep.v))) ? NHC.GETOBJ_SUGGEST : NHC.GETOBJ_DOWNPLAY;
+        return ((uwep.v && ammo_and_launcher(obj, uwep.v)) ||
+            (uswapwep.v && ammo_and_launcher(obj, uswapwep.v)))
+                ? NHC.GETOBJ_SUGGEST
+                : NHC.GETOBJ_DOWNPLAY;
     } else if (is_launcher(obj)) {
         return NHC.GETOBJ_DOWNPLAY;
     } else {
-        if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
+        if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
+                cptr.ld1so(obj, $obj_oclass) == NHC.COIN_CLASS)
             return NHC.GETOBJ_SUGGEST;
         /* Possible extension: exclude weapons that make no sense to throw,
            such as whips, bows, slings, rubber hoses. */
@@ -442,14 +529,19 @@ export function dowield() {
             /* previously interrupted armor removal mustn't be resumed */
             reset_remarm();
             /* if player chose a partial stack but can't wield it, undo split */
-            if (cptr.ldI32o(wep, $obj_o_id) && cptr.ldI32o(wep, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid))
+            if (cptr.ldI32o(wep, $obj_o_id) &&
+                    cptr.ldI32o(wep, $obj_o_id) ==
+                        cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid))
                 unsplitobj(wep);
             return NHM.ECMD_FAIL;
-        } else if (cptr.ldI32o(wep, $obj_o_id) && cptr.ldI32o(wep, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
+        } else if (cptr.ldI32o(wep, $obj_o_id) &&
+                cptr.ldI32o(wep, $obj_o_id) ==
+                    cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
             /* if wep is the result of supplying a count to getobj()
                we don't want to split something already wielded; for
                any other item, we need to give it its own inventory slot */
-            if (uwep.v && cptr.ldI32o(uwep.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit)) {
+            if (uwep.v &&
+                    cptr.ldI32o(uwep.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit)) {
                 unsplitobj(wep);
                 /* wep was merged back to uwep, already_wielded uses wep */
                 wep = uwep.v;
@@ -471,8 +563,15 @@ export function dowield() {
             return doswapweapon();
         } else if (cptr.eq(wep, uquiver.v)) {
             /* offer to split stack if multiple are quivered */
-            if (cptr.ldI64o(uquiver.v, $obj_quan) > 1n && inv_cnt(0) < NHC.invlet_basic && splittable(uquiver.v)) {
-                void cptr.sprintf(cptr.decay(qbuf), __s_you_have_ld_s_readied_wield_one, cptr.ldI64o(uquiver.v, $obj_quan), simpleonames(uquiver.v));
+            if (cptr.ldI64o(uquiver.v, $obj_quan) > 1n &&
+                    inv_cnt(0) < NHC.invlet_basic &&
+                    splittable(uquiver.v)) {
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_you_have_ld_s_readied_wield_one,
+                    cptr.ldI64o(uquiver.v, $obj_quan),
+                    simpleonames(uquiver.v)
+                );
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
                     return NHM.ECMD_OK;
@@ -488,12 +587,22 @@ export function dowield() {
             } else {
                 let use_plural = schar((is_plural(uquiver.v) || pair_of(uquiver.v) ? 1 : 0));
 
-                void cptr.sprintf(cptr.decay(qbuf), __s_you_have_s_readied_wield_s_instead, !use_plural ? __s_that : __s_those, !use_plural ? __s_it : __s_them);
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_you_have_s_readied_wield_s_instead,
+                    !use_plural ? __s_that : __s_those,
+                    !use_plural ? __s_it : __s_them
+                );
             }
             /* require confirmation to wield the quivered weapon */
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uquiver.v);  /* replace qbuf[] contents */
-                pline(__s_s_s_s_readied, cptr.decay(qbuf), simpleonames(uquiver.v), otense(uquiver.v, __s_remain));
+                pline(
+                    __s_s_s_s_readied,
+                    cptr.decay(qbuf),
+                    simpleonames(uquiver.v),
+                    otense(uquiver.v, __s_remain)
+                );
                 return NHM.ECMD_OK;
             }
             /* wielding whole readied stack, so no longer quivered */
@@ -601,11 +710,13 @@ export function doquiver_core(verb) {
                 You(__s_already_have_no_ammunition_readied);
             }
             return NHM.ECMD_OK;
-        } else if (cptr.ldI32o(newquiver, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
+        } else if (cptr.ldI32o(newquiver, $obj_o_id) ==
+                cptr.ldI32o(svc, $context_info_objsplit + $obj_split_child_oid)) {
             /* if newquiver is the result of supplying a count to getobj()
                we don't want to split something already in the quiver;
                for any other item, we need to give it its own inventory slot */
-            if (uquiver.v && cptr.ldI32o(uquiver.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit)) {
+            if (uquiver.v &&
+                    cptr.ldI32o(uquiver.v, $obj_o_id) == cptr.ldI32o(svc, $context_info_objsplit)) {
                 unsplitobj(newquiver);
                 {
                     pline(__s_that_ammunition_is_already_readied);
@@ -633,14 +744,25 @@ export function doquiver_core(verb) {
                 return weld_res ? NHM.ECMD_TIME : NHM.ECMD_OK;
             }
             /* offer to split stack if wielding more than 1 */
-            if (cptr.ldI64o(uwep.v, $obj_quan) > 1n && inv_cnt(0) < NHC.invlet_basic && splittable(uwep.v)) {
-                void cptr.sprintf(cptr.decay(qbuf), __s_you_are_wielding_ld_s_ready_ld_of_them, cptr.ldI64o(uwep.v, $obj_quan), simpleonames(uwep.v), BigInt.asIntN(64, cptr.ldI64o(uwep.v, $obj_quan) - 1n));
+            if (cptr.ldI64o(uwep.v, $obj_quan) > 1n &&
+                    inv_cnt(0) < NHC.invlet_basic &&
+                    splittable(uwep.v)) {
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_you_are_wielding_ld_s_ready_ld_of_them,
+                    cptr.ldI64o(uwep.v, $obj_quan),
+                    simpleonames(uwep.v),
+                    BigInt.asIntN(64, cptr.ldI64o(uwep.v, $obj_quan) - 1n)
+                );
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
                     return NHM.ECMD_OK;
                     case 121:
                     /* leave 1 wielded, split rest off and put into quiver */
-                    newquiver = splitobj(uwep.v, BigInt.asIntN(64, cptr.ldI64o(uwep.v, $obj_quan) - 1n));
+                    newquiver = splitobj(
+                        uwep.v,
+                        BigInt.asIntN(64, cptr.ldI64o(uwep.v, $obj_quan) - 1n)
+                    );
                     finish_splitting(newquiver);
                     break __lbl_quivering;
                     default:
@@ -650,12 +772,22 @@ export function doquiver_core(verb) {
             } else {
                 let use_plural = schar((is_plural(uwep.v) || pair_of(uwep.v) ? 1 : 0));
 
-                void cptr.sprintf(cptr.decay(qbuf), __s_you_are_wielding_s_ready_s_instead, !use_plural ? __s_that : __s_those, !use_plural ? __s_it : __s_them);
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_you_are_wielding_s_ready_s_instead,
+                    !use_plural ? __s_that : __s_those,
+                    !use_plural ? __s_it : __s_them
+                );
             }
             /* require confirmation to ready the main weapon */
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uwep.v);  /* replace qbuf[] contents */
-                pline(__s_s_s_s_wielded, cptr.decay(qbuf), simpleonames(uwep.v), otense(uwep.v, __s_remain));
+                pline(
+                    __s_s_s_s_wielded,
+                    cptr.decay(qbuf),
+                    simpleonames(uwep.v),
+                    otense(uwep.v, __s_remain)
+                );
                 return NHM.ECMD_OK;
             }
             /* quivering main weapon, so no longer wielding it */
@@ -663,14 +795,28 @@ export function doquiver_core(verb) {
             untwoweapon();
             was_uwep = 1;
         } else if (cptr.eq(newquiver, uswapwep.v)) {
-            if (cptr.ldI64o(uswapwep.v, $obj_quan) > 1n && inv_cnt(0) < NHC.invlet_basic && splittable(uswapwep.v)) {
-                void cptr.sprintf(cptr.decay(qbuf), __s_s_ld_s_ready_ld_of_them, cptr.ld1so(u, $you_twoweap) ? __s_you_are_dual_wielding : __s_your_alternate_weapon_is, cptr.ldI64o(uswapwep.v, $obj_quan), simpleonames(uswapwep.v), BigInt.asIntN(64, cptr.ldI64o(uswapwep.v, $obj_quan) - 1n));
+            if (cptr.ldI64o(uswapwep.v, $obj_quan) > 1n &&
+                    inv_cnt(0) < NHC.invlet_basic &&
+                    splittable(uswapwep.v)) {
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_s_ld_s_ready_ld_of_them,
+                    cptr.ld1so(u, $you_twoweap)
+                        ? __s_you_are_dual_wielding
+                        : __s_your_alternate_weapon_is,
+                    cptr.ldI64o(uswapwep.v, $obj_quan),
+                    simpleonames(uswapwep.v),
+                    BigInt.asIntN(64, cptr.ldI64o(uswapwep.v, $obj_quan) - 1n)
+                );
                 switch (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1)) {
                     case 113:
                     return NHM.ECMD_OK;
                     case 121:
                     /* leave 1 alt-wielded, split rest off and put into quiver */
-                    newquiver = splitobj(uswapwep.v, BigInt.asIntN(64, cptr.ldI64o(uswapwep.v, $obj_quan) - 1n));
+                    newquiver = splitobj(
+                        uswapwep.v,
+                        BigInt.asIntN(64, cptr.ldI64o(uswapwep.v, $obj_quan) - 1n)
+                    );
                     finish_splitting(newquiver);
                     break __lbl_quivering;
                     default:
@@ -680,12 +826,24 @@ export function doquiver_core(verb) {
             } else {
                 let use_plural = schar((is_plural(uswapwep.v) || pair_of(uswapwep.v) ? 1 : 0));
 
-                void cptr.sprintf(cptr.decay(qbuf), __s_s_your_s_weapon_ready_s_instead, !use_plural ? __s_that_is : __s_those_are, cptr.ld1so(u, $you_twoweap) ? __s_second : __s_alternate, !use_plural ? __s_it : __s_them);
+                void cptr.sprintf(
+                    cptr.decay(qbuf),
+                    __s_s_your_s_weapon_ready_s_instead,
+                    !use_plural ? __s_that_is : __s_those_are,
+                    cptr.ld1so(u, $you_twoweap) ? __s_second : __s_alternate,
+                    !use_plural ? __s_it : __s_them
+                );
             }
             /* require confirmation to ready the alternate weapon */
             if (yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1) != 121) {
                 void Shk_Your(cptr.decay(qbuf), uswapwep.v);  /* replace qbuf[] contents */
-                pline(__s_s_s_s_s, cptr.decay(qbuf), simpleonames(uswapwep.v), otense(uswapwep.v, __s_remain), cptr.ld1so(u, $you_twoweap) ? __s_wielded : __s_as_secondary_weapon);
+                pline(
+                    __s_s_s_s_s,
+                    cptr.decay(qbuf),
+                    simpleonames(uswapwep.v),
+                    otense(uswapwep.v, __s_remain),
+                    cptr.ld1so(u, $you_twoweap) ? __s_wielded : __s_as_secondary_weapon
+                );
                 return NHM.ECMD_OK;
             }
             /* quivering alternate weapon, so no more uswapwep */
@@ -733,7 +891,11 @@ export function wield_tool(obj, verb) {
     if (!verb)
         verb = __s_wield;
     what = xname(obj);
-    more_than_1 = schar((cptr.ldI64o(obj, $obj_quan) > 1n || strstri(what, __s_pair_of) !== null || strstri(what, __s_s_of) !== null ? 1 : 0));
+    more_than_1 = schar((cptr.ldI64o(obj, $obj_quan) > 1n ||
+        strstri(what, __s_pair_of) !== null ||
+        strstri(what, __s_s_of) !== null
+            ? 1
+            : 0));
 
     if (cptr.ldI64o(obj, $obj_owornmask) & 983167n) {
         You_cant(__s_s_s_while_wearing_s, verb, yname(obj), more_than_1 ? __s_them : __s_it);
@@ -747,7 +909,13 @@ export function wield_tool(obj, verb) {
                 hand = makeplural(hand);
             if (strstri(what, __s_pair_of) !== null)
                 more_than_1 = 0;
-            pline(__s_since_your_weapon_is_welded_to_your_s, hand, verb, more_than_1 ? __s_those : __s_that, xname(obj));
+            pline(
+                __s_since_your_weapon_is_welded_to_your_s,
+                hand,
+                verb,
+                more_than_1 ? __s_those : __s_that,
+                xname(obj)
+            );
         } else {
             You_cant(__s_do_that);
         }
@@ -759,7 +927,11 @@ export function wield_tool(obj, verb) {
     }
     /* check shield */
     if (uarms.v && bimanual(obj)) {
-        You(__s_cannot_s_a_two_handed_s_while_wearing_a, verb, (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) ? __s_weapon : __s_tool);
+        You(
+            __s_cannot_s_a_two_handed_s_while_wearing_a,
+            verb,
+            (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS) ? __s_weapon : __s_tool
+        );
         return 0;
     }
 
@@ -773,7 +945,12 @@ export function wield_tool(obj, verb) {
     } else {
         let oldwep = uwep.v;
 
-        if (((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 && ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL || cptr.ldI16o((obj), $obj_otyp) == NHC.IRON_CHAIN) || cptr.ldI16o((obj), $obj_otyp) == NHC.TIN_OPENER))) {
+        if (((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 &&
+                ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS ||
+                    is_weptool(obj) ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.IRON_CHAIN) ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.TIN_OPENER))) {
             /* hope none of ready_weapon()'s early returns apply here... */
             void ready_weapon(obj);
         } else {
@@ -801,17 +978,43 @@ export function can_twoweapon() {
         if (Upolyd())
             You_cant(__s_use_two_weapons_in_your_current_form);
         else
-            pline(__s_s_aren_t_able_to_use_two_weapons_at_once, makeplural((cptr.ld1so(flags, $flag_female) && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole)));
+            pline(
+                __s_s_aren_t_able_to_use_two_weapons_at_once,
+                makeplural((cptr.ld1so(flags, $flag_female) &&
+                    cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
+                    ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
+                    : cptr.ldPtro(gu, $instance_globals_u_urole))
+            );
     } else if (!uwep.v || !uswapwep.v) {
         let hand_s = body_part(NHC.HAND);
 
         if (!uwep.v && !uswapwep.v)
             hand_s = makeplural(hand_s);
         /* "your hands are empty" or "your {left|right} hand is empty" */
-        Your(__s_s_s_s_empty, uwep.v ? __s_left : (uswapwep.v ? __s_right : __s_empty), hand_s, vtense(hand_s, __s_are));
-    } else if (!((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS) ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v)) : is_weptool(uwep.v)) || !((cptr.ld1so((uswapwep.v), $obj_oclass) == NHC.WEAPON_CLASS) ? !(is_launcher(uswapwep.v) || is_ammo(uswapwep.v) || is_missile(uswapwep.v)) : is_weptool(uswapwep.v))) {
-        otmp = !((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS) ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v)) : is_weptool(uwep.v)) ? uwep.v : uswapwep.v;
-        pline(__s_s_s_suitable_s_weapon_s, Yname2(otmp), is_plural(otmp) ? __s_aren_t : __s_isn_t_a, (cptr.eq(otmp, uwep.v)) ? __s_primary : __s_secondary, (((cptr.ldI64o(otmp, $obj_quan)) == 1n) ? __s_empty : __s_s));
+        Your(
+            __s_s_s_s_empty,
+            uwep.v ? __s_left : (uswapwep.v ? __s_right : __s_empty),
+            hand_s,
+            vtense(hand_s, __s_are)
+        );
+    } else if (!((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS)
+        ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v))
+        : is_weptool(uwep.v)) ||
+            !((cptr.ld1so((uswapwep.v), $obj_oclass) == NHC.WEAPON_CLASS)
+                ? !(is_launcher(uswapwep.v) || is_ammo(uswapwep.v) || is_missile(uswapwep.v))
+                : is_weptool(uswapwep.v))) {
+        otmp = !((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS)
+            ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v))
+            : is_weptool(uwep.v))
+                ? uwep.v
+                : uswapwep.v;
+        pline(
+            __s_s_s_suitable_s_weapon_s,
+            Yname2(otmp),
+            is_plural(otmp) ? __s_aren_t : __s_isn_t_a,
+            (cptr.eq(otmp, uwep.v)) ? __s_primary : __s_secondary,
+            (((cptr.ldI64o(otmp, $obj_quan)) == 1n) ? __s_empty : __s_s)
+        );
     } else if (bimanual(uwep.v) || bimanual(uswapwep.v)) {
         otmp = bimanual(uwep.v) ? uwep.v : uswapwep.v;
         pline(__s_s_isn_t_one_handed, Yname2(otmp));
@@ -848,7 +1051,12 @@ export function drop_uswapwep() {
         pline(__s_s_from_your_s, Yobjnam2(obj, __s_slip), cptr.decay(left_hand));
     else if (!cptr.ld1so(u, $you_twoweap))
         /* attempting to two-weapon when uswapwep is cursed */
-        pline(__s_s_your_grasp_and_s_from_your_s, Yobjnam2(obj, __s_evade), otense(obj, __s_drop), cptr.decay(left_hand));
+        pline(
+            __s_s_your_grasp_and_s_from_your_s,
+            Yobjnam2(obj, __s_evade),
+            otense(obj, __s_drop),
+            cptr.decay(left_hand)
+        );
     else
         /* already two-weaponing but can't anymore because uswapwep has
            become cursed */
@@ -936,7 +1144,9 @@ export function untwoweapon() {
 /* enchant wielded weapon */
 /** C ref: wield.c:918 — @param {CPtr<struct obj>} otmp @param {CInt} amount @returns {CInt} */
 export function chwepon(otmp, amount) {
-    let color = hcolor((amount < 0) ? cptr.ldPtr(c_color_names) : cptr.ldPtro(c_color_names, $c_color_names_c_blue));
+    let color = hcolor((amount < 0)
+            ? cptr.ldPtr(c_color_names)
+            : cptr.ldPtro(c_color_names, $c_color_names_c_blue));
     let xtime;
     let wepname = __s_empty;
     let multiple;
@@ -945,9 +1155,21 @@ export function chwepon(otmp, amount) {
     if (!uwep.v || (cptr.ld1so(uwep.v, $obj_oclass) != NHC.WEAPON_CLASS && !is_weptool(uwep.v))) {
         let buf = new Uint8Array(256);
 
-        if (amount >= 0 && uwep.v && ((cptr.ldI32o((uwep.v), $obj_cursed) & 1) | 0 && ((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v) || cptr.ldI16o((uwep.v), $obj_otyp) == NHC.HEAVY_IRON_BALL || cptr.ldI16o((uwep.v), $obj_otyp) == NHC.IRON_CHAIN) || cptr.ldI16o((uwep.v), $obj_otyp) == NHC.TIN_OPENER))) {
+        if (amount >= 0 &&
+                uwep.v &&
+                ((cptr.ldI32o((uwep.v), $obj_cursed) & 1) | 0 &&
+                    ((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS ||
+                        is_weptool(uwep.v) ||
+                        cptr.ldI16o((uwep.v), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
+                        cptr.ldI16o((uwep.v), $obj_otyp) == NHC.IRON_CHAIN) ||
+                        cptr.ldI16o((uwep.v), $obj_otyp) == NHC.TIN_OPENER))) {
             if (!Blind()) {
-                void cptr.sprintf(cptr.decay(buf), __s_s_with_s_aura, Yobjnam2(uwep.v, __s_glow), an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))));
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_s_with_s_aura,
+                    Yobjnam2(uwep.v, __s_glow),
+                    an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber)))
+                );
                 cptr.stI32o(uwep.v, $obj_bknown, (!Hallucination()) >>> 0);  /* ok to bypass set_bknown() */
             } else {
                 /* cursed tin opener is wielded in right hand */
@@ -956,7 +1178,12 @@ export function chwepon(otmp, amount) {
             uncurse(uwep.v);
             update_inventory();
         } else {
-            void cptr.sprintf(cptr.decay(buf), __s_your_s_s, makeplural(body_part(NHC.HAND)), (amount >= 0) ? __s_twitch : __s_itch);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_your_s_s,
+                makeplural(body_part(NHC.HAND)),
+                (amount >= 0) ? __s_twitch : __s_itch
+            );
         }
         strange_feeling(otmp, cptr.decay(buf));  /* pline()+docall()+useup() */
         exercise(NHC.A_DEX, schar((amount >= 0)));
@@ -969,7 +1196,11 @@ export function chwepon(otmp, amount) {
     if (cptr.ldI16o(uwep.v, $obj_otyp) == NHC.WORM_TOOTH && amount >= 0) {
         multiple = schar((cptr.ldI64o(uwep.v, $obj_quan) > 1n));
         /* order: message, transformation, shop handling */
-        Your(__s_s_s_much_sharper_now, simpleonames(uwep.v), multiple ? __s_fuse_and_become : __s_is);
+        Your(
+            __s_s_s_much_sharper_now,
+            simpleonames(uwep.v),
+            multiple ? __s_fuse_and_become : __s_is
+        );
         cptr.stI16o(uwep.v, $obj_otyp, NHC.CRYSKNIFE);
         cptr.stI32o(uwep.v, $obj_oerodeproof, 0);
         if (multiple) {
@@ -989,7 +1220,11 @@ export function chwepon(otmp, amount) {
     } else if (cptr.ldI16o(uwep.v, $obj_otyp) == NHC.CRYSKNIFE && amount < 0) {
         multiple = schar((cptr.ldI64o(uwep.v, $obj_quan) > 1n));
         /* order matters: message, shop handling, transformation */
-        Your(__s_s_s_much_duller_now, simpleonames(uwep.v), multiple ? __s_fuse_and_become : __s_is);
+        Your(
+            __s_s_s_much_duller_now,
+            simpleonames(uwep.v),
+            multiple ? __s_fuse_and_become : __s_is
+        );
         costly_alteration(uwep.v, NHC.COST_DEGRD);  /* DECHNT? other? */
         cptr.stI16o(uwep.v, $obj_otyp, NHC.WORM_TOOTH);
         cptr.stI32o(uwep.v, $obj_oerodeproof, 0);
@@ -1012,9 +1247,16 @@ export function chwepon(otmp, amount) {
         return 1;
     }
     /* there is a (soft) upper and lower limit to uwep->spe */
-    if (((cptr.ld1so(uwep.v, $obj_spe) > 5 && amount >= 0) || (cptr.ld1so(uwep.v, $obj_spe) < -5 && amount < 0)) && rn2(3)) {
+    if (((cptr.ld1so(uwep.v, $obj_spe) > 5 && amount >= 0) ||
+        (cptr.ld1so(uwep.v, $obj_spe) < -5 && amount < 0)) &&
+            rn2(3)) {
         if (!Blind())
-            pline(__s_s_s_for_a_while_and_then_s, Yobjnam2(uwep.v, __s_violently_glow), color, otense(uwep.v, __s_evaporate));
+            pline(
+                __s_s_s_for_a_while_and_then_s,
+                Yobjnam2(uwep.v, __s_violently_glow),
+                color,
+                otense(uwep.v, __s_evaporate)
+            );
         else
             pline(__s_pct_s_dot, Yobjnam2(uwep.v, __s_evaporate));
 
@@ -1023,8 +1265,15 @@ export function chwepon(otmp, amount) {
     }
     if (!Blind()) {
         xtime = (Math.imul(amount, amount) == 1) ? __s_moment : __s_while;
-        pline(__s_s_s_for_a_s, Yobjnam2(uwep.v, amount == 0 ? __s_violently_glow : __s_glow), color, xtime);
-        if (otyp != NHC.STRANGE_OBJECT && (cptr.ldI32o(uwep.v, $obj_known) & 1) | 0 && (amount > 0 || (amount < 0 && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0)))
+        pline(
+            __s_s_s_for_a_s,
+            Yobjnam2(uwep.v, amount == 0 ? __s_violently_glow : __s_glow),
+            color,
+            xtime
+        );
+        if (otyp != NHC.STRANGE_OBJECT &&
+                (cptr.ldI32o(uwep.v, $obj_known) & 1) | 0 &&
+                (amount > 0 || (amount < 0 && (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0)))
             discover_object((otyp), 1, 1, 1);
     }
     if (amount < 0)
@@ -1044,12 +1293,17 @@ export function chwepon(otmp, amount) {
      * spe dependent.  Give an obscure clue here.
      */
     if (is_art(uwep.v, NHC.ART_MAGICBANE) && cptr.ld1so(uwep.v, $obj_spe) >= 0) {
-        Your(__s_right_s_sches, body_part(NHC.HAND), (((amount > 1) && (cptr.ld1so(uwep.v, $obj_spe) > 1)) ? __s_flin : __s_it));
+        Your(
+            __s_right_s_sches,
+            body_part(NHC.HAND),
+            (((amount > 1) && (cptr.ld1so(uwep.v, $obj_spe) > 1)) ? __s_flin : __s_it)
+        );
     }
 
     /* an elven magic clue, cookie@keebler */
     /* elven weapons vibrate warningly when enchanted beyond a limit */
-    if ((cptr.ld1so(uwep.v, $obj_spe) > 5) && (is_elven_weapon(uwep.v) || cptr.ld1so(uwep.v, $obj_oartifact) || !rn2(7)))
+    if ((cptr.ld1so(uwep.v, $obj_spe) > 5) &&
+            (is_elven_weapon(uwep.v) || cptr.ld1so(uwep.v, $obj_oartifact) || !rn2(7)))
         pline(__s_s_unexpectedly, Yobjnam2(uwep.v, __s_suddenly_vibrate));
 
     return 1;
@@ -1057,7 +1311,14 @@ export function chwepon(otmp, amount) {
 
 /** C ref: wield.c:1051 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function welded(obj) {
-    if (obj && cptr.eq(obj, uwep.v) && ((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 && ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL || cptr.ldI16o((obj), $obj_otyp) == NHC.IRON_CHAIN) || cptr.ldI16o((obj), $obj_otyp) == NHC.TIN_OPENER))) {
+    if (obj &&
+            cptr.eq(obj, uwep.v) &&
+            ((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 &&
+                ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS ||
+                    is_weptool(obj) ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.IRON_CHAIN) ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.TIN_OPENER))) {
         set_bknown(obj, 1);
         return 1;
     }
@@ -1081,7 +1342,14 @@ export function weldmsg(obj) {
 /** C ref: wield.c:1078 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function mwelded(obj) {
     /* caller is responsible for making sure this is a monster's item */
-    if (obj && (cptr.ldI64o(obj, $obj_owornmask) & 256n) && ((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 && ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL || cptr.ldI16o((obj), $obj_otyp) == NHC.IRON_CHAIN) || cptr.ldI16o((obj), $obj_otyp) == NHC.TIN_OPENER)))
+    if (obj &&
+            (cptr.ldI64o(obj, $obj_owornmask) & 256n) &&
+            ((cptr.ldI32o((obj), $obj_cursed) & 1) | 0 &&
+                ((cptr.ld1so((obj), $obj_oclass) == NHC.WEAPON_CLASS ||
+                    is_weptool(obj) ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.HEAVY_IRON_BALL ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.IRON_CHAIN) ||
+                    cptr.ldI16o((obj), $obj_otyp) == NHC.TIN_OPENER)))
         return 1;
     return 0;
 }

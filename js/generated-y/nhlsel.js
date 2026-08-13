@@ -12,12 +12,31 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_optinteger, luaL_setfuncs } from './lauxlib.js';
-import { check_mapchr, get_table_int, get_table_int_opt, get_table_option, lcheck_param_table, nhl_add_table_entry_int, nhl_error, nhl_get_xy_params, nhl_pcall_handle } from './nhlua.js';
-import { selection_clear, selection_do_ellipse, selection_do_gradient, selection_do_grow, selection_do_line, selection_do_randline, selection_filter_mapchar, selection_filter_percent, selection_floodfill, selection_free, selection_from_mkroom, selection_getbounds, selection_getpoint, selection_new, selection_not, selection_recalc_bounds, selection_rndcoord, selection_setpoint, selection_size_description } from './selvar.js';
-import { lua_createtable, lua_gc, lua_getfield, lua_gettop, lua_newuserdatauv, lua_pushinteger, lua_pushnumber, lua_pushstring, lua_pushvalue, lua_rotate, lua_setfield, lua_setglobal, lua_setmetatable, lua_settop, lua_toboolean, lua_type } from './lapi.js';
+import {
+    luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_checkudata,
+    luaL_checkversion_, luaL_newmetatable, luaL_optinteger, luaL_setfuncs
+} from './lauxlib.js';
+import {
+    check_mapchr, get_table_int, get_table_int_opt, get_table_option, lcheck_param_table,
+    nhl_add_table_entry_int, nhl_error, nhl_get_xy_params, nhl_pcall_handle
+} from './nhlua.js';
+import {
+    selection_clear, selection_do_ellipse, selection_do_gradient, selection_do_grow,
+    selection_do_line, selection_do_randline, selection_filter_mapchar, selection_filter_percent,
+    selection_floodfill, selection_free, selection_from_mkroom, selection_getbounds,
+    selection_getpoint, selection_new, selection_not, selection_recalc_bounds, selection_rndcoord,
+    selection_setpoint, selection_size_description
+} from './selvar.js';
+import {
+    lua_createtable, lua_gc, lua_getfield, lua_gettop, lua_newuserdatauv, lua_pushinteger,
+    lua_pushnumber, lua_pushstring, lua_pushvalue, lua_rotate, lua_setfield, lua_setglobal,
+    lua_setmetatable, lua_settop, lua_toboolean, lua_type
+} from './lapi.js';
 import { dupstr } from './alloc.js';
-import { cvt_to_abscoord, cvt_to_relcoord, get_location_coord, mapfrag_error, mapfrag_free, mapfrag_fromstr, mapfrag_match, set_floodfillchk_match_under, update_croom } from './sp_lev.js';
+import {
+    cvt_to_abscoord, cvt_to_relcoord, get_location_coord, mapfrag_error, mapfrag_free,
+    mapfrag_fromstr, mapfrag_match, set_floodfillchk_match_under, update_croom
+} from './sp_lev.js';
 import { cg, gc, gx, gy, svl, svn, svr } from './decl.js';
 import { rect_bounds } from './rect.js';
 import { isok } from './cmd.js';
@@ -25,17 +44,18 @@ import { isok } from './cmd.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
-    $instance_globals_c_coder = FLD.instance_globals_c_coder,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_n_nroom = FLD.instance_globals_saved_n_nroom,
-    $instance_globals_x_xstart = FLD.instance_globals_x_xstart,
-    $instance_globals_y_ystart = FLD.instance_globals_y_ystart, $luaL_Reg_func = FLD.luaL_Reg_func,
-    $mkroom_ly = FLD.mkroom_ly, $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy,
-    $nhrect_ly = FLD.nhrect_ly, $rm_typ = FLD.rm_typ, $selectionvar_bounds = FLD.selectionvar_bounds,
-    $selectionvar_hei = FLD.selectionvar_hei, $selectionvar_map = FLD.selectionvar_map,
-    $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg, $sizeof_mkroom = FLD.sizeof_mkroom,
-    $sizeof_nhrect = FLD.sizeof_nhrect, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $sp_coder_croom = FLD.sp_coder_croom;
+      $instance_globals_c_coder = FLD.instance_globals_c_coder,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_n_nroom = FLD.instance_globals_saved_n_nroom,
+      $instance_globals_x_xstart = FLD.instance_globals_x_xstart,
+      $instance_globals_y_ystart = FLD.instance_globals_y_ystart,
+      $luaL_Reg_func = FLD.luaL_Reg_func, $mkroom_ly = FLD.mkroom_ly, $nhrect_hx = FLD.nhrect_hx,
+      $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly, $rm_typ = FLD.rm_typ,
+      $selectionvar_bounds = FLD.selectionvar_bounds, $selectionvar_hei = FLD.selectionvar_hei,
+      $selectionvar_map = FLD.selectionvar_map, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg,
+      $sizeof_mkroom = FLD.sizeof_mkroom, $sizeof_nhrect = FLD.sizeof_nhrect,
+      $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+      $sp_coder_croom = FLD.sp_coder_croom;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_selection = cptr.lit("selection");
@@ -103,7 +123,12 @@ const __s_sub = cptr.lit("__sub");
 const __s_index = cptr.lit("__index");
 const __s_metatable = cptr.lit("__metatable");
 
-/** C ref: nhlsel.c:58 — @param {CPtr<lua_State>} L @param {CInt} index @returns {CPtr<struct selectionvar>} */
+/**
+ * C ref: nhlsel.c:58
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} index
+ * @returns {CPtr<struct selectionvar>}
+ */
 export function* l_selection_check(L, index) {
     let sel;
 
@@ -216,7 +241,15 @@ function* l_selection_setpoint(L) {
         crd = 16777216n;
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
-    (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, crd));
+    (yield* get_location_coord(
+        x,
+        y,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        crd
+    ));
     selection_setpoint(x.v, y.v, sel, val);
     (yield* lua_settop(L, 1));
     return 1;
@@ -229,7 +262,8 @@ function* l_selection_numpoints(L) {
     let x;
     let y;
     let ret = 0;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     selection_getbounds(sel, rect);
 
@@ -267,7 +301,15 @@ function* l_selection_getpoint(L) {
         crd = 16777216n;
     else
         crd = BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0));
-    (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, crd));
+    (yield* get_location_coord(
+        x,
+        y,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        crd
+    ));
 
     val = selection_getpoint(x.v, y.v, sel);
     (yield* lua_settop(L, 0));
@@ -306,13 +348,15 @@ function* l_selection_and(L) {
     let sela = (yield* l_selection_check(L, 1));
     let selb = (yield* l_selection_check(L, 2));
     let selr = (yield* l_selection_push_new(L));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
 
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
-            let val = (selection_getpoint(i16(x), i16(y), sela) & selection_getpoint(i16(x), i16(y), selb));
+            let val = (selection_getpoint(i16(x), i16(y), sela) &
+                    selection_getpoint(i16(x), i16(y), selb));
 
             selection_setpoint(i16(x), i16(y), selr, val);
         }
@@ -330,13 +374,15 @@ function* l_selection_or(L) {
     let sela = (yield* l_selection_check(L, 1));
     let selb = (yield* l_selection_check(L, 2));
     let selr = (yield* l_selection_push_new(L));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
 
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
-            let val = (selection_getpoint(i16(x), i16(y), sela) | selection_getpoint(i16(x), i16(y), selb));
+            let val = (selection_getpoint(i16(x), i16(y), sela) |
+                    selection_getpoint(i16(x), i16(y), selb));
 
             selection_setpoint(i16(x), i16(y), selr, val);
         }
@@ -355,13 +401,15 @@ function* l_selection_xor(L) {
     let sela = (yield* l_selection_check(L, 1));
     let selb = (yield* l_selection_check(L, 2));
     let selr = (yield* l_selection_push_new(L));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
 
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
-            let val = (selection_getpoint(i16(x), i16(y), sela) ^ selection_getpoint(i16(x), i16(y), selb));
+            let val = (selection_getpoint(i16(x), i16(y), sela) ^
+                    selection_getpoint(i16(x), i16(y), selb));
 
             selection_setpoint(i16(x), i16(y), selr, val);
         }
@@ -383,7 +431,8 @@ function* l_selection_sub(L) {
     let sela = (yield* l_selection_check(L, 1));
     let selb = (yield* l_selection_check(L, 2));
     let selr = (yield* l_selection_push_new(L));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     rect_bounds(cptr.add(sela, $selectionvar_bounds), cptr.add(selb, $selectionvar_bounds), rect);
 
@@ -430,9 +479,18 @@ function* l_selection_rndcoord(L) {
     selection_rndcoord(sel, x, y, schar(removeit));
     if (!(x.v == -1 && y.v == -1)) {
         update_croom();
-        if (cptr.ldPtro(gc, $instance_globals_c_coder) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) {
-            x.v = i16(x.v - cptr.ldI16(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)));
-            y.v = i16(y.v - cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom), $mkroom_ly));
+        if (cptr.ldPtro(gc, $instance_globals_c_coder) &&
+                cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)) {
+            x.v = i16(x.v -
+                    cptr.ldI16(cptr.ldPtro(
+                        cptr.ldPtro(gc, $instance_globals_c_coder),
+                        $sp_coder_croom
+                    )));
+            y.v = i16(y.v -
+                    cptr.ldI16o(
+                        cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom),
+                        $mkroom_ly
+                    ));
         } else {
             x.v = i16(x.v - cptr.ldI16o(gx, $instance_globals_x_xstart));
             y.v = i16(y.v - cptr.ldI16o(gy, $instance_globals_y_ystart));
@@ -455,7 +513,9 @@ function* l_selection_room(L) {
     if (argc == 1) {
         let i = Number(BigInt.asIntN(32, (yield* luaL_checkinteger(L, -1))));
 
-        croom = (i >= 0 && i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom)) ? cptr.add(svr, i, $sizeof_mkroom) : null;
+        croom = (i >= 0 && i < cptr.ldI32o(svn, $instance_globals_saved_n_nroom))
+                ? cptr.add(svr, i, $sizeof_mkroom)
+                : null;
     }
 
     sel = (yield* selection_from_mkroom(croom));
@@ -470,7 +530,8 @@ function* l_selection_room(L) {
 /** C ref: nhlsel.c:454 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* l_selection_getbounds(L) {
     let sel = (yield* l_selection_check(L, 1));
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     selection_getbounds(sel, rect);
     (yield* lua_settop(L, 0));
@@ -488,7 +549,16 @@ function* l_selection_getbounds(L) {
 */
 /* function(selection, x1,y1, x2,y2) */
 /* selection:function(x1,y1, x2,y2) */
-/** C ref: nhlsel.c:476 — @param {CPtr<lua_State>} L @param {CPtr<struct selectionvar *>} sel @param {CPtr<coordxy>} x1 @param {CPtr<coordxy>} y1 @param {CPtr<coordxy>} x2 @param {CPtr<coordxy>} y2 @returns {CInt} */
+/**
+ * C ref: nhlsel.c:476
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<struct selectionvar *>} sel
+ * @param {CPtr<coordxy>} x1
+ * @param {CPtr<coordxy>} y1
+ * @param {CPtr<coordxy>} x2
+ * @param {CPtr<coordxy>} y2
+ * @returns {CInt}
+ */
 function* params_sel_2coords(L, sel, x1, y1, x2, y2) {
     let argc = lua_gettop(L);
 
@@ -531,8 +601,24 @@ function* l_selection_line(L) {
         (yield* nhl_error(L, __s_selection_line_illegal_arguments));
     }
 
-    (yield* get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))));
-    (yield* get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))));
+    (yield* get_location_coord(
+        x1,
+        y1,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))
+    ));
+    (yield* get_location_coord(
+        x2,
+        y2,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))
+    ));
 
     void (yield* l_selection_clone(L));
     sel.v = (yield* l_selection_check(L, 2));
@@ -553,8 +639,24 @@ function* l_selection_rect(L) {
         (yield* nhl_error(L, __s_selection_rect_illegal_arguments));
     }
 
-    (yield* get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))));
-    (yield* get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))));
+    (yield* get_location_coord(
+        x1,
+        y1,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))
+    ));
+    (yield* get_location_coord(
+        x2,
+        y2,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))
+    ));
 
     void (yield* l_selection_clone(L));
     sel.v = (yield* l_selection_check(L, 2));
@@ -582,8 +684,24 @@ function* l_selection_fillrect(L) {
         (yield* nhl_error(L, __s_selection_fillrect_illegal_arguments));
     }
 
-    (yield* get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))));
-    (yield* get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))));
+    (yield* get_location_coord(
+        x1,
+        y1,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))
+    ));
+    (yield* get_location_coord(
+        x2,
+        y2,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))
+    ));
 
     void (yield* l_selection_clone(L));
     sel.v = (yield* l_selection_check(L, 2));
@@ -630,8 +748,24 @@ function* l_selection_randline(L) {
         void (yield* l_selection_check(L, 1));
     }
 
-    (yield* get_location_coord(x1, y1, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))));
-    (yield* get_location_coord(x2, y2, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))));
+    (yield* get_location_coord(
+        x1,
+        y1,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x1.v) & 255) + (((y1.v) & 255) << 16)) | 0))
+    ));
+    (yield* get_location_coord(
+        x2,
+        y2,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x2.v) & 255) + (((y2.v) & 255) << 16)) | 0))
+    ));
 
     void (yield* l_selection_clone(L));
     sel = (yield* l_selection_check(L, 2));
@@ -665,7 +799,11 @@ function* l_selection_grow(L) {
     let argc = lua_gettop(L);
 
     void (yield* l_selection_check(L, 1));
-    dir = cptr.ldI32o(__static_l_selection_grow_growdirs2i, (yield* luaL_checkoption(L, 2, __s_all, __static_l_selection_grow_growdirs)), 4);
+    dir = cptr.ldI32o(
+        __static_l_selection_grow_growdirs2i,
+        (yield* luaL_checkoption(L, 2, __s_all, __static_l_selection_grow_growdirs)),
+        4
+    );
 
     if (argc == 2)
         (yield* lua_settop(L, -2));  /* get rid of growdir */
@@ -765,10 +903,25 @@ function* l_selection_flood(L) {
         /*NOTREACHED*/
     }
 
-    (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
+    (yield* get_location_coord(
+        x,
+        y,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))
+    ));
 
     if (isok(x.v, y.v)) {
-        set_floodfillchk_match_under(i16(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)));
+        set_floodfillchk_match_under(i16(cptr.ld1so3(
+            svl,
+            x.v,
+            $sizeof_rm_x21,
+            y.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )));
         (yield* selection_floodfill(sel, x.v, y.v, diagonals));
     }
     return 1;
@@ -814,7 +967,15 @@ function* l_selection_circle(L) {
         /*NOTREACHED*/
     }
 
-    (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
+    (yield* get_location_coord(
+        x,
+        y,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))
+    ));
 
     selection_do_ellipse(sel, x.v, y.v, r, r, !filled);
 
@@ -866,7 +1027,15 @@ function* l_selection_ellipse(L) {
         /*NOTREACHED*/
     }
 
-    (yield* get_location_coord(x, y, NHM.ANY_LOC, cptr.ldPtro(gc, $instance_globals_c_coder) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom) : null, BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))));
+    (yield* get_location_coord(
+        x,
+        y,
+        NHM.ANY_LOC,
+        cptr.ldPtro(gc, $instance_globals_c_coder)
+            ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_coder), $sp_coder_croom)
+            : null,
+        BigInt(((((x.v) & 255) + (((y.v) & 255) << 16)) | 0))
+    ));
 
     selection_do_ellipse(sel, x.v, y.v, r1, r2, !filled);
 
@@ -907,7 +1076,11 @@ function* l_selection_gradient(L) {
 
     if (argc == 1 && lua_type(L, 1) == 5) {
         (yield* lcheck_param_table(L));
-        type = BigInt(cptr.ldI32o(__static_l_selection_gradient_gradtypes2i, (yield* get_table_option(L, __s_type, __s_radial, __static_l_selection_gradient_gradtypes)), 4));
+        type = BigInt(cptr.ldI32o(
+            __static_l_selection_gradient_gradtypes2i,
+            (yield* get_table_option(L, __s_type, __s_radial, __static_l_selection_gradient_gradtypes)),
+            4
+        ));
         x.v = i16((yield* get_table_int(L, __s_x)));
         y.v = i16((yield* get_table_int(L, __s_y)));
         x2.v = i16((yield* get_table_int_opt(L, __s_x2, -1)));
@@ -936,7 +1109,16 @@ function* l_selection_gradient(L) {
         y2.v = y.v;
     }
 
-    (yield* selection_do_gradient(sel, BigInt(x.v), BigInt(y.v), BigInt(x2.v), BigInt(y2.v), type, BigInt(mindist), BigInt(maxdist)));
+    (yield* selection_do_gradient(
+        sel,
+        BigInt(x.v),
+        BigInt(y.v),
+        BigInt(x2.v),
+        BigInt(y2.v),
+        type,
+        BigInt(mindist),
+        BigInt(maxdist)
+    ));
     (yield* lua_settop(L, 1));
     return 1;
 }
@@ -952,14 +1134,19 @@ function* l_selection_iterate(L) {
     let sel = null;
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
     __lbl_out: {
 
         if (argc == 2 && lua_type(L, 2) == 6) {
             sel = (yield* l_selection_check(L, 1));
             selection_getbounds(sel, rect);
             for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
-                for (x = (1 > (cptr.ldI16(rect)) ? 1 : (cptr.ldI16(rect))); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
+                for (
+                    x = (1 > (cptr.ldI16(rect)) ? 1 : (cptr.ldI16(rect)));
+                    x <= cptr.ldI16o(rect, $nhrect_hx);
+                    x++
+                )
                     if (selection_getpoint(i16(x), i16(y), sel)) {
                         let tmpx = cptr.box(i16(x));
                         let tmpy = cptr.box(i16(y));
@@ -967,7 +1154,13 @@ function* l_selection_iterate(L) {
                         (yield* lua_pushvalue(L, 2));
                         (yield* lua_pushinteger(L, BigInt(tmpx.v)));
                         (yield* lua_pushinteger(L, BigInt(tmpy.v)));
-                        if ((yield* nhl_pcall_handle(L, 2, 0, __s_l_selection_iterate, NHC.NHLpa_impossible))) {
+                        if ((yield* nhl_pcall_handle(
+                            L,
+                            2,
+                            0,
+                            __s_l_selection_iterate,
+                            NHC.NHLpa_impossible
+                        ))) {
                             /* abort loops to prevent possible error cascade */
                             break __lbl_out;
                         }
@@ -1078,7 +1271,11 @@ cptr.stPtro(l_selection_meta, 128 + $luaL_Reg_func, null);
 /** C ref: nhlsel.c:1025 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* l_selection_register(L) {
     /* Table of instance methods and static methods. */
-    ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 400n / 16n - 1n))))), (yield* luaL_setfuncs(L, l_selection_methods, 0)));
+    (
+        (yield* luaL_checkversion_(L, 504, 136n)),
+        (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 400n / 16n - 1n))))),
+        (yield* luaL_setfuncs(L, l_selection_methods, 0))
+    );
 
     /* metatable = { __name = "selection", __gc = l_selection_gc } */
     (yield* luaL_newmetatable(L, __s_selection));
@@ -1090,7 +1287,11 @@ export function* l_selection_register(L) {
 
     /* Don't let lua code mess with the real metatable.
        Instead offer a fake one that only contains __gc. */
-    ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n))))), (yield* luaL_setfuncs(L, l_selection_meta, 0)));
+    (
+        (yield* luaL_checkversion_(L, 504, 136n)),
+        (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 144n / 16n - 1n))))),
+        (yield* luaL_setfuncs(L, l_selection_meta, 0))
+    );
     (yield* lua_setfield(L, -2, __s_metatable));
 
     /* We don't need the metatable anymore. It's safe in the
@@ -1107,7 +1308,13 @@ export function* l_selection_register(L) {
 // 6 bindings: 0 rebound+refilled, 0 rebound, 6 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__static_l_selection_grow_growdirs), S(__static_l_selection_grow_growdirs2i), S(__static_l_selection_gradient_gradtypes), S(__static_l_selection_gradient_gradtypes2i), S(l_selection_methods), S(l_selection_meta)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__static_l_selection_grow_growdirs), S(__static_l_selection_grow_growdirs2i),
+        S(__static_l_selection_gradient_gradtypes), S(__static_l_selection_gradient_gradtypes2i),
+        S(l_selection_methods), S(l_selection_meta)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("nhlsel.js: __resetState before __captureState");

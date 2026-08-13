@@ -18,13 +18,15 @@ import { free_nomakedefs, populate_nomakedefs } from './date.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $sizeof_soundlib_information = FLD.sizeof_soundlib_information,
-    $sizeof_version_info = FLD.sizeof_version_info, $sizeof_win_information = FLD.sizeof_win_information,
-    $soundlib_information_Url = FLD.soundlib_information_Url,
-    $soundlib_information_text_id = FLD.soundlib_information_text_id,
-    $soundlib_information_valid = FLD.soundlib_information_valid,
-    $version_info_entity_count = FLD.version_info_entity_count,
-    $version_info_feature_set = FLD.version_info_feature_set,
-    $win_information_name = FLD.win_information_name, $win_information_valid = FLD.win_information_valid;
+      $sizeof_version_info = FLD.sizeof_version_info,
+      $sizeof_win_information = FLD.sizeof_win_information,
+      $soundlib_information_Url = FLD.soundlib_information_Url,
+      $soundlib_information_text_id = FLD.soundlib_information_text_id,
+      $soundlib_information_valid = FLD.soundlib_information_valid,
+      $version_info_entity_count = FLD.version_info_entity_count,
+      $version_info_feature_set = FLD.version_info_feature_set,
+      $win_information_name = FLD.win_information_name,
+      $win_information_valid = FLD.win_information_valid;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
@@ -201,7 +203,9 @@ cptr.stPtro(window_opts, 24, null);
 cptr.stPtro(window_opts, 24 + $win_information_name, null);
 cptr.st1o(window_opts, 24 + $win_information_valid, 0);
 
-/** C ref: mdlib.c:169 — struct soundlib_information { id, text_id, Url, valid } (memory model v0.5) */
+/**
+ * C ref: mdlib.c:169 — struct soundlib_information { id, text_id, Url, valid } (memory model v0.5)
+ */
 
 /*
  * soundlibs
@@ -251,20 +255,47 @@ function make_version() {
         continue;
     cptr.stU64o(version, $version_info_entity_count, BigInt.asUintN(64, BigInt(((i - 1) | 0))));
     i = NHC.NUM_OBJECTS;
-    cptr.stU64o(version, $version_info_entity_count, (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i)));
+    cptr.stU64o(
+        version,
+        $version_info_entity_count,
+        (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i))
+    );
     i = NHC.NUMMONS;
-    cptr.stU64o(version, $version_info_entity_count, (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i)));
+    cptr.stU64o(
+        version,
+        $version_info_entity_count,
+        (cptr.ldU64o(version, $version_info_entity_count) << 12n) | BigInt.asUintN(64, BigInt(i))
+    );
     /* free bits in here */
     return;
 }
 
-/** C ref: mdlib.c:300 — @param {CPtr<char>} outbuf @param {CPtr<char>} delim @returns {CPtr<char>} */
+/**
+ * C ref: mdlib.c:300
+ * @param {CPtr<char>} outbuf
+ * @param {CPtr<char>} delim
+ * @returns {CPtr<char>}
+ */
 export function mdlib_version_string(outbuf, delim) {
-    void cptr.sprintf(outbuf, __s_d_s_d_s_d, NHM.VERSION_MAJOR, delim, NHM.VERSION_MINOR, delim, NHM.PATCHLEVEL);
+    void cptr.sprintf(
+        outbuf,
+        __s_d_s_d_s_d,
+        NHM.VERSION_MAJOR,
+        delim,
+        NHM.VERSION_MINOR,
+        delim,
+        NHM.PATCHLEVEL
+    );
     return outbuf;
 }
 
-/** C ref: mdlib.c:316 — @param {CPtr<char>} outbuf @param {CLongLong} bufsz @param {CPtr<char>} build_date @returns {CPtr<char>} */
+/**
+ * C ref: mdlib.c:316
+ * @param {CPtr<char>} outbuf
+ * @param {CLongLong} bufsz
+ * @param {CPtr<char>} build_date
+ * @returns {CPtr<char>}
+ */
 export function version_id_string(outbuf, bufsz, build_date) {
     let subbuf = new Uint8Array(64);
     let versbuf = new Uint8Array(64);
@@ -272,20 +303,49 @@ export function version_id_string(outbuf, bufsz, build_date) {
     cptr.st1o(cptr.decay(statusbuf), 0, 0, 1);
     cptr.st1o(cptr.decay(subbuf), 0, 0, 1);
 
-    nh_snprintf(__s_version_id_string, 342, outbuf, bufsz, __s_s_nethack_s_version_s_s_last_s_s, __s_macos, cptr.decay(subbuf), mdlib_version_string(cptr.decay(versbuf), __s_dot), cptr.decay(statusbuf), date_via_env ? __s_revision : __s_build, build_date);
+    nh_snprintf(
+        __s_version_id_string,
+        342,
+        outbuf,
+        bufsz,
+        __s_s_nethack_s_version_s_s_last_s_s,
+        __s_macos,
+        cptr.decay(subbuf),
+        mdlib_version_string(cptr.decay(versbuf), __s_dot),
+        cptr.decay(statusbuf),
+        date_via_env ? __s_revision : __s_build,
+        build_date
+    );
     return outbuf;
 }
 
 /* still within #if MAKDEFS_C || FOR_RUNTIME */
 
-/** C ref: mdlib.c:349 — @param {CPtr<char>} outbuf @param {CLongLong} bufsz @param {CPtr<char>} build_date @returns {CPtr<char>} */
+/**
+ * C ref: mdlib.c:349
+ * @param {CPtr<char>} outbuf
+ * @param {CLongLong} bufsz
+ * @param {CPtr<char>} build_date
+ * @returns {CPtr<char>}
+ */
 export function bannerc_string(outbuf, bufsz, build_date) {
     let subbuf = new Uint8Array(64);
     let versbuf = new Uint8Array(64);
 
     cptr.st1o(cptr.decay(subbuf), 0, 0, 1);
 
-    nh_snprintf(__s_bannerc_string, 368, outbuf, bufsz, __s_version_s_s_s_s_s, mdlib_version_string(cptr.decay(versbuf), __s_dot), __s_macos, cptr.decay(subbuf), date_via_env ? __s_revised : __s_built, build_date);
+    nh_snprintf(
+        __s_bannerc_string,
+        368,
+        outbuf,
+        bufsz,
+        __s_version_s_s_s_s_s,
+        mdlib_version_string(cptr.decay(versbuf), __s_dot),
+        __s_macos,
+        cptr.decay(subbuf),
+        date_via_env ? __s_revised : __s_built,
+        build_date
+    );
     return outbuf;
 }
 
@@ -296,7 +356,13 @@ const save_bones_compat_buf = new Uint8Array(256);
 function build_savebones_compat_string() {
 
     void cptr.strcpy(cptr.decay(save_bones_compat_buf), __s_save_and_bones_files_accepted_from);
-    void cptr.sprintf(eos(cptr.decay(save_bones_compat_buf)), __s_d_d_d_only, NHM.VERSION_MAJOR, NHM.VERSION_MINOR, NHM.PATCHLEVEL);
+    void cptr.sprintf(
+        eos(cptr.decay(save_bones_compat_buf)),
+        __s_d_d_d_only,
+        NHM.VERSION_MAJOR,
+        NHM.VERSION_MINOR,
+        NHM.PATCHLEVEL
+    );
 }
 
 /** C ref: mdlib.c:417 — char *[26] */
@@ -363,13 +429,27 @@ function* opt_out_words(str, length_p) {
         if (word)
             cptr.st1(word, 0);
         if (((cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0) > 75) {
-            (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
-            void cptr.sprintf(cptr.decay(optbuf), __s_pct_s, cptr.decay(opt_indent)), cptr.stI32(length_p, Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(opt_indent)))));
+            (void ((idxopttext < 60)
+                    ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+                    : null));
+            void cptr.sprintf(cptr.decay(optbuf), __s_pct_s, cptr.decay(opt_indent)),
+                    cptr.stI32(
+                        length_p,
+                        Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(opt_indent))))
+                    );
         } else {
-            void cptr.sprintf(eos(cptr.decay(optbuf)), __s_sp), (cptr.stI32(length_p, cptr.ldI32(length_p) + 1)) - (1);
+            void cptr.sprintf(eos(cptr.decay(optbuf)), __s_sp),
+                    (cptr.stI32(length_p, cptr.ldI32(length_p) + 1)) - (1);
         }
-        void cptr.sprintf(eos(cptr.decay(optbuf)), __s_pct_s, str), cptr.stI32(length_p, (cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0);
-        str = cptr.add(str, BigInt.asUintN(64, cptr.strlen(str) + BigInt.asUintN(64, BigInt((word ? 1 : 0)))));
+        void cptr.sprintf(eos(cptr.decay(optbuf)), __s_pct_s, str),
+                cptr.stI32(
+                    length_p,
+                    (cptr.ldI32(length_p) + Number(BigInt.asIntN(32, cptr.strlen(str)))) | 0
+                );
+        str = cptr.add(
+            str,
+            BigInt.asUintN(64, cptr.strlen(str) + BigInt.asUintN(64, BigInt((word ? 1 : 0))))
+        );
     }
 }
 
@@ -400,34 +480,72 @@ function* build_options() {
     let defwinsys = __s_tty;
     let soundlibcnt;
     build_savebones_compat_string();
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
-    void cptr.sprintf(cptr.decay(optbuf), __s_snethack_version_d_d_d_s, cptr.decay(opt_indent), NHM.VERSION_MAJOR, NHM.VERSION_MINOR, NHM.PATCHLEVEL, __s_empty);
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
+    void cptr.sprintf(
+        cptr.decay(optbuf),
+        __s_snethack_version_d_d_d_s,
+        cptr.decay(opt_indent),
+        NHM.VERSION_MAJOR,
+        NHM.VERSION_MINOR,
+        NHM.PATCHLEVEL,
+        __s_empty
+    );
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
     void cptr.sprintf(cptr.decay(optbuf), __s_options_compiled_into_this_edition);
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;  /* force 1st item onto new line */
     void cptr.strcat(cptr.strcpy(cptr.decay(buf), datamodel(0)), __s_data_model);
     (yield* opt_out_words(cptr.decay(buf), length));
     for (i = 0; i < 26; i++) {
-        void cptr.strcat(cptr.strcpy(cptr.decay(buf), cptr.ldPtro(build_opts, i, 8)), (i < ((26 - 1) | 0)) ? __s_comma : __s_dot);
+        void cptr.strcat(
+            cptr.strcpy(cptr.decay(buf), cptr.ldPtro(build_opts, i, 8)),
+            (i < ((26 - 1) | 0)) ? __s_comma : __s_dot
+        );
         (yield* opt_out_words(cptr.decay(buf), length));
     }
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     winsyscnt = count_and_validate_winopts();
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
-    void cptr.sprintf(cptr.decay(optbuf), __s_supported_windowing_system_s, (winsyscnt > 1) ? __s_s : __s_empty);
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
+    void cptr.sprintf(
+        cptr.decay(optbuf),
+        __s_supported_windowing_system_s,
+        (winsyscnt > 1) ? __s_s : __s_empty
+    );
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;  /* force 1st item onto new line */
 
     for (i = 0; i < ((2 - 1) | 0); i++) {
         if (!cptr.ld1so2(window_opts, i, $sizeof_win_information, $win_information_valid))
             continue;
-        void cptr.sprintf(cptr.decay(buf), __s_quot_pct_s_quot, cptr.ldPtro(window_opts, i, $sizeof_win_information));
-        if (strcmp(cptr.ldPtro2(window_opts, i, $sizeof_win_information, $win_information_name), cptr.ldPtro(window_opts, i, $sizeof_win_information)))
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_s_rparen, cptr.ldPtro2(window_opts, i, $sizeof_win_information, $win_information_name));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_quot_pct_s_quot,
+            cptr.ldPtro(window_opts, i, $sizeof_win_information)
+        );
+        if (strcmp(
+            cptr.ldPtro2(window_opts, i, $sizeof_win_information, $win_information_name),
+            cptr.ldPtro(window_opts, i, $sizeof_win_information)
+        ))
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_sp_lparen_pct_s_rparen,
+                cptr.ldPtro2(window_opts, i, $sizeof_win_information, $win_information_name)
+            );
         /*
          * 1 : foo.
          * 2 : foo and bar,
@@ -435,7 +553,14 @@ function* build_options() {
          *
          * 2+ will be followed by " with a default of..."
          */
-        void cptr.strcat(cptr.decay(buf), (winsyscnt == 1) ? __s_dot : ((winsyscnt == 2 && cnt == 0) ? __s_and : ((cnt == ((winsyscnt - 2) | 0)) ? __s_and__2 : __s_comma)));  /* no 'default' */
+        void cptr.strcat(
+            cptr.decay(buf),
+            (winsyscnt == 1)
+                ? __s_dot
+                : ((winsyscnt == 2 && cnt == 0)
+                    ? __s_and
+                    : ((cnt == ((winsyscnt - 2) | 0)) ? __s_and__2 : __s_comma))
+        );  /* no 'default' */
         (yield* opt_out_words(cptr.decay(buf), length));
         cnt++;
     }
@@ -445,20 +570,40 @@ function* build_options() {
         (yield* opt_out_words(cptr.decay(buf), length));
     }
     cnt = 0;
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     soundlibcnt = count_and_validate_soundlibopts();
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
-    void cptr.sprintf(cptr.decay(optbuf), __s_supported_soundlib_s, (soundlibcnt > 1) ? __s_s : __s_empty);
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
+    void cptr.sprintf(
+        cptr.decay(optbuf),
+        __s_supported_soundlib_s,
+        (soundlibcnt > 1) ? __s_s : __s_empty
+    );
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     length.v = 81;  /* force 1st item onto new line */
     for (i = 0; i < ((2 - 1) | 0); i++) {
         let soundlib;
 
-        if (!cptr.ld1so2(soundlib_opts, i, $sizeof_soundlib_information, $soundlib_information_valid))
+        if (!cptr.ld1so2(
+            soundlib_opts,
+            i,
+            $sizeof_soundlib_information,
+            $soundlib_information_valid
+        ))
             continue;
-        soundlib = cptr.ldPtro2(soundlib_opts, i, $sizeof_soundlib_information, $soundlib_information_text_id);
+        soundlib = cptr.ldPtro2(
+            soundlib_opts,
+            i,
+            $sizeof_soundlib_information,
+            $soundlib_information_text_id
+        );
         if (!cptr.strncmp(soundlib, __s_soundlib, 9n))
             soundlib = cptr.add(soundlib, 9);
         void cptr.sprintf(cptr.decay(buf), __s_quot_pct_s_quot, soundlib);
@@ -467,19 +612,35 @@ function* build_options() {
          * 2 : foo and bar.
          * 3+: for, bar, and quux.
          */
-        void cptr.strcat(cptr.decay(buf), (soundlibcnt == 1 || cnt == ((soundlibcnt - 1) | 0)) ? __s_dot : ((soundlibcnt == 2 && cnt == 0) ? __s_and : ((cnt == ((soundlibcnt - 2) | 0)) ? __s_and__2 : __s_comma)));
+        void cptr.strcat(
+            cptr.decay(buf),
+            (soundlibcnt == 1 || cnt == ((soundlibcnt - 1) | 0))
+                ? __s_dot
+                : ((soundlibcnt == 2 && cnt == 0)
+                    ? __s_and
+                    : ((cnt == ((soundlibcnt - 2) | 0)) ? __s_and__2 : __s_comma))
+        );
         (yield* opt_out_words(cptr.decay(buf), length));
         cnt++;
     }
 
-    (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8)) : null));
+    (void ((idxopttext < 60)
+            ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.decay(optbuf))), 8))
+            : null));
     cptr.st1o(cptr.decay(optbuf), 0, 0, 1);
     {
 
         /* add lua copyright notice;
            ":TAG:" substitutions are deferred to caller */
         for (i = 0; cptr.ldPtro(__static_build_options_lua_info, i, 8); ++i) {
-            (void ((idxopttext < 60) ? (cptr.stPtro(opttext, idxopttext++, (yield* dupstr(cptr.ldPtro(__static_build_options_lua_info, i, 8))), 8)) : null));
+            (void ((idxopttext < 60)
+                    ? (cptr.stPtro(
+                        opttext,
+                        idxopttext++,
+                        (yield* dupstr(cptr.ldPtro(__static_build_options_lua_info, i, 8))),
+                        8
+                    ))
+                    : null));
         }
     }
 
@@ -529,7 +690,13 @@ export function release_runtime_info() {
 // 13 bindings: 1 rebound+refilled, 3 rebound, 9 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(artifact_names), S(date_via_env), S(idxopttext), S(done_runtime_opt_init_once), S(opttext), S(optbuf), S(version), S(opt_indent), S(window_opts), S(soundlib_opts), S(save_bones_compat_buf), S(build_opts), S(__static_build_options_lua_info)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(artifact_names), S(date_via_env), S(idxopttext), S(done_runtime_opt_init_once),
+        S(opttext), S(optbuf), S(version), S(opt_indent), S(window_opts), S(soundlib_opts),
+        S(save_bones_compat_buf), S(build_opts), S(__static_build_options_lua_info)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("mdlib.js: __resetState before __captureState");

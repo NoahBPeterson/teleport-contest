@@ -8,9 +8,20 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, SchroedingersBox, canspotmon, has_ebones, has_mgivenname, has_oname, is_vampshifter, ismnum, min } from './nhmacrofn.js';
-import { Blind, Hallucination, Lifesaved, Sick, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, exit_nhwindows, mark_synch, outrip, putstr, raw_print, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
-import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, disclosure_options, disp, flags, ga, gb, gd, gg, gh, gi, gk, gm, gn, gt, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svp, u, uamul, uchain, urealtime, ynchars, ynqchars } from './decl.js';
+import {
+    Is_container, SchroedingersBox, canspotmon, has_ebones, has_mgivenname, has_oname,
+    is_vampshifter, ismnum, min
+} from './nhmacrofn.js';
+import {
+    Blind, Hallucination, Lifesaved, Sick, Ugender, Upolyd, clear_nhwindow, create_nhwindow,
+    destroy_nhwindow, discover, display_nhwindow, exit_nhwindows, mark_synch, outrip, putstr,
+    raw_print, tutorial_dnum, wait_synch, wizard
+} from './nhprop.js';
+import {
+    WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, disclosure_options, disp, flags, ga, gb, gd, gg,
+    gh, gi, gk, gm, gn, gt, gu, gv, gy, iflags, program_state, svc, svd, svk, svl, svm, svp, u,
+    uamul, uchain, urealtime, ynchars, ynqchars
+} from './decl.js';
 import { dump_close_log, dump_forward_putstr, dump_open_log, windowprocs } from './windows.js';
 import { canseemon, curs_on_u, sensemon } from './display.js';
 import { money_cnt, nomul } from './hack.js';
@@ -19,19 +30,31 @@ import { schedule_goto } from './do.js';
 import { soundprocs } from './sounds.js';
 import { sethanguphandler } from './unixmain.js';
 import { mons } from './monst.js';
-import { You, You_feel, Your, impossible, livelog_printf, pline, pline_The, raw_printf } from './pline.js';
+import {
+    You, You_feel, Your, impossible, livelog_printf, pline, pline_The, raw_printf
+} from './pline.js';
 import { monhealthdescr } from './pager.js';
 import { eos, strstri, upstart } from './hacklib.js';
 import { Mgender, Monnam, free_oname, m_monnam, mon_nam, pmname } from './do_name.js';
-import { an, doname_with_price, the, the_unique_obj, the_unique_pm, thesimpleoname, xname } from './objnam.js';
+import {
+    an, doname_with_price, the, the_unique_obj, the_unique_pm, thesimpleoname, xname
+} from './objnam.js';
 import { shkname, shkname_is_pname } from './shknam.js';
 import { unstuck, zombie_maker } from './mon.js';
 import { sysopt } from './sys.js';
 import { clearlocks, debugcore, paniclog, set_error_savefile } from './files.js';
 import { dosave0, freedynamicdata } from './save.js';
-import { carrying, currency, display_inventory, free_pickinv_cache, perm_invent_toggled, set_cknown_lknown, sortloot, stackobj, unsortloot, update_inventory, useup } from './invent.js';
-import { count_achievements, enlightenment, list_genocided, list_vanquished, record_achievement, show_conduct } from './insight.js';
-import { In_quest, deepest_lev_reached, depth, dunlev, on_level, show_overview, single_level_branch } from './dungeon.js';
+import {
+    carrying, currency, display_inventory, free_pickinv_cache, perm_invent_toggled,
+    set_cknown_lknown, sortloot, stackobj, unsortloot, update_inventory, useup
+} from './invent.js';
+import {
+    count_achievements, enlightenment, list_genocided, list_vanquished, record_achievement,
+    show_conduct
+} from './insight.js';
+import {
+    In_quest, deepest_lev_reached, depth, dunlev, on_level, show_overview, single_level_branch
+} from './dungeon.js';
 import { acurr, adjattrib, minuhpmax, setuhpmax } from './attrib.js';
 import { init_uhunger } from './eat.js';
 import { make_sick, peffects, set_itimeout } from './potion.js';
@@ -66,102 +89,116 @@ import { nomux_capture_write_input_boundary } from './termcap.js';
 import { l_nhcore_call, l_nhcore_done } from './nhlua.js';
 import { alloc } from './alloc.js';
 import { sfi_kinfo, sfo_kinfo } from './sfbase.js';
-import { NH_panictrace_gdb, NH_panictrace_libc, panictrace_setsignals, submit_web_report } from './report.js';
+import {
+    NH_panictrace_gdb, NH_panictrace_libc, panictrace_setsignals, submit_web_report
+} from './report.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $NHFILE_mode = FLD.NHFILE_mode, $Race_mnum = FLD.Race_mnum, $Race_mummynum = FLD.Race_mummynum,
-    $Race_zombienum = FLD.Race_zombienum, $RoleName_f = FLD.RoleName_f, $Role_mnum = FLD.Role_mnum,
-    $context_info_mon_moving = FLD.context_info_mon_moving, $context_info_move = FLD.context_info_move,
-    $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum,
-    $display_hints_botlx = FLD.display_hints_botlx, $display_hints_time_botl = FLD.display_hints_time_botl,
-    $flag_beginner = FLD.flag_beginner, $flag_debug = FLD.flag_debug,
-    $flag_end_disclose = FLD.flag_end_disclose, $flag_explore = FLD.flag_explore,
-    $flag_female = FLD.flag_female, $flag_ignintr = FLD.flag_ignintr,
-    $flag_paranoia_bits = FLD.flag_paranoia_bits, $flag_sortloot = FLD.flag_sortloot,
-    $flag_sortpack = FLD.flag_sortpack, $flag_tombstone = FLD.flag_tombstone,
-    $instance_flags_at_midnight = FLD.instance_flags_at_midnight,
-    $instance_flags_at_night = FLD.instance_flags_at_night,
-    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
-    $instance_flags_force_invmenu = FLD.instance_flags_force_invmenu,
-    $instance_flags_in_dumplog = FLD.instance_flags_in_dumplog,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_perm_invent = FLD.instance_flags_perm_invent,
-    $instance_flags_toptenwin = FLD.instance_flags_toptenwin,
-    $instance_flags_vision_inited = FLD.instance_flags_vision_inited,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_globals_a_amulets = FLD.instance_globals_a_amulets,
-    $instance_globals_b_bot_disabled = FLD.instance_globals_b_bot_disabled,
-    $instance_globals_d_done_money = FLD.instance_globals_d_done_money,
-    $instance_globals_d_done_seq = FLD.instance_globals_d_done_seq,
-    $instance_globals_g_gems = FLD.instance_globals_g_gems,
-    $instance_globals_h_hero_seq = FLD.instance_globals_h_hero_seq,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_k_kickedobj = FLD.instance_globals_k_kickedobj,
-    $instance_globals_m_multi = FLD.instance_globals_m_multi,
-    $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
-    $instance_globals_m_multireasonbuf = FLD.instance_globals_m_multireasonbuf,
-    $instance_globals_m_mydogs = FLD.instance_globals_m_mydogs,
-    $instance_globals_n_nomovemsg = FLD.instance_globals_n_nomovemsg,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
-    $instance_globals_t_thrownobj = FLD.instance_globals_t_thrownobj,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_v_valuables = FLD.instance_globals_v_valuables,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_format = FLD.kinfo_format,
-    $kinfo_id = FLD.kinfo_id, $kinfo_name = FLD.kinfo_name, $mextra_ebones = FLD.mextra_ebones,
-    $monst_cham = FLD.monst_cham, $monst_data = FLD.monst_data, $monst_female = FLD.monst_female,
-    $monst_isminion = FLD.monst_isminion, $monst_ispriest = FLD.monst_ispriest,
-    $monst_isshk = FLD.monst_isshk, $monst_m_ap_type = FLD.monst_m_ap_type, $monst_m_id = FLD.monst_m_id,
-    $monst_mappearance = FLD.monst_mappearance, $monst_mextra = FLD.monst_mextra, $monst_mhp = FLD.monst_mhp,
-    $monst_minvis = FLD.monst_minvis, $monst_mtame = FLD.monst_mtame, $mvitals_mvflags = FLD.mvitals_mvflags,
-    $obj_bknown = FLD.obj_bknown, $obj_cknown = FLD.obj_cknown, $obj_cobj = FLD.obj_cobj,
-    $obj_dknown = FLD.obj_dknown, $obj_known = FLD.obj_known, $obj_lknown = FLD.obj_lknown,
-    $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass, $obj_oextra = FLD.obj_oextra,
-    $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan, $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe,
-    $obj_where = FLD.obj_where, $objclass_oc_class = FLD.objclass_oc_class,
-    $objclass_oc_cost = FLD.objclass_oc_cost, $permonst_geno = FLD.permonst_geno,
-    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
-    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags,
-    $rm_typ = FLD.rm_typ, $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_exiting = FLD.sinfo_exiting,
-    $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $sinfo_panicking = FLD.sinfo_panicking,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sinfo_stopprint = FLD.sinfo_stopprint,
-    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_mvitals = FLD.sizeof_mvitals,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
-    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_valuable_data = FLD.sizeof_valuable_data,
-    $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
-    $sysopt_s_fmtd_wizard_list = FLD.sysopt_s_fmtd_wizard_list,
-    $sysopt_s_panictrace_gdb = FLD.sysopt_s_panictrace_gdb,
-    $sysopt_s_panictrace_libc = FLD.sysopt_s_panictrace_libc, $sysopt_s_recover = FLD.sysopt_s_recover,
-    $u_realtime_finish_time = FLD.u_realtime_finish_time,
-    $u_realtime_start_timing = FLD.u_realtime_start_timing, $u_roleplay_nudist = FLD.u_roleplay_nudist,
-    $val_list_size = FLD.val_list_size, $valuable_data_typ = FLD.valuable_data_typ,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
-    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
-    $window_procs_win_outrip = FLD.window_procs_win_outrip,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch, $you_dx = FLD.you_dx,
-    $you_dy = FLD.you_dy, $you_mfemale = FLD.you_mfemale, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
-    $you_uachieved = FLD.you_uachieved, $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase,
-    $you_ucamefrom = FLD.you_ucamefrom, $you_ugrave_arise = FLD.you_ugrave_arise, $you_uhave = FLD.you_uhave,
-    $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax, $you_uhunger = FLD.you_uhunger,
-    $you_uinvulnerable = FLD.you_uinvulnerable, $you_ulevel = FLD.you_ulevel, $you_ulycn = FLD.you_ulycn,
-    $you_umoney0 = FLD.you_umoney0, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-    $you_umortality = FLD.you_umortality, $you_uprops = FLD.you_uprops, $you_urexp = FLD.you_urexp,
-    $you_uroleplay = FLD.you_uroleplay, $you_usleep = FLD.you_usleep, $you_ustuck = FLD.you_ustuck,
-    $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
+const $NHFILE_mode = FLD.NHFILE_mode, $Race_mnum = FLD.Race_mnum,
+      $Race_mummynum = FLD.Race_mummynum, $Race_zombienum = FLD.Race_zombienum,
+      $RoleName_f = FLD.RoleName_f, $Role_mnum = FLD.Role_mnum,
+      $context_info_mon_moving = FLD.context_info_mon_moving,
+      $context_info_move = FLD.context_info_move, $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum,
+      $display_hints_botlx = FLD.display_hints_botlx,
+      $display_hints_time_botl = FLD.display_hints_time_botl, $flag_beginner = FLD.flag_beginner,
+      $flag_debug = FLD.flag_debug, $flag_end_disclose = FLD.flag_end_disclose,
+      $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female,
+      $flag_ignintr = FLD.flag_ignintr, $flag_paranoia_bits = FLD.flag_paranoia_bits,
+      $flag_sortloot = FLD.flag_sortloot, $flag_sortpack = FLD.flag_sortpack,
+      $flag_tombstone = FLD.flag_tombstone,
+      $instance_flags_at_midnight = FLD.instance_flags_at_midnight,
+      $instance_flags_at_night = FLD.instance_flags_at_night,
+      $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+      $instance_flags_force_invmenu = FLD.instance_flags_force_invmenu,
+      $instance_flags_in_dumplog = FLD.instance_flags_in_dumplog,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_perm_invent = FLD.instance_flags_perm_invent,
+      $instance_flags_toptenwin = FLD.instance_flags_toptenwin,
+      $instance_flags_vision_inited = FLD.instance_flags_vision_inited,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_globals_a_amulets = FLD.instance_globals_a_amulets,
+      $instance_globals_b_bot_disabled = FLD.instance_globals_b_bot_disabled,
+      $instance_globals_d_done_money = FLD.instance_globals_d_done_money,
+      $instance_globals_d_done_seq = FLD.instance_globals_d_done_seq,
+      $instance_globals_g_gems = FLD.instance_globals_g_gems,
+      $instance_globals_h_hero_seq = FLD.instance_globals_h_hero_seq,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_k_kickedobj = FLD.instance_globals_k_kickedobj,
+      $instance_globals_m_multi = FLD.instance_globals_m_multi,
+      $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
+      $instance_globals_m_multireasonbuf = FLD.instance_globals_m_multireasonbuf,
+      $instance_globals_m_mydogs = FLD.instance_globals_m_mydogs,
+      $instance_globals_n_nomovemsg = FLD.instance_globals_n_nomovemsg,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+      $instance_globals_t_thrownobj = FLD.instance_globals_t_thrownobj,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_v_valuables = FLD.instance_globals_v_valuables,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+      $kinfo_format = FLD.kinfo_format, $kinfo_id = FLD.kinfo_id, $kinfo_name = FLD.kinfo_name,
+      $mextra_ebones = FLD.mextra_ebones, $monst_cham = FLD.monst_cham,
+      $monst_data = FLD.monst_data, $monst_female = FLD.monst_female,
+      $monst_isminion = FLD.monst_isminion, $monst_ispriest = FLD.monst_ispriest,
+      $monst_isshk = FLD.monst_isshk, $monst_m_ap_type = FLD.monst_m_ap_type,
+      $monst_m_id = FLD.monst_m_id, $monst_mappearance = FLD.monst_mappearance,
+      $monst_mextra = FLD.monst_mextra, $monst_mhp = FLD.monst_mhp,
+      $monst_minvis = FLD.monst_minvis, $monst_mtame = FLD.monst_mtame,
+      $mvitals_mvflags = FLD.mvitals_mvflags, $obj_bknown = FLD.obj_bknown,
+      $obj_cknown = FLD.obj_cknown, $obj_cobj = FLD.obj_cobj, $obj_dknown = FLD.obj_dknown,
+      $obj_known = FLD.obj_known, $obj_lknown = FLD.obj_lknown, $obj_oartifact = FLD.obj_oartifact,
+      $obj_oclass = FLD.obj_oclass, $obj_oextra = FLD.obj_oextra, $obj_otyp = FLD.obj_otyp,
+      $obj_quan = FLD.obj_quan, $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe,
+      $obj_where = FLD.obj_where, $objclass_oc_class = FLD.objclass_oc_class,
+      $objclass_oc_cost = FLD.objclass_oc_cost, $permonst_geno = FLD.permonst_geno,
+      $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
+      $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+      $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ, $sinfo_done_hup = FLD.sinfo_done_hup,
+      $sinfo_exiting = FLD.sinfo_exiting, $sinfo_in_moveloop = FLD.sinfo_in_moveloop,
+      $sinfo_panicking = FLD.sinfo_panicking,
+      $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+      $sinfo_stopprint = FLD.sinfo_stopprint, $sizeof_dungeon = FLD.sizeof_dungeon,
+      $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_valuable_data = FLD.sizeof_valuable_data,
+      $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
+      $sysopt_s_fmtd_wizard_list = FLD.sysopt_s_fmtd_wizard_list,
+      $sysopt_s_panictrace_gdb = FLD.sysopt_s_panictrace_gdb,
+      $sysopt_s_panictrace_libc = FLD.sysopt_s_panictrace_libc,
+      $sysopt_s_recover = FLD.sysopt_s_recover,
+      $u_realtime_finish_time = FLD.u_realtime_finish_time,
+      $u_realtime_start_timing = FLD.u_realtime_start_timing,
+      $u_roleplay_nudist = FLD.u_roleplay_nudist, $val_list_size = FLD.val_list_size,
+      $valuable_data_typ = FLD.valuable_data_typ,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+      $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+      $window_procs_win_outrip = FLD.window_procs_win_outrip,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_mfemale = FLD.you_mfemale, $you_mh = FLD.you_mh,
+      $you_mhmax = FLD.you_mhmax, $you_uachieved = FLD.you_uachieved, $you_ualign = FLD.you_ualign,
+      $you_ualignbase = FLD.you_ualignbase, $you_ucamefrom = FLD.you_ucamefrom,
+      $you_ugrave_arise = FLD.you_ugrave_arise, $you_uhave = FLD.you_uhave, $you_uhp = FLD.you_uhp,
+      $you_uhpmax = FLD.you_uhpmax, $you_uhunger = FLD.you_uhunger,
+      $you_uinvulnerable = FLD.you_uinvulnerable, $you_ulevel = FLD.you_ulevel,
+      $you_ulycn = FLD.you_ulycn, $you_umoney0 = FLD.you_umoney0, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_umortality = FLD.you_umortality,
+      $you_uprops = FLD.you_uprops, $you_urexp = FLD.you_urexp, $you_uroleplay = FLD.you_uroleplay,
+      $you_usleep = FLD.you_usleep, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
+      $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy,
+      $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_died = cptr.lit("died");
@@ -370,10 +407,15 @@ export function done1(sig_unused) {
 export function done2() {
     let abandon_tutorial = 0;
 
-    if ((cptr.ldI16((cptr.add(u, $you_uz))) == tutorial_dnum()) && yn_function(__s_switch_from_the_tutorial_back_to, cptr.decay(ynchars), 110, 1) == 121)
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) == tutorial_dnum()) &&
+            yn_function(__s_switch_from_the_tutorial_back_to, cptr.decay(ynchars), 110, 1) == 121)
         abandon_tutorial = 1;
 
-    if (abandon_tutorial || !paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)), __s_really_quit_without_saving)) {
+    if (abandon_tutorial ||
+            !paranoid_query(
+                schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)),
+                __s_really_quit_without_saving
+            )) {
         void signal(2, done1);
         clear_nhwindow()(WIN_MESSAGE.v);
         curs_on_u();
@@ -386,7 +428,12 @@ export function done2() {
         }
 
         if (abandon_tutorial)
-            schedule_goto(cptr.add(u, $you_ucamefrom), NHC.UTOTYPE_ATSTAIRS, __s_resuming_regular_play, null);
+            schedule_goto(
+                cptr.add(u, $you_ucamefrom),
+                NHC.UTOTYPE_ATSTAIRS,
+                __s_resuming_regular_play,
+                null
+            );
         return NHM.ECMD_OK;
     }
     if (wizard()) {
@@ -400,7 +447,12 @@ export function done2() {
             exit_nhwindows()(null);
             NH_abort(null);
         } else if (c == 113)
-            (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_stopprint,
+                cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+            )) -
+                    (1);
     }
     done(NHC.QUIT);
     return NHM.ECMD_OK;
@@ -410,7 +462,12 @@ export function done2() {
 /*ARGSUSED*/
 /** C ref: end.c:155 — @param {CInt} sig_unused */
 function done_intr(sig_unused) {
-    (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+    (cptr.stI32o(
+        program_state,
+        $sinfo_stopprint,
+        cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+    )) -
+            (1);
     void signal(2, 1);
     void signal(3, 1);
     return;
@@ -419,7 +476,8 @@ function done_intr(sig_unused) {
 /* signal() handler */
 /** C ref: end.c:170 — @param {CInt} sig */
 function done_hangup(sig) {
-    (cptr.stI32o(program_state, $sinfo_done_hup, cptr.ldI32o(program_state, $sinfo_done_hup) + 1)) - (1);
+    (cptr.stI32o(program_state, $sinfo_done_hup, cptr.ldI32o(program_state, $sinfo_done_hup) + 1)) -
+            (1);
     sethanguphandler(1);
     done_intr(sig);
     return;
@@ -429,9 +487,12 @@ function done_hangup(sig) {
 export function done_in_by(mtmp, how) {
     let buf = new Uint8Array(256);
     let mptr = cptr.ldPtro(mtmp, $monst_data);
-    let champtr = ismnum(cptr.ldI16o(mtmp, $monst_cham)) ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst) : mptr;
+    let champtr = ismnum(cptr.ldI16o(mtmp, $monst_cham))
+            ? cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst)
+            : mptr;
     let distorted = schar((Hallucination() && canspotmon(mtmp) ? 1 : 0));
-    let mimicker = schar(((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER));
+    let mimicker = schar(((cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
+            NHC.M_AP_MONSTER));
     let imitator = schar((!cptr.eq(mptr, champtr) || mimicker ? 1 : 0));
 
     You((how == NHC.STONING) ? __s_turn_to_stone : __s_die);
@@ -440,7 +501,10 @@ export function done_in_by(mtmp, how) {
     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY_AN);
     /* "killed by the high priest of Crom" is okay,
        "killed by the high priest" alone isn't */
-    if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 && !(imitator && !mimicker) && !(cptr.eq(mptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)) && !(cptr.ldI32o(mtmp, $monst_ispriest) & 1))) {
+    if ((cptr.ldU16o(mptr, $permonst_geno) & NHM.G_UNIQ) != 0 &&
+            !(imitator && !mimicker) &&
+            !(cptr.eq(mptr, cptr.add(mons, NHC.PM_HIGH_CLERIC, $sizeof_permonst)) &&
+                !(cptr.ldI32o(mtmp, $monst_ispriest) & 1))) {
         if (!((cptr.ldU64o((mptr), $permonst_mflags2) & 524288n) != 0n))
             void cptr.strcat(cptr.decay(buf), __s_the);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
@@ -481,33 +545,58 @@ export function done_in_by(mtmp, how) {
         else
             void cptr.strcpy(cptr.decay(shape), an(fakenm));
         /* omit "called" to avoid excessive verbosity */
-        void cptr.sprintf(eos(cptr.decay(buf)), alt ? __s_s_in_s_form : (mimicker ? __s_s_disguised_as_s : __s_s_imitating_s), realnm, cptr.decay(shape));
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            alt ? __s_s_in_s_form : (mimicker ? __s_s_disguised_as_s : __s_s_imitating_s),
+            realnm,
+            cptr.decay(shape)
+        );
         mptr = cptr.ldPtro(mtmp, $monst_data);  /* reset for mimicker case */
     } else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOST, $sizeof_permonst))) {
         void cptr.strcat(cptr.decay(buf), __s_ghost);
         if (has_mgivenname(mtmp))
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_of_s, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_of_s,
+                (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))
+            );
     } else if ((cptr.ldI32o(mtmp, $monst_isshk) & 1)) {
         let shknm = shkname(mtmp);
-        let honorific = shkname_is_pname(mtmp) ? __s_empty : ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0 ? __s_ms : __s_mr);
+        let honorific = shkname_is_pname(mtmp)
+                ? __s_empty
+                : ((cptr.ldI32o(mtmp, $monst_female) & 1) | 0 ? __s_ms : __s_mr);
 
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_the_shopkeeper, honorific, shknm);
         cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
-    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) {
+    } else if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1) | 0 ||
+            (cptr.ldI32o(mtmp, $monst_isminion) & 1) | 0) {
         /* m_monnam() suppresses "the" prefix plus "invisible", and
            it overrides the effect of Hallucination on priestname() */
         void cptr.strcat(cptr.decay(buf), m_monnam(mtmp));
     } else {
         void cptr.strcat(cptr.decay(buf), pmname(mptr, Mgender(mtmp)));
         if (has_mgivenname(mtmp)) {
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, has_ebones(mtmp) ? __s_of : __s_called, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_s_s,
+                has_ebones(mtmp) ? __s_of : __s_called,
+                (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))
+            );
         }
     }
 
     void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(buf));
 
     /* might need to fix up multi_reason if 'mtmp' caused the reason */
-    if (cptr.ldPtro(gm, $instance_globals_m_multi_reason) && cptr.cmp(cptr.ldPtro(gm, $instance_globals_m_multi_reason), cptr.add(gm, $instance_globals_m_multireasonbuf)) > 0 && cptr.cmp(cptr.ldPtro(gm, $instance_globals_m_multi_reason), cptr.add(cptr.add(cptr.add(gm, $instance_globals_m_multireasonbuf), 128n), -(1))) < 0) {
+    if (cptr.ldPtro(gm, $instance_globals_m_multi_reason) &&
+            cptr.cmp(
+                cptr.ldPtro(gm, $instance_globals_m_multi_reason),
+                cptr.add(gm, $instance_globals_m_multireasonbuf)
+            ) > 0 &&
+            cptr.cmp(
+                cptr.ldPtro(gm, $instance_globals_m_multi_reason),
+                cptr.add(cptr.add(cptr.add(gm, $instance_globals_m_multireasonbuf), 128n), -(1))
+            ) < 0) {
         let reasondummy = cptr.box(0);
         let p;
         let reasonmid = cptr.box(0);
@@ -528,7 +617,13 @@ export function done_in_by(mtmp, how) {
          * report the truncated helplessness reason even if some other
          * monster performs the /coup de grace/.
          */
-        if (sscanf(cptr.add(gm, $instance_globals_m_multireasonbuf), __s_u_c, reasonmid, reasondummy) == 2 && cptr.ldI32o(mtmp, $monst_m_id) == reasonmid.v) {
+        if (sscanf(
+            cptr.add(gm, $instance_globals_m_multireasonbuf),
+            __s_u_c,
+            reasonmid,
+            reasondummy
+        ) == 2 &&
+                cptr.ldI32o(mtmp, $monst_m_id) == reasonmid.v) {
             if ((p = cptr.strchr(cptr.add(gm, $instance_globals_m_multireasonbuf), 32)) !== null)
                 cptr.st1(p, 0);
         }
@@ -545,17 +640,35 @@ export function done_in_by(mtmp, how) {
      */
     if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_WRAITH)
         cptr.stI32o(u, $you_ugrave_arise, NHC.PM_WRAITH);
-    else if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_MUMMY && cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mummynum) != NHC.NON_PM)
-        cptr.stI32o(u, $you_ugrave_arise, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mummynum));
-    else if (zombie_maker(mtmp) && cptr.ldI16o(gu, $instance_globals_u_urace + $Race_zombienum) != NHC.NON_PM)
-        cptr.stI32o(u, $you_ugrave_arise, cptr.ldI16o(gu, $instance_globals_u_urace + $Race_zombienum));
-    else if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_VAMPIRE && (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_HUMAN))
+    else if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_MUMMY &&
+            cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mummynum) != NHC.NON_PM)
+        cptr.stI32o(
+            u,
+            $you_ugrave_arise,
+            cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mummynum)
+        );
+    else if (zombie_maker(mtmp) &&
+            cptr.ldI16o(gu, $instance_globals_u_urace + $Race_zombienum) != NHC.NON_PM)
+        cptr.stI32o(
+            u,
+            $you_ugrave_arise,
+            cptr.ldI16o(gu, $instance_globals_u_urace + $Race_zombienum)
+        );
+    else if (cptr.ld1so(mptr, $permonst_mlet) == NHC.S_VAMPIRE &&
+            (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_HUMAN))
         cptr.stI32o(u, $you_ugrave_arise, NHC.PM_VAMPIRE);
     else if (cptr.eq(mptr, cptr.add(mons, NHC.PM_GHOUL, $sizeof_permonst)))
         cptr.stI32o(u, $you_ugrave_arise, NHC.PM_GHOUL);
     /* this could happen if a high-end vampire kills the hero
        when ordinary vampires are genocided; ditto for wraiths */
-    if (cptr.ldI32o(u, $you_ugrave_arise) >= NHC.LOW_PM && (cptr.ld1uo2(svm, cptr.ldI32o(u, $you_ugrave_arise), $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+    if (cptr.ldI32o(u, $you_ugrave_arise) >= NHC.LOW_PM &&
+            (cptr.ld1uo2(
+                svm,
+                cptr.ldI32o(u, $you_ugrave_arise),
+                $sizeof_mvitals,
+                $instance_globals_saved_m_mvitals + $mvitals_mvflags
+            ) &
+                NHM.G_GENOD))
         cptr.stI32o(u, $you_ugrave_arise, NHC.NON_PM);
 
     done(how);
@@ -584,9 +697,17 @@ function fixup_death(how) {
 
     if (cptr.ldPtro(gm, $instance_globals_m_multi_reason)) {
         for (i = 0; i < 2; ++i)
-            if (cptr.ldI32o(death_fixups, i, 24) == how && !strcmp(cptr.ldPtro2(death_fixups, i, 24, 8), cptr.ldPtro(gm, $instance_globals_m_multi_reason))) {
+            if (cptr.ldI32o(death_fixups, i, 24) == how &&
+                    !strcmp(
+                        cptr.ldPtro2(death_fixups, i, 24, 8),
+                        cptr.ldPtro(gm, $instance_globals_m_multi_reason)
+                    )) {
                 if (cptr.ldPtro2(death_fixups, i, 24, 16))
-                    cptr.stPtro(gm, $instance_globals_m_multi_reason, cptr.ldPtro2(death_fixups, i, 24, 16));
+                    cptr.stPtro(
+                        gm,
+                        $instance_globals_m_multi_reason,
+                        cptr.ldPtro2(death_fixups, i, 24, 16)
+                    );
                 else
                     cptr.stPtro(gm, $instance_globals_m_multi_reason, null);
                 cptr.st1o2(gm, 0, 1, $instance_globals_m_multireasonbuf, 0);  /* dynamic buf stale either way */
@@ -606,7 +727,12 @@ export function panic(str, ...__va) {
         the_args = cptr.vaList(__va);
         ;
 
-        if ((cptr.stI32o(program_state, $sinfo_panicking, cptr.ldI32o(program_state, $sinfo_panicking) + 1)) - (1))
+        if ((cptr.stI32o(
+            program_state,
+            $sinfo_panicking,
+            cptr.ldI32o(program_state, $sinfo_panicking) + 1
+        )) -
+                (1))
             NH_abort(null);  /* avoid loops - this should never happen*/
 
         cptr.st1o(gb, $instance_globals_b_bot_disabled, 1);
@@ -619,22 +745,33 @@ export function panic(str, ...__va) {
             cptr.st1o(iflags, $instance_flags_window_inited, 0);  /* they're gone; force raw_print()ing */
         }
 
-        raw_print()(cptr.ldI32(program_state) ? __s_postgame_wrapup_disrupted : (!cptr.ldI32o(program_state, $sinfo_something_worth_saving) ? __s_program_initialization_has_failed : __s_suddenly_the_dungeon_collapses));
+        raw_print()(cptr.ldI32(program_state)
+                ? __s_postgame_wrapup_disrupted
+                : (!cptr.ldI32o(program_state, $sinfo_something_worth_saving)
+                    ? __s_program_initialization_has_failed
+                    : __s_suddenly_the_dungeon_collapses));
         if (!wizard()) {
-            let maybe_rebuild = !cptr.ldI32o(program_state, $sinfo_something_worth_saving) ? __s_dot : __s_and_it_may_be_possible_to_rebuild;
+            let maybe_rebuild = !cptr.ldI32o(program_state, $sinfo_something_worth_saving)
+                    ? __s_dot
+                    : __s_and_it_may_be_possible_to_rebuild;
 
             // XXX this may need an update if defined(CRASHREPORT) TBD
             if (cptr.ldPtr(sysopt))
                 raw_printf(__s_to_report_this_error_s_s, cptr.ldPtr(sysopt), maybe_rebuild);
             else if (cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list))
-                raw_printf(__s_to_report_this_error_contact_s_s, cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list), maybe_rebuild);
+                raw_printf(
+                    __s_to_report_this_error_contact_s_s,
+                    cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list),
+                    maybe_rebuild
+                );
             else
                 raw_printf(__s_report_error_to_s_s, __s_wizard, maybe_rebuild);
         }
         /* XXX can we move this above the prints?  Then we'd be able to
          * suppress "it may be possible to rebuild" based on dosave0()
          * or say it's NOT possible to rebuild. */
-        if (cptr.ldI32o(program_state, $sinfo_something_worth_saving) && !cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
+        if (cptr.ldI32o(program_state, $sinfo_something_worth_saving) &&
+                !cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
             set_error_savefile();
             if (dosave0()) {
                 /* os/win port specific recover instructions */
@@ -706,14 +843,21 @@ function disclose(how, taken) {
     let qbuf = new Uint8Array(128);
     let ask = 0;
 
-    if (cptr.ldPtro(gi, $instance_globals_i_invent) && !cptr.ldI32o(program_state, $sinfo_stopprint)) {
+    if (cptr.ldPtro(gi, $instance_globals_i_invent) &&
+            !cptr.ldI32o(program_state, $sinfo_stopprint)) {
         if (taken)
-            void cptr.sprintf(cptr.decay(qbuf), __s_do_you_want_to_see_what_you_had_when, (how == NHC.QUIT) ? __s_quit : __s_died);
+            void cptr.sprintf(
+                cptr.decay(qbuf),
+                __s_do_you_want_to_see_what_you_had_when,
+                (how == NHC.QUIT) ? __s_quit : __s_died
+            );
         else
             void cptr.strcpy(cptr.decay(qbuf), __s_do_you_want_your_possessions_identified);
 
         ask = should_query_disclose_option(105, defquery);
-        c = schar((ask ? yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), defquery.v, 1) : defquery.v));
+        c = schar((ask
+                ? yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), defquery.v, 1)
+                : defquery.v));
         if (c == 121) {
             /* caller has already ID'd everything; we pass 'want_reply=True'
                to force display_pickinv() to avoid using WIN_INVENT */
@@ -722,16 +866,33 @@ function disclose(how, taken) {
             container_contents(cptr.ldPtro(gi, $instance_globals_i_invent), 1, 1, 0);
         }
         if (c == 113)
-            (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_stopprint,
+                cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+            )) -
+                    (1);
     }
 
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
         ask = should_query_disclose_option(97, defquery);
-        c = schar((ask ? yn_function(__s_do_you_want_to_see_your_attributes, cptr.decay(ynqchars), defquery.v, 1) : defquery.v));
+        c = schar((ask
+                ? yn_function(
+                    __s_do_you_want_to_see_your_attributes,
+                    cptr.decay(ynqchars),
+                    defquery.v,
+                    1
+                )
+                : defquery.v));
         if (c == 121)
             enlightenment(3, (how >= NHC.PANICKED) ? NHM.ENL_GAMEOVERALIVE : NHM.ENL_GAMEOVERDEAD);
         if (c == 113)
-            (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_stopprint,
+                cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+            )) -
+                    (1);
     }
 
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
@@ -748,7 +909,11 @@ function disclose(how, taken) {
         if (should_query_disclose_option(99, defquery)) {
             let acnt = count_achievements();
 
-            void cptr.sprintf(cptr.decay(qbuf), __s_do_you_want_to_see_your_conduct_s, (acnt > 0) ? __s_and_achievements : __s_empty);
+            void cptr.sprintf(
+                cptr.decay(qbuf),
+                __s_do_you_want_to_see_your_conduct_s,
+                (acnt > 0) ? __s_and_achievements : __s_empty
+            );
             c = yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), defquery.v, 1);
         } else {
             c = defquery.v;
@@ -756,16 +921,33 @@ function disclose(how, taken) {
         if (c == 121)
             show_conduct((how >= NHC.PANICKED) ? 1 : 2);
         if (c == 113)
-            (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_stopprint,
+                cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+            )) -
+                    (1);
     }
 
     if (!cptr.ldI32o(program_state, $sinfo_stopprint)) {
         ask = should_query_disclose_option(111, defquery);
-        c = schar((ask ? yn_function(__s_do_you_want_to_see_the_dungeon_overview, cptr.decay(ynqchars), defquery.v, 1) : defquery.v));
+        c = schar((ask
+                ? yn_function(
+                    __s_do_you_want_to_see_the_dungeon_overview,
+                    cptr.decay(ynqchars),
+                    defquery.v,
+                    1
+                )
+                : defquery.v));
         if (c == 121)
             show_overview((how >= NHC.PANICKED) ? 1 : 2, how);
         if (c == 113)
-            (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_stopprint,
+                cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+            )) -
+                    (1);
     }
 }
 
@@ -801,7 +983,13 @@ function savelife(how) {
        again (perhaps due to zap rebound); this text will be appended to
           "killed by <something>, while "
        in high scores entry, if any, and in logfile (but not on tombstone) */
-    cptr.stPtro(gm, $instance_globals_m_multi_reason, (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_TOURIST) ? __s_being_toyed_with_by_fate : __s_attempting_to_cheat_death);
+    cptr.stPtro(
+        gm,
+        $instance_globals_m_multi_reason,
+        (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_TOURIST)
+            ? __s_being_toyed_with_by_fate
+            : __s_attempting_to_cheat_death
+    );
 
     if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)
         reset_utrap(0);
@@ -813,7 +1001,11 @@ function savelife(how) {
         endmultishot(0);
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* might drop hero onto a trap that kills her all over again */
-        expels(cptr.ldPtro(u, $you_ustuck), cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), 1);
+        expels(
+            cptr.ldPtro(u, $you_ustuck),
+            cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
+            1
+        );
     } else if (cptr.ldPtro(u, $you_ustuck)) {
         if (Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             You(__s_release_s, mon_nam(cptr.ldPtro(u, $you_ustuck)));
@@ -841,18 +1033,61 @@ function get_valuables(list) {
         } else if (cptr.ld1so(obj, $obj_oclass) == NHC.AMULET_CLASS) {
             i = (cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_AMULET) | 0;
             if (!cptr.ldI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets)) {
-                cptr.stI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets, cptr.ldI64o(obj, $obj_quan));
-                cptr.stI32o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets + $valuable_data_typ, cptr.ldI16o(obj, $obj_otyp));
+                cptr.stI64o2(
+                    ga,
+                    i,
+                    $sizeof_valuable_data,
+                    $instance_globals_a_amulets,
+                    cptr.ldI64o(obj, $obj_quan)
+                );
+                cptr.stI32o2(
+                    ga,
+                    i,
+                    $sizeof_valuable_data,
+                    $instance_globals_a_amulets + $valuable_data_typ,
+                    cptr.ldI16o(obj, $obj_otyp)
+                );
             } else
-                cptr.stI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets, cptr.ldI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets) + cptr.ldI64o(obj, $obj_quan));  /* always adds one */
-        } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && cptr.ldI16o(obj, $obj_otyp) <= NHC.LAST_GLASS_GEM) {
+                cptr.stI64o2(
+                    ga,
+                    i,
+                    $sizeof_valuable_data,
+                    $instance_globals_a_amulets,
+                    cptr.ldI64o2(ga, i, $sizeof_valuable_data, $instance_globals_a_amulets) +
+                        cptr.ldI64o(obj, $obj_quan)
+                );  /* always adds one */
+        } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
+                cptr.ldI16o(obj, $obj_otyp) <= NHC.LAST_GLASS_GEM) {
             /* last+1: combine all glass gems into one slot */
-            i = (((cptr.ldI16o(obj, $obj_otyp)) < ((NHC.LAST_REAL_GEM + 1) | 0) ? (cptr.ldI16o(obj, $obj_otyp)) : ((NHC.LAST_REAL_GEM + 1) | 0)) - NHC.FIRST_REAL_GEM) | 0;
+            i = (((cptr.ldI16o(obj, $obj_otyp)) < ((NHC.LAST_REAL_GEM + 1) | 0)
+                ? (cptr.ldI16o(obj, $obj_otyp))
+                : ((NHC.LAST_REAL_GEM + 1) | 0)) -
+                NHC.FIRST_REAL_GEM) |
+                    0;
             if (!cptr.ldI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems)) {
-                cptr.stI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems, cptr.ldI64o(obj, $obj_quan));
-                cptr.stI32o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems + $valuable_data_typ, cptr.ldI16o(obj, $obj_otyp));
+                cptr.stI64o2(
+                    gg,
+                    i,
+                    $sizeof_valuable_data,
+                    $instance_globals_g_gems,
+                    cptr.ldI64o(obj, $obj_quan)
+                );
+                cptr.stI32o2(
+                    gg,
+                    i,
+                    $sizeof_valuable_data,
+                    $instance_globals_g_gems + $valuable_data_typ,
+                    cptr.ldI16o(obj, $obj_otyp)
+                );
             } else
-                cptr.stI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems, cptr.ldI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems) + cptr.ldI64o(obj, $obj_quan));
+                cptr.stI64o2(
+                    gg,
+                    i,
+                    $sizeof_valuable_data,
+                    $instance_globals_g_gems,
+                    cptr.ldI64o2(gg, i, $sizeof_valuable_data, $instance_globals_g_gems) +
+                        cptr.ldI64o(obj, $obj_quan)
+                );
         }
     return;
 }
@@ -875,7 +1110,11 @@ function sort_valuables(list, size) {
         for (j = i; j > 0; --j) {
             if (cptr.ldI64o(list, (j - 1) | 0, $sizeof_valuable_data) >= cptr.ldI64(ltmp))
                 break;
-            cptr.memcpy(cptr.add(list, j, $sizeof_valuable_data), cptr.add(list, (j - 1) | 0, $sizeof_valuable_data), 16);
+            cptr.memcpy(
+                cptr.add(list, j, $sizeof_valuable_data),
+                cptr.add(list, (j - 1) | 0, $sizeof_valuable_data),
+                16
+            );
         }
         cptr.memcpy(cptr.add(list, j, $sizeof_valuable_data), ltmp, 16);
     }
@@ -907,20 +1146,27 @@ export function done_object_cleanup() {
      * not being knocked down holes, but it seems better to get this
      * game over with than risk being tangled up in more and more details.
      */
-    ox = (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0, oy = (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0;
+    ox = (cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0,
+            oy = (cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0;
     if (!isok(i16(ox), i16(oy)) || !accessible(i16(ox), i16(oy)))
         ox = cptr.ldI16(u), oy = cptr.ldI16o(u, $you_uy);
     /* put thrown or kicked object on map (for bones); location might
        be incorrect (perhaps killed by divine lightning when throwing at
        a temple priest?) but this should be better than just vanishing
        (fragile stuff should be taken care of before getting here) */
-    if (cptr.ldPtro(gt, $instance_globals_t_thrownobj) && cptr.ld1so(cptr.ldPtro(gt, $instance_globals_t_thrownobj), $obj_where) == NHM.OBJ_FREE) {
+    if (cptr.ldPtro(gt, $instance_globals_t_thrownobj) &&
+            cptr.ld1so(cptr.ldPtro(gt, $instance_globals_t_thrownobj), $obj_where) ==
+                NHM.OBJ_FREE) {
         place_object(cptr.ldPtro(gt, $instance_globals_t_thrownobj), i16(ox), i16(oy));
-        stackobj(cptr.ldPtro(gt, $instance_globals_t_thrownobj)), cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
+        stackobj(cptr.ldPtro(gt, $instance_globals_t_thrownobj)),
+                cptr.stPtro(gt, $instance_globals_t_thrownobj, null);
     }
-    if (cptr.ldPtro(gk, $instance_globals_k_kickedobj) && cptr.ld1so(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_where) == NHM.OBJ_FREE) {
+    if (cptr.ldPtro(gk, $instance_globals_k_kickedobj) &&
+            cptr.ld1so(cptr.ldPtro(gk, $instance_globals_k_kickedobj), $obj_where) ==
+                NHM.OBJ_FREE) {
         place_object(cptr.ldPtro(gk, $instance_globals_k_kickedobj), i16(ox), i16(oy));
-        stackobj(cptr.ldPtro(gk, $instance_globals_k_kickedobj)), cptr.stPtro(gk, $instance_globals_k_kickedobj, null);
+        stackobj(cptr.ldPtro(gk, $instance_globals_k_kickedobj)),
+                cptr.stPtro(gk, $instance_globals_k_kickedobj, null);
     }
     /* if Punished hero dies during level change or dies or quits while
        swallowed, uball and uchain will be in limbo; put them on floor
@@ -947,17 +1193,53 @@ function artifact_score(list, counting, endwin) {
     let points;
 
     for (otmp = list; otmp; otmp = cptr.ldPtr(otmp)) {
-        if (cptr.ld1so(otmp, $obj_oartifact) || cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL_OF_OPENING || cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD || cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
+        if (cptr.ld1so(otmp, $obj_oartifact) ||
+                cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL_OF_OPENING ||
+                cptr.ldI16o(otmp, $obj_otyp) == NHC.SPE_BOOK_OF_THE_DEAD ||
+                cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
             value = arti_cost(otmp);  /* zorkmid value */
             points = BigInt.asIntN(64, value * 5n) / 2n;  /* score value */
             if (counting) {
-                cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - (points))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (points))) : 9223372036854775807n));
+                cptr.stI64o(
+                    u,
+                    $you_urexp,
+                    ((cptr.ldI64o(u, $you_urexp)) <=
+                        (BigInt.asIntN(64, 9223372036854775807n - (points)))
+                        ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (points)))
+                        : 9223372036854775807n)
+                );
             } else {
                 discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0);
                 /* not observe_object; dead characters don't observe */
-                cptr.stI32o(otmp, $obj_known, cptr.stI32o(otmp, $obj_dknown, cptr.stI32o(otmp, $obj_bknown, cptr.stI32o(otmp, $obj_rknown, 1))));
+                cptr.stI32o(
+                    otmp,
+                    $obj_known,
+                    cptr.stI32o(
+                        otmp,
+                        $obj_dknown,
+                        cptr.stI32o(otmp, $obj_bknown, cptr.stI32o(otmp, $obj_rknown, 1))
+                    )
+                );
                 /* assumes artifacts don't have quan > 1 */
-                void cptr.sprintf(cptr.decay(pbuf), __s_s_s_worth_ld_s_and_ld_points, the_unique_obj(otmp) ? __s_the__2 : __s_empty, cptr.ld1so(otmp, $obj_oartifact) ? artiname(cptr.ld1so(otmp, $obj_oartifact)) : (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass))), $sizeof_objdescr)), value, currency(value), points);
+                void cptr.sprintf(
+                    cptr.decay(pbuf),
+                    __s_s_s_worth_ld_s_and_ld_points,
+                    the_unique_obj(otmp) ? __s_the__2 : __s_empty,
+                    cptr.ld1so(otmp, $obj_oartifact)
+                        ? artiname(cptr.ld1so(otmp, $obj_oartifact))
+                        : (cptr.ldPtro(
+                            obj_descr,
+                            cptr.ldI16((cptr.add(
+                                objects,
+                                cptr.ldI16o(otmp, $obj_otyp),
+                                $sizeof_objclass
+                            ))),
+                            $sizeof_objdescr
+                        )),
+                    value,
+                    currency(value),
+                    points
+                );
                 putstr()(endwin, 0, cptr.decay(pbuf));
             }
         }
@@ -974,14 +1256,19 @@ function fuzzer_savelife(how) {
      * Some debugging code pulled out of done() to unclutter it.
      * 'done_seq' is maintained in done().
      */
-    if (!cptr.ldI32o(program_state, $sinfo_panicking) && how != NHC.PANICKED && how != NHC.TRICKED) {
+    if (!cptr.ldI32o(program_state, $sinfo_panicking) &&
+            how != NHC.PANICKED &&
+            how != NHC.TRICKED) {
         savelife(how);
 
         /* periodically restore characteristics plus lost experience
            levels or cure lycanthropy or both; those conditions make the
            hero vulnerable to repeat deaths (often by becoming surrounded
            while being too encumbered to do anything) */
-        if (!rn2((cptr.ldI64o(gd, $instance_globals_d_done_seq) > BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 2n)) ? 2 : 10)) {
+        if (!rn2((cptr.ldI64o(gd, $instance_globals_d_done_seq) >
+            BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 2n))
+                ? 2
+                : 10)) {
             let potion;
             let propidx;
             let proptim;
@@ -1007,8 +1294,16 @@ function fuzzer_savelife(how) {
                 /* confer temporary resistances for first 8 properties:
                    fire, cold, sleep, disint, shock, poison, acid, stone */
                 for (propidx = 1; propidx <= 8; ++propidx) {
-                    if (!cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops) && (proptim = rn2(3)) > 0)
-                        set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), propidx, $sizeof_prop), $prop_intrinsic), BigInt(((Math.imul(2, proptim) + 1) | 0)));  /* 3 or 5 */
+                    if (!cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops + $prop_intrinsic) &&
+                            !cptr.ldI64o2(u, propidx, $sizeof_prop, $you_uprops) &&
+                            (proptim = rn2(3)) > 0)
+                        set_itimeout(
+                            cptr.add(
+                                cptr.add(cptr.add(u, $you_uprops), propidx, $sizeof_prop),
+                                $prop_intrinsic
+                            ),
+                            BigInt(((Math.imul(2, proptim) + 1) | 0))
+                        );  /* 3 or 5 */
                 }
                 ++remedies;
             }
@@ -1028,7 +1323,13 @@ function fuzzer_savelife(how) {
          * if we're in wizmode (always the case for debug_fuzzer unless
          * player has used a debugger to fiddle with 'iflags' bits).
          */
-        if ((cptr.stI64o(gd, $instance_globals_d_done_seq, cptr.ldI64o(gd, $instance_globals_d_done_seq) + 1n)) - (1n) > BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 100n)) {
+        if ((cptr.stI64o(
+            gd,
+            $instance_globals_d_done_seq,
+            cptr.ldI64o(gd, $instance_globals_d_done_seq) + 1n
+        )) -
+            (1n) >
+                BigInt.asIntN(64, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 100n)) {
             if (!wizard())
                 return 0;  /* can't deal with it */
             cmdq_add_ec(NHC.CQ_CANNED, wiz_makemap);
@@ -1056,10 +1357,15 @@ export function done(how) {
             return;
         }
     }
-    if (cptr.ldI32o(program_state, $sinfo_panicking) || cptr.ldI32o(program_state, $sinfo_done_hup) || (how == NHC.QUIT && cptr.ldI32o(program_state, $sinfo_stopprint))) {
+    if (cptr.ldI32o(program_state, $sinfo_panicking) ||
+            cptr.ldI32o(program_state, $sinfo_done_hup) ||
+            (how == NHC.QUIT && cptr.ldI32o(program_state, $sinfo_stopprint))) {
         /* skip status update if panicking or disconnected
            or answer of 'q' to "Really quit?" */
-        cptr.st1(disp, cptr.st1o(disp, $display_hints_botlx, cptr.st1o(disp, $display_hints_time_botl, 0)));
+        cptr.st1(
+            disp,
+            cptr.st1o(disp, $display_hints_botlx, cptr.st1o(disp, $display_hints_time_botl, 0))
+        );
     } else {
         /* otherwise force full status update */
         cptr.st1o(disp, $display_hints_botlx, 1);
@@ -1070,8 +1376,13 @@ export function done(how) {
        by the hero on the current turn (since the 'moves' variable
        actually counts turns); its details shouldn't matter here;
        used by fuzzer_savelife() and for hangup below */
-    if (cptr.ldI64o(gd, $instance_globals_d_done_seq) < cptr.ldI64o(gh, $instance_globals_h_hero_seq))
-        cptr.stI64o(gd, $instance_globals_d_done_seq, cptr.ldI64o(gh, $instance_globals_h_hero_seq));
+    if (cptr.ldI64o(gd, $instance_globals_d_done_seq) <
+            cptr.ldI64o(gh, $instance_globals_h_hero_seq))
+        cptr.stI64o(
+            gd,
+            $instance_globals_d_done_seq,
+            cptr.ldI64o(gh, $instance_globals_h_hero_seq)
+        );
 
     if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
         if (fuzzer_savelife(how))
@@ -1122,7 +1433,21 @@ export function done(how) {
         }
     }
     /* explore and wizard modes offer player the option to keep playing */
-    if (!survive && (wizard() || discover()) && how <= NHC.GENOCIDED && !(cptr.ldI32o(program_state, $sinfo_done_hup) && (cptr.stI64o(gd, $instance_globals_d_done_seq, cptr.ldI64o(gd, $instance_globals_d_done_seq) + 1n)) - (1n) == cptr.ldI64o(gh, $instance_globals_h_hero_seq)) && !paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_DIE) >>> 0) != 0)), __s_die__2)) {
+    if (!survive &&
+            (wizard() || discover()) &&
+            how <= NHC.GENOCIDED &&
+            !(cptr.ldI32o(program_state, $sinfo_done_hup) &&
+                (cptr.stI64o(
+                    gd,
+                    $instance_globals_d_done_seq,
+                    cptr.ldI64o(gd, $instance_globals_d_done_seq) + 1n
+                )) -
+                    (1n) ==
+                    cptr.ldI64o(gh, $instance_globals_h_hero_seq)) &&
+            !paranoid_query(
+                schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_DIE) >>> 0) != 0)),
+                __s_die__2
+            )) {
         pline(__s_ok_so_you_don_t_s, (how == NHC.CHOKING) ? __s_choke : __s_die__3);
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OK_DONT_DIE);
         savelife(how);
@@ -1158,7 +1483,12 @@ function really_done(how) {
     /* in case of a subsequent panic(), there's no point trying to save */
     cptr.stI32o(program_state, $sinfo_something_worth_saving, 0);
     if (cptr.ldI32o(program_state, $sinfo_done_hup))
-        (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+        (cptr.stI32o(
+            program_state,
+            $sinfo_stopprint,
+            cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+        )) -
+                (1);
     /* render vision subsystem inoperative */
     cptr.st1o(iflags, $instance_flags_vision_inited, 0);
 
@@ -1173,7 +1503,11 @@ function really_done(how) {
        topten figure it out separately and possibly getting different
        time or even day if player is slow responding to --More-- */
     cptr.stI64o(urealtime, $u_realtime_finish_time, endtime = getnow());
-    cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(endtime, cptr.ldI64o(urealtime, $u_realtime_start_timing)));
+    cptr.stI64(
+        urealtime,
+        cptr.ldI64(urealtime) +
+            timet_delta(endtime, cptr.ldI64o(urealtime, $u_realtime_start_timing))
+    );
     /* collect these for end of game disclosure (not used during play) */
     cptr.stI32o(iflags, $instance_flags_at_night, night());
     cptr.stI32o(iflags, $instance_flags_at_midnight, midnight());
@@ -1194,7 +1528,9 @@ function really_done(how) {
      * On those rare occasions you get hosed immediately, go out
      * smiling... :-)  -3.
      */
-    if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n && how < NHC.PANICKED && !cptr.ldI32o(program_state, $sinfo_stopprint))
+    if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= 1n &&
+            how < NHC.PANICKED &&
+            !cptr.ldI32o(program_state, $sinfo_stopprint))
         pline(__s_do_not_pass_go_do_not_collect_200_s, currency(200n));
 
     if (have_windows)
@@ -1215,7 +1551,14 @@ function really_done(how) {
         cptr.stI32o(u, $you_ugrave_arise, ((NHC.NON_PM - 2) | 0));  /* leave no corpse */
     else if (how == NHC.STONING)
         cptr.stI32o(u, $you_ugrave_arise, NHC.LEAVESTATUE);  /* statue instead of corpse */
-    else if (how == NHC.TURNED_SLIME && !(cptr.ld1uo2(svm, NHC.PM_GREEN_SLIME, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD))
+    else if (how == NHC.TURNED_SLIME &&
+            !(cptr.ld1uo2(
+                svm,
+                NHC.PM_GREEN_SLIME,
+                $sizeof_mvitals,
+                $instance_globals_saved_m_mvitals + $mvitals_mvflags
+            ) &
+                NHM.G_GENOD))
         cptr.stI32o(u, $you_ugrave_arise, NHC.PM_GREEN_SLIME);
 
     if (how == NHC.QUIT) {
@@ -1259,7 +1602,15 @@ function really_done(how) {
             nextobj = cptr.ldPtr(obj);
             discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0);
             /* observe_object not necessary after discover_object */
-            cptr.stI32o(obj, $obj_known, cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_rknown, 1))));
+            cptr.stI32o(
+                obj,
+                $obj_known,
+                cptr.stI32o(
+                    obj,
+                    $obj_bknown,
+                    cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_rknown, 1))
+                )
+            );
             set_cknown_lknown(obj);  /* set flags when applicable */
             /* we resolve Schroedinger's cat now in case of both
                disclosure and dumplog, where the 50:50 chance for
@@ -1304,18 +1655,70 @@ function really_done(how) {
 
     /* grave creation should be after disclosure so it doesn't have
        this grave in the current level's features for #overview */
-    if (bones_ok && cptr.ldI32o(u, $you_ugrave_arise) == NHC.NON_PM && !(cptr.ld1uo2(svm, cptr.ldI32o(u, $you_umonnum), $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_NOCORPSE)) {
+    if (bones_ok &&
+            cptr.ldI32o(u, $you_ugrave_arise) == NHC.NON_PM &&
+            !(cptr.ld1uo2(
+                svm,
+                cptr.ldI32o(u, $you_umonnum),
+                $sizeof_mvitals,
+                $instance_globals_saved_m_mvitals + $mvitals_mvflags
+            ) &
+                NHM.G_NOCORPSE)) {
         /* Base corpse on race when not poly'd since original u.umonnum
            is based on role, and all role monsters are human. */
-        let mnum = !Upolyd() ? cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) : cptr.ldI32o(u, $you_umonnum);
-        let was_already_grave = ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE);
+        let mnum = !Upolyd()
+                ? cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)
+                : cptr.ldI32o(u, $you_umonnum);
+        let was_already_grave = ((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.GRAVE);
 
-        corpse = mk_named_object(NHC.CORPSE, cptr.add(mons, mnum, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), svp);
+        corpse = mk_named_object(
+            NHC.CORPSE,
+            cptr.add(mons, mnum, $sizeof_permonst),
+            cptr.ldI16(u),
+            cptr.ldI16o(u, $you_uy),
+            svp
+        );
         void cptr.sprintf(cptr.decay(pbuf), __s_pct_s_comma_sp, svp);
-        formatkiller(eos(cptr.decay(pbuf)), Number(BigInt.asUintN(32, BigInt.asUintN(64, 256n - BigInt(Strlen_(cptr.decay(pbuf), __s_really_done, 1317) >>> 0)))), how, 1);
+        formatkiller(
+            eos(cptr.decay(pbuf)),
+            Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(
+                    64,
+                    256n - BigInt(Strlen_(cptr.decay(pbuf), __s_really_done, 1317) >>> 0)
+                )
+            )),
+            how,
+            1
+        );
         make_grave(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(pbuf));
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.GRAVE) && !was_already_grave)
-            cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 1);  /* corpse isn't buried */
+        if (((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+            NHC.GRAVE) &&
+                !was_already_grave)
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
+                1
+            );  /* corpse isn't buried */
     }
     cptr.st1o(cptr.decay(pbuf), 0, 0, 1);  /* clear grave text; also lint suppression */
 
@@ -1335,27 +1738,58 @@ function really_done(how) {
         tmp += BigInt.asIntN(64, 50n * BigInt(((deepest - 1) | 0)));
         if (deepest > 20)
             tmp += BigInt.asIntN(64, 1000n * BigInt(((deepest > 30) ? 10 : (deepest - 20) | 0)));
-        cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (tmp))) : 9223372036854775807n));
+        cptr.stI64o(
+            u,
+            $you_urexp,
+            ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp)))
+                ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (tmp)))
+                : 9223372036854775807n)
+        );
 
         /* ascension gives a score bonus iff offering to original deity */
-        if (how == NHC.ASCENDED && cptr.ld1so(u, $you_ualign) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) {
+        if (how == NHC.ASCENDED &&
+                cptr.ld1so(u, $you_ualign) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) {
             /* retaining original alignment: score *= 2;
                converting, then using helm-of-OA to switch back: *= 1.5 */
-            tmp = (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) ? cptr.ldI64o(u, $you_urexp) : (cptr.ldI64o(u, $you_urexp) / 2n);
-            cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (tmp))) : 9223372036854775807n));
+            tmp = (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) ==
+                cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))
+                    ? cptr.ldI64o(u, $you_urexp)
+                    : (cptr.ldI64o(u, $you_urexp) / 2n);
+            cptr.stI64o(
+                u,
+                $you_urexp,
+                ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp)))
+                    ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (tmp)))
+                    : 9223372036854775807n)
+            );
         }
     }
 
-    if (ismnum(cptr.ldI32o(u, $you_ugrave_arise)) && !cptr.ldI32o(program_state, $sinfo_stopprint)) {
+    if (ismnum(cptr.ldI32o(u, $you_ugrave_arise)) &&
+            !cptr.ldI32o(program_state, $sinfo_stopprint)) {
         /* give this feedback even if bones aren't going to be created,
            so that its presence or absence doesn't tip off the player to
            new bones or their lack; it might be a lie if makemon fails */
-        Your(__s_s_as_s, (cptr.ldI32o(u, $you_ugrave_arise) != NHC.PM_GREEN_SLIME) ? __s_body_rises_from_the_dead : __s_revenant_persists, an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), $sizeof_permonst), Ugender())));
+        Your(
+            __s_s_as_s,
+            (cptr.ldI32o(u, $you_ugrave_arise) != NHC.PM_GREEN_SLIME)
+                ? __s_body_rises_from_the_dead
+                : __s_revenant_persists,
+            an(pmname(
+                cptr.add(mons, cptr.ldI32o(u, $you_ugrave_arise), $sizeof_permonst),
+                Ugender()
+            ))
+        );
         display_nhwindow()(WIN_MESSAGE.v, 0);
     }
 
     if (bones_ok) {
-        if (!wizard() || paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_BONES) >>> 0) != 0)), __s_save_bones))
+        if (!wizard() ||
+                paranoid_query(
+                    schar((((cptr.ldI32o(flags, $flag_paranoia_bits) &
+                        NHM.PARANOID_BONES) >>> 0) != 0)),
+                    __s_save_bones
+                ))
             savebones(how, endtime, corpse);
         /* corpse may be invalid pointer now so
             ensure that it isn't used again */
@@ -1391,14 +1825,42 @@ function really_done(how) {
     if ((cptr.ldI32o(u, $you_uhave) & 1)) {
         void cptr.strcat(cptr.add(svk, $kinfo_name), __s_with_the_amulet);
     } else if (how == NHC.ESCAPED) {
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
+        if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )
+                ))))
             void cptr.strcat(cptr.add(svk, $kinfo_name), __s_in_celestial_disgrace);
         else if (carrying(NHC.FAKE_AMULET_OF_YENDOR))
             void cptr.strcat(cptr.add(svk, $kinfo_name), __s_with_a_fake_amulet);
         /* don't bother counting to see whether it should be plural */
     }
 
-    void cptr.sprintf(cptr.decay(pbuf), __s_s_s_the_s, Goodbye(), svp, (how != NHC.ASCENDED) ? ((cptr.ld1so(flags, $flag_female) && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole)) : (cptr.ld1so(flags, $flag_female) ? __s_demigoddess : __s_demigod));
+    void cptr.sprintf(
+        cptr.decay(pbuf),
+        __s_s_s_the_s,
+        Goodbye(),
+        svp,
+        (how != NHC.ASCENDED)
+            ? ((cptr.ld1so(flags, $flag_female) &&
+                cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
+                ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
+                : cptr.ldPtro(gu, $instance_globals_u_urole))
+            : (cptr.ld1so(flags, $flag_female) ? __s_demigoddess : __s_demigod)
+    );
     dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint));
     dump_forward_putstr(endwin, 0, __s_empty, cptr.ldI32o(program_state, $sinfo_stopprint));
 
@@ -1408,31 +1870,79 @@ function really_done(how) {
         let val;
         let i;
 
-        for (val = cptr.add(gv, $instance_globals_v_valuables); cptr.ldPtr(val); val = cptr.add(val, 1, 16))
+        for (
+            val = cptr.add(gv, $instance_globals_v_valuables);
+            cptr.ldPtr(val);
+            val = cptr.add(val, 1, 16)
+        )
             for (i = 0; i < cptr.ldI32o(val, $val_list_size); i++) {
                 cptr.stI64o(cptr.ldPtr(val), i, 0n, $sizeof_valuable_data);
             }
         get_valuables(cptr.ldPtro(gi, $instance_globals_i_invent));
 
         /* add points for collected valuables */
-        for (val = cptr.add(gv, $instance_globals_v_valuables); cptr.ldPtr(val); val = cptr.add(val, 1, 16))
+        for (
+            val = cptr.add(gv, $instance_globals_v_valuables);
+            cptr.ldPtr(val);
+            val = cptr.add(val, 1, 16)
+        )
             for (i = 0; i < cptr.ldI32o(val, $val_list_size); i++)
                 if (cptr.ldI64o(cptr.ldPtr(val), i, $sizeof_valuable_data) != 0n) {
-                    tmp = BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtr(val), i, $sizeof_valuable_data) * BigInt(cptr.ldI16o2(objects, cptr.ldI32o2(cptr.ldPtr(val), i, $sizeof_valuable_data, $valuable_data_typ), $sizeof_objclass, $objclass_oc_cost)));
-                    cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - (tmp))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (tmp))) : 9223372036854775807n));
+                    tmp = BigInt.asIntN(
+                        64,
+                        cptr.ldI64o(cptr.ldPtr(val), i, $sizeof_valuable_data) *
+                            BigInt(cptr.ldI16o2(
+                                objects,
+                                cptr.ldI32o2(
+                                    cptr.ldPtr(val),
+                                    i,
+                                    $sizeof_valuable_data,
+                                    $valuable_data_typ
+                                ),
+                                $sizeof_objclass,
+                                $objclass_oc_cost
+                            ))
+                    );
+                    cptr.stI64o(
+                        u,
+                        $you_urexp,
+                        ((cptr.ldI64o(u, $you_urexp)) <=
+                            (BigInt.asIntN(64, 9223372036854775807n - (tmp)))
+                            ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + (tmp)))
+                            : 9223372036854775807n)
+                    );
                 }
 
         /* count the points for artifacts */
         artifact_score(cptr.ldPtro(gi, $instance_globals_i_invent), 1, endwin);
 
-        cptr.st1o(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), 0, 8), 0, cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), 0, 8), 0) | NHM.IN_SIGHT);  /* need visibility for naming */
+        cptr.st1o(
+            cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), 0, 8),
+            0,
+            cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), 0, 8), 0) |
+                NHM.IN_SIGHT
+        );  /* need visibility for naming */
         mtmp = cptr.ldPtro(gm, $instance_globals_m_mydogs);
         void cptr.strcpy(cptr.decay(pbuf), __s_you);
         if (mtmp || Schroedingers_cat) {
             while (mtmp) {
                 void cptr.sprintf(eos(cptr.decay(pbuf)), __s_and_s, mon_nam(mtmp));
                 if (cptr.ld1so(mtmp, $monst_mtame))
-                    cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - BigInt((cptr.ldI32o(mtmp, $monst_mhp))))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + BigInt((cptr.ldI32o(mtmp, $monst_mhp))))) : 9223372036854775807n));
+                    cptr.stI64o(
+                        u,
+                        $you_urexp,
+                        ((cptr.ldI64o(u, $you_urexp)) <=
+                            (BigInt.asIntN(
+                                64,
+                                9223372036854775807n - BigInt((cptr.ldI32o(mtmp, $monst_mhp)))
+                            ))
+                            ? (BigInt.asIntN(
+                                64,
+                                (cptr.ldI64o(u, $you_urexp)) +
+                                    BigInt((cptr.ldI32o(mtmp, $monst_mhp)))
+                            ))
+                            : 9223372036854775807n)
+                    );
                 mtmp = cptr.ldPtr(mtmp);
             }
             /* [it might be more robust to create a housecat and add it to
@@ -1442,30 +1952,69 @@ function really_done(how) {
                 let m_lev = adj_lev(cptr.add(mons, NHC.PM_HOUSECAT, $sizeof_permonst));
 
                 mhp = d((m_lev), 8);
-                cptr.stI64o(u, $you_urexp, ((cptr.ldI64o(u, $you_urexp)) <= (BigInt.asIntN(64, 9223372036854775807n - BigInt((mhp)))) ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + BigInt((mhp)))) : 9223372036854775807n));
+                cptr.stI64o(
+                    u,
+                    $you_urexp,
+                    ((cptr.ldI64o(u, $you_urexp)) <=
+                        (BigInt.asIntN(64, 9223372036854775807n - BigInt((mhp))))
+                        ? (BigInt.asIntN(64, (cptr.ldI64o(u, $you_urexp)) + BigInt((mhp))))
+                        : 9223372036854775807n)
+                );
                 void cptr.strcat(eos(cptr.decay(pbuf)), __s_and_schroedinger_s_cat);
             }
-            dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint));
+            dump_forward_putstr(
+                endwin,
+                0,
+                cptr.decay(pbuf),
+                cptr.ldI32o(program_state, $sinfo_stopprint)
+            );
             cptr.st1o(cptr.decay(pbuf), 0, 0, 1);
         } else {
             void cptr.strcat(cptr.decay(pbuf), __s_sp);
         }
-        void cptr.sprintf(eos(cptr.decay(pbuf)), __s_s_with_ld_point_s, (how == NHC.ASCENDED) ? __s_went_to_your_reward : __s_escaped_from_the_dungeon, cptr.ldI64o(u, $you_urexp), (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __s_empty : __s_s));
-        dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint));
+        void cptr.sprintf(
+            eos(cptr.decay(pbuf)),
+            __s_s_with_ld_point_s,
+            (how == NHC.ASCENDED) ? __s_went_to_your_reward : __s_escaped_from_the_dungeon,
+            cptr.ldI64o(u, $you_urexp),
+            (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __s_empty : __s_s)
+        );
+        dump_forward_putstr(
+            endwin,
+            0,
+            cptr.decay(pbuf),
+            cptr.ldI32o(program_state, $sinfo_stopprint)
+        );
 
         if (!cptr.ldI32o(program_state, $sinfo_stopprint))
             artifact_score(cptr.ldPtro(gi, $instance_globals_i_invent), 0, endwin);  /* list artifacts */
 
         /* list valuables here */
-        for (val = cptr.add(gv, $instance_globals_v_valuables); cptr.ldPtr(val); val = cptr.add(val, 1, 16)) {
+        for (
+            val = cptr.add(gv, $instance_globals_v_valuables);
+            cptr.ldPtr(val);
+            val = cptr.add(val, 1, 16)
+        ) {
             sort_valuables(cptr.ldPtr(val), cptr.ldI32o(val, $val_list_size));
-            for (i = 0; i < cptr.ldI32o(val, $val_list_size) && !cptr.ldI32o(program_state, $sinfo_stopprint); i++) {
-                let typ = cptr.ldI32o2(cptr.ldPtr(val), i, $sizeof_valuable_data, $valuable_data_typ);
+            for (
+                i = 0;
+                i < cptr.ldI32o(val, $val_list_size) &&
+                    !cptr.ldI32o(program_state, $sinfo_stopprint);
+                i++
+            ) {
+                let typ = cptr.ldI32o2(
+                    cptr.ldPtr(val),
+                    i,
+                    $sizeof_valuable_data,
+                    $valuable_data_typ
+                );
                 let count = cptr.ldI64o(cptr.ldPtr(val), i, $sizeof_valuable_data);
 
                 if (count == 0n)
                     continue;
-                if (cptr.ld1so2(objects, typ, $sizeof_objclass, $objclass_oc_class) != NHC.GEM_CLASS || typ <= NHC.LAST_REAL_GEM) {
+                if (cptr.ld1so2(objects, typ, $sizeof_objclass, $objclass_oc_class) !=
+                    NHC.GEM_CLASS ||
+                        typ <= NHC.LAST_REAL_GEM) {
                     otmp = mksobj(typ, 0, 0);
                     discover_object(cptr.ldI16o(otmp, $obj_otyp), 1, 1, 0);
                     cptr.stI32o(otmp, $obj_dknown, 1);  /* seen it (blindness fix) */
@@ -1474,10 +2023,31 @@ function really_done(how) {
                     if (has_oname(otmp))
                         free_oname(otmp);
                     cptr.stI64o(otmp, $obj_quan, count);
-                    void cptr.sprintf(cptr.decay(pbuf), __s_8ld_s_worth_ld_s, count, xname(otmp), BigInt.asIntN(64, count * BigInt(cptr.ldI16o2(objects, typ, $sizeof_objclass, $objclass_oc_cost))), currency(2n));
+                    void cptr.sprintf(
+                        cptr.decay(pbuf),
+                        __s_8ld_s_worth_ld_s,
+                        count,
+                        xname(otmp),
+                        BigInt.asIntN(
+                            64,
+                            count *
+                                BigInt(cptr.ldI16o2(
+                                    objects,
+                                    typ,
+                                    $sizeof_objclass,
+                                    $objclass_oc_cost
+                                ))
+                        ),
+                        currency(2n)
+                    );
                     obfree(otmp, null);
                 } else {
-                    void cptr.sprintf(cptr.decay(pbuf), __s_8ld_worthless_piece_s_of_colored_glass, count, (((count) == 1n) ? __s_empty : __s_s));
+                    void cptr.sprintf(
+                        cptr.decay(pbuf),
+                        __s_8ld_worthless_piece_s_of_colored_glass,
+                        count,
+                        (((count) == 1n) ? __s_empty : __s_s)
+                    );
                 }
                 dump_forward_putstr(endwin, 0, cptr.decay(pbuf), 0);
             }
@@ -1488,25 +2058,84 @@ function really_done(how) {
         if (cptr.ldI16o(u, $you_uz) == 0 && cptr.ldI16o(u, $you_uz + $d_level_dlevel) <= 0) {
             /* level teleported out of the dungeon; `how' is DIED,
                due to falling or to "arriving at heaven prematurely" */
-            void cptr.sprintf(cptr.decay(pbuf), __s_you_s_beyond_the_confines_of_the_dungeon, (cptr.ldI16o(u, $you_uz + $d_level_dlevel) < 0) ? __s_passed_away : cptr.ldPtro(ends, how, 8));
+            void cptr.sprintf(
+                cptr.decay(pbuf),
+                __s_you_s_beyond_the_confines_of_the_dungeon,
+                (cptr.ldI16o(u, $you_uz + $d_level_dlevel) < 0)
+                    ? __s_passed_away
+                    : cptr.ldPtro(ends, how, 8)
+            );
         } else {
             /* more conventional demise */
             let where = cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon);
 
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
+            if ((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_astral_level
+                        )
+                    ))))
                 where = __s_the_astral_plane;
             void cptr.sprintf(cptr.decay(pbuf), __s_you_s_in_s, cptr.ldPtro(ends, how, 8), where);
-            if (!(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !single_level_branch(cptr.add(u, $you_uz)))
-                void cptr.sprintf(eos(cptr.decay(pbuf)), __s_on_dungeon_level_d, In_quest(cptr.add(u, $you_uz)) ? dunlev(cptr.add(u, $you_uz)) : depth(cptr.add(u, $you_uz)));
+            if (!(cptr.ldI16((cptr.add(u, $you_uz))) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))) &&
+                    !single_level_branch(cptr.add(u, $you_uz)))
+                void cptr.sprintf(
+                    eos(cptr.decay(pbuf)),
+                    __s_on_dungeon_level_d,
+                    In_quest(cptr.add(u, $you_uz))
+                        ? dunlev(cptr.add(u, $you_uz))
+                        : depth(cptr.add(u, $you_uz))
+                );
         }
 
-        void cptr.sprintf(eos(cptr.decay(pbuf)), __s_with_ld_point_s, cptr.ldI64o(u, $you_urexp), (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __s_empty : __s_s));
-        dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint));
+        void cptr.sprintf(
+            eos(cptr.decay(pbuf)),
+            __s_with_ld_point_s,
+            cptr.ldI64o(u, $you_urexp),
+            (((cptr.ldI64o(u, $you_urexp)) == 1n) ? __s_empty : __s_s)
+        );
+        dump_forward_putstr(
+            endwin,
+            0,
+            cptr.decay(pbuf),
+            cptr.ldI32o(program_state, $sinfo_stopprint)
+        );
     }
 
-    void cptr.sprintf(cptr.decay(pbuf), __s_and_ld_piece_s_of_gold_after_ld_move_s, umoney, (((umoney) == 1n) ? __s_empty : __s_s), cptr.ldI64o(svm, $instance_globals_saved_m_moves), (((cptr.ldI64o(svm, $instance_globals_saved_m_moves)) == 1n) ? __s_empty : __s_s));
+    void cptr.sprintf(
+        cptr.decay(pbuf),
+        __s_and_ld_piece_s_of_gold_after_ld_move_s,
+        umoney,
+        (((umoney) == 1n) ? __s_empty : __s_s),
+        cptr.ldI64o(svm, $instance_globals_saved_m_moves),
+        (((cptr.ldI64o(svm, $instance_globals_saved_m_moves)) == 1n) ? __s_empty : __s_s)
+    );
     dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint));
-    void cptr.sprintf(cptr.decay(pbuf), __s_you_were_level_d_with_a_maximum_of_d, cptr.ldI32o(u, $you_ulevel), cptr.ldI32o(u, $you_uhpmax), (((cptr.ldI32o(u, $you_uhpmax)) == 1) ? __s_empty : __s_s), cptr.ldPtro(ends, how, 8));
+    void cptr.sprintf(
+        cptr.decay(pbuf),
+        __s_you_were_level_d_with_a_maximum_of_d,
+        cptr.ldI32o(u, $you_ulevel),
+        cptr.ldI32o(u, $you_uhpmax),
+        (((cptr.ldI32o(u, $you_uhpmax)) == 1) ? __s_empty : __s_s),
+        cptr.ldPtro(ends, how, 8)
+    );
     dump_forward_putstr(endwin, 0, cptr.decay(pbuf), cptr.ldI32o(program_state, $sinfo_stopprint));
     dump_forward_putstr(endwin, 0, __s_empty, cptr.ldI32o(program_state, $sinfo_stopprint));
     if (!cptr.ldI32o(program_state, $sinfo_stopprint))
@@ -1550,7 +2179,13 @@ function really_done(how) {
 }
 
 /* used for disclosure and for the ':' choice when looting a container */
-/** C ref: end.c:1596 — @param {CPtr<struct obj>} list @param {CInt} identified @param {CInt} all_containers @param {CInt} reportempty */
+/**
+ * C ref: end.c:1596
+ * @param {CPtr<struct obj>} list
+ * @param {CInt} identified
+ * @param {CInt} all_containers
+ * @param {CInt} reportempty
+ */
 export function container_contents(list, identified, all_containers, reportempty) {
     let box;
     let obj;
@@ -1560,7 +2195,8 @@ export function container_contents(list, identified, all_containers, reportempty
 
     for (box = list; box; box = cptr.ldPtr(box)) {
         if (Is_container(box) || cptr.ldI16o(box, $obj_otyp) == NHC.STATUE) {
-            if (!(cptr.ldI32o(box, $obj_cknown) & 1) || (identified && !(cptr.ldI32o(box, $obj_lknown) & 1))) {
+            if (!(cptr.ldI32o(box, $obj_cknown) & 1) ||
+                    (identified && !(cptr.ldI32o(box, $obj_lknown) & 1))) {
                 cptr.stI32o(box, $obj_cknown, 1);  /* we're looking at the contents now */
                 if (identified)
                     cptr.stI32o(box, $obj_lknown, 1);
@@ -1588,13 +2224,26 @@ export function container_contents(list, identified, all_containers, reportempty
                     putstr()(tmpwin, 0, __s_empty);
                 cptr.st1o(cptr.decay(buf), 0, cptr.st1o(cptr.decay(buf), 1, 32, 1), 1);  /* two leading spaces */
                 if (cptr.ldPtro(box, $obj_cobj) && !cat) {
-                    sortflags = (((cptr.ld1so(flags, $flag_sortloot) == 108 || cptr.ld1so(flags, $flag_sortloot) == 102) ? NHM.SORTLOOT_LOOT : 0) | (cptr.ld1so(flags, $flag_sortpack) ? NHM.SORTLOOT_PACK : 0)) >>> 0;
+                    sortflags = (((cptr.ld1so(flags, $flag_sortloot) == 108 ||
+                        cptr.ld1so(flags, $flag_sortloot) == 102)
+                        ? NHM.SORTLOOT_LOOT
+                        : 0) |
+                        (cptr.ld1so(flags, $flag_sortpack) ? NHM.SORTLOOT_PACK : 0)) >>>
+                            0;
                     sortedcobj.v = sortloot(cptr.add(box, $obj_cobj), sortflags, 0, null);
-                    for (srtc = sortedcobj.v; (obj = cptr.ldPtr(srtc)) !== null; srtc = cptr.add(srtc, 1, 24)) {
+                    for (
+                        srtc = sortedcobj.v;
+                        (obj = cptr.ldPtr(srtc)) !== null;
+                        srtc = cptr.add(srtc, 1, 24)
+                    ) {
                         if (identified) {
                             discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0);
                             cptr.stI32o(obj, $obj_dknown, 1);  /* observe_object unnecessary */
-                            cptr.stI32o(obj, $obj_known, cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1)));
+                            cptr.stI32o(
+                                obj,
+                                $obj_known,
+                                cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1))
+                            );
                             if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
                                 cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
                         }
@@ -1759,7 +2408,10 @@ function bel_copy1(inp, out) {
     while (cptr.ld1s(in$) && isspace(uchar(cptr.ld1s(in$))))
         in$ = cptr.add(in$, 1);
     while (cptr.ld1s(in$) && !isspace(uchar(cptr.ld1s(in$))))
-        cptr.st1(cptr.postinc(() => out, (v) => { out = v; }), cptr.ld1s(cptr.postinc(() => in$, (v) => { in$ = v; })));
+        cptr.st1(
+            cptr.postinc(() => out, (v) => { out = v; }),
+            cptr.ld1s(cptr.postinc(() => in$, (v) => { in$ = v; }))
+        );
     cptr.st1(out, 0);
     cptr.stPtr(inp, in$);
 }
@@ -1834,7 +2486,11 @@ export function NH_abort(why) {
 // 5 bindings: 0 rebound+refilled, 2 rebound, 3 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(deaths), S(ends), S(Schroedingers_cat), S(death_fixups), S(__static_NH_abort_aborting)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(deaths), S(ends), S(Schroedingers_cat), S(death_fixups), S(__static_NH_abort_aborting)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("end.js: __resetState before __captureState");

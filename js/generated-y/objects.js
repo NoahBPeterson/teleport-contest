@@ -14,24 +14,30 @@ import * as FLD from './nhfield.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_buy_maxseen = FLD.objclass_oc_buy_maxseen,
-    $objclass_oc_buy_minseen = FLD.objclass_oc_buy_minseen, $objclass_oc_charged = FLD.objclass_oc_charged,
-    $objclass_oc_class = FLD.objclass_oc_class, $objclass_oc_color = FLD.objclass_oc_color,
-    $objclass_oc_cost = FLD.objclass_oc_cost, $objclass_oc_delay = FLD.objclass_oc_delay,
-    $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx, $objclass_oc_dir = FLD.objclass_oc_dir,
-    $objclass_oc_encountered = FLD.objclass_oc_encountered, $objclass_oc_magic = FLD.objclass_oc_magic,
-    $objclass_oc_material = FLD.objclass_oc_material, $objclass_oc_merge = FLD.objclass_oc_merge,
-    $objclass_oc_name_known = FLD.objclass_oc_name_known, $objclass_oc_nowish = FLD.objclass_oc_nowish,
-    $objclass_oc_nutrition = FLD.objclass_oc_nutrition, $objclass_oc_oc1 = FLD.objclass_oc_oc1,
-    $objclass_oc_oc2 = FLD.objclass_oc_oc2, $objclass_oc_oprop = FLD.objclass_oc_oprop,
-    $objclass_oc_prob = FLD.objclass_oc_prob, $objclass_oc_sell_maxseen = FLD.objclass_oc_sell_maxseen,
-    $objclass_oc_sell_minseen = FLD.objclass_oc_sell_minseen, $objclass_oc_spare1 = FLD.objclass_oc_spare1,
-    $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $objclass_oc_tough = FLD.objclass_oc_tough,
-    $objclass_oc_uname = FLD.objclass_oc_uname, $objclass_oc_unique = FLD.objclass_oc_unique,
-    $objclass_oc_uses_known = FLD.objclass_oc_uses_known, $objclass_oc_weight = FLD.objclass_oc_weight,
-    $objclass_oc_wldam = FLD.objclass_oc_wldam, $objclass_oc_wsdam = FLD.objclass_oc_wsdam,
-    $objdescr_oc_descr = FLD.objdescr_oc_descr, $sizeof_objclass = FLD.sizeof_objclass,
-    $sizeof_objdescr = FLD.sizeof_objdescr;
+const $objclass_oc_big = FLD.objclass_oc_big,
+      $objclass_oc_buy_maxseen = FLD.objclass_oc_buy_maxseen,
+      $objclass_oc_buy_minseen = FLD.objclass_oc_buy_minseen,
+      $objclass_oc_charged = FLD.objclass_oc_charged, $objclass_oc_class = FLD.objclass_oc_class,
+      $objclass_oc_color = FLD.objclass_oc_color, $objclass_oc_cost = FLD.objclass_oc_cost,
+      $objclass_oc_delay = FLD.objclass_oc_delay,
+      $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx, $objclass_oc_dir = FLD.objclass_oc_dir,
+      $objclass_oc_encountered = FLD.objclass_oc_encountered,
+      $objclass_oc_magic = FLD.objclass_oc_magic, $objclass_oc_material = FLD.objclass_oc_material,
+      $objclass_oc_merge = FLD.objclass_oc_merge,
+      $objclass_oc_name_known = FLD.objclass_oc_name_known,
+      $objclass_oc_nowish = FLD.objclass_oc_nowish,
+      $objclass_oc_nutrition = FLD.objclass_oc_nutrition, $objclass_oc_oc1 = FLD.objclass_oc_oc1,
+      $objclass_oc_oc2 = FLD.objclass_oc_oc2, $objclass_oc_oprop = FLD.objclass_oc_oprop,
+      $objclass_oc_prob = FLD.objclass_oc_prob,
+      $objclass_oc_sell_maxseen = FLD.objclass_oc_sell_maxseen,
+      $objclass_oc_sell_minseen = FLD.objclass_oc_sell_minseen,
+      $objclass_oc_spare1 = FLD.objclass_oc_spare1, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
+      $objclass_oc_tough = FLD.objclass_oc_tough, $objclass_oc_uname = FLD.objclass_oc_uname,
+      $objclass_oc_unique = FLD.objclass_oc_unique,
+      $objclass_oc_uses_known = FLD.objclass_oc_uses_known,
+      $objclass_oc_weight = FLD.objclass_oc_weight, $objclass_oc_wldam = FLD.objclass_oc_wldam,
+      $objclass_oc_wsdam = FLD.objclass_oc_wsdam, $objdescr_oc_descr = FLD.objdescr_oc_descr,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_strange_object = cptr.lit("strange object");
@@ -17615,7 +17621,11 @@ export function objects_globals_init() {
 // 4 bindings: 0 rebound+refilled, 0 rebound, 4 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(obj_descr_init), S(obj_init), S(obj_descr), S(objects)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(obj_descr_init), S(obj_init), S(obj_descr), S(objects)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("objects.js: __resetState before __captureState");

@@ -9,9 +9,14 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { nonliving } from './nhmacrofn.js';
-import { Blind, BlindedTimeout, Breathless, Half_gas_damage, Half_physical_damage, Poison_resistance, putstr, sokoban_dnum } from './nhprop.js';
+import {
+    Blind, BlindedTimeout, Breathless, Half_gas_damage, Half_physical_damage, Poison_resistance,
+    putstr, sokoban_dnum
+} from './nhprop.js';
 import { alloc } from './alloc.js';
-import { c_common_strings, cg, gg, gi, gm, gr, gv, gy, iflags, svc, svd, svl, svm, svn, u, ublindf } from './decl.js';
+import {
+    c_common_strings, cg, gg, gi, gm, gr, gv, gy, iflags, svc, svd, svl, svm, svn, u, ublindf
+} from './decl.js';
 import { mons } from './monst.js';
 import { You, You_feel, You_see, Your, impossible, pline, pline_The } from './pline.js';
 import { Monnam, m_monnam } from './do_name.js';
@@ -21,7 +26,10 @@ import { newsym, show_glyph } from './display.js';
 import { find_mid } from './light.js';
 import { windowprocs } from './windows.js';
 import { dist2, eos } from './hacklib.js';
-import { sfi_any, sfi_boolean, sfi_char, sfi_int, sfi_long, sfi_nhrect, sfi_short, sfi_unsigned, sfo_any, sfo_boolean, sfo_char, sfo_int, sfo_long, sfo_nhrect, sfo_short, sfo_unsigned } from './sfbase.js';
+import {
+    sfi_any, sfi_boolean, sfi_char, sfi_int, sfi_long, sfi_nhrect, sfi_short, sfi_unsigned, sfo_any,
+    sfo_boolean, sfo_char, sfo_int, sfo_long, sfo_nhrect, sfo_short, sfo_unsigned
+} from './sfbase.js';
 import { lookup_id_mapping } from './restore.js';
 import { killed, m_poisongas_ok, monkilled, setmangry, wake_nearto } from './mon.js';
 import { makeplural } from './objnam.js';
@@ -38,49 +46,54 @@ import { safe_teleds } from './teleport.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mode = FLD.NHFILE_mode, $NhRect_hx = FLD.NhRect_hx,
-    $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.NhRect_ly, $NhRegion_arg = FLD.NhRegion_arg,
-    $NhRegion_attach_2_m = FLD.NhRegion_attach_2_m, $NhRegion_attach_2_u = FLD.NhRegion_attach_2_u,
-    $NhRegion_can_enter_f = FLD.NhRegion_can_enter_f, $NhRegion_can_leave_f = FLD.NhRegion_can_leave_f,
-    $NhRegion_enter_f = FLD.NhRegion_enter_f, $NhRegion_enter_msg = FLD.NhRegion_enter_msg,
-    $NhRegion_expire_f = FLD.NhRegion_expire_f, $NhRegion_glyph = FLD.NhRegion_glyph,
-    $NhRegion_inside_f = FLD.NhRegion_inside_f, $NhRegion_leave_f = FLD.NhRegion_leave_f,
-    $NhRegion_leave_msg = FLD.NhRegion_leave_msg, $NhRegion_max_monst = FLD.NhRegion_max_monst,
-    $NhRegion_monsters = FLD.NhRegion_monsters, $NhRegion_n_monst = FLD.NhRegion_n_monst,
-    $NhRegion_nrects = FLD.NhRegion_nrects, $NhRegion_player_flags = FLD.NhRegion_player_flags,
-    $NhRegion_rects = FLD.NhRegion_rects, $NhRegion_ttl = FLD.NhRegion_ttl,
-    $NhRegion_visible = FLD.NhRegion_visible,
-    $c_common_strings_c_Something = FLD.c_common_strings_c_Something,
-    $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
-    $const_globals_zeroany = FLD.const_globals_zeroany,
-    $context_info_mon_moving = FLD.context_info_mon_moving, $coord_y = FLD.coord_y,
-    $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
-    $dgn_topology_d_sokoban_dnum = FLD.dgn_topology_d_sokoban_dnum,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters, $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_menu_tab_sep = FLD.instance_flags_menu_tab_sep,
-    $instance_globals_g_gas_cloud_diss_seen = FLD.instance_globals_g_gas_cloud_diss_seen,
-    $instance_globals_g_gas_cloud_diss_within = FLD.instance_globals_g_gas_cloud_diss_within,
-    $instance_globals_i_in_mklev = FLD.instance_globals_i_in_mklev,
-    $instance_globals_m_max_regions = FLD.instance_globals_m_max_regions,
-    $instance_globals_r_regions = FLD.instance_globals_r_regions,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_saved_n_n_regions = FLD.instance_globals_saved_n_n_regions,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
-    $monst_m_id = FLD.monst_m_id, $monst_mblinded = FLD.monst_mblinded, $monst_mcansee = FLD.monst_mcansee,
-    $monst_mhp = FLD.monst_mhp, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
-    $nhcoord_y = FLD.nhcoord_y, $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy,
-    $nhrect_ly = FLD.nhrect_ly, $obj_otyp = FLD.obj_otyp, $obj_spe = FLD.obj_spe,
-    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
-    $permonst_mlet = FLD.permonst_mlet, $permonst_msound = FLD.permonst_msound,
-    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $sizeof_NhRect = FLD.sizeof_NhRect, $sizeof_coord = FLD.sizeof_coord,
-    $sizeof_nhcoord = FLD.sizeof_nhcoord, $sizeof_nhrect = FLD.sizeof_nhrect,
-    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $you_uinwater = FLD.you_uinwater, $you_uprops = FLD.you_uprops, $you_uswallow = FLD.you_uswallow,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_xray_range = FLD.you_xray_range;
+      $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.NhRect_ly, $NhRegion_arg = FLD.NhRegion_arg,
+      $NhRegion_attach_2_m = FLD.NhRegion_attach_2_m,
+      $NhRegion_attach_2_u = FLD.NhRegion_attach_2_u,
+      $NhRegion_can_enter_f = FLD.NhRegion_can_enter_f,
+      $NhRegion_can_leave_f = FLD.NhRegion_can_leave_f, $NhRegion_enter_f = FLD.NhRegion_enter_f,
+      $NhRegion_enter_msg = FLD.NhRegion_enter_msg, $NhRegion_expire_f = FLD.NhRegion_expire_f,
+      $NhRegion_glyph = FLD.NhRegion_glyph, $NhRegion_inside_f = FLD.NhRegion_inside_f,
+      $NhRegion_leave_f = FLD.NhRegion_leave_f, $NhRegion_leave_msg = FLD.NhRegion_leave_msg,
+      $NhRegion_max_monst = FLD.NhRegion_max_monst, $NhRegion_monsters = FLD.NhRegion_monsters,
+      $NhRegion_n_monst = FLD.NhRegion_n_monst, $NhRegion_nrects = FLD.NhRegion_nrects,
+      $NhRegion_player_flags = FLD.NhRegion_player_flags, $NhRegion_rects = FLD.NhRegion_rects,
+      $NhRegion_ttl = FLD.NhRegion_ttl, $NhRegion_visible = FLD.NhRegion_visible,
+      $c_common_strings_c_Something = FLD.c_common_strings_c_Something,
+      $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $context_info_mon_moving = FLD.context_info_mon_moving, $coord_y = FLD.coord_y,
+      $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
+      $dgn_topology_d_sokoban_dnum = FLD.dgn_topology_d_sokoban_dnum,
+      $dlevel_t_monsters = FLD.dlevel_t_monsters,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_menu_tab_sep = FLD.instance_flags_menu_tab_sep,
+      $instance_globals_g_gas_cloud_diss_seen = FLD.instance_globals_g_gas_cloud_diss_seen,
+      $instance_globals_g_gas_cloud_diss_within = FLD.instance_globals_g_gas_cloud_diss_within,
+      $instance_globals_i_in_mklev = FLD.instance_globals_i_in_mklev,
+      $instance_globals_m_max_regions = FLD.instance_globals_m_max_regions,
+      $instance_globals_r_regions = FLD.instance_globals_r_regions,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_saved_n_n_regions = FLD.instance_globals_saved_n_n_regions,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
+      $monst_m_id = FLD.monst_m_id, $monst_mblinded = FLD.monst_mblinded,
+      $monst_mcansee = FLD.monst_mcansee, $monst_mhp = FLD.monst_mhp, $monst_mx = FLD.monst_mx,
+      $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y, $nhrect_hx = FLD.nhrect_hx,
+      $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly, $obj_otyp = FLD.obj_otyp,
+      $obj_spe = FLD.obj_spe, $permonst_mflags1 = FLD.permonst_mflags1,
+      $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
+      $permonst_msound = FLD.permonst_msound, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $sizeof_NhRect = FLD.sizeof_NhRect,
+      $sizeof_coord = FLD.sizeof_coord, $sizeof_nhcoord = FLD.sizeof_nhcoord,
+      $sizeof_nhrect = FLD.sizeof_nhrect, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $you_uinwater = FLD.you_uinwater, $you_uprops = FLD.you_uprops,
+      $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz,
+      $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_add_mon_to_reg_s_u_already_in_region = cptr.lit("add_mon_to_reg: %s [#%u] already in region.");
@@ -144,13 +157,24 @@ const callbacks = [inside_gas_cloud, expire_gas_cloud];
 /* Should be inlined. */
 /** C ref: region.c:54 — @param {CPtr<NhRect>} r @param {CInt} x @param {CInt} y @returns {CInt} */
 export function inside_rect(r, x, y) {
-    return schar((x >= cptr.ldI16(r) && x <= cptr.ldI16o(r, $NhRect_hx) && y >= cptr.ldI16o(r, $NhRect_ly) && y <= cptr.ldI16o(r, $NhRect_hy) ? 1 : 0));
+    return schar((x >= cptr.ldI16(r) &&
+        x <= cptr.ldI16o(r, $NhRect_hx) &&
+        y >= cptr.ldI16o(r, $NhRect_ly) &&
+        y <= cptr.ldI16o(r, $NhRect_hy)
+            ? 1
+            : 0));
 }
 
 /*
  * Check if a point is inside a region.
  */
-/** C ref: region.c:63 — @param {CPtr<NhRegion>} reg @param {CInt} x @param {CInt} y @returns {CInt} */
+/**
+ * C ref: region.c:63
+ * @param {CPtr<NhRegion>} reg
+ * @param {CInt} x
+ * @param {CInt} y
+ * @returns {CInt}
+ */
 export function inside_region(reg, x, y) {
     let i;
 
@@ -165,7 +189,12 @@ export function inside_region(reg, x, y) {
 /*
  * Create a region. It does not activate it.
  */
-/** C ref: region.c:79 — @param {CPtr<NhRect>} rects @param {CInt} nrect @returns {CPtr<NhRegion>} */
+/**
+ * C ref: region.c:79
+ * @param {CPtr<NhRect>} rects
+ * @param {CInt} nrect
+ * @returns {CPtr<NhRegion>}
+ */
 export function create_region(rects, nrect) {
     let i;
     let reg;
@@ -182,7 +211,16 @@ export function create_region(rects, nrect) {
         cptr.stI16o(reg, $nhrect_hy, 0);
     }
     cptr.stI16o(reg, $NhRegion_nrects, i16(nrect));
-    cptr.stPtro(reg, $NhRegion_rects, (nrect > 0) ? alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(nrect)) * 8n)))) : null);
+    cptr.stPtro(
+        reg,
+        $NhRegion_rects,
+        (nrect > 0)
+            ? alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt(nrect)) * 8n)
+            )))
+            : null
+    );
     for (i = 0; i < nrect; i++) {
         if (cptr.ldI16o(rects, i, $sizeof_NhRect) < cptr.ldI16(reg))
             cptr.stI16(reg, cptr.ldI16o(rects, i, $sizeof_NhRect));
@@ -192,7 +230,11 @@ export function create_region(rects, nrect) {
             cptr.stI16o(reg, $nhrect_hx, cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_hx));
         if (cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_hy) > cptr.ldI16o(reg, $nhrect_hy))
             cptr.stI16o(reg, $nhrect_hy, cptr.ldI16o2(rects, i, $sizeof_NhRect, $nhrect_hy));
-        cptr.memcpy(cptr.add(cptr.ldPtro(reg, $NhRegion_rects), i, $sizeof_NhRect), cptr.add(rects, i, $sizeof_NhRect), 8);
+        cptr.memcpy(
+            cptr.add(cptr.ldPtro(reg, $NhRegion_rects), i, $sizeof_NhRect),
+            cptr.add(rects, i, $sizeof_NhRect),
+            8
+        );
     }
     cptr.stI64o(reg, $NhRegion_ttl, -1n);  /* Defaults */
     cptr.st1o(reg, $NhRegion_attach_2_u, 0);
@@ -206,8 +248,16 @@ export function create_region(rects, nrect) {
     cptr.stI16o(reg, $NhRegion_leave_f, -1);
     cptr.stI16o(reg, $NhRegion_can_leave_f, -1);
     cptr.stI16o(reg, $NhRegion_inside_f, -1);
-    (cptr.stI32o((reg), $NhRegion_player_flags, cptr.ldI32o((reg), $NhRegion_player_flags) & 4294967294));
-    (cptr.stI32o((reg), $NhRegion_player_flags, cptr.ldI32o((reg), $NhRegion_player_flags) | NHM.REG_NOT_HEROS));
+    (cptr.stI32o(
+        (reg),
+        $NhRegion_player_flags,
+        cptr.ldI32o((reg), $NhRegion_player_flags) & 4294967294
+    ));
+    (cptr.stI32o(
+        (reg),
+        $NhRegion_player_flags,
+        cptr.ldI32o((reg), $NhRegion_player_flags) | NHM.REG_NOT_HEROS
+    ));
     cptr.stI16o(reg, $NhRegion_n_monst, 0);
     cptr.stI16o(reg, $NhRegion_max_monst, 0);
     cptr.stPtro(reg, $NhRegion_monsters, null);
@@ -222,9 +272,19 @@ export function create_region(rects, nrect) {
 export function add_rect_to_reg(reg, rect) {
     let tmp_rect;
 
-    tmp_rect = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((cptr.ldI16o(reg, $NhRegion_nrects) + 1) | 0))) * 8n))));
+    tmp_rect = alloc(Number(BigInt.asUintN(
+        32,
+        BigInt.asUintN(
+            64,
+            BigInt.asUintN(64, BigInt(((cptr.ldI16o(reg, $NhRegion_nrects) + 1) | 0))) * 8n
+        )
+    )));
     if (cptr.ldI16o(reg, $NhRegion_nrects) > 0) {
-        void cptr.memcpy(tmp_rect, cptr.ldPtro(reg, $NhRegion_rects), BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI16o(reg, $NhRegion_nrects))) * 8n));
+        void cptr.memcpy(
+            tmp_rect,
+            cptr.ldPtro(reg, $NhRegion_rects),
+            BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI16o(reg, $NhRegion_nrects))) * 8n)
+        );
         cptr.free(cptr.ldPtro(reg, $NhRegion_rects));
     }
     cptr.memcpy(cptr.add(tmp_rect, cptr.ldI16o(reg, $NhRegion_nrects), $sizeof_NhRect), rect, 8);
@@ -252,21 +312,47 @@ export function add_mon_to_reg(reg, mon) {
     /* if this is a long worm, it might already be present in the region;
        only include it once no matter how segments the region contains */
     if (mon_in_region(reg, mon)) {
-        if (!cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)))
-            impossible(__s_add_mon_to_reg_s_u_already_in_region, m_monnam(mon), cptr.ldI32o(mon, $monst_m_id));
+        if (!cptr.eq(
+            cptr.ldPtro(mon, $monst_data),
+            cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)
+        ))
+            impossible(
+                __s_add_mon_to_reg_s_u_already_in_region,
+                m_monnam(mon),
+                cptr.ldI32o(mon, $monst_m_id)
+            );
         return;
     }
     if (cptr.ldI16o(reg, $NhRegion_max_monst) <= cptr.ldI16o(reg, $NhRegion_n_monst)) {
-        tmp_m = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 4n * BigInt.asUintN(64, BigInt(((cptr.ldI16o(reg, $NhRegion_max_monst) + NHM.MONST_INC) | 0)))))));
+        tmp_m = alloc(Number(BigInt.asUintN(
+            32,
+            BigInt.asUintN(
+                64,
+                4n *
+                    BigInt.asUintN(
+                        64,
+                        BigInt(((cptr.ldI16o(reg, $NhRegion_max_monst) + NHM.MONST_INC) | 0))
+                    )
+            )
+        )));
         if (cptr.ldI16o(reg, $NhRegion_max_monst) > 0) {
             for (i = 0; i < cptr.ldI16o(reg, $NhRegion_max_monst); i++)
                 cptr.stI32o(tmp_m, i, cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4), 4);
             cptr.free(cptr.ldPtro(reg, $NhRegion_monsters));
         }
         cptr.stPtro(reg, $NhRegion_monsters, tmp_m);
-        cptr.stI16o(reg, $NhRegion_max_monst, cptr.ldI16o(reg, $NhRegion_max_monst) + NHM.MONST_INC);
+        cptr.stI16o(
+            reg,
+            $NhRegion_max_monst,
+            cptr.ldI16o(reg, $NhRegion_max_monst) + NHM.MONST_INC
+        );
     }
-    cptr.stI32o(cptr.ldPtro(reg, $NhRegion_monsters), (cptr.stI16o(reg, $NhRegion_n_monst, cptr.ldI16o(reg, $NhRegion_n_monst) + 1)) - (1), cptr.ldI32o(mon, $monst_m_id), 4);
+    cptr.stI32o(
+        cptr.ldPtro(reg, $NhRegion_monsters),
+        (cptr.stI16o(reg, $NhRegion_n_monst, cptr.ldI16o(reg, $NhRegion_n_monst) + 1)) - (1),
+        cptr.ldI32o(mon, $monst_m_id),
+        4
+    );
 }
 
 /*
@@ -277,9 +363,19 @@ export function remove_mon_from_reg(reg, mon) {
     let i;
 
     for (i = 0; i < cptr.ldI16o(reg, $NhRegion_n_monst); i++)
-        if (cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) == cptr.ldI32o(mon, $monst_m_id)) {
+        if (cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) ==
+                cptr.ldI32o(mon, $monst_m_id)) {
             (cptr.stI16o(reg, $NhRegion_n_monst, cptr.ldI16o(reg, $NhRegion_n_monst) + -1)) - (-1);
-            cptr.stI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), cptr.ldI16o(reg, $NhRegion_n_monst), 4), 4);
+            cptr.stI32o(
+                cptr.ldPtro(reg, $NhRegion_monsters),
+                i,
+                cptr.ldI32o(
+                    cptr.ldPtro(reg, $NhRegion_monsters),
+                    cptr.ldI16o(reg, $NhRegion_n_monst),
+                    4
+                ),
+                4
+            );
             return;
         }
 }
@@ -289,12 +385,18 @@ export function remove_mon_from_reg(reg, mon) {
  * It's probably quicker to check with the region internal list
  * than to check for coordinates.
  */
-/** C ref: region.c:210 — @param {CPtr<NhRegion>} reg @param {CPtr<struct monst>} mon @returns {CInt} */
+/**
+ * C ref: region.c:210
+ * @param {CPtr<NhRegion>} reg
+ * @param {CPtr<struct monst>} mon
+ * @returns {CInt}
+ */
 export function mon_in_region(reg, mon) {
     let i;
 
     for (i = 0; i < cptr.ldI16o(reg, $NhRegion_n_monst); i++)
-        if (cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) == cptr.ldI32o(mon, $monst_m_id))
+        if (cptr.ldI32o(cptr.ldPtro(reg, $NhRegion_monsters), i, 4) ==
+                cptr.ldI32o(mon, $monst_m_id))
             return 1;
     return 0;
 }
@@ -327,17 +429,55 @@ export function add_region(reg) {
     let i;
     let j;
 
-    if (cptr.ldI32o(gm, $instance_globals_m_max_regions) <= cptr.ldI32o(svn, $instance_globals_saved_n_n_regions)) {
+    if (cptr.ldI32o(gm, $instance_globals_m_max_regions) <=
+            cptr.ldI32o(svn, $instance_globals_saved_n_n_regions)) {
         tmp_reg = cptr.ldPtro(gr, $instance_globals_r_regions);
-        cptr.stPtro(gr, $instance_globals_r_regions, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((cptr.ldI32o(gm, $instance_globals_m_max_regions) + 10) | 0))) * 8n)))));
+        cptr.stPtro(
+            gr,
+            $instance_globals_r_regions,
+            alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(
+                    64,
+                    BigInt.asUintN(
+                        64,
+                        BigInt(((cptr.ldI32o(gm, $instance_globals_m_max_regions) + 10) | 0))
+                    ) * 8n
+                )
+            )))
+        );
         if (cptr.ldI32o(gm, $instance_globals_m_max_regions) > 0) {
-            void cptr.memcpy(cptr.ldPtro(gr, $instance_globals_r_regions), tmp_reg, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o(gm, $instance_globals_m_max_regions))) * 8n));
+            void cptr.memcpy(
+                cptr.ldPtro(gr, $instance_globals_r_regions),
+                tmp_reg,
+                BigInt.asUintN(
+                    64,
+                    BigInt.asUintN(
+                        64,
+                        BigInt(cptr.ldI32o(gm, $instance_globals_m_max_regions))
+                    ) * 8n
+                )
+            );
             cptr.free(tmp_reg);
         }
-        cptr.stI32o(gm, $instance_globals_m_max_regions, (cptr.ldI32o(gm, $instance_globals_m_max_regions) + 10) | 0);
+        cptr.stI32o(
+            gm,
+            $instance_globals_m_max_regions,
+            (cptr.ldI32o(gm, $instance_globals_m_max_regions) + 10) | 0
+        );
     }
-    cptr.stPtro(cptr.ldPtro(gr, $instance_globals_r_regions), cptr.ldI32o(svn, $instance_globals_saved_n_n_regions), reg, 8);
-    (cptr.stI32o(svn, $instance_globals_saved_n_n_regions, cptr.ldI32o(svn, $instance_globals_saved_n_n_regions) + 1)) - (1);
+    cptr.stPtro(
+        cptr.ldPtro(gr, $instance_globals_r_regions),
+        cptr.ldI32o(svn, $instance_globals_saved_n_n_regions),
+        reg,
+        8
+    );
+    (cptr.stI32o(
+        svn,
+        $instance_globals_saved_n_n_regions,
+        cptr.ldI32o(svn, $instance_globals_saved_n_n_regions) + 1
+    )) -
+            (1);
     /* Check for monsters inside the region */
     for (i = cptr.ldI16(reg); i <= cptr.ldI16o(reg, $nhrect_hx); i++)
         for (j = cptr.ldI16o(reg, $nhrect_ly); j <= cptr.ldI16o(reg, $nhrect_hy); j++) {
@@ -350,22 +490,41 @@ export function add_region(reg) {
             if (inside_region(reg, i, j)) {
                 is_inside = 1;
                 /* if there's a monster here, add it to the region */
-                if ((mtmp = (cptr.ldPtro3(svl, i, 168, j, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
+                if ((mtmp = (cptr.ldPtro3(
+                    svl,
+                    i,
+                    168,
+                    j,
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters
+                ))) !== null) {
                     add_mon_to_reg(reg, mtmp);
                 }
             }
             if (cptr.ld1so(reg, $NhRegion_visible)) {
                 if (is_inside)
                     block_point(i, j);
-                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), j, 8), i) & NHM.IN_SIGHT) != 0))
+                if (((cptr.ld1uo(
+                    cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), j, 8),
+                    i
+                ) &
+                        NHM.IN_SIGHT) != 0))
                     newsym(i16(i), i16(j));
             }
         }
     /* Check for player now... */
     if (inside_region(reg, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-        (cptr.stI32o((reg), $NhRegion_player_flags, cptr.ldI32o((reg), $NhRegion_player_flags) | NHM.REG_HERO_INSIDE));
+        (cptr.stI32o(
+            (reg),
+            $NhRegion_player_flags,
+            cptr.ldI32o((reg), $NhRegion_player_flags) | NHM.REG_HERO_INSIDE
+        ));
     else
-        (cptr.stI32o((reg), $NhRegion_player_flags, cptr.ldI32o((reg), $NhRegion_player_flags) & 4294967294));
+        (cptr.stI32o(
+            (reg),
+            $NhRegion_player_flags,
+            cptr.ldI32o((reg), $NhRegion_player_flags) & 4294967294
+        ));
 }
 
 /*
@@ -384,9 +543,27 @@ export function remove_region(reg) {
         return;
 
     /* remove region before potential newsym() calls, but don't free it yet */
-    if (cptr.stI32o(svn, $instance_globals_saved_n_n_regions, cptr.ldI32o(svn, $instance_globals_saved_n_n_regions) + -1) != i)
-        cptr.stPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), cptr.ldI32o(svn, $instance_globals_saved_n_n_regions), 8), 8);
-    cptr.stPtro(cptr.ldPtro(gr, $instance_globals_r_regions), cptr.ldI32o(svn, $instance_globals_saved_n_n_regions), null, 8);
+    if (cptr.stI32o(
+        svn,
+        $instance_globals_saved_n_n_regions,
+        cptr.ldI32o(svn, $instance_globals_saved_n_n_regions) + -1
+    ) != i)
+        cptr.stPtro(
+            cptr.ldPtro(gr, $instance_globals_r_regions),
+            i,
+            cptr.ldPtro(
+                cptr.ldPtro(gr, $instance_globals_r_regions),
+                cptr.ldI32o(svn, $instance_globals_saved_n_n_regions),
+                8
+            ),
+            8
+        );
+    cptr.stPtro(
+        cptr.ldPtro(gr, $instance_globals_r_regions),
+        cptr.ldI32o(svn, $instance_globals_saved_n_n_regions),
+        null,
+        8
+    );
 
     /* Update screen if necessary */
     cptr.stI64o(reg, $NhRegion_ttl, -2n);  /* for visible_region_at */
@@ -404,10 +581,26 @@ export function remove_region(reg) {
                 for (y = cptr.ldI16o(reg, $nhrect_ly); y <= cptr.ldI16o(reg, $nhrect_hy); y++)
                     if (isok(i16(x), i16(y)) && inside_region(reg, x, y)) {
                         if (pass == 1) {
-                            if (!does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm)))
+                            if (!does_block(
+                                x,
+                                y,
+                                cptr.add(
+                                    cptr.add(
+                                        cptr.add(svl, $instance_globals_saved_l_level),
+                                        x,
+                                        $sizeof_rm_x21
+                                    ),
+                                    y,
+                                    $sizeof_rm
+                                )
+                            ))
                                 unblock_point(x, y);
                         } else {
-                            if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
+                            if (((cptr.ld1uo(
+                                cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                                x
+                            ) &
+                                    NHM.IN_SIGHT) != 0))
                                 newsym(i16(x), i16(y));
                         }
                     }
@@ -453,8 +646,19 @@ export function run_regions() {
     /* End of life ? */
     /* Do it backward because the array will be modified */
     for (i = (cptr.ldI32o(svn, $instance_globals_saved_n_n_regions) - 1) | 0; i >= 0; i--) {
-        if (cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_ttl) == 0n) {
-            if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_expire_f)) == -1 || (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), null))
+        if (cptr.ldI64o(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_ttl
+        ) == 0n) {
+            if ((f_indx = cptr.ldI16o(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                $NhRegion_expire_f
+            )) ==
+                -1 ||
+                    (callbacks[f_indx])(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        null
+                    ))
                 remove_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8));
         }
     }
@@ -462,22 +666,98 @@ export function run_regions() {
     /* Process remaining regions */
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
         /* Make the region age */
-        if (cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_ttl) > 0n)
-            (cptr.stI64o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_ttl, cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_ttl) + -1n)) - (-1n);
+        if (cptr.ldI64o(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_ttl
+        ) > 0n)
+            (cptr.stI64o(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                $NhRegion_ttl,
+                cptr.ldI64o(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    $NhRegion_ttl
+                ) +
+                    -1n
+            )) -
+                    (-1n);
         /* Check if player is inside region */
-        f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_inside_f);
-        if (f_indx != -1 && ((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & NHM.REG_HERO_INSIDE) >>> 0))
-            void (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), null);
+        f_indx = cptr.ldI16o(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_inside_f
+        );
+        if (f_indx != -1 &&
+                ((cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                    $NhRegion_player_flags
+                ) &
+                    NHM.REG_HERO_INSIDE) >>> 0))
+            void (callbacks[f_indx])(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                null
+            );
         /* Check if any monster is inside region */
         if (f_indx != -1) {
-            for (j = 0; j < cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_n_monst); j++) {
-                let mtmp = find_mid(cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_monsters), j, 4), NHM.FM_FMON);
+            for (
+                j = 0;
+                j <
+                    cptr.ldI16o(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_n_monst
+                    );
+                j++
+            ) {
+                let mtmp = find_mid(
+                    cptr.ldI32o(
+                        cptr.ldPtro(
+                            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                            $NhRegion_monsters
+                        ),
+                        j,
+                        4
+                    ),
+                    NHM.FM_FMON
+                );
 
-                if (!mtmp || (cptr.ldI32o((mtmp), $monst_mhp) < 1) || (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mtmp)) {
+                if (!mtmp ||
+                        (cptr.ldI32o((mtmp), $monst_mhp) < 1) ||
+                        (callbacks[f_indx])(
+                            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                            mtmp
+                        )) {
                     /* The monster died, remove it from list */
-                    k = (cptr.stI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_n_monst, cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_n_monst) - 1));
-                    cptr.stI32o(cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_monsters), j, cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_monsters), k, 4), 4);
-                    cptr.stI32o(cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_monsters), k, 0, 4);
+                    k = (cptr.stI16o(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_n_monst,
+                        cptr.ldI16o(
+                            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                            $NhRegion_n_monst
+                        ) - 1
+                    ));
+                    cptr.stI32o(
+                        cptr.ldPtro(
+                            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                            $NhRegion_monsters
+                        ),
+                        j,
+                        cptr.ldI32o(
+                            cptr.ldPtro(
+                                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                                $NhRegion_monsters
+                            ),
+                            k,
+                            4
+                        ),
+                        4
+                    );
+                    cptr.stI32o(
+                        cptr.ldPtro(
+                            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                            $NhRegion_monsters
+                        ),
+                        k,
+                        0,
+                        4
+                    );
                     --j;  /* current slot has been reused; recheck it next */
                 }
             }
@@ -493,7 +773,11 @@ export function run_regions() {
         cptr.st1o(gg, $instance_globals_g_gas_cloud_diss_within, 0);
     }
     if (cptr.ldI32o(gg, $instance_globals_g_gas_cloud_diss_seen)) {
-        You_see(__s_s_gas_cloud_s_dissipate, (cptr.ldI32o(gg, $instance_globals_g_gas_cloud_diss_seen) == 1) ? __s_a : __s_some, (((cptr.ldI32o(gg, $instance_globals_g_gas_cloud_diss_seen)) == 1) ? __s_empty : __s_s));
+        You_see(
+            __s_s_gas_cloud_s_dissipate,
+            (cptr.ldI32o(gg, $instance_globals_g_gas_cloud_diss_seen) == 1) ? __s_a : __s_some,
+            (((cptr.ldI32o(gg, $instance_globals_g_gas_cloud_diss_seen)) == 1) ? __s_empty : __s_s)
+        );
         cptr.stI32o(gg, $instance_globals_g_gas_cloud_diss_seen, 0);
     }
 }
@@ -508,37 +792,139 @@ export function in_out_region(x, y) {
 
     /* First check if hero can do the move */
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_attach_2_u))
+        if (cptr.ld1so(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_attach_2_u
+        ))
             continue;
-        if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y) ? (!((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & NHM.REG_HERO_INSIDE) >>> 0) && (f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_can_enter_f)) != -1 ? 1 : 0) : (((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & NHM.REG_HERO_INSIDE) >>> 0) && (f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_can_leave_f)) != -1 ? 1 : 0)) {
-            if (!(callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), null))
+        if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y)
+                ? (!((cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                    $NhRegion_player_flags
+                ) &
+                    NHM.REG_HERO_INSIDE) >>> 0) &&
+                    (f_indx = cptr.ldI16o(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_can_enter_f
+                    )) !=
+                        -1
+                    ? 1
+                    : 0)
+                : (((cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                    $NhRegion_player_flags
+                ) &
+                    NHM.REG_HERO_INSIDE) >>> 0) &&
+                    (f_indx = cptr.ldI16o(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_can_leave_f
+                    )) !=
+                        -1
+                    ? 1
+                    : 0)) {
+            if (!(callbacks[f_indx])(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                null
+            ))
                 return 0;
         }
     }
 
     /* Callbacks for the regions hero does leave */
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_attach_2_u))
+        if (cptr.ld1so(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_attach_2_u
+        ))
             continue;
-        if (((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & NHM.REG_HERO_INSIDE) >>> 0) && !inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y)) {
-            (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & 4294967294));
-            if (cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_leave_msg) !== null)
-                pline(__s_pct_s, cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_leave_msg));
-            if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_leave_f)) != -1)
-                void (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), null);
+        if (((cptr.ldI32o(
+            (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+            $NhRegion_player_flags
+        ) &
+            NHM.REG_HERO_INSIDE) >>> 0) &&
+                !inside_region(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    x,
+                    y
+                )) {
+            (cptr.stI32o(
+                (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                $NhRegion_player_flags,
+                cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                    $NhRegion_player_flags
+                ) &
+                    4294967294
+            ));
+            if (cptr.ldPtro(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                $NhRegion_leave_msg
+            ) !== null)
+                pline(
+                    __s_pct_s,
+                    cptr.ldPtro(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_leave_msg
+                    )
+                );
+            if ((f_indx = cptr.ldI16o(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                $NhRegion_leave_f
+            )) !=
+                    -1)
+                void (callbacks[f_indx])(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    null
+                );
         }
     }
 
     /* Callbacks for the regions hero does enter */
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_attach_2_u))
+        if (cptr.ld1so(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_attach_2_u
+        ))
             continue;
-        if (!((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & NHM.REG_HERO_INSIDE) >>> 0) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y)) {
-            (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) | NHM.REG_HERO_INSIDE));
-            if (cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_enter_msg) !== null)
-                pline(__s_pct_s, cptr.ldPtro(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_enter_msg));
-            if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_enter_f)) != -1)
-                void (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), null);
+        if (!((cptr.ldI32o(
+            (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+            $NhRegion_player_flags
+        ) &
+            NHM.REG_HERO_INSIDE) >>> 0) &&
+                inside_region(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    x,
+                    y
+                )) {
+            (cptr.stI32o(
+                (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                $NhRegion_player_flags,
+                cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                    $NhRegion_player_flags
+                ) |
+                    NHM.REG_HERO_INSIDE
+            ));
+            if (cptr.ldPtro(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                $NhRegion_enter_msg
+            ) !== null)
+                pline(
+                    __s_pct_s,
+                    cptr.ldPtro(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_enter_msg
+                    )
+                );
+            if ((f_indx = cptr.ldI16o(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                $NhRegion_enter_f
+            )) !=
+                    -1)
+                void (callbacks[f_indx])(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    null
+                );
         }
     }
 
@@ -548,40 +934,110 @@ export function in_out_region(x, y) {
 /*
  * check whether a monster enters/leaves one or more regions.
  */
-/** C ref: region.c:533 — @param {CPtr<struct monst>} mon @param {CInt} x @param {CInt} y @returns {CInt} */
+/**
+ * C ref: region.c:533
+ * @param {CPtr<struct monst>} mon
+ * @param {CInt} x
+ * @param {CInt} y
+ * @returns {CInt}
+ */
 export function m_in_out_region(mon, x, y) {
     let i;
     let f_indx = 0;
 
     /* First check if mon can do the move */
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_attach_2_m) == cptr.ldI32o(mon, $monst_m_id))
+        if (cptr.ldI32o(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_attach_2_m
+        ) ==
+                cptr.ldI32o(mon, $monst_m_id))
             continue;
-        if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y) ? (!mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon) && (f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_can_enter_f)) != -1 ? 1 : 0) : (mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon) && (f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_can_leave_f)) != -1 ? 1 : 0)) {
-            if (!(callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon))
+        if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y)
+                ? (!mon_in_region(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    mon
+                ) &&
+                    (f_indx = cptr.ldI16o(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_can_enter_f
+                    )) !=
+                        -1
+                    ? 1
+                    : 0)
+                : (mon_in_region(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    mon
+                ) &&
+                    (f_indx = cptr.ldI16o(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_can_leave_f
+                    )) !=
+                        -1
+                    ? 1
+                    : 0)) {
+            if (!(callbacks[f_indx])(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                mon
+            ))
                 return 0;
         }
     }
 
     /* Callbacks for the regions mon does leave */
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_attach_2_m) == cptr.ldI32o(mon, $monst_m_id))
+        if (cptr.ldI32o(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_attach_2_m
+        ) ==
+                cptr.ldI32o(mon, $monst_m_id))
             continue;
-        if (mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon) && !inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y)) {
-            remove_mon_from_reg(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon);
-            if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_leave_f)) != -1)
-                void (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon);
+        if (mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon) &&
+                !inside_region(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    x,
+                    y
+                )) {
+            remove_mon_from_reg(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                mon
+            );
+            if ((f_indx = cptr.ldI16o(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                $NhRegion_leave_f
+            )) !=
+                    -1)
+                void (callbacks[f_indx])(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    mon
+                );
         }
     }
 
     /* Callbacks for the regions mon does enter */
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_attach_2_m) == cptr.ldI32o(mon, $monst_m_id))
+        if (cptr.ldI32o(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_attach_2_m
+        ) ==
+                cptr.ldI32o(mon, $monst_m_id))
             continue;
-        if (!mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y)) {
+        if (!mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon) &&
+                inside_region(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    x,
+                    y
+                )) {
             add_mon_to_reg(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon);
-            if ((f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_enter_f)) != -1)
-                void (callbacks[f_indx])(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon);
+            if ((f_indx = cptr.ldI16o(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                $NhRegion_enter_f
+            )) !=
+                    -1)
+                void (callbacks[f_indx])(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    mon
+                );
         }
     }
 
@@ -596,10 +1052,34 @@ export function update_player_regions() {
     let i;
 
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++)
-        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_attach_2_u) && inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-            (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) | NHM.REG_HERO_INSIDE));
+        if (!cptr.ld1so(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_attach_2_u
+        ) &&
+                inside_region(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    cptr.ldI16(u),
+                    cptr.ldI16o(u, $you_uy)
+                ))
+            (cptr.stI32o(
+                (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                $NhRegion_player_flags,
+                cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                    $NhRegion_player_flags
+                ) |
+                    NHM.REG_HERO_INSIDE
+            ));
         else
-            (cptr.stI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags, cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & 4294967294));
+            (cptr.stI32o(
+                (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                $NhRegion_player_flags,
+                cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+                    $NhRegion_player_flags
+                ) &
+                    4294967294
+            ));
 }
 
 /*
@@ -610,12 +1090,25 @@ export function update_monster_region(mon) {
     let i;
 
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my))) {
-            if (!mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon))
-                add_mon_to_reg(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon);
+        if (inside_region(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            cptr.ldI16o(mon, $monst_mx),
+            cptr.ldI16o(mon, $monst_my)
+        )) {
+            if (!mon_in_region(
+                cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                mon
+            ))
+                add_mon_to_reg(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    mon
+                );
         } else {
             if (mon_in_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon))
-                remove_mon_from_reg(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), mon);
+                remove_mon_from_reg(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    mon
+                );
         }
     }
 }
@@ -623,7 +1116,9 @@ export function update_monster_region(mon) {
 /* per-turn damage inflicted by visible region; hides details from caller */
 /** C ref: region.c:651 — @param {CPtr<NhRegion>} reg @returns {CInt} */
 export function reg_damg(reg) {
-    let damg = (!cptr.ld1so(reg, $NhRegion_visible) || cptr.ldI64o(reg, $NhRegion_ttl) == -2n) ? 0 : cptr.ldI32o(reg, $NhRegion_arg);
+    let damg = (!cptr.ld1so(reg, $NhRegion_visible) || cptr.ldI64o(reg, $NhRegion_ttl) == -2n)
+            ? 0
+            : cptr.ldI32o(reg, $NhRegion_arg);
 
     return damg;
 }
@@ -634,7 +1129,15 @@ export function any_visible_region() {
     let i;
 
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_visible) || cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_ttl) == -2n)
+        if (!cptr.ld1so(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_visible
+        ) ||
+                cptr.ldI64o(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    $NhRegion_ttl
+                ) ==
+                    -2n)
             continue;
         return 1;
     }
@@ -670,14 +1173,26 @@ export function visible_region_summary(win) {
            since time-to-live has already been decremented, regions
            which are due to timeout on the next turn have ttl==0;
            adding 1 is intended to make the display be less confusing */
-        void cptr.sprintf(cptr.decay(buf), __s_5ld, BigInt.asIntN(64, cptr.ldI64o(reg, $NhRegion_ttl) + 1n));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_5ld,
+            BigInt.asIntN(64, cptr.ldI64o(reg, $NhRegion_ttl) + 1n)
+        );
         damg = cptr.ldI32o(reg, $NhRegion_arg);
         if (damg)
             void cptr.sprintf(cptr.decay(typbuf), __s_poison_gas_d, damg);
         else
             void cptr.strcpy(cptr.decay(typbuf), __s_vapor);
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_16s, fldsep, cptr.decay(typbuf));
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_s_d_d_d_d, fldsep, cptr.ldI16(reg), cptr.ldI16o(reg, $nhrect_ly), cptr.ldI16o(reg, $nhrect_hx), cptr.ldI16o(reg, $nhrect_hy));
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_s_d_d_d_d,
+            fldsep,
+            cptr.ldI16(reg),
+            cptr.ldI16o(reg, $nhrect_ly),
+            cptr.ldI16o(reg, $nhrect_hx),
+            cptr.ldI16o(reg, $nhrect_hy)
+        );
         putstr()(win, 0, cptr.decay(buf));
     }
 }
@@ -691,7 +1206,15 @@ export function visible_region_at(x, y) {
     let i;
 
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
-        if (!cptr.ld1so(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_visible) || cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_ttl) == -2n)
+        if (!cptr.ld1so(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_visible
+        ) ||
+                cptr.ldI64o(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    $NhRegion_ttl
+                ) ==
+                    -2n)
             continue;
         if (inside_region(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), x, y))
             return cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8);
@@ -727,17 +1250,25 @@ export function save_regions(nhfp) {
             sfo_nhrect(nhfp, r, __s_region_bounding_box);
             sfo_short(nhfp, cptr.add(r, $NhRegion_nrects), __s_region_nrects);
             for (j = 0; j < cptr.ldI16o(r, $NhRegion_nrects); j++) {
-                sfo_nhrect(nhfp, cptr.add(cptr.ldPtro(r, $NhRegion_rects), j, $sizeof_NhRect), __s_region_rect);
+                sfo_nhrect(
+                    nhfp,
+                    cptr.add(cptr.ldPtro(r, $NhRegion_rects), j, $sizeof_NhRect),
+                    __s_region_rect
+                );
             }
             sfo_boolean(nhfp, cptr.add(r, $NhRegion_attach_2_u), __s_region_attach_2_u);
             sfo_unsigned(nhfp, cptr.add(r, $NhRegion_attach_2_m), __s_region_attach_2_m);
             n.v = 0;
-            n.v = !cptr.ldPtro(r, $NhRegion_enter_msg) ? 0 : Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro(r, $NhRegion_enter_msg))));
+            n.v = !cptr.ldPtro(r, $NhRegion_enter_msg)
+                    ? 0
+                    : Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro(r, $NhRegion_enter_msg))));
             sfo_unsigned(nhfp, n, __s_region_enter_msg_length);
             if (n.v > 0) {
                 sfo_char(nhfp, cptr.ldPtro(r, $NhRegion_enter_msg), __s_region_enter_msg, n.v | 0);
             }
-            n.v = !cptr.ldPtro(r, $NhRegion_leave_msg) ? 0 : Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro(r, $NhRegion_leave_msg))));
+            n.v = !cptr.ldPtro(r, $NhRegion_leave_msg)
+                    ? 0
+                    : Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro(r, $NhRegion_leave_msg))));
             sfo_unsigned(nhfp, n, __s_region_leave_msg_length);
             if (n.v > 0) {
                 sfo_char(nhfp, cptr.ldPtro(r, $NhRegion_leave_msg), __s_region_leave_msg, n.v | 0);
@@ -754,7 +1285,11 @@ export function save_regions(nhfp) {
             sfo_short(nhfp, cptr.add(r, $NhRegion_n_monst), __s_region_monster_count);
 
             for (j = 0; j < cptr.ldI16o(r, $NhRegion_n_monst); j++) {
-                sfo_unsigned(nhfp, cptr.add(cptr.ldPtro(r, $NhRegion_monsters), j, 4), __s_region_monster);
+                sfo_unsigned(
+                    nhfp,
+                    cptr.add(cptr.ldPtro(r, $NhRegion_monsters), j, 4),
+                    __s_region_monster
+                );
             }
             sfo_boolean(nhfp, cptr.add(r, $NhRegion_visible), __s_region_visible);
             sfo_int(nhfp, cptr.add(r, $NhRegion_glyph), __s_region_glyph);
@@ -781,22 +1316,56 @@ export function rest_regions(nhfp) {
     if (ghostly)
         tmstamp.v = 0n;
     else
-        tmstamp.v = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - tmstamp.v));
+        tmstamp.v = (BigInt.asIntN(
+            64,
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves) - tmstamp.v
+        ));
     sfi_int(nhfp, cptr.add(svn, $instance_globals_saved_n_n_regions), __s_region_region_count);
     ;
-    cptr.stI32o(gm, $instance_globals_m_max_regions, cptr.ldI32o(svn, $instance_globals_saved_n_n_regions));
+    cptr.stI32o(
+        gm,
+        $instance_globals_m_max_regions,
+        cptr.ldI32o(svn, $instance_globals_saved_n_n_regions)
+    );
     if (cptr.ldI32o(svn, $instance_globals_saved_n_n_regions) > 0)
-        cptr.stPtro(gr, $instance_globals_r_regions, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o(svn, $instance_globals_saved_n_n_regions))) * 8n)))));
+        cptr.stPtro(
+            gr,
+            $instance_globals_r_regions,
+            alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(
+                    64,
+                    BigInt.asUintN(
+                        64,
+                        BigInt(cptr.ldI32o(svn, $instance_globals_saved_n_n_regions))
+                    ) * 8n
+                )
+            )))
+        );
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
         r = cptr.stPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, alloc(96), 8);
         sfi_nhrect(nhfp, r, __s_region_bounding_box__2);
         sfi_short(nhfp, cptr.add(r, $NhRegion_nrects), __s_region_nrects);
         if (cptr.ldI16o(r, $NhRegion_nrects) > 0)
-            cptr.stPtro(r, $NhRegion_rects, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI16o(r, $NhRegion_nrects))) * 8n)))));
+            cptr.stPtro(
+                r,
+                $NhRegion_rects,
+                alloc(Number(BigInt.asUintN(
+                    32,
+                    BigInt.asUintN(
+                        64,
+                        BigInt.asUintN(64, BigInt(cptr.ldI16o(r, $NhRegion_nrects))) * 8n
+                    )
+                )))
+            );
         else
             cptr.stPtro(r, $NhRegion_rects, null);
         for (j = 0; j < cptr.ldI16o(r, $NhRegion_nrects); j++) {
-            sfi_nhrect(nhfp, cptr.add(cptr.ldPtro(r, $NhRegion_rects), j, $sizeof_NhRect), __s_region_rect);
+            sfi_nhrect(
+                nhfp,
+                cptr.add(cptr.ldPtro(r, $NhRegion_rects), j, $sizeof_NhRect),
+                __s_region_rect
+            );
         }
 
         sfi_boolean(nhfp, cptr.add(r, $NhRegion_attach_2_u), __s_region_attach_2_u);
@@ -829,7 +1398,13 @@ export function rest_regions(nhfp) {
         ;
         /* check for expired region */
         if (cptr.ldI64o(r, $NhRegion_ttl) >= 0n)
-            cptr.stI64o(r, $NhRegion_ttl, (cptr.ldI64o(r, $NhRegion_ttl) > tmstamp.v) ? BigInt.asIntN(64, cptr.ldI64o(r, $NhRegion_ttl) - tmstamp.v) : 0n);
+            cptr.stI64o(
+                r,
+                $NhRegion_ttl,
+                (cptr.ldI64o(r, $NhRegion_ttl) > tmstamp.v)
+                    ? BigInt.asIntN(64, cptr.ldI64o(r, $NhRegion_ttl) - tmstamp.v)
+                    : 0n
+            );
         sfi_short(nhfp, cptr.add(r, $NhRegion_expire_f), __s_region_expire_f);
         sfi_short(nhfp, cptr.add(r, $NhRegion_can_enter_f), __s_region_can_enter_f);
         sfi_short(nhfp, cptr.add(r, $NhRegion_enter_f), __s_region_enter_f);
@@ -839,17 +1414,39 @@ export function rest_regions(nhfp) {
         sfi_unsigned(nhfp, cptr.add(r, $NhRegion_player_flags), __s_region_player_flags);
         ;
         if (ghostly) {
-            (cptr.stI32o((r), $NhRegion_player_flags, cptr.ldI32o((r), $NhRegion_player_flags) & 4294967294));
-            (cptr.stI32o((r), $NhRegion_player_flags, cptr.ldI32o((r), $NhRegion_player_flags) | NHM.REG_NOT_HEROS));
+            (cptr.stI32o(
+                (r),
+                $NhRegion_player_flags,
+                cptr.ldI32o((r), $NhRegion_player_flags) & 4294967294
+            ));
+            (cptr.stI32o(
+                (r),
+                $NhRegion_player_flags,
+                cptr.ldI32o((r), $NhRegion_player_flags) | NHM.REG_NOT_HEROS
+            ));
         }
         sfi_short(nhfp, cptr.add(r, $NhRegion_n_monst), __s_region_monster_count);
         if (cptr.ldI16o(r, $NhRegion_n_monst) > 0)
-            cptr.stPtro(r, $NhRegion_monsters, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI16o(r, $NhRegion_n_monst))) * 4n)))));
+            cptr.stPtro(
+                r,
+                $NhRegion_monsters,
+                alloc(Number(BigInt.asUintN(
+                    32,
+                    BigInt.asUintN(
+                        64,
+                        BigInt.asUintN(64, BigInt(cptr.ldI16o(r, $NhRegion_n_monst))) * 4n
+                    )
+                )))
+            );
         else
             cptr.stPtro(r, $NhRegion_monsters, null);
         cptr.stI16o(r, $NhRegion_max_monst, cptr.ldI16o(r, $NhRegion_n_monst));
         for (j = 0; j < cptr.ldI16o(r, $NhRegion_n_monst); j++) {
-            sfi_unsigned(nhfp, cptr.add(cptr.ldPtro(r, $NhRegion_monsters), j, 4), __s_region_monster);
+            sfi_unsigned(
+                nhfp,
+                cptr.add(cptr.ldPtro(r, $NhRegion_monsters), j, 4),
+                __s_region_monster
+            );
             ;
         }
         sfi_boolean(nhfp, cptr.add(r, $NhRegion_visible), __s_region_visible);
@@ -869,7 +1466,13 @@ export function rest_regions(nhfp) {
 }
 
 /* to support '#stats' wizard-mode command */
-/** C ref: region.c:899 — @param {CPtr<char>} hdrfmt @param {CPtr<char>} hdrbuf @param {CPtr<long>} count @param {CPtr<long>} size */
+/**
+ * C ref: region.c:899
+ * @param {CPtr<char>} hdrfmt
+ * @param {CPtr<char>} hdrbuf
+ * @param {CPtr<long>} count
+ * @param {CPtr<long>} size
+ */
 export function region_stats(hdrfmt, hdrbuf, count, size) {
     let rg;
     let i;
@@ -877,15 +1480,38 @@ export function region_stats(hdrfmt, hdrbuf, count, size) {
     /* other stats formats take one parameter; this takes two */
     void cptr.sprintf(hdrbuf, hdrfmt, 96n, 8n);
     cptr.stI64(count, BigInt(cptr.ldI32o(svn, $instance_globals_saved_n_n_regions)));  /* might be 0 even tho max_regions isn't */
-    cptr.stI64(size, BigInt.asIntN(64, BigInt(cptr.ldI32o(gm, $instance_globals_m_max_regions)) * 96n));
+    cptr.stI64(
+        size,
+        BigInt.asIntN(64, BigInt(cptr.ldI32o(gm, $instance_globals_m_max_regions)) * 96n)
+    );
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); ++i) {
         rg = cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8);
-        cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16o(rg, $NhRegion_nrects)) * 8n));
+        cptr.stI64(
+            size,
+            cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16o(rg, $NhRegion_nrects)) * 8n)
+        );
         if (cptr.ldPtro(rg, $NhRegion_enter_msg))
-            cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, (BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(rg, $NhRegion_enter_msg)) + 1n))));
+            cptr.stI64(
+                size,
+                cptr.ldI64(size) +
+                    BigInt.asIntN(
+                        64,
+                        (BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(rg, $NhRegion_enter_msg)) + 1n))
+                    )
+            );
         if (cptr.ldPtro(rg, $NhRegion_leave_msg))
-            cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, (BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(rg, $NhRegion_leave_msg)) + 1n))));
-        cptr.stI64(size, cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16o(rg, $NhRegion_max_monst)) * 4n));
+            cptr.stI64(
+                size,
+                cptr.ldI64(size) +
+                    BigInt.asIntN(
+                        64,
+                        (BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(rg, $NhRegion_leave_msg)) + 1n))
+                    )
+            );
+        cptr.stI64(
+            size,
+            cptr.ldI64(size) + BigInt.asIntN(64, BigInt(cptr.ldI16o(rg, $NhRegion_max_monst)) * 4n)
+        );
     }
     /* ? */
 }
@@ -947,14 +1573,35 @@ export function expire_gas_cloud(p1, p2) {
             for (y = cptr.ldI16o(reg, $nhrect_ly); y <= cptr.ldI16o(reg, $nhrect_hy); y++) {
                 if (inside_region(reg, x, y)) {
                     if (pass == 1) {
-                        if (!does_block(x, y, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm)))
+                        if (!does_block(
+                            x,
+                            y,
+                            cptr.add(
+                                cptr.add(
+                                    cptr.add(svl, $instance_globals_saved_l_level),
+                                    x,
+                                    $sizeof_rm_x21
+                                ),
+                                y,
+                                $sizeof_rm
+                            )
+                        ))
                             unblock_point(x, y);
                     } else {
                         if (!(cptr.ldI32o(u, $you_uswallow) & 1)) {
                             if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                                 cptr.st1o(gg, $instance_globals_g_gas_cloud_diss_within, 1);
-                            else if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
-                                (cptr.stI32o(gg, $instance_globals_g_gas_cloud_diss_seen, cptr.ldI32o(gg, $instance_globals_g_gas_cloud_diss_seen) + 1)) - (1);
+                            else if (((cptr.ld1uo(
+                                cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                                x
+                            ) &
+                                    NHM.IN_SIGHT) != 0))
+                                (cptr.stI32o(
+                                    gg,
+                                    $instance_globals_g_gas_cloud_diss_seen,
+                                    cptr.ldI32o(gg, $instance_globals_g_gas_cloud_diss_seen) + 1
+                                )) -
+                                        (1);
                         }
                     }
                 }
@@ -979,7 +1626,11 @@ export function inside_gas_cloud(p1, p2) {
      */
 
     /* fog clouds maintain gas clouds, even poisonous ones */
-    if (cptr.ldI64o(reg, $NhRegion_ttl) < 20n && umon && cptr.eq(cptr.ldPtro(umon, $monst_data), cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)))
+    if (cptr.ldI64o(reg, $NhRegion_ttl) < 20n && umon &&
+            cptr.eq(
+                cptr.ldPtro(umon, $monst_data),
+                cptr.add(mons, NHC.PM_FOG_CLOUD, $sizeof_permonst)
+            ))
         cptr.stI64o(reg, $NhRegion_ttl, cptr.ldI64o(reg, $NhRegion_ttl) + 5n);
 
     if (dam < 1)
@@ -993,10 +1644,16 @@ export function inside_gas_cloud(p1, p2) {
             make_blinded(1n, 0);
         }
         if (!Poison_resistance()) {
-            pline(__s_s_is_burning_your_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_Something), makeplural(body_part(NHC.LUNG)));
+            pline(
+                __s_s_is_burning_your_s,
+                cptr.ldPtro(c_common_strings, $c_common_strings_c_Something),
+                makeplural(body_part(NHC.LUNG))
+            );
             You(__s_cough_and_spit_blood);
             wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 2);
-            dam = ((Half_physical_damage()) ? ((((((rnd(dam) + 5) | 0) + 1) | 0) / 2) | 0) : ((rnd(dam) + 5) | 0));
+            dam = ((Half_physical_damage())
+                    ? ((((((rnd(dam) + 5) | 0) + 1) | 0) / 2) | 0)
+                    : ((rnd(dam) + 5) | 0));
             if (Half_gas_damage())
                 dam = (((dam + 1) | 0) / 2) | 0;
             losehp(dam, __s_gas_cloud, NHM.KILLED_BY_AN);
@@ -1012,20 +1669,41 @@ export function inside_gas_cloud(p1, p2) {
         mtmp = p2;
 
         if (m_poisongas_ok(mtmp) != NHM.M_POISONGAS_OK) {
-            if (!(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) == NHC.MS_SILENT)) {
-                if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0) || (dist2((cptr.ldI16o(mtmp, $monst_mx)), (cptr.ldI16o(mtmp, $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 8))
+            if (!(cptr.ld1uo((cptr.ldPtro(mtmp, $monst_data)), $permonst_msound) ==
+                    NHC.MS_SILENT)) {
+                if (((cptr.ld1uo(
+                    cptr.ldPtro(
+                        cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                        cptr.ldI16o(mtmp, $monst_my),
+                        8
+                    ),
+                    cptr.ldI16o(mtmp, $monst_mx)
+                ) &
+                    NHM.IN_SIGHT) != 0) ||
+                        (dist2(
+                            (cptr.ldI16o(mtmp, $monst_mx)),
+                            (cptr.ldI16o(mtmp, $monst_my)),
+                            cptr.ldI16(u),
+                            cptr.ldI16o(u, $you_uy)
+                        ) < 8))
                     pline(__s_s_coughs, Monnam(mtmp));
                 wake_nearto(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), 2);
             }
             if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) & NHM.REG_NOT_HEROS) >>> 0)))
                 setmangry(mtmp, 1);
-            if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 4096n) == 0n) && (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0) {
+            if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) &
+                4096n) == 0n) &&
+                    (cptr.ldI32o(mtmp, $monst_mcansee) & 1) | 0) {
                 cptr.stI32o(mtmp, $monst_mblinded, 1);
                 cptr.stI32o(mtmp, $monst_mcansee, 0);
             }
             if (Resists_Elem(mtmp, NHC.POISON_RES))
                 return 0;
-            cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - ((rnd(dam) + 5) | 0)) | 0);
+            cptr.stI32o(
+                mtmp,
+                $monst_mhp,
+                (cptr.ldI32o(mtmp, $monst_mhp) - ((rnd(dam) + 5) | 0)) | 0
+            );
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                 if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) & NHM.REG_NOT_HEROS) >>> 0)))
                     killed(mtmp);
@@ -1045,32 +1723,108 @@ function is_hero_inside_gas_cloud() {
     let i;
 
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++)
-        if (((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & NHM.REG_HERO_INSIDE) >>> 0) && cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_inside_f) == 0)
+        if (((cptr.ldI32o(
+            (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+            $NhRegion_player_flags
+        ) &
+            NHM.REG_HERO_INSIDE) >>> 0) &&
+                cptr.ldI16o(
+                    cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                    $NhRegion_inside_f
+                ) == 0)
             return 1;
     return 0;
 }
 
 /* details of gas cloud creation which are common to create_gas_cloud()
    and create_gas_cloud_selection() */
-/** C ref: region.c:1182 — @param {CPtr<NhRegion>} cloud @param {CInt} damage @param {CInt} inside_cloud */
+/**
+ * C ref: region.c:1182
+ * @param {CPtr<NhRegion>} cloud
+ * @param {CInt} damage
+ * @param {CInt} inside_cloud
+ */
 function make_gas_cloud(cloud, damage, inside_cloud) {
     if (!cptr.ld1so(gi, $instance_globals_i_in_mklev) && !cptr.ld1so(svc, $context_info_mon_moving))
-        (cptr.stI32o((cloud), $NhRegion_player_flags, cptr.ldI32o((cloud), $NhRegion_player_flags) & 4294967293));  /* assume player has created it */
+        (cptr.stI32o(
+            (cloud),
+            $NhRegion_player_flags,
+            cptr.ldI32o((cloud), $NhRegion_player_flags) & 4294967293
+        ));  /* assume player has created it */
     cptr.stI16o(cloud, $NhRegion_inside_f, 0);
     cptr.stI16o(cloud, $NhRegion_expire_f, 1);
     cptr.memcpy(cptr.add(cloud, $NhRegion_arg), cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stI32o(cloud, $NhRegion_arg, damage);
     cptr.st1o(cloud, $NhRegion_visible, 1);
-    cptr.stI32o(cloud, $NhRegion_glyph, (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_trwall) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < NHC.S_altar) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_goodpos) ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH)))))));
+    cptr.stI32o(
+        cloud,
+        $NhRegion_glyph,
+        (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_stone)
+            ? NHC.GLYPH_CMAP_STONE_OFF
+            : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_trwall)
+                ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_vwall) | 0) +
+                    (In_mines(cptr.add(u, $you_uz))
+                        ? NHC.GLYPH_CMAP_MINES_OFF
+                        : (In_hell(cptr.add(u, $you_uz))
+                            ? NHC.GLYPH_CMAP_GEH_OFF
+                            : ((((cptr.ldI16o(
+                                (cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_knox_level
+                                )),
+                                $d_level_dlevel
+                            ) ||
+                                cptr.ldI16((cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_knox_level
+                                )))) &&
+                                on_level(
+                                    cptr.add(u, $you_uz),
+                                    cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_knox_level
+                                    )
+                                )))
+                                ? NHC.GLYPH_CMAP_KNOX_OFF
+                                : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum())
+                                    ? NHC.GLYPH_CMAP_SOKO_OFF
+                                    : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
+                : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < NHC.S_altar)
+                    ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_ndoor) | 0) +
+                        NHC.GLYPH_CMAP_A_OFF) | 0)
+                    : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_altar)
+                        ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
+                        : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <
+                            ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
+                            ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_grave) | 0) +
+                                NHC.GLYPH_CMAP_B_OFF) | 0)
+                            : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_goodpos)
+                                ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) -
+                                    NHC.S_digbeam) | 0) +
+                                    NHC.GLYPH_CMAP_C_OFF) | 0)
+                                : NHC.MAX_GLYPH))))))
+    );
     add_region(cloud);
 
-    if (!cptr.ld1so(gi, $instance_globals_i_in_mklev) && !inside_cloud && is_hero_inside_gas_cloud()) {
+    if (!cptr.ld1so(gi, $instance_globals_i_in_mklev) &&
+            !inside_cloud &&
+            is_hero_inside_gas_cloud()) {
         You(__s_are_enveloped_in_a_cloud_of_s, damage ? __s_noxious_gas : __s_steam);
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_ENVELOPED_IN_GAS);
     }
 }
 
-/** C ref: region.c:1213 — @param {CInt} x @param {CInt} y @param {CInt} cloudsize @param {CInt} damage @returns {CPtr<NhRegion>} */
+/**
+ * C ref: region.c:1213
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} cloudsize
+ * @param {CInt} damage
+ * @returns {CPtr<NhRegion>}
+ */
 export function create_gas_cloud(x, y, cloudsize, damage) {
     let cloud;
     let i;
@@ -1088,7 +1842,13 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
 
     /* a single-point cloud on hero and it deals no damage.
        probably a natural cause of being polyed. don't message about it */
-    if (!cptr.ld1so(svc, $context_info_mon_moving) && ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && cloudsize == 1 && (!damage || (damage && m_poisongas_ok(cptr.add(gy, $instance_globals_y_youmonst)) == NHM.M_POISONGAS_OK)))
+    if (!cptr.ld1so(svc, $context_info_mon_moving) &&
+            ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
+            cloudsize == 1 &&
+            (!damage ||
+                (damage &&
+                    m_poisongas_ok(cptr.add(gy, $instance_globals_y_youmonst)) ==
+                        NHM.M_POISONGAS_OK)))
         inside_cloud = 1;
 
     if (cloudsize > 150) {
@@ -1106,12 +1866,25 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
 
         /* Primitive Fisher-Yates-Knuth shuffle to randomize the order of
          * directions chosen. */
-        let dirs = cptr.alloc(4 * $sizeof_coord); cptr.stI16o(dirs, 0, 0); cptr.stI16o(dirs, 0 + $coord_y, -1); cptr.stI16o(dirs, 4, 0); cptr.stI16o(dirs, 4 + $coord_y, 1); cptr.stI16o(dirs, 8, -1); cptr.stI16o(dirs, 8 + $coord_y, 0); cptr.stI16o(dirs, 12, 1); cptr.stI16o(dirs, 12 + $coord_y, 0);
+        let dirs = cptr.alloc(4 * $sizeof_coord);
+        cptr.stI16o(dirs, 0, 0);
+        cptr.stI16o(dirs, 0 + $coord_y, -1);
+        cptr.stI16o(dirs, 4, 0);
+        cptr.stI16o(dirs, 4 + $coord_y, 1);
+        cptr.stI16o(dirs, 8, -1);
+        cptr.stI16o(dirs, 8 + $coord_y, 0);
+        cptr.stI16o(dirs, 12, 1);
+        cptr.stI16o(dirs, 12 + $coord_y, 0);
         for (i = 4; i > 0; --i) {
             let swapidx = i16(rn2(i));
-            let tmp = cptr.alloc(4); cptr.memcpy(tmp, cptr.add(dirs, swapidx, $sizeof_coord), $sizeof_nhcoord);
+            let tmp = cptr.alloc(4);
+            cptr.memcpy(tmp, cptr.add(dirs, swapidx, $sizeof_coord), $sizeof_nhcoord);
 
-            cptr.memcpy(cptr.add(dirs, swapidx, $sizeof_coord), cptr.add(dirs, (i - 1) | 0, $sizeof_coord), 4);
+            cptr.memcpy(
+                cptr.add(dirs, swapidx, $sizeof_coord),
+                cptr.add(dirs, (i - 1) | 0, $sizeof_coord),
+                4
+            );
             cptr.memcpy(cptr.add(dirs, (i - 1) | 0, $sizeof_coord), tmp, 4);
         }
         let nvalid = 0;  /* # of valid adjacent spots */
@@ -1125,7 +1898,8 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
                 nvalid++;
                 /* don't pick a location we've already picked */
                 for (j = 0; j < newidx; ++j) {
-                    if (cptr.ldI16o(xcoords, j, 2) == ((xx + dx) | 0) && cptr.ldI16o(ycoords, j, 2) == ((yy + dy) | 0)) {
+                    if (cptr.ldI16o(xcoords, j, 2) == ((xx + dx) | 0) &&
+                            cptr.ldI16o(ycoords, j, 2) == ((yy + dy) | 0)) {
                         isunpicked = 0;
                         break;
                     }
@@ -1154,19 +1928,32 @@ export function create_gas_cloud(x, y, cloudsize, damage) {
     cloud = create_region(null, 0);
     for (i = 0; i < newidx; ++i) {
         cptr.stI16(tmprect, cptr.stI16o(tmprect, $nhrect_hx, cptr.ldI16o(xcoords, i, 2)));
-        cptr.stI16o(tmprect, $nhrect_ly, cptr.stI16o(tmprect, $nhrect_hy, cptr.ldI16o(ycoords, i, 2)));
+        cptr.stI16o(
+            tmprect,
+            $nhrect_ly,
+            cptr.stI16o(tmprect, $nhrect_hy, cptr.ldI16o(ycoords, i, 2))
+        );
         add_rect_to_reg(cloud, tmprect);
     }
     cptr.stI64o(cloud, $NhRegion_ttl, BigInt(((rn2(3) + 4) | 0)));
     /* If cloud was constrained in small space, give it more time to live. */
-    cptr.stI64o(cloud, $NhRegion_ttl, (BigInt.asIntN(64, cptr.ldI64o(cloud, $NhRegion_ttl) * BigInt(cloudsize))) / BigInt(newidx));
+    cptr.stI64o(
+        cloud,
+        $NhRegion_ttl,
+        (BigInt.asIntN(64, cptr.ldI64o(cloud, $NhRegion_ttl) * BigInt(cloudsize))) / BigInt(newidx)
+    );
 
     make_gas_cloud(cloud, damage, inside_cloud);
     return cloud;
 }
 
 /* create a single gas cloud from selection */
-/** C ref: region.c:1313 — @param {CPtr<struct selectionvar>} sel @param {CInt} damage @returns {CPtr<NhRegion>} */
+/**
+ * C ref: region.c:1313
+ * @param {CPtr<struct selectionvar>} sel
+ * @param {CInt} damage
+ * @returns {CPtr<NhRegion>}
+ */
 export function create_gas_cloud_selection(sel, damage) {
     let cloud;
     let tmprect = cptr.alloc(8);
@@ -1199,13 +1986,21 @@ export function region_danger() {
 
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
         /* only care about regions that hero is in */
-        if (!((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & NHM.REG_HERO_INSIDE) >>> 0))
+        if (!((cptr.ldI32o(
+            (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+            $NhRegion_player_flags
+        ) &
+                NHM.REG_HERO_INSIDE) >>> 0))
             continue;
-        f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_inside_f);
+        f_indx = cptr.ldI16o(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_inside_f
+        );
         /* the only type of region we understand is gas_cloud */
         if (f_indx == 0) {
             /* completely harmless if you don't need to breathe */
-            if (nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) || Breathless())
+            if (nonliving(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ||
+                    Breathless())
                 continue;
             /* minor inconvenience if you're poison resistant;
                not harmful enough to be a prayer-level trouble */
@@ -1228,12 +2023,23 @@ export function region_safety() {
 
     for (i = 0; i < cptr.ldI32o(svn, $instance_globals_saved_n_n_regions); i++) {
         /* only care about regions that hero is in */
-        if (!((cptr.ldI32o((cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)), $NhRegion_player_flags) & NHM.REG_HERO_INSIDE) >>> 0))
+        if (!((cptr.ldI32o(
+            (cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8)),
+            $NhRegion_player_flags
+        ) &
+                NHM.REG_HERO_INSIDE) >>> 0))
             continue;
-        f_indx = cptr.ldI16o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_inside_f);
+        f_indx = cptr.ldI16o(
+            cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+            $NhRegion_inside_f
+        );
         /* the only type of region we understand is gas_cloud */
         if (f_indx == 0) {
-            if (!n++ && cptr.ldI64o(cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8), $NhRegion_ttl) >= 0n)
+            if (!n++ &&
+                    cptr.ldI64o(
+                        cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8),
+                        $NhRegion_ttl
+                    ) >= 0n)
                 r = cptr.ldPtro(cptr.ldPtro(gr, $instance_globals_r_regions), i, 8);
         }
     }
@@ -1244,7 +2050,13 @@ export function region_safety() {
         /* maybe there's no safe place available; must get hero out of danger
            or prayer's "fix all troubles" result will get stuck in a loop */
         if (region_danger()) {
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.MAGICAL_BREATHING, $sizeof_prop), $prop_intrinsic), BigInt(((d(4, 4) + 4) | 0)));
+            set_itimeout(
+                cptr.add(
+                    cptr.add(cptr.add(u, $you_uprops), NHC.MAGICAL_BREATHING, $sizeof_prop),
+                    $prop_intrinsic
+                ),
+                BigInt(((d(4, 4) + 4) | 0))
+            );
             /* not already Breathless or wouldn't be in region danger */
             You_feel(__s_able_to_breathe);
         }

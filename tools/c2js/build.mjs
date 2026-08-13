@@ -22,6 +22,7 @@ import { astPathFor, compileCwdFor } from './ast-dump.mjs';
 import { Emitter, loadPrelude } from './emit.mjs';
 import { listTargets, collectFile, buildSymbolMap, loadSlimIr, slimIrPath } from './symbols.mjs';
 import { EMIT_VERSION, CONST_NS, CONST_MODULE, MACRO_NS, MACRO_MODULE, FIELD_NS, FIELD_MODULE, FIELD_PREFIX, PROP_MODULE, MACRO_FN_MODULE, MACRO_HELPERS, MACRO_FN_HELPERS, RNG_MODULE, RNG_HELPERS, JS_RESERVED, assertNoAbsolutePaths } from './emit.mjs';
+import { formatSource, wrapImport, fillItems, FMT_ON, FMT_COLS, FMT_STATS } from './jsfmt.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const TRANSPILER_VERSION = 'c2js emit v1+batch';
@@ -651,10 +652,10 @@ function writePropModule(symbols) {
     `// Transpiler: tools/c2js ${TRANSPILER_VERSION}`,
     '// See docs/NOTES-readability.md §3 (macro-body helpers).',
     '',
-    ...imports,
+    ...imports.map((l) => wrapImport(l)),
     '',
     ...(fieldRefs.size ? [fieldPreamble(fieldRefs, null, base), ''] : []),
-    text,
+    formatSource(text, { where: base }),
     '',
   ];
   fs.writeFileSync(path.join(outDir, base), lines.join('\n'));
@@ -715,10 +716,10 @@ function writeMacroFnModule(symbols) {
     `// Transpiler: tools/c2js ${TRANSPILER_VERSION}`,
     '// See docs/NOTES-emit-hygiene.md §3 (function-like macros, tier 1.12).',
     '',
-    ...imports,
+    ...imports.map((l) => wrapImport(l)),
     '',
     ...(fieldRefs.size ? [fieldPreamble(fieldRefs, null, base), ''] : []),
-    text,
+    formatSource(text, { where: base }),
     '',
   ];
   fs.writeFileSync(path.join(outDir, base), lines.join('\n'));
@@ -799,14 +800,21 @@ function fieldPreamble(refs, declared, where) {
   if (clash.length) throw new Error(`field-offset binding(s) collide with a declaration in ${where}: ${clash.join(', ')}`);
   const lines = ['// struct field offsets used below, bound at module scope so V8 folds them',
     `// (values from ${FIELD_MODULE}, which is the whole table)`];
-  let cur = 'const ';
-  for (let i = 0; i < names.length; i++) {
-    const piece = `${FIELD_PREFIX}${names[i]} = ${FIELD_NS}.${names[i]}${i === names.length - 1 ? ';' : ','}`;
-    if (cur !== 'const ' && cur.length + piece.length > 110) { lines.push(cur.trimEnd()); cur = '    '; }
-    cur += piece + ' ';
+  if (!FMT_ON) { // the pre-jsfmt fill, at its own width, so C2JS_FMT=0 is exact
+    let cur = 'const ';
+    for (let i = 0; i < names.length; i++) {
+      const piece = `${FIELD_PREFIX}${names[i]} = ${FIELD_NS}.${names[i]}${i === names.length - 1 ? ';' : ','}`;
+      if (cur !== 'const ' && cur.length + piece.length > 110) { lines.push(cur.trimEnd()); cur = '    '; }
+      cur += piece + ' ';
+    }
+    lines.push(cur.trimEnd());
+    return lines.join('\n');
   }
-  lines.push(cur.trimEnd());
-  return lines.join('\n');
+  // filled to the column budget, continuations aligned under the first binding
+  const body = fillItems(names.map((n) => `${FIELD_PREFIX}${n} = ${FIELD_NS}.${n}`), 6);
+  body[0] = `const ${body[0].trimStart()}`;
+  body[body.length - 1] += ';';
+  return [...lines, ...body].join('\n');
 }
 
 /** assemble a generated module from emitter output (+ optional prelude/imports) */
@@ -818,7 +826,12 @@ function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports })
     `// Transpiler: tools/c2js ${TRANSPILER_VERSION}`,
   ].join('\n');
 
-  const bodyText = chunks.map((c) => c.join('\n')).join('\n\n');
+  // The transpiled C, wrapped to the column budget. Only the body: the header,
+  // the imports, the field preamble, the hand-written runtime preludes and the
+  // string table are not transpiled expressions and each already has a layout
+  // of its own. See tools/c2js/jsfmt.mjs; C2JS_FMT=0 restores the one-line-per-
+  // statement emission.
+  const bodyText = formatSource(chunks.map((c) => c.join('\n')).join('\n\n'), { where: `${name}.js` });
 
   const imports = [];
   if (/isaac64_/.test(bodyText)) imports.push("import { isaac64_init, isaac64_next_uint64 } from '../isaac64.js';");
@@ -894,7 +907,7 @@ function assemble({ name, srcRel, sha, emitter, chunks, prelude, crossImports })
       ...emitter.stringList.map((raw, i) => `const ${stringNames[i]} = cptr.lit(${raw});`)].join('\n')
     : null;
 
-  const out = [header, '', ...imports, '', ...(fieldTable ? [fieldTable, ''] : []), ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');
+  const out = [header, '', ...imports.map((l) => wrapImport(l)), '', ...(fieldTable ? [fieldTable, ''] : []), ...(prelude ? [prelude, ''] : []), ...(stringTable ? [stringTable, ''] : []), bodyText, ''].join('\n');
   // __FILE__ hygiene: nothing this machine knows about its own filesystem may
   // reach the shipped tree (emit.mjs, sourcePathSpelling)
   assertNoAbsolutePaths(out, `${name}.js`);
@@ -1276,6 +1289,12 @@ function assertTreesHygienic() {
     }
   }
   console.log(`\nemit hygiene: ${checked} emitted modules carry no absolute machine path`);
+  if (FMT_ON) {
+    console.log(`jsfmt: budget ${FMT_COLS} cols — ${FMT_STATS.linesWrapped} of ${FMT_STATS.linesSeen} statement lines wrapped `
+      + `into ${FMT_STATS.linesEmitted}, ${FMT_STATS.docsWrapped} C-ref markers reflowed, `
+      + `${FMT_STATS.trailingCarried} trailing comments carried to the last line; `
+      + `${FMT_STATS.unsplittable} lines over budget with no break point, ${FMT_STATS.auditFailed} failed the token audit`);
+  }
 }
 
 /**

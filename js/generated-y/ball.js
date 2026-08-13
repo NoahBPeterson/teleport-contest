@@ -14,7 +14,9 @@ import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { is_hole, is_pit } from './nhmacrofn.js';
 import { Blind, Half_physical_damage, Levitation, Luck, Punished } from './nhprop.js';
-import { flags, gi, gv, svd, svl, u, uarmh, uball, uchain, uquiver, uswapwep, uwep } from './decl.js';
+import {
+    flags, gi, gv, svd, svl, u, uarmh, uball, uchain, uquiver, uswapwep, uwep
+} from './decl.js';
 import { setuqwep, setuswapwep, setuwep, welded } from './wield.js';
 import { You, You_feel, Your, impossible, pline, pline_The } from './pline.js';
 import { freeinv } from './invent.js';
@@ -41,23 +43,25 @@ import { exercise } from './attrib.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters, $dlevel_t_objects = FLD.dlevel_t_objects,
-    $flag_verbose = FLD.flag_verbose, $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
-    $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt,
-    $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan, $obj_v = FLD.obj_v,
-    $obj_where = FLD.obj_where, $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ, $sizeof_prop = FLD.sizeof_prop,
-    $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21, $trap_tseen = FLD.trap_tseen,
-    $trap_ttyp = FLD.trap_ttyp, $you_bc_felt = FLD.you_bc_felt, $you_bc_order = FLD.you_bc_order,
-    $you_bglyph = FLD.you_bglyph, $you_cglyph = FLD.you_cglyph, $you_dx = FLD.you_dx, $you_dy = FLD.you_dy,
-    $you_moreluck = FLD.you_moreluck, $you_uluck = FLD.you_uluck, $you_uprops = FLD.you_uprops,
-    $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
-    $you_utraptype = FLD.you_utraptype, $you_ux0 = FLD.you_ux0, $you_uy = FLD.you_uy, $you_uy0 = FLD.you_uy0,
-    $you_uz = FLD.you_uz;
+const $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
+      $dlevel_t_monsters = FLD.dlevel_t_monsters, $dlevel_t_objects = FLD.dlevel_t_objects,
+      $flag_verbose = FLD.flag_verbose, $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+      $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt,
+      $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan, $obj_v = FLD.obj_v,
+      $obj_where = FLD.obj_where, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
+      $you_bc_felt = FLD.you_bc_felt, $you_bc_order = FLD.you_bc_order,
+      $you_bglyph = FLD.you_bglyph, $you_cglyph = FLD.you_cglyph, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_moreluck = FLD.you_moreluck, $you_uluck = FLD.you_uluck,
+      $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow,
+      $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype, $you_ux0 = FLD.you_ux0,
+      $you_uy = FLD.you_uy, $you_uy0 = FLD.you_uy0, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_startled_you_drop_the_iron_ball = cptr.lit("Startled, you drop the iron ball.");
@@ -131,10 +135,15 @@ export function* ballrelease(showmsg) {
 export function* ballfall() {
     let gets_hit;
 
-    if (!uball.v || (uball.v && (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (yield* welded(uball.v))))
+    if (!uball.v ||
+            (uball.v && (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (yield* welded(uball.v))))
         return;
 
-    gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) || (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) && ((cptr.eq(uwep.v, uball.v)) ? 0 : schar(rn2(5))) ? 1 : 0));
+    gets_hit = schar((((cptr.ldI16o(uball.v, $obj_ox) != cptr.ldI16(u)) ||
+        (cptr.ldI16o(uball.v, $obj_oy) != cptr.ldI16o(u, $you_uy))) &&
+        ((cptr.eq(uwep.v, uball.v)) ? 0 : schar(rn2(5)))
+            ? 1
+            : 0));
     (yield* ballrelease(1));
     if (gets_hit) {
         let dmg = ((rn2(7) + 25) | 0);
@@ -147,7 +156,11 @@ export function* ballfall() {
             } else if (cptr.ld1so(flags, $flag_verbose))
                 (yield* pline(__s_s_does_not_protect_you, (yield* Yname2(uarmh.v))));
         }
-        (yield* losehp(((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)), __s_crunched_in_the_head_by_an_iron_ball, NHM.NO_KILLER_PREFIX));
+        (yield* losehp(
+            ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)),
+            __s_crunched_in_the_head_by_an_iron_ball,
+            NHM.NO_KILLER_PREFIX
+        ));
     }
 }
 
@@ -179,7 +192,22 @@ function* placebc_core() {
 
     (yield* place_object(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
 
-    cptr.stI32o(u, $you_bglyph, cptr.stI32o(u, $you_cglyph, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level)));  /* pick up glyph */
+    cptr.stI32o(
+        u,
+        $you_bglyph,
+        cptr.stI32o(
+            u,
+            $you_cglyph,
+            cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level
+            )
+        )
+    );  /* pick up glyph */
 
     (yield* newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
     bcrestriction = 0;
@@ -188,7 +216,24 @@ function* placebc_core() {
 /** C ref: ball.c:147 */
 function* unplacebc_core() {
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+        if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )
+                )))) {
             /* we need to proceed with the removal from the floor
              * so that movebubbles() processing will disregard it as
              * intended. Ignore all the vision stuff.
@@ -204,13 +249,29 @@ function* unplacebc_core() {
     if (!(cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT)) {
         (yield* obj_extract_self(uball.v));
         if (Blind() && (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_BALL))
-            cptr.stI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_bglyph));
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16o(uball.v, $obj_ox),
+                $sizeof_rm_x21,
+                cptr.ldI16o(uball.v, $obj_oy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level,
+                cptr.ldI32o(u, $you_bglyph)
+            );
         (yield* maybe_unhide_at(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));
         (yield* newsym(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));
     }
     (yield* obj_extract_self(uchain.v));
     if (Blind() && (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN))
-        cptr.stI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_cglyph));
+        cptr.stI32o3(
+            svl,
+            cptr.ldI16o(uchain.v, $obj_ox),
+            $sizeof_rm_x21,
+            cptr.ldI16o(uchain.v, $obj_oy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level,
+            cptr.ldI32o(u, $you_cglyph)
+        );
     (yield* maybe_unhide_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
 
     (yield* newsym(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
@@ -282,10 +343,24 @@ export function* lift_covet_and_placebc(pin) {
 function* bc_order() {
     let obj;
 
-    if (cptr.ldI16o(uchain.v, $obj_ox) != cptr.ldI16o(uball.v, $obj_ox) || cptr.ldI16o(uchain.v, $obj_oy) != cptr.ldI16o(uball.v, $obj_oy) || (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
+    if (cptr.ldI16o(uchain.v, $obj_ox) != cptr.ldI16o(uball.v, $obj_ox) ||
+            cptr.ldI16o(uchain.v, $obj_oy) != cptr.ldI16o(uball.v, $obj_oy) ||
+            (cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) ||
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0)
         return 0;
 
-    for (obj = cptr.ldPtro3(svl, cptr.ldI16o(uball.v, $obj_ox), 168, cptr.ldI16o(uball.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); obj; obj = cptr.ldPtro(obj, $obj_v)) {
+    for (
+        obj = cptr.ldPtro3(
+            svl,
+            cptr.ldI16o(uball.v, $obj_ox),
+            168,
+            cptr.ldI16o(uball.v, $obj_oy),
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_objects
+        );
+        obj;
+        obj = cptr.ldPtro(obj, $obj_v)
+    ) {
         if (cptr.eq(obj, uchain.v))
             return 1;
         if (cptr.eq(obj, uball.v))
@@ -309,7 +384,22 @@ export function* set_bc(already_blind) {
     cptr.stI32o(u, $you_bc_felt, ball_on_floor ? 3 : NHM.BC_CHAIN);  /* felt */
 
     if (already_blind || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
-        cptr.stI32o(u, $you_cglyph, cptr.stI32o(u, $you_bglyph, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level)));
+        cptr.stI32o(
+            u,
+            $you_cglyph,
+            cptr.stI32o(
+                u,
+                $you_bglyph,
+                cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level
+                )
+            )
+        );
         return;
     }
 
@@ -323,14 +413,36 @@ export function* set_bc(already_blind) {
         (yield* remove_object(uball.v));
 
     (yield* newsym(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
-    cptr.stI32o(u, $you_cglyph, cptr.ldI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level));
+    cptr.stI32o(
+        u,
+        $you_cglyph,
+        cptr.ldI32o3(
+            svl,
+            cptr.ldI16o(uchain.v, $obj_ox),
+            $sizeof_rm_x21,
+            cptr.ldI16o(uchain.v, $obj_oy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level
+        )
+    );
 
     if (cptr.ldI32o(u, $you_bc_order) == 0) {
         (yield* place_object(uchain.v, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
         (yield* newsym(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)));
         if (ball_on_floor) {
             (yield* newsym(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));  /* see under ball */
-            cptr.stI32o(u, $you_bglyph, cptr.ldI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level));
+            cptr.stI32o(
+                u,
+                $you_bglyph,
+                cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16o(uball.v, $obj_ox),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(uball.v, $obj_oy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level
+                )
+            );
             (yield* place_object(uball.v, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));
             (yield* newsym(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)));  /* restore ball */
         }
@@ -357,7 +469,15 @@ export function* set_bc(already_blind) {
  *
  *  Should not be called while swallowed.
  */
-/** C ref: ball.c:437 — @param {CInt} before @param {CInt} control @param {CInt} ballx @param {CInt} bally @param {CInt} chainx @param {CInt} chainy */
+/**
+ * C ref: ball.c:437
+ * @param {CInt} before
+ * @param {CInt} control
+ * @param {CInt} ballx
+ * @param {CInt} bally
+ * @param {CInt} chainx
+ * @param {CInt} chainy
+ */
 export function* move_bc(before, control, ballx, bally, chainx, chainy) {
     if (Blind()) {
         /*
@@ -376,50 +496,146 @@ export function* move_bc(before, control, ballx, bally, chainx, chainy) {
                  *  Both ball and chain moved.  If felt, drop glyph.
                  */
                 if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_BALL)
-                    cptr.stI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_bglyph));
+                    cptr.stI32o3(
+                        svl,
+                        cptr.ldI16o(uball.v, $obj_ox),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(uball.v, $obj_oy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level,
+                        cptr.ldI32o(u, $you_bglyph)
+                    );
                 if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN)
-                    cptr.stI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_cglyph));
+                    cptr.stI32o3(
+                        svl,
+                        cptr.ldI16o(uchain.v, $obj_ox),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(uchain.v, $obj_oy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level,
+                        cptr.ldI32o(u, $you_cglyph)
+                    );
                 cptr.stI32o(u, $you_bc_felt, 0);
 
                 /* Pick up glyph at new location. */
-                cptr.stI32o(u, $you_bglyph, cptr.ldI32o3(svl, ballx, $sizeof_rm_x21, bally, $sizeof_rm, $instance_globals_saved_l_level));
-                cptr.stI32o(u, $you_cglyph, cptr.ldI32o3(svl, chainx, $sizeof_rm_x21, chainy, $sizeof_rm, $instance_globals_saved_l_level));
+                cptr.stI32o(
+                    u,
+                    $you_bglyph,
+                    cptr.ldI32o3(
+                        svl,
+                        ballx,
+                        $sizeof_rm_x21,
+                        bally,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level
+                    )
+                );
+                cptr.stI32o(
+                    u,
+                    $you_cglyph,
+                    cptr.ldI32o3(
+                        svl,
+                        chainx,
+                        $sizeof_rm_x21,
+                        chainy,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level
+                    )
+                );
 
                 (yield* movobj(uball.v, ballx, bally));
                 (yield* movobj(uchain.v, chainx, chainy));
             } else if (control & NHM.BC_BALL) {
                 if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_BALL) {
                     if (cptr.ldI32o(u, $you_bc_order) == 0) {
-                        cptr.stI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_bglyph));
+                        cptr.stI32o3(
+                            svl,
+                            cptr.ldI16o(uball.v, $obj_ox),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(uball.v, $obj_oy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level,
+                            cptr.ldI32o(u, $you_bglyph)
+                        );
                     } else if (cptr.ldI32o(u, $you_bc_order) == 2) {
                         if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN) {
                             (yield* map_object(uchain.v, 0));
                         } else {
-                            cptr.stI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_bglyph));
+                            cptr.stI32o3(
+                                svl,
+                                cptr.ldI16o(uball.v, $obj_ox),
+                                $sizeof_rm_x21,
+                                cptr.ldI16o(uball.v, $obj_oy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level,
+                                cptr.ldI32o(u, $you_bglyph)
+                            );
                         }
                     }
                     cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -2);  /* no longer feel the ball */
                 }
 
                 /* Pick up glyph at new position. */
-                cptr.stI32o(u, $you_bglyph, (ballx != chainx || bally != chainy) ? cptr.ldI32o3(svl, ballx, $sizeof_rm_x21, bally, $sizeof_rm, $instance_globals_saved_l_level) : cptr.ldI32o(u, $you_cglyph));
+                cptr.stI32o(
+                    u,
+                    $you_bglyph,
+                    (ballx != chainx || bally != chainy)
+                        ? cptr.ldI32o3(
+                            svl,
+                            ballx,
+                            $sizeof_rm_x21,
+                            bally,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level
+                        )
+                        : cptr.ldI32o(u, $you_cglyph)
+                );
 
                 (yield* movobj(uball.v, ballx, bally));
             } else if (control & NHM.BC_CHAIN) {
                 if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN) {
                     if (cptr.ldI32o(u, $you_bc_order) == 0) {
-                        cptr.stI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_cglyph));
+                        cptr.stI32o3(
+                            svl,
+                            cptr.ldI16o(uchain.v, $obj_ox),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(uchain.v, $obj_oy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level,
+                            cptr.ldI32o(u, $you_cglyph)
+                        );
                     } else if (cptr.ldI32o(u, $you_bc_order) == 1) {
                         if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_BALL) {
                             (yield* map_object(uball.v, 0));
                         } else {
-                            cptr.stI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_cglyph));
+                            cptr.stI32o3(
+                                svl,
+                                cptr.ldI16o(uchain.v, $obj_ox),
+                                $sizeof_rm_x21,
+                                cptr.ldI16o(uchain.v, $obj_oy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level,
+                                cptr.ldI32o(u, $you_cglyph)
+                            );
                         }
                     }
                     cptr.stI32o(u, $you_bc_felt, cptr.ldI32o(u, $you_bc_felt) & -3);
                 }
                 /* Pick up glyph at new position. */
-                cptr.stI32o(u, $you_cglyph, (ballx != chainx || bally != chainy) ? cptr.ldI32o3(svl, chainx, $sizeof_rm_x21, chainy, $sizeof_rm, $instance_globals_saved_l_level) : cptr.ldI32o(u, $you_bglyph));
+                cptr.stI32o(
+                    u,
+                    $you_cglyph,
+                    (ballx != chainx || bally != chainy)
+                        ? cptr.ldI32o3(
+                            svl,
+                            chainx,
+                            $sizeof_rm_x21,
+                            chainy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level
+                        )
+                        : cptr.ldI32o(u, $you_bglyph)
+                );
 
                 (yield* movobj(uchain.v, chainx, chainy));
             }
@@ -473,7 +689,19 @@ export function* move_bc(before, control, ballx, bally, chainx, chainy) {
 }
 
 /* return TRUE if the caller needs to place the ball and chain down again */
-/** C ref: ball.c:560 — @param {CInt} x @param {CInt} y @param {CPtr<int>} bc_control @param {CPtr<coordxy>} ballx @param {CPtr<coordxy>} bally @param {CPtr<coordxy>} chainx @param {CPtr<coordxy>} chainy @param {CPtr<boolean>} cause_delay @param {CInt} allow_drag @returns {CInt} */
+/**
+ * C ref: ball.c:560
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<int>} bc_control
+ * @param {CPtr<coordxy>} ballx
+ * @param {CPtr<coordxy>} bally
+ * @param {CPtr<coordxy>} chainx
+ * @param {CPtr<coordxy>} chainy
+ * @param {CPtr<boolean>} cause_delay
+ * @param {CInt} allow_drag
+ * @returns {CInt}
+ */
 export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_delay, allow_drag) {
     let t = null;
     let already_in_rock;
@@ -501,27 +729,124 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
         cptr.st1(cause_delay, 0);
 
         if (dist2(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) <= 2) {
-            (yield* move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+            (yield* move_bc(
+                1,
+                cptr.ldI32(bc_control),
+                cptr.ldI16(ballx),
+                cptr.ldI16(bally),
+                cptr.ldI16(chainx),
+                cptr.ldI16(chainy)
+            ));
             return 1;
         }
 
         /* only need to move the chain? */
-        if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) || distmin(x, y, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 2) {
+        if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) ||
+                distmin(x, y, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 2) {
             let oldchainx = cptr.ldI16o(uchain.v, $obj_ox);
             let oldchainy = cptr.ldI16o(uchain.v, $obj_oy);
 
             cptr.stI32(bc_control, NHM.BC_CHAIN);
-            (yield* move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+            (yield* move_bc(
+                1,
+                cptr.ldI32(bc_control),
+                cptr.ldI16(ballx),
+                cptr.ldI16(bally),
+                cptr.ldI16(chainx),
+                cptr.ldI16(chainy)
+            ));
             if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT)) {
                 /* move chain only if necessary */
-                if (distmin(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) > 1) {
+                if (distmin(
+                    x,
+                    y,
+                    cptr.ldI16o(uchain.v, $obj_ox),
+                    cptr.ldI16o(uchain.v, $obj_oy)
+                ) > 1) {
                     cptr.stI16(chainx, cptr.ldI16(u));
                     cptr.stI16(chainy, cptr.ldI16o(u, $you_uy));
                 }
                 return 1;
             }
 
-            if ((((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) || (((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) || (((cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))))
+            if ((((cptr.ld1so3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )) <
+                NHC.POOL) ||
+                (((cptr.ld1so3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                )) ==
+                    NHC.DOOR) &&
+                    (((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) & 31) | 0) & 12))) ||
+                    (((cptr.ld1so3(
+                        svl,
+                        cptr.ldI16(chainx),
+                        $sizeof_rm_x21,
+                        cptr.ldI16(chainy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) <
+                        NHC.POOL) ||
+                        (((cptr.ld1so3(
+                            svl,
+                            cptr.ldI16(chainx),
+                            $sizeof_rm_x21,
+                            cptr.ldI16(chainy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                            NHC.DOOR) &&
+                            (((cptr.ldI32o3(
+                                svl,
+                                cptr.ldI16(chainx),
+                                $sizeof_rm_x21,
+                                cptr.ldI16(chainy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) & 31) | 0) & 12))) ||
+                    (((cptr.ld1so3(
+                        svl,
+                        cptr.ldI16o(uball.v, $obj_ox),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(uball.v, $obj_oy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) <
+                        NHC.POOL) ||
+                        (((cptr.ld1so3(
+                            svl,
+                            cptr.ldI16o(uball.v, $obj_ox),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(uball.v, $obj_oy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                            NHC.DOOR) &&
+                            (((cptr.ldI32o3(
+                                svl,
+                                cptr.ldI16o(uball.v, $obj_ox),
+                                $sizeof_rm_x21,
+                                cptr.ldI16o(uball.v, $obj_oy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) & 31) | 0) & 12))))
                 already_in_rock = 1;
             else
                 already_in_rock = 0;
@@ -530,11 +855,44 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                 case 8:
                 cptr.stI16(chainx, i16(((((cptr.ldI16o(uball.v, $obj_ox) + x) | 0) / 2) | 0)));
                 cptr.stI16(chainy, i16(((((cptr.ldI16o(uball.v, $obj_oy) + y) | 0) / 2) | 0)));
-                if ((((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !already_in_rock)
+                if ((((cptr.ld1so3(
+                    svl,
+                    cptr.ldI16(chainx),
+                    $sizeof_rm_x21,
+                    cptr.ldI16(chainy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                )) <
+                    NHC.POOL) ||
+                    (((cptr.ld1so3(
+                        svl,
+                        cptr.ldI16(chainx),
+                        $sizeof_rm_x21,
+                        cptr.ldI16(chainy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) ==
+                        NHC.DOOR) &&
+                        (((cptr.ldI32o3(
+                            svl,
+                            cptr.ldI16(chainx),
+                            $sizeof_rm_x21,
+                            cptr.ldI16(chainy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) & 31) | 0) & 12))) &&
+                        !already_in_rock)
                     {
                         cptr.stI16(chainx, oldchainx);
                         cptr.stI16(chainy, oldchainy);
-                        (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+                        (yield* move_bc(
+                            0,
+                            cptr.ldI32(bc_control),
+                            cptr.ldI16(ballx),
+                            cptr.ldI16(bally),
+                            cptr.ldI16(chainx),
+                            cptr.ldI16(chainy)
+                        ));
                         break __lbl_drag;
                     }
                 break;
@@ -557,24 +915,95 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                     if (Math.abs((x - cptr.ldI16o(uball.v, $obj_ox)) | 0) == 1) {
                         tempx = x;
                         tempx2 = cptr.ldI16o(uball.v, $obj_ox);
-                        tempy = (tempy2 = i16(((((cptr.ldI16o(uball.v, $obj_oy) + y) | 0) / 2) | 0)));
+                        tempy = (tempy2 = i16(((((cptr.ldI16o(
+                            uball.v,
+                            $obj_oy
+                        ) + y) | 0) / 2) | 0)));
                     } else {
-                        tempx = (tempx2 = i16(((((cptr.ldI16o(uball.v, $obj_ox) + x) | 0) / 2) | 0)));
+                        tempx = (tempx2 = i16(((((cptr.ldI16o(
+                            uball.v,
+                            $obj_ox
+                        ) + x) | 0) / 2) | 0)));
                         tempy = y;
                         tempy2 = cptr.ldI16o(uball.v, $obj_oy);
                     }
-                    if ((((cptr.ld1so3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !(((cptr.ld1so3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !already_in_rock) {
+                    if ((((cptr.ld1so3(
+                        svl,
+                        tempx,
+                        $sizeof_rm_x21,
+                        tempy,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) <
+                        NHC.POOL) ||
+                        (((cptr.ld1so3(
+                            svl,
+                            tempx,
+                            $sizeof_rm_x21,
+                            tempy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                            NHC.DOOR) &&
+                            (((cptr.ldI32o3(
+                                svl,
+                                tempx,
+                                $sizeof_rm_x21,
+                                tempy,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) & 31) | 0) & 12))) &&
+                            !(((cptr.ld1so3(
+                                svl,
+                                tempx2,
+                                $sizeof_rm_x21,
+                                tempy2,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            )) <
+                                NHC.POOL) ||
+                                (((cptr.ld1so3(
+                                    svl,
+                                    tempx2,
+                                    $sizeof_rm_x21,
+                                    tempy2,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                )) ==
+                                    NHC.DOOR) &&
+                                    (((cptr.ldI32o3(
+                                        svl,
+                                        tempx2,
+                                        $sizeof_rm_x21,
+                                        tempy2,
+                                        $sizeof_rm,
+                                        $instance_globals_saved_l_level + $rm_flags
+                                    ) & 31) | 0) & 12))) &&
+                            !already_in_rock) {
                         if (allow_drag) {
                             /* Avoid pathological case *if* not teleporting:
                              *   0                          0_
                              *   _X  move northeast  ----->  X@
                              *    @
                              */
-                            if (dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) == 5 && dist2(x, y, tempx, tempy) == 1)
+                            if (dist2(
+                                cptr.ldI16(u),
+                                cptr.ldI16o(u, $you_uy),
+                                cptr.ldI16o(uball.v, $obj_ox),
+                                cptr.ldI16o(uball.v, $obj_oy)
+                            ) == 5 &&
+                                    dist2(x, y, tempx, tempy) == 1)
                                 {
                                     cptr.stI16(chainx, oldchainx);
                                     cptr.stI16(chainy, oldchainy);
-                                    (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+                                    (yield* move_bc(
+                                        0,
+                                        cptr.ldI32(bc_control),
+                                        cptr.ldI16(ballx),
+                                        cptr.ldI16(bally),
+                                        cptr.ldI16(chainx),
+                                        cptr.ldI16(chainy)
+                                    ));
                                     break __lbl_drag;
                                 }
                             /* Avoid pathological case *if* not teleporting:
@@ -582,43 +1011,217 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                              *   _X  move east       ----->  X_
                              *    @                           @
                              */
-                            if (dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) == 4 && dist2(x, y, tempx, tempy) == 2)
+                            if (dist2(
+                                cptr.ldI16(u),
+                                cptr.ldI16o(u, $you_uy),
+                                cptr.ldI16o(uball.v, $obj_ox),
+                                cptr.ldI16o(uball.v, $obj_oy)
+                            ) == 4 &&
+                                    dist2(x, y, tempx, tempy) == 2)
                                 {
                                     cptr.stI16(chainx, oldchainx);
                                     cptr.stI16(chainy, oldchainy);
-                                    (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+                                    (yield* move_bc(
+                                        0,
+                                        cptr.ldI32(bc_control),
+                                        cptr.ldI16(ballx),
+                                        cptr.ldI16(bally),
+                                        cptr.ldI16(chainx),
+                                        cptr.ldI16(chainy)
+                                    ));
                                     break __lbl_drag;
                                 }
                         }
                         cptr.stI16(chainx, tempx2);
                         cptr.stI16(chainy, tempy2);
-                    } else if (!(((cptr.ld1so3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && (((cptr.ld1so3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !already_in_rock) {
+                    } else if (!(((cptr.ld1so3(
+                        svl,
+                        tempx,
+                        $sizeof_rm_x21,
+                        tempy,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) <
+                        NHC.POOL) ||
+                        (((cptr.ld1so3(
+                            svl,
+                            tempx,
+                            $sizeof_rm_x21,
+                            tempy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                            NHC.DOOR) &&
+                            (((cptr.ldI32o3(
+                                svl,
+                                tempx,
+                                $sizeof_rm_x21,
+                                tempy,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) & 31) | 0) & 12))) &&
+                            (((cptr.ld1so3(
+                                svl,
+                                tempx2,
+                                $sizeof_rm_x21,
+                                tempy2,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            )) <
+                                NHC.POOL) ||
+                                (((cptr.ld1so3(
+                                    svl,
+                                    tempx2,
+                                    $sizeof_rm_x21,
+                                    tempy2,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                )) ==
+                                    NHC.DOOR) &&
+                                    (((cptr.ldI32o3(
+                                        svl,
+                                        tempx2,
+                                        $sizeof_rm_x21,
+                                        tempy2,
+                                        $sizeof_rm,
+                                        $instance_globals_saved_l_level + $rm_flags
+                                    ) & 31) | 0) & 12))) &&
+                            !already_in_rock) {
                         if (allow_drag) {
-                            if (dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) == 5 && dist2(x, y, tempx2, tempy2) == 1)
+                            if (dist2(
+                                cptr.ldI16(u),
+                                cptr.ldI16o(u, $you_uy),
+                                cptr.ldI16o(uball.v, $obj_ox),
+                                cptr.ldI16o(uball.v, $obj_oy)
+                            ) == 5 &&
+                                    dist2(x, y, tempx2, tempy2) == 1)
                                 {
                                     cptr.stI16(chainx, oldchainx);
                                     cptr.stI16(chainy, oldchainy);
-                                    (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+                                    (yield* move_bc(
+                                        0,
+                                        cptr.ldI32(bc_control),
+                                        cptr.ldI16(ballx),
+                                        cptr.ldI16(bally),
+                                        cptr.ldI16(chainx),
+                                        cptr.ldI16(chainy)
+                                    ));
                                     break __lbl_drag;
                                 }
-                            if (dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) == 4 && dist2(x, y, tempx2, tempy2) == 2)
+                            if (dist2(
+                                cptr.ldI16(u),
+                                cptr.ldI16o(u, $you_uy),
+                                cptr.ldI16o(uball.v, $obj_ox),
+                                cptr.ldI16o(uball.v, $obj_oy)
+                            ) == 4 &&
+                                    dist2(x, y, tempx2, tempy2) == 2)
                                 {
                                     cptr.stI16(chainx, oldchainx);
                                     cptr.stI16(chainy, oldchainy);
-                                    (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+                                    (yield* move_bc(
+                                        0,
+                                        cptr.ldI32(bc_control),
+                                        cptr.ldI16(ballx),
+                                        cptr.ldI16(bally),
+                                        cptr.ldI16(chainx),
+                                        cptr.ldI16(chainy)
+                                    ));
                                     break __lbl_drag;
                                 }
                         }
                         cptr.stI16(chainx, tempx);
                         cptr.stI16(chainy, tempy);
-                    } else if ((((cptr.ld1so3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, tempx, $sizeof_rm_x21, tempy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && (((cptr.ld1so3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, tempx2, $sizeof_rm_x21, tempy2, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !already_in_rock) {
+                    } else if ((((cptr.ld1so3(
+                        svl,
+                        tempx,
+                        $sizeof_rm_x21,
+                        tempy,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) <
+                        NHC.POOL) ||
+                        (((cptr.ld1so3(
+                            svl,
+                            tempx,
+                            $sizeof_rm_x21,
+                            tempy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                            NHC.DOOR) &&
+                            (((cptr.ldI32o3(
+                                svl,
+                                tempx,
+                                $sizeof_rm_x21,
+                                tempy,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) & 31) | 0) & 12))) &&
+                            (((cptr.ld1so3(
+                                svl,
+                                tempx2,
+                                $sizeof_rm_x21,
+                                tempy2,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            )) <
+                                NHC.POOL) ||
+                                (((cptr.ld1so3(
+                                    svl,
+                                    tempx2,
+                                    $sizeof_rm_x21,
+                                    tempy2,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                )) ==
+                                    NHC.DOOR) &&
+                                    (((cptr.ldI32o3(
+                                        svl,
+                                        tempx2,
+                                        $sizeof_rm_x21,
+                                        tempy2,
+                                        $sizeof_rm,
+                                        $instance_globals_saved_l_level + $rm_flags
+                                    ) & 31) | 0) & 12))) &&
+                            !already_in_rock) {
                         {
                             cptr.stI16(chainx, oldchainx);
                             cptr.stI16(chainy, oldchainy);
-                            (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+                            (yield* move_bc(
+                                0,
+                                cptr.ldI32(bc_control),
+                                cptr.ldI16(ballx),
+                                cptr.ldI16(bally),
+                                cptr.ldI16(chainx),
+                                cptr.ldI16(chainy)
+                            ));
                             break __lbl_drag;
                         }
-                    } else if (dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) < dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) || ((dist2(tempx, tempy, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == dist2(tempx2, tempy2, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && rn2(2))) {
+                    } else if (dist2(
+                        tempx,
+                        tempy,
+                        cptr.ldI16o(uchain.v, $obj_ox),
+                        cptr.ldI16o(uchain.v, $obj_oy)
+                    ) <
+                        dist2(
+                            tempx2,
+                            tempy2,
+                            cptr.ldI16o(uchain.v, $obj_ox),
+                            cptr.ldI16o(uchain.v, $obj_oy)
+                        ) ||
+                            ((dist2(
+                                tempx,
+                                tempy,
+                                cptr.ldI16o(uchain.v, $obj_ox),
+                                cptr.ldI16o(uchain.v, $obj_oy)
+                            ) ==
+                                dist2(
+                                    tempx2,
+                                    tempy2,
+                                    cptr.ldI16o(uchain.v, $obj_ox),
+                                    cptr.ldI16o(uchain.v, $obj_oy)
+                                )) &&
+                                rn2(2))) {
                         cptr.stI16(chainx, tempx);
                         cptr.stI16(chainy, tempy);
                     } else {
@@ -628,29 +1231,117 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                     break;
                 }
                 case 4:
-                if ((distmin(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) <= 1 && distmin(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 1))
+                if ((distmin(
+                    x,
+                    y,
+                    cptr.ldI16o(uchain.v, $obj_ox),
+                    cptr.ldI16o(uchain.v, $obj_oy)
+                ) <= 1 &&
+                        distmin(
+                            cptr.ldI16o(uchain.v, $obj_ox),
+                            cptr.ldI16o(uchain.v, $obj_oy),
+                            cptr.ldI16o(uball.v, $obj_ox),
+                            cptr.ldI16o(uball.v, $obj_oy)
+                        ) <= 1))
                     break;
                 cptr.stI16(chainx, i16(((((x + cptr.ldI16o(uball.v, $obj_ox)) | 0) / 2) | 0)));
                 cptr.stI16(chainy, i16(((((y + cptr.ldI16o(uball.v, $obj_oy)) | 0) / 2) | 0)));
-                if ((((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !already_in_rock)
+                if ((((cptr.ld1so3(
+                    svl,
+                    cptr.ldI16(chainx),
+                    $sizeof_rm_x21,
+                    cptr.ldI16(chainy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                )) <
+                    NHC.POOL) ||
+                    (((cptr.ld1so3(
+                        svl,
+                        cptr.ldI16(chainx),
+                        $sizeof_rm_x21,
+                        cptr.ldI16(chainy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) ==
+                        NHC.DOOR) &&
+                        (((cptr.ldI32o3(
+                            svl,
+                            cptr.ldI16(chainx),
+                            $sizeof_rm_x21,
+                            cptr.ldI16(chainy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) & 31) | 0) & 12))) &&
+                        !already_in_rock)
                     {
                         cptr.stI16(chainx, oldchainx);
                         cptr.stI16(chainy, oldchainy);
-                        (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+                        (yield* move_bc(
+                            0,
+                            cptr.ldI32(bc_control),
+                            cptr.ldI16(ballx),
+                            cptr.ldI16(bally),
+                            cptr.ldI16(chainx),
+                            cptr.ldI16(chainy)
+                        ));
                         break __lbl_drag;
                     }
                 break;
                 case 2:
-                if (dist2(x, y, cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) == 2 && dist2(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == 4) {
+                if (dist2(
+                    x,
+                    y,
+                    cptr.ldI16o(uball.v, $obj_ox),
+                    cptr.ldI16o(uball.v, $obj_oy)
+                ) == 2 &&
+                        dist2(
+                            x,
+                            y,
+                            cptr.ldI16o(uchain.v, $obj_ox),
+                            cptr.ldI16o(uchain.v, $obj_oy)
+                        ) == 4) {
                     if (cptr.ldI16o(uchain.v, $obj_oy) == y)
                         cptr.stI16(chainx, cptr.ldI16o(uball.v, $obj_ox));
                     else
                         cptr.stI16(chainy, cptr.ldI16o(uball.v, $obj_oy));
-                    if ((((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, cptr.ldI16(chainx), $sizeof_rm_x21, cptr.ldI16(chainy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12))) && !already_in_rock)
+                    if ((((cptr.ld1so3(
+                        svl,
+                        cptr.ldI16(chainx),
+                        $sizeof_rm_x21,
+                        cptr.ldI16(chainy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) <
+                        NHC.POOL) ||
+                        (((cptr.ld1so3(
+                            svl,
+                            cptr.ldI16(chainx),
+                            $sizeof_rm_x21,
+                            cptr.ldI16(chainy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                            NHC.DOOR) &&
+                            (((cptr.ldI32o3(
+                                svl,
+                                cptr.ldI16(chainx),
+                                $sizeof_rm_x21,
+                                cptr.ldI16(chainy),
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_flags
+                            ) & 31) | 0) & 12))) &&
+                            !already_in_rock)
                         {
                             cptr.stI16(chainx, oldchainx);
                             cptr.stI16(chainy, oldchainy);
-                            (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+                            (yield* move_bc(
+                                0,
+                                cptr.ldI32(bc_control),
+                                cptr.ldI16(ballx),
+                                cptr.ldI16(bally),
+                                cptr.ldI16(chainx),
+                                cptr.ldI16(chainy)
+                            ));
                             break __lbl_drag;
                         }
                     break;
@@ -660,10 +1351,27 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                 case 1:
                 case 0:
                 /* do nothing if possible */
-                if ((distmin(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) <= 1 && distmin(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 1))
+                if ((distmin(
+                    x,
+                    y,
+                    cptr.ldI16o(uchain.v, $obj_ox),
+                    cptr.ldI16o(uchain.v, $obj_oy)
+                ) <= 1 &&
+                        distmin(
+                            cptr.ldI16o(uchain.v, $obj_ox),
+                            cptr.ldI16o(uchain.v, $obj_oy),
+                            cptr.ldI16o(uball.v, $obj_ox),
+                            cptr.ldI16o(uball.v, $obj_oy)
+                        ) <= 1))
                     break;
                 /* otherwise try to drag chain to player's old position */
-                if ((distmin(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 1 && distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) <= 1)) {
+                if ((distmin(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 1 &&
+                        distmin(
+                            cptr.ldI16(u),
+                            cptr.ldI16o(u, $you_uy),
+                            cptr.ldI16o(uball.v, $obj_ox),
+                            cptr.ldI16o(uball.v, $obj_oy)
+                        ) <= 1)) {
                     cptr.stI16(chainx, cptr.ldI16(u));
                     cptr.stI16(chainy, cptr.ldI16o(u, $you_uy));
                     break;
@@ -681,13 +1389,39 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
         }
     }
 
-    if (near_capacity() > NHC.SLT_ENCUMBER && dist2(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) {
-        (yield* You(__s_cannot_sdrag_the_heavy_iron_ball, cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_carry_all_that_and_also : __s_empty));
+    if (near_capacity() > NHC.SLT_ENCUMBER &&
+            dist2(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) {
+        (yield* You(
+            __s_cannot_sdrag_the_heavy_iron_ball,
+            cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_carry_all_that_and_also : __s_empty
+        ));
         nomul(0);
         return 0;
     }
 
-    if ((is_pool(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) && (cptr.ld1so3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL || !is_pool(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) || cptr.ld1so3(svl, cptr.ldI16o(uball.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uball.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.POOL)) || ((t = t_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) && (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(t, $trap_ttyp) & 31))))) {
+    if ((is_pool(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) &&
+        (cptr.ld1so3(
+            svl,
+            cptr.ldI16o(uchain.v, $obj_ox),
+            $sizeof_rm_x21,
+            cptr.ldI16o(uchain.v, $obj_oy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        ) ==
+            NHC.POOL ||
+            !is_pool(cptr.ldI16o(uball.v, $obj_ox), cptr.ldI16o(uball.v, $obj_oy)) ||
+            cptr.ld1so3(
+                svl,
+                cptr.ldI16o(uball.v, $obj_ox),
+                $sizeof_rm_x21,
+                cptr.ldI16o(uball.v, $obj_oy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                NHC.POOL)) ||
+            ((t = t_at(cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy))) &&
+                (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ||
+                    is_hole((cptr.ldI32o(t, $trap_ttyp) & 31))))) {
         if (Levitation()) {
             (yield* You_feel(__s_a_tug_from_the_iron_ball));
             if (t)
@@ -696,7 +1430,14 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
             let victim;
 
             (yield* You(__s_are_jerked_back_by_the_iron_ball));
-            if ((victim = (cptr.ldPtro3(svl, cptr.ldI16o(uchain.v, $obj_ox), 168, cptr.ldI16o(uchain.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
+            if ((victim = (cptr.ldPtro3(
+                svl,
+                cptr.ldI16o(uchain.v, $obj_ox),
+                168,
+                cptr.ldI16o(uchain.v, $obj_oy),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters
+            ))) !== null) {
                 let tmp;
                 let dieroll = rnd(20);
 
@@ -709,7 +1450,14 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
                     (yield* miss((yield* xname(uball.v)), victim));
 
             }  /* now check again in case mon died */
-            if (!(cptr.ldPtro3(svl, cptr.ldI16o(uchain.v, $obj_ox), 168, cptr.ldI16o(uchain.v, $obj_oy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) {
+            if (!(cptr.ldPtro3(
+                svl,
+                cptr.ldI16o(uchain.v, $obj_ox),
+                168,
+                cptr.ldI16o(uchain.v, $obj_oy),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters
+            ))) {
                 cptr.stI16(u, cptr.ldI16o(uchain.v, $obj_ox));
                 cptr.stI16o(u, $you_uy, cptr.ldI16o(uchain.v, $obj_oy));
                 (yield* newsym(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)));
@@ -717,10 +1465,24 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
             nomul(0);
 
             cptr.stI32(bc_control, NHM.BC_BALL);
-            (yield* move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+            (yield* move_bc(
+                1,
+                cptr.ldI32(bc_control),
+                cptr.ldI16(ballx),
+                cptr.ldI16(bally),
+                cptr.ldI16(chainx),
+                cptr.ldI16(chainy)
+            ));
             cptr.stI16(ballx, cptr.ldI16o(uchain.v, $obj_ox));
             cptr.stI16(bally, cptr.ldI16o(uchain.v, $obj_oy));
-            (yield* move_bc(0, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+            (yield* move_bc(
+                0,
+                cptr.ldI32(bc_control),
+                cptr.ldI16(ballx),
+                cptr.ldI16(bally),
+                cptr.ldI16(chainx),
+                cptr.ldI16(chainy)
+            ));
             (yield* spoteffects(1));
             return 0;
         }
@@ -728,7 +1490,14 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
 
     cptr.stI32(bc_control, 3);
 
-    (yield* move_bc(1, cptr.ldI32(bc_control), cptr.ldI16(ballx), cptr.ldI16(bally), cptr.ldI16(chainx), cptr.ldI16(chainy)));
+    (yield* move_bc(
+        1,
+        cptr.ldI32(bc_control),
+        cptr.ldI16(ballx),
+        cptr.ldI16(bally),
+        cptr.ldI16(chainx),
+        cptr.ldI16(chainy)
+    ));
     if (dist2(x, y, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > 2) {
         /* Awful case: we're still in range of the ball, so we thought we
          * could only move the chain, but it turned out that the target
@@ -750,10 +1519,61 @@ export function* drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause
          * take the simple approach if the hero's previous location or
          * the potential between location is inaccessible.
          */
-        if (dist2(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == 4 && !(((cptr.ld1so3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12)))) {
+        if (dist2(x, y, cptr.ldI16o(uchain.v, $obj_ox), cptr.ldI16o(uchain.v, $obj_oy)) == 4 &&
+                !(((cptr.ld1so3(
+                    svl,
+                    newchainx,
+                    $sizeof_rm_x21,
+                    newchainy,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                )) <
+                    NHC.POOL) ||
+                    (((cptr.ld1so3(
+                        svl,
+                        newchainx,
+                        $sizeof_rm_x21,
+                        newchainy,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) ==
+                        NHC.DOOR) &&
+                        (((cptr.ldI32o3(
+                            svl,
+                            newchainx,
+                            $sizeof_rm_x21,
+                            newchainy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) & 31) | 0) & 12)))) {
             newchainx = i16(((((x + cptr.ldI16o(uchain.v, $obj_ox)) | 0) / 2) | 0));
             newchainy = i16(((((y + cptr.ldI16o(uchain.v, $obj_oy)) | 0) / 2) | 0));
-            if ((((cptr.ld1so3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) || (((cptr.ld1so3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o3(svl, newchainx, $sizeof_rm_x21, newchainy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & 12)))) {
+            if ((((cptr.ld1so3(
+                svl,
+                newchainx,
+                $sizeof_rm_x21,
+                newchainy,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )) <
+                NHC.POOL) ||
+                    (((cptr.ld1so3(
+                        svl,
+                        newchainx,
+                        $sizeof_rm_x21,
+                        newchainy,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) ==
+                        NHC.DOOR) &&
+                        (((cptr.ldI32o3(
+                            svl,
+                            newchainx,
+                            $sizeof_rm_x21,
+                            newchainy,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) & 31) | 0) & 12)))) {
                 /* don't let chain move to inaccessible location */
                 newchainx = cptr.ldI16(u);
                 newchainy = cptr.ldI16o(u, $you_uy);
@@ -786,14 +1606,29 @@ export function* drop_ball(x, y) {
         /* get the order */
         cptr.stI32o(u, $you_bc_order, (yield* bc_order()));
         /* pick up glyph */
-        cptr.stI32o(u, $you_bglyph, (cptr.ldI32o(u, $you_bc_order)) ? cptr.ldI32o(u, $you_cglyph) : cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level));
+        cptr.stI32o(
+            u,
+            $you_bglyph,
+            (cptr.ldI32o(u, $you_bc_order))
+                ? cptr.ldI32o(u, $you_cglyph)
+                : cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level
+                )
+        );
     }
 
     if (x != cptr.ldI16(u) || y != cptr.ldI16o(u, $you_uy)) {
         let t;
         let side;
 
-        if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) != NHC.TT_INFLOOR && cptr.ldI32o(u, $you_utraptype) != NHC.TT_BURIEDBALL) {
+        if (cptr.ldI32o(u, $you_utrap) &&
+                cptr.ldI32o(u, $you_utraptype) != NHC.TT_INFLOOR &&
+                cptr.ldI32o(u, $you_utraptype) != NHC.TT_BURIEDBALL) {
             switch (cptr.ldI32o(u, $you_utraptype)) {
                 case NHC.TT_PIT:
                 (yield* pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), __s_pit));
@@ -812,8 +1647,16 @@ export function* drop_ball(x, y) {
                 (yield* pline(__s_s_s, cptr.decay(__static_drop_ball_pullmsg), __s_bear_trap));
                 (yield* set_wounded_legs(side, ((rn2(1000) + 500) | 0)));
                 if (!cptr.ldPtro(u, $you_usteed)) {
-                    (yield* Your(__s_s_s_is_severely_damaged, (side == 131072n) ? __s_left : __s_right, (yield* body_part(NHC.LEG))));
-                    (yield* losehp(((Half_physical_damage()) ? 1 : 2), __s_leg_damage_from_being_pulled_out_of_a, NHM.KILLED_BY));
+                    (yield* Your(
+                        __s_s_s_is_severely_damaged,
+                        (side == 131072n) ? __s_left : __s_right,
+                        (yield* body_part(NHC.LEG))
+                    ));
+                    (yield* losehp(
+                        ((Half_physical_damage()) ? 1 : 2),
+                        __s_leg_damage_from_being_pulled_out_of_a,
+                        NHM.KILLED_BY
+                    ));
                 }
                 break;
             }
@@ -823,7 +1666,20 @@ export function* drop_ball(x, y) {
 
         cptr.stI16o(u, $you_ux0, cptr.ldI16(u));
         cptr.stI16o(u, $you_uy0, cptr.ldI16o(u, $you_uy));
-        if (!Levitation() && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && !cptr.ldI32o(u, $you_utrap) && (is_pool(x, y) || ((t = t_at(x, y)) && (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) || is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)))))) {
+        if (!Levitation() &&
+                !(cptr.ldPtro3(
+                    svl,
+                    x,
+                    168,
+                    y,
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters
+                ) !== null) &&
+                !cptr.ldI32o(u, $you_utrap) &&
+                (is_pool(x, y) ||
+                    ((t = t_at(x, y)) &&
+                        (is_pit((cptr.ldI32o(t, $trap_ttyp) & 31)) ||
+                            is_hole((cptr.ldI32o(t, $trap_ttyp) & 31)))))) {
             cptr.stI16(u, x);
             cptr.stI16o(u, $you_uy, y);
         } else {
@@ -835,17 +1691,39 @@ export function* drop_ball(x, y) {
         if (Blind()) {
             /* drop glyph under the chain */
             if (cptr.ldI32o(u, $you_bc_felt) & NHM.BC_CHAIN)
-                cptr.stI32o3(svl, cptr.ldI16o(uchain.v, $obj_ox), $sizeof_rm_x21, cptr.ldI16o(uchain.v, $obj_oy), $sizeof_rm, $instance_globals_saved_l_level, cptr.ldI32o(u, $you_cglyph));
+                cptr.stI32o3(
+                    svl,
+                    cptr.ldI16o(uchain.v, $obj_ox),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(uchain.v, $obj_oy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level,
+                    cptr.ldI32o(u, $you_cglyph)
+                );
             cptr.stI32o(u, $you_bc_felt, 0);  /* feel nothing */
             /* pick up new glyph */
-            cptr.stI32o(u, $you_cglyph, (cptr.ldI32o(u, $you_bc_order)) ? cptr.ldI32o(u, $you_bglyph) : cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level));
+            cptr.stI32o(
+                u,
+                $you_cglyph,
+                (cptr.ldI32o(u, $you_bc_order))
+                    ? cptr.ldI32o(u, $you_bglyph)
+                    : cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level
+                    )
+            );
         }
         (yield* movobj(uchain.v, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));  /* has a newsym */
         if (Blind()) {
             cptr.stI32o(u, $you_bc_order, (yield* bc_order()));
         }
         (yield* newsym(cptr.ldI16o(u, $you_ux0), cptr.ldI16o(u, $you_uy0)));  /* clean up old position */
-        if (cptr.ldI16o(u, $you_ux0) != cptr.ldI16(u) || cptr.ldI16o(u, $you_uy0) != cptr.ldI16o(u, $you_uy)) {
+        if (cptr.ldI16o(u, $you_ux0) != cptr.ldI16(u) ||
+                cptr.ldI16o(u, $you_uy0) != cptr.ldI16o(u, $you_uy)) {
             (yield* spoteffects(1));
         }
     }
@@ -862,7 +1740,12 @@ function* litter() {
         nextobj = cptr.ldPtr(otmp);
         if (!cptr.eq(otmp, uball.v) && rnd(capacity) <= (cptr.ldI32o(otmp, $obj_owt) | 0)) {
             if ((yield* canletgo(otmp, __s_empty))) {
-                (yield* You(__s_drop_s_and_s_s_down_the_stairs_with_you, (yield* yname(otmp)), (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_they, (yield* otense(otmp, __s_fall))));
+                (yield* You(
+                    __s_drop_s_and_s_s_down_the_stairs_with_you,
+                    (yield* yname(otmp)),
+                    (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_it : __s_they,
+                    (yield* otense(otmp, __s_fall))
+                ));
                 (yield* setnotworn(otmp));
                 (yield* freeinv(otmp));
                 (yield* hitfloor(otmp, 0));
@@ -884,7 +1767,10 @@ export function* drag_down() {
      *     not wielding any weapon), or
      *  c) (perhaps) it falls forward out of his non-weapon hand
      */
-    forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && (cptr.eq(uwep.v, uball.v) || !uwep.v || !rn2(3)) ? 1 : 0));
+    forward = schar(((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) &&
+        (cptr.eq(uwep.v, uball.v) || !uwep.v || !rn2(3))
+            ? 1
+            : 0));
 
     if ((cptr.ld1so((uball.v), $obj_where) == NHM.OBJ_INVENT) && !(yield* welded(uball.v)))
         (yield* You(__s_lose_your_grip_on_the_iron_ball));
@@ -894,20 +1780,32 @@ export function* drag_down() {
     if (forward) {
         if (rn2(6)) {
             (yield* pline_The(__s_iron_ball_drags_you_downstairs));
-            (yield* losehp(((Half_physical_damage()) ? ((((rnd(6) + 1) | 0) / 2) | 0) : rnd(6)), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX));
+            (yield* losehp(
+                ((Half_physical_damage()) ? ((((rnd(6) + 1) | 0) / 2) | 0) : rnd(6)),
+                __s_dragged_downstairs_by_an_iron_ball,
+                NHM.NO_KILLER_PREFIX
+            ));
             (yield* litter());
         }
     } else {
         if (rn2(2)) {
             ;
             (yield* pline_The(__s_iron_ball_smacks_into_you));
-            (yield* losehp(((Half_physical_damage()) ? ((((rnd(20) + 1) | 0) / 2) | 0) : rnd(20)), __s_iron_ball_collision, NHM.KILLED_BY_AN));
+            (yield* losehp(
+                ((Half_physical_damage()) ? ((((rnd(20) + 1) | 0) / 2) | 0) : rnd(20)),
+                __s_iron_ball_collision,
+                NHM.KILLED_BY_AN
+            ));
             (yield* exercise(NHC.A_STR, 0));
             dragchance = uchar(dragchance - 2);
         }
         if (dragchance >= rnd(6)) {
             (yield* pline_The(__s_iron_ball_drags_you_downstairs));
-            (yield* losehp(((Half_physical_damage()) ? ((((rnd(3) + 1) | 0) / 2) | 0) : rnd(3)), __s_dragged_downstairs_by_an_iron_ball, NHM.NO_KILLER_PREFIX));
+            (yield* losehp(
+                ((Half_physical_damage()) ? ((((rnd(3) + 1) | 0) / 2) | 0) : rnd(3)),
+                __s_dragged_downstairs_by_an_iron_ball,
+                NHM.NO_KILLER_PREFIX
+            ));
             (yield* exercise(NHC.A_STR, 0));
             (yield* litter());
         }
@@ -922,25 +1820,64 @@ export function* bc_sanity_check() {
     let onam;
 
     if (Punished() && (!uball.v || !uchain.v)) {
-        (yield* impossible(__s_punished_without_s_s_s, !uball.v ? __s_iron_ball : __s_empty, (!uball.v && !uchain.v) ? __s_and : __s_empty, !uchain.v ? __s_attached_chain : __s_empty));
+        (yield* impossible(
+            __s_punished_without_s_s_s,
+            !uball.v ? __s_iron_ball : __s_empty,
+            (!uball.v && !uchain.v) ? __s_and : __s_empty,
+            !uchain.v ? __s_attached_chain : __s_empty
+        ));
     } else if (!Punished() && (uball.v || uchain.v)) {
-        (yield* impossible(__s_attached_s_s_s_without_being_punished, uchain.v ? __s_chain : __s_empty, (uchain.v && uball.v) ? __s_and : __s_empty, uball.v ? __s_iron_ball : __s_empty));
+        (yield* impossible(
+            __s_attached_s_s_s_without_being_punished,
+            uchain.v ? __s_chain : __s_empty,
+            (uchain.v && uball.v) ? __s_and : __s_empty,
+            uball.v ? __s_iron_ball : __s_empty
+        ));
     }
     /* ball is free when swallowed, when changing levels or during air bubble
        management on Plane of Water (both of which start and end in between
        sanity checking cycles, so shouldn't be relevant), other times? */
     freechain = (!uchain.v || cptr.ld1so(uchain.v, $obj_where) == NHM.OBJ_FREE ? 1 : 0);
-    freeball = (!uball.v || cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FREE || (freechain && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_INVENT) ? 1 : 0);
-    if (uball.v && (cptr.ldI16o(uball.v, $obj_otyp) != NHC.HEAVY_IRON_BALL || (cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FLOOR && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_INVENT && cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FREE) || (freeball ^ freechain) || (cptr.ldI64o(uball.v, $obj_owornmask) & 2097152n) == 0n || (cptr.ldI64o(uball.v, $obj_owornmask) & -2098945n) != 0n)) {
+    freeball = (!uball.v ||
+        cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_FREE ||
+        (freechain && cptr.ld1so(uball.v, $obj_where) == NHM.OBJ_INVENT)
+            ? 1
+            : 0);
+    if (uball.v &&
+            (cptr.ldI16o(uball.v, $obj_otyp) != NHC.HEAVY_IRON_BALL ||
+                (cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FLOOR &&
+                    cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_INVENT &&
+                    cptr.ld1so(uball.v, $obj_where) != NHM.OBJ_FREE) ||
+                (freeball ^ freechain) ||
+                (cptr.ldI64o(uball.v, $obj_owornmask) & 2097152n) == 0n ||
+                (cptr.ldI64o(uball.v, $obj_owornmask) & -2098945n) != 0n)) {
         otyp = cptr.ldI16o(uball.v, $obj_otyp);
         onam = (yield* safe_typename(otyp));
-        (yield* impossible(__s_uball_type_d_s_where_d_wornmask_0x_08lx, otyp, onam, cptr.ld1so(uball.v, $obj_where), cptr.ldI64o(uball.v, $obj_owornmask)));
+        (yield* impossible(
+            __s_uball_type_d_s_where_d_wornmask_0x_08lx,
+            otyp,
+            onam,
+            cptr.ld1so(uball.v, $obj_where),
+            cptr.ldI64o(uball.v, $obj_owornmask)
+        ));
     }
     /* similar check to ball except can't be in inventory */
-    if (uchain.v && (cptr.ldI16o(uchain.v, $obj_otyp) != NHC.IRON_CHAIN || (cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FLOOR && cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FREE) || (freechain ^ freeball) || (cptr.ldI64o(uchain.v, $obj_owornmask) & 4194304n) == 0n || (cptr.ldI64o(uchain.v, $obj_owornmask) & -4194305n) != 0n)) {
+    if (uchain.v &&
+            (cptr.ldI16o(uchain.v, $obj_otyp) != NHC.IRON_CHAIN ||
+                (cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FLOOR &&
+                    cptr.ld1so(uchain.v, $obj_where) != NHM.OBJ_FREE) ||
+                (freechain ^ freeball) ||
+                (cptr.ldI64o(uchain.v, $obj_owornmask) & 4194304n) == 0n ||
+                (cptr.ldI64o(uchain.v, $obj_owornmask) & -4194305n) != 0n)) {
         otyp = cptr.ldI16o(uchain.v, $obj_otyp);
         onam = (yield* safe_typename(otyp));
-        (yield* impossible(__s_uchain_type_d_s_where_d_wornmask_0x_08lx, otyp, onam, cptr.ld1so(uchain.v, $obj_where), cptr.ldI64o(uchain.v, $obj_owornmask)));
+        (yield* impossible(
+            __s_uchain_type_d_s_where_d_wornmask_0x_08lx,
+            otyp,
+            onam,
+            cptr.ld1so(uchain.v, $obj_where),
+            cptr.ldI64o(uchain.v, $obj_owornmask)
+        ));
     }
     if (uball.v && uchain.v && !(freeball && freechain)) {
         let bx;
@@ -964,7 +1901,15 @@ export function* bc_sanity_check() {
         bdx = (bx - cx) | 0, bdy = (by - cy) | 0;
         bdx = Math.abs(bdx), bdy = Math.abs(bdy);
         if (cdx > 1 || cdy > 1 || bdx > 1 || bdy > 1)
-            (yield* impossible(__s_b_c_distance_you_d_d_chain_d_d_ball_d_d, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cx, cy, bx, by));
+            (yield* impossible(
+                __s_b_c_distance_you_d_d_chain_d_d_ball_d_d,
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy),
+                cx,
+                cy,
+                bx,
+                by
+            ));
     }
     /* [check bc_order too?] */
 }

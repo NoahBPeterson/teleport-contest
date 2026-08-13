@@ -13,22 +13,32 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Hallucination, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu, wait_synch, wizard } from './nhprop.js';
+import {
+    Hallucination, clear_nhwindow, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu,
+    putstr, start_menu, wait_synch, wizard
+} from './nhprop.js';
 import { ledger_no, maxledgerno } from './dungeon.js';
-import { WIN_MESSAGE, cg, flags, go, gu, iflags, program_state, svb, svc, svd, u, ynchars } from './decl.js';
+import {
+    WIN_MESSAGE, cg, flags, go, gu, iflags, program_state, svb, svc, svd, u, ynchars
+} from './decl.js';
 import { obj_descr, objects } from './objects.js';
 import { You, impossible, pline, raw_printf } from './pline.js';
 import { add_menu, add_menu_heading, add_menu_str, select_menu, windowprocs } from './windows.js';
 import { rn2 } from './rnd.js';
 import { panic } from './end.js';
-import { sfi_char, sfi_int, sfi_objclass, sfi_short, sfi_unsigned, sfo_char, sfo_int, sfo_objclass, sfo_short, sfo_unsigned } from './sfbase.js';
+import {
+    sfi_char, sfi_int, sfi_objclass, sfi_short, sfi_unsigned, sfo_char, sfo_int, sfo_objclass,
+    sfo_short, sfo_unsigned
+} from './sfbase.js';
 import { Strlen_ } from './strutil.js';
 import { alloc, dupstr } from './alloc.js';
 import { Japanese_item_name, obj_typename } from './objnam.js';
 import { exercise } from './attrib.js';
 import { append_price_quote, gem_learned } from './shk.js';
 import { let_to_name, loot_classify, update_inventory } from './invent.js';
-import { eos, lowc, nh_deterministic_qsort, strkitten, strncmpi, strstri, strsubst, upstart, visctrl } from './hacklib.js';
+import {
+    eos, lowc, nh_deterministic_qsort, strkitten, strncmpi, strstri, strsubst, upstart, visctrl
+} from './hacklib.js';
 import { nul_glyphinfo } from './display.js';
 import { disp_artifact_discoveries, dump_artifact_info } from './artifact.js';
 import { def_char_to_objclass, def_oc_syms } from './drawing.js';
@@ -38,40 +48,45 @@ import { docall, objtyp_is_callable } from './do_name.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NHFILE_mode = FLD.NHFILE_mode, $Role_mnum = FLD.Role_mnum,
-    $color_and_attr_attr = FLD.color_and_attr_attr, $const_globals_zeroany = FLD.const_globals_zeroany,
-    $context_info_current_fruit = FLD.context_info_current_fruit, $flag_debug = FLD.flag_debug,
-    $flag_discosort = FLD.flag_discosort, $flag_inv_order = FLD.flag_inv_order,
-    $flag_menu_style = FLD.flag_menu_style, $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
-    $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
-    $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
-    $instance_globals_o_oclass_prob_totals = FLD.instance_globals_o_oclass_prob_totals,
-    $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
-    $instance_globals_saved_d_disco = FLD.instance_globals_saved_d_disco,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole, $obj_corpsenm = FLD.obj_corpsenm,
-    $obj_dknown = FLD.obj_dknown, $obj_known = FLD.obj_known, $obj_oclass = FLD.obj_oclass,
-    $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
-    $objclass_oc_class = FLD.objclass_oc_class, $objclass_oc_color = FLD.objclass_oc_color,
-    $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx, $objclass_oc_dir = FLD.objclass_oc_dir,
-    $objclass_oc_encountered = FLD.objclass_oc_encountered, $objclass_oc_magic = FLD.objclass_oc_magic,
-    $objclass_oc_material = FLD.objclass_oc_material, $objclass_oc_name_known = FLD.objclass_oc_name_known,
-    $objclass_oc_prob = FLD.objclass_oc_prob, $objclass_oc_tough = FLD.objclass_oc_tough,
-    $objclass_oc_uname = FLD.objclass_oc_uname, $objclass_oc_unique = FLD.objclass_oc_unique,
-    $objclass_oc_uses_known = FLD.objclass_oc_uses_known, $objdescr_oc_descr = FLD.objdescr_oc_descr,
-    $prop_intrinsic = FLD.prop_intrinsic, $sinfo_in_moveloop = FLD.sinfo_in_moveloop,
-    $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
-    $sizeof_prop = FLD.sizeof_prop, $sortloot_item_disco = FLD.sortloot_item_disco,
-    $sortloot_item_orderclass = FLD.sortloot_item_orderclass, $sortloot_item_str = FLD.sortloot_item_str,
-    $sortloot_item_subclass = FLD.sortloot_item_subclass,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch, $you_uprops = FLD.you_uprops,
-    $you_uz = FLD.you_uz;
+      $color_and_attr_attr = FLD.color_and_attr_attr,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $context_info_current_fruit = FLD.context_info_current_fruit, $flag_debug = FLD.flag_debug,
+      $flag_discosort = FLD.flag_discosort, $flag_inv_order = FLD.flag_inv_order,
+      $flag_menu_style = FLD.flag_menu_style,
+      $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
+      $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
+      $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
+      $instance_globals_o_oclass_prob_totals = FLD.instance_globals_o_oclass_prob_totals,
+      $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
+      $instance_globals_saved_d_disco = FLD.instance_globals_saved_d_disco,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole, $obj_corpsenm = FLD.obj_corpsenm,
+      $obj_dknown = FLD.obj_dknown, $obj_known = FLD.obj_known, $obj_oclass = FLD.obj_oclass,
+      $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
+      $objclass_oc_class = FLD.objclass_oc_class, $objclass_oc_color = FLD.objclass_oc_color,
+      $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx, $objclass_oc_dir = FLD.objclass_oc_dir,
+      $objclass_oc_encountered = FLD.objclass_oc_encountered,
+      $objclass_oc_magic = FLD.objclass_oc_magic, $objclass_oc_material = FLD.objclass_oc_material,
+      $objclass_oc_name_known = FLD.objclass_oc_name_known,
+      $objclass_oc_prob = FLD.objclass_oc_prob, $objclass_oc_tough = FLD.objclass_oc_tough,
+      $objclass_oc_uname = FLD.objclass_oc_uname, $objclass_oc_unique = FLD.objclass_oc_unique,
+      $objclass_oc_uses_known = FLD.objclass_oc_uses_known,
+      $objdescr_oc_descr = FLD.objdescr_oc_descr, $prop_intrinsic = FLD.prop_intrinsic,
+      $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $sizeof_class_sym = FLD.sizeof_class_sym,
+      $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_prop = FLD.sizeof_prop,
+      $sortloot_item_disco = FLD.sortloot_item_disco,
+      $sortloot_item_orderclass = FLD.sortloot_item_orderclass,
+      $sortloot_item_str = FLD.sortloot_item_str,
+      $sortloot_item_subclass = FLD.sortloot_item_subclass,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch, $you_uprops = FLD.you_uprops,
+      $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_not_enough_gems_first_d_j_d_last_gem_d = cptr.lit("Not enough gems? - first=%d j=%d LAST_GEM=%d");
@@ -150,15 +165,32 @@ function* setgemprobs(dlev) {
     for (j = 0; j < ((9 - ((lev / 3) | 0)) | 0); j++)
         cptr.stI16o2(objects, (first + j) | 0, $sizeof_objclass, $objclass_oc_prob, 0);
     first = (first + j) | 0;
-    if (first > NHC.LAST_REAL_GEM || cptr.ld1so2(objects, first, $sizeof_objclass, $objclass_oc_class) != NHC.GEM_CLASS || (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, first, $sizeof_objclass))), $sizeof_objdescr)) === null) {
+    if (first > NHC.LAST_REAL_GEM ||
+            cptr.ld1so2(objects, first, $sizeof_objclass, $objclass_oc_class) != NHC.GEM_CLASS ||
+            (cptr.ldPtro(
+                obj_descr,
+                cptr.ldI16((cptr.add(objects, first, $sizeof_objclass))),
+                $sizeof_objdescr
+            )) === null) {
         (yield* raw_printf(__s_not_enough_gems_first_d_j_d_last_gem_d, first, j, NHC.LAST_REAL_GEM));
         (yield* Y.icall(wait_synch()()));
     }
     for (j = first; j <= NHC.LAST_REAL_GEM; j++)
-        cptr.stI16o2(objects, j, $sizeof_objclass, $objclass_oc_prob, i16(((((((171 + j) | 0) - first) | 0) / ((((NHC.LAST_REAL_GEM + 1) | 0) - first) | 0)) | 0)));
+        cptr.stI16o2(
+            objects,
+            j,
+            $sizeof_objclass,
+            $objclass_oc_prob,
+            i16(((((((171 + j) | 0) - first) | 0) /
+                ((((NHC.LAST_REAL_GEM + 1) | 0) - first) | 0)) | 0))
+        );
 
     /* recompute GEM_CLASS total oc_prob - including rocks/stones */
-    for (j = cptr.ldI32o2(svb, NHC.GEM_CLASS, 4, $instance_globals_saved_b_bases); j < cptr.ldI32o2(svb, ((NHC.GEM_CLASS + 1) | 0), 4, $instance_globals_saved_b_bases); j++)
+    for (
+        j = cptr.ldI32o2(svb, NHC.GEM_CLASS, 4, $instance_globals_saved_b_bases);
+        j < cptr.ldI32o2(svb, ((NHC.GEM_CLASS + 1) | 0), 4, $instance_globals_saved_b_bases);
+        j++
+    )
         sum = (sum + cptr.ldI16o2(objects, j, $sizeof_objclass, $objclass_oc_prob)) | 0;
     cptr.stI16o2(go, NHC.GEM_CLASS, 2, $instance_globals_o_oclass_prob_totals, i16(sum));
 }
@@ -167,22 +199,87 @@ function* setgemprobs(dlev) {
 /** C ref: o_init.c:85 */
 function randomize_gem_colors() {
     if (rn2(2)) {
-        cptr.stI16o2(objects, NHC.TURQUOISE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.TURQUOISE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color));
+        cptr.stI16o2(
+            objects,
+            NHC.TURQUOISE,
+            $sizeof_objclass,
+            $objclass_oc_descr_idx,
+            cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)
+        ),
+                cptr.st1o2(
+                    objects,
+                    NHC.TURQUOISE,
+                    $sizeof_objclass,
+                    $objclass_oc_color,
+                    cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color)
+                );
     }
     if (rn2(2)) {
-        cptr.stI16o2(objects, NHC.AQUAMARINE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.AQUAMARINE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color));
+        cptr.stI16o2(
+            objects,
+            NHC.AQUAMARINE,
+            $sizeof_objclass,
+            $objclass_oc_descr_idx,
+            cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)
+        ),
+                cptr.st1o2(
+                    objects,
+                    NHC.AQUAMARINE,
+                    $sizeof_objclass,
+                    $objclass_oc_color,
+                    cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color)
+                );
     }
     switch (rn2(4)) {
         case 0:
         break;
         case 1:
-        cptr.stI16o2(objects, NHC.FLUORITE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.FLUORITE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color));
+        cptr.stI16o2(
+            objects,
+            NHC.FLUORITE,
+            $sizeof_objclass,
+            $objclass_oc_descr_idx,
+            cptr.ldI16o2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_descr_idx)
+        ),
+                cptr.st1o2(
+                    objects,
+                    NHC.FLUORITE,
+                    $sizeof_objclass,
+                    $objclass_oc_color,
+                    cptr.ld1uo2(objects, NHC.SAPPHIRE, $sizeof_objclass, $objclass_oc_color)
+                );
         break;
         case 2:
-        cptr.stI16o2(objects, NHC.FLUORITE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.DIAMOND, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.FLUORITE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.DIAMOND, $sizeof_objclass, $objclass_oc_color));
+        cptr.stI16o2(
+            objects,
+            NHC.FLUORITE,
+            $sizeof_objclass,
+            $objclass_oc_descr_idx,
+            cptr.ldI16o2(objects, NHC.DIAMOND, $sizeof_objclass, $objclass_oc_descr_idx)
+        ),
+                cptr.st1o2(
+                    objects,
+                    NHC.FLUORITE,
+                    $sizeof_objclass,
+                    $objclass_oc_color,
+                    cptr.ld1uo2(objects, NHC.DIAMOND, $sizeof_objclass, $objclass_oc_color)
+                );
         break;
         case 3:
-        cptr.stI16o2(objects, NHC.FLUORITE, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, NHC.EMERALD, $sizeof_objclass, $objclass_oc_descr_idx)), cptr.st1o2(objects, NHC.FLUORITE, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, NHC.EMERALD, $sizeof_objclass, $objclass_oc_color));
+        cptr.stI16o2(
+            objects,
+            NHC.FLUORITE,
+            $sizeof_objclass,
+            $objclass_oc_descr_idx,
+            cptr.ldI16o2(objects, NHC.EMERALD, $sizeof_objclass, $objclass_oc_descr_idx)
+        ),
+                cptr.st1o2(
+                    objects,
+                    NHC.FLUORITE,
+                    $sizeof_objclass,
+                    $objclass_oc_color,
+                    cptr.ld1uo2(objects, NHC.EMERALD, $sizeof_objclass, $objclass_oc_color)
+                );
         break;
     }
 }
@@ -209,19 +306,43 @@ function shuffle(o_low, o_high, domaterial) {
             i = (j + rn2((((o_high - j) | 0) + 1) | 0)) | 0;
         while ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1));
         sw = cptr.ldI16o2(objects, j, $sizeof_objclass, $objclass_oc_descr_idx);
-        cptr.stI16o2(objects, j, $sizeof_objclass, $objclass_oc_descr_idx, cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_descr_idx));
+        cptr.stI16o2(
+            objects,
+            j,
+            $sizeof_objclass,
+            $objclass_oc_descr_idx,
+            cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_descr_idx)
+        );
         cptr.stI16o2(objects, i, $sizeof_objclass, $objclass_oc_descr_idx, sw);
         sw = i16((cptr.ldI32o2(objects, j, $sizeof_objclass, $objclass_oc_tough) & 1));
-        cptr.stI32o2(objects, j, $sizeof_objclass, $objclass_oc_tough, (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_tough) & 1));
+        cptr.stI32o2(
+            objects,
+            j,
+            $sizeof_objclass,
+            $objclass_oc_tough,
+            (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_tough) & 1)
+        );
         cptr.stI32o2(objects, i, $sizeof_objclass, $objclass_oc_tough, sw);
         color = cptr.ld1uo2(objects, j, $sizeof_objclass, $objclass_oc_color);
-        cptr.st1o2(objects, j, $sizeof_objclass, $objclass_oc_color, cptr.ld1uo2(objects, i, $sizeof_objclass, $objclass_oc_color));
+        cptr.st1o2(
+            objects,
+            j,
+            $sizeof_objclass,
+            $objclass_oc_color,
+            cptr.ld1uo2(objects, i, $sizeof_objclass, $objclass_oc_color)
+        );
         cptr.st1o2(objects, i, $sizeof_objclass, $objclass_oc_color, uchar(color));
 
         /* shuffle material */
         if (domaterial) {
             sw = i16((cptr.ldI32o2(objects, j, $sizeof_objclass, $objclass_oc_material) & 31));
-            cptr.stI32o2(objects, j, $sizeof_objclass, $objclass_oc_material, (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_material) & 31));
+            cptr.stI32o2(
+                objects,
+                j,
+                $sizeof_objclass,
+                $objclass_oc_material,
+                (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_material) & 31)
+            );
             cptr.stI32o2(objects, i, $sizeof_objclass, $objclass_oc_material, sw);
         }
     }
@@ -237,12 +358,23 @@ export function* init_objects() {
 
     for (i = 0; i <= NHC.MAXOCLASSES; i++) {
         cptr.stI32o2(svb, i, 4, $instance_globals_saved_b_bases, 0);
-        if (i > 0 && i < NHC.MAXOCLASSES && cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != i)
-            (yield* panic(__s_init_objects_class_for_generic_object_d, i, cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class)));
+        if (i > 0 &&
+                i < NHC.MAXOCLASSES &&
+                cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != i)
+            (yield* panic(
+                __s_init_objects_class_for_generic_object_d,
+                i,
+                cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class)
+            ));
     }
     /* initialize object descriptions */
     for (i = 0; i < NHC.NUM_OBJECTS; i++)
-        cptr.stI16o(objects, i, cptr.stI16o2(objects, i, $sizeof_objclass, $objclass_oc_descr_idx, i16(i)), $sizeof_objclass);
+        cptr.stI16o(
+            objects,
+            i,
+            cptr.stI16o2(objects, i, $sizeof_objclass, $objclass_oc_descr_idx, i16(i)),
+            $sizeof_objclass
+        );
     /* init base; if probs given check that they add up to 1000,
        otherwise compute probs */
     first = NHC.MAXOCLASSES;
@@ -260,7 +392,8 @@ export function* init_objects() {
             (yield* panic(__s_objects_d_class_d_not_in_order, first, oclass));
 
         last = (first + 1) | 0;
-        while (last < NHC.NUM_OBJECTS && cptr.ld1so2(objects, last, $sizeof_objclass, $objclass_oc_class) == oclass)
+        while (last < NHC.NUM_OBJECTS &&
+                cptr.ld1so2(objects, last, $sizeof_objclass, $objclass_oc_class) == oclass)
             last++;
         cptr.stI32o2(svb, oclass, 4, $instance_globals_saved_b_bases, first);
 
@@ -279,24 +412,69 @@ export function* init_objects() {
        attempting to process non-existent class MAXOCLASSES; the
        [MAXOCLASSES+1] element gives that non-class 0 objects
        when traversing objects[] from bases[X] through bases[X+1]-1 */
-    cptr.stI32o2(svb, NHC.MAXOCLASSES, 4, $instance_globals_saved_b_bases, cptr.stI32o2(svb, ((NHC.MAXOCLASSES + 1) | 0), 4, $instance_globals_saved_b_bases, NHC.NUM_OBJECTS));
+    cptr.stI32o2(
+        svb,
+        NHC.MAXOCLASSES,
+        4,
+        $instance_globals_saved_b_bases,
+        cptr.stI32o2(
+            svb,
+            ((NHC.MAXOCLASSES + 1) | 0),
+            4,
+            $instance_globals_saved_b_bases,
+            NHC.NUM_OBJECTS
+        )
+    );
     /* hypothetically someone might remove all objects of some class,
        or be adding a new class and not populated it yet, leaving gaps
        in bases[]; guarantee that there are no such gaps */
     for (last = ((NHC.MAXOCLASSES - 1) | 0); last >= 0; --last)
         if (!cptr.ldI32o2(svb, last, 4, $instance_globals_saved_b_bases))
-            cptr.stI32o2(svb, last, 4, $instance_globals_saved_b_bases, cptr.ldI32o2(svb, (last + 1) | 0, 4, $instance_globals_saved_b_bases));
+            cptr.stI32o2(
+                svb,
+                last,
+                4,
+                $instance_globals_saved_b_bases,
+                cptr.ldI32o2(svb, (last + 1) | 0, 4, $instance_globals_saved_b_bases)
+            );
 
     /* check objects[].oc_name_known */
     for (i = NHC.MAXOCLASSES; i < NHC.NUM_OBJECTS; ++i) {
-        let nmkn = ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) != 0;
+        let nmkn = ((cptr.ldI32o2(
+            objects,
+            i,
+            $sizeof_objclass,
+            $objclass_oc_name_known
+        ) & 1) | 0) !=
+                0;
 
-        if (!(cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)) ^ nmkn) {
+        if (!(cptr.ldPtro2(
+            obj_descr,
+            cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx),
+            $sizeof_objdescr,
+            $objdescr_oc_descr
+        )) ^ nmkn) {
             if (cptr.ld1so(iflags, $instance_flags_sanity_check)) {
-                (yield* impossible(__s_obj_d_s_name_is_s_despite_s_alternate, i, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)), nmkn ? __s_pre_known : __s_not_known, nmkn ? __s_empty : __s_no));
+                (yield* impossible(
+                    __s_obj_d_s_name_is_s_despite_s_alternate,
+                    i,
+                    (cptr.ldPtro(
+                        obj_descr,
+                        cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))),
+                        $sizeof_objdescr
+                    )),
+                    nmkn ? __s_pre_known : __s_not_known,
+                    nmkn ? __s_empty : __s_no
+                ));
             }
             /* repair the mistake and keep going */
-            cptr.stI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known, (nmkn ? 0 : 1) >>> 0);
+            cptr.stI32o2(
+                objects,
+                i,
+                $sizeof_objclass,
+                $objclass_oc_name_known,
+                (nmkn ? 0 : 1) >>> 0
+            );
         }
     }
     /* compute oclass_prob_totals */
@@ -304,7 +482,13 @@ export function* init_objects() {
 
     /* shuffle descriptions */
     shuffle_all();
-    cptr.stI32o2(objects, NHC.WAN_NOTHING, $sizeof_objclass, $objclass_oc_dir, (rn2(2) ? NHM.NODIR : NHM.IMMEDIATE) >>> 0);
+    cptr.stI32o2(
+        objects,
+        NHC.WAN_NOTHING,
+        $sizeof_objclass,
+        $objclass_oc_dir,
+        (rn2(2) ? NHM.NODIR : NHM.IMMEDIATE) >>> 0
+    );
 }
 
 /* Compute the total probability of each object class.
@@ -319,13 +503,29 @@ export function* init_oclass_probs() {
         /* note: for ILLOBJ_CLASS, bases[oclass+1]-1 isn't the last item
            in the class; but all the generic items have probability 0 so
            adding them to 'sum' has no impact */
-        for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i < cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases); ++i) {
+        for (
+            i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
+            i < cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases);
+            ++i
+        ) {
             sum = i16(sum + cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob));
         }
-        if (sum <= 0 && oclass != NHC.ILLOBJ_CLASS && cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases) != cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases)) {
-            (yield* impossible(__s_s_d_probability_total_for_oclass_d, !sum ? __s_zero : __s_negative, sum, oclass));
+        if (sum <= 0 &&
+                oclass != NHC.ILLOBJ_CLASS &&
+                cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases) !=
+                    cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases)) {
+            (yield* impossible(
+                __s_s_d_probability_total_for_oclass_d,
+                !sum ? __s_zero : __s_negative,
+                sum,
+                oclass
+            ));
             /* gracefully fail by setting all members of this class to 1 */
-            for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i < cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases); ++i) {
+            for (
+                i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
+                i < cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases);
+                ++i
+            ) {
                 cptr.stI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob, 1);
                 sum++;
             }
@@ -364,8 +564,13 @@ export function obj_shuffle_range(otyp, lo_p, hi_p) {
         case NHC.SPBOOK_CLASS:
         /* exclude non-magic types and also unique ones */
         cptr.stI32(lo_p, cptr.ldI32o2(svb, ocls, 4, $instance_globals_saved_b_bases));
-        for (i = cptr.ldI32(lo_p); cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == ocls; i++)
-            if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_unique) & 1) | 0 || !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
+        for (
+            i = cptr.ldI32(lo_p);
+            cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == ocls;
+            i++
+        )
+            if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_unique) & 1) | 0 ||
+                    !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_magic) & 1))
                 break;
         cptr.stI32(hi_p, (i - 1) | 0);
         break;
@@ -374,7 +579,10 @@ export function obj_shuffle_range(otyp, lo_p, hi_p) {
         case NHC.VENOM_CLASS:
         /* entire class */
         cptr.stI32(lo_p, cptr.ldI32o2(svb, ocls, 4, $instance_globals_saved_b_bases));
-        cptr.stI32(hi_p, (cptr.ldI32o2(svb, (ocls + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0);
+        cptr.stI32(
+            hi_p,
+            (cptr.ldI32o2(svb, (ocls + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0
+        );
         break;
     }
 
@@ -386,7 +594,15 @@ export function obj_shuffle_range(otyp, lo_p, hi_p) {
 }
 
 /* randomize object descriptions */
-const __static_shuffle_all_shuffle_classes = [NHC.AMULET_CLASS, NHC.POTION_CLASS, NHC.RING_CLASS, NHC.SCROLL_CLASS, NHC.SPBOOK_CLASS, NHC.WAND_CLASS, NHC.VENOM_CLASS]; /** C ref: o_init.c:325 — char[7] (function-static) */
+const __static_shuffle_all_shuffle_classes = [
+    NHC.AMULET_CLASS,
+    NHC.POTION_CLASS,
+    NHC.RING_CLASS,
+    NHC.SCROLL_CLASS,
+    NHC.SPBOOK_CLASS,
+    NHC.WAND_CLASS,
+    NHC.VENOM_CLASS
+]; /** C ref: o_init.c:325 — char[7] (function-static) */
 const __static_shuffle_all_shuffle_types = cptr.alloc(4 * 2);
 cptr.stI16o(__static_shuffle_all_shuffle_types, 0, NHC.HELMET);
 cptr.stI16o(__static_shuffle_all_shuffle_types, 2, NHC.LEATHER_GLOVES);
@@ -401,7 +617,16 @@ function shuffle_all() {
 
     /* do whole classes (amulets, &c) */
     for (idx = 0; idx < __static_shuffle_all_shuffle_classes.length; idx++) {
-        obj_shuffle_range(cptr.ldI32o2(svb, cptr.ld1so(cptr.decay(__static_shuffle_all_shuffle_classes), idx, 1), 4, $instance_globals_saved_b_bases), first, last);
+        obj_shuffle_range(
+            cptr.ldI32o2(
+                svb,
+                cptr.ld1so(cptr.decay(__static_shuffle_all_shuffle_classes), idx, 1),
+                4,
+                $instance_globals_saved_b_bases
+            ),
+            first,
+            last
+        );
         shuffle(first.v, last.v, 1);
     }
     /* do type ranges (helms, &c) */
@@ -423,7 +648,15 @@ export function* objdescr_is(obj, descr) {
         return 0;
     }
 
-    objdescr = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr));
+    objdescr = (cptr.ldPtro2(
+        obj_descr,
+        cptr.ldI16o(
+            (cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)),
+            $objclass_oc_descr_idx
+        ),
+        $sizeof_objdescr,
+        $objdescr_oc_descr
+    ));
     if (!objdescr)
         return 0;  /* no obj description, no match */
     return schar((!strcmp(objdescr, descr)));
@@ -442,10 +675,18 @@ export function* savenames(nhfp) {
 
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         for (i = 0; i < ((NHC.MAXOCLASSES + 2) | 0); ++i) {
-            (yield* sfo_int(nhfp, cptr.add(cptr.add(svb, $instance_globals_saved_b_bases), i, 4), __s_names_bases));
+            (yield* sfo_int(
+                nhfp,
+                cptr.add(cptr.add(svb, $instance_globals_saved_b_bases), i, 4),
+                __s_names_bases
+            ));
         }
         for (i = 0; i < NHC.NUM_OBJECTS; ++i) {
-            (yield* sfo_short(nhfp, cptr.add(cptr.add(svd, $instance_globals_saved_d_disco), i, 2), __s_names_disco));
+            (yield* sfo_short(
+                nhfp,
+                cptr.add(cptr.add(svd, $instance_globals_saved_d_disco), i, 2),
+                __s_names_disco
+            ));
         }
         for (i = 0; i < NHC.NUM_OBJECTS; ++i) {
             (yield* sfo_objclass(nhfp, cptr.add(objects, i, $sizeof_objclass), __s_names_objclass));
@@ -457,9 +698,19 @@ export function* savenames(nhfp) {
     for (i = 0; i < NHC.NUM_OBJECTS; i++)
         if (cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname)) {
             if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
-                len.v = ((yield* Strlen_(cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname), __s_savenames, 397)) + 1) >>> 0;
+                len.v = ((yield* Strlen_(
+                    cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname),
+                    __s_savenames,
+                    397
+                )) + 1) >>>
+                        0;
                 (yield* sfo_unsigned(nhfp, len, __s_names_len));
-                (yield* sfo_char(nhfp, cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname), __s_names_oc_uname, len.v | 0));
+                (yield* sfo_char(
+                    nhfp,
+                    cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname),
+                    __s_names_oc_uname,
+                    len.v | 0
+                ));
             }
             if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
                 cptr.free(cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname));
@@ -474,11 +725,19 @@ export function* restnames(nhfp) {
     let len = cptr.box(0);
 
     for (i = 0; i < ((NHC.MAXOCLASSES + 2) | 0); ++i) {
-        (yield* sfi_int(nhfp, cptr.add(cptr.add(svb, $instance_globals_saved_b_bases), i, 4), __s_names_bases));
+        (yield* sfi_int(
+            nhfp,
+            cptr.add(cptr.add(svb, $instance_globals_saved_b_bases), i, 4),
+            __s_names_bases
+        ));
         ;
     }
     for (i = 0; i < NHC.NUM_OBJECTS; ++i) {
-        (yield* sfi_short(nhfp, cptr.add(cptr.add(svd, $instance_globals_saved_d_disco), i, 2), __s_names_disco));
+        (yield* sfi_short(
+            nhfp,
+            cptr.add(cptr.add(svd, $instance_globals_saved_d_disco), i, 2),
+            __s_names_disco
+        ));
     }
     for (i = 0; i < NHC.NUM_OBJECTS; ++i) {
         (yield* sfi_objclass(nhfp, cptr.add(objects, i, $sizeof_objclass), __s_names_objclass));
@@ -488,7 +747,12 @@ export function* restnames(nhfp) {
             (yield* sfi_unsigned(nhfp, len, __s_names_len));
             ;
             cptr.stPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname, (yield* alloc(len.v)));
-            (yield* sfi_char(nhfp, cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname), __s_names_oc_uname, len.v | 0));
+            (yield* sfi_char(
+                nhfp,
+                cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname),
+                __s_names_oc_uname,
+                len.v | 0
+            ));
         }
     }
 }
@@ -505,19 +769,34 @@ export function* observe_object(obj) {
     }
 }
 
-/** C ref: o_init.c:454 — @param {CInt} oindx @param {CInt} mark_as_known @param {CInt} mark_as_encountered @param {CInt} credit_hero */
+/**
+ * C ref: o_init.c:454
+ * @param {CInt} oindx
+ * @param {CInt} mark_as_known
+ * @param {CInt} mark_as_encountered
+ * @param {CInt} credit_hero
+ */
 export function* discover_object(oindx, mark_as_known, mark_as_encountered, credit_hero) {
     if (oindx < NHC.FIRST_OBJECT)
         return;
 
-    if ((!(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_name_known) & 1) && mark_as_known) || (!(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_encountered) & 1) && mark_as_encountered) || ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) && Japanese_item_name(oindx, null))) {
+    if ((!(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_name_known) & 1) &&
+        mark_as_known) ||
+            (!(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_encountered) & 1) &&
+                mark_as_encountered) ||
+            ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) &&
+                Japanese_item_name(oindx, null))) {
         let dindx;
         let acls = cptr.ld1so2(objects, oindx, $sizeof_objclass, $objclass_oc_class);
 
         /* Loop thru disco[] 'til we find the target (which may have been
            uname'd) or the next open slot; one or the other will be found
            before we reach the next class... */
-        for (dindx = cptr.ldI32o2(svb, acls, 4, $instance_globals_saved_b_bases); cptr.ldI16o2(svd, dindx, 2, $instance_globals_saved_d_disco) != 0; dindx++)
+        for (
+            dindx = cptr.ldI32o2(svb, acls, 4, $instance_globals_saved_b_bases);
+            cptr.ldI16o2(svd, dindx, 2, $instance_globals_saved_d_disco) != 0;
+            dindx++
+        )
             if (cptr.ldI16o2(svd, dindx, 2, $instance_globals_saved_d_disco) == oindx)
                 break;
         cptr.stI16o2(svd, dindx, 2, $instance_globals_saved_d_disco, i16(oindx));
@@ -525,7 +804,8 @@ export function* discover_object(oindx, mark_as_known, mark_as_encountered, cred
         if (mark_as_encountered)
             cptr.stI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_encountered, 1);
 
-        if (!(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_name_known) & 1) && mark_as_known) {
+        if (!(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_name_known) & 1) &&
+                mark_as_known) {
             cptr.stI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_name_known, 1);
             if (credit_hero)
                 (yield* exercise(NHC.A_WIS, 1));
@@ -533,7 +813,8 @@ export function* discover_object(oindx, mark_as_known, mark_as_encountered, cred
             /* !in_moveloop => initial inventory,
                gameover => final disclosure */
             if (cptr.ldI32o(program_state, $sinfo_in_moveloop) && !cptr.ldI32(program_state)) {
-                if (cptr.ld1so2(objects, oindx, $sizeof_objclass, $objclass_oc_class) == NHC.GEM_CLASS)
+                if (cptr.ld1so2(objects, oindx, $sizeof_objclass, $objclass_oc_class) ==
+                        NHC.GEM_CLASS)
                     (yield* gem_learned(oindx));  /* could affect price of unpaid gems */
                 (yield* update_inventory());
             }
@@ -544,15 +825,28 @@ export function* discover_object(oindx, mark_as_known, mark_as_encountered, cred
 /* if a class name has been cleared, we may need to purge it from disco[] */
 /** C ref: o_init.c:498 — @param {CInt} oindx */
 export function* undiscover_object(oindx) {
-    if (!(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_name_known) & 1) && !(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_encountered) & 1)) {
+    if (!(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_name_known) & 1) &&
+            !(cptr.ldI32o2(objects, oindx, $sizeof_objclass, $objclass_oc_encountered) & 1)) {
         let dindx;
         let acls = cptr.ld1so2(objects, oindx, $sizeof_objclass, $objclass_oc_class);
         let found = 0;
 
         /* find the object; shift those behind it forward one slot */
-        for (dindx = cptr.ldI32o2(svb, acls, 4, $instance_globals_saved_b_bases); dindx < NHC.NUM_OBJECTS && cptr.ldI16o2(svd, dindx, 2, $instance_globals_saved_d_disco) != 0 && cptr.ld1so2(objects, dindx, $sizeof_objclass, $objclass_oc_class) == acls; dindx++)
+        for (
+            dindx = cptr.ldI32o2(svb, acls, 4, $instance_globals_saved_b_bases);
+            dindx < NHC.NUM_OBJECTS &&
+                cptr.ldI16o2(svd, dindx, 2, $instance_globals_saved_d_disco) != 0 &&
+                cptr.ld1so2(objects, dindx, $sizeof_objclass, $objclass_oc_class) == acls;
+            dindx++
+        )
             if (found)
-                cptr.stI16o2(svd, (dindx - 1) | 0, 2, $instance_globals_saved_d_disco, cptr.ldI16o2(svd, dindx, 2, $instance_globals_saved_d_disco));
+                cptr.stI16o2(
+                    svd,
+                    (dindx - 1) | 0,
+                    2,
+                    $instance_globals_saved_d_disco,
+                    cptr.ldI16o2(svd, dindx, 2, $instance_globals_saved_d_disco)
+                );
             else if (cptr.ldI16o2(svd, dindx, 2, $instance_globals_saved_d_disco) == oindx)
                 found = 1;
 
@@ -572,12 +866,23 @@ export function interesting_to_discover(i) {
     /* most players who don't speak Japanese manage to figure out what
        gunyoki, osaku, and so forth mean, but treat them as pre-discovered
        to be disclosed by '\' */
-    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) && Japanese_item_name(i, null))
+    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) &&
+            Japanese_item_name(i, null))
         return 1;
 
     /* Objects that were discovered without encountering them are now printed
        with a '*' */
-    return schar((cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname) !== null || (((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0) && (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)) !== null) ? 1 : 0));
+    return schar((cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname) !== null ||
+        (((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
+            (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0) &&
+            (cptr.ldPtro2(
+                obj_descr,
+                cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx),
+                $sizeof_objdescr,
+                $objdescr_oc_descr
+            )) !== null)
+            ? 1
+            : 0));
 }
 
 /* items that should stand out once they're known */
@@ -611,7 +916,14 @@ function* sortloot_descr(otyp, outbuf) {
     cptr.stI16o(o, $obj_otyp, i16(otyp));
     cptr.st1o(o, $obj_oclass, cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_class));
     cptr.stI32o(o, $obj_dknown, 1);  /* not observe_object, this isn't a real object */
-    cptr.stI32o(o, $obj_known, (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_uses_known) & 1)) ? 1 : 0) >>> 0);
+    cptr.stI32o(
+        o,
+        $obj_known,
+        (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
+            !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_uses_known) & 1))
+            ? 1
+            : 0) >>> 0
+    );
     cptr.stI32o(o, $obj_corpsenm, NHC.NON_PM);  /* suppress statue and figurine details */
     /* but suppressing fruit details leads to "bad fruit #0" */
     if (otyp == NHC.SLIME_MOLD)
@@ -622,7 +934,13 @@ function* sortloot_descr(otyp, outbuf) {
     cptr.stPtro(sl_cookie, $sortloot_item_str, null);
 
     (yield* loot_classify(sl_cookie, o));
-    void cptr.sprintf(outbuf, __s_02d_02d_1d, cptr.ld1so(sl_cookie, $sortloot_item_orderclass), cptr.ld1so(sl_cookie, $sortloot_item_subclass), cptr.ld1so(sl_cookie, $sortloot_item_disco));
+    void cptr.sprintf(
+        outbuf,
+        __s_02d_02d_1d,
+        cptr.ld1so(sl_cookie, $sortloot_item_orderclass),
+        cptr.ld1so(sl_cookie, $sortloot_item_subclass),
+        cptr.ld1so(sl_cookie, $sortloot_item_disco)
+    );
     return outbuf;
 }
 
@@ -653,7 +971,19 @@ export function* choose_disco_sort(mode) {
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* zero out all bits */
     for (i = 0; cptr.ldPtro(disco_orders_descr, i, 8); ++i) {
         cptr.stI32(any, cptr.ld1so(cptr.decay(disco_order_let), i, 1));
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, schar(cptr.ldI32(any)), 0, NHM.ATR_NONE, clr, cptr.ldPtro(disco_orders_descr, i, 8), (cptr.ld1so(cptr.decay(disco_order_let), i, 1) == cptr.ld1so(flags, $flag_discosort)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            schar(cptr.ldI32(any)),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.ldPtro(disco_orders_descr, i, 8),
+            (cptr.ld1so(cptr.decay(disco_order_let), i, 1) == cptr.ld1so(flags, $flag_discosort))
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     if (mode == 2) {
         /* called via 'm `' where full alphabetize doesn't make sense
@@ -684,9 +1014,17 @@ export function* choose_disco_sort(mode) {
 function* disco_typename(otyp) {
     let result = (yield* obj_typename(otyp));
 
-    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) && Japanese_item_name(otyp, null)) {
+    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) &&
+            Japanese_item_name(otyp, null)) {
         let buf = new Uint8Array(256);
-        let actualn = (((otyp != NHC.MAGIC_HARP && otyp != NHC.WOODEN_HARP) || (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) ? (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))), $sizeof_objdescr)) : __s_harp);
+        let actualn = (((otyp != NHC.MAGIC_HARP && otyp != NHC.WOODEN_HARP) ||
+            (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
+                ? (cptr.ldPtro(
+                    obj_descr,
+                    cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))),
+                    $sizeof_objdescr
+                ))
+                : __s_harp);
 
         if (!actualn) {
             ;
@@ -717,17 +1055,37 @@ function* disco_append_typename(buf, dis) {
         /* ordinary */
         void cptr.strcat(buf, typnm);
         eos.v = cptr.add(cptr.add(buf, len), typnm_len);
-    } else if ((p = cptr.strrchr(typnm, 40)) !== null && cptr.cmp(p, typnm) > 0 && cptr.ld1so(p, -1) == 32 && cptr.strchr(p, 41) !== null) {
+    } else if ((p = cptr.strrchr(typnm, 40)) !== null &&
+            cptr.cmp(p, typnm) > 0 &&
+            cptr.ld1so(p, -1) == 32 &&
+            cptr.strchr(p, 41) !== null) {
         /* typename() returned "really long user-applied name (actual type)"
            and we want to truncate from "really long user-applied name" while
            keeping " (actual type)" intact */
         p = cptr.add(p, -1);  /* back up to space in front of open paren */
-        void __builtin___strncat_chk(buf, typnm, BigInt.asUintN(64, 255n - (BigInt.asUintN(64, len + BigInt(Number(BigInt.asUintN(32, cptr.strlen(p))) >>> 0)))), __builtin_object_size(buf, 1));
+        void __builtin___strncat_chk(
+            buf,
+            typnm,
+            BigInt.asUintN(
+                64,
+                255n -
+                    (BigInt.asUintN(
+                        64,
+                        len + BigInt(Number(BigInt.asUintN(32, cptr.strlen(p))) >>> 0)
+                    ))
+            ),
+            __builtin_object_size(buf, 1)
+        );
         void cptr.strcat(buf, p);
         eos.v = cptr.add(buf, cptr.strlen(buf));
     } else {
         /* unexpected; just truncate from end of typename */
-        void __builtin___strncat_chk(buf, typnm, BigInt.asUintN(64, 255n - len), __builtin_object_size(buf, 1));
+        void __builtin___strncat_chk(
+            buf,
+            typnm,
+            BigInt.asUintN(64, 255n - len),
+            __builtin_object_size(buf, 1)
+        );
         eos.v = cptr.add(buf, cptr.strlen(buf));
     }
 
@@ -737,25 +1095,54 @@ function* disco_append_typename(buf, dis) {
 /* minor fixup for Book of the Dead needed in more than one place */
 /** C ref: o_init.c:725 — @param {CInt} uidx @param {CPtr<char>} outbuf */
 function disco_fmt_uniq(uidx, outbuf) {
-    void cptr.sprintf(outbuf, __s_sp2_pct_s, (cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, uidx, $sizeof_objclass))), $sizeof_objdescr)) : (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, uidx, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)));
+    void cptr.sprintf(
+        outbuf,
+        __s_sp2_pct_s,
+        (cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
+            ? (cptr.ldPtro(
+                obj_descr,
+                cptr.ldI16((cptr.add(objects, uidx, $sizeof_objclass))),
+                $sizeof_objdescr
+            ))
+            : (cptr.ldPtro2(
+                obj_descr,
+                cptr.ldI16o((cptr.add(objects, uidx, $sizeof_objclass)), $objclass_oc_descr_idx),
+                $sizeof_objdescr,
+                $objdescr_oc_descr
+            ))
+    );
     /* in the spellbooks section of main discoveries list, encountered
        but not fully discovered Book of the Dead is shown as
        "spellbook (papyrus)" like other encountered but not discovered books;
        in the unique/relics section we want "papyrus spellbook" instead */
-    if (!(cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) && cptr.ld1so2(objects, uidx, $sizeof_objclass, $objclass_oc_class) == NHC.SPBOOK_CLASS)
+    if (!(cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) &&
+            cptr.ld1so2(objects, uidx, $sizeof_objclass, $objclass_oc_class) == NHC.SPBOOK_CLASS)
         void cptr.strcat(outbuf, __s_spellbook);
 }
 
 /* sort and output sorted_lines to window and free the lines */
-/** C ref: o_init.c:741 — @param {CInt} tmpwin @param {CPtr<char *>} sorted_lines @param {CInt} sorted_ct @param {CInt} lootsort */
+/**
+ * C ref: o_init.c:741
+ * @param {CInt} tmpwin
+ * @param {CPtr<char *>} sorted_lines
+ * @param {CInt} sorted_ct
+ * @param {CInt} lootsort
+ */
 function* disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort) {
     let p;
     let j;
 
-    (yield* nh_deterministic_qsort((sorted_lines), BigInt.asUintN(64, BigInt((sorted_ct))), 8n, (discovered_cmp)));
+    (yield* nh_deterministic_qsort(
+        (sorted_lines),
+        BigInt.asUintN(64, BigInt((sorted_ct))),
+        8n,
+        (discovered_cmp)
+    ));
     for (j = 0; j < sorted_ct; ++j) {
         p = cptr.ldPtro(sorted_lines, j, 8);
-        (__builtin_expect(BigInt((!(!cptr.eq(p, (null))))), 0n) ? __assert_rtn(__s_disco_output_sorted, __s_o_init_c, 752, __s_p_null) : void 0);  /* pacify static analyzer */
+        (__builtin_expect(BigInt((!(!cptr.eq(p, (null))))), 0n)
+                ? __assert_rtn(__s_disco_output_sorted, __s_o_init_c, 752, __s_p_null)
+                : void 0);  /* pacify static analyzer */
         if (lootsort) {
             cptr.st1o(p, 6, cptr.ld1so(p, 0));  /* '*' or ' ' */
             p = cptr.add(p, 6);
@@ -788,7 +1175,8 @@ export function* dodiscovered() {
     let alphabyclass;
     let lootsort;
 
-    if (!cptr.ld1so(flags, $flag_discosort) || !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, $flag_discosort))))
+    if (!cptr.ld1so(flags, $flag_discosort) ||
+            !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, $flag_discosort))))
         cptr.st1o(flags, $flag_discosort, 111);
 
     if (cptr.ld1so(iflags, $instance_flags_menu_requested)) {
@@ -798,10 +1186,17 @@ export function* dodiscovered() {
     alphabyclass = schar((cptr.ld1so(flags, $flag_discosort) == 99));
     alphabetized = schar((cptr.ld1so(flags, $flag_discosort) == 97 || alphabyclass ? 1 : 0));
     lootsort = schar((cptr.ld1so(flags, $flag_discosort) == 115));
-    sortindx = cptr.diff(cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, $flag_discosort)), cptr.decay(disco_order_let));
+    sortindx = cptr.diff(
+        cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, $flag_discosort)),
+        cptr.decay(disco_order_let)
+    );
 
     tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
-    void cptr.sprintf(cptr.decay(buf), __s_discoveries_s, cptr.ldPtro(disco_orders_descr, sortindx, 8));
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_discoveries_s,
+        cptr.ldPtro(disco_orders_descr, sortindx, 8)
+    );
     (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
     (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
 
@@ -816,9 +1211,20 @@ export function* dodiscovered() {
     uniq_ct = 0;
     for (i = (dis = 0); i < 4; i++) {
         uidx = cptr.ldI16o(uniq_objs, i, 2);
-        if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0 && uidx != NHC.AMULET_OF_YENDOR)) {
+        if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
+                ((cptr.ldI32o2(
+                    objects,
+                    uidx,
+                    $sizeof_objclass,
+                    $objclass_oc_encountered
+                ) & 1) | 0 &&
+                    uidx != NHC.AMULET_OF_YENDOR)) {
             if (!dis++)
-                (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __s_unique_items_or_relics)));
+                (yield* Y.icall(putstr()(
+                    tmpwin,
+                    cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr),
+                    __s_unique_items_or_relics
+                )));
             ++uniq_ct;
             disco_fmt_uniq(uidx, cptr.decay(buf));
             (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
@@ -837,8 +1243,14 @@ export function* dodiscovered() {
     for (s = cptr.decay(classes); cptr.ld1s(s); s = cptr.add(s, 1)) {
         oclass = cptr.ld1s(s);
         prev_class = schar(((oclass + 1) | 0));  /* forced different from oclass */
-        for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS && cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == oclass; i++) {
-            if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 && interesting_to_discover(dis)) {
+        for (
+            i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
+            i < NHC.NUM_OBJECTS &&
+                cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == oclass;
+            i++
+        ) {
+            if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 &&
+                    interesting_to_discover(dis)) {
                 ct++;
                 if (oclass != prev_class) {
                     if ((alphabyclass || lootsort) && sorted_ct) {
@@ -848,11 +1260,23 @@ export function* dodiscovered() {
                     }
                     if (!alphabetized || alphabyclass) {
                         /* header for new class */
-                        (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), (yield* let_to_name(oclass, 0, 0)))));
+                        (yield* Y.icall(putstr()(
+                            tmpwin,
+                            cptr.ldI32o(
+                                iflags,
+                                $instance_flags_menu_headings + $color_and_attr_attr
+                            ),
+                            (yield* let_to_name(oclass, 0, 0))
+                        )));
                         prev_class = oclass;
                     }
                 }
-                void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o2(objects, dis, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0 ? __s_sp2 : __s_star_sp);
+                void cptr.strcpy(
+                    cptr.decay(buf),
+                    (cptr.ldI32o2(objects, dis, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0
+                        ? __s_sp2
+                        : __s_star_sp
+                );
                 if (lootsort)
                     void (yield* sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1)));
                 (yield* disco_append_typename(cptr.decay(buf), dis));
@@ -873,7 +1297,11 @@ export function* dodiscovered() {
                classes, we normally don't need a header; but it we showed
                any unique items or any artifacts then we do need one */
             if ((uniq_ct || arti_ct) && alphabetized && !alphabyclass)
-                (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __s_discovered_items)));
+                (yield* Y.icall(putstr()(
+                    tmpwin,
+                    cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr),
+                    __s_discovered_items
+                )));
             (yield* disco_output_sorted(tmpwin, sorted_lines, sorted_ct, lootsort));
         }
         (yield* Y.icall(display_nhwindow()(tmpwin, 1)));
@@ -927,18 +1355,25 @@ export function* doclassdisco() {
     let lootsort;
     let clr = NHM.NO_COLOR;
 
-    if (!cptr.ld1so(flags, $flag_discosort) || !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, $flag_discosort))))
+    if (!cptr.ld1so(flags, $flag_discosort) ||
+            !(p = cptr.strchr(cptr.decay(disco_order_let), cptr.ld1so(flags, $flag_discosort))))
         cptr.st1o(flags, $flag_discosort, 111);
 
     if (cptr.ld1so(iflags, $instance_flags_menu_requested)) {
         if ((yield* choose_disco_sort(2)) < 0)
             return NHM.ECMD_OK;
     }
-    alphabetized = schar((cptr.ld1so(flags, $flag_discosort) == 97 || cptr.ld1so(flags, $flag_discosort) == 99 ? 1 : 0));
+    alphabetized = schar((cptr.ld1so(flags, $flag_discosort) == 97 ||
+        cptr.ld1so(flags, $flag_discosort) == 99
+            ? 1
+            : 0));
     lootsort = schar((cptr.ld1so(flags, $flag_discosort) == 115));
 
     cptr.st1o(cptr.decay(discosyms), 0, 0, 1);
-    traditional = schar((cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL || cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION ? 1 : 0));
+    traditional = schar((cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_TRADITIONAL ||
+        cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_COMBINATION
+            ? 1
+            : 0));
     if (!traditional) {
         tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
         (yield* Y.icall(start_menu()(tmpwin, 0n)));
@@ -958,14 +1393,31 @@ export function* doclassdisco() {
        from 'u' to 'r') */
     for (i = 0; i < 4; i++) {
         uidx = cptr.ldI16o(uniq_objs, i, 2);
-        if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0 && uidx != NHC.AMULET_OF_YENDOR)) {
+        if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
+                ((cptr.ldI32o2(
+                    objects,
+                    uidx,
+                    $sizeof_objclass,
+                    $objclass_oc_encountered
+                ) & 1) | 0 &&
+                    uidx != NHC.AMULET_OF_YENDOR)) {
             void cptr.strcat(cptr.decay(discosyms), __s_u);
             if (!traditional) {
                 cptr.stI32(any, 117);
                 /* FIXME: having 'r' as an accelerator to provide an unseen
                    synonym works but doesn't make much sense since the main
                    selector is 'a' (implicit lootabc) rather than 'u' */
-                (yield* add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 114, NHM.ATR_NONE, clr, cptr.decay(__static_doclassdisco_unique_items), NHM.MENU_ITEMFLAGS_NONE));
+                (yield* add_menu(
+                    tmpwin,
+                    nul_glyphinfo.v,
+                    any,
+                    menulet++,
+                    114,
+                    NHM.ATR_NONE,
+                    clr,
+                    cptr.decay(__static_doclassdisco_unique_items),
+                    NHM.MENU_ITEMFLAGS_NONE
+                ));
             }
             break;
         }
@@ -976,7 +1428,17 @@ export function* doclassdisco() {
         void cptr.strcat(cptr.decay(discosyms), __s_a);
         if (!traditional) {
             cptr.stI32(any, 97);
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, 0, NHM.ATR_NONE, clr, cptr.decay(__static_doclassdisco_artifact_items), NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                menulet++,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                cptr.decay(__static_doclassdisco_artifact_items),
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         }
     }
 
@@ -989,13 +1451,29 @@ export function* doclassdisco() {
     for (s = cptr.decay(allclasses); cptr.ld1s(s); s = cptr.add(s, 1)) {
         oclass = cptr.ld1s(s);
         c = cptr.ld1so(def_oc_syms, oclass, $sizeof_class_sym);
-        for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS && cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == oclass; ++i)
-            if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 && interesting_to_discover(dis)) {
+        for (
+            i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
+            i < NHC.NUM_OBJECTS &&
+                cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == oclass;
+            ++i
+        )
+            if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 &&
+                    interesting_to_discover(dis)) {
                 if (!cptr.strchr(cptr.decay(discosyms), c)) {
                     void (yield* strkitten(cptr.decay(discosyms), c));
                     if (!traditional) {
                         cptr.stI32(any, c);
-                        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, menulet++, c, NHM.ATR_NONE, clr, (yield* oclass_to_name(oclass, cptr.decay(buf))), NHM.MENU_ITEMFLAGS_NONE));
+                        (yield* add_menu(
+                            tmpwin,
+                            nul_glyphinfo.v,
+                            any,
+                            menulet++,
+                            c,
+                            NHM.ATR_NONE,
+                            clr,
+                            (yield* oclass_to_name(oclass, cptr.decay(buf))),
+                            NHM.MENU_ITEMFLAGS_NONE
+                        ));
                     }
                 }
             }
@@ -1017,9 +1495,18 @@ export function* doclassdisco() {
         /* we'll prompt even if there's only one viable class; we add all
            nonviable classes as unseen acceptable choices so player can ask
            for discoveries of any class whether it has discoveries or not */
-        void cptr.sprintf(cptr.decay(allclasses_plustwo), __s_s_c_c_c, cptr.decay(allclasses), 97, 117, 114);
+        void cptr.sprintf(
+            cptr.decay(allclasses_plustwo),
+            __s_s_c_c_c,
+            cptr.decay(allclasses),
+            97,
+            117,
+            114
+        );
         for (s = cptr.decay(allclasses_plustwo), xtras = 0; cptr.ld1s(s); s = cptr.add(s, 1)) {
-            c = schar((cptr.strchr(__s_aur, cptr.ld1s(s)) ? cptr.ld1s(s) : cptr.ld1so(def_oc_syms, cptr.ld1s(s), $sizeof_class_sym)));
+            c = schar((cptr.strchr(__s_aur, cptr.ld1s(s))
+                    ? cptr.ld1s(s)
+                    : cptr.ld1so(def_oc_syms, cptr.ld1s(s), $sizeof_class_sym)));
             if (!cptr.strchr(cptr.decay(discosyms), c)) {
                 if (!xtras++)
                     void (yield* strkitten(cptr.decay(discosyms), 27));
@@ -1032,7 +1519,8 @@ export function* doclassdisco() {
             (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
     } else {
         /* menustyle:full or menustyle:partial */
-        if (!cptr.ld1so(cptr.decay(discosyms), 1, 1) && cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_PARTIAL) {
+        if (!cptr.ld1so(cptr.decay(discosyms), 1, 1) &&
+                cptr.ld1so(flags, $flag_menu_style) == NHM.MENU_PARTIAL) {
             /* only one class; menustyle:partial normally jumps past class
                filtering straight to final menu so skip class filter here */
             c = cptr.ld1so(cptr.decay(discosyms), 0, 1);
@@ -1059,24 +1547,44 @@ export function* doclassdisco() {
     switch (c) {
         case 117:
         case 114:
-        (yield* Y.icall(putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), upstart(cptr.strcpy(cptr.decay(buf), cptr.decay(__static_doclassdisco_unique_items))))));
+        (yield* Y.icall(putstr()(
+            tmpwin,
+            cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr),
+            upstart(cptr.strcpy(cptr.decay(buf), cptr.decay(__static_doclassdisco_unique_items)))
+        )));
         for (i = 0; i < 4; i++) {
             uidx = cptr.ldI16o(uniq_objs, i, 2);
-            if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0 && uidx != NHC.AMULET_OF_YENDOR)) {
+            if ((cptr.ldI32o2(objects, uidx, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
+                    ((cptr.ldI32o2(
+                        objects,
+                        uidx,
+                        $sizeof_objclass,
+                        $objclass_oc_encountered
+                    ) & 1) | 0 &&
+                        uidx != NHC.AMULET_OF_YENDOR)) {
                 ++ct;
                 disco_fmt_uniq(uidx, cptr.decay(buf));
                 (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));
             }
         }
         if (!ct)
-            (yield* You(cptr.decay(__static_doclassdisco_havent_discovered_any), cptr.decay(__static_doclassdisco_unique_items)));
+            (yield* You(
+                cptr.decay(__static_doclassdisco_havent_discovered_any),
+                cptr.decay(__static_doclassdisco_unique_items)
+            ));
         break;
         case 97:
         /* note: this will work all the time for menustyle traditional
            but requires at least one artifact discovery for other styles
            [could fix that by forcing the 'a' choice into the pick-class
            menu when running in wizard mode] */
-        if (wizard() && (yield* yn_function(__s_dump_information_about_all_artifacts, cptr.decay(ynchars), 110, 1)) == 121) {
+        if (wizard() &&
+                (yield* yn_function(
+                    __s_dump_information_about_all_artifacts,
+                    cptr.decay(ynchars),
+                    110,
+                    1
+                )) == 121) {
             (yield* dump_artifact_info(tmpwin));
             ct = NHC.NROFARTIFACTS;  /* non-zero vs zero is what matters below */
             break;
@@ -1084,20 +1592,43 @@ export function* doclassdisco() {
         /* disp_artifact_discoveries() includes a header */
         ct = (yield* disp_artifact_discoveries(tmpwin));
         if (!ct)
-            (yield* You(cptr.decay(__static_doclassdisco_havent_discovered_any), cptr.decay(__static_doclassdisco_artifact_items)));
+            (yield* You(
+                cptr.decay(__static_doclassdisco_havent_discovered_any),
+                cptr.decay(__static_doclassdisco_artifact_items)
+            ));
         break;
         default:
         oclass = schar(def_char_to_objclass(c));
         /* this should never happen but has been observed via the fuzzer */
         if (oclass == NHC.MAXOCLASSES)
             (yield* impossible(__s_doclassdisco_invalid_object_class_s, visctrl(c)));
-        void cptr.sprintf(cptr.decay(buf), __s_discovered_s_in_s, (yield* let_to_name(oclass, 0, 0)), (cptr.ld1so(flags, $flag_discosort) == 111) ? __s_order_of_discovery : ((cptr.ld1so(flags, $flag_discosort) == 115) ? __s_sortloot_order : __s_alphabetical_order));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_discovered_s_in_s,
+            (yield* let_to_name(oclass, 0, 0)),
+            (cptr.ld1so(flags, $flag_discosort) == 111)
+                ? __s_order_of_discovery
+                : ((cptr.ld1so(flags, $flag_discosort) == 115)
+                    ? __s_sortloot_order
+                    : __s_alphabetical_order)
+        );
         (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(buf))));  /* skip iflags.menu_headings */
         sorted_ct = 0;
-        for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i <= ((cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0); ++i) {
-            if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 && interesting_to_discover(dis)) {
+        for (
+            i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
+            i <=
+                ((cptr.ldI32o2(svb, (oclass + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0);
+            ++i
+        ) {
+            if ((dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco)) != 0 &&
+                    interesting_to_discover(dis)) {
                 ++ct;
-                void cptr.strcpy(cptr.decay(buf), (cptr.ldI32o2(objects, dis, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0 ? __s_sp2 : __s_star_sp);
+                void cptr.strcpy(
+                    cptr.decay(buf),
+                    (cptr.ldI32o2(objects, dis, $sizeof_objclass, $objclass_oc_encountered) & 1) | 0
+                        ? __s_sp2
+                        : __s_star_sp
+                );
                 if (lootsort)
                     void (yield* sortloot_descr(dis, cptr.add(cptr.decay(buf), 2, 1)));
                 (yield* disco_append_typename(cptr.decay(buf), dis));
@@ -1109,9 +1640,17 @@ export function* doclassdisco() {
             }
         }
         if (!ct) {
-            (yield* You(cptr.decay(__static_doclassdisco_havent_discovered_any), (yield* oclass_to_name(oclass, cptr.decay(buf)))));
+            (yield* You(
+                cptr.decay(__static_doclassdisco_havent_discovered_any),
+                (yield* oclass_to_name(oclass, cptr.decay(buf)))
+            ));
         } else if (sorted_ct) {
-            (yield* nh_deterministic_qsort((sorted_lines), BigInt.asUintN(64, BigInt((sorted_ct))), 8n, (discovered_cmp)));
+            (yield* nh_deterministic_qsort(
+                (sorted_lines),
+                BigInt.asUintN(64, BigInt((sorted_ct))),
+                8n,
+                (discovered_cmp)
+            ));
             for (i = 0; i < sorted_ct; ++i) {
                 let sl;
 
@@ -1164,7 +1703,12 @@ export function* rename_disco() {
     for (s = cptr.add(flags, $flag_inv_order); cptr.ld1s(s); s = cptr.add(s, 1)) {
         oclass = cptr.ld1s(s);
         prev_class = schar(((oclass + 1) | 0));  /* forced different from oclass */
-        for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS && cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == oclass; i++) {
+        for (
+            i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
+            i < NHC.NUM_OBJECTS &&
+                cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) == oclass;
+            i++
+        ) {
             dis = cptr.ldI16o2(svd, i, 2, $instance_globals_saved_d_disco);
             if (!dis || !interesting_to_discover(dis))
                 continue;
@@ -1181,7 +1725,17 @@ export function* rename_disco() {
             cptr.stI32(any, dis);
             cptr.st1(cptr.decay(buf), 0);
             (yield* disco_append_typename(cptr.decay(buf), dis));
-            (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                0,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                cptr.decay(buf),
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         }
     }
     if (ct == 0) {
@@ -1201,9 +1755,17 @@ export function* rename_disco() {
 
             cptr.memcpy(odummy, cg, 216);
             cptr.stI16o(odummy, $obj_otyp, i16(dis));
-            cptr.st1o(odummy, $obj_oclass, cptr.ld1so2(objects, dis, $sizeof_objclass, $objclass_oc_class));
+            cptr.st1o(
+                odummy,
+                $obj_oclass,
+                cptr.ld1so2(objects, dis, $sizeof_objclass, $objclass_oc_class)
+            );
             cptr.stI64o(odummy, $obj_quan, 1n);
-            cptr.stI32o(odummy, $obj_known, (!(cptr.ldI32o2(objects, dis, $sizeof_objclass, $objclass_oc_uses_known) & 1)) >>> 0);
+            cptr.stI32o(
+                odummy,
+                $obj_known,
+                (!(cptr.ldI32o2(objects, dis, $sizeof_objclass, $objclass_oc_uses_known) & 1)) >>> 0
+            );
             cptr.stI32o(odummy, $obj_dknown, 1);  /* not observe_object: it isn't real */
             (yield* docall(odummy));
         }
@@ -1221,14 +1783,24 @@ export function get_sortdisco(opts, cnf) {
     if (cnf)
         void cptr.sprintf(opts, __s_pct_c, cptr.ld1so(flags, $flag_discosort));
     else
-        void cptr.strcpy(opts, cptr.ldPtro(disco_orders_descr, cptr.diff(p, cptr.decay(disco_order_let)), 8));
+        void cptr.strcpy(
+            opts,
+            cptr.ldPtro(disco_orders_descr, cptr.diff(p, cptr.decay(disco_order_let)), 8)
+        );
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
 // 9 bindings: 0 rebound+refilled, 0 rebound, 9 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__static_shuffle_all_shuffle_classes), S(__static_shuffle_all_shuffle_types), S(uniq_objs), S(disco_order_let), S(disco_orders_descr), S(__static_doclassdisco_prompt), S(__static_doclassdisco_havent_discovered_any), S(__static_doclassdisco_unique_items), S(__static_doclassdisco_artifact_items)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__static_shuffle_all_shuffle_classes), S(__static_shuffle_all_shuffle_types),
+        S(uniq_objs), S(disco_order_let), S(disco_orders_descr), S(__static_doclassdisco_prompt),
+        S(__static_doclassdisco_havent_discovered_any), S(__static_doclassdisco_unique_items),
+        S(__static_doclassdisco_artifact_items)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("o_init.js: __resetState before __captureState");

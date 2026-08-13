@@ -15,8 +15,8 @@ import { impossible } from './pline.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NhRect_hx = FLD.NhRect_hx, $NhRect_hy = FLD.NhRect_hy, $NhRect_ly = FLD.NhRect_ly,
-    $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly,
-    $sizeof_NhRect = FLD.sizeof_NhRect, $sizeof_nhrect = FLD.sizeof_nhrect;
+      $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly,
+      $sizeof_NhRect = FLD.sizeof_NhRect, $sizeof_nhrect = FLD.sizeof_nhrect;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_could_not_alloc_rect = cptr.lit("Could not alloc rect");
@@ -40,7 +40,10 @@ let rect_cnt = 0;
 export function init_rect() {
     if (!rect) {
         n_rects = 56;
-        rect = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 8n * BigInt.asUintN(64, BigInt(n_rects))))));
+        rect = alloc(Number(BigInt.asUintN(
+            32,
+            BigInt.asUintN(64, 8n * BigInt.asUintN(64, BigInt(n_rects)))
+        )));
         if (!rect)
             panic(__s_could_not_alloc_rect);
     }
@@ -77,8 +80,17 @@ export function get_rect_ind(r) {
     ly = cptr.ldI16o(r, $NhRect_ly);
     hx = cptr.ldI16o(r, $NhRect_hx);
     hy = cptr.ldI16o(r, $NhRect_hy);
-    for (i = 0, rectp = cptr.add(rect, 0, $sizeof_NhRect); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
-        if (lx == cptr.ldI16(rectp) && ly == cptr.ldI16o(rectp, $NhRect_ly) && hx == cptr.ldI16o(rectp, $NhRect_hx) && hy == cptr.ldI16o(rectp, $NhRect_hy))
+    for (
+        i = 0,
+        rectp = cptr.add(rect, 0, $sizeof_NhRect);
+        i < rect_cnt;
+        i++,
+        rectp = cptr.add(rectp, 1, 8)
+    )
+        if (lx == cptr.ldI16(rectp) &&
+                ly == cptr.ldI16o(rectp, $NhRect_ly) &&
+                hx == cptr.ldI16o(rectp, $NhRect_hx) &&
+                hy == cptr.ldI16o(rectp, $NhRect_hy))
             return i;
     return -1;
 }
@@ -100,8 +112,17 @@ export function get_rect(r) {
     ly = cptr.ldI16o(r, $NhRect_ly);
     hx = cptr.ldI16o(r, $NhRect_hx);
     hy = cptr.ldI16o(r, $NhRect_hy);
-    for (i = 0, rectp = cptr.add(rect, 0, $sizeof_NhRect); i < rect_cnt; i++, rectp = cptr.add(rectp, 1, 8))
-        if (lx >= cptr.ldI16(rectp) && ly >= cptr.ldI16o(rectp, $NhRect_ly) && hx <= cptr.ldI16o(rectp, $NhRect_hx) && hy <= cptr.ldI16o(rectp, $NhRect_hy))
+    for (
+        i = 0,
+        rectp = cptr.add(rect, 0, $sizeof_NhRect);
+        i < rect_cnt;
+        i++,
+        rectp = cptr.add(rectp, 1, 8)
+    )
+        if (lx >= cptr.ldI16(rectp) &&
+                ly >= cptr.ldI16o(rectp, $NhRect_ly) &&
+                hx <= cptr.ldI16o(rectp, $NhRect_hx) &&
+                hy <= cptr.ldI16o(rectp, $NhRect_hy))
             return rectp;
     return null;
 }
@@ -121,17 +142,45 @@ export function rnd_rect() {
  * otherwise returns FALSE
  */
 
-/** C ref: rect.c:116 — @param {CPtr<NhRect>} r1 @param {CPtr<NhRect>} r2 @param {CPtr<NhRect>} r3 @returns {CInt} */
+/**
+ * C ref: rect.c:116
+ * @param {CPtr<NhRect>} r1
+ * @param {CPtr<NhRect>} r2
+ * @param {CPtr<NhRect>} r3
+ * @returns {CInt}
+ */
 function intersect(r1, r2, r3) {
-    if (cptr.ldI16(r2) > cptr.ldI16o(r1, $NhRect_hx) || cptr.ldI16o(r2, $NhRect_ly) > cptr.ldI16o(r1, $NhRect_hy) || cptr.ldI16o(r2, $NhRect_hx) < cptr.ldI16(r1) || cptr.ldI16o(r2, $NhRect_hy) < cptr.ldI16o(r1, $NhRect_ly))
+    if (cptr.ldI16(r2) > cptr.ldI16o(r1, $NhRect_hx) ||
+            cptr.ldI16o(r2, $NhRect_ly) > cptr.ldI16o(r1, $NhRect_hy) ||
+            cptr.ldI16o(r2, $NhRect_hx) < cptr.ldI16(r1) ||
+            cptr.ldI16o(r2, $NhRect_hy) < cptr.ldI16o(r1, $NhRect_ly))
         return 0;
 
     cptr.stI16(r3, i16((cptr.ldI16(r2) > cptr.ldI16(r1) ? cptr.ldI16(r2) : cptr.ldI16(r1))));
-    cptr.stI16o(r3, $NhRect_ly, i16((cptr.ldI16o(r2, $NhRect_ly) > cptr.ldI16o(r1, $NhRect_ly) ? cptr.ldI16o(r2, $NhRect_ly) : cptr.ldI16o(r1, $NhRect_ly))));
-    cptr.stI16o(r3, $NhRect_hx, i16((cptr.ldI16o(r2, $NhRect_hx) > cptr.ldI16o(r1, $NhRect_hx) ? cptr.ldI16o(r1, $NhRect_hx) : cptr.ldI16o(r2, $NhRect_hx))));
-    cptr.stI16o(r3, $NhRect_hy, i16((cptr.ldI16o(r2, $NhRect_hy) > cptr.ldI16o(r1, $NhRect_hy) ? cptr.ldI16o(r1, $NhRect_hy) : cptr.ldI16o(r2, $NhRect_hy))));
+    cptr.stI16o(
+        r3,
+        $NhRect_ly,
+        i16((cptr.ldI16o(r2, $NhRect_ly) > cptr.ldI16o(r1, $NhRect_ly)
+            ? cptr.ldI16o(r2, $NhRect_ly)
+            : cptr.ldI16o(r1, $NhRect_ly)))
+    );
+    cptr.stI16o(
+        r3,
+        $NhRect_hx,
+        i16((cptr.ldI16o(r2, $NhRect_hx) > cptr.ldI16o(r1, $NhRect_hx)
+            ? cptr.ldI16o(r1, $NhRect_hx)
+            : cptr.ldI16o(r2, $NhRect_hx)))
+    );
+    cptr.stI16o(
+        r3,
+        $NhRect_hy,
+        i16((cptr.ldI16o(r2, $NhRect_hy) > cptr.ldI16o(r1, $NhRect_hy)
+            ? cptr.ldI16o(r1, $NhRect_hy)
+            : cptr.ldI16o(r2, $NhRect_hy)))
+    );
 
-    if (cptr.ldI16(r3) > cptr.ldI16o(r3, $NhRect_hx) || cptr.ldI16o(r3, $NhRect_ly) > cptr.ldI16o(r3, $NhRect_hy))
+    if (cptr.ldI16(r3) > cptr.ldI16o(r3, $NhRect_hx) ||
+            cptr.ldI16o(r3, $NhRect_ly) > cptr.ldI16o(r3, $NhRect_hy))
         return 0;
     return 1;
 }
@@ -157,7 +206,11 @@ export function remove_rect(r) {
 
     ind = get_rect_ind(r);
     if (ind >= 0)
-        cptr.memcpy(cptr.add(rect, ind, $sizeof_NhRect), cptr.add(rect, --rect_cnt, $sizeof_NhRect), 8);
+        cptr.memcpy(
+            cptr.add(rect, ind, $sizeof_NhRect),
+            cptr.add(rect, --rect_cnt, $sizeof_NhRect),
+            8
+        );
 }
 
 /*
@@ -198,22 +251,26 @@ export function split_rects(r1, r2) {
         if (intersect(cptr.add(rect, i, $sizeof_NhRect), r2, r))
             split_rects(cptr.add(rect, i, $sizeof_NhRect), r);
 
-    if (((((cptr.ldI16o(r2, $NhRect_ly) - cptr.ldI16o(old_r, $nhrect_ly)) | 0) - 1) | 0) > (((cptr.ldI16o(old_r, $nhrect_hy) < 20 ? 6 : 4) + 4) | 0)) {
+    if (((((cptr.ldI16o(r2, $NhRect_ly) - cptr.ldI16o(old_r, $nhrect_ly)) | 0) - 1) | 0) >
+            (((cptr.ldI16o(old_r, $nhrect_hy) < 20 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16o(r, $nhrect_hy, i16(((cptr.ldI16o(r2, $NhRect_ly) - 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16(r2) - cptr.ldI16(old_r)) | 0) - 1) | 0) > (((cptr.ldI16o(old_r, $nhrect_hx) < 79 ? 8 : 5) + 4) | 0)) {
+    if (((((cptr.ldI16(r2) - cptr.ldI16(old_r)) | 0) - 1) | 0) >
+            (((cptr.ldI16o(old_r, $nhrect_hx) < 79 ? 8 : 5) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16o(r, $nhrect_hx, i16(((cptr.ldI16(r2) - 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16o(old_r, $nhrect_hy) - cptr.ldI16o(r2, $NhRect_hy)) | 0) - 1) | 0) > (((cptr.ldI16o(old_r, $nhrect_ly) > 0 ? 6 : 4) + 4) | 0)) {
+    if (((((cptr.ldI16o(old_r, $nhrect_hy) - cptr.ldI16o(r2, $NhRect_hy)) | 0) - 1) | 0) >
+            (((cptr.ldI16o(old_r, $nhrect_ly) > 0 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16o(r, $nhrect_ly, i16(((cptr.ldI16o(r2, $NhRect_hy) + 2) | 0)));
         add_rect(r);
     }
-    if (((((cptr.ldI16o(old_r, $nhrect_hx) - cptr.ldI16o(r2, $NhRect_hx)) | 0) - 1) | 0) > (((cptr.ldI16(old_r) > 0 ? 8 : 5) + 4) | 0)) {
+    if (((((cptr.ldI16o(old_r, $nhrect_hx) - cptr.ldI16o(r2, $NhRect_hx)) | 0) - 1) | 0) >
+            (((cptr.ldI16(old_r) > 0 ? 8 : 5) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16(r, i16(((cptr.ldI16o(r2, $NhRect_hx) + 2) | 0)));
         add_rect(r);

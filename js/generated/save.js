@@ -8,24 +8,43 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { BALL_IN_MON, CHAIN_IN_MON, clear_nhwindow, discover, display_nhwindow, exit_nhwindows, getmsghistory, mark_synch, wizard } from './nhprop.js';
+import {
+    BALL_IN_MON, CHAIN_IN_MON, clear_nhwindow, discover, display_nhwindow, exit_nhwindows,
+    getmsghistory, mark_synch, wizard
+} from './nhprop.js';
 import { windowprocs } from './windows.js';
-import { WIN_MESSAGE, a11y, flags, gb, gf, gg, gh, gi, gl, gm, go, gs, gu, iflags, program_state, svc, svd, svh, svk, svl, svm, svn, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain, urealtime, ynchars } from './decl.js';
+import {
+    WIN_MESSAGE, a11y, flags, gb, gf, gg, gh, gi, gl, gm, go, gs, gu, iflags, program_state, svc,
+    svd, svh, svk, svl, svm, svn, svp, svq, svr, svs, svu, svw, u, uball, ubirthday, uchain,
+    urealtime, ynchars
+} from './decl.js';
 import { cmdbind_freeall, cmdq_clear, yn_function } from './cmd.js';
 import { nomul } from './hack.js';
 import { There, dumplogfreemessages, free_youbuf, impossible, pline } from './pline.js';
 import { soundprocs } from './sounds.js';
 import { done, done_object_cleanup, nh_terminate, panic, save_killers } from './end.js';
 import { docrt, tmp_at } from './display.js';
-import { close_nhfile, create_levelfile, create_savefile, debugcore, delete_levelfile, delete_savefile, fqname, free_convert_filenames, get_freeing_nhfile, nh_compress, nh_sfconvert, nh_uncompress, open_levelfile, open_savefile, save_savefile_name } from './files.js';
+import {
+    close_nhfile, create_levelfile, create_savefile, debugcore, delete_levelfile, delete_savefile,
+    fqname, free_convert_filenames, get_freeing_nhfile, nh_compress, nh_sfconvert, nh_uncompress,
+    open_levelfile, open_savefile, save_savefile_name
+} from './files.js';
 import { free_nhuuid, sethanguphandler } from './unixmain.js';
 import { vision_recalc } from './vision.js';
 import { change_luck } from './attrib.js';
 import { store_version } from './version.js';
 import { ledger_no, maxledgerno, save_dungeon, save_exclusions } from './dungeon.js';
 import { alloc_itermonarr, dealloc_monst, dmonsfree, mon_animal_list, set_ustuck } from './mon.js';
-import { getlev, moves_to_relative_time, relative_time_to_moves, rest_adjust_levelflags } from './restore.js';
-import { sfi_int, sfo_cemetery, sfo_char, sfo_context_info, sfo_damage, sfo_dest_area, sfo_ebones, sfo_edog, sfo_egd, sfo_emin, sfo_epri, sfo_eshk, sfo_flag, sfo_fruit, sfo_gamelog_line, sfo_int, sfo_int32, sfo_levelflags, sfo_long, sfo_monst, sfo_mvitals, sfo_nhcoord, sfo_obj, sfo_q_score, sfo_rm, sfo_s_level, sfo_schar, sfo_spell, sfo_stairway, sfo_trap, sfo_ulong, sfo_unsigned, sfo_xint8, sfo_you } from './sfbase.js';
+import {
+    getlev, moves_to_relative_time, relative_time_to_moves, rest_adjust_levelflags
+} from './restore.js';
+import {
+    sfi_int, sfo_cemetery, sfo_char, sfo_context_info, sfo_damage, sfo_dest_area, sfo_ebones,
+    sfo_edog, sfo_egd, sfo_emin, sfo_epri, sfo_eshk, sfo_flag, sfo_fruit, sfo_gamelog_line, sfo_int,
+    sfo_int32, sfo_levelflags, sfo_long, sfo_monst, sfo_mvitals, sfo_nhcoord, sfo_obj, sfo_q_score,
+    sfo_rm, sfo_s_level, sfo_schar, sfo_spell, sfo_stairway, sfo_trap, sfo_ulong, sfo_unsigned,
+    sfo_xint8, sfo_you
+} from './sfbase.js';
 import { Strlen_ } from './strutil.js';
 import { getnow, yyyymmddhhmmss } from './calendar.js';
 import { timet_delta } from './allmain.js';
@@ -51,7 +70,10 @@ import { aligns, genders } from './role.js';
 import { free_maildata } from './mail.js';
 import { free_menu_coloring } from './coloratt.js';
 import { free_invbuf } from './invent.js';
-import { free_autopickup_exceptions, freeroleoptvals, msgtype_free, options_free_window_colors, options_set_window_colors_flag } from './options.js';
+import {
+    free_autopickup_exceptions, freeroleoptvals, msgtype_free, options_free_window_colors,
+    options_set_window_colors_flag
+} from './options.js';
 import { free_symsets, savedsym_free } from './symbols.js';
 import { free_glyphid_cache, glyphid_cache_status, purge_all_custom_entries } from './glyphs.js';
 import { free_rect } from './rect.js';
@@ -63,96 +85,108 @@ import { sysopt_release } from './sys.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_filecode,
-    $NHFILE_fplog = FLD.NHFILE_fplog, $NHFILE_mode = FLD.NHFILE_mode, $NHFILE_rcount = FLD.NHFILE_rcount,
-    $NHFILE_structlevel = FLD.NHFILE_structlevel, $NHFILE_wcount = FLD.NHFILE_wcount,
-    $Race_filecode = FLD.Race_filecode, $Role_filecode = FLD.Role_filecode,
-    $accessibility_data_mon_notices_blocked = FLD.accessibility_data_mon_notices_blocked,
-    $book_info_o_id = FLD.book_info_o_id, $context_info_digging = FLD.context_info_digging,
-    $context_info_polearm = FLD.context_info_polearm, $context_info_seer_turn = FLD.context_info_seer_turn,
-    $context_info_spbook = FLD.context_info_spbook, $context_info_tin = FLD.context_info_tin,
-    $context_info_victual = FLD.context_info_victual, $d_level_dlevel = FLD.d_level_dlevel,
-    $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
-    $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
-    $dig_info_lastdigtime = FLD.dig_info_lastdigtime, $dlevel_t_bonesinfo = FLD.dlevel_t_bonesinfo,
-    $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist, $dlevel_t_damagelist = FLD.dlevel_t_damagelist,
-    $dlevel_t_flags = FLD.dlevel_t_flags, $dlevel_t_monlist = FLD.dlevel_t_monlist,
-    $dlevel_t_objlist = FLD.dlevel_t_objlist, $edog_droptime = FLD.edog_droptime,
-    $edog_hungrytime = FLD.edog_hungrytime, $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore,
-    $flag_female = FLD.flag_female, $flag_friday13 = FLD.flag_friday13, $flag_ins_chkpt = FLD.flag_ins_chkpt,
-    $flag_moonphase = FLD.flag_moonphase, $fruit_fid = FLD.fruit_fid, $fruit_nextf = FLD.fruit_nextf,
-    $gamelog_line_next = FLD.gamelog_line_next, $gamelog_line_text = FLD.gamelog_line_text,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_purge_monsters = FLD.instance_flags_purge_monsters,
-    $instance_flags_save_uburied = FLD.instance_flags_save_uburied,
-    $instance_flags_save_uinwater = FLD.instance_flags_save_uinwater,
-    $instance_flags_save_uswallow = FLD.instance_flags_save_uswallow,
-    $instance_flags_wc_font_map = FLD.instance_flags_wc_font_map,
-    $instance_flags_wc_font_menu = FLD.instance_flags_wc_font_menu,
-    $instance_flags_wc_font_message = FLD.instance_flags_wc_font_message,
-    $instance_flags_wc_font_status = FLD.instance_flags_wc_font_status,
-    $instance_flags_wc_font_text = FLD.instance_flags_wc_font_text,
-    $instance_flags_wc_tile_file = FLD.instance_flags_wc_tile_file,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_globals_b_billobjs = FLD.instance_globals_b_billobjs,
-    $instance_globals_f_ffruit = FLD.instance_globals_f_ffruit,
-    $instance_globals_g_gamelog = FLD.instance_globals_g_gamelog,
-    $instance_globals_h_havestate = FLD.instance_globals_h_havestate,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_l_looseball = FLD.instance_globals_l_looseball,
-    $instance_globals_l_loosechain = FLD.instance_globals_l_loosechain,
-    $instance_globals_m_migrating_mons = FLD.instance_globals_m_migrating_mons,
-    $instance_globals_m_migrating_objs = FLD.instance_globals_m_migrating_objs,
-    $instance_globals_m_multi = FLD.instance_globals_m_multi,
-    $instance_globals_m_mydogs = FLD.instance_globals_m_mydogs,
-    $instance_globals_s_SAVEF = FLD.instance_globals_s_SAVEF,
-    $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
-    $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
-    $instance_globals_saved_d_doors = FLD.instance_globals_saved_d_doors,
-    $instance_globals_saved_d_doors_alloc = FLD.instance_globals_saved_d_doors_alloc,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_l_level_info = FLD.instance_globals_saved_l_level_info,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
-    $instance_globals_saved_n_nhuuid = FLD.instance_globals_saved_n_nhuuid,
-    $instance_globals_saved_p_pl_character = FLD.instance_globals_saved_p_pl_character,
-    $instance_globals_saved_p_pl_fruit = FLD.instance_globals_saved_p_pl_fruit,
-    $instance_globals_saved_s_sp_levchn = FLD.instance_globals_saved_s_sp_levchn,
-    $instance_globals_saved_w_wtreserved = FLD.instance_globals_saved_w_wtreserved,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_u_uz_save = FLD.instance_globals_u_uz_save, $kinfo_name = FLD.kinfo_name,
-    $levelflags_stasis_until = FLD.levelflags_stasis_until, $mextra_ebones = FLD.mextra_ebones,
-    $mextra_edog = FLD.mextra_edog, $mextra_egd = FLD.mextra_egd, $mextra_emin = FLD.mextra_emin,
-    $mextra_epri = FLD.mextra_epri, $mextra_eshk = FLD.mextra_eshk, $mextra_mcorpsenm = FLD.mextra_mcorpsenm,
-    $monst_data = FLD.monst_data, $monst_ispriest = FLD.monst_ispriest, $monst_m_id = FLD.monst_m_id,
-    $monst_mextra = FLD.monst_mextra, $monst_minvent = FLD.monst_minvent, $monst_mnum = FLD.monst_mnum,
-    $monst_mtemplit = FLD.monst_mtemplit, $obj_cobj = FLD.obj_cobj, $obj_corpsenm = FLD.obj_corpsenm,
-    $obj_lamplit = FLD.obj_lamplit, $obj_o_id = FLD.obj_o_id, $obj_oextra = FLD.obj_oextra,
-    $obj_owornmask = FLD.obj_owornmask, $obj_timed = FLD.obj_timed, $obj_where = FLD.obj_where,
-    $oextra_omailcmd = FLD.oextra_omailcmd, $oextra_omid = FLD.oextra_omid,
-    $oextra_omonst = FLD.oextra_omonst, $permonst_pmidx = FLD.permonst_pmidx,
-    $polearm_info_m_id = FLD.polearm_info_m_id, $sinfo_done_hup = FLD.sinfo_done_hup,
-    $sinfo_freeingdata = FLD.sinfo_freeingdata, $sinfo_restoring = FLD.sinfo_restoring,
-    $sinfo_savefile_completed = FLD.sinfo_savefile_completed, $sinfo_saving = FLD.sinfo_saving,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_Align = FLD.sizeof_Align,
-    $sizeof_Gender = FLD.sizeof_Gender, $sizeof_fruit = FLD.sizeof_fruit, $sizeof_linfo = FLD.sizeof_linfo,
-    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $sizeof_spell = FLD.sizeof_spell, $sizeof_trap = FLD.sizeof_trap,
-    $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound, $stairway_next = FLD.stairway_next,
-    $stairway_tolev = FLD.stairway_tolev, $tin_info_o_id = FLD.tin_info_o_id, $trap_dst = FLD.trap_dst,
-    $u_realtime_finish_time = FLD.u_realtime_finish_time,
-    $u_realtime_start_timing = FLD.u_realtime_start_timing, $victual_info_o_id = FLD.victual_info_o_id,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
-    $window_procs_win_getmsghistory = FLD.window_procs_win_getmsghistory,
-    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
-    $window_procs_wincap2 = FLD.window_procs_wincap2, $you_ualign = FLD.you_ualign,
-    $you_uburied = FLD.you_uburied, $you_uhp = FLD.you_uhp, $you_uinvulnerable = FLD.you_uinvulnerable,
-    $you_uinwater = FLD.you_uinwater, $you_usteed = FLD.you_usteed, $you_usteed_mid = FLD.you_usteed_mid,
-    $you_ustuck = FLD.you_ustuck, $you_ustuck_mid = FLD.you_ustuck_mid, $you_uswallow = FLD.you_uswallow,
-    $you_uz = FLD.you_uz;
+      $NHFILE_fplog = FLD.NHFILE_fplog, $NHFILE_mode = FLD.NHFILE_mode,
+      $NHFILE_rcount = FLD.NHFILE_rcount, $NHFILE_structlevel = FLD.NHFILE_structlevel,
+      $NHFILE_wcount = FLD.NHFILE_wcount, $Race_filecode = FLD.Race_filecode,
+      $Role_filecode = FLD.Role_filecode,
+      $accessibility_data_mon_notices_blocked = FLD.accessibility_data_mon_notices_blocked,
+      $book_info_o_id = FLD.book_info_o_id, $context_info_digging = FLD.context_info_digging,
+      $context_info_polearm = FLD.context_info_polearm,
+      $context_info_seer_turn = FLD.context_info_seer_turn,
+      $context_info_spbook = FLD.context_info_spbook, $context_info_tin = FLD.context_info_tin,
+      $context_info_victual = FLD.context_info_victual, $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
+      $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
+      $dig_info_lastdigtime = FLD.dig_info_lastdigtime,
+      $dlevel_t_bonesinfo = FLD.dlevel_t_bonesinfo,
+      $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist,
+      $dlevel_t_damagelist = FLD.dlevel_t_damagelist, $dlevel_t_flags = FLD.dlevel_t_flags,
+      $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_objlist = FLD.dlevel_t_objlist,
+      $edog_droptime = FLD.edog_droptime, $edog_hungrytime = FLD.edog_hungrytime,
+      $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore,
+      $flag_female = FLD.flag_female, $flag_friday13 = FLD.flag_friday13,
+      $flag_ins_chkpt = FLD.flag_ins_chkpt, $flag_moonphase = FLD.flag_moonphase,
+      $fruit_fid = FLD.fruit_fid, $fruit_nextf = FLD.fruit_nextf,
+      $gamelog_line_next = FLD.gamelog_line_next, $gamelog_line_text = FLD.gamelog_line_text,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_purge_monsters = FLD.instance_flags_purge_monsters,
+      $instance_flags_save_uburied = FLD.instance_flags_save_uburied,
+      $instance_flags_save_uinwater = FLD.instance_flags_save_uinwater,
+      $instance_flags_save_uswallow = FLD.instance_flags_save_uswallow,
+      $instance_flags_wc_font_map = FLD.instance_flags_wc_font_map,
+      $instance_flags_wc_font_menu = FLD.instance_flags_wc_font_menu,
+      $instance_flags_wc_font_message = FLD.instance_flags_wc_font_message,
+      $instance_flags_wc_font_status = FLD.instance_flags_wc_font_status,
+      $instance_flags_wc_font_text = FLD.instance_flags_wc_font_text,
+      $instance_flags_wc_tile_file = FLD.instance_flags_wc_tile_file,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_globals_b_billobjs = FLD.instance_globals_b_billobjs,
+      $instance_globals_f_ffruit = FLD.instance_globals_f_ffruit,
+      $instance_globals_g_gamelog = FLD.instance_globals_g_gamelog,
+      $instance_globals_h_havestate = FLD.instance_globals_h_havestate,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_l_looseball = FLD.instance_globals_l_looseball,
+      $instance_globals_l_loosechain = FLD.instance_globals_l_loosechain,
+      $instance_globals_m_migrating_mons = FLD.instance_globals_m_migrating_mons,
+      $instance_globals_m_migrating_objs = FLD.instance_globals_m_migrating_objs,
+      $instance_globals_m_multi = FLD.instance_globals_m_multi,
+      $instance_globals_m_mydogs = FLD.instance_globals_m_mydogs,
+      $instance_globals_s_SAVEF = FLD.instance_globals_s_SAVEF,
+      $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
+      $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
+      $instance_globals_saved_d_doors = FLD.instance_globals_saved_d_doors,
+      $instance_globals_saved_d_doors_alloc = FLD.instance_globals_saved_d_doors_alloc,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_l_level_info = FLD.instance_globals_saved_l_level_info,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+      $instance_globals_saved_n_nhuuid = FLD.instance_globals_saved_n_nhuuid,
+      $instance_globals_saved_p_pl_character = FLD.instance_globals_saved_p_pl_character,
+      $instance_globals_saved_p_pl_fruit = FLD.instance_globals_saved_p_pl_fruit,
+      $instance_globals_saved_s_sp_levchn = FLD.instance_globals_saved_s_sp_levchn,
+      $instance_globals_saved_w_wtreserved = FLD.instance_globals_saved_w_wtreserved,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_u_uz_save = FLD.instance_globals_u_uz_save, $kinfo_name = FLD.kinfo_name,
+      $levelflags_stasis_until = FLD.levelflags_stasis_until, $mextra_ebones = FLD.mextra_ebones,
+      $mextra_edog = FLD.mextra_edog, $mextra_egd = FLD.mextra_egd, $mextra_emin = FLD.mextra_emin,
+      $mextra_epri = FLD.mextra_epri, $mextra_eshk = FLD.mextra_eshk,
+      $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $monst_data = FLD.monst_data,
+      $monst_ispriest = FLD.monst_ispriest, $monst_m_id = FLD.monst_m_id,
+      $monst_mextra = FLD.monst_mextra, $monst_minvent = FLD.monst_minvent,
+      $monst_mnum = FLD.monst_mnum, $monst_mtemplit = FLD.monst_mtemplit, $obj_cobj = FLD.obj_cobj,
+      $obj_corpsenm = FLD.obj_corpsenm, $obj_lamplit = FLD.obj_lamplit, $obj_o_id = FLD.obj_o_id,
+      $obj_oextra = FLD.obj_oextra, $obj_owornmask = FLD.obj_owornmask, $obj_timed = FLD.obj_timed,
+      $obj_where = FLD.obj_where, $oextra_omailcmd = FLD.oextra_omailcmd,
+      $oextra_omid = FLD.oextra_omid, $oextra_omonst = FLD.oextra_omonst,
+      $permonst_pmidx = FLD.permonst_pmidx, $polearm_info_m_id = FLD.polearm_info_m_id,
+      $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_freeingdata = FLD.sinfo_freeingdata,
+      $sinfo_restoring = FLD.sinfo_restoring,
+      $sinfo_savefile_completed = FLD.sinfo_savefile_completed, $sinfo_saving = FLD.sinfo_saving,
+      $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+      $sizeof_Align = FLD.sizeof_Align, $sizeof_Gender = FLD.sizeof_Gender,
+      $sizeof_fruit = FLD.sizeof_fruit, $sizeof_linfo = FLD.sizeof_linfo,
+      $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_spell = FLD.sizeof_spell,
+      $sizeof_trap = FLD.sizeof_trap,
+      $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
+      $stairway_next = FLD.stairway_next, $stairway_tolev = FLD.stairway_tolev,
+      $tin_info_o_id = FLD.tin_info_o_id, $trap_dst = FLD.trap_dst,
+      $u_realtime_finish_time = FLD.u_realtime_finish_time,
+      $u_realtime_start_timing = FLD.u_realtime_start_timing,
+      $victual_info_o_id = FLD.victual_info_o_id,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+      $window_procs_win_getmsghistory = FLD.window_procs_win_getmsghistory,
+      $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+      $window_procs_wincap2 = FLD.window_procs_wincap2, $you_ualign = FLD.you_ualign,
+      $you_uburied = FLD.you_uburied, $you_uhp = FLD.you_uhp,
+      $you_uinvulnerable = FLD.you_uinvulnerable, $you_uinwater = FLD.you_uinwater,
+      $you_usteed = FLD.you_usteed, $you_usteed_mid = FLD.you_usteed_mid,
+      $you_ustuck = FLD.you_ustuck, $you_ustuck_mid = FLD.you_ustuck_mid,
+      $you_uswallow = FLD.you_uswallow, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_really_save = cptr.lit("Really save?");
@@ -260,7 +294,12 @@ export function dosave() {
         pline(__s_saving);
         cptr.stI32o(program_state, $sinfo_done_hup, 0);
         if (dosave0()) {
-            (cptr.stI32o(program_state, $sinfo_savefile_completed, cptr.ldI32o(program_state, $sinfo_savefile_completed) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_savefile_completed,
+                cptr.ldI32o(program_state, $sinfo_savefile_completed) + 1
+            )) -
+                    (1);
             cptr.stI32o(u, $you_uhp, -1);  /* universal game's over indicator */
             if (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))
                 (cptr.ldPtro(soundprocs, $sound_procs_sound_exit_nhsound))(__s_dosave);
@@ -286,9 +325,15 @@ export function dosave0() {
     let res = 0;
     __lbl_done: {
 
-        (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) - (1);  /* inhibit status and perm_invent updates */
+        (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) -
+                (1);  /* inhibit status and perm_invent updates */
         {
-            (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
+            (cptr.stI32o(
+                a11y,
+                $accessibility_data_mon_notices_blocked,
+                cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1
+            )) -
+                    (1);
         }
         /* we may get here via hangup signal, in which case we want to fix up
            a few of things before saving so that they won't be restored in
@@ -306,7 +351,8 @@ export function dosave0() {
            when punished, make sure ball and chain are placed too */
         done_object_cleanup();  /* maybe force some items onto map */
 
-        if (!cptr.ldI32o(program_state, $sinfo_something_worth_saving) || !cptr.ld1so2(gs, 0, 1, $instance_globals_s_SAVEF))
+        if (!cptr.ldI32o(program_state, $sinfo_something_worth_saving) ||
+                !cptr.ld1so2(gs, 0, 1, $instance_globals_s_SAVEF))
             break __lbl_done;
 
         fq_save = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 1);  /* level files take 0 */
@@ -321,7 +367,12 @@ export function dosave0() {
                     close_nhfile(nhfp);
                     clear_nhwindow()(WIN_MESSAGE.v);
                     There(__s_seems_to_be_an_old_save_file);
-                    if (yn_function(__s_overwrite_the_old_file, cptr.decay(ynchars), 110, 1) == 110) {
+                    if (yn_function(
+                        __s_overwrite_the_old_file,
+                        cptr.decay(ynchars),
+                        110,
+                        1
+                    ) == 110) {
                         nh_sfconvert(fq_save);
                         nh_compress(fq_save);
                         break __lbl_done;
@@ -385,7 +436,8 @@ export function dosave0() {
         for (ltmp.v = 1; ltmp.v <= maxledgerno(); ltmp.v++) {
             if (ltmp.v == ledger_no(cptr.add(gu, $instance_globals_u_uz_save)))
                 continue;
-            if (!(cptr.ld1uo2(svl, ltmp.v, $sizeof_linfo, $instance_globals_saved_l_level_info) & NHM.LFILE_EXISTS))
+            if (!(cptr.ld1uo2(svl, ltmp.v, $sizeof_linfo, $instance_globals_saved_l_level_info) &
+                    NHM.LFILE_EXISTS))
                 continue;
             onhfp = open_levelfile(ltmp.v, cptr.decay(whynot));
             if (!onhfp) {
@@ -409,7 +461,11 @@ export function dosave0() {
         close_nhfile(nhfp);
 
         cptr.memcpy(cptr.add(u, $you_uz), cptr.add(gu, $instance_globals_u_uz_save), 4);
-        cptr.stI16o(gu, $instance_globals_u_uz_save, cptr.stI16o(gu, $instance_globals_u_uz_save + $d_level_dlevel, 0));
+        cptr.stI16o(
+            gu,
+            $instance_globals_u_uz_save,
+            cptr.stI16o(gu, $instance_globals_u_uz_save + $d_level_dlevel, 0)
+        );
 
         /* get rid of current level --jgm */
         delete_levelfile(ledger_no(cptr.add(u, $you_uz)));
@@ -421,12 +477,17 @@ export function dosave0() {
         res = 1;
     }
     {
-        if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
+        if (cptr.stI32o(
+            a11y,
+            $accessibility_data_mon_notices_blocked,
+            cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1
+        ) < 0) {
             impossible(__s_mon_notices_blocked_0);
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
     }
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
+    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) -
+            (-1);
     return res;
 }
 
@@ -463,7 +524,8 @@ function savegamestate(nhfp) {
     let i;
     let uid = cptr.box(0n);
 
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) - (1);  /* caller should/did already set this... */
+    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) -
+            (1);  /* caller should/did already set this... */
     uid.v = BigInt(getuid() >>> 0);
     sfo_ulong(nhfp, uid, __s_gamestate_uid);
     ;
@@ -478,7 +540,14 @@ function savegamestate(nhfp) {
 
     sfo_flag(nhfp, flags, __s_gamestate_flags);
     cptr.stI64o(urealtime, $u_realtime_finish_time, getnow());
-    cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(cptr.ldI64o(urealtime, $u_realtime_finish_time), cptr.ldI64o(urealtime, $u_realtime_start_timing)));
+    cptr.stI64(
+        urealtime,
+        cptr.ldI64(urealtime) +
+            timet_delta(
+                cptr.ldI64o(urealtime, $u_realtime_finish_time),
+                cptr.ldI64o(urealtime, $u_realtime_start_timing)
+            )
+    );
     sfo_long(nhfp, svw, __s_wreserve);
     ;
     sfo_int32(nhfp, cptr.add(svw, $instance_globals_saved_w_wtreserved), __s_wtreserved);
@@ -486,9 +555,18 @@ function savegamestate(nhfp) {
     sfo_char(nhfp, yyyymmddhhmmss(ubirthday.v), __s_gamestate_ubirthday, 14);
     sfo_long(nhfp, urealtime, __s_gamestate_realtime);
     ;
-    sfo_char(nhfp, yyyymmddhhmmss(cptr.ldI64o(urealtime, $u_realtime_start_timing)), __s_gamestate_start_timing, 14);
+    sfo_char(
+        nhfp,
+        yyyymmddhhmmss(cptr.ldI64o(urealtime, $u_realtime_start_timing)),
+        __s_gamestate_start_timing,
+        14
+    );
     /* this is the value to use for the next update of urealtime.realtime */
-    cptr.stI64o(urealtime, $u_realtime_start_timing, cptr.ldI64o(urealtime, $u_realtime_finish_time));
+    cptr.stI64o(
+        urealtime,
+        $u_realtime_start_timing,
+        cptr.ldI64o(urealtime, $u_realtime_finish_time)
+    );
     save_killers(nhfp);
 
     /* must come before gm.migrating_objs and gm.migrating_mons are freed */
@@ -507,9 +585,17 @@ function savegamestate(nhfp) {
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
         cptr.stPtro(gm, $instance_globals_m_migrating_mons, null);
     for (i = 0; i < NHC.NUMMONS; ++i) {
-        sfo_mvitals(nhfp, cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, $sizeof_mvitals), __s_gamestate_mvitals);
+        sfo_mvitals(
+            nhfp,
+            cptr.add(cptr.add(svm, $instance_globals_saved_m_mvitals), i, $sizeof_mvitals),
+            __s_gamestate_mvitals
+        );
     }
-    save_dungeon(nhfp, schar((!!(cptr.ldI32o((nhfp), $NHFILE_mode) & 3))), schar((!!(cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))));
+    save_dungeon(
+        nhfp,
+        schar((!!(cptr.ldI32o((nhfp), $NHFILE_mode) & 3))),
+        schar((!!(cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)))
+    );
     savelevchn(nhfp);
     sfo_q_score(nhfp, svq, __s_gamestate_quest_status);
     for (i = 0; i < ((NHC.MAXSPELL + 1) | 0); ++i) {
@@ -517,7 +603,12 @@ function savegamestate(nhfp) {
     }
     save_artifacts(nhfp);
     save_oracles(nhfp);
-    sfo_char(nhfp, cptr.add(svp, $instance_globals_saved_p_pl_character), __s_gamestate_pl_character, 32);
+    sfo_char(
+        nhfp,
+        cptr.add(svp, $instance_globals_saved_p_pl_character),
+        __s_gamestate_pl_character,
+        32
+    );
     sfo_char(nhfp, cptr.add(svp, $instance_globals_saved_p_pl_fruit), __s_gamestate_pl_fruit, 32);
     savefruitchn(nhfp);
     savenames(nhfp);
@@ -526,7 +617,8 @@ function savegamestate(nhfp) {
     save_luadata(nhfp);
     if (cptr.ld1so(nhfp, $NHFILE_structlevel))
         bflush(cptr.ldI32(nhfp));
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
+    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) -
+            (-1);
     return;
 }
 
@@ -549,7 +641,8 @@ export function savestateinlock() {
     let whynot = new Uint8Array(256);
     let nhfp;
 
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) - (1);  /* inhibit status and perm_invent updates */
+    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) -
+            (1);  /* inhibit status and perm_invent updates */
     /* When checkpointing is on, the full state needs to be written
      * on each checkpoint.  When checkpointing is off, only the pid
      * needs to be in the level.0 file, so it does not need to be
@@ -570,14 +663,24 @@ export function savestateinlock() {
          */
         nhfp = open_levelfile(0, cptr.decay(whynot));
         if (tricked_fileremoved(nhfp, cptr.decay(whynot))) {
-            (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_saving,
+                cptr.ldI32o(program_state, $sinfo_saving) + -1
+            )) -
+                    (-1);
             return;
         }
 
         sfi_int(nhfp, hpid, __s_gamestate_hackpid);
         ;
         if (cptr.ldI32(svh) != hpid.v) {
-            void cptr.sprintf(cptr.decay(whynot), __s_level_0_pid_d_doesn_t_match_ours_d, hpid.v, cptr.ldI32(svh));
+            void cptr.sprintf(
+                cptr.decay(whynot),
+                __s_level_0_pid_d_doesn_t_match_ours_d,
+                hpid.v,
+                cptr.ldI32(svh)
+            );
             {
                 void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(whynot));
                 /* done(TRICKED) will return when running in wizard mode;
@@ -585,7 +688,12 @@ export function savestateinlock() {
                    than after so that screen updating behaves normally;
                    game data shouldn't be inconsistent yet, unlike it would
                    become midway through saving */
-                (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
+                (cptr.stI32o(
+                    program_state,
+                    $sinfo_saving,
+                    cptr.ldI32o(program_state, $sinfo_saving) + -1
+                )) -
+                        (-1);
                 done(NHC.TRICKED);
                 return;
             }
@@ -596,7 +704,12 @@ export function savestateinlock() {
         if (!nhfp) {
             pline(__s_pct_s, cptr.decay(whynot));
             void cptr.strcpy(cptr.add(svk, $kinfo_name), cptr.decay(whynot));
-            (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_saving,
+                cptr.ldI32o(program_state, $sinfo_saving) + -1
+            )) -
+                    (-1);
             done(NHC.TRICKED);
             return;
         }
@@ -618,14 +731,18 @@ export function savestateinlock() {
         }
         close_nhfile(nhfp);
     }
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
+    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) -
+            (-1);
     cptr.st1o(gh, $instance_globals_h_havestate, cptr.ld1so(flags, $flag_ins_chkpt));
     return;
 }
 
 /** C ref: save.c:429 — @param {CPtr<NHFILE>} nhfp @param {CInt} lev */
 export function savelev(nhfp, lev) {
-    let set_uz_save = schar((cptr.ldI16o(gu, $instance_globals_u_uz_save) == 0 && cptr.ldI16o(gu, $instance_globals_u_uz_save + $d_level_dlevel) == 0 ? 1 : 0));
+    let set_uz_save = schar((cptr.ldI16o(gu, $instance_globals_u_uz_save) == 0 &&
+        cptr.ldI16o(gu, $instance_globals_u_uz_save + $d_level_dlevel) == 0
+            ? 1
+            : 0));
 
     /* caller might have already set up gu.uz_save and zeroed u.uz;
        if not, we need to set it for save_bubbles(); caveat: if the
@@ -642,7 +759,11 @@ export function savelev(nhfp, lev) {
     savelev_core(nhfp, lev);
 
     if (set_uz_save)
-        cptr.stI16o(gu, $instance_globals_u_uz_save, cptr.stI16o(gu, $instance_globals_u_uz_save + $d_level_dlevel, 0));  /* unset */
+        cptr.stI16o(
+            gu,
+            $instance_globals_u_uz_save,
+            cptr.stI16o(gu, $instance_globals_u_uz_save + $d_level_dlevel, 0)
+        );  /* unset */
 }
 
 /** C ref: save.c:452 — @param {CPtr<NHFILE>} nhfp @param {CInt} lev */
@@ -654,7 +775,8 @@ function savelev_core(nhfp, lev) {
     let tmpc;
     __lbl_skip_lots: {
 
-        (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) - (1);  /* even if current mode is FREEING */
+        (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + 1)) -
+                (1);  /* even if current mode is FREEING */
 
         if (!nhfp)
             panic(__s_save_on_bad_file);  /* impossible */
@@ -688,7 +810,14 @@ function savelev_core(nhfp, lev) {
                 dobjsfree();  /* really free deleted objects */
 
             if (lev.v >= 0 && lev.v <= maxledgerno())
-                cptr.st1o2(svl, lev.v, $sizeof_linfo, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev.v, $sizeof_linfo, $instance_globals_saved_l_level_info) | NHM.VISITED);
+                cptr.st1o2(
+                    svl,
+                    lev.v,
+                    $sizeof_linfo,
+                    $instance_globals_saved_l_level_info,
+                    cptr.ld1uo2(svl, lev.v, $sizeof_linfo, $instance_globals_saved_l_level_info) |
+                        NHM.VISITED
+                );
             sfo_int(nhfp, svh, __s_gamestate_hackpid);
             sfo_xint8(nhfp, lev, __s_gamestate_dlvl);
             ;
@@ -717,7 +846,11 @@ function savelev_core(nhfp, lev) {
         sfo_dest_area(nhfp, svu, __s_lev_updest);
         sfo_dest_area(nhfp, cptr.add(svd, $instance_globals_saved_d_dndest), __s_lev_dndest);
         save_adjust_levelflags();
-        sfo_levelflags(nhfp, cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags), __s_lev_level_flags);
+        sfo_levelflags(
+            nhfp,
+            cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags),
+            __s_lev_level_flags
+        );
         rest_adjust_levelflags();
 
         sfo_int(nhfp, cptr.add(svd, $instance_globals_saved_d_doors_alloc), __s_lev_doors_alloc);
@@ -753,7 +886,8 @@ function savelev_core(nhfp, lev) {
         if (cptr.ld1so(nhfp, $NHFILE_structlevel))
             bflush(cptr.ldI32(nhfp));
     }
-    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) - (-1);
+    (cptr.stI32o(program_state, $sinfo_saving, cptr.ldI32o(program_state, $sinfo_saving) + -1)) -
+            (-1);
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
         clear_level_structures();
         cptr.stPtr(gf, null);
@@ -766,7 +900,10 @@ function savelev_core(nhfp, lev) {
 /** C ref: save.c:570 */
 export function save_adjust_levelflags() {
     /* adjust any timestamps */
-    moves_to_relative_time(cptr.add(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until));
+    moves_to_relative_time(cptr.add(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until
+    ));
 }
 
 /** C ref: save.c:577 — @param {CPtr<NHFILE>} nhfp */
@@ -776,7 +913,15 @@ function savelevl(nhfp) {
 
     for (x = 0; x < NHM.COLNO; x++) {
         for (y = 0; y < NHM.ROWNO; y++) {
-            sfo_rm(nhfp, cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm), __s_location_rm);
+            sfo_rm(
+                nhfp,
+                cptr.add(
+                    cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+                    y,
+                    $sizeof_rm
+                ),
+                __s_location_rm
+            );
         }
     }
     return;
@@ -794,7 +939,16 @@ function save_bubbles(nhfp, lev) {
        so that restore can determine whether they are present even when
        u.uz and ledger_no() aren't available to it yet */
     bbubbly.v = 0;
-    if (lev == ledger_no(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)) || lev == ledger_no(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))
+    if (lev ==
+        ledger_no(cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+        )) ||
+            lev ==
+                ledger_no(cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                )))
         bbubbly.v = lev;  /* non-zero */
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3))
         sfo_xint8(nhfp, bbubbly, __s_bubbles_bbubbly);
@@ -860,16 +1014,30 @@ function save_stairs(nhfp) {
 
     while (stway) {
         if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
-            let use_relative = schar((cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE && cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) ? 1 : 0));
+            let use_relative = schar((cptr.ldI32o(program_state, $sinfo_restoring) !=
+                NHC.REST_GSTATE &&
+                cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz)
+                    ? 1
+                    : 0));
             if (use_relative) {
                 /* make dlevel relative to current level */
-                cptr.stI16o(stway, $stairway_tolev + $d_level_dlevel, cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel) - cptr.ldI16o(u, $you_uz + $d_level_dlevel));
+                cptr.stI16o(
+                    stway,
+                    $stairway_tolev + $d_level_dlevel,
+                    cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel) -
+                        cptr.ldI16o(u, $you_uz + $d_level_dlevel)
+                );
             }
             sfo_int(nhfp, buflen, __s_stairs_staircount);
             sfo_stairway(nhfp, stway, __s_stairs_stairway);
             if (use_relative) {
                 /* reset stairway dlevel back to absolute */
-                cptr.stI16o(stway, $stairway_tolev + $d_level_dlevel, cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel) + cptr.ldI16o(u, $you_uz + $d_level_dlevel));
+                cptr.stI16o(
+                    stway,
+                    $stairway_tolev + $d_level_dlevel,
+                    cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel) +
+                        cptr.ldI16o(u, $you_uz + $d_level_dlevel)
+                );
             }
         }
         stway = cptr.ldPtro(stway, $stairway_next);
@@ -920,7 +1088,12 @@ function saveobj(nhfp, otmp) {
     sfo_int(nhfp, buflen, __s_obj_obj_length);
     sfo_obj(nhfp, otmp, __s_obj);
     if (cptr.ldPtro(otmp, $obj_oextra)) {
-        buflen.v = (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))) ? (Number(BigInt.asIntN(32, cptr.strlen((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra)))))) + 1) | 0 : 0;
+        buflen.v = (cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra)))
+                ? (Number(BigInt.asIntN(
+                    32,
+                    cptr.strlen((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))))
+                )) + 1) | 0
+                : 0;
         sfo_int(nhfp, buflen, __s_obj_oname_length);
 
         if (buflen.v > 0) {
@@ -933,10 +1106,20 @@ function saveobj(nhfp, otmp) {
             sfo_int(nhfp, zerobuf, __s_obj_omonst_length);
         }
         /* extra info about scroll of mail */
-        buflen.v = (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)) ? (Number(BigInt.asIntN(32, cptr.strlen((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd))))) + 1) | 0 : 0;
+        buflen.v = (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd))
+                ? (Number(BigInt.asIntN(
+                    32,
+                    cptr.strlen((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)))
+                )) + 1) | 0
+                : 0;
         sfo_int(nhfp, buflen, __s_obj_omailcmd_length);
         if (buflen.v > 0) {
-            sfo_char(nhfp, (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)), __s_obj_omailcmd, buflen.v);
+            sfo_char(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)),
+                __s_obj_omailcmd,
+                buflen.v
+            );
         }
         /* omid used to be indirect via a pointer in oextra but has
            become part of oextra itself; 0 means not applicable and
@@ -951,7 +1134,9 @@ function saveobj(nhfp, otmp) {
 function saveobjchn(nhfp, obj_p) {
     let otmp = cptr.ldPtr(obj_p);
     let otmp2;
-    let is_invent = schar((otmp && cptr.eq(otmp, cptr.ldPtro(gi, $instance_globals_i_invent)) ? 1 : 0));
+    let is_invent = schar((otmp && cptr.eq(otmp, cptr.ldPtro(gi, $instance_globals_i_invent))
+            ? 1
+            : 0));
     let minusone = cptr.box(-1);
 
     while (otmp) {
@@ -969,7 +1154,11 @@ function saveobjchn(nhfp, obj_p) {
              * the o_id in order to restore the pointer on reload.
              */
             if (cptr.eq(otmp, cptr.ldPtro(svc, $context_info_victual))) {
-                cptr.stI32o(svc, $context_info_victual + $victual_info_o_id, cptr.ldI32o(otmp, $obj_o_id));
+                cptr.stI32o(
+                    svc,
+                    $context_info_victual + $victual_info_o_id,
+                    cptr.ldI32o(otmp, $obj_o_id)
+                );
                 cptr.stPtro(svc, $context_info_victual, null);
             }
             if (cptr.eq(otmp, cptr.ldPtro(svc, $context_info_tin))) {
@@ -977,7 +1166,11 @@ function saveobjchn(nhfp, obj_p) {
                 cptr.stPtro(svc, $context_info_tin, null);
             }
             if (cptr.eq(otmp, cptr.ldPtro(svc, $context_info_spbook))) {
-                cptr.stI32o(svc, $context_info_spbook + $book_info_o_id, cptr.ldI32o(otmp, $obj_o_id));
+                cptr.stI32o(
+                    svc,
+                    $context_info_spbook + $book_info_o_id,
+                    cptr.ldI32o(otmp, $obj_o_id)
+                );
                 cptr.stPtro(svc, $context_info_spbook, null);
             }
             cptr.st1o(otmp, $obj_where, NHM.OBJ_FREE);  /* set to free so dealloc will work */
@@ -991,9 +1184,19 @@ function saveobjchn(nhfp, obj_p) {
             if ((cptr.ldI64o(otmp, $obj_owornmask) & 6291456n) != 0n)
                 setworn(null, cptr.ldI64o(otmp, $obj_owornmask) & 6291456n);
             cptr.stI64o(otmp, $obj_owornmask, 0n);  /* no longer care */
-            (cptr.stI32o(program_state, $sinfo_freeingdata, cptr.ldI32o(program_state, $sinfo_freeingdata) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_freeingdata,
+                cptr.ldI32o(program_state, $sinfo_freeingdata) + 1
+            )) -
+                    (1);
             dealloc_obj(otmp);
-            (cptr.stI32o(program_state, $sinfo_freeingdata, cptr.ldI32o(program_state, $sinfo_freeingdata) + -1)) - (-1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_freeingdata,
+                cptr.ldI32o(program_state, $sinfo_freeingdata) + -1
+            )) -
+                    (-1);
         }
         otmp = otmp2;
     }
@@ -1016,45 +1219,91 @@ function savemon(nhfp, mtmp) {
     sfo_int(nhfp, buflen, __s_monst_monst_length);
     sfo_monst(nhfp, mtmp, __s_monst);
     if (cptr.ldPtro(mtmp, $monst_mextra)) {
-        buflen.v = (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))) ? (Number(BigInt.asIntN(32, cptr.strlen((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))))) + 1) | 0 : 0;
+        buflen.v = (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))
+                ? (Number(BigInt.asIntN(
+                    32,
+                    cptr.strlen((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))
+                )) + 1) | 0
+                : 0;
         sfo_int(nhfp, buflen, __s_monst_mgivenname_length);
         if (buflen.v > 0) {
-            sfo_char(nhfp, (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))), __s_monst_mgivenname, buflen.v);
+            sfo_char(
+                nhfp,
+                (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))),
+                __s_monst_mgivenname,
+                buflen.v
+            );
         }
         buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)) ? 652 : 0;
         sfo_int(nhfp, buflen, __s_monst_egd_length);
         if (buflen.v > 0) {
-            sfo_egd(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)), __s_monst_egd);
+            sfo_egd(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)),
+                __s_monst_egd
+            );
         }
         buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)) ? 56 : 0;
         sfo_int(nhfp, buflen, __s_monst_epri_length);
         if (buflen.v > 0) {
-            sfo_epri(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)), __s_monst_epri);
+            sfo_epri(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_epri)),
+                __s_monst_epri
+            );
         }
         buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)) ? 4960 : 0;
         sfo_int(nhfp, buflen, __s_monst_eshk_length);
         if (buflen.v > 0) {
-            sfo_eshk(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), __s_monst_eshk);
+            sfo_eshk(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
+                __s_monst_eshk
+            );
         }
         buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)) ? 8 : 0;
         sfo_int(nhfp, buflen, __s_monst_emin_length);
         if (buflen.v > 0) {
-            sfo_emin(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)), __s_monst_emin);
+            sfo_emin(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_emin)),
+                __s_monst_emin
+            );
         }
         buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)) ? 64 : 0;
         sfo_int(nhfp, buflen, __s_monst_edog_length);
         if (buflen.v > 0) {
             /* we only store relative times in save and bones */
-            moves_to_relative_time(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_droptime));
-            moves_to_relative_time(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime));
-            sfo_edog(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), __s_monst_edog);
-            relative_time_to_moves(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_droptime));
-            relative_time_to_moves(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime));
+            moves_to_relative_time(cptr.add(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                $edog_droptime
+            ));
+            moves_to_relative_time(cptr.add(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                $edog_hungrytime
+            ));
+            sfo_edog(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                __s_monst_edog
+            );
+            relative_time_to_moves(cptr.add(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                $edog_droptime
+            ));
+            relative_time_to_moves(cptr.add(
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                $edog_hungrytime
+            ));
         }
         buflen.v = (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)) ? 36 : 0;
         sfo_int(nhfp, buflen, __s_monst_ebones_length);
         if (buflen.v > 0) {
-            sfo_ebones(nhfp, (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)), __s_monst_ebones);
+            sfo_ebones(
+                nhfp,
+                (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_ebones)),
+                __s_monst_ebones
+            );
         }
         /* mcorpsenm is inline int rather than pointer to something,
            so doesn't need to be preceded by a length field */
@@ -1071,7 +1320,11 @@ function savemonchn(nhfp, mtmp) {
     while (mtmp) {
         mtmp2 = cptr.ldPtr(mtmp);
         if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
-            cptr.stI16o(mtmp, $monst_mnum, (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)));
+            cptr.stI16o(
+                mtmp,
+                $monst_mnum,
+                (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx))
+            );
             if ((cptr.ldI32o(mtmp, $monst_ispriest) & 1))
                 forget_temple_entry(mtmp);  /* EPRI() */
             savemon(nhfp, mtmp);
@@ -1080,13 +1333,25 @@ function savemonchn(nhfp, mtmp) {
             saveobjchn(nhfp, cptr.add(mtmp, $monst_minvent));
         if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
             if (cptr.eq(mtmp, cptr.ldPtro(svc, $context_info_polearm))) {
-                cptr.stI32o(svc, $context_info_polearm + $polearm_info_m_id, cptr.ldI32o(mtmp, $monst_m_id));
+                cptr.stI32o(
+                    svc,
+                    $context_info_polearm + $polearm_info_m_id,
+                    cptr.ldI32o(mtmp, $monst_m_id)
+                );
                 cptr.stPtro(svc, $context_info_polearm, null);
             }
             if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck)))
-                cptr.stI32o(u, $you_ustuck_mid, cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_m_id));
+                cptr.stI32o(
+                    u,
+                    $you_ustuck_mid,
+                    cptr.ldI32o(cptr.ldPtro(u, $you_ustuck), $monst_m_id)
+                );
             if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed)))
-                cptr.stI32o(u, $you_usteed_mid, cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_m_id));
+                cptr.stI32o(
+                    u,
+                    $you_usteed_mid,
+                    cptr.ldI32o(cptr.ldPtro(u, $you_usteed), $monst_m_id)
+                );
             cptr.stPtr(mtmp, null);  /* nmon saved into mtmp2 */
             dealloc_monst(mtmp);
         }
@@ -1105,15 +1370,28 @@ function savetrapchn(nhfp, trap) {
     let trap2;
 
     while (trap) {
-        let use_relative = schar((cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE && cptr.ldI16o(trap, $trap_dst) == cptr.ldI16o(u, $you_uz) ? 1 : 0));
+        let use_relative = schar((cptr.ldI32o(program_state, $sinfo_restoring) != NHC.REST_GSTATE &&
+            cptr.ldI16o(trap, $trap_dst) == cptr.ldI16o(u, $you_uz)
+                ? 1
+                : 0));
         trap2 = cptr.ldPtr(trap);
         if (use_relative)
-            cptr.stI16o(trap, $trap_dst + $d_level_dlevel, cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) - cptr.ldI16o(u, $you_uz + $d_level_dlevel));  /* make it relative */
+            cptr.stI16o(
+                trap,
+                $trap_dst + $d_level_dlevel,
+                cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) -
+                    cptr.ldI16o(u, $you_uz + $d_level_dlevel)
+            );  /* make it relative */
         if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
             sfo_trap(nhfp, trap, __s_trap);
         }
         if (use_relative)
-            cptr.stI16o(trap, $trap_dst + $d_level_dlevel, cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) + cptr.ldI16o(u, $you_uz + $d_level_dlevel));  /* reset back to absolute */
+            cptr.stI16o(
+                trap,
+                $trap_dst + $d_level_dlevel,
+                cptr.ldI16o(trap, $trap_dst + $d_level_dlevel) +
+                    cptr.ldI16o(u, $you_uz + $d_level_dlevel)
+            );  /* reset back to absolute */
         if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING))
             cptr.free((trap));
         trap = trap2;
@@ -1158,7 +1436,11 @@ function savelevchn(nhfp) {
     let tmplev2;
     let cnt = cptr.box(0);
 
-    for (tmplev = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); tmplev; tmplev = cptr.ldPtr(tmplev))
+    for (
+        tmplev = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn);
+        tmplev;
+        tmplev = cptr.ldPtr(tmplev)
+    )
         cnt.v++;
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & 3)) {
         sfo_int(nhfp, cnt, __s_levchn_lev_count);
@@ -1182,17 +1464,35 @@ export function store_plname_in_file(nhfp) {
     let hero = new Uint8Array(49);  /* [PL_NSIZ + 4*(1+3) + 1] */
     let plsiztmp = cptr.box(49);
 
-    void __builtin___memset_chk(cptr.decay(hero), 0, 49n, __builtin_object_size(cptr.decay(hero), 0));
+    void __builtin___memset_chk(
+        cptr.decay(hero),
+        0,
+        49n,
+        __builtin_object_size(cptr.decay(hero), 0)
+    );
     /* augment svp.plname[]; the gender and alignment values reflect those
        in effect at time of saving rather than at start of game */
-    nh_snprintf(__s_store_plname_in_file, 1010, cptr.decay(hero), 49n, __s_s_3s_3s_3s_3s, svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), $sizeof_Gender, $Gender_filecode), cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, $sizeof_Align, $Align_filecode));
+    nh_snprintf(
+        __s_store_plname_in_file,
+        1010,
+        cptr.decay(hero),
+        49n,
+        __s_s_3s_3s_3s_3s,
+        svp,
+        cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode),
+        cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode),
+        cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female), $sizeof_Gender, $Gender_filecode),
+        cptr.ldPtro2(aligns, (1 - cptr.ld1so(u, $you_ualign)) | 0, $sizeof_Align, $Align_filecode)
+    );
     /* replace "-role-race..." with "\0role-race..." so that we can include
        or exclude the role-&c suffix easily, without worrying about whether
        plname contains any dashes; but don't rely on snprintf() for this */
     cptr.st1o(cptr.decay(hero), cptr.strlen(svp), 0, 1);
     /* insert playmode into final slot of hero[];
        'D','X','-' are the same characters as are used for paniclog entries */
-    (__builtin_expect(BigInt((!(cptr.ld1so(cptr.decay(hero), 47, 1) == 0))), 0n) ? __assert_rtn(__s_store_plname_in_file, __s_save_c, 1017, __s_hero_pl_nsiz_plus_1_1_0) : void 0);
+    (__builtin_expect(BigInt((!(cptr.ld1so(cptr.decay(hero), 47, 1) == 0))), 0n)
+            ? __assert_rtn(__s_store_plname_in_file, __s_save_c, 1017, __s_hero_pl_nsiz_plus_1_1_0)
+            : void 0);
     cptr.st1o(cptr.decay(hero), 48, schar((wizard() ? 68 : (discover() ? 88 : 45))), 1);
 
     if (cptr.ld1so(nhfp, $NHFILE_structlevel))
@@ -1277,10 +1577,22 @@ export function freedynamicdata() {
     save_killers(tnhfp);
     save_timers(tnhfp, NHM.RANGE_GLOBAL);
     save_light_sources(tnhfp, NHM.RANGE_GLOBAL);
-    (saveobjchn(tnhfp, cptr.add(gi, $instance_globals_i_invent)), cptr.stPtro(gi, $instance_globals_i_invent, null));
-    (saveobjchn(tnhfp, cptr.add(gm, $instance_globals_m_migrating_objs)), cptr.stPtro(gm, $instance_globals_m_migrating_objs, null));
-    (savemonchn(tnhfp, cptr.ldPtro(gm, $instance_globals_m_migrating_mons)), cptr.stPtro(gm, $instance_globals_m_migrating_mons, null));
-    (savemonchn(tnhfp, cptr.ldPtro(gm, $instance_globals_m_mydogs)), cptr.stPtro(gm, $instance_globals_m_mydogs, null));  /* ascension or dungeon escape */
+    (
+        saveobjchn(tnhfp, cptr.add(gi, $instance_globals_i_invent)),
+        cptr.stPtro(gi, $instance_globals_i_invent, null)
+    );
+    (
+        saveobjchn(tnhfp, cptr.add(gm, $instance_globals_m_migrating_objs)),
+        cptr.stPtro(gm, $instance_globals_m_migrating_objs, null)
+    );
+    (
+        savemonchn(tnhfp, cptr.ldPtro(gm, $instance_globals_m_migrating_mons)),
+        cptr.stPtro(gm, $instance_globals_m_migrating_mons, null)
+    );
+    (
+        savemonchn(tnhfp, cptr.ldPtro(gm, $instance_globals_m_mydogs)),
+        cptr.stPtro(gm, $instance_globals_m_mydogs, null)
+    );  /* ascension or dungeon escape */
     /* freelevchn();  --  [folded into free_dungeons()] */
     mon_animal_list(0);
     save_oracles(tnhfp);
@@ -1302,17 +1614,23 @@ export function freedynamicdata() {
 
     /* some pointers in iflags */
     if (cptr.ldPtro(iflags, $instance_flags_wc_font_map))
-        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_map)), cptr.stPtro(iflags, $instance_flags_wc_font_map, null);
+        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_map)),
+                cptr.stPtro(iflags, $instance_flags_wc_font_map, null);
     if (cptr.ldPtro(iflags, $instance_flags_wc_font_message))
-        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_message)), cptr.stPtro(iflags, $instance_flags_wc_font_message, null);
+        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_message)),
+                cptr.stPtro(iflags, $instance_flags_wc_font_message, null);
     if (cptr.ldPtro(iflags, $instance_flags_wc_font_text))
-        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_text)), cptr.stPtro(iflags, $instance_flags_wc_font_text, null);
+        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_text)),
+                cptr.stPtro(iflags, $instance_flags_wc_font_text, null);
     if (cptr.ldPtro(iflags, $instance_flags_wc_font_menu))
-        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_menu)), cptr.stPtro(iflags, $instance_flags_wc_font_menu, null);
+        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_menu)),
+                cptr.stPtro(iflags, $instance_flags_wc_font_menu, null);
     if (cptr.ldPtro(iflags, $instance_flags_wc_font_status))
-        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_status)), cptr.stPtro(iflags, $instance_flags_wc_font_status, null);
+        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_font_status)),
+                cptr.stPtro(iflags, $instance_flags_wc_font_status, null);
     if (cptr.ldPtro(iflags, $instance_flags_wc_tile_file))
-        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_tile_file)), cptr.stPtro(iflags, $instance_flags_wc_tile_file, null);
+        cptr.free(cptr.ldPtro(iflags, $instance_flags_wc_tile_file)),
+                cptr.stPtro(iflags, $instance_flags_wc_tile_file, null);
     free_autopickup_exceptions();
 
     /* miscellaneous */
@@ -1348,7 +1666,11 @@ export function freedynamicdata() {
 // 2 bindings: 2 rebound+refilled, 0 rebound, 0 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__static_savetrapchn_zerotrap), S(__static_savefruitchn_zerofruit)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__static_savetrapchn_zerotrap), S(__static_savefruitchn_zerofruit)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("save.js: __resetState before __captureState");

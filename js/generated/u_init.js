@@ -8,9 +8,15 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, bimanual, is_ammo, is_boots, is_cloak, is_gloves, is_graystone, is_helmet, is_launcher, is_missile, is_pole, is_shield, is_shirt, is_spear, is_suit, is_weptool } from './nhmacrofn.js';
+import {
+    Is_container, bimanual, is_ammo, is_boots, is_cloak, is_gloves, is_graystone, is_helmet,
+    is_launcher, is_missile, is_pole, is_shield, is_shirt, is_spear, is_suit, is_weptool
+} from './nhmacrofn.js';
 import { Race_switch, Role_switch, discover } from './nhprop.js';
-import { cg, flags, gi, gl, gn, gu, iflags, svb, svm, svs, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, ubirthday, uquiver, urealtime, uswapwep, uwep } from './decl.js';
+import {
+    cg, flags, gi, gl, gn, gu, iflags, svb, svm, svs, u, uarm, uarmc, uarmf, uarmg, uarmh, uarms,
+    uarmu, ubirthday, uquiver, urealtime, uswapwep, uwep
+} from './decl.js';
 import { discover_object } from './o_init.js';
 import { obj_descr, objects } from './objects.js';
 import { is_art } from './artifact.js';
@@ -39,51 +45,56 @@ import { find_ac } from './do_wear.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Align_value = FLD.Align_value, $Race_mnum = FLD.Race_mnum, $Role_mnum = FLD.Role_mnum,
-    $d_level_dlevel = FLD.d_level_dlevel, $def_skill_skmax = FLD.def_skill_skmax,
-    $flag_beginner = FLD.flag_beginner, $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female,
-    $flag_initalign = FLD.flag_initalign, $flag_initgend = FLD.flag_initgend,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_l_lastinvnr = FLD.instance_globals_l_lastinvnr,
-    $instance_globals_n_nocreate = FLD.instance_globals_n_nocreate,
-    $instance_globals_n_nocreate2 = FLD.instance_globals_n_nocreate2,
-    $instance_globals_n_nocreate3 = FLD.instance_globals_n_nocreate3,
-    $instance_globals_n_nocreate4 = FLD.instance_globals_n_nocreate4,
-    $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole, $inv_sub_item_otyp = FLD.inv_sub_item_otyp,
-    $inv_sub_subs_otyp = FLD.inv_sub_subs_otyp, $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed,
-    $obj_cknown = FLD.obj_cknown, $obj_cursed = FLD.obj_cursed, $obj_dknown = FLD.obj_dknown,
-    $obj_known = FLD.obj_known, $obj_lknown = FLD.obj_lknown, $obj_oclass = FLD.obj_oclass,
-    $obj_otrapped = FLD.obj_otrapped, $obj_otyp = FLD.obj_otyp, $obj_owt = FLD.obj_owt,
-    $obj_quan = FLD.obj_quan, $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe,
-    $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_charged = FLD.objclass_oc_charged,
-    $objclass_oc_class = FLD.objclass_oc_class, $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx,
-    $objclass_oc_magic = FLD.objclass_oc_magic, $objclass_oc_oc2 = FLD.objclass_oc_oc2,
-    $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $objclass_oc_uses_known = FLD.objclass_oc_uses_known,
-    $objdescr_oc_descr = FLD.objdescr_oc_descr, $prop_intrinsic = FLD.prop_intrinsic,
-    $sizeof_Align = FLD.sizeof_Align, $sizeof_def_skill = FLD.sizeof_def_skill,
-    $sizeof_inv_sub = FLD.sizeof_inv_sub, $sizeof_objclass = FLD.sizeof_objclass,
-    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_prop = FLD.sizeof_prop,
-    $sizeof_skills = FLD.sizeof_skills, $sizeof_spell = FLD.sizeof_spell, $sizeof_trobj = FLD.sizeof_trobj,
-    $sizeof_u_roleplay = FLD.sizeof_u_roleplay, $skills_advance = FLD.skills_advance,
-    $trobj_trbless = FLD.trobj_trbless, $trobj_trclass = FLD.trobj_trclass,
-    $trobj_trquan_max = FLD.trobj_trquan_max, $trobj_trquan_min = FLD.trobj_trquan_min,
-    $trobj_trspe = FLD.trobj_trspe, $u_roleplay_nudist = FLD.u_roleplay_nudist,
-    $u_roleplay_pauper = FLD.u_roleplay_pauper, $you_nv_range = FLD.you_nv_range,
-    $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase, $you_ublesscnt = FLD.you_ublesscnt,
-    $you_uen = FLD.you_uen, $you_ueninc = FLD.you_ueninc, $you_uenmax = FLD.you_uenmax,
-    $you_uenpeak = FLD.you_uenpeak, $you_ugrave_arise = FLD.you_ugrave_arise,
-    $you_uhandedness = FLD.you_uhandedness, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
-    $you_uhppeak = FLD.you_uhppeak, $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax,
-    $you_ulycn = FLD.you_ulycn, $you_umoney0 = FLD.you_umoney0, $you_umonnum = FLD.you_umonnum,
-    $you_umonster = FLD.you_umonster, $you_umortality = FLD.you_umortality, $you_umoved = FLD.you_umoved,
-    $you_unblind_telepat_range = FLD.you_unblind_telepat_range, $you_uprops = FLD.you_uprops,
-    $you_uroleplay = FLD.you_uroleplay, $you_uspellprot = FLD.you_uspellprot, $you_ustuck = FLD.you_ustuck,
-    $you_utolev = FLD.you_utolev, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0,
-    $you_weapon_skills = FLD.you_weapon_skills, $you_weapon_slots = FLD.you_weapon_slots,
-    $you_xray_range = FLD.you_xray_range;
+      $d_level_dlevel = FLD.d_level_dlevel, $def_skill_skmax = FLD.def_skill_skmax,
+      $flag_beginner = FLD.flag_beginner, $flag_explore = FLD.flag_explore,
+      $flag_female = FLD.flag_female, $flag_initalign = FLD.flag_initalign,
+      $flag_initgend = FLD.flag_initgend, $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_l_lastinvnr = FLD.instance_globals_l_lastinvnr,
+      $instance_globals_n_nocreate = FLD.instance_globals_n_nocreate,
+      $instance_globals_n_nocreate2 = FLD.instance_globals_n_nocreate2,
+      $instance_globals_n_nocreate3 = FLD.instance_globals_n_nocreate3,
+      $instance_globals_n_nocreate4 = FLD.instance_globals_n_nocreate4,
+      $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $inv_sub_item_otyp = FLD.inv_sub_item_otyp, $inv_sub_subs_otyp = FLD.inv_sub_subs_otyp,
+      $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed, $obj_cknown = FLD.obj_cknown,
+      $obj_cursed = FLD.obj_cursed, $obj_dknown = FLD.obj_dknown, $obj_known = FLD.obj_known,
+      $obj_lknown = FLD.obj_lknown, $obj_oclass = FLD.obj_oclass, $obj_otrapped = FLD.obj_otrapped,
+      $obj_otyp = FLD.obj_otyp, $obj_owt = FLD.obj_owt, $obj_quan = FLD.obj_quan,
+      $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe, $objclass_oc_big = FLD.objclass_oc_big,
+      $objclass_oc_charged = FLD.objclass_oc_charged, $objclass_oc_class = FLD.objclass_oc_class,
+      $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx,
+      $objclass_oc_magic = FLD.objclass_oc_magic, $objclass_oc_oc2 = FLD.objclass_oc_oc2,
+      $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
+      $objclass_oc_uses_known = FLD.objclass_oc_uses_known,
+      $objdescr_oc_descr = FLD.objdescr_oc_descr, $prop_intrinsic = FLD.prop_intrinsic,
+      $sizeof_Align = FLD.sizeof_Align, $sizeof_def_skill = FLD.sizeof_def_skill,
+      $sizeof_inv_sub = FLD.sizeof_inv_sub, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_prop = FLD.sizeof_prop,
+      $sizeof_skills = FLD.sizeof_skills, $sizeof_spell = FLD.sizeof_spell,
+      $sizeof_trobj = FLD.sizeof_trobj, $sizeof_u_roleplay = FLD.sizeof_u_roleplay,
+      $skills_advance = FLD.skills_advance, $trobj_trbless = FLD.trobj_trbless,
+      $trobj_trclass = FLD.trobj_trclass, $trobj_trquan_max = FLD.trobj_trquan_max,
+      $trobj_trquan_min = FLD.trobj_trquan_min, $trobj_trspe = FLD.trobj_trspe,
+      $u_roleplay_nudist = FLD.u_roleplay_nudist, $u_roleplay_pauper = FLD.u_roleplay_pauper,
+      $you_nv_range = FLD.you_nv_range, $you_ualign = FLD.you_ualign,
+      $you_ualignbase = FLD.you_ualignbase, $you_ublesscnt = FLD.you_ublesscnt,
+      $you_uen = FLD.you_uen, $you_ueninc = FLD.you_ueninc, $you_uenmax = FLD.you_uenmax,
+      $you_uenpeak = FLD.you_uenpeak, $you_ugrave_arise = FLD.you_ugrave_arise,
+      $you_uhandedness = FLD.you_uhandedness, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
+      $you_uhppeak = FLD.you_uhppeak, $you_ulevel = FLD.you_ulevel,
+      $you_ulevelmax = FLD.you_ulevelmax, $you_ulycn = FLD.you_ulycn,
+      $you_umoney0 = FLD.you_umoney0, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_umortality = FLD.you_umortality,
+      $you_umoved = FLD.you_umoved, $you_unblind_telepat_range = FLD.you_unblind_telepat_range,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_uspellprot = FLD.you_uspellprot, $you_ustuck = FLD.you_ustuck,
+      $you_utolev = FLD.you_utolev, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0,
+      $you_weapon_skills = FLD.you_weapon_skills, $you_weapon_slots = FLD.you_weapon_slots,
+      $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_no_skills_found_for_role = cptr.lit("No skills found for role");
@@ -92,7 +103,10 @@ const __s_ini_inv_substituting_s_for_s_s = cptr.lit("ini_inv: substituting %s fo
 const __s_random = cptr.lit("random ");
 const __s_empty = cptr.lit("");
 
-/** C ref: u_init.c:8 — struct trobj { trotyp, trspe, trclass, trquan_min, trquan_max, trbless } (memory model v0.5) */
+/**
+ * C ref: u_init.c:8 — struct trobj { trotyp, trspe, trclass, trquan_min, trquan_max, trbless }
+ *     (memory model v0.5)
+ */
 
 /*
  *      Initial inventory for the various roles.
@@ -1688,7 +1702,11 @@ function knows_class(sym) {
      *        arrow, and spear limitation below.
      */
 
-    for (ct = cptr.ldI32o2(svb, uchar(sym), 4, $instance_globals_saved_b_bases); ct < cptr.ldI32o2(svb, (uchar(sym) + 1) | 0, 4, $instance_globals_saved_b_bases); ct++) {
+    for (
+        ct = cptr.ldI32o2(svb, uchar(sym), 4, $instance_globals_saved_b_bases);
+        ct < cptr.ldI32o2(svb, (uchar(sym) + 1) | 0, 4, $instance_globals_saved_b_bases);
+        ct++
+    ) {
         /* not flagged as magic but shouldn't be pre-discovered
            (small shields look the same as two types of magical shield;
            cornuthaum / dunce cap look the same as each other) */
@@ -1697,18 +1715,29 @@ function knows_class(sym) {
         if (sym == NHC.WEAPON_CLASS) {
             cptr.stI16o(odummy, $obj_otyp, i16(ct));  /* update 'o' */
             /* arbitrary: only knights and samurai recognize polearms */
-            if ((!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) && is_pole(o))
+            if ((!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) &&
+                !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI)) &&
+                    is_pole(o))
                 continue;
             /* rangers know all launchers (bows, &c), ammo (arrows, &c),
                and spears regardless of race/species, but not other weapons */
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER) && (!is_launcher(o) && !is_ammo(o) && !is_spear(o)))
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_RANGER) &&
+                    (!is_launcher(o) && !is_ammo(o) && !is_spear(o)))
                 continue;
             /* rogues know daggers, regardless of racial variations */
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE) && (cptr.ld1so2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp) != NHC.P_DAGGER))
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE) &&
+                    (cptr.ld1so2(
+                        objects,
+                        cptr.ldI16o(o, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_subtyp
+                    ) !=
+                        NHC.P_DAGGER))
                 continue;
         }
 
-        if (cptr.ld1so2(objects, ct, $sizeof_objclass, $objclass_oc_class) == sym && !(cptr.ldI32o2(objects, ct, $sizeof_objclass, $objclass_oc_magic) & 1))
+        if (cptr.ld1so2(objects, ct, $sizeof_objclass, $objclass_oc_class) == sym &&
+                !(cptr.ldI32o2(objects, ct, $sizeof_objclass, $objclass_oc_magic) & 1))
             knows_object(ct, 0);
     }
 }
@@ -1771,7 +1800,13 @@ function u_init_role() {
         knows_class(NHC.WEAPON_CLASS);  /* all weapons */
         knows_class(NHC.ARMOR_CLASS);
         /* give knights chess-like mobility--idea from wooledge@..cwru.edu */
-        cptr.stI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+        cptr.stI64o2(
+            u,
+            NHC.JUMPING,
+            $sizeof_prop,
+            $you_uprops + $prop_intrinsic,
+            cptr.ldI64o2(u, NHC.JUMPING, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+        );
         break;
         case NHC.PM_MONK:
         {
@@ -1886,8 +1921,21 @@ function u_init_race() {
          * Non-warriors get an instrument.  We use a kludge to
          * get only non-magic instruments.
          */
-        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) || (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) {
-            let Instrument = cptr.alloc(2 * $sizeof_trobj); cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, rn2(6), 4))); cptr.st1o(Instrument, 0 + $trobj_trspe, 0); cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS); cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1); cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1); cptr.st1o(Instrument, 0 + $trobj_trbless, 0); cptr.stI16o(Instrument, 8, 0); cptr.st1o(Instrument, 8 + $trobj_trspe, 0); cptr.st1o(Instrument, 8 + $trobj_trclass, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0); cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0); cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
+        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) ||
+                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) {
+            let Instrument = cptr.alloc(2 * $sizeof_trobj);
+            cptr.stI16o(Instrument, 0, i16(cptr.ldI32o(__static_u_init_race_trotyp, rn2(6), 4)));
+            cptr.st1o(Instrument, 0 + $trobj_trspe, 0);
+            cptr.st1o(Instrument, 0 + $trobj_trclass, NHC.TOOL_CLASS);
+            cptr.st1o(Instrument, 0 + $trobj_trquan_min, 1);
+            cptr.st1o(Instrument, 0 + $trobj_trquan_max, 1);
+            cptr.st1o(Instrument, 0 + $trobj_trbless, 0);
+            cptr.stI16o(Instrument, 8, 0);
+            cptr.st1o(Instrument, 8 + $trobj_trspe, 0);
+            cptr.st1o(Instrument, 8 + $trobj_trclass, 0);
+            cptr.st1o(Instrument, 8 + $trobj_trquan_min, 0);
+            cptr.st1o(Instrument, 8 + $trobj_trquan_max, 0);
+            cptr.st1o(Instrument, 8 + $trobj_trbless, 0);
             ini_inv(Instrument);
         }
 
@@ -2017,7 +2065,8 @@ function u_init_carry_attr_boost() {
 /** C ref: u_init.c:944 */
 export function u_init_misc() {
     let i;
-    let tmpuroleplay = cptr.alloc(24); cptr.memcpy(tmpuroleplay, cptr.add(u, $you_uroleplay), $sizeof_u_roleplay);  /* set by rcfile options */
+    let tmpuroleplay = cptr.alloc(24);
+    cptr.memcpy(tmpuroleplay, cptr.add(u, $you_uroleplay), $sizeof_u_roleplay);  /* set by rcfile options */
 
     cptr.st1o(flags, $flag_female, schar(cptr.ldI32o(flags, $flag_initgend)));
     cptr.st1o(flags, $flag_beginner, 1);
@@ -2039,7 +2088,11 @@ export function u_init_misc() {
     cptr.stI32o(u, $you_umortality, 0);
     cptr.stI32o(u, $you_ugrave_arise, NHC.NON_PM);
 
-    cptr.stI32o(u, $you_umonnum, cptr.stI32o(u, $you_umonster, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum)));
+    cptr.stI32o(
+        u,
+        $you_umonnum,
+        cptr.stI32o(u, $you_umonster, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum))
+    );
     cptr.stI32o(u, $you_ulycn, NHC.NON_PM);
     set_uasmon();
 
@@ -2054,7 +2107,28 @@ export function u_init_misc() {
     for (i = 0; i <= NHC.MAXSPELL; i++)
         cptr.stI16o(svs, i, NHM.NO_SPELL, $sizeof_spell);
     cptr.stI32o(u, $you_ublesscnt, 300);  /* no prayers just yet */
-    cptr.st1o2(u, NHM.A_CURRENT, 1, $you_ualignbase, cptr.st1o2(u, NHM.A_ORIGINAL, 1, $you_ualignbase, cptr.st1o(u, $you_ualign, cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_value))));
+    cptr.st1o2(
+        u,
+        NHM.A_CURRENT,
+        1,
+        $you_ualignbase,
+        cptr.st1o2(
+            u,
+            NHM.A_ORIGINAL,
+            1,
+            $you_ualignbase,
+            cptr.st1o(
+                u,
+                $you_ualign,
+                cptr.ld1so2(
+                    aligns,
+                    cptr.ldI32o(flags, $flag_initalign),
+                    $sizeof_Align,
+                    $Align_value
+                )
+            )
+        )
+    );
 
     /* Route through getnow() so fixed datetime also controls ubirthday. */
     ubirthday.v = getnow();
@@ -2072,7 +2146,13 @@ export function u_init_misc() {
        to void the conduct, but will leave the PermaBlind bit set so that
        blindness resumes when the Eyes are removed). */
     if (cptr.ld1so(u, $you_uroleplay))
-        cptr.stI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);  /* set PermaBlind */
+        cptr.stI64o2(
+            u,
+            NHC.BLINDED,
+            $sizeof_prop,
+            $you_uprops + $prop_intrinsic,
+            cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+        );  /* set PermaBlind */
 
     /* roughly based on distribution in human population */
     cptr.stI32o(u, $you_uhandedness, (rn2(10) ? NHM.RIGHT_HANDED : NHM.LEFT_HANDED) >>> 0);
@@ -2154,11 +2234,18 @@ function restricted_spell_discipline(otyp) {
 function trquan(trop) {
     if (!cptr.ld1so(trop, $trobj_trquan_min))
         return 1n;
-    return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) + rn2((((cptr.ld1so(trop, $trobj_trquan_max) - cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0)) | 0));
+    return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) +
+            rn2((((cptr.ld1so(trop, $trobj_trquan_max) -
+                cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0)) | 0));
 }
 
 /* create random object of certain class, filtering out too powerful items */
-/** C ref: u_init.c:1115 — @param {CInt} oclass @param {CInt} got_level1_spellbook @returns {CPtr<struct obj>} */
+/**
+ * C ref: u_init.c:1115
+ * @param {CInt} oclass
+ * @param {CInt} got_level1_spellbook
+ * @returns {CPtr<struct obj>}
+ */
 function ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
     let obj;
     let otyp;
@@ -2177,7 +2264,32 @@ function ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
     obj = mkobj(oclass, 0);
     otyp = cptr.ldI16o(obj, $obj_otyp);
 
-    while (otyp == NHC.WAN_WISHING || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate2) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate3) || otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate4) || otyp == NHC.RIN_LEVITATION || otyp == NHC.POT_HALLUCINATION || otyp == NHC.POT_ACID || otyp == NHC.SCR_AMNESIA || otyp == NHC.SCR_FIRE || otyp == NHC.SCR_BLANK_PAPER || otyp == NHC.SPE_BLANK_PAPER || otyp == NHC.RIN_AGGRAVATE_MONSTER || otyp == NHC.RIN_HUNGER || otyp == NHC.WAN_NOTHING || (otyp == NHC.RIN_POISON_RESISTANCE && (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)) || (otyp == NHC.SCR_ENCHANT_WEAPON && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) || (otyp == NHC.SPE_FORCE_BOLT && (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) || (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS && (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_oc2) > (got_level1_spellbook ? 3 : 1) || restricted_spell_discipline(otyp))) || otyp == NHC.SPE_NOVEL) {
+    while (otyp == NHC.WAN_WISHING ||
+            otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate) ||
+            otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate2) ||
+            otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate3) ||
+            otyp == cptr.ldI16o(gn, $instance_globals_n_nocreate4) ||
+            otyp == NHC.RIN_LEVITATION ||
+            otyp == NHC.POT_HALLUCINATION ||
+            otyp == NHC.POT_ACID ||
+            otyp == NHC.SCR_AMNESIA ||
+            otyp == NHC.SCR_FIRE ||
+            otyp == NHC.SCR_BLANK_PAPER ||
+            otyp == NHC.SPE_BLANK_PAPER ||
+            otyp == NHC.RIN_AGGRAVATE_MONSTER ||
+            otyp == NHC.RIN_HUNGER ||
+            otyp == NHC.WAN_NOTHING ||
+            (otyp == NHC.RIN_POISON_RESISTANCE &&
+                (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ORC)) ||
+            (otyp == NHC.SCR_ENCHANT_WEAPON &&
+                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK)) ||
+            (otyp == NHC.SPE_FORCE_BOLT &&
+                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)) ||
+            (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS &&
+                (cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_oc2) >
+                    (got_level1_spellbook ? 3 : 1) ||
+                    restricted_spell_discipline(otyp))) ||
+            otyp == NHC.SPE_NOVEL) {
         dealloc_obj(obj);
         if (++trycnt > 1000) {
             /* This lonely pancake's potential will never be realized.
@@ -2197,7 +2309,12 @@ function ini_inv_mkobj_filter(oclass, got_level1_spellbook) {
 
 /* substitute object with something else based on race.
    only changes otyp, and returns it. */
-/** C ref: u_init.c:1179 — @param {CPtr<struct trobj>} trop @param {CPtr<struct obj>} obj @returns {CInt} */
+/**
+ * C ref: u_init.c:1179
+ * @param {CPtr<struct trobj>} trop
+ * @param {CPtr<struct obj>} obj
+ * @returns {CInt}
+ */
 function ini_inv_obj_substitution(trop, obj) {
     if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) != NHC.PM_HUMAN) {
         let i;
@@ -2207,15 +2324,43 @@ function ini_inv_obj_substitution(trop, obj) {
            substitutions didn't occur for randomly generated items
            (particularly food) which have racial substitutes */
         for (i = 0; cptr.ldI16o(inv_subs, i, $sizeof_inv_sub) != NHC.NON_PM; ++i)
-            if (cptr.ldI16o(inv_subs, i, $sizeof_inv_sub) == cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) && cptr.ldI16o(obj, $obj_otyp) == cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_item_otyp)) {
+            if (cptr.ldI16o(inv_subs, i, $sizeof_inv_sub) ==
+                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) &&
+                    cptr.ldI16o(obj, $obj_otyp) ==
+                        cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_item_otyp)) {
                 {
                     if (debugcore(__s_u_init_c, 1)) {
                         let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                        pline(__s_ini_inv_substituting_s_for_s_s, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_subs_otyp), $sizeof_objclass))), $sizeof_objdescr)), (cptr.ldI16(trop) == 0) ? __s_random : __s_empty, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass))), $sizeof_objdescr)));
+                        pline(
+                            __s_ini_inv_substituting_s_for_s_s,
+                            (cptr.ldPtro(
+                                obj_descr,
+                                cptr.ldI16((cptr.add(
+                                    objects,
+                                    cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_subs_otyp),
+                                    $sizeof_objclass
+                                ))),
+                                $sizeof_objdescr
+                            )),
+                            (cptr.ldI16(trop) == 0) ? __s_random : __s_empty,
+                            (cptr.ldPtro(
+                                obj_descr,
+                                cptr.ldI16((cptr.add(
+                                    objects,
+                                    cptr.ldI16o(obj, $obj_otyp),
+                                    $sizeof_objclass
+                                ))),
+                                $sizeof_objdescr
+                            ))
+                        );
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
-                cptr.stI16o(obj, $obj_otyp, cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_subs_otyp));
+                cptr.stI16o(
+                    obj,
+                    $obj_otyp,
+                    cptr.ldI16o2(inv_subs, i, $sizeof_inv_sub, $inv_sub_subs_otyp)
+                );
                 break;
             }
     }
@@ -2224,17 +2369,31 @@ function ini_inv_obj_substitution(trop, obj) {
 
 /* returns: TRUE to stop generating items from this trobj,
    FALSE for normal behaviour */
-/** C ref: u_init.c:1205 — @param {CPtr<struct trobj>} trop @param {CPtr<struct obj>} obj @returns {CInt} */
+/**
+ * C ref: u_init.c:1205
+ * @param {CPtr<struct trobj>} trop
+ * @param {CPtr<struct obj>} obj
+ * @returns {CInt}
+ */
 function ini_inv_adjust_obj(trop, obj) {
     let stop = 0;
     if (cptr.ld1so(trop, $trobj_trclass) == NHC.COIN_CLASS) {
         /* no "blessed" or "identified" money */
         cptr.stI64o(obj, $obj_quan, cptr.ldI64o(u, $you_umoney0));
     } else {
-        if ((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_uses_known) & 1))
+        if ((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_uses_known
+        ) & 1))
             cptr.stI32o(obj, $obj_known, 1);
         /* not observe_object during startup, that's handled later */
-        cptr.stI32o(obj, $obj_dknown, cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1)));
+        cptr.stI32o(
+            obj,
+            $obj_dknown,
+            cptr.stI32o(obj, $obj_bknown, cptr.stI32o(obj, $obj_rknown, 1))
+        );
         if (Is_container(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
             cptr.stI32o(obj, $obj_cknown, cptr.stI32o(obj, $obj_lknown, 1));
             cptr.stI32o(obj, $obj_otrapped, 0);
@@ -2242,10 +2401,13 @@ function ini_inv_adjust_obj(trop, obj) {
         cptr.stI32o(obj, $obj_cursed, 0);
         if ((cptr.ldI32o(obj, $obj_otrapped) & 1) | 0 && cptr.ld1so(u, $you_ualign) != -1)
             cptr.stI32o(obj, $obj_otrapped, 0);
-        if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
+        if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
+                cptr.ld1so(obj, $obj_oclass) == NHC.TOOL_CLASS) {
             cptr.stI64o(obj, $obj_quan, trquan(trop));
             stop = 1;
-        } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS && is_graystone(obj) && cptr.ldI16o(obj, $obj_otyp) != NHC.FLINT) {
+        } else if (cptr.ld1so(obj, $obj_oclass) == NHC.GEM_CLASS &&
+                is_graystone(obj) &&
+                cptr.ldI16o(obj, $obj_otyp) != NHC.FLINT) {
             cptr.stI64o(obj, $obj_quan, 1n);
         }
         if (cptr.ld1so(trop, $trobj_trspe) != 127) {
@@ -2254,7 +2416,20 @@ function ini_inv_adjust_obj(trop, obj) {
                 cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + rn2(4));
         } else {
             /* Don't start with +0 or negative rings */
-            if (cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_class) == NHC.RING_CLASS && (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_charged) & 1) | 0 && cptr.ld1so(obj, $obj_spe) <= 0)
+            if (cptr.ld1so2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_class
+            ) ==
+                NHC.RING_CLASS &&
+                    (cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(obj, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_charged
+                    ) & 1) | 0 &&
+                    cptr.ld1so(obj, $obj_spe) <= 0)
                 cptr.st1o(obj, $obj_spe, schar(rne(3)));
         }
         if (cptr.ld1so(trop, $trobj_trbless) != 2)
@@ -2270,7 +2445,16 @@ function ini_inv_adjust_obj(trop, obj) {
 /** C ref: u_init.c:1251 — @param {CPtr<struct obj>} obj */
 function ini_inv_use_obj(obj) {
     /* Make the type known if necessary */
-    if ((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)) && (cptr.ldI32o(obj, $obj_known) & 1) | 0)
+    if ((cptr.ldPtro2(
+        obj_descr,
+        cptr.ldI16o(
+            (cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)),
+            $objclass_oc_descr_idx
+        ),
+        $sizeof_objdescr,
+        $objdescr_oc_descr
+    )) &&
+            (cptr.ldI32o(obj, $obj_known) & 1) | 0)
         discover_object(cptr.ldI16o(obj, $obj_otyp), 1, 1, 0);
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.OIL_LAMP)
         discover_object(NHC.POT_OIL, 1, 1, 0);
@@ -2297,7 +2481,11 @@ function ini_inv_use_obj(obj) {
             setworn(obj, 1n);
     }
 
-    if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(obj) || cptr.ldI16o(obj, $obj_otyp) == NHC.TIN_OPENER || cptr.ldI16o(obj, $obj_otyp) == NHC.FLINT || cptr.ldI16o(obj, $obj_otyp) == NHC.ROCK) {
+    if (cptr.ld1so(obj, $obj_oclass) == NHC.WEAPON_CLASS ||
+            is_weptool(obj) ||
+            cptr.ldI16o(obj, $obj_otyp) == NHC.TIN_OPENER ||
+            cptr.ldI16o(obj, $obj_otyp) == NHC.FLINT ||
+            cptr.ldI16o(obj, $obj_otyp) == NHC.ROCK) {
         if (is_ammo(obj) || is_missile(obj)) {
             if (!uquiver.v)
                 setuqwep(obj);
@@ -2307,7 +2495,8 @@ function ini_inv_use_obj(obj) {
             setuswapwep(obj);
         }
     }
-    if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS && cptr.ldI16o(obj, $obj_otyp) != NHC.SPE_BLANK_PAPER)
+    if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS &&
+            cptr.ldI16o(obj, $obj_otyp) != NHC.SPE_BLANK_PAPER)
         initialspell(obj);
 }
 
@@ -2347,7 +2536,8 @@ function ini_inv(trop) {
                 cptr.stI16o(gn, $instance_globals_n_nocreate3, NHC.POT_POLYMORPH);
             }
             /* Don't have 2 of the same ring or spellbook */
-            if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS || cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS)
+            if (cptr.ld1so(obj, $obj_oclass) == NHC.RING_CLASS ||
+                    cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS)
                 cptr.stI16o(gn, $instance_globals_n_nocreate4, i16(otyp));
         }
         /* Put post-creation object adjustments that don't depend on whether
@@ -2357,7 +2547,8 @@ function ini_inv(trop) {
         (void (otyp));
 
         /* nudist gets no armor */
-        if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_nudist) && cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS) {
+        if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_nudist) &&
+                cptr.ld1so(obj, $obj_oclass) == NHC.ARMOR_CLASS) {
             dealloc_obj(obj);
             trop = cptr.add(trop, 1, 8);
             continue;
@@ -2368,7 +2559,13 @@ function ini_inv(trop) {
         obj = addinv(obj);
 
         /* First spellbook should be level 1 - did we get it? */
-        if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS && cptr.ld1so2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2) == 1)
+        if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS &&
+                cptr.ld1so2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_oc2
+                ) == 1)
             got_sp1 = 1;
 
         if (--quan)
@@ -2419,7 +2616,19 @@ export function u_init_skills_discoveries() {
     /* If we have at least one spell, force starting Pw to be enough,
        so hero can cast the level 1 spell they should have */
     if (num_spells() && (cptr.ldI32o(u, $you_uenmax) < 5))
-        cptr.stI32o(u, $you_uen, cptr.stI32o(u, $you_uenmax, cptr.stI32o(u, $you_uenpeak, cptr.stI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_ueninc, 5))));
+        cptr.stI32o(
+            u,
+            $you_uen,
+            cptr.stI32o(
+                u,
+                $you_uenmax,
+                cptr.stI32o(
+                    u,
+                    $you_uenpeak,
+                    cptr.stI16o2(u, cptr.ldI32o(u, $you_ulevel), 2, $you_ueninc, 5)
+                )
+            )
+        );
 
     find_ac();  /* get initial ac value */
 }
@@ -2428,7 +2637,17 @@ export function u_init_skills_discoveries() {
 // 42 bindings: 0 rebound+refilled, 0 rebound, 42 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(Archeologist), S(Barbarian_0), S(Barbarian_1), S(Cave_man), S(Healer), S(Knight), S(Monk), S(Priest), S(Ranger), S(Rogue), S(Samurai), S(Tourist), S(Valkyrie), S(Wizard), S(Healing_book), S(Protection_book), S(Confuse_monster_book), S(Tinopener), S(Magicmarker), S(Lamp), S(Blindfold), S(Xtra_food), S(Leash), S(Towel), S(Wishing), S(Money), S(inv_subs), S(Skill_A), S(Skill_B), S(Skill_C), S(Skill_H), S(Skill_K), S(Skill_Mon), S(Skill_P), S(Skill_R), S(Skill_Ran), S(Skill_S), S(Skill_T), S(Skill_V), S(Skill_W), S(__static_u_init_role_M_spell), S(__static_u_init_race_trotyp)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(Archeologist), S(Barbarian_0), S(Barbarian_1), S(Cave_man), S(Healer), S(Knight), S(Monk),
+        S(Priest), S(Ranger), S(Rogue), S(Samurai), S(Tourist), S(Valkyrie), S(Wizard),
+        S(Healing_book), S(Protection_book), S(Confuse_monster_book), S(Tinopener), S(Magicmarker),
+        S(Lamp), S(Blindfold), S(Xtra_food), S(Leash), S(Towel), S(Wishing), S(Money), S(inv_subs),
+        S(Skill_A), S(Skill_B), S(Skill_C), S(Skill_H), S(Skill_K), S(Skill_Mon), S(Skill_P),
+        S(Skill_R), S(Skill_Ran), S(Skill_S), S(Skill_T), S(Skill_V), S(Skill_W),
+        S(__static_u_init_role_M_spell), S(__static_u_init_race_trotyp)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("u_init.js: __resetState before __captureState");

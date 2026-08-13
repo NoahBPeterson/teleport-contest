@@ -13,10 +13,22 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_container, has_oname, is_poisonable, timer_is_obj } from './nhmacrofn.js';
-import { luaL_checkinteger, luaL_checklstring, luaL_checktype, luaL_checkudata, luaL_checkversion_, luaL_newmetatable, luaL_setfuncs } from './lauxlib.js';
-import { nhl_add_table_entry_char, nhl_add_table_entry_int, nhl_add_table_entry_str, nhl_error, nhl_get_timertype } from './nhlua.js';
-import { add_to_container, dealloc_obj, mkobj, mksobj, obj_extract_self, place_object, weight } from './mkobj.js';
-import { lua_createtable, lua_getfield, lua_gettop, lua_newuserdatauv, lua_pushboolean, lua_pushinteger, lua_pushvalue, lua_setfield, lua_setglobal, lua_setmetatable, lua_settop, lua_toboolean, lua_tointegerx, lua_type } from './lapi.js';
+import {
+    luaL_checkinteger, luaL_checklstring, luaL_checktype, luaL_checkudata, luaL_checkversion_,
+    luaL_newmetatable, luaL_setfuncs
+} from './lauxlib.js';
+import {
+    nhl_add_table_entry_char, nhl_add_table_entry_int, nhl_add_table_entry_str, nhl_error,
+    nhl_get_timertype
+} from './nhlua.js';
+import {
+    add_to_container, dealloc_obj, mkobj, mksobj, obj_extract_self, place_object, weight
+} from './mkobj.js';
+import {
+    lua_createtable, lua_getfield, lua_gettop, lua_newuserdatauv, lua_pushboolean, lua_pushinteger,
+    lua_pushvalue, lua_setfield, lua_setglobal, lua_setmetatable, lua_settop, lua_toboolean,
+    lua_tointegerx, lua_type
+} from './lapi.js';
 import { addinv } from './invent.js';
 import { obj_descr, objects } from './objects.js';
 import { hands_obj, materialnm, svl } from './decl.js';
@@ -34,38 +46,44 @@ import { bury_an_obj } from './dig.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $_lua_obj_obj = FLD._lua_obj_obj, $dlevel_t_objects = FLD.dlevel_t_objects,
-    $dlevel_t_objlist = FLD.dlevel_t_objlist,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level, $luaL_Reg_func = FLD.luaL_Reg_func,
-    $obj_age = FLD.obj_age, $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed,
-    $obj_bypass = FLD.obj_bypass, $obj_cknown = FLD.obj_cknown, $obj_cobj = FLD.obj_cobj,
-    $obj_corpsenm = FLD.obj_corpsenm, $obj_cursed = FLD.obj_cursed, $obj_dknown = FLD.obj_dknown,
-    $obj_globby = FLD.obj_globby, $obj_greased = FLD.obj_greased, $obj_how_lost = FLD.obj_how_lost,
-    $obj_in_use = FLD.obj_in_use, $obj_invlet = FLD.obj_invlet, $obj_known = FLD.obj_known,
-    $obj_lamplit = FLD.obj_lamplit, $obj_lknown = FLD.obj_lknown, $obj_lua_ref_cnt = FLD.obj_lua_ref_cnt,
-    $obj_no_charge = FLD.obj_no_charge, $obj_nomerge = FLD.obj_nomerge, $obj_o_id = FLD.obj_o_id,
-    $obj_obroken = FLD.obj_obroken, $obj_oclass = FLD.obj_oclass, $obj_oeaten = FLD.obj_oeaten,
-    $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2, $obj_oerodeproof = FLD.obj_oerodeproof,
-    $obj_oextra = FLD.obj_oextra, $obj_olocked = FLD.obj_olocked, $obj_otrapped = FLD.obj_otrapped,
-    $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt,
-    $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan, $obj_recharged = FLD.obj_recharged,
-    $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe, $obj_tknown = FLD.obj_tknown,
-    $obj_unpaid = FLD.obj_unpaid, $obj_usecount = FLD.obj_usecount, $obj_v = FLD.obj_v,
-    $obj_where = FLD.obj_where, $objclass_oc_big = FLD.objclass_oc_big,
-    $objclass_oc_charged = FLD.objclass_oc_charged, $objclass_oc_class = FLD.objclass_oc_class,
-    $objclass_oc_color = FLD.objclass_oc_color, $objclass_oc_cost = FLD.objclass_oc_cost,
-    $objclass_oc_delay = FLD.objclass_oc_delay, $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx,
-    $objclass_oc_dir = FLD.objclass_oc_dir, $objclass_oc_encountered = FLD.objclass_oc_encountered,
-    $objclass_oc_magic = FLD.objclass_oc_magic, $objclass_oc_material = FLD.objclass_oc_material,
-    $objclass_oc_merge = FLD.objclass_oc_merge, $objclass_oc_name_known = FLD.objclass_oc_name_known,
-    $objclass_oc_nowish = FLD.objclass_oc_nowish, $objclass_oc_nutrition = FLD.objclass_oc_nutrition,
-    $objclass_oc_oprop = FLD.objclass_oc_oprop, $objclass_oc_prob = FLD.objclass_oc_prob,
-    $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $objclass_oc_tough = FLD.objclass_oc_tough,
-    $objclass_oc_uname = FLD.objclass_oc_uname, $objclass_oc_unique = FLD.objclass_oc_unique,
-    $objclass_oc_uses_known = FLD.objclass_oc_uses_known, $objclass_oc_weight = FLD.objclass_oc_weight,
-    $objclass_oc_wldam = FLD.objclass_oc_wldam, $objclass_oc_wsdam = FLD.objclass_oc_wsdam,
-    $objdescr_oc_descr = FLD.objdescr_oc_descr, $sizeof_class_sym = FLD.sizeof_class_sym,
-    $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg, $sizeof_objclass = FLD.sizeof_objclass,
-    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst;
+      $dlevel_t_objlist = FLD.dlevel_t_objlist,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $luaL_Reg_func = FLD.luaL_Reg_func, $obj_age = FLD.obj_age, $obj_bknown = FLD.obj_bknown,
+      $obj_blessed = FLD.obj_blessed, $obj_bypass = FLD.obj_bypass, $obj_cknown = FLD.obj_cknown,
+      $obj_cobj = FLD.obj_cobj, $obj_corpsenm = FLD.obj_corpsenm, $obj_cursed = FLD.obj_cursed,
+      $obj_dknown = FLD.obj_dknown, $obj_globby = FLD.obj_globby, $obj_greased = FLD.obj_greased,
+      $obj_how_lost = FLD.obj_how_lost, $obj_in_use = FLD.obj_in_use, $obj_invlet = FLD.obj_invlet,
+      $obj_known = FLD.obj_known, $obj_lamplit = FLD.obj_lamplit, $obj_lknown = FLD.obj_lknown,
+      $obj_lua_ref_cnt = FLD.obj_lua_ref_cnt, $obj_no_charge = FLD.obj_no_charge,
+      $obj_nomerge = FLD.obj_nomerge, $obj_o_id = FLD.obj_o_id, $obj_obroken = FLD.obj_obroken,
+      $obj_oclass = FLD.obj_oclass, $obj_oeaten = FLD.obj_oeaten, $obj_oeroded = FLD.obj_oeroded,
+      $obj_oeroded2 = FLD.obj_oeroded2, $obj_oerodeproof = FLD.obj_oerodeproof,
+      $obj_oextra = FLD.obj_oextra, $obj_olocked = FLD.obj_olocked,
+      $obj_otrapped = FLD.obj_otrapped, $obj_otyp = FLD.obj_otyp,
+      $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt, $obj_ox = FLD.obj_ox,
+      $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan, $obj_recharged = FLD.obj_recharged,
+      $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe, $obj_tknown = FLD.obj_tknown,
+      $obj_unpaid = FLD.obj_unpaid, $obj_usecount = FLD.obj_usecount, $obj_v = FLD.obj_v,
+      $obj_where = FLD.obj_where, $objclass_oc_big = FLD.objclass_oc_big,
+      $objclass_oc_charged = FLD.objclass_oc_charged, $objclass_oc_class = FLD.objclass_oc_class,
+      $objclass_oc_color = FLD.objclass_oc_color, $objclass_oc_cost = FLD.objclass_oc_cost,
+      $objclass_oc_delay = FLD.objclass_oc_delay,
+      $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx, $objclass_oc_dir = FLD.objclass_oc_dir,
+      $objclass_oc_encountered = FLD.objclass_oc_encountered,
+      $objclass_oc_magic = FLD.objclass_oc_magic, $objclass_oc_material = FLD.objclass_oc_material,
+      $objclass_oc_merge = FLD.objclass_oc_merge,
+      $objclass_oc_name_known = FLD.objclass_oc_name_known,
+      $objclass_oc_nowish = FLD.objclass_oc_nowish,
+      $objclass_oc_nutrition = FLD.objclass_oc_nutrition,
+      $objclass_oc_oprop = FLD.objclass_oc_oprop, $objclass_oc_prob = FLD.objclass_oc_prob,
+      $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $objclass_oc_tough = FLD.objclass_oc_tough,
+      $objclass_oc_uname = FLD.objclass_oc_uname, $objclass_oc_unique = FLD.objclass_oc_unique,
+      $objclass_oc_uses_known = FLD.objclass_oc_uses_known,
+      $objclass_oc_weight = FLD.objclass_oc_weight, $objclass_oc_wldam = FLD.objclass_oc_wldam,
+      $objclass_oc_wsdam = FLD.objclass_oc_wsdam, $objdescr_oc_descr = FLD.objdescr_oc_descr,
+      $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
+      $sizeof_permonst = FLD.sizeof_permonst;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_obj = cptr.lit("obj");
@@ -179,7 +197,12 @@ const __s_metatable = cptr.lit("__metatable");
 
 /** C ref: nhlobj.c:8 — struct _lua_obj { state, obj } (memory model v0.5) */
 
-/** C ref: nhlobj.c:35 — @param {CPtr<lua_State>} L @param {CInt} indx @returns {CPtr<struct _lua_obj>} */
+/**
+ * C ref: nhlobj.c:35
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} indx
+ * @returns {CPtr<struct _lua_obj>}
+ */
 function* l_obj_check(L, indx) {
     let lo;
 
@@ -200,7 +223,9 @@ function* l_obj_gc(L) {
         if (cptr.ldI32o(obj, $obj_lua_ref_cnt) > 0)
             (cptr.stI32o(obj, $obj_lua_ref_cnt, cptr.ldI32o(obj, $obj_lua_ref_cnt) + -1)) - (-1);
         /* free-floating objects with no other refs are deallocated. */
-        if (!cptr.ldI32o(obj, $obj_lua_ref_cnt) && (cptr.ld1so(obj, $obj_where) == NHM.OBJ_FREE || cptr.ld1so(obj, $obj_where) == NHM.OBJ_LUAFREE)) {
+        if (!cptr.ldI32o(obj, $obj_lua_ref_cnt) &&
+                (cptr.ld1so(obj, $obj_where) == NHM.OBJ_FREE ||
+                    cptr.ld1so(obj, $obj_where) == NHM.OBJ_LUAFREE)) {
             if ((cptr.ldPtro((obj), $obj_cobj) !== null)) {
                 while ((otmp = cptr.ldPtro(obj, $obj_cobj)) !== null) {
                     (yield* obj_extract_self(otmp));
@@ -215,7 +240,12 @@ function* l_obj_gc(L) {
     return 0;
 }
 
-/** C ref: nhlobj.c:73 — @param {CPtr<lua_State>} L @param {CPtr<struct obj>} otmp @returns {CPtr<struct _lua_obj>} */
+/**
+ * C ref: nhlobj.c:73
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<struct obj>} otmp
+ * @returns {CPtr<struct _lua_obj>}
+ */
 function* l_obj_push(L, otmp) {
     let lo = (yield* lua_newuserdatauv(L, 16n, 1));
     ((yield* lua_getfield(L, -1001000, (__s_obj))));
@@ -259,7 +289,12 @@ function* l_obj_add_to_container(L) {
     let otmp;
     let refs;
 
-    if (!((lo) && cptr.ldPtro((lo), $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE) || !((lobox) && cptr.ldPtro((lobox), $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro((lobox), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE))
+    if (!((lo) &&
+        cptr.ldPtro((lo), $_lua_obj_obj) &&
+        cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE) ||
+            !((lobox) &&
+                cptr.ldPtro((lobox), $_lua_obj_obj) &&
+                cptr.ld1so(cptr.ldPtro((lobox), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE))
         return 0;
 
     refs = cptr.ldI32o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_lua_ref_cnt) | 0;
@@ -270,9 +305,17 @@ function* l_obj_add_to_container(L) {
     /* was lo->obj merged? */
     if (!cptr.eq(otmp, cptr.ldPtro(lo, $_lua_obj_obj))) {
         cptr.stPtro(lo, $_lua_obj_obj, otmp);
-        cptr.stI32o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_lua_ref_cnt, (cptr.ldI32o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_lua_ref_cnt) + (refs >>> 0)) | 0);
+        cptr.stI32o(
+            cptr.ldPtro(lo, $_lua_obj_obj),
+            $obj_lua_ref_cnt,
+            (cptr.ldI32o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_lua_ref_cnt) + (refs >>> 0)) | 0
+        );
     }
-    cptr.stI32o(cptr.ldPtro(lobox, $_lua_obj_obj), $obj_owt, (yield* weight(cptr.ldPtro(lobox, $_lua_obj_obj))) >>> 0);
+    cptr.stI32o(
+        cptr.ldPtro(lobox, $_lua_obj_obj),
+        $obj_owt,
+        (yield* weight(cptr.ldPtro(lobox, $_lua_obj_obj))) >>> 0
+    );
 
     return 0;
 }
@@ -285,7 +328,10 @@ export function* nhl_obj_u_giveobj(L) {
     let otmp;
     let refs;
 
-    if (!((lo) && cptr.ldPtro((lo), $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE) || cptr.ld1so(cptr.ldPtro(lo, $_lua_obj_obj), $obj_where) == NHM.OBJ_INVENT)
+    if (!((lo) &&
+        cptr.ldPtro((lo), $_lua_obj_obj) &&
+        cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE) ||
+            cptr.ld1so(cptr.ldPtro(lo, $_lua_obj_obj), $obj_where) == NHM.OBJ_INVENT)
         return 0;
 
     refs = cptr.ldI32o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_lua_ref_cnt) | 0;
@@ -294,7 +340,11 @@ export function* nhl_obj_u_giveobj(L) {
     otmp = (yield* addinv(cptr.ldPtro(lo, $_lua_obj_obj)));
 
     if (!cptr.eq(otmp, cptr.ldPtro(lo, $_lua_obj_obj))) {
-        cptr.stI32o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_lua_ref_cnt, (cptr.ldI32o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_lua_ref_cnt) + (refs >>> 0)) | 0);
+        cptr.stI32o(
+            cptr.ldPtro(lo, $_lua_obj_obj),
+            $obj_lua_ref_cnt,
+            (cptr.ldI32o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_lua_ref_cnt) + (refs >>> 0)) | 0
+        );
         cptr.stPtro(lo, $_lua_obj_obj, otmp);
     }
 
@@ -336,29 +386,79 @@ function* l_obj_objects_to_table(L) {
 
     (yield* lua_createtable(L, 0, 0));
 
-    if ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))), $sizeof_objdescr)))
-        (yield* nhl_add_table_entry_str(L, __s_name, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))), $sizeof_objdescr))));
-    if ((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)))
-        (yield* nhl_add_table_entry_str(L, __s_descr, (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))));
+    if ((cptr.ldPtro(
+        obj_descr,
+        cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))),
+        $sizeof_objdescr
+    )))
+        (yield* nhl_add_table_entry_str(
+            L,
+            __s_name,
+            (cptr.ldPtro(
+                obj_descr,
+                cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))),
+                $sizeof_objdescr
+            ))
+        ));
+    if ((cptr.ldPtro2(
+        obj_descr,
+        cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx),
+        $sizeof_objdescr,
+        $objdescr_oc_descr
+    )))
+        (yield* nhl_add_table_entry_str(
+            L,
+            __s_descr,
+            (cptr.ldPtro2(
+                obj_descr,
+                cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx),
+                $sizeof_objdescr,
+                $objdescr_oc_descr
+            ))
+        ));
     if (cptr.ldPtro(o, $objclass_oc_uname))
         (yield* nhl_add_table_entry_str(L, __s_uname, cptr.ldPtro(o, $objclass_oc_uname)));
 
-    (yield* nhl_add_table_entry_int(L, __s_name_known, BigInt((cptr.ldI32o(o, $objclass_oc_name_known) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_name_known,
+        BigInt((cptr.ldI32o(o, $objclass_oc_name_known) & 1) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(L, __s_merge, BigInt((cptr.ldI32o(o, $objclass_oc_merge) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_uses_known, BigInt((cptr.ldI32o(o, $objclass_oc_uses_known) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_encountered, BigInt((cptr.ldI32o(o, $objclass_oc_encountered) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_uses_known,
+        BigInt((cptr.ldI32o(o, $objclass_oc_uses_known) & 1) >>> 0)
+    ));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_encountered,
+        BigInt((cptr.ldI32o(o, $objclass_oc_encountered) & 1) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(L, __s_magic, BigInt((cptr.ldI32o(o, $objclass_oc_magic) & 1) >>> 0)));
-    (yield* nhl_add_table_entry_int(L, __s_charged, BigInt((cptr.ldI32o(o, $objclass_oc_charged) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_charged,
+        BigInt((cptr.ldI32o(o, $objclass_oc_charged) & 1) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(L, __s_unique, BigInt((cptr.ldI32o(o, $objclass_oc_unique) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_nowish, BigInt((cptr.ldI32o(o, $objclass_oc_nowish) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_big, BigInt((cptr.ldI32o(o, $objclass_oc_big) & 1) >>> 0)));
     /* TODO: oc_bimanual, oc_bulky */
     (yield* nhl_add_table_entry_int(L, __s_tough, BigInt((cptr.ldI32o(o, $objclass_oc_tough) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_dir, BigInt((cptr.ldI32o(o, $objclass_oc_dir) & 7) >>> 0)));  /* TODO: convert to text */
-    (yield* nhl_add_table_entry_str(L, __s_material, cptr.ldPtro(materialnm, (cptr.ldI32o(o, $objclass_oc_material) & 31), 8)));
+    (yield* nhl_add_table_entry_str(
+        L,
+        __s_material,
+        cptr.ldPtro(materialnm, (cptr.ldI32o(o, $objclass_oc_material) & 31), 8)
+    ));
     /* TODO: oc_subtyp, oc_skill, oc_armcat */
     (yield* nhl_add_table_entry_int(L, __s_oprop, BigInt(cptr.ld1uo(o, $objclass_oc_oprop) >>> 0)));
-    (yield* nhl_add_table_entry_char(L, __s_class, cptr.ld1so(def_oc_syms, uchar(cptr.ld1so(o, $objclass_oc_class)), $sizeof_class_sym)));
+    (yield* nhl_add_table_entry_char(
+        L,
+        __s_class,
+        cptr.ld1so(def_oc_syms, uchar(cptr.ld1so(o, $objclass_oc_class)), $sizeof_class_sym)
+    ));
     (yield* nhl_add_table_entry_int(L, __s_delay, BigInt(cptr.ld1so(o, $objclass_oc_delay))));
     (yield* nhl_add_table_entry_int(L, __s_color, BigInt(cptr.ld1uo(o, $objclass_oc_color) >>> 0)));  /* TODO: text? */
     (yield* nhl_add_table_entry_int(L, __s_prob, BigInt(cptr.ldI16o(o, $objclass_oc_prob))));
@@ -394,22 +494,70 @@ function* l_obj_to_table(L) {
     (yield* nhl_add_table_entry_int(L, __s_ox, BigInt(cptr.ldI16o(obj, $obj_ox))));
     (yield* nhl_add_table_entry_int(L, __s_oy, BigInt(cptr.ldI16o(obj, $obj_oy))));
     (yield* nhl_add_table_entry_int(L, __s_otyp, BigInt(cptr.ldI16o(obj, $obj_otyp))));
-    if ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass))), $sizeof_objdescr)))
-        (yield* nhl_add_table_entry_str(L, __s_otyp_name, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass))), $sizeof_objdescr))));
-    if ((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)))
-        (yield* nhl_add_table_entry_str(L, __s_otyp_descr, (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))));
+    if ((cptr.ldPtro(
+        obj_descr,
+        cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass))),
+        $sizeof_objdescr
+    )))
+        (yield* nhl_add_table_entry_str(
+            L,
+            __s_otyp_name,
+            (cptr.ldPtro(
+                obj_descr,
+                cptr.ldI16((cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass))),
+                $sizeof_objdescr
+            ))
+        ));
+    if ((cptr.ldPtro2(
+        obj_descr,
+        cptr.ldI16o(
+            (cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)),
+            $objclass_oc_descr_idx
+        ),
+        $sizeof_objdescr,
+        $objdescr_oc_descr
+    )))
+        (yield* nhl_add_table_entry_str(
+            L,
+            __s_otyp_descr,
+            (cptr.ldPtro2(
+                obj_descr,
+                cptr.ldI16o(
+                    (cptr.add(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass)),
+                    $objclass_oc_descr_idx
+                ),
+                $sizeof_objdescr,
+                $objdescr_oc_descr
+            ))
+        ));
     (yield* nhl_add_table_entry_int(L, __s_owt, BigInt(cptr.ldI32o(obj, $obj_owt) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_quan, cptr.ldI64o(obj, $obj_quan)));
     (yield* nhl_add_table_entry_int(L, __s_spe, BigInt(cptr.ld1so(obj, $obj_spe))));
 
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE)
-        (yield* nhl_add_table_entry_int(L, __s_historic, BigInt(((cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_HISTORIC) != 0))));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_historic,
+            BigInt(((cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_HISTORIC) != 0))
+        ));
     if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE) {
-        (yield* nhl_add_table_entry_int(L, __s_male, BigInt(((cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_MALE) != 0))));
-        (yield* nhl_add_table_entry_int(L, __s_female, BigInt(((cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_FEMALE) != 0))));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_male,
+            BigInt(((cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_MALE) != 0))
+        ));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_female,
+            BigInt(((cptr.ld1so(obj, $obj_spe) & NHM.CORPSTAT_FEMALE) != 0))
+        ));
     }
 
-    (yield* nhl_add_table_entry_char(L, __s_oclass, cptr.ld1so(def_oc_syms, uchar(cptr.ld1so(obj, $obj_oclass)), $sizeof_class_sym)));
+    (yield* nhl_add_table_entry_char(
+        L,
+        __s_oclass,
+        cptr.ld1so(def_oc_syms, uchar(cptr.ld1so(obj, $obj_oclass)), $sizeof_class_sym)
+    ));
     (yield* nhl_add_table_entry_char(L, __s_invlet, cptr.ld1so(obj, $obj_invlet)));
     /* TODO: nhl_add_table_entry_char(L, "oartifact", obj->oartifact);*/
     (yield* nhl_add_table_entry_int(L, __s_where, BigInt(cptr.ld1so(obj, $obj_where))));
@@ -424,18 +572,34 @@ function* l_obj_to_table(L) {
     (yield* nhl_add_table_entry_int(L, __s_rknown, BigInt((cptr.ldI32o(obj, $obj_rknown) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_tknown, BigInt((cptr.ldI32o(obj, $obj_tknown) & 1) >>> 0)));
     if (cptr.ld1so(obj, $obj_oclass) == NHC.POTION_CLASS)
-        (yield* nhl_add_table_entry_int(L, __s_odiluted, BigInt((cptr.ldI32o(obj, $obj_oeroded) & 3) >>> 0)));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_odiluted,
+            BigInt((cptr.ldI32o(obj, $obj_oeroded) & 3) >>> 0)
+        ));
     else
         (yield* nhl_add_table_entry_int(L, __s_oeroded, BigInt((cptr.ldI32o(obj, $obj_oeroded) & 3) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_oeroded2, BigInt((cptr.ldI32o(obj, $obj_oeroded2) & 3) >>> 0)));
     /* TODO: orotten, norevive */
-    (yield* nhl_add_table_entry_int(L, __s_oerodeproof, BigInt((cptr.ldI32o(obj, $obj_oerodeproof) & 1) >>> 0)));
+    (yield* nhl_add_table_entry_int(
+        L,
+        __s_oerodeproof,
+        BigInt((cptr.ldI32o(obj, $obj_oerodeproof) & 1) >>> 0)
+    ));
     (yield* nhl_add_table_entry_int(L, __s_olocked, BigInt((cptr.ldI32o(obj, $obj_olocked) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_obroken, BigInt((cptr.ldI32o(obj, $obj_obroken) & 1) >>> 0)));
     if (is_poisonable(obj))
-        (yield* nhl_add_table_entry_int(L, __s_opoisoned, BigInt((cptr.ldI32o(obj, $obj_otrapped) & 1) >>> 0)));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_opoisoned,
+            BigInt((cptr.ldI32o(obj, $obj_otrapped) & 1) >>> 0)
+        ));
     else
-        (yield* nhl_add_table_entry_int(L, __s_otrapped, BigInt((cptr.ldI32o(obj, $obj_otrapped) & 1) >>> 0)));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_otrapped,
+            BigInt((cptr.ldI32o(obj, $obj_otrapped) & 1) >>> 0)
+        ));
     /* TODO: degraded_horn */
     (yield* nhl_add_table_entry_int(L, __s_recharged, BigInt((cptr.ldI32o(obj, $obj_recharged) & 7) >>> 0)));
     /* TODO: on_ice */
@@ -449,8 +613,17 @@ function* l_obj_to_table(L) {
     (yield* nhl_add_table_entry_int(L, __s_cknown, BigInt((cptr.ldI32o(obj, $obj_cknown) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_lknown, BigInt((cptr.ldI32o(obj, $obj_lknown) & 1) >>> 0)));
     (yield* nhl_add_table_entry_int(L, __s_corpsenm, BigInt(cptr.ldI32o(obj, $obj_corpsenm))));
-    if (cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM && (cptr.ldI16o(obj, $obj_otyp) == NHC.TIN || cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(obj, $obj_otyp) == NHC.EGG || cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE || cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE))
-        (yield* nhl_add_table_entry_str(L, __s_corpsenm_name, cptr.ldPtro3(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst, NHC.NEUTRAL, 8, 0)));
+    if (cptr.ldI32o(obj, $obj_corpsenm) != NHC.NON_PM &&
+            (cptr.ldI16o(obj, $obj_otyp) == NHC.TIN ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.EGG ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.FIGURINE ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.STATUE))
+        (yield* nhl_add_table_entry_str(
+            L,
+            __s_corpsenm_name,
+            cptr.ldPtro3(mons, cptr.ldI32o(obj, $obj_corpsenm), $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+        ));
     /* TODO: leashmon, fromsink, novelidx, record_achieve_special */
     (yield* nhl_add_table_entry_int(L, __s_usecount, BigInt(cptr.ldI32o(obj, $obj_usecount))));
     /* TODO: spestudied */
@@ -519,7 +692,10 @@ function* l_obj_at(L) {
         cvt_to_abscoord(x, y);
 
         (yield* lua_settop(L, -3));
-        void (yield* l_obj_push(L, cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_objects)));
+        void (yield* l_obj_push(
+            L,
+            cptr.ldPtro3(svl, x.v, 168, y.v, 8, $instance_globals_saved_l_level + $dlevel_t_objects)
+        ));
         return 1;
     } else
         (yield* nhl_error(L, __s_l_obj_at_wrong_args));
@@ -546,7 +722,9 @@ function* l_obj_placeobj(L) {
 
     (yield* lua_settop(L, -4));
 
-    if (((lo) && cptr.ldPtro((lo), $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE)) {
+    if (((lo) &&
+            cptr.ldPtro((lo), $_lua_obj_obj) &&
+            cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE)) {
         (yield* obj_extract_self(cptr.ldPtro(lo, $_lua_obj_obj)));
         (yield* place_object(cptr.ldPtro(lo, $_lua_obj_obj), x.v, y.v));
         (yield* newsym(x.v, y.v));
@@ -574,7 +752,13 @@ function* l_obj_nextobj(L) {
             use_nexthere = schar(lua_toboolean(L, 2));
 
         if (lo && cptr.ldPtro(lo, $_lua_obj_obj))
-            void (yield* l_obj_push(L, (use_nexthere && cptr.ld1so(cptr.ldPtro(lo, $_lua_obj_obj), $obj_where) == NHM.OBJ_FLOOR) ? cptr.ldPtro(cptr.ldPtro(lo, $_lua_obj_obj), $obj_v) : cptr.ldPtr(cptr.ldPtro(lo, $_lua_obj_obj))));
+            void (yield* l_obj_push(
+                L,
+                (use_nexthere &&
+                    cptr.ld1so(cptr.ldPtro(lo, $_lua_obj_obj), $obj_where) == NHM.OBJ_FLOOR)
+                    ? cptr.ldPtro(cptr.ldPtro(lo, $_lua_obj_obj), $obj_v)
+                    : cptr.ldPtr(cptr.ldPtro(lo, $_lua_obj_obj))
+            ));
     }
     return 1;
 }
@@ -585,7 +769,9 @@ function* l_obj_nextobj(L) {
 function* l_obj_container(L) {
     let lo = (yield* l_obj_check(L, 1));
 
-    if (lo && cptr.ldPtro(lo, $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro(lo, $_lua_obj_obj), $obj_where) == NHM.OBJ_CONTAINED)
+    if (lo &&
+            cptr.ldPtro(lo, $_lua_obj_obj) &&
+            cptr.ld1so(cptr.ldPtro(lo, $_lua_obj_obj), $obj_where) == NHM.OBJ_CONTAINED)
         void (yield* l_obj_push(L, cptr.ldPtro(cptr.ldPtro(lo, $_lua_obj_obj), $obj_v)));
     else
         void (yield* l_obj_push(L, null));
@@ -598,7 +784,12 @@ function* l_obj_container(L) {
 function* l_obj_isnull(L) {
     let lo = (yield* l_obj_check(L, 1));
 
-    (yield* lua_pushboolean(L, !((lo) && cptr.ldPtro((lo), $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE)));
+    (yield* lua_pushboolean(
+        L,
+        !((lo) &&
+            cptr.ldPtro((lo), $_lua_obj_obj) &&
+            cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE)
+    ));
     return 1;
 }
 
@@ -694,7 +885,12 @@ function* l_obj_timer_start(L) {
         if (timer_is_obj(timertype) && lo && cptr.ldPtro(lo, $_lua_obj_obj) && when > 0n) {
             if (obj_has_timer(cptr.ldPtro(lo, $_lua_obj_obj), timertype))
                 (yield* stop_timer(timertype, obj_to_any(cptr.ldPtro(lo, $_lua_obj_obj))));
-            (yield* start_timer(when, NHC.TIMER_OBJECT, timertype, obj_to_any(cptr.ldPtro(lo, $_lua_obj_obj))));
+            (yield* start_timer(
+                when,
+                NHC.TIMER_OBJECT,
+                timertype,
+                obj_to_any(cptr.ldPtro(lo, $_lua_obj_obj))
+            ));
         }
     } else
         (yield* nhl_error(L, __s_l_obj_timer_start_wrong_args));
@@ -723,7 +919,10 @@ function* l_obj_bury(L) {
     } else
         (yield* nhl_error(L, __s_l_obj_bury_wrong_args));
 
-    if (((lo) && cptr.ldPtro((lo), $_lua_obj_obj) && cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE) && isok(x.v, y.v)) {
+    if (((lo) &&
+        cptr.ldPtro((lo), $_lua_obj_obj) &&
+        cptr.ld1so(cptr.ldPtro((lo), $_lua_obj_obj), $obj_where) != NHM.OBJ_LUAFREE) &&
+            isok(x.v, y.v)) {
         cptr.stI16o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_ox, x.v);
         cptr.stI16o(cptr.ldPtro(lo, $_lua_obj_obj), $obj_oy, y.v);
         void (yield* bury_an_obj(cptr.ldPtro(lo, $_lua_obj_obj), dealloced));
@@ -778,7 +977,11 @@ cptr.stPtro(l_obj_meta, 16 + $luaL_Reg_func, null);
 export function* l_obj_register(L) {
     /* Table of instance methods (e.g. an_object:isnull())
        and static methods (e.g. obj.new("dagger")). */
-    ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 256n / 16n - 1n))))), (yield* luaL_setfuncs(L, l_obj_methods, 0)));
+    (
+        (yield* luaL_checkversion_(L, 504, 136n)),
+        (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 256n / 16n - 1n))))),
+        (yield* luaL_setfuncs(L, l_obj_methods, 0))
+    );
 
     /* metatable = { __name = "obj", __gc = l_obj_gc } */
     (yield* luaL_newmetatable(L, __s_obj));
@@ -789,7 +992,11 @@ export function* l_obj_register(L) {
 
     /* Don't let lua code mess with the real metatable.
        Instead offer a fake one that only contains __gc. */
-    ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 32n / 16n - 1n))))), (yield* luaL_setfuncs(L, l_obj_meta, 0)));
+    (
+        (yield* luaL_checkversion_(L, 504, 136n)),
+        (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 32n / 16n - 1n))))),
+        (yield* luaL_setfuncs(L, l_obj_meta, 0))
+    );
     (yield* lua_setfield(L, -2, __s_metatable));
 
     /* We don't need the metatable anymore. It's safe in the

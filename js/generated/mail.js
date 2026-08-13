@@ -36,27 +36,30 @@ import { nh_terminate } from './end.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind, $coord_y = FLD.coord_y,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters, $flag_biff = FLD.flag_biff,
-    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_v_viz_rmax = FLD.instance_globals_v_viz_rmax,
-    $instance_globals_v_viz_rmin = FLD.instance_globals_v_viz_rmin,
-    $mail_info_display_txt = FLD.mail_info_display_txt, $mail_info_object_nam = FLD.mail_info_object_nam,
-    $mail_info_response_cmd = FLD.mail_info_response_cmd, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
-    $nhcoord_y = FLD.nhcoord_y, $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $rm_typ = FLD.rm_typ, $sizeof_mail_info = FLD.sizeof_mail_info, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $sizeof_stat = FLD.sizeof_stat, $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy,
-    $stairway_tolev = FLD.stairway_tolev, $stat_st_mtimespec = FLD.stat_st_mtimespec,
-    $stat_st_size = FLD.stat_st_size, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow, $you_uprops = FLD.you_uprops,
-    $you_uroleplay = FLD.you_uroleplay, $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy,
-    $you_uz = FLD.you_uz;
+      $dlevel_t_monsters = FLD.dlevel_t_monsters, $flag_biff = FLD.flag_biff,
+      $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_v_viz_rmax = FLD.instance_globals_v_viz_rmax,
+      $instance_globals_v_viz_rmin = FLD.instance_globals_v_viz_rmin,
+      $mail_info_display_txt = FLD.mail_info_display_txt,
+      $mail_info_object_nam = FLD.mail_info_object_nam,
+      $mail_info_response_cmd = FLD.mail_info_response_cmd, $monst_mx = FLD.monst_mx,
+      $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $rm_typ = FLD.rm_typ,
+      $sizeof_mail_info = FLD.sizeof_mail_info, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_stat = FLD.sizeof_stat,
+      $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy,
+      $stairway_tolev = FLD.stairway_tolev, $stat_st_mtimespec = FLD.stat_st_mtimespec,
+      $stat_st_size = FLD.stat_st_size, $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_mail = cptr.lit("MAIL");
@@ -108,7 +111,10 @@ export function getmailstatus() {
         let pw_name = cptr.ldPtr(getpwuid(getuid()));
 
         /* note: 'sizeof "LITERAL"' includes +1 for terminating '\0' */
-        mailbox = alloc(Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(pw_name) + 11n)))));
+        mailbox = alloc(Number(BigInt.asUintN(
+            32,
+            (BigInt.asUintN(64, cptr.strlen(pw_name) + 11n))
+        )));
         void cptr.strcpy(mailbox, __s_usr_mail);
         void cptr.strcat(mailbox, pw_name);
     }
@@ -116,7 +122,12 @@ export function getmailstatus() {
         if (debugcore(__s_mail_c, 1)) {
 
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            pline(__s_mailbox_c_s_c, mailbox ? 34 : 60, mailbox ? mailbox : __s_null, mailbox ? 34 : 62);
+            pline(
+                __s_mailbox_c_s_c,
+                mailbox ? 34 : 60,
+                mailbox ? mailbox : __s_null,
+                mailbox ? 34 : 62
+            );
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -154,7 +165,16 @@ function md_start(startp) {
      * hero.
      */
     while (stway) {
-        if (cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(stway, $stairway_sy), 8), cptr.ldI16(stway)) & NHM.COULD_SEE) != 0)) {
+        if (cptr.ldI16o(stway, $stairway_tolev) == cptr.ldI16o(u, $you_uz) &&
+                ((cptr.ld1uo(
+                    cptr.ldPtro(
+                        cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                        cptr.ldI16o(stway, $stairway_sy),
+                        8
+                    ),
+                    cptr.ldI16(stway)
+                ) &
+                    NHM.COULD_SEE) != 0)) {
             cptr.stI16(startp, cptr.ldI16(stway));
             cptr.stI16o(startp, $coord_y, cptr.ldI16o(stway, $stairway_sy));
             return 1;
@@ -175,28 +195,91 @@ function md_start(startp) {
     max_distance = -1;
     __lbl_retry: while (true) {
         for (row = 0; row < NHM.ROWNO; row++) {
-            if (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2) < cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)) {
+            if (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2) <
+                    cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)) {
                 /* There are valid positions on this row. */
-                dd = dist2((cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2)), i16((row)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                dd = dist2(
+                    (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2)),
+                    i16((row)),
+                    cptr.ldI16(u),
+                    cptr.ldI16o(u, $you_uy)
+                );
                 if (dd > max_distance) {
                     if (lax) {
                         max_distance = dd;
                         cptr.stI16o(startp, $coord_y, i16(row));
-                        cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2));
+                        cptr.stI16(
+                            startp,
+                            cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2)
+                        );
 
-                    } else if (enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2), i16(row), null) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
+                    } else if (enexto(
+                        testcc,
+                        cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmin), row, 2),
+                        i16(row),
+                        null
+                    ) &&
+                            !((cptr.ld1uo(
+                                cptr.ldPtro(
+                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                    cptr.ldI16o(testcc, $nhcoord_y),
+                                    8
+                                ),
+                                cptr.ldI16(testcc)
+                            ) &
+                                NHM.IN_SIGHT) != 0) &&
+                            ((cptr.ld1uo(
+                                cptr.ldPtro(
+                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                    cptr.ldI16o(testcc, $nhcoord_y),
+                                    8
+                                ),
+                                cptr.ldI16(testcc)
+                            ) &
+                                NHM.COULD_SEE) != 0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
                 }
-                dd = dist2((cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)), i16((row)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+                dd = dist2(
+                    (cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)),
+                    i16((row)),
+                    cptr.ldI16(u),
+                    cptr.ldI16o(u, $you_uy)
+                );
                 if (dd > max_distance) {
                     if (lax) {
                         max_distance = dd;
                         cptr.stI16o(startp, $coord_y, i16(row));
-                        cptr.stI16(startp, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2));
+                        cptr.stI16(
+                            startp,
+                            cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2)
+                        );
 
-                    } else if (enexto(testcc, cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2), i16(row), null) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.IN_SIGHT) != 0) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(testcc, $nhcoord_y), 8), cptr.ldI16(testcc)) & NHM.COULD_SEE) != 0)) {
+                    } else if (enexto(
+                        testcc,
+                        cptr.ldI16o(cptr.ldPtro(gv, $instance_globals_v_viz_rmax), row, 2),
+                        i16(row),
+                        null
+                    ) &&
+                            !((cptr.ld1uo(
+                                cptr.ldPtro(
+                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                    cptr.ldI16o(testcc, $nhcoord_y),
+                                    8
+                                ),
+                                cptr.ldI16(testcc)
+                            ) &
+                                NHM.IN_SIGHT) != 0) &&
+                            ((cptr.ld1uo(
+                                cptr.ldPtro(
+                                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                                    cptr.ldI16o(testcc, $nhcoord_y),
+                                    8
+                                ),
+                                cptr.ldI16(testcc)
+                            ) &
+                                NHM.COULD_SEE) != 0)) {
                         max_distance = dd;
                         cptr.memcpy(startp, testcc, 4);
                     }
@@ -230,13 +313,27 @@ function md_stop(stopp, startp) {
     let min_distance = -1;
 
     for (x = i16(((cptr.ldI16(u) - 1) | 0)); x <= ((cptr.ldI16(u) + 1) | 0); x++)
-        for (y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0)); y <= ((cptr.ldI16o(u, $you_uy) + 1) | 0); y++) {
+        for (
+            y = i16(((cptr.ldI16o(u, $you_uy) - 1) | 0));
+            y <= ((cptr.ldI16o(u, $you_uy) + 1) | 0);
+            y++
+        ) {
             if (!isok(x, y) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
                 continue;
 
-            if (accessible(x, y) && !(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null)) {
+            if (accessible(x, y) &&
+                    !(cptr.ldPtro3(
+                        svl,
+                        x,
+                        168,
+                        y,
+                        8,
+                        $instance_globals_saved_l_level + $dlevel_t_monsters
+                    ) !== null)) {
                 distance = i16(dist2(x, y, cptr.ldI16(startp), cptr.ldI16o(startp, $coord_y)));
-                if (min_distance < 0 || distance < min_distance || (distance == min_distance && rn2(2))) {
+                if (min_distance < 0 ||
+                        distance < min_distance ||
+                        (distance == min_distance && rn2(2))) {
                     cptr.stI16(stopp, x);
                     cptr.stI16o(stopp, $coord_y, y);
                     min_distance = distance;
@@ -245,7 +342,13 @@ function md_stop(stopp, startp) {
         }
 
     /* If we didn't find a good spot, try enexto(). */
-    if (min_distance < 0 && !enexto(stopp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst)))
+    if (min_distance < 0 &&
+            !enexto(
+                stopp,
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy),
+                cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst)
+            ))
         return 0;
 
     return 1;
@@ -264,7 +367,13 @@ cptr.stPtro(mail_text, 16, __s_pardon_me);
  * FALSE if the md gets stuck in a position where there is a monster.  Return
  * TRUE otherwise.
  */
-/** C ref: mail.c:288 — @param {CPtr<struct monst>} md @param {CInt} tx @param {CInt} ty @returns {CInt} */
+/**
+ * C ref: mail.c:288
+ * @param {CPtr<struct monst>} md
+ * @param {CInt} tx
+ * @param {CInt} ty
+ * @returns {CInt}
+ */
 function md_rush(md, tx, ty) {
     let mon;  /* displaced monster */
     let dx;
@@ -280,8 +389,19 @@ function md_rush(md, tx, ty) {
      * It is possible that the monster at (fx,fy) is not the md when:
      * the md rushed the hero and failed, and is now starting back.
      */
-    if (cptr.eq((cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), md)) {
-        cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);  /* pick up from orig position */
+    if (cptr.eq(
+        (cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)),
+        md
+    )) {
+        cptr.stPtro3(
+            svl,
+            fx,
+            168,
+            fy,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters,
+            null
+        );  /* pick up from orig position */
         newsym(i16(fx), i16(fy));
     }
 
@@ -294,7 +414,17 @@ function md_rush(md, tx, ty) {
         d1 = dist2(i16(fx), i16(fy), i16(tx), i16(ty));
         for (dx = -1; dx <= 1; dx++)
             for (dy = -1; dy <= 1; dy++)
-                if ((dx || dy) && isok(i16(((fx + dx) | 0)), i16(((fy + dy) | 0))) && !((cptr.ld1so3(svl, (fx + dx) | 0, $sizeof_rm_x21, (fy + dy) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)) {
+                if ((dx || dy) &&
+                        isok(i16(((fx + dx) | 0)), i16(((fy + dy) | 0))) &&
+                        !((cptr.ld1so3(
+                            svl,
+                            (fx + dx) | 0,
+                            $sizeof_rm_x21,
+                            (fy + dy) | 0,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) <=
+                            NHC.DBWALL)) {
                     d2 = dist2(i16(((fx + dx) | 0)), i16(((fy + dy) | 0)), i16(tx), i16(ty));
                     if (d2 < d1) {
                         d1 = d2;
@@ -314,7 +444,14 @@ function md_rush(md, tx, ty) {
         if (fx == tx && fy == ty)
             break;
 
-        mon = (cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));  /* save monster at this position */
+        mon = (cptr.ldPtro3(
+            svl,
+            fx,
+            168,
+            fy,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters
+        ));  /* save monster at this position */
         if (!Deaf()) {
             ;
             if (mon)
@@ -324,17 +461,41 @@ function md_rush(md, tx, ty) {
         }
 
         if (mon)
-            cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+            cptr.stPtro3(
+                svl,
+                fx,
+                168,
+                fy,
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters,
+                null
+            );
         place_monster(md, i16(fx), i16(fy));  /* put md down */
         newsym(i16(fx), i16(fy));  /* see it */
         flush_screen(0);  /* make sure md shows up */
         nh_delay_output()();  /* wait a little bit */
 
         /* Remove md from the dungeon.  Restore original mon, if necessary. */
-        cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+        cptr.stPtro3(
+            svl,
+            fx,
+            168,
+            fy,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters,
+            null
+        );
         if (mon) {
             if ((cptr.ldI16o(mon, $monst_mx) != fx) || (cptr.ldI16o(mon, $monst_my) != fy))
-                cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, mon);
+                cptr.stPtro3(
+                    svl,
+                    fx,
+                    168,
+                    fy,
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters,
+                    mon
+                );
             else
                 place_monster(mon, i16(fx), i16(fy));
         }
@@ -345,8 +506,23 @@ function md_rush(md, tx, ty) {
      * Check for a monster at our stopping position (this is possible, but
      * very unlikely).  If one exists, then have the md leave in disgust.
      */
-    if ((mon = (cptr.ldPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
-        cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+    if ((mon = (cptr.ldPtro3(
+        svl,
+        fx,
+        168,
+        fy,
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_monsters
+    ))) !== null) {
+        cptr.stPtro3(
+            svl,
+            fx,
+            168,
+            fy,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters,
+            null
+        );
         place_monster(md, i16(fx), i16(fy));  /* display md with text below */
         newsym(i16(fx), i16(fy));
         if (!Deaf()) {
@@ -355,10 +531,26 @@ function md_rush(md, tx, ty) {
         } else {
             pline(__s_pct_s_dot, cptr.ldPtro(c_common_strings, $c_common_strings_c_Never_mind));
         }
-        cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+        cptr.stPtro3(
+            svl,
+            fx,
+            168,
+            fy,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters,
+            null
+        );
 
         if ((cptr.ldI16o(mon, $monst_mx) != fx) || (cptr.ldI16o(mon, $monst_my) != fy))
-            cptr.stPtro3(svl, fx, 168, fy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, mon);
+            cptr.stPtro3(
+                svl,
+                fx,
+                168,
+                fy,
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters,
+                mon
+            );
         else
             place_monster(mon, i16(fx), i16(fy));
 
@@ -390,7 +582,12 @@ function newmail(info) {
             break __lbl_give_up;
 
         /* Make the daemon.  Have it rush towards the hero. */
-        if (!(md = makemon(cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst), cptr.ldI16(start), cptr.ldI16o(start, $nhcoord_y), NHM.NO_MM_FLAGS)))
+        if (!(md = makemon(
+            cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst),
+            cptr.ldI16(start),
+            cptr.ldI16o(start, $nhcoord_y),
+            NHM.NO_MM_FLAGS
+        )))
             break __lbl_give_up;
         if (!md_rush(md, cptr.ldI16(stop), cptr.ldI16o(stop, $nhcoord_y)))
             break __lbl_go_back;
@@ -445,7 +642,11 @@ cptr.stPtro(__static_ckmailstatus_deliver, $mail_info_response_cmd, null);
 export function ckmailstatus() {
     ck_server_admin_msg();
 
-    if (!mailbox || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || !cptr.ld1so(flags, $flag_biff) || cptr.ldI64o(svm, $instance_globals_saved_m_moves) < BigInt.asIntN(64, laststattime + 50n))
+    if (!mailbox ||
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+            !cptr.ld1so(flags, $flag_biff) ||
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves) <
+                BigInt.asIntN(64, laststattime + 50n))
         return;
 
     laststattime = cptr.ldI64o(svm, $instance_globals_saved_m_moves);
@@ -487,7 +688,12 @@ export function readmail(otmp) {
 // 6 bindings: 3 rebound+refilled, 2 rebound, 1 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(omstat), S(nmstat), S(mailbox), S(laststattime), S(mail_text), S(__static_ckmailstatus_deliver)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(omstat), S(nmstat), S(mailbox), S(laststattime), S(mail_text),
+        S(__static_ckmailstatus_deliver)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("mail.js: __resetState before __captureState");

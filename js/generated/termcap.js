@@ -12,7 +12,10 @@ import { CO, LI, nh_HE, nh_HI, nh_UE, nh_US } from './nhprop.js';
 import { error, tty_utf8graphics_fixup } from './unixtty.js';
 import { alloc, dupstr } from './alloc.js';
 import { flags, gc, gs, gt, iflags } from './decl.js';
-import { BASE_WINDOW, HE_resets_AS, erase_tty_screen, setclipped, ttyDisplay, tty_curs, tty_raw_print, tty_wait_synch } from './wintty.js';
+import {
+    BASE_WINDOW, HE_resets_AS, erase_tty_screen, setclipped, ttyDisplay, tty_curs, tty_raw_print,
+    tty_wait_synch
+} from './wintty.js';
 import { digit, nh_snprintf } from './hacklib.js';
 import { decgraphics_mode_callback, utf8graphics_mode_callback } from './symbols.js';
 import { teleport_state_dump } from './allmain.js';
@@ -20,23 +23,23 @@ import { teleport_state_dump } from './allmain.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $DisplayDesc_curx = FLD.DisplayDesc_curx, $DisplayDesc_cury = FLD.DisplayDesc_cury,
-    $cmd_num_pad = FLD.cmd_num_pad, $flag_null = FLD.flag_null, $flag_silent = FLD.flag_silent,
-    $instance_flags_colorcount = FLD.instance_flags_colorcount,
-    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
-    $instance_flags_wc2_darkgray = FLD.instance_flags_wc2_darkgray,
-    $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
-    $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
-    $instance_globals_s_symset = FLD.instance_globals_s_symset,
-    $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
-    $nomux_cell_attr = FLD.nomux_cell_attr, $nomux_cell_decgfx = FLD.nomux_cell_decgfx,
-    $nomux_cell_fg = FLD.nomux_cell_fg, $sizeof_nomux_cell = FLD.sizeof_nomux_cell,
-    $sizeof_symsetentry = FLD.sizeof_symsetentry, $sizeof_tc_lcl_data = FLD.sizeof_tc_lcl_data,
-    $symsetentry_handling = FLD.symsetentry_handling, $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE,
-    $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO, $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI,
-    $tc_lcl_data_tc_CD = FLD.tc_lcl_data_tc_CD, $tc_lcl_data_tc_HE = FLD.tc_lcl_data_tc_HE,
-    $tc_lcl_data_tc_HI = FLD.tc_lcl_data_tc_HI, $tc_lcl_data_tc_ND = FLD.tc_lcl_data_tc_ND,
-    $tc_lcl_data_tc_UE = FLD.tc_lcl_data_tc_UE, $tc_lcl_data_tc_US = FLD.tc_lcl_data_tc_US,
-    $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack;
+      $cmd_num_pad = FLD.cmd_num_pad, $flag_null = FLD.flag_null, $flag_silent = FLD.flag_silent,
+      $instance_flags_colorcount = FLD.instance_flags_colorcount,
+      $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+      $instance_flags_wc2_darkgray = FLD.instance_flags_wc2_darkgray,
+      $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
+      $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
+      $instance_globals_s_symset = FLD.instance_globals_s_symset,
+      $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
+      $nomux_cell_attr = FLD.nomux_cell_attr, $nomux_cell_decgfx = FLD.nomux_cell_decgfx,
+      $nomux_cell_fg = FLD.nomux_cell_fg, $sizeof_nomux_cell = FLD.sizeof_nomux_cell,
+      $sizeof_symsetentry = FLD.sizeof_symsetentry, $sizeof_tc_lcl_data = FLD.sizeof_tc_lcl_data,
+      $symsetentry_handling = FLD.symsetentry_handling, $tc_gbl_data_tc_AE = FLD.tc_gbl_data_tc_AE,
+      $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO, $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI,
+      $tc_lcl_data_tc_CD = FLD.tc_lcl_data_tc_CD, $tc_lcl_data_tc_HE = FLD.tc_lcl_data_tc_HE,
+      $tc_lcl_data_tc_HI = FLD.tc_lcl_data_tc_HI, $tc_lcl_data_tc_ND = FLD.tc_lcl_data_tc_ND,
+      $tc_lcl_data_tc_UE = FLD.tc_lcl_data_tc_UE, $tc_lcl_data_tc_US = FLD.tc_lcl_data_tc_US,
+      $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_term = cptr.lit("TERM");
@@ -236,7 +239,12 @@ export function term_startup(wid, hgt) {
         cptr.st1o(flags, $flag_null, 0);  /* this should be a termcap flag */
     if (tgetent(tptr, term) < 1) {
         let buf = new Uint8Array(256);
-        void __builtin___strncpy_chk(cptr.decay(buf), term, 228n, __builtin_object_size(cptr.decay(buf), 1));
+        void __builtin___strncpy_chk(
+            cptr.decay(buf),
+            term,
+            228n,
+            __builtin_object_size(cptr.decay(buf), 1)
+        );
         cptr.st1o(cptr.decay(buf), 255, 0, 1);
         error(__s_unknown_terminal_type_s, term);
     }
@@ -280,7 +288,11 @@ export function term_startup(wid, hgt) {
     ZR = (tgetstr((__s_zr), tbufptr));  /* italic end */
     SG = tgetnum((__s_sg));  /* -1: not fnd; else # of spaces left by so */
     if (!SO || !SE || (SG > 0))
-        SO = (SE = cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_US, cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_UE, cptr.decay(nullstr))));
+        SO = (SE = cptr.stPtro(
+            tc_lcl_data,
+            $tc_lcl_data_tc_US,
+            cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_UE, cptr.decay(nullstr))
+        ));
     TI = (tgetstr((__s_ti), tbufptr));  /* nonconsequential cursor movement start */
     TE = (tgetstr((__s_te), tbufptr));  /* nonconsequential cursor movement end */
     VS = (VE = cptr.decay(nullstr));
@@ -319,7 +331,11 @@ export function term_startup(wid, hgt) {
     dynamic_HIHE = 1;
 
     cptr.stPtro(gt, $instance_globals_t_tc_gbl_data, (tgetstr((__s_as), tbufptr)));  /* alt charset start */
-    cptr.stPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE, (tgetstr((__s_ae), tbufptr)));  /* alt charset end */
+    cptr.stPtro(
+        gt,
+        $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE,
+        (tgetstr((__s_ae), tbufptr))
+    );  /* alt charset end */
     cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_CD, (tgetstr((__s_cd), tbufptr)));  /* clear lines from cursor and down */
     init_hilite();
     cptr.stI32(wid, CO());
@@ -333,10 +349,15 @@ export function term_startup(wid, hgt) {
     /* keep static copies of these so that raw_print_bold() will work
        after exit_nhwindows(); if the sequences are too long, then bold
        won't work after that--it will be rendered as ordinary text */
-    if (cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI) && cptr.strlen(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)) < 16n)
+    if (cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI) &&
+            cptr.strlen(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)) < 16n)
         void cptr.strcpy(cptr.decay(tty_standout_on), cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI));
-    if (cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) && cptr.strlen(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)) < 16n)
-        void cptr.strcpy(cptr.decay(tty_standout_off), cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE));
+    if (cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) &&
+            cptr.strlen(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)) < 16n)
+        void cptr.strcpy(
+            cptr.decay(tty_standout_off),
+            cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)
+        );
 }
 
 /* note: at present, this routine is not part of the formal window interface
@@ -346,8 +367,10 @@ export function term_startup(wid, hgt) {
 export function term_shutdown() {
     kill_hilite();
     if (dynamic_HIHE) {
-        cptr.free(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)), cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HI, null);
-        cptr.free(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)), cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HE, null);
+        cptr.free(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)),
+                cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HI, null);
+        cptr.free(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)),
+                cptr.stPtro(tc_lcl_data, $tc_lcl_data_tc_HE, null);
         dynamic_HIHE = 0;
     }
     return;
@@ -387,9 +410,17 @@ function tty_decgraphics_termcap_fixup() {
 
     /* these values are missing from some termcaps */
     if (!cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data))
-        cptr.stPtro(gt, $instance_globals_t_tc_gbl_data, cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlN));  /* ^N (shift-out [graphics font]) */
+        cptr.stPtro(
+            gt,
+            $instance_globals_t_tc_gbl_data,
+            cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlN)
+        );  /* ^N (shift-out [graphics font]) */
     if (!cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE))
-        cptr.stPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE, cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlO));  /* ^O (shift-in  [regular font])  */
+        cptr.stPtro(
+            gt,
+            $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE,
+            cptr.decay(__static_tty_decgraphics_termcap_fixup_ctrlO)
+        );  /* ^O (shift-in  [regular font])  */
     if (!KS)
         KS = cptr.decay(__static_tty_decgraphics_termcap_fixup_appMode);  /* ESC= (application keypad mode) */
     if (!KE)
@@ -399,7 +430,13 @@ function tty_decgraphics_termcap_fixup() {
      * Do not select NA ASCII as the primary font since people may
      * reasonably be using the UK character set.
      */
-    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC)) {
+    if ((cptr.ldI32o2(
+        gs,
+        cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_handling
+    ) ==
+            NHC.H_DEC)) {
         xputs(__s_esc_rparen_0);  /* "\e)0" load line drawing chars as secondary set */
         /* TI doesn't necessarily do this; explicitly switch to primary
            font in case previous program (either before starting nethack
@@ -427,7 +464,9 @@ function tty_decgraphics_termcap_fixup() {
     /* stdc strstr(), not nethack's strstri(); HE ends color, ME ends
        inverse video; they might have the same value; sequences to end
        other attributes aren't known to sometimes contain AE */
-    if ((cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) && cptr.strstr(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE), ae)) || (ME && cptr.strstr(ME, ae)))
+    if ((cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) &&
+        cptr.strstr(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE), ae)) ||
+            (ME && cptr.strstr(ME, ae)))
         HE_resets_AS.v = 1;
     xputs(cptr.ldPtro(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_AE));
 }
@@ -436,7 +475,13 @@ function tty_decgraphics_termcap_fixup() {
 export function term_start_screen() {
     xputs(TI);
     xputs(VS);
-    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC))
+    if ((cptr.ldI32o2(
+        gs,
+        cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_handling
+    ) ==
+            NHC.H_DEC))
         tty_decgraphics_termcap_fixup();
     /* set up callback in case option is not set yet but toggled later */
     decgraphics_mode_callback.v = tty_decgraphics_termcap_fixup;
@@ -467,7 +512,12 @@ export function nocmov(x, y) {
         if (UP) {
             while (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) > y) {
                 xputs(UP);
-                (cptr.stI16o(ttyDisplay, $DisplayDesc_cury, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + -1)) - (-1);
+                (cptr.stI16o(
+                    ttyDisplay,
+                    $DisplayDesc_cury,
+                    cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + -1
+                )) -
+                        (-1);
             }
         } else if (cptr.ldPtr(tc_lcl_data)) {
             cmov(x, y);
@@ -479,7 +529,12 @@ export function nocmov(x, y) {
         if (XD) {
             while (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) < y) {
                 xputs(XD);
-                (cptr.stI16o(ttyDisplay, $DisplayDesc_cury, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1)) - (1);
+                (cptr.stI16o(
+                    ttyDisplay,
+                    $DisplayDesc_cury,
+                    cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1
+                )) -
+                        (1);
             }
         } else if (cptr.ldPtr(tc_lcl_data)) {
             cmov(x, y);
@@ -487,7 +542,12 @@ export function nocmov(x, y) {
             while (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) < y) {
                 void xputc(10);
                 cptr.stI16o(ttyDisplay, $DisplayDesc_curx, 0);
-                (cptr.stI16o(ttyDisplay, $DisplayDesc_cury, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1)) - (1);
+                (cptr.stI16o(
+                    ttyDisplay,
+                    $DisplayDesc_cury,
+                    cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1
+                )) -
+                        (1);
             }
         }
     }
@@ -498,13 +558,23 @@ export function nocmov(x, y) {
             /* should instead print what is there already */
             while (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) < x) {
                 xputs(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_ND));
-                (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
+                (cptr.stI16o(
+                    ttyDisplay,
+                    $DisplayDesc_curx,
+                    cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+                )) -
+                        (1);
             }
         }
     } else if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > x) {
         while (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > x) {
             xputs(BC);
-            (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
+            (cptr.stI16o(
+                ttyDisplay,
+                $DisplayDesc_curx,
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
+            )) -
+                    (-1);
         }
     }
 }
@@ -569,7 +639,9 @@ let __static_nomux_markers_enabled_cached = -1; /** C ref: termcap.c:667 — int
 function nomux_markers_enabled() {
     if (__static_nomux_markers_enabled_cached < 0) {
         let ev = getenv(__s_nomux_markers);
-        __static_nomux_markers_enabled_cached = (ev && cptr.ld1s(ev) && cptr.ld1so(ev, 0) != 48) ? 1 : 0;
+        __static_nomux_markers_enabled_cached = (ev && cptr.ld1s(ev) && cptr.ld1so(ev, 0) != 48)
+                ? 1
+                : 0;
     }
     return __static_nomux_markers_enabled_cached;
 }
@@ -592,7 +664,16 @@ function nomux_emit_marker(kind) {
         let cy = cptr.box(0);
         let scr_len = scr ? cptr.strlen(scr) : 0n;
         nomux_get_cursor(cx, cy);
-        fprintf(__stdoutp, __s_7777_kind_s_seq_d_anim_d_cx_d_cy_d_len, kind, nomux_seq, nomux_anim_id, cx.v, cy.v, scr_len);
+        fprintf(
+            __stdoutp,
+            __s_7777_kind_s_seq_d_anim_d_cx_d_cy_d_len,
+            kind,
+            nomux_seq,
+            nomux_anim_id,
+            cx.v,
+            cy.v,
+            scr_len
+        );
         if (scr_len > 0n)
             fwrite(scr, 1n, scr_len, __stdoutp);
         fflush(__stdoutp);
@@ -623,7 +704,13 @@ export function nomux_capture_write_input_boundary() {
 
 /* NOMUX shadow frame buffer implementation */
 /** C ref: termcap.c:728 — nomux_cell[24][80] */
-export const nomux_buf = (function () { const flat = new Uint8Array(24 * 80 * 4); const a = []; for (let r = 0; r < 24; r++) a.push(flat.subarray(r * 80 * 4, (r + 1) * 80 * 4)); a.buf = flat; return a; })();
+export const nomux_buf = (function () {
+    const flat = new Uint8Array(24 * 80 * 4);
+    const a = [];
+    for (let r = 0; r < 24; r++) a.push(flat.subarray(r * 80 * 4, (r + 1) * 80 * 4));
+    a.buf = flat;
+    return a;
+})();
 
 /** C ref: termcap.c:729 — unsigned char */
 let nomux_fg_cur = 7;
@@ -681,9 +768,27 @@ export function nomux_putch(ch) {
     col = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
     if (row >= 0 && row < 24 && col >= 0 && col < 80) {
         cptr.st1o(cptr.decay(nomux_buf[row]), col, schar(ch), $sizeof_nomux_cell);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, $sizeof_nomux_cell, $nomux_cell_fg, nomux_fg_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, $sizeof_nomux_cell, $nomux_cell_attr, nomux_attr_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[row]), col, $sizeof_nomux_cell, $nomux_cell_decgfx, nomux_decgfx_cur);
+        cptr.st1o2(
+            cptr.decay(nomux_buf[row]),
+            col,
+            $sizeof_nomux_cell,
+            $nomux_cell_fg,
+            nomux_fg_cur
+        );
+        cptr.st1o2(
+            cptr.decay(nomux_buf[row]),
+            col,
+            $sizeof_nomux_cell,
+            $nomux_cell_attr,
+            nomux_attr_cur
+        );
+        cptr.st1o2(
+            cptr.decay(nomux_buf[row]),
+            col,
+            $sizeof_nomux_cell,
+            $nomux_cell_decgfx,
+            nomux_decgfx_cur
+        );
 
     }
 }
@@ -759,7 +864,27 @@ export function nomux_capture_screen() {
         cur_fg = 7;
         cur_attr = 0;
         end = 79;
-        while (end >= 0 && (cptr.ld1so(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell) == 32 || cptr.ld1so(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell) == 0) && cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell, $nomux_cell_attr) == 0 && (cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell, $nomux_cell_fg) == 7 || cptr.ld1uo2(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell, $nomux_cell_fg) == 0))
+        while (end >= 0 &&
+                (cptr.ld1so(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell) == 32 ||
+                    cptr.ld1so(cptr.decay(nomux_buf[row]), end, $sizeof_nomux_cell) == 0) &&
+                cptr.ld1uo2(
+                    cptr.decay(nomux_buf[row]),
+                    end,
+                    $sizeof_nomux_cell,
+                    $nomux_cell_attr
+                ) == 0 &&
+                (cptr.ld1uo2(
+                    cptr.decay(nomux_buf[row]),
+                    end,
+                    $sizeof_nomux_cell,
+                    $nomux_cell_fg
+                ) == 7 ||
+                    cptr.ld1uo2(
+                        cptr.decay(nomux_buf[row]),
+                        end,
+                        $sizeof_nomux_cell,
+                        $nomux_cell_fg
+                    ) == 0))
             end--;
         let in_dec = 0;
         for (col = 0; col <= end; col++) {
@@ -866,10 +991,33 @@ function nomux_raw_putch(ch) {
     if (ch < 32)
         return;
     if (nomux_raw_row >= 0 && nomux_raw_row < 24 && nomux_raw_col >= 0 && nomux_raw_col < 80) {
-        cptr.st1o(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, schar(ch), $sizeof_nomux_cell);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, $sizeof_nomux_cell, $nomux_cell_fg, nomux_fg_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, $sizeof_nomux_cell, $nomux_cell_attr, nomux_attr_cur);
-        cptr.st1o2(cptr.decay(nomux_buf[nomux_raw_row]), nomux_raw_col, $sizeof_nomux_cell, $nomux_cell_decgfx, nomux_decgfx_cur);
+        cptr.st1o(
+            cptr.decay(nomux_buf[nomux_raw_row]),
+            nomux_raw_col,
+            schar(ch),
+            $sizeof_nomux_cell
+        );
+        cptr.st1o2(
+            cptr.decay(nomux_buf[nomux_raw_row]),
+            nomux_raw_col,
+            $sizeof_nomux_cell,
+            $nomux_cell_fg,
+            nomux_fg_cur
+        );
+        cptr.st1o2(
+            cptr.decay(nomux_buf[nomux_raw_row]),
+            nomux_raw_col,
+            $sizeof_nomux_cell,
+            $nomux_cell_attr,
+            nomux_attr_cur
+        );
+        cptr.st1o2(
+            cptr.decay(nomux_buf[nomux_raw_row]),
+            nomux_raw_col,
+            $sizeof_nomux_cell,
+            $nomux_cell_decgfx,
+            nomux_decgfx_cur
+        );
     }
     nomux_raw_col++;
 
@@ -933,14 +1081,21 @@ export function xputs(s) {
 export function cl_end() {
     if (CE) {
         xputs(CE);
-        nomux_clear_to_eol(cptr.ldI16o(ttyDisplay, $DisplayDesc_cury), cptr.ldI16o(ttyDisplay, $DisplayDesc_curx));  /* no-CE fix - free after Harold Rynes */
+        nomux_clear_to_eol(
+            cptr.ldI16o(ttyDisplay, $DisplayDesc_cury),
+            cptr.ldI16o(ttyDisplay, $DisplayDesc_curx)
+        );  /* no-CE fix - free after Harold Rynes */
     } else {
         let cx = (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) | 0;
         while (cx < CO()) {
             void xputc(32);
             cx++;
         }
-        tty_curs(BASE_WINDOW, (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) | 0, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury));
+        tty_curs(
+            BASE_WINDOW,
+            (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) | 0,
+            cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)
+        );
     }
 }
 
@@ -1038,7 +1193,11 @@ export function tty_delay_output() {
         no_delay_env = getenv(__s_nethack_no_delay);
         if (!no_delay_env || !cptr.ld1s(no_delay_env))
             no_delay_env = getenv(__s_webhack_no_delay);
-        __static_tty_delay_output_no_delay = (no_delay_env && cptr.ld1s(no_delay_env) && cptr.ld1s(no_delay_env) != 48 ? 1 : 0);
+        __static_tty_delay_output_no_delay = (no_delay_env &&
+            cptr.ld1s(no_delay_env) &&
+            cptr.ld1s(no_delay_env) != 48
+                ? 1
+                : 0);
     }
     if (__static_tty_delay_output_no_delay || cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
         void fflush(__stdoutp);
@@ -1056,10 +1215,20 @@ export function tty_delay_output() {
         tputs(__s_50, 1, xputc);
 
     } else if (ospeed.v > 0 && ospeed.v < 15 && cptr.ldPtr(tc_lcl_data)) {
-        let cmlen = Number(BigInt.asIntN(32, cptr.strlen(tgoto(cptr.ldPtr(tc_lcl_data), cptr.ldI16o(ttyDisplay, $DisplayDesc_curx), cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)))));
+        let cmlen = Number(BigInt.asIntN(
+            32,
+            cptr.strlen(tgoto(
+                cptr.ldPtr(tc_lcl_data),
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx),
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)
+            ))
+        ));
         let i = (500 + ((cptr.ldI16o(tmspc10, ospeed.v, 2) / 2) | 0)) | 0;
         while (i > 0) {
-            cmov(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx), cptr.ldI16o(ttyDisplay, $DisplayDesc_cury));
+            cmov(
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx),
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)
+            );
             i = (i - Math.imul(cmlen, cptr.ldI16o(tmspc10, ospeed.v, 2))) | 0;
         }  /* MICRO */
     }
@@ -1072,7 +1241,10 @@ export function cl_eos() {
         xputs(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_CD));
         {
             let r;
-            nomux_clear_to_eol(cptr.ldI16o(ttyDisplay, $DisplayDesc_cury), cptr.ldI16o(ttyDisplay, $DisplayDesc_curx));
+            nomux_clear_to_eol(
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_cury),
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx)
+            );
             for (r = (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1) | 0; r < 24; r++)
                 nomux_clear_to_eol(r, 0);
         }
@@ -1085,7 +1257,11 @@ export function cl_eos() {
             cy++;
         }
         cl_end();
-        tty_curs(BASE_WINDOW, (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) | 0, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury));
+        tty_curs(
+            BASE_WINDOW,
+            (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) | 0,
+            cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)
+        );
 
     }
 }
@@ -1131,7 +1307,11 @@ function init_hilite() {
     cptr.stI32o(iflags, $instance_flags_colorcount, colors >>> 0);
 
     let md_len = 0;
-    if (colors < 8 || !MD || !cptr.ld1s(MD) || ((setf = tgetstr((__s_af), null)) === null && (setf = tgetstr((__s_sf), null)) === null)) {
+    if (colors < 8 ||
+            !MD ||
+            !cptr.ld1s(MD) ||
+            ((setf = tgetstr((__s_af), null)) === null &&
+                (setf = tgetstr((__s_sf), null)) === null)) {
         /* Fallback when colors not available
          * It's arbitrary to collapse all colors except gray
          * together, but that's what the previous code did.
@@ -1149,7 +1329,12 @@ function init_hilite() {
         cptr.stPtro(hilites, NHM.CLR_BRIGHT_GREEN, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
         cptr.stPtro(hilites, NHM.CLR_YELLOW, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
         cptr.stPtro(hilites, NHM.CLR_BRIGHT_BLUE, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
-        cptr.stPtro(hilites, NHM.CLR_BRIGHT_MAGENTA, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
+        cptr.stPtro(
+            hilites,
+            NHM.CLR_BRIGHT_MAGENTA,
+            cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI),
+            8
+        );
         cptr.stPtro(hilites, NHM.CLR_BRIGHT_CYAN, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
         cptr.stPtro(hilites, NHM.CLR_WHITE, cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI), 8);
 
@@ -1172,7 +1357,16 @@ function init_hilite() {
 
             let work;
             scratch = tparm(setf, cptr.ldI32o(ti_map, c, 12));
-            work = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))) + 1n))));
+            work = alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(
+                    64,
+                    BigInt.asUintN(
+                        64,
+                        cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))
+                    ) + 1n
+                )
+            )));
             void cptr.strcpy(work, MD);
             cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 8), work, 8);
             work = cptr.add(work, md_len);
@@ -1186,7 +1380,21 @@ function init_hilite() {
         cptr.stPtro(hilites, NHM.CLR_WHITE, dupstr(scratch), 8);
     } else {
         scratch = tparm(setf, 7);
-        cptr.stPtro(hilites, NHM.CLR_WHITE, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))) + 1n)))), 8);
+        cptr.stPtro(
+            hilites,
+            NHM.CLR_WHITE,
+            alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(
+                    64,
+                    BigInt.asUintN(
+                        64,
+                        cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))
+                    ) + 1n
+                )
+            ))),
+            8
+        );
         void cptr.strcpy(cptr.ldPtro(hilites, NHM.CLR_WHITE, 8), MD);
         void cptr.strcat(cptr.ldPtro(hilites, NHM.CLR_WHITE, 8), scratch);
 
@@ -1205,7 +1413,21 @@ function init_hilite() {
             * black background.  We can use it to represent black objects.
             */
             scratch = tparm(setf, 0);
-            cptr.stPtro(hilites, NHM.CLR_BLACK, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))) + 1n)))), 8);
+            cptr.stPtro(
+                hilites,
+                NHM.CLR_BLACK,
+                alloc(Number(BigInt.asUintN(
+                    32,
+                    BigInt.asUintN(
+                        64,
+                        BigInt.asUintN(
+                            64,
+                            cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))
+                        ) + 1n
+                    )
+                ))),
+                8
+            );
             void cptr.strcpy(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), MD);
             void cptr.strcat(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), scratch);
         }
@@ -1223,14 +1445,18 @@ function kill_hilite() {
     let c;
 
     /* if colors weren't available, no freeing needed */
-    if (cptr.eq(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)))
+    if (cptr.eq(
+        cptr.ldPtro(hilites, NHM.CLR_BLACK, 8),
+        cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)
+    ))
         return;
 
     /* hilites[] will be set to NULL below, whether freed here or not */
 
     if (cptr.ldPtro(hilites, NHM.CLR_BLACK, 8)) {
         if (!cptr.eq(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8), cptr.ldPtro(hilites, NHM.CLR_BLUE, 8)))
-            cptr.free(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8)), cptr.stPtro(hilites, NHM.CLR_BLACK, null, 8);
+            cptr.free(cptr.ldPtro(hilites, NHM.CLR_BLACK, 8)),
+                    cptr.stPtro(hilites, NHM.CLR_BLACK, null, 8);
     }
     if (tgetnum((__s_co__2)) >= 16) {
         if (cptr.ldPtro(hilites, NHM.CLR_BLUE, 8))
@@ -1343,7 +1569,9 @@ function e_atr2str(n) {
 /** C ref: termcap.c:1781 — @param {CInt} msk @returns {CInt} */
 export function term_attr_fixup(msk) {
     /* underline is converted to bold if its start sequence isn't available */
-    if ((msk & NHC.HL_ULINE) && (!cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US) || !cptr.ld1s(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US)))) {
+    if ((msk & NHC.HL_ULINE) &&
+            (!cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US) ||
+                !cptr.ld1s(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_US)))) {
         msk |= NHC.HL_BOLD;
         msk &= -17;
     }
@@ -1385,7 +1613,9 @@ export function term_end_attr(attr) {
 
 /** C ref: termcap.c:1831 */
 export function term_start_raw_bold() {
-    let soOn = cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI) ? cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI) : cptr.decay(tty_standout_on);
+    let soOn = cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)
+            ? cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HI)
+            : cptr.decay(tty_standout_on);
     if (cptr.ld1s(soOn))
         xputs(soOn);
 
@@ -1393,7 +1623,9 @@ export function term_start_raw_bold() {
 
 /** C ref: termcap.c:1841 */
 export function term_end_raw_bold() {
-    let soOff = cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) ? cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE) : cptr.decay(tty_standout_off);
+    let soOff = cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)
+            ? cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE)
+            : cptr.decay(tty_standout_off);
     if (cptr.ld1s(soOff))
 
         xputs(soOff);
@@ -1411,7 +1643,9 @@ export function term_start_color(color) {
     nomux_set_fg(color);
     if (color == NHM.NO_COLOR)
         xputs(cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_HE));  /* inline term_end_color() */
-    else if (color < NHM.CLR_MAX && cptr.ldPtro(hilites, color, 8) && cptr.ld1s(cptr.ldPtro(hilites, color, 8)))
+    else if (color < NHM.CLR_MAX &&
+            cptr.ldPtro(hilites, color, 8) &&
+            cptr.ld1s(cptr.ldPtro(hilites, color, 8)))
         xputs(cptr.ldPtro(hilites, color, 8));
 }
 
@@ -1444,7 +1678,16 @@ const __static_emit24bit_tcolorbuf = new Uint8Array(128); /** C ref: termcap.c:1
 /** C ref: termcap.c:1949 — @param {CLongLong} mcolor */
 function emit24bit(mcolor) {
 
-    nh_snprintf(__s_emit24bit, 1956, cptr.decay(__static_emit24bit_tcolorbuf), 128n, __s_38_2_ld_ld_ldm, ((mcolor >> 16n) & 255n), ((mcolor >> 8n) & 255n), ((mcolor >> 0n) & 255n));
+    nh_snprintf(
+        __s_emit24bit,
+        1956,
+        cptr.decay(__static_emit24bit_tcolorbuf),
+        128n,
+        __s_38_2_ld_ld_ldm,
+        ((mcolor >> 16n) & 255n),
+        ((mcolor >> 8n) & 255n),
+        ((mcolor >> 0n) & 255n)
+    );
     xputs(cptr.decay(__static_emit24bit_tcolorbuf));
 
 }
@@ -1454,7 +1697,14 @@ const __static_emit256_tcolorbuf = new Uint8Array(128); /** C ref: termcap.c:196
 /** C ref: termcap.c:1960 — @param {CInt} color256idx */
 function emit256(color256idx) {
 
-    nh_snprintf(__s_emit256, 1965, cptr.decay(__static_emit256_tcolorbuf), 128n, __s_38_5_dm, color256idx);
+    nh_snprintf(
+        __s_emit256,
+        1965,
+        cptr.decay(__static_emit256_tcolorbuf),
+        128n,
+        __s_38_5_dm,
+        color256idx
+    );
     xputs(cptr.decay(__static_emit256_tcolorbuf));
 }
 
@@ -1477,7 +1727,22 @@ export function term_end_extracolor() {
 // 56 bindings: 1 rebound+refilled, 38 rebound, 17 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(tc_lcl_data), S(nh_VI), S(nh_VE), S(nh_Ic), S(HO), S(CL), S(CE), S(UP), S(XD), S(BC), S(SO), S(SE), S(TI), S(TE), S(VS), S(VE), S(ME), S(MR), S(MB), S(MH), S(MD), S(ZH), S(ZR), S(dynamic_HIHE), S(SG), S(PC), S(tbuf), S(hilites), S(KS), S(KE), S(nullstr), S(tty_standout_on), S(tty_standout_off), S(__static_tty_decgraphics_termcap_fixup_ctrlN), S(__static_tty_decgraphics_termcap_fixup_ctrlO), S(__static_tty_decgraphics_termcap_fixup_appMode), S(__static_tty_decgraphics_termcap_fixup_numMode), S(__static_nomux_markers_enabled_cached), S(nomux_seq), S(nomux_anim_id), S(nomux_buf), S(nomux_fg_cur), S(nomux_attr_cur), S(nomux_decgfx_cur), S(nomux_out), S(nomux_raw_active), S(nomux_raw_row), S(nomux_raw_col), S(tmspc10), S(__static_tty_delay_output_no_delay), S(ti_map), S(nilstring), S(nulstr), S(__static_term_curs_set_vis), S(__static_emit24bit_tcolorbuf), S(__static_emit256_tcolorbuf)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(tc_lcl_data), S(nh_VI), S(nh_VE), S(nh_Ic), S(HO), S(CL), S(CE), S(UP), S(XD), S(BC),
+        S(SO), S(SE), S(TI), S(TE), S(VS), S(VE), S(ME), S(MR), S(MB), S(MH), S(MD), S(ZH), S(ZR),
+        S(dynamic_HIHE), S(SG), S(PC), S(tbuf), S(hilites), S(KS), S(KE), S(nullstr),
+        S(tty_standout_on), S(tty_standout_off), S(__static_tty_decgraphics_termcap_fixup_ctrlN),
+        S(__static_tty_decgraphics_termcap_fixup_ctrlO),
+        S(__static_tty_decgraphics_termcap_fixup_appMode),
+        S(__static_tty_decgraphics_termcap_fixup_numMode), S(__static_nomux_markers_enabled_cached),
+        S(nomux_seq), S(nomux_anim_id), S(nomux_buf), S(nomux_fg_cur), S(nomux_attr_cur),
+        S(nomux_decgfx_cur), S(nomux_out), S(nomux_raw_active), S(nomux_raw_row), S(nomux_raw_col),
+        S(tmspc10), S(__static_tty_delay_output_no_delay), S(ti_map), S(nilstring), S(nulstr),
+        S(__static_term_curs_set_vis), S(__static_emit24bit_tcolorbuf),
+        S(__static_emit256_tcolorbuf)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("termcap.js: __resetState before __captureState");

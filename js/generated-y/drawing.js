@@ -16,8 +16,8 @@ import * as FLD from './nhfield.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $class_sym_explain = FLD.class_sym_explain, $class_sym_name = FLD.class_sym_name,
-    $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_symdef = FLD.sizeof_symdef,
-    $symdef_color = FLD.symdef_color, $symdef_explanation = FLD.symdef_explanation;
+      $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_symdef = FLD.sizeof_symdef,
+      $symdef_color = FLD.symdef_color, $symdef_explanation = FLD.symdef_explanation;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
@@ -786,7 +786,26 @@ cptr.st1o(defsyms, 2520 + $symdef_color, NHM.NO_COLOR);
 
 /* default rogue level symbols */
 /** C ref: drawing.c:72 — unsigned char[18] */
-export const def_r_oc_syms = [0, NHC.ILLOBJ_SYM, NHC.WEAPON_SYM, 93, NHC.RING_SYM, 44, NHC.TOOL_SYM, 58, NHC.POTION_SYM, NHC.SCROLL_SYM, NHC.SPBOOK_SYM, NHC.WAND_SYM, NHC.GEM_SYM, NHC.GEM_SYM, NHC.ROCK_SYM, NHC.BALL_SYM, NHC.CHAIN_SYM, NHC.VENOM_SYM];
+export const def_r_oc_syms = [
+    0,
+    NHC.ILLOBJ_SYM,
+    NHC.WEAPON_SYM,
+    93,
+    NHC.RING_SYM,
+    44,
+    NHC.TOOL_SYM,
+    58,
+    NHC.POTION_SYM,
+    NHC.SCROLL_SYM,
+    NHC.SPBOOK_SYM,
+    NHC.WAND_SYM,
+    NHC.GEM_SYM,
+    NHC.GEM_SYM,
+    NHC.ROCK_SYM,
+    NHC.BALL_SYM,
+    NHC.CHAIN_SYM,
+    NHC.VENOM_SYM
+];
 
 /*
  * Convert the given character to an object class.  If the character is not
@@ -831,13 +850,20 @@ export function def_char_is_furniture(ch) {
 
     for (i = 0; i < NHC.MAXPCHARS; ++i) {
         if (!furniture) {
-            if (!cptr.strncmp(cptr.ldPtro2(defsyms, i, $sizeof_symdef, $symdef_explanation), cptr.decay(__static_def_char_is_furniture_first_furniture), 5n))
+            if (!cptr.strncmp(
+                cptr.ldPtro2(defsyms, i, $sizeof_symdef, $symdef_explanation),
+                cptr.decay(__static_def_char_is_furniture_first_furniture),
+                5n
+            ))
                 furniture = 1;
         }
         if (furniture) {
             if (cptr.ld1uo(defsyms, i, $sizeof_symdef) == uchar(ch))
                 return i;
-            if (!strcmp(cptr.ldPtro2(defsyms, i, $sizeof_symdef, $symdef_explanation), cptr.decay(__static_def_char_is_furniture_last_furniture)))
+            if (!strcmp(
+                cptr.ldPtro2(defsyms, i, $sizeof_symdef, $symdef_explanation),
+                cptr.decay(__static_def_char_is_furniture_last_furniture)
+            ))
                 break;  /* reached last furniture */
         }
     }
@@ -848,7 +874,13 @@ export function def_char_is_furniture(ch) {
 // 7 bindings: 0 rebound+refilled, 0 rebound, 7 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(def_oc_syms), S(def_monsyms), S(def_warnsyms), S(defsyms), S(def_r_oc_syms), S(__static_def_char_is_furniture_first_furniture), S(__static_def_char_is_furniture_last_furniture)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(def_oc_syms), S(def_monsyms), S(def_warnsyms), S(defsyms), S(def_r_oc_syms),
+        S(__static_def_char_is_furniture_first_furniture),
+        S(__static_def_char_is_furniture_last_furniture)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("drawing.js: __resetState before __captureState");

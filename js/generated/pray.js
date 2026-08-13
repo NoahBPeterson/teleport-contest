@@ -8,9 +8,22 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Align2amask, bimanual, eyecount, has_mcorpsenm, has_omonst, is_unicorn, is_vampshifter, is_weptool, ismnum } from './nhmacrofn.js';
-import { Antimagic, Blind, Blinded, BlindedTimeout, Blindfolded_only, Deaf, Disint_resistance, EBlinded, EDisint_resistance, EReflecting, Fixed_abil, Flying, Glib, HBlinded, HConfusion, HDeaf, HFast, HHallucination, HProtection, HStealth, HStun, HTelepat, Hallucination, Levitation, Luck, ParanoidPray, Passes_walls, Punished, Reflecting, Shock_resistance, Sick, Slimed, Stoned, Strangled, Unchanging, Upolyd, Wounded_legs, display_nhwindow, wizard } from './nhprop.js';
-import { WIN_MESSAGE, c_color_names, c_common_strings, disp, flags, ga, gi, gm, gn, gp, gu, gv, gy, iflags, svb, svd, svk, svl, svm, svt, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, uright, uswapwep, uwep, ynchars } from './decl.js';
+import {
+    Align2amask, bimanual, eyecount, has_mcorpsenm, has_omonst, is_unicorn, is_vampshifter,
+    is_weptool, ismnum
+} from './nhmacrofn.js';
+import {
+    Antimagic, Blind, Blinded, BlindedTimeout, Blindfolded_only, Deaf, Disint_resistance, EBlinded,
+    EDisint_resistance, EReflecting, Fixed_abil, Flying, Glib, HBlinded, HConfusion, HDeaf, HFast,
+    HHallucination, HProtection, HStealth, HStun, HTelepat, Hallucination, Levitation, Luck,
+    ParanoidPray, Passes_walls, Punished, Reflecting, Shock_resistance, Sick, Slimed, Stoned,
+    Strangled, Unchanging, Upolyd, Wounded_legs, display_nhwindow, wizard
+} from './nhprop.js';
+import {
+    WIN_MESSAGE, c_color_names, c_common_strings, disp, flags, ga, gi, gm, gn, gp, gu, gv, gy,
+    iflags, svb, svd, svk, svl, svm, svt, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu,
+    uball, ublindf, uleft, uright, uswapwep, uwep, ynchars
+} from './decl.js';
 import { xlev_to_rank } from './botl.js';
 import { isok, paranoid_query, yn_function } from './cmd.js';
 import { region_danger, region_safety } from './region.js';
@@ -21,12 +34,25 @@ import { welded } from './wield.js';
 import { which_armor } from './worn.js';
 import { Resists_Elem, attacktype_fordmg, can_chant, monstseesu, monstunseesu } from './mondata.js';
 import { obj_descr, objects } from './objects.js';
-import { artifact_origin, artiname, confers_luck, discover_artifact, exist_artifact, is_art, mk_artifact, nartifact_exist } from './artifact.js';
-import { You, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The, verbalize } from './pline.js';
-import { make_blinded, make_confused, make_deaf, make_glib, make_hallucinated, make_sick, make_slimed, make_stoned, make_stunned, set_itimeout } from './potion.js';
-import { An, Yobjnam2, actualoname, an, ansimpleoname, bare_artifactname, corpse_xname, gloves_simple_name, makeplural, otense, rnd_class, simpleonames, vtense, xname, yname } from './objnam.js';
+import {
+    artifact_origin, artiname, confers_luck, discover_artifact, exist_artifact, is_art, mk_artifact,
+    nartifact_exist
+} from './artifact.js';
+import {
+    You, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The, verbalize
+} from './pline.js';
+import {
+    make_blinded, make_confused, make_deaf, make_glib, make_hallucinated, make_sick, make_slimed,
+    make_stoned, make_stunned, set_itimeout
+} from './potion.js';
+import {
+    An, Yobjnam2, actualoname, an, ansimpleoname, bare_artifactname, corpse_xname,
+    gloves_simple_name, makeplural, otense, rnd_class, simpleonames, vtense, xname, yname
+} from './objnam.js';
 import { Monnam, a_monnam, hcolor, mon_nam, oname } from './do_name.js';
-import { bless, get_mtraits, mkobj, mksobj, peek_at_iced_corpse_age, place_object, set_bknown, uncurse } from './mkobj.js';
+import {
+    bless, get_mtraits, mkobj, mksobj, peek_at_iced_corpse_age, place_object, set_bknown, uncurse
+} from './mkobj.js';
 import { carrying, feel_cockatrice, sobj_at, update_inventory, useup, useupf } from './invent.js';
 import { safe_teleds } from './teleport.js';
 import { animate_statue, rescued_from_terrain, reset_utrap } from './trap.js';
@@ -66,75 +92,90 @@ import { is_pool_or_lava } from './dbridge.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Gender_him = FLD.Gender_him, $Gender_his = FLD.Gender_his, $Race_adj = FLD.Race_adj,
-    $Race_selfmask = FLD.Race_selfmask, $Role_cgod = FLD.Role_cgod, $Role_lgod = FLD.Role_lgod,
-    $Role_mnum = FLD.Role_mnum, $Role_ngod = FLD.Role_ngod, $align_record = FLD.align_record,
-    $c_color_names_c_amber = FLD.c_color_names_c_amber, $c_color_names_c_golden = FLD.c_color_names_c_golden,
-    $c_color_names_c_light_blue = FLD.c_color_names_c_light_blue,
-    $c_color_names_c_orange = FLD.c_color_names_c_orange, $c_color_names_c_white = FLD.c_color_names_c_white,
-    $c_common_strings_c_Something = FLD.c_common_strings_c_Something,
-    $c_common_strings_c_You_can_move_again = FLD.c_common_strings_c_You_can_move_again,
-    $c_common_strings_c_something = FLD.c_common_strings_c_something, $d_level_dlevel = FLD.d_level_dlevel,
-    $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_sanctum_level = FLD.dgn_topology_d_sanctum_level, $dlevel_t_flags = FLD.dlevel_t_flags,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters, $dlevel_t_objects = FLD.dlevel_t_objects,
-    $flag_debug = FLD.flag_debug, $flag_female = FLD.flag_female,
-    $flag_paranoia_bits = FLD.flag_paranoia_bits, $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
-    $instance_globals_n_nomovemsg = FLD.instance_globals_n_nomovemsg,
-    $instance_globals_p_p_aligntyp = FLD.instance_globals_p_p_aligntyp,
-    $instance_globals_p_p_trouble = FLD.instance_globals_p_p_trouble,
-    $instance_globals_p_p_type = FLD.instance_globals_p_p_type,
-    $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_format = FLD.kinfo_format,
-    $kinfo_name = FLD.kinfo_name, $levelflags_sokoban_rules = FLD.levelflags_sokoban_rules,
-    $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $monst_cham = FLD.monst_cham, $monst_data = FLD.monst_data,
-    $monst_isminion = FLD.monst_isminion, $monst_m_ap_type = FLD.monst_m_ap_type,
-    $monst_mappearance = FLD.monst_mappearance, $monst_mcanmove = FLD.monst_mcanmove,
-    $monst_mextra = FLD.monst_mextra, $monst_mflee = FLD.monst_mflee, $monst_mfrozen = FLD.monst_mfrozen,
-    $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
-    $monst_mstrategy = FLD.monst_mstrategy, $monst_mtame = FLD.monst_mtame, $monst_mx = FLD.monst_mx,
-    $monst_my = FLD.monst_my, $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed,
-    $obj_corpsenm = FLD.obj_corpsenm, $obj_cursed = FLD.obj_cursed, $obj_known = FLD.obj_known,
-    $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass, $obj_oeaten = FLD.obj_oeaten,
-    $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2, $obj_oerodeproof = FLD.obj_oerodeproof,
-    $obj_oextra = FLD.obj_oextra, $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan,
-    $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe, $obj_v = FLD.obj_v, $obj_where = FLD.obj_where,
-    $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_class = FLD.objclass_oc_class,
-    $objclass_oc_name_known = FLD.objclass_oc_name_known, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
-    $oextra_omonst = FLD.oextra_omonst, $permonst_difficulty = FLD.permonst_difficulty,
-    $permonst_maligntyp = FLD.permonst_maligntyp, $permonst_mflags1 = FLD.permonst_mflags1,
-    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
-    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags,
-    $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender, $sizeof_Role = FLD.sizeof_Role,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
-    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_skills = FLD.sizeof_skills,
-    $u_conduct_gnostic = FLD.u_conduct_gnostic, $u_event_ascended = FLD.u_event_ascended,
-    $u_event_gehennom_entered = FLD.u_event_gehennom_entered, $u_event_udemigod = FLD.u_event_udemigod,
-    $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth,
-    $u_event_uheard_tune = FLD.u_event_uheard_tune, $u_event_uopened_dbridge = FLD.u_event_uopened_dbridge,
-    $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow, $you_acurr = FLD.you_acurr,
-    $you_amax = FLD.you_amax, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
-    $you_moreluck = FLD.you_moreluck, $you_twoweap = FLD.you_twoweap, $you_ualign = FLD.you_ualign,
-    $you_ualignbase = FLD.you_ualignbase, $you_ublesscnt = FLD.you_ublesscnt,
-    $you_ublessed = FLD.you_ublessed, $you_uconduct = FLD.you_uconduct, $you_ucreamed = FLD.you_ucreamed,
-    $you_uevent = FLD.you_uevent, $you_ugangr = FLD.you_ugangr, $you_ugifts = FLD.you_ugifts,
-    $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax, $you_uhppeak = FLD.you_uhppeak,
-    $you_uhs = FLD.you_uhs, $you_uhunger = FLD.you_uhunger, $you_uinvulnerable = FLD.you_uinvulnerable,
-    $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax, $you_uluck = FLD.you_uluck,
-    $you_ulycn = FLD.you_ulycn, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-    $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_urooms = FLD.you_urooms,
-    $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
-    $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy,
-    $you_uz = FLD.you_uz, $you_weapon_skills = FLD.you_weapon_skills;
+      $Race_selfmask = FLD.Race_selfmask, $Role_cgod = FLD.Role_cgod, $Role_lgod = FLD.Role_lgod,
+      $Role_mnum = FLD.Role_mnum, $Role_ngod = FLD.Role_ngod, $align_record = FLD.align_record,
+      $c_color_names_c_amber = FLD.c_color_names_c_amber,
+      $c_color_names_c_golden = FLD.c_color_names_c_golden,
+      $c_color_names_c_light_blue = FLD.c_color_names_c_light_blue,
+      $c_color_names_c_orange = FLD.c_color_names_c_orange,
+      $c_color_names_c_white = FLD.c_color_names_c_white,
+      $c_common_strings_c_Something = FLD.c_common_strings_c_Something,
+      $c_common_strings_c_You_can_move_again = FLD.c_common_strings_c_You_can_move_again,
+      $c_common_strings_c_something = FLD.c_common_strings_c_something,
+      $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dgn_topology_d_sanctum_level = FLD.dgn_topology_d_sanctum_level,
+      $dlevel_t_flags = FLD.dlevel_t_flags, $dlevel_t_monsters = FLD.dlevel_t_monsters,
+      $dlevel_t_objects = FLD.dlevel_t_objects, $flag_debug = FLD.flag_debug,
+      $flag_female = FLD.flag_female, $flag_paranoia_bits = FLD.flag_paranoia_bits,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
+      $instance_globals_n_nomovemsg = FLD.instance_globals_n_nomovemsg,
+      $instance_globals_p_p_aligntyp = FLD.instance_globals_p_p_aligntyp,
+      $instance_globals_p_p_trouble = FLD.instance_globals_p_p_trouble,
+      $instance_globals_p_p_type = FLD.instance_globals_p_p_type,
+      $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+      $kinfo_format = FLD.kinfo_format, $kinfo_name = FLD.kinfo_name,
+      $levelflags_sokoban_rules = FLD.levelflags_sokoban_rules,
+      $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $monst_cham = FLD.monst_cham,
+      $monst_data = FLD.monst_data, $monst_isminion = FLD.monst_isminion,
+      $monst_m_ap_type = FLD.monst_m_ap_type, $monst_mappearance = FLD.monst_mappearance,
+      $monst_mcanmove = FLD.monst_mcanmove, $monst_mextra = FLD.monst_mextra,
+      $monst_mflee = FLD.monst_mflee, $monst_mfrozen = FLD.monst_mfrozen,
+      $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
+      $monst_mstrategy = FLD.monst_mstrategy, $monst_mtame = FLD.monst_mtame,
+      $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $obj_bknown = FLD.obj_bknown,
+      $obj_blessed = FLD.obj_blessed, $obj_corpsenm = FLD.obj_corpsenm,
+      $obj_cursed = FLD.obj_cursed, $obj_known = FLD.obj_known, $obj_oartifact = FLD.obj_oartifact,
+      $obj_oclass = FLD.obj_oclass, $obj_oeaten = FLD.obj_oeaten, $obj_oeroded = FLD.obj_oeroded,
+      $obj_oeroded2 = FLD.obj_oeroded2, $obj_oerodeproof = FLD.obj_oerodeproof,
+      $obj_oextra = FLD.obj_oextra, $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan,
+      $obj_rknown = FLD.obj_rknown, $obj_spe = FLD.obj_spe, $obj_v = FLD.obj_v,
+      $obj_where = FLD.obj_where, $objclass_oc_big = FLD.objclass_oc_big,
+      $objclass_oc_class = FLD.objclass_oc_class,
+      $objclass_oc_name_known = FLD.objclass_oc_name_known,
+      $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $oextra_omonst = FLD.oextra_omonst,
+      $permonst_difficulty = FLD.permonst_difficulty, $permonst_maligntyp = FLD.permonst_maligntyp,
+      $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
+      $permonst_mlet = FLD.permonst_mlet, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
+      $sizeof_Gender = FLD.sizeof_Gender, $sizeof_Role = FLD.sizeof_Role,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+      $sizeof_skills = FLD.sizeof_skills, $u_conduct_gnostic = FLD.u_conduct_gnostic,
+      $u_event_ascended = FLD.u_event_ascended,
+      $u_event_gehennom_entered = FLD.u_event_gehennom_entered,
+      $u_event_udemigod = FLD.u_event_udemigod,
+      $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth,
+      $u_event_uheard_tune = FLD.u_event_uheard_tune,
+      $u_event_uopened_dbridge = FLD.u_event_uopened_dbridge,
+      $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $you_acurr = FLD.you_acurr, $you_amax = FLD.you_amax, $you_mh = FLD.you_mh,
+      $you_mhmax = FLD.you_mhmax, $you_moreluck = FLD.you_moreluck, $you_twoweap = FLD.you_twoweap,
+      $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase,
+      $you_ublesscnt = FLD.you_ublesscnt, $you_ublessed = FLD.you_ublessed,
+      $you_uconduct = FLD.you_uconduct, $you_ucreamed = FLD.you_ucreamed,
+      $you_uevent = FLD.you_uevent, $you_ugangr = FLD.you_ugangr, $you_ugifts = FLD.you_ugifts,
+      $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax, $you_uhppeak = FLD.you_uhppeak,
+      $you_uhs = FLD.you_uhs, $you_uhunger = FLD.you_uhunger,
+      $you_uinvulnerable = FLD.you_uinvulnerable, $you_ulevel = FLD.you_ulevel,
+      $you_ulevelmax = FLD.you_ulevelmax, $you_uluck = FLD.you_uluck, $you_ulycn = FLD.you_ulycn,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_urooms = FLD.you_urooms, $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck,
+      $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
+      $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz,
+      $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_moloch = cptr.lit("Moloch");
@@ -513,7 +554,40 @@ export function stuck_in_wall() {
             if (!i && !j)
                 continue;
             y = (cptr.ldI16o(u, $you_uy) + j) | 0;
-            if (!isok(i16(x), i16(y)) || (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.SDOOR && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.SCORR)) || (blocked_boulder(i, j) && !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 134217728n) != 0n)))
+            if (!isok(i16(x), i16(y)) ||
+                    (((cptr.ld1so3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) <
+                        NHC.POOL) &&
+                        (cptr.ld1so3(
+                            svl,
+                            x,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        ) !=
+                            NHC.SDOOR &&
+                            cptr.ld1so3(
+                                svl,
+                                x,
+                                $sizeof_rm_x21,
+                                y,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            ) !=
+                                NHC.SCORR)) ||
+                    (blocked_boulder(i, j) &&
+                        !((cptr.ldU64o(
+                            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                            $permonst_mflags2
+                        ) &
+                            134217728n) != 0n)))
                 ++count;
         }
     }
@@ -560,19 +634,37 @@ function in_trouble() {
         return 7;
     if (ismnum(cptr.ldI32o(u, $you_ulycn)))
         return 6;
-    if (near_capacity() >= NHC.EXT_ENCUMBER && (((cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)) - (cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr))) | 0) > 3)
+    if (near_capacity() >= NHC.EXT_ENCUMBER &&
+            (((cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)) -
+                (cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr))) | 0) > 3)
         return 5;
     if (stuck_in_wall())
         return 4;
-    if (((uarmf.v) && cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.LEVITATION_BOOTS && (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0) || stuck_ring(uleft.v, NHC.RIN_LEVITATION) || stuck_ring(uright.v, NHC.RIN_LEVITATION))
+    if (((uarmf.v) &&
+        cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.LEVITATION_BOOTS &&
+        (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0) ||
+            stuck_ring(uleft.v, NHC.RIN_LEVITATION) ||
+            stuck_ring(uright.v, NHC.RIN_LEVITATION))
         return 3;
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) || !freehand()) {
+    if (((cptr.ldU64o(
+        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+        $permonst_mflags1
+    ) &
+        8192n) != 0n) ||
+            !freehand()) {
         /* for bag/box access [cf use_container()]...
            make sure it's a case that we know how to handle;
            otherwise "fix all troubles" would get stuck in a loop */
         if (welded(uwep.v))
             return 2;
-        if (Upolyd() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) && (!Unchanging() || ((otmp = unchanger()) !== null && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)))
+        if (Upolyd() &&
+                ((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                    8192n) != 0n) &&
+                (!Unchanging() ||
+                    ((otmp = unchanger()) !== null && (cptr.ldI32o(otmp, $obj_cursed) & 1) | 0)))
             return 2;
     }
     if (EBlinded() && (cptr.ldI32o(ublindf.v, $obj_cursed) & 1) | 0)
@@ -581,19 +673,34 @@ function in_trouble() {
     /*
      * minor troubles
      */
-    if (Punished() || (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL))
+    if (Punished() ||
+            (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_BURIEDBALL))
         return -1;
-    if (((uarmg.v) && cptr.ldI16o((uarmg.v), $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING && (cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0) || ((uarmf.v) && cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.FUMBLE_BOOTS && (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0))
+    if (((uarmg.v) &&
+        cptr.ldI16o((uarmg.v), $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING &&
+        (cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0) ||
+            ((uarmf.v) &&
+                cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.FUMBLE_BOOTS &&
+                (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0))
         return -2;
     if (worst_cursed_item())
         return -3;
     if (cptr.ldPtro(u, $you_usteed)) {
         otmp = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n);
-        if (((otmp) && cptr.ldI16o((otmp), $obj_otyp) == NHC.SADDLE && (cptr.ldI32o((otmp), $obj_cursed) & 1) | 0))
+        if (((otmp) &&
+                cptr.ldI16o((otmp), $obj_otyp) == NHC.SADDLE &&
+                (cptr.ldI32o((otmp), $obj_cursed) & 1) | 0))
             return -4;
     }
 
-    if (BlindedTimeout() > 1n && !(HBlinded() & -16777216n) && (!(cptr.ldI32o(u, $you_uswallow) & 1) || !attacktype_fordmg(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AT_ENGL, NHM.AD_BLND)))
+    if (BlindedTimeout() > 1n &&
+            !(HBlinded() & -16777216n) &&
+            (!(cptr.ldI32o(u, $you_uswallow) & 1) ||
+                !attacktype_fordmg(
+                    cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data),
+                    NHM.AT_ENGL,
+                    NHM.AD_BLND
+                )))
         return -5;
     /* deafness isn't its own trouble; healing magic cures deafness
        when it cures blindness, so do the same with trouble repair */
@@ -624,7 +731,9 @@ function worst_cursed_item() {
     /* if strained or worse, check for loadstone first */
     if (near_capacity() >= NHC.HVY_ENCUMBER) {
         for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = cptr.ldPtr(otmp))
-            if (((otmp) && cptr.ldI16o((otmp), $obj_otyp) == NHC.LOADSTONE && (cptr.ldI32o((otmp), $obj_cursed) & 1) | 0))
+            if (((otmp) &&
+                    cptr.ldI16o((otmp), $obj_otyp) == NHC.LOADSTONE &&
+                    (cptr.ldI32o((otmp), $obj_cursed) & 1) | 0))
                 return otmp;
     }
     /* weapon takes precedence if it is interfering
@@ -644,7 +753,9 @@ function worst_cursed_item() {
         otmp = uarm.v;
         /* if worn helmet of opposite alignment is making you an adherent
            of the current god, he/she/it won't uncurse that for you */
-    } else if (uarmh.v && (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0 && cptr.ldI16o(uarmh.v, $obj_otyp) != NHC.HELM_OF_OPPOSITE_ALIGNMENT) {
+    } else if (uarmh.v &&
+            (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0 &&
+            cptr.ldI16o(uarmh.v, $obj_otyp) != NHC.HELM_OF_OPPOSITE_ALIGNMENT) {
         otmp = uarmh.v;
     } else if (uarmf.v && (cptr.ldI32o(uarmf.v, $obj_cursed) & 1) | 0) {
         otmp = uarmf.v;
@@ -662,7 +773,9 @@ function worst_cursed_item() {
     } else if (welded(uwep.v)) {
         otmp = uwep.v;
         /* active secondary weapon even though it isn't welded */
-    } else if (uswapwep.v && (cptr.ldI32o(uswapwep.v, $obj_cursed) & 1) | 0 && cptr.ld1so(u, $you_twoweap)) {
+    } else if (uswapwep.v &&
+            (cptr.ldI32o(uswapwep.v, $obj_cursed) & 1) | 0 &&
+            cptr.ld1so(u, $you_twoweap)) {
         otmp = uswapwep.v;
         /* all worn items ought to be handled by now */
     } else {
@@ -689,7 +802,11 @@ function fix_curse_trouble(otmp, what) {
             return;
     }
     if (!Blind() || (cptr.eq(otmp, ublindf.v) && Blindfolded_only())) {
-        pline(__s_s_s, what ? what : Yobjnam2(otmp, __s_softly_glow), hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber)));
+        pline(
+            __s_s_s,
+            what ? what : Yobjnam2(otmp, __s_softly_glow),
+            hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))
+        );
         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
         cptr.stI32o(otmp, $obj_bknown, (!Hallucination()) >>> 0);  /* ok to skip set_bknown() */
     }
@@ -766,7 +883,13 @@ function fix_worst_trouble(trouble) {
         break;
         case 5:
         /* override Fixed_abil; uncurse that if feasible */
-        You_feel(__s_sstronger, ((((cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)) - (cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr))) | 0) > 6) ? __s_much : __s_empty);
+        You_feel(
+            __s_sstronger,
+            ((((cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)) -
+                (cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr))) | 0) > 6)
+                ? __s_much
+                : __s_empty
+        );
         cptr.st1o2(u, NHC.A_STR, 1, $you_acurr, (cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)));
         cptr.st1(disp, 1);
         if (Fixed_abil()) {
@@ -795,14 +918,22 @@ function fix_worst_trouble(trouble) {
                Without something like this, fix_all_troubles can get
                stuck in an infinite loop trying to fix STUCK_IN_WALL
                and repeatedly failing. */
-            set_itimeout(cptr.add(cptr.add(cptr.add(u, $you_uprops), NHC.PASSES_WALLS, $sizeof_prop), $prop_intrinsic), BigInt(((d(4, 4) + 4) | 0)));  /* 8..20 */
+            set_itimeout(
+                cptr.add(
+                    cptr.add(cptr.add(u, $you_uprops), NHC.PASSES_WALLS, $sizeof_prop),
+                    $prop_intrinsic
+                ),
+                BigInt(((d(4, 4) + 4) | 0))
+            );  /* 8..20 */
             /* how else could you move between packed rocks or among
                lattice forming "solid" rock? */
             You_feel(__s_much_slimmer);
         }
         break;
         case 3:
-        if (((uarmf.v) && cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.LEVITATION_BOOTS && (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0)) {
+        if (((uarmf.v) &&
+                cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.LEVITATION_BOOTS &&
+                (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0)) {
             otmp = uarmf.v;
         } else if ((otmp = stuck_ring(uleft.v, NHC.RIN_LEVITATION)) !== null) {
             if (cptr.eq(otmp, uleft.v))
@@ -819,7 +950,12 @@ function fix_worst_trouble(trouble) {
             fix_curse_trouble(otmp, what);
             break;
         }
-        if (Upolyd() && ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
+        if (Upolyd() &&
+                ((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                    8192n) != 0n)) {
             if (!Unchanging()) {
                 Your(__s_shape_becomes_uncertain);
                 rehumanize();  /* "You return to {normal} form." */
@@ -829,7 +965,12 @@ function fix_worst_trouble(trouble) {
                 break;
             }
         }
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n) || !freehand())
+        if (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags1
+        ) &
+            8192n) != 0n) ||
+                !freehand())
             impossible(__s_fix_worst_trouble_couldn_t_cure_hands);
         break;
         case 1:
@@ -847,9 +988,13 @@ function fix_worst_trouble(trouble) {
             unpunish();
         break;
         case -2:
-        if (((uarmg.v) && cptr.ldI16o((uarmg.v), $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING && (cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0))
+        if (((uarmg.v) &&
+                cptr.ldI16o((uarmg.v), $obj_otyp) == NHC.GAUNTLETS_OF_FUMBLING &&
+                (cptr.ldI32o((uarmg.v), $obj_cursed) & 1) | 0))
             otmp = uarmg.v;
-        else if (((uarmf.v) && cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.FUMBLE_BOOTS && (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0))
+        else if (((uarmf.v) &&
+                cptr.ldI16o((uarmf.v), $obj_otyp) == NHC.FUMBLE_BOOTS &&
+                (cptr.ldI32o((uarmf.v), $obj_cursed) & 1) | 0))
             otmp = uarmf.v;
         fix_curse_trouble(otmp, what);
         break;
@@ -885,14 +1030,23 @@ function fix_worst_trouble(trouble) {
             if (Blinded()) {
                 if (eyecount(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) != 1)
                     eyes = makeplural(eyes);
-                void cptr.sprintf(cptr.decay(msgbuf), __s_your_s_s_better, eyes, vtense(eyes, __s_feel));
+                void cptr.sprintf(
+                    cptr.decay(msgbuf),
+                    __s_your_s_s_better,
+                    eyes,
+                    vtense(eyes, __s_feel)
+                );
                 cptr.stI32o(u, $you_ucreamed, 0);
                 make_blinded(0n, 0);
             }
             if (cure_deaf) {
                 make_deaf(0n, 0);
                 if (!Deaf())
-                    void cptr.sprintf(eos(cptr.decay(msgbuf)), __s_s_can_hear_again, !cptr.ld1s(cptr.decay(msgbuf)) ? __s_you : __s_and_you);
+                    void cptr.sprintf(
+                        eos(cptr.decay(msgbuf)),
+                        __s_s_can_hear_again,
+                        !cptr.ld1s(cptr.decay(msgbuf)) ? __s_you : __s_and_you
+                    );
             }
             if (cptr.ld1s(cptr.decay(msgbuf)))
                 pline(__s_pct_s_dot, cptr.decay(msgbuf));
@@ -914,7 +1068,11 @@ function fix_worst_trouble(trouble) {
         case -4:
         otmp = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n);
         if (!Blind()) {
-            pline(__s_s_s, Yobjnam2(otmp, __s_softly_glow), hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber)));
+            pline(
+                __s_s_s,
+                Yobjnam2(otmp, __s_softly_glow),
+                hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))
+            );
             set_bknown(otmp, 1);
         }
         uncurse(otmp);
@@ -994,7 +1152,43 @@ function god_zaps_you(resp_god) {
             godvoice(resp_god, __s_i_believe_it_not);
             monstseesu(16n);
         }
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level))))) {
+        if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )
+            ))) ||
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_sanctum_level
+                        )
+                    )))) {
             /* one more try for high altars */
             ;
             verbalize(__s_thou_cannot_escape_my_wrath_mortal);
@@ -1002,14 +1196,25 @@ function god_zaps_you(resp_god) {
             summon_minion(resp_god, 0);
             summon_minion(resp_god, 0);
             ;
-            verbalize(__s_destroy_s_my_servants, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)));
+            verbalize(
+                __s_destroy_s_my_servants,
+                (cptr.ldPtro2(
+                    genders,
+                    cptr.ld1so(flags, $flag_female) ? 1 : 0,
+                    $sizeof_Gender,
+                    $Gender_him
+                ))
+            );
         }
     }
 }
 
 /** C ref: pray.c:694 — @param {CInt} resp_god @param {CInt} via_disintegration */
 function fry_by_god(resp_god, via_disintegration) {
-    You(__s_pct_s_bang, !via_disintegration ? __s_fry_to_a_crisp : __s_disintegrate_into_a_pile_of_dust);
+    You(
+        __s_pct_s_bang,
+        !via_disintegration ? __s_fry_to_a_crisp : __s_disintegrate_into_a_pile_of_dust
+    );
     cptr.stI32o(svk, $kinfo_format, NHM.KILLED_BY);
     void cptr.sprintf(cptr.add(svk, $kinfo_name), __s_the_wrath_of_s, align_gname(resp_god));
     done(NHC.DIED);
@@ -1027,9 +1232,17 @@ function angrygods(resp_god) {
     /* changed from tmp = u.ugangr + abs (u.uluck) -- rph */
     /* added test for alignment diff -dlc */
     if (resp_god != cptr.ld1so(u, $you_ualign))
-        maxanger = (((cptr.ldI32o(u, $you_ualign + $align_record) / 2) | 0) + (((cptr.ld1so(u, $you_uluck) + cptr.ld1so(u, $you_moreluck)) | 0) > 0 ? (-((cptr.ld1so(u, $you_uluck) + cptr.ld1so(u, $you_moreluck)) | 0) / 3) | 0 : -((cptr.ld1so(u, $you_uluck) + cptr.ld1so(u, $you_moreluck)) | 0))) | 0;
+        maxanger = (((cptr.ldI32o(u, $you_ualign + $align_record) / 2) | 0) +
+            (((cptr.ld1so(u, $you_uluck) + cptr.ld1so(u, $you_moreluck)) | 0) > 0
+                ? (-((cptr.ld1so(u, $you_uluck) + cptr.ld1so(u, $you_moreluck)) | 0) / 3) | 0
+                : -((cptr.ld1so(u, $you_uluck) + cptr.ld1so(u, $you_moreluck)) | 0))) |
+                0;
     else
-        maxanger = (Math.imul(3, cptr.ldI32o(u, $you_ugangr)) + ((Luck() > 0 || cptr.ldI32o(u, $you_ualign + $align_record) >= 4) ? (-Luck() / 3) | 0 : -Luck())) | 0;
+        maxanger = (Math.imul(3, cptr.ldI32o(u, $you_ugangr)) +
+            ((Luck() > 0 || cptr.ldI32o(u, $you_ualign + $align_record) >= 4)
+                ? (-Luck() / 3) | 0
+                : -Luck())) |
+                0;
     if (maxanger < 1)
         maxanger = 1;  /* possible if bad align & good luck */
     else if (maxanger > 15)
@@ -1038,12 +1251,29 @@ function angrygods(resp_god) {
     switch (rn2(maxanger)) {
         case 0:
         case 1:
-        You_feel(__s_that_s_is_s, align_gname(resp_god), Hallucination() ? __s_bummed : __s_displeased);
+        You_feel(
+            __s_that_s_is_s,
+            align_gname(resp_god),
+            Hallucination() ? __s_bummed : __s_displeased
+        );
         break;
         case 2:
         case 3:
         godvoice(resp_god, null);
-        pline(__s_thou_s_s, ((cptr.ldI32o(u, $you_ualign + $align_record) < 0) && resp_god == cptr.ld1so(u, $you_ualign)) ? __s_hast_strayed_from_the_path : __s_art_arrogant, cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_HUMAN ? __s_mortal : __s_creature);
+        pline(
+            __s_thou_s_s,
+            ((cptr.ldI32o(u, $you_ualign + $align_record) < 0) &&
+                resp_god == cptr.ld1so(u, $you_ualign))
+                ? __s_hast_strayed_from_the_path
+                : __s_art_arrogant,
+            cptr.ld1so(
+                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                $permonst_mlet
+            ) ==
+                NHC.S_HUMAN
+                ? __s_mortal
+                : __s_creature
+        );
         ;
         verbalize(__s_thou_must_relearn_thy_lessons);
         void adjattrib(NHC.A_WIS, -1, 0);
@@ -1069,9 +1299,65 @@ function angrygods(resp_god) {
         case 8:
         godvoice(resp_god, null);
         ;
-        verbalize(__s_thou_durst_s_me, (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && (((schar(((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))) != resp_god)) ? __s_scorn : __s_call_upon);
+        verbalize(
+            __s_thou_durst_s_me,
+            (((cptr.ld1so3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )) ==
+                NHC.ALTAR) &&
+                (((schar(((((((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.AM_MASK) &
+                    NHM.AM_MASK) == 0)
+                    ? -128
+                    : ((((((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) & 31) | 0) &
+                        NHM.AM_MASK) &
+                        NHM.AM_MASK) ==
+                        NHM.AM_LAWFUL)
+                        ? NHM.A_LAWFUL
+                        : ((((((cptr.ldI32o3(
+                            svl,
+                            cptr.ldI16(u),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(u, $you_uy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) & 31) | 0) &
+                            NHM.AM_MASK) &
+                            NHM.AM_MASK)) - 2) | 0))))) !=
+                    resp_god))
+                ? __s_scorn
+                : __s_call_upon
+        );
         /* [why isn't this using verbalize()?] */
-        pline(__s_then_die_s, (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_HUMAN) ? __s_mortal : __s_creature);
+        pline(
+            __s_then_die_s,
+            (cptr.ld1so(
+                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                $permonst_mlet
+            ) ==
+                NHC.S_HUMAN)
+                ? __s_mortal
+                : __s_creature
+        );
         summon_minion(resp_god, 0);
         break;
         default:
@@ -1093,9 +1379,21 @@ function at_your_feet(str) {
         str = cptr.ldPtro(c_common_strings, $c_common_strings_c_Something);
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* barrier between you and the floor */
-        pline(__s_s_s_into_s_s, str, vtense(str, __s_drop), s_suffix(mon_nam(cptr.ldPtro(u, $you_ustuck))), mbodypart(cptr.ldPtro(u, $you_ustuck), NHC.STOMACH));
+        pline(
+            __s_s_s_into_s_s,
+            str,
+            vtense(str, __s_drop),
+            s_suffix(mon_nam(cptr.ldPtro(u, $you_ustuck))),
+            mbodypart(cptr.ldPtro(u, $you_ustuck), NHC.STOMACH)
+        );
     } else {
-        pline(__s_s_s_s_your_s, str, vtense(str, Blind() ? __s_land : __s_appear), Levitation() ? __s_beneath : __s_at, makeplural(body_part(NHC.FOOT)));
+        pline(
+            __s_s_s_s_your_s,
+            str,
+            vtense(str, Blind() ? __s_land : __s_appear),
+            Levitation() ? __s_beneath : __s_at,
+            makeplural(body_part(NHC.FOOT))
+        );
     }
 }
 
@@ -1107,25 +1405,69 @@ function gcrownu() {
     let in_hand;
     let class_gift;
 
-    cptr.stI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-    cptr.stI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-    cptr.stI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-    cptr.stI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-    cptr.stI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
-    cptr.stI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+    cptr.stI64o2(
+        u,
+        NHC.SEE_INVIS,
+        $sizeof_prop,
+        $you_uprops + $prop_intrinsic,
+        cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+    );
+    cptr.stI64o2(
+        u,
+        NHC.FIRE_RES,
+        $sizeof_prop,
+        $you_uprops + $prop_intrinsic,
+        cptr.ldI64o2(u, NHC.FIRE_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+    );
+    cptr.stI64o2(
+        u,
+        NHC.COLD_RES,
+        $sizeof_prop,
+        $you_uprops + $prop_intrinsic,
+        cptr.ldI64o2(u, NHC.COLD_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+    );
+    cptr.stI64o2(
+        u,
+        NHC.SHOCK_RES,
+        $sizeof_prop,
+        $you_uprops + $prop_intrinsic,
+        cptr.ldI64o2(u, NHC.SHOCK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+    );
+    cptr.stI64o2(
+        u,
+        NHC.SLEEP_RES,
+        $sizeof_prop,
+        $you_uprops + $prop_intrinsic,
+        cptr.ldI64o2(u, NHC.SLEEP_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+    );
+    cptr.stI64o2(
+        u,
+        NHC.POISON_RES,
+        $sizeof_prop,
+        $you_uprops + $prop_intrinsic,
+        cptr.ldI64o2(u, NHC.POISON_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n
+    );
     godvoice(cptr.ld1so(u, $you_ualign), null);
 
     class_gift = NHC.STRANGE_OBJECT;
     /* 3.3.[01] had this in the A_NEUTRAL case,
        preventing chaotic wizards from receiving a spellbook */
-    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && !is_art(uwep.v, NHC.ART_VORPAL_BLADE) && !is_art(uwep.v, NHC.ART_STORMBRINGER) && !carrying(NHC.SPE_FINGER_OF_DEATH)) {
+    if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) &&
+            !is_art(uwep.v, NHC.ART_VORPAL_BLADE) &&
+            !is_art(uwep.v, NHC.ART_STORMBRINGER) &&
+            !carrying(NHC.SPE_FINGER_OF_DEATH)) {
         class_gift = NHC.SPE_FINGER_OF_DEATH;
-    } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) && (!uwep.v || !cptr.ld1so(uwep.v, $obj_oartifact)) && !carrying(NHC.SPE_RESTORE_ABILITY)) {
+    } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) &&
+            (!uwep.v || !cptr.ld1so(uwep.v, $obj_oartifact)) &&
+            !carrying(NHC.SPE_RESTORE_ABILITY)) {
         /* monks rarely wield a weapon */
         class_gift = NHC.SPE_RESTORE_ABILITY;
     }
 
-    obj = ((uwep.v) && (cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v))) ? uwep.v : null;
+    obj = ((uwep.v) &&
+        (cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v)))
+            ? uwep.v
+            : null;
     already_exists = (in_hand = 0);  /* lint suppression */
     switch (cptr.ld1so(u, $you_ualign)) {
         case NHM.A_LAWFUL:
@@ -1146,14 +1488,17 @@ function gcrownu() {
         cptr.stI32o(u, $you_uevent + $u_event_uhand_of_elbereth, 3);
         in_hand = is_art(uwep.v, NHC.ART_STORMBRINGER);
         already_exists = exist_artifact(NHC.RUNESWORD, artiname(NHC.ART_STORMBRINGER));
-        what = (((already_exists && !in_hand) || class_gift != NHC.STRANGE_OBJECT) ? __s_take_lives : __s_steal_souls);
+        what = (((already_exists && !in_hand) || class_gift != NHC.STRANGE_OBJECT)
+                ? __s_take_lives
+                : __s_steal_souls);
         ;
         verbalize(__s_thou_art_chosen_to_s_for_my_glory, what);
         livelog_printf(8n, __s_was_chosen_to_s_for_the_glory_of_s, what, u_gname());
         break;
     }
 
-    if (cptr.ld1so2(objects, class_gift, $sizeof_objclass, $objclass_oc_class) == NHC.SPBOOK_CLASS) {
+    if (cptr.ld1so2(objects, class_gift, $sizeof_objclass, $objclass_oc_class) ==
+            NHC.SPBOOK_CLASS) {
         let bbuf = new Uint8Array(256);
 
         obj = mksobj(class_gift, 1, 0);
@@ -1173,7 +1518,9 @@ function gcrownu() {
 
         /* when getting a new book for known spell, enhance
            currently wielded weapon rather than the book */
-        if (known_spell(class_gift) != NHC.spe_Unknown && ((uwep.v) && (cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v))))
+        if (known_spell(class_gift) != NHC.spe_Unknown &&
+                ((uwep.v) &&
+                    (cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v))))
             obj = uwep.v;  /* to be blessed,&c */
     }
 
@@ -1181,7 +1528,9 @@ function gcrownu() {
         case NHM.A_LAWFUL:
         if (class_gift != NHC.STRANGE_OBJECT) {
             ;  /* already got bonus above */
-        } else if (obj && cptr.ldI16o(obj, $obj_otyp) == NHC.LONG_SWORD && !cptr.ld1so(obj, $obj_oartifact)) {
+        } else if (obj &&
+                cptr.ldI16o(obj, $obj_otyp) == NHC.LONG_SWORD &&
+                !cptr.ld1so(obj, $obj_oartifact)) {
             let lbuf = new Uint8Array(256);
 
             void cptr.strcpy(cptr.decay(lbuf), simpleonames(obj));  /* before transformation */
@@ -1190,7 +1539,18 @@ function gcrownu() {
             obj = oname(obj, artiname(NHC.ART_EXCALIBUR), 264);
             if (is_art(obj, NHC.ART_EXCALIBUR)) {
                 (cptr.stI32o(u, $you_ugifts, cptr.ldI32o(u, $you_ugifts) + 1)) - (1);
-                livelog_printf(72n, __s_had_s_wielded_s_transformed_into_s, (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_his)), cptr.decay(lbuf), artiname(NHC.ART_EXCALIBUR));
+                livelog_printf(
+                    72n,
+                    __s_had_s_wielded_s_transformed_into_s,
+                    (cptr.ldPtro2(
+                        genders,
+                        cptr.ld1so(flags, $flag_female) ? 1 : 0,
+                        $sizeof_Gender,
+                        $Gender_his
+                    )),
+                    cptr.decay(lbuf),
+                    artiname(NHC.ART_EXCALIBUR)
+                );
             }
         }
         /* acquire Excalibur's skill regardless of weapon or gift */
@@ -1283,31 +1643,57 @@ function give_spell() {
     otmp = mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 1);
     while (--trycnt > 0) {
         if (cptr.ldI16o(otmp, $obj_otyp) != NHC.SPE_BLANK_PAPER) {
-            if (known_spell(cptr.ldI16o(otmp, $obj_otyp)) <= NHC.spe_Unknown && !(cptr.ldI16o2(u, spell_skilltype(cptr.ldI16o(otmp, $obj_otyp)), $sizeof_skills, $you_weapon_skills) == NHC.P_ISRESTRICTED))
+            if (known_spell(cptr.ldI16o(otmp, $obj_otyp)) <= NHC.spe_Unknown &&
+                    !(cptr.ldI16o2(
+                        u,
+                        spell_skilltype(cptr.ldI16o(otmp, $obj_otyp)),
+                        $sizeof_skills,
+                        $you_weapon_skills
+                    ) ==
+                        NHC.P_ISRESTRICTED))
                 break;  /* forgotten or not yet known */
         } else {
             /* blank paper is acceptable if not discovered yet or
                if hero has a magic marker to write something on it
                (doesn't matter if marker is out of charges); it will
                become discovered (below) without needing to be read */
-            if (!(cptr.ldI32o2(objects, NHC.SPE_BLANK_PAPER, $sizeof_objclass, $objclass_oc_name_known) & 1) || carrying(NHC.MAGIC_MARKER))
+            if (!(cptr.ldI32o2(
+                objects,
+                NHC.SPE_BLANK_PAPER,
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) & 1) ||
+                    carrying(NHC.MAGIC_MARKER))
                 break;
         }
-        cptr.stI16o(otmp, $obj_otyp, i16(rnd_class(cptr.ldI32o2(svb, NHC.SPBOOK_CLASS, 4, $instance_globals_saved_b_bases), NHC.SPE_BLANK_PAPER)));
+        cptr.stI16o(
+            otmp,
+            $obj_otyp,
+            i16(rnd_class(
+                cptr.ldI32o2(svb, NHC.SPBOOK_CLASS, 4, $instance_globals_saved_b_bases),
+                NHC.SPE_BLANK_PAPER
+            ))
+        );
     }
     /*
      * 25% chance of learning the spell directly instead of
      * receiving the book for it, unless it's already well known.
      * The chance is not influenced by whether hero is illiterate.
      */
-    if (cptr.ldI16o(otmp, $obj_otyp) != NHC.SPE_BLANK_PAPER && !rn2(4) && (spe_knowledge = known_spell(cptr.ldI16o(otmp, $obj_otyp))) != NHC.spe_Fresh) {
+    if (cptr.ldI16o(otmp, $obj_otyp) != NHC.SPE_BLANK_PAPER &&
+            !rn2(4) &&
+            (spe_knowledge = known_spell(cptr.ldI16o(otmp, $obj_otyp))) != NHC.spe_Fresh) {
         /* force_learn_spell() should only return '\0' if the book
            is blank paper or the spell is known and has retention
            of spe_Fresh, so no 'else' case is needed here */
         if ((spe_let = force_learn_spell(cptr.ldI16o(otmp, $obj_otyp))) != 0) {
             /* for spellbook class, OBJ_NAME() yields the name of
                the spell rather than "spellbook of <spell-name>" */
-            let spe_name = (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass))), $sizeof_objdescr));
+            let spe_name = (cptr.ldPtro(
+                obj_descr,
+                cptr.ldI16((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass))),
+                $sizeof_objdescr
+            ));
 
             if (spe_knowledge == NHC.spe_Unknown)
                 /* appending "spell 'a'" seems slightly silly but
@@ -1316,7 +1702,12 @@ function give_spell() {
                    might not recognize that 'spe_name' is a spell */
                 pline(__s_divine_knowledge_of_s_fills_your_mind, spe_name, spe_let);
             else
-                Your(__s_knowledge_of_spell_c_s_is_s, spe_let, spe_name, (spe_knowledge == NHC.spe_Forgotten) ? __s_restored : __s_refreshed);
+                Your(
+                    __s_knowledge_of_spell_c_s_is_s,
+                    spe_let,
+                    spe_name,
+                    (spe_knowledge == NHC.spe_Forgotten) ? __s_restored : __s_refreshed
+                );
         }
         obfree(otmp, null);  /* discard the book */
     } else {
@@ -1344,10 +1735,27 @@ function pleased(g_align) {
     let pat_on_head = 0;
     let kick_on_butt;
 
-    You_feel(__s_that_s_is_s, align_gname(g_align), (cptr.ldI32o(u, $you_ualign + $align_record) >= 14) ? Hallucination() ? __s_pleased_as_punch : __s_well_pleased : ((cptr.ldI32o(u, $you_ualign + $align_record) >= 4) ? Hallucination() ? __s_ticklish : __s_pleased : (Hallucination() ? __s_full : __s_satisfied)));
+    You_feel(
+        __s_that_s_is_s,
+        align_gname(g_align),
+        (cptr.ldI32o(u, $you_ualign + $align_record) >= 14)
+            ? Hallucination() ? __s_pleased_as_punch : __s_well_pleased
+            : ((cptr.ldI32o(u, $you_ualign + $align_record) >= 4)
+                ? Hallucination() ? __s_ticklish : __s_pleased
+                : (Hallucination() ? __s_full : __s_satisfied))
+    );
 
     /* not your deity */
-    if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && cptr.ld1so(gp, $instance_globals_p_p_aligntyp) != cptr.ld1so(u, $you_ualign)) {
+    if (((cptr.ld1so3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) ==
+        NHC.ALTAR) &&
+            cptr.ld1so(gp, $instance_globals_p_p_aligntyp) != cptr.ld1so(u, $you_ualign)) {
         adjalign(-1);
         return;
     } else if (cptr.ldI32o(u, $you_ualign + $align_record) < 2 && trouble <= 0)
@@ -1389,8 +1797,36 @@ function pleased(g_align) {
            sure it's at least -1 so that Luck+2 is big enough to avoid
            a divide by zero crash when generating a random number.  */
         prayer_luck = ((Luck()) > -1 ? (Luck()) : -1);  /* => (prayer_luck + 2 > 0) */
-        action = ((rn2((prayer_luck + (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) ? (3 + ((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_SHRINE) != 0)) | 0 : 2)) | 0) + 1) | 0);
-        if (!((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
+        action = ((rn2((prayer_luck +
+                (((cptr.ld1so3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                )) ==
+                    NHC.ALTAR)
+                    ? (3 +
+                        ((((cptr.ldI32o3(
+                            svl,
+                            cptr.ldI16(u),
+                            $sizeof_rm_x21,
+                            cptr.ldI16o(u, $you_uy),
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_flags
+                        ) & 31) | 0) &
+                            NHM.AM_SHRINE) != 0)) | 0
+                    : 2)) | 0) + 1) | 0);
+        if (!((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.ALTAR))
             action = ((action) < 3 ? (action) : 3);
         if (cptr.ldI32o(u, $you_ualign + $align_record) < 4)
             action = (cptr.ldI32o(u, $you_ualign + $align_record) > 0 || !rnl(2)) ? 1 : 0;
@@ -1432,16 +1868,29 @@ function pleased(g_align) {
             case 0:
             break;
             case 1:
-            if (uwep.v && (welded(uwep.v) || cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(uwep.v))) {
+            if (uwep.v &&
+                    (welded(uwep.v) ||
+                        cptr.ld1so(uwep.v, $obj_oclass) == NHC.WEAPON_CLASS ||
+                        is_weptool(uwep.v))) {
                 let repair_buf = new Uint8Array(256);
 
                 cptr.st1(cptr.decay(repair_buf), 0);
-                if ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 || (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0)
-                    void cptr.sprintf(cptr.decay(repair_buf), __s_and_s_now_as_good_as_new, otense(uwep.v, __s_are));
+                if ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 ||
+                        (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0)
+                    void cptr.sprintf(
+                        cptr.decay(repair_buf),
+                        __s_and_s_now_as_good_as_new,
+                        otense(uwep.v, __s_are)
+                    );
 
                 if ((cptr.ldI32o(uwep.v, $obj_cursed) & 1)) {
                     if (!Blind()) {
-                        pline(__s_s_s_s, Yobjnam2(uwep.v, __s_softly_glow), hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber)), cptr.decay(repair_buf));
+                        pline(
+                            __s_s_s_s,
+                            Yobjnam2(uwep.v, __s_softly_glow),
+                            hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber)),
+                            cptr.decay(repair_buf)
+                        );
                         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
                     } else
                         You_feel(__s_the_power_of_s_over_s, u_gname(), yname(uwep.v));
@@ -1450,7 +1899,12 @@ function pleased(g_align) {
                     cptr.st1(cptr.decay(repair_buf), 0);
                 } else if (!(cptr.ldI32o(uwep.v, $obj_blessed) & 1)) {
                     if (!Blind()) {
-                        pline(__s_s_with_s_aura_s, Yobjnam2(uwep.v, __s_softly_glow), an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_light_blue))), cptr.decay(repair_buf));
+                        pline(
+                            __s_s_with_s_aura_s,
+                            Yobjnam2(uwep.v, __s_softly_glow),
+                            an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_light_blue))),
+                            cptr.decay(repair_buf)
+                        );
                         cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
                     } else
                         You_feel(__s_the_blessing_of_s_over_s, u_gname(), yname(uwep.v));
@@ -1461,12 +1915,16 @@ function pleased(g_align) {
 
                 /* fix any rust/burn/rot damage, but don't protect
                    against future damage */
-                if ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 || (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0) {
+                if ((cptr.ldI32o(uwep.v, $obj_oeroded) & 3) | 0 ||
+                        (cptr.ldI32o(uwep.v, $obj_oeroded2) & 3) | 0) {
                     cptr.stI32o(uwep.v, $obj_oeroded, cptr.stI32o(uwep.v, $obj_oeroded2, 0));
                     /* only give this message if we didn't just bless
                        or uncurse (which has already given a message) */
                     if (cptr.ld1s(cptr.decay(repair_buf)))
-                        pline(__s_s_as_good_as_new, Yobjnam2(uwep.v, Blind() ? __s_feel : __s_look));
+                        pline(
+                            __s_s_as_good_as_new,
+                            Yobjnam2(uwep.v, Blind() ? __s_feel : __s_look)
+                        );
                 }
                 update_inventory();
             }
@@ -1476,20 +1934,39 @@ function pleased(g_align) {
                skip if you've solved it via mastermind or destroyed the
                drawbridge (both set uopened_dbridge) or if you've already
                travelled past the Valley of the Dead (gehennom_entered) */
-            if (!(cptr.ldI32o(u, $you_uevent + $u_event_uopened_dbridge) & 1) && !(cptr.ldI32o(u, $you_uevent + $u_event_gehennom_entered) & 1)) {
+            if (!(cptr.ldI32o(u, $you_uevent + $u_event_uopened_dbridge) & 1) &&
+                    !(cptr.ldI32o(u, $you_uevent + $u_event_gehennom_entered) & 1)) {
                 if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) < 1) {
                     godvoice(g_align, null);
                     ;
-                    verbalize(__s_hark_s, ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 8n) != 0n) ? __s_mortal : __s_creature);
+                    verbalize(
+                        __s_hark_s,
+                        ((cptr.ldU64o(
+                            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                            $permonst_mflags2
+                        ) & 8n) != 0n)
+                            ? __s_mortal
+                            : __s_creature
+                    );
                     ;
                     verbalize(__s_to_enter_the_castle_thou_must_play_the);
-                    (cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) + 1)) - (1);
+                    (cptr.stI32o(
+                        u,
+                        $you_uevent + $u_event_uheard_tune,
+                        cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) + 1
+                    )) -
+                            (1);
                     break;
                 } else if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) < 2) {
                     ;
                     You_hear(__s_a_divine_music);
                     pline(__s_it_sounds_like_s, svt);
-                    (cptr.stI32o(u, $you_uevent + $u_event_uheard_tune, cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) + 1)) - (1);
+                    (cptr.stI32o(
+                        u,
+                        $you_uevent + $u_event_uheard_tune,
+                        cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) + 1
+                    )) -
+                            (1);
                     record_achievement(NHC.ACH_TUNE);
                     break;
                 }
@@ -1498,7 +1975,10 @@ function pleased(g_align) {
             ;
             case 2:
             if (!Blind())
-                You(__s_are_surrounded_by_s_glow, an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_golden))));
+                You(
+                    __s_are_surrounded_by_s_glow,
+                    an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_golden)))
+                );
             /* if any levels have been lost (and not yet regained),
                treat this effect like blessed full healing */
             if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI32o(u, $you_ulevelmax)) {
@@ -1514,7 +1994,8 @@ function pleased(g_align) {
             cptr.stI32o(u, $you_uhp, cptr.ldI32o(u, $you_uhpmax));
             if (Upolyd())
                 cptr.stI32o(u, $you_mh, cptr.ldI32o(u, $you_mhmax));
-            if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) < (cptr.ld1so2(u, NHC.A_STR, 1, $you_amax))) {
+            if ((cptr.ld1so2(u, NHC.A_STR, 1, $you_acurr)) <
+                    (cptr.ld1so2(u, NHC.A_STR, 1, $you_amax))) {
                 cptr.st1o2(u, NHC.A_STR, 1, $you_acurr, (cptr.ld1so2(u, NHC.A_STR, 1, $you_amax)));
                 cptr.st1(disp, 1);  /* before potential message */
                 encumber_msg();
@@ -1542,12 +2023,22 @@ function pleased(g_align) {
                 if (Blind())
                     You_feel(__s_the_power_of_s, u_gname());
                 else
-                    You(__s_are_surrounded_by_s_aura, an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_light_blue))));
+                    You(
+                        __s_are_surrounded_by_s_aura,
+                        an(hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_light_blue)))
+                    );
                 for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp; otmp = nextobj) {
                     nextobj = cptr.ldPtr(otmp);
-                    if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 && (!cptr.eq(otmp, uarmh.v) || cptr.ldI16o(uarmh.v, $obj_otyp) != NHC.HELM_OF_OPPOSITE_ALIGNMENT)) {
+                    if ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 &&
+                            (!cptr.eq(otmp, uarmh.v) ||
+                                cptr.ldI16o(uarmh.v, $obj_otyp) !=
+                                    NHC.HELM_OF_OPPOSITE_ALIGNMENT)) {
                         if (!Blind()) {
-                            pline(__s_s_s, Yobjnam2(otmp, __s_softly_glow), hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber)));
+                            pline(
+                                __s_s_s,
+                                Yobjnam2(otmp, __s_softly_glow),
+                                hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_amber))
+                            );
                             cptr.stI32o(iflags, $instance_flags_last_msg, NHC.PLNMSG_OBJ_GLOWS);
                             cptr.stI32o(otmp, $obj_bknown, 1);  /* ok to bypass set_bknown() */
                             ++any;
@@ -1564,19 +2055,52 @@ function pleased(g_align) {
 
                 godvoice(cptr.ld1so(u, $you_ualign), __s_thou_hast_pleased_me_with_thy_progress);
                 if (!(HTelepat() & 117440512n)) {
-                    cptr.stI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+                    cptr.stI64o2(
+                        u,
+                        NHC.TELEPAT,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic,
+                        cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                            67108864n
+                    );
                     pline(cptr.decay(__static_pleased_msg), __s_telepathy);
                     if (Blind())
                         see_monsters();
                 } else if (!(HFast() & 117440512n)) {
-                    cptr.stI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+                    cptr.stI64o2(
+                        u,
+                        NHC.FAST,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic,
+                        cptr.ldI64o2(u, NHC.FAST, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                            67108864n
+                    );
                     pline(cptr.decay(__static_pleased_msg), __s_speed);
                 } else if (!(HStealth() & 117440512n)) {
-                    cptr.stI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+                    cptr.stI64o2(
+                        u,
+                        NHC.STEALTH,
+                        $sizeof_prop,
+                        $you_uprops + $prop_intrinsic,
+                        cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                            67108864n
+                    );
                     pline(cptr.decay(__static_pleased_msg), __s_stealth);
                 } else {
                     if (!(HProtection() & 117440512n)) {
-                        cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+                        cptr.stI64o2(
+                            u,
+                            NHC.PROTECTION,
+                            $sizeof_prop,
+                            $you_uprops + $prop_intrinsic,
+                            cptr.ldI64o2(
+                                u,
+                                NHC.PROTECTION,
+                                $sizeof_prop,
+                                $you_uprops + $prop_intrinsic
+                            ) |
+                                67108864n
+                        );
                         if (!cptr.ldI32o(u, $you_ublessed))
                             cptr.stI32o(u, $you_ublessed, ((rn2(3) + 2) | 0));
                     } else
@@ -1589,7 +2113,8 @@ function pleased(g_align) {
             }
             case 7:
             case 8:
-            if (cptr.ldI32o(u, $you_ualign + $align_record) >= 20 && !(cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3)) {
+            if (cptr.ldI32o(u, $you_ualign + $align_record) >= 20 &&
+                    !(cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3)) {
                 gcrownu();
                 break;
             }
@@ -1608,7 +2133,11 @@ function pleased(g_align) {
     if ((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3))
         kick_on_butt++;
     if (kick_on_butt)
-        cptr.stI32o(u, $you_ublesscnt, (cptr.ldI32o(u, $you_ublesscnt) + Math.imul(kick_on_butt, rnz(1000))) | 0);
+        cptr.stI32o(
+            u,
+            $you_ublesscnt,
+            (cptr.ldI32o(u, $you_ublesscnt) + Math.imul(kick_on_butt, rnz(1000))) | 0
+        );
 
     /* Avoid games that go into infinite loops of copy-pasted commands
        with no human interaction; this is a DoS vector against the
@@ -1619,12 +2148,21 @@ function pleased(g_align) {
        it ever reaches 32K so that configurations using 16-bit ints are
        still viable. */
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) > 100000n) {
-        let incr = (BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - 100000n)) / 100n;
-        let largest_ublesscnt_incr = BigInt(((NHM.LARGEST_INT - cptr.ldI32o(u, $you_ublesscnt)) | 0));
+        let incr = (BigInt.asIntN(
+            64,
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves) - 100000n
+        )) /
+                100n;
+        let largest_ublesscnt_incr = BigInt(((NHM.LARGEST_INT -
+                cptr.ldI32o(u, $you_ublesscnt)) | 0));
 
         if (incr > largest_ublesscnt_incr)
             incr = largest_ublesscnt_incr;
-        cptr.stI32o(u, $you_ublesscnt, (cptr.ldI32o(u, $you_ublesscnt) + Number(BigInt.asIntN(32, incr))) | 0);
+        cptr.stI32o(
+            u,
+            $you_ublesscnt,
+            (cptr.ldI32o(u, $you_ublesscnt) + Number(BigInt.asIntN(32, incr))) | 0
+        );
     }
 
     return;
@@ -1640,9 +2178,23 @@ function water_prayer(bless_water) {
     let other = 0;
     let bc_known = schar((!(Blind() || Hallucination())));
 
-    for (otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
+    for (
+        otmp = cptr.ldPtro3(
+            svl,
+            cptr.ldI16(u),
+            168,
+            cptr.ldI16o(u, $you_uy),
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_objects
+        );
+        otmp;
+        otmp = cptr.ldPtro(otmp, $obj_v)
+    ) {
         /* turn water into (un)holy water */
-        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_WATER && (bless_water ? !(cptr.ldI32o(otmp, $obj_blessed) & 1) : !(cptr.ldI32o(otmp, $obj_cursed) & 1))) {
+        if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_WATER &&
+                (bless_water
+                    ? !(cptr.ldI32o(otmp, $obj_blessed) & 1)
+                    : !(cptr.ldI32o(otmp, $obj_cursed) & 1))) {
             cptr.stI32o(otmp, $obj_blessed, bless_water);
             cptr.stI32o(otmp, $obj_cursed, (!bless_water) >>> 0);
             cptr.stI32o(otmp, $obj_bknown, bc_known);  /* ok to bypass set_bknown() */
@@ -1651,7 +2203,15 @@ function water_prayer(bless_water) {
             other = 1;
     }
     if (!Blind() && changed) {
-        pline(__s_s_potion_s_on_the_altar_glow_s_s_for_a, ((other && changed > 1n) ? __s_some_of_the : (other ? __s_one_of_the : __s_the)), ((other || changed > 1n) ? __s_s : __s_empty), (changed > 1n ? __s_empty : __s_s), (bless_water ? hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_light_blue)) : hcolor(cptr.ldPtr(c_color_names))));
+        pline(
+            __s_s_potion_s_on_the_altar_glow_s_s_for_a,
+            ((other && changed > 1n) ? __s_some_of_the : (other ? __s_one_of_the : __s_the)),
+            ((other || changed > 1n) ? __s_s : __s_empty),
+            (changed > 1n ? __s_empty : __s_s),
+            (bless_water
+                ? hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_light_blue))
+                : hcolor(cptr.ldPtr(c_color_names)))
+        );
     }
     return schar((changed > 0n));
 }
@@ -1665,7 +2225,14 @@ function godvoice(g_align, words) {
     else
         words = __s_empty;
 
-    pline_The(__s_voice_of_s_s_s_s_s, align_gname(g_align), cptr.ldPtro(godvoices, rn2(4), 8), quot, words, quot);
+    pline_The(
+        __s_voice_of_s_s_s_s_s,
+        align_gname(g_align),
+        cptr.ldPtro(godvoices, rn2(4), 8),
+        quot,
+        words,
+        quot
+    );
 }
 
 /** C ref: pray.c:1429 — @param {CInt} g_align */
@@ -1700,7 +2267,14 @@ function consume_offering(otmp) {
     else if (Blind() && cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL)
         Your(__s_sacrifice_disappears);
     else
-        Your(__s_sacrifice_is_consumed_in_a_s, (cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL) ? __s_flash_of_light : ((cptr.ld1so(u, $you_ualign) == NHM.A_NEUTRAL) ? __s_plume_of_smoke : __s_burst_of_flame));
+        Your(
+            __s_sacrifice_is_consumed_in_a_s,
+            (cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL)
+                ? __s_flash_of_light
+                : ((cptr.ld1so(u, $you_ualign) == NHM.A_NEUTRAL)
+                    ? __s_plume_of_smoke
+                    : __s_burst_of_flame)
+        );
     if ((cptr.ld1so((otmp), $obj_where) == NHM.OBJ_INVENT))
         useup(otmp);
     else
@@ -1721,7 +2295,14 @@ function offer_too_soon(altaralign) {
         gods_upset(-128);  /* Moloch becomes angry */
         return;
     }
-    You_feel(__s_pct_s_dot, Hallucination() ? __s_homesick : ((altaralign == cptr.ld1so(u, $you_ualign)) ? __s_an_urge_to_return_to_the_surface : __s_ashamed));
+    You_feel(
+        __s_pct_s_dot,
+        Hallucination()
+            ? __s_homesick
+            : ((altaralign == cptr.ld1so(u, $you_ualign))
+                ? __s_an_urge_to_return_to_the_surface
+                : __s_ashamed)
+    );
 }
 
 /** C ref: pray.c:1501 — @param {CInt} highaltar @param {CInt} altaralign */
@@ -1740,7 +2321,11 @@ export function desecrate_altar(highaltar, altaralign) {
     }
     You_feel(__s_the_air_around_you_grow_charged);
     pline(__s_suddenly_you_realize_that_s_has_noticed, align_gname(altaralign));
-    void cptr.sprintf(cptr.decay(gvbuf), __s_so_mortal_you_dare_desecrate_my_s, highaltar ? __s_high_temple : __s_altar);
+    void cptr.sprintf(
+        cptr.decay(gvbuf),
+        __s_so_mortal_you_dare_desecrate_my_s,
+        highaltar ? __s_high_temple : __s_altar
+    );
     godvoice(altaralign, cptr.decay(gvbuf));
     /* Throw everything we have at the player */
     god_zaps_you(altaralign);
@@ -1779,7 +2364,10 @@ function offer_real_amulet(otmp, altaralign) {
         pline(__s_s_snarls_and_tries_again, Moloch);
         fry_by_god(-128, 1);  /* wrath of Moloch */
         /* declined to die in wizard or explore mode */
-        pline(cptr.decay(__static_offer_real_amulet_cloud_of_smoke), hcolor(cptr.ldPtr(c_color_names)));
+        pline(
+            cptr.decay(__static_offer_real_amulet_cloud_of_smoke),
+            hcolor(cptr.ldPtr(c_color_names))
+        );
         done(NHC.ESCAPED);
         /*NOTREACHED*/
     } else if (cptr.ld1so(u, $you_ualign) != altaralign) {
@@ -1789,7 +2377,10 @@ function offer_real_amulet(otmp, altaralign) {
         pline(__s_s_accepts_your_gift_and_gains_dominion, a_gname(), u_gname());
         pline(__s_s_is_enraged, u_gname());
         pline(__s_fortunately_s_permits_you_to_live, a_gname());
-        pline(cptr.decay(__static_offer_real_amulet_cloud_of_smoke), hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_orange)));
+        pline(
+            cptr.decay(__static_offer_real_amulet_cloud_of_smoke),
+            hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_orange))
+        );
         done(NHC.ESCAPED);
         /*NOTREACHED*/
     } else {
@@ -1801,7 +2392,10 @@ function offer_real_amulet(otmp, altaralign) {
         display_nhwindow()(WIN_MESSAGE.v, 0);
         ;
         verbalize(__s_in_return_for_thy_service_i_grant_thee);
-        You(__s_ascend_to_the_status_of_demigod_s, cptr.ld1so(flags, $flag_female) ? __s_dess : __s_empty);
+        You(
+            __s_ascend_to_the_status_of_demigod_s,
+            cptr.ld1so(flags, $flag_female) ? __s_dess : __s_empty
+        );
         done(NHC.ASCENDED);
         /*NOTREACHED*/
     }
@@ -1817,7 +2411,12 @@ function offer_negative_valued(highaltar, altaralign) {
     }
 }
 
-/** C ref: pray.c:1602 — @param {CPtr<struct obj>} otmp @param {CInt} highaltar @param {CInt} altaralign */
+/**
+ * C ref: pray.c:1602
+ * @param {CPtr<struct obj>} otmp
+ * @param {CInt} highaltar
+ * @param {CInt} altaralign
+ */
 function offer_fake_amulet(otmp, highaltar, altaralign) {
     if (!highaltar && !(cptr.ldI32o(otmp, $obj_known) & 1)) {
         offer_too_soon(altaralign);
@@ -1845,8 +2444,11 @@ function offer_fake_amulet(otmp, highaltar, altaralign) {
 function offer_different_alignment_altar(otmp, altaralign) {
     /* Is this a conversion ? */
     /* An unaligned altar in Gehennom will always elicit rejection. */
-    if ((cptr.ldI32o(u, $you_ualign + $align_record) < 0) || (altaralign == -128 && In_hell(cptr.add(u, $you_uz)))) {
-        if (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) == cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase) && altaralign != -128) {
+    if ((cptr.ldI32o(u, $you_ualign + $align_record) < 0) ||
+            (altaralign == -128 && In_hell(cptr.add(u, $you_uz)))) {
+        if (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) ==
+            cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase) &&
+                altaralign != -128) {
             You(__s_have_a_strong_feeling_that_s_is_angry, u_gname());
             consume_offering(otmp);
             pline(__s_s_accepts_your_allegiance, a_gname());
@@ -1875,15 +2477,62 @@ function offer_different_alignment_altar(otmp, altaralign) {
             You_feel(__s_the_power_of_s_increase, u_gname());
             exercise(NHC.A_WIS, 1);
             change_luck(1);
-            shrine = schar(((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_SHRINE) != 0));
-            cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, Align2amask(cptr.ld1so(u, $you_ualign)));
+            shrine = schar(((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) | 0) &
+                    NHM.AM_SHRINE) != 0));
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
+                Align2amask(cptr.ld1so(u, $you_ualign))
+            );
             if (shrine)
-                cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.AM_SHRINE);
+                cptr.stI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) |
+                        NHM.AM_SHRINE
+                );
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* in case Invisible to self */
             if (!Blind())
-                pline_The(__s_altar_glows_s, hcolor((cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL) ? cptr.ldPtro(c_color_names, $c_color_names_c_white) : (cptr.ld1so(u, $you_ualign) ? cptr.ldPtr(c_color_names) : __s_gray)));
+                pline_The(
+                    __s_altar_glows_s,
+                    hcolor((cptr.ld1so(u, $you_ualign) == NHM.A_LAWFUL)
+                        ? cptr.ldPtro(c_color_names, $c_color_names_c_white)
+                        : (cptr.ld1so(u, $you_ualign) ? cptr.ldPtr(c_color_names) : __s_gray))
+                );
 
-            if (rnl(cptr.ldI32o(u, $you_ulevel)) > 6 && cptr.ldI32o(u, $you_ualign + $align_record) > 0 && BigInt(rnd(cptr.ldI32o(u, $you_ualign + $align_record))) > (BigInt.asIntN(64, 3n * (BigInt.asIntN(64, 10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n))))) / 4n)
+            if (rnl(cptr.ldI32o(u, $you_ulevel)) > 6 &&
+                    cptr.ldI32o(u, $you_ualign + $align_record) > 0 &&
+                    BigInt(rnd(cptr.ldI32o(u, $you_ualign + $align_record))) >
+                        (BigInt.asIntN(
+                            64,
+                            3n *
+                                (BigInt.asIntN(
+                                    64,
+                                    10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n)
+                                ))
+                        )) / 4n)
                 summon_minion(altaralign, 1);
             /* anger priest; test handles bones files */
             if ((pri = findpriest(temple_occupied(cptr.add(u, $you_urooms)))) && !p_coaligned(pri))
@@ -1892,17 +2541,35 @@ function offer_different_alignment_altar(otmp, altaralign) {
             pline(__s_unluckily_you_feel_the_power_of_s, u_gname());
             change_luck(-1);
             exercise(NHC.A_WIS, 0);
-            if (rnl(cptr.ldI32o(u, $you_ulevel)) > 6 && cptr.ldI32o(u, $you_ualign + $align_record) > 0 && BigInt(rnd(cptr.ldI32o(u, $you_ualign + $align_record))) > (BigInt.asIntN(64, 7n * (BigInt.asIntN(64, 10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n))))) / 8n)
+            if (rnl(cptr.ldI32o(u, $you_ulevel)) > 6 &&
+                    cptr.ldI32o(u, $you_ualign + $align_record) > 0 &&
+                    BigInt(rnd(cptr.ldI32o(u, $you_ualign + $align_record))) >
+                        (BigInt.asIntN(
+                            64,
+                            7n *
+                                (BigInt.asIntN(
+                                    64,
+                                    10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n)
+                                ))
+                        )) / 8n)
                 summon_minion(altaralign, 1);
         }
     }
 }
 
-/** C ref: pray.c:1698 — @param {CPtr<struct obj>} otmp @param {CInt} highaltar @param {CInt} altaralign */
+/**
+ * C ref: pray.c:1698
+ * @param {CPtr<struct obj>} otmp
+ * @param {CInt} highaltar
+ * @param {CInt} altaralign
+ */
 function sacrifice_your_race(otmp, highaltar, altaralign) {
     let pm;
 
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n)) {
+    if (((cptr.ldU64o(
+        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+        $permonst_mflags2
+    ) & 256n) != 0n)) {
         You(__s_find_the_idea_very_satisfying);
         exercise(NHC.A_WIS, 1);
     } else if (cptr.ld1so(u, $you_ualign) != -1) {
@@ -1915,8 +2582,19 @@ function sacrifice_your_race(otmp, highaltar, altaralign) {
         return;
     } else if (altaralign != -1 && altaralign != -128) {
         /* curse the lawful/neutral altar */
-        pline_The(__s_altar_is_stained_with_s_blood, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj));
-        cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.AM_CHAOTIC);
+        pline_The(
+            __s_altar_is_stained_with_s_blood,
+            cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj)
+        );
+        cptr.stI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            NHM.AM_CHAOTIC
+        );
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));  /* in case Invisible to self */
         angry_priest();
     } else {
@@ -1927,8 +2605,24 @@ function sacrifice_your_race(otmp, highaltar, altaralign) {
         /* is equivalent to demon summoning */
         if (altaralign == -1 && cptr.ld1so(u, $you_ualign) != -1) {
             pline(__s_the_blood_floods_the_altar_which, an(hcolor(cptr.ldPtr(c_color_names))));
-            cptr.st1o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, NHC.ROOM);
-            cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
+            cptr.st1o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                NHC.ROOM
+            );
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
+                0
+            );
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             angry_priest();
             demonless_msg = __s_cloud_dissipates;
@@ -1938,16 +2632,27 @@ function sacrifice_your_race(otmp, highaltar, altaralign) {
             change_luck(schar((altaralign == -128 ? -2 : 2)));
             demonless_msg = __s_blood_coagulates;
         }
-        if ((pm = dlord(altaralign)) != NHC.NON_PM && (dmon = makemon(cptr.add(mons, pm, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
+        if ((pm = dlord(altaralign)) != NHC.NON_PM &&
+                (dmon = makemon(
+                    cptr.add(mons, pm, $sizeof_permonst),
+                    cptr.ldI16(u),
+                    cptr.ldI16o(u, $you_uy),
+                    NHM.MM_NOMSG
+                )) !== null) {
             let dbuf = new Uint8Array(256);
 
             void cptr.strcpy(cptr.decay(dbuf), a_monnam(dmon));
             if (!strncmpi(cptr.decay((dbuf)), (__s_it__2), -1))
                 void cptr.strcpy(cptr.decay(dbuf), __s_something_dreadful);
             else
-                cptr.stU64o(dmon, $monst_mstrategy, cptr.ldU64o(dmon, $monst_mstrategy) & 18446744071562067967n);
+                cptr.stU64o(
+                    dmon,
+                    $monst_mstrategy,
+                    cptr.ldU64o(dmon, $monst_mstrategy) & 18446744071562067967n
+                );
             You(__s_have_summoned_s, cptr.decay(dbuf));
-            if (sgn(cptr.ld1so(u, $you_ualign)) == sgn(cptr.ld1so(cptr.ldPtro(dmon, $monst_data), $permonst_maligntyp)))
+            if (sgn(cptr.ld1so(u, $you_ualign)) ==
+                    sgn(cptr.ld1so(cptr.ldPtro(dmon, $monst_data), $permonst_maligntyp)))
                 cptr.stI32o(dmon, $monst_mpeaceful, 1);
             You(__s_are_terrified_and_unable_to_move);
             nomul(-3);
@@ -1975,21 +2680,66 @@ function sacrifice_your_race(otmp, highaltar, altaralign) {
 /** C ref: pray.c:1781 — @param {CUInt} max_giftvalue @returns {CInt} */
 function bestow_artifact(max_giftvalue) {
     let nartifacts = nartifact_exist();
-    let do_bestow = schar((cptr.ldI32o(u, $you_ulevel) > 2 && cptr.ld1so(u, $you_uluck) >= 0 ? 1 : 0));
+    let do_bestow = schar((cptr.ldI32o(u, $you_ulevel) > 2 && cptr.ld1so(u, $you_uluck) >= 0
+            ? 1
+            : 0));
     if (do_bestow) {
         /* you were already in pretty good standing */
         /* The player can gain an artifact */
         /* The chance goes down as the number of artifacts goes up */
         if (wizard())
-            do_bestow = schar((yn_function(__s_gift_an_artifact, cptr.decay(ynchars), 110, 1) == 121));
+            do_bestow = schar((yn_function(
+                __s_gift_an_artifact,
+                cptr.decay(ynchars),
+                110,
+                1
+            ) == 121));
         else
-            do_bestow = schar((!rn2((6 + (Math.imul(Math.imul(2, cptr.ldI32o(u, $you_ugifts)), nartifacts))) | 0)));
+            do_bestow = schar((!rn2((6 +
+                    (Math.imul(Math.imul(2, cptr.ldI32o(u, $you_ugifts)), nartifacts))) | 0)));
     }
 
     if (do_bestow) {
         let otmp;
         /* mk_artifact() with NULL obj and a_align() arg can return NULL */
-        otmp = mk_artifact(null, ((schar(((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))), max_giftvalue, 1);
+        otmp = mk_artifact(
+            null,
+            ((schar(((((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) | 0) &
+                NHM.AM_MASK) &
+                NHM.AM_MASK) == 0)
+                ? -128
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.AM_MASK) &
+                    NHM.AM_MASK) ==
+                    NHM.AM_LAWFUL)
+                    ? NHM.A_LAWFUL
+                    : ((((((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) & 31) | 0) &
+                        NHM.AM_MASK) &
+                        NHM.AM_MASK)) - 2) | 0))))),
+            max_giftvalue,
+            1
+        );
         if (otmp) {
             let buf = new Uint8Array(256);
 
@@ -1999,7 +2749,10 @@ function bestow_artifact(max_giftvalue) {
             if ((cptr.ldI32o(otmp, $obj_cursed) & 1))
                 uncurse(otmp);
             cptr.stI32o(otmp, $obj_oerodeproof, 1);
-            void cptr.strcpy(cptr.decay(buf), (Hallucination() ? __s_a_doodad : (Blind() ? __s_an_object : ansimpleoname(otmp))));
+            void cptr.strcpy(
+                cptr.decay(buf),
+                (Hallucination() ? __s_a_doodad : (Blind() ? __s_an_object : ansimpleoname(otmp)))
+            );
             if (!Blind())
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_named_s, bare_artifactname(otmp));
             at_your_feet(upstart(cptr.decay(buf)));
@@ -2008,7 +2761,12 @@ function bestow_artifact(max_giftvalue) {
             (cptr.stI32o(u, $you_ugifts, cptr.ldI32o(u, $you_ugifts) + 1)) - (1);
             cptr.stI32o(u, $you_ublesscnt, rnz((300 + (Math.imul(50, nartifacts))) | 0));
             exercise(NHC.A_WIS, 1);
-            livelog_printf(72n, __s_was_bestowed_with_s_by_s, artiname(cptr.ld1so(otmp, $obj_oartifact)), align_gname(cptr.ld1so(u, $you_ualign)));
+            livelog_printf(
+                72n,
+                __s_was_bestowed_with_s_by_s,
+                artiname(cptr.ld1so(otmp, $obj_oartifact)),
+                align_gname(cptr.ld1so(u, $you_ualign))
+            );
             /* make sure we can use this weapon */
             unrestrict_weapon_skill(weapon_type(otmp));
             if (!Hallucination() && !Blind()) {
@@ -2026,8 +2784,16 @@ function bestow_artifact(max_giftvalue) {
 function sacrifice_value(otmp) {
     let value = 0;
 
-    if (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.PM_ACID_BLOB || (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <= BigInt.asIntN(64, peek_at_iced_corpse_age(otmp) + 50n))) {
-        value = (cptr.ld1uo2(mons, cptr.ldI32o(otmp, $obj_corpsenm), $sizeof_permonst, $permonst_difficulty) + 1) | 0;
+    if (cptr.ldI32o(otmp, $obj_corpsenm) == NHC.PM_ACID_BLOB ||
+            (cptr.ldI64o(svm, $instance_globals_saved_m_moves) <=
+                BigInt.asIntN(64, peek_at_iced_corpse_age(otmp) + 50n))) {
+        value = (cptr.ld1uo2(
+            mons,
+            cptr.ldI32o(otmp, $obj_corpsenm),
+            $sizeof_permonst,
+            $permonst_difficulty
+        ) + 1) |
+                0;
         if (cptr.ldI32o(otmp, $obj_oeaten))
             value = eaten_stat(value, otmp);
     }
@@ -2039,16 +2805,65 @@ function sacrifice_value(otmp) {
 export function dosacrifice() {
     let otmp;
     let highaltar;
-    let altaralign = ((schar(((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0)))));
+    let altaralign = ((schar(((((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) &
+        NHM.AM_MASK) &
+        NHM.AM_MASK) == 0)
+            ? -128
+            : ((((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) | 0) &
+                NHM.AM_MASK) &
+                NHM.AM_MASK) ==
+                NHM.AM_LAWFUL)
+                ? NHM.A_LAWFUL
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.AM_MASK) &
+                    NHM.AM_MASK)) - 2) | 0)))));
 
-    if (!((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+    if (!((cptr.ld1so3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) ==
+        NHC.ALTAR) ||
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
         You(__s_are_not_s_an_altar, (Levitation() || Flying()) ? __s_over : __s_on);
         return NHM.ECMD_OK;
     } else if (HConfusion() || HStun()) {
         You(__s_are_too_impaired_to_perform_the_rite);
         return NHM.ECMD_OK;
     }
-    highaltar = schar((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_SANCTUM));
+    highaltar = schar((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) &
+            NHM.AM_SANCTUM));
 
     otmp = floorfood(__s_sacrifice, 1);
     if (!otmp)
@@ -2095,7 +2910,9 @@ function eval_offering(otmp, altaralign) {
            corpse so won't get here; the exception is wraith; give the
            bonus for wraith to chaotics too because they are sacrificing
            something valuable (unless hero refuses to eat such things) */
-        if (cptr.ld1so(u, $you_ualign) != -1 || (cptr.eq(ptr, cptr.add(mons, NHC.PM_WRAITH, $sizeof_permonst)) && cptr.ldI64o(u, $you_uconduct)))
+        if (cptr.ld1so(u, $you_ualign) != -1 ||
+                (cptr.eq(ptr, cptr.add(mons, NHC.PM_WRAITH, $sizeof_permonst)) &&
+                    cptr.ldI64o(u, $you_uconduct)))
             value = (value + 1) | 0;
     } else if (is_unicorn(ptr)) {
         let unicalign = sgn(cptr.ld1so(ptr, $permonst_maligntyp));
@@ -2103,14 +2920,21 @@ function eval_offering(otmp, altaralign) {
         if (unicalign == altaralign) {
             /* When same as altar, always a very bad action.
              */
-            pline(__s_such_an_action_is_an_insult_to_s, (unicalign == -1) ? __s_chaos : (unicalign ? __s_law : __s_balance));
+            pline(
+                __s_such_an_action_is_an_insult_to_s,
+                (unicalign == -1) ? __s_chaos : (unicalign ? __s_law : __s_balance)
+            );
             void adjattrib(NHC.A_WIS, -1, 1);
             return -1;
         } else if (cptr.ld1so(u, $you_ualign) == altaralign) {
             /* When different from altar, and altar is same as yours,
              * it's a very good action.
              */
-            if (BigInt(cptr.ldI32o(u, $you_ualign + $align_record)) < (BigInt.asIntN(64, 10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n))))
+            if (BigInt(cptr.ldI32o(u, $you_ualign + $align_record)) <
+                    (BigInt.asIntN(
+                        64,
+                        10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n)
+                    )))
                 You_feel(__s_appropriately_s, align_str(cptr.ld1so(u, $you_ualign)));
             else
                 You_feel(__s_you_are_thoroughly_on_the_right_path);
@@ -2133,15 +2957,30 @@ function eval_offering(otmp, altaralign) {
     return value;
 }
 
-/** C ref: pray.c:1959 — @param {CPtr<struct obj>} otmp @param {CInt} highaltar @param {CInt} altaralign */
+/**
+ * C ref: pray.c:1959
+ * @param {CPtr<struct obj>} otmp
+ * @param {CInt} highaltar
+ * @param {CInt} altaralign
+ */
 function offer_corpse(otmp, highaltar, altaralign) {
     let value;
     let ptr;
     let mtmp;
 
     /* KMH, conduct */
-    if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_gnostic, cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n)) - (1n)))
-        livelog_printf(32n, __s_rejected_atheism_by_offering_s_on_an, corpse_xname(otmp, null, NHM.CXN_ARTICLE), a_gname());
+    if (!((cptr.stI64o(
+        u,
+        $you_uconduct + $u_conduct_gnostic,
+        cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n
+    )) -
+            (1n)))
+        livelog_printf(
+            32n,
+            __s_rejected_atheism_by_offering_s_on_an,
+            corpse_xname(otmp, null, NHM.CXN_ARTICLE),
+            a_gname()
+        );
 
     /* you're handling this corpse, even if it was killed upon the altar
      */
@@ -2153,16 +2992,29 @@ function offer_corpse(otmp, highaltar, altaralign) {
 
     /* same race or former pet results apply even if the corpse is
        too old (value==0) */
-    if (((cptr.ldU64o((ptr), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask)))) != 0n)) {
+    if (((cptr.ldU64o((ptr), $permonst_mflags2) &
+            BigInt.asUintN(
+                64,
+                BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
+            )) != 0n)) {
         sacrifice_your_race(otmp, highaltar, altaralign);
         return;
     }
-    if (has_omonst(otmp) && (mtmp = get_mtraits(otmp, 0)) !== null && cptr.ld1so(mtmp, $monst_mtame)) {
+    if (has_omonst(otmp) &&
+            (mtmp = get_mtraits(otmp, 0)) !== null &&
+            cptr.ld1so(mtmp, $monst_mtame)) {
         /* mtmp is a temporary pointer to a tame monster's attributes,
          * not a real monster */
         pline(__s_so_this_is_how_you_repay_loyalty);
         adjalign(-3);
-        cptr.stI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+        cptr.stI64o2(
+            u,
+            NHC.AGGRAVATE_MONSTER,
+            $sizeof_prop,
+            $you_uprops + $prop_intrinsic,
+            cptr.ldI64o2(u, NHC.AGGRAVATE_MONSTER, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                67108864n
+        );
         offer_negative_valued(highaltar, altaralign);
         return;
     }
@@ -2191,17 +3043,30 @@ function offer_corpse(otmp, highaltar, altaralign) {
     /* OK, you get brownie points. */
     if (cptr.ldI32o(u, $you_ugangr)) {
         let saved_anger = cptr.ldI32o(u, $you_ugangr);
-        cptr.stI32o(u, $you_ugangr, (cptr.ldI32o(u, $you_ugangr) - (((Math.imul(value, (cptr.ld1so(u, $you_ualign) == -1 ? 2 : 3))) / 24) | 0)) | 0);
+        cptr.stI32o(
+            u,
+            $you_ugangr,
+            (cptr.ldI32o(u, $you_ugangr) -
+                (((Math.imul(value, (cptr.ld1so(u, $you_ualign) == -1 ? 2 : 3))) / 24) | 0)) | 0
+        );
         if (cptr.ldI32o(u, $you_ugangr) < 0)
             cptr.stI32o(u, $you_ugangr, 0);
         if (cptr.ldI32o(u, $you_ugangr) != saved_anger) {
             if (cptr.ldI32o(u, $you_ugangr)) {
-                pline(__s_s_seems_s, u_gname(), Hallucination() ? __s_groovy : __s_slightly_mollified);
+                pline(
+                    __s_s_seems_s,
+                    u_gname(),
+                    Hallucination() ? __s_groovy : __s_slightly_mollified
+                );
 
                 if (cptr.ld1so(u, $you_uluck) < 0)
                     change_luck(1);
             } else {
-                pline(__s_s_seems_s, u_gname(), Hallucination() ? __s_cosmic_not_a_new_fact : __s_mollified);
+                pline(
+                    __s_s_seems_s,
+                    u_gname(),
+                    Hallucination() ? __s_cosmic_not_a_new_fact : __s_mollified
+                );
 
                 if (cptr.ld1so(u, $you_uluck) < 0)
                     cptr.st1o(u, $you_uluck, 0);
@@ -2221,7 +3086,12 @@ function offer_corpse(otmp, highaltar, altaralign) {
         You_feel(__s_partially_absolved);
     } else if (cptr.ldI32o(u, $you_ublesscnt) > 0) {
         let saved_cnt = cptr.ldI32o(u, $you_ublesscnt);
-        cptr.stI32o(u, $you_ublesscnt, (cptr.ldI32o(u, $you_ublesscnt) - (((Math.imul(value, (cptr.ld1so(u, $you_ualign) == -1 ? 500 : 300))) / 24) | 0)) | 0);
+        cptr.stI32o(
+            u,
+            $you_ublesscnt,
+            (cptr.ldI32o(u, $you_ublesscnt) -
+                (((Math.imul(value, (cptr.ld1so(u, $you_ualign) == -1 ? 500 : 300))) / 24) | 0)) | 0
+        );
         if (cptr.ldI32o(u, $you_ublesscnt) < 0)
             cptr.stI32o(u, $you_ublesscnt, 0);
         if (cptr.ldI32o(u, $you_ublesscnt) != saved_cnt) {
@@ -2265,9 +3135,18 @@ function offer_corpse(otmp, highaltar, altaralign) {
             cptr.st1o(u, $you_uluck, 0);
         if (cptr.ld1so(u, $you_uluck) != orig_luck) {
             if (Blind())
-                You(__s_think_s_brushed_your_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_something), body_part(NHC.FOOT));
+                You(
+                    __s_think_s_brushed_your_s,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_something),
+                    body_part(NHC.FOOT)
+                );
             else
-                You(Hallucination() ? __s_see_crabgrass_at_your_s_a_funny_thing : __s_glimpse_a_four_leaf_clover_at_your_s, makeplural(body_part(NHC.FOOT)));
+                You(
+                    Hallucination()
+                        ? __s_see_crabgrass_at_your_s_a_funny_thing
+                        : __s_glimpse_a_four_leaf_clover_at_your_s,
+                    makeplural(body_part(NHC.FOOT))
+                );
         }
     }
 }
@@ -2277,19 +3156,74 @@ function offer_corpse(otmp, highaltar, altaralign) {
 export function can_pray(praying) {
     let alignment;
 
-    cptr.st1o(gp, $instance_globals_p_p_aligntyp, schar((((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) ? ((schar(((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))) : cptr.ld1so(u, $you_ualign))));
+    cptr.st1o(
+        gp,
+        $instance_globals_p_p_aligntyp,
+        schar((((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+            NHC.ALTAR)
+            ? ((schar(((((((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) | 0) &
+                NHM.AM_MASK) &
+                NHM.AM_MASK) == 0)
+                ? -128
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.AM_MASK) &
+                    NHM.AM_MASK) ==
+                    NHM.AM_LAWFUL)
+                    ? NHM.A_LAWFUL
+                    : ((((((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) & 31) | 0) &
+                        NHM.AM_MASK) &
+                        NHM.AM_MASK)) - 2) | 0)))))
+            : cptr.ld1so(u, $you_ualign)))
+    );
     cptr.stI32o(gp, $instance_globals_p_p_trouble, in_trouble());
 
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n) && (cptr.ld1so(gp, $instance_globals_p_p_aligntyp) == NHM.A_LAWFUL || cptr.ld1so(gp, $instance_globals_p_p_aligntyp) != NHM.A_NEUTRAL)) {
+    if (((cptr.ldU64o(
+        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+        $permonst_mflags2
+    ) & 256n) != 0n) &&
+            (cptr.ld1so(gp, $instance_globals_p_p_aligntyp) == NHM.A_LAWFUL ||
+                cptr.ld1so(gp, $instance_globals_p_p_aligntyp) != NHM.A_NEUTRAL)) {
         if (praying)
-            pline_The(__s_very_idea_of_praying_to_a_s_god_is, cptr.ld1so(gp, $instance_globals_p_p_aligntyp) ? __s_lawful : __s_neutral);
+            pline_The(
+                __s_very_idea_of_praying_to_a_s_god_is,
+                cptr.ld1so(gp, $instance_globals_p_p_aligntyp) ? __s_lawful : __s_neutral
+            );
         return 0;
     }
 
     if (praying)
         You(__s_begin_praying_to_s, align_gname(cptr.ld1so(gp, $instance_globals_p_p_aligntyp)));
 
-    if (cptr.ld1so(u, $you_ualign) && cptr.ld1so(u, $you_ualign) == -cptr.ld1so(gp, $instance_globals_p_p_aligntyp))
+    if (cptr.ld1so(u, $you_ualign) &&
+            cptr.ld1so(u, $you_ualign) == -cptr.ld1so(gp, $instance_globals_p_p_aligntyp))
         alignment = -cptr.ldI32o(u, $you_ualign + $align_record);  /* Opposite alignment altar */
     else if (cptr.ld1so(u, $you_ualign) != cptr.ld1so(gp, $instance_globals_p_p_aligntyp))
         alignment = (cptr.ldI32o(u, $you_ualign + $align_record) / 2) | 0;  /* Different alignment altar */
@@ -2298,24 +3232,48 @@ export function can_pray(praying) {
 
     if (cptr.ld1so(gp, $instance_globals_p_p_aligntyp) == -128)
         cptr.stI32o(gp, $instance_globals_p_p_type, -2);
-    else if ((cptr.ldI32o(gp, $instance_globals_p_p_trouble) > 0) ? (cptr.ldI32o(u, $you_ublesscnt) > 200) : ((cptr.ldI32o(gp, $instance_globals_p_p_trouble) < 0) ? (cptr.ldI32o(u, $you_ublesscnt) > 100) : (cptr.ldI32o(u, $you_ublesscnt) > 0)))
+    else if ((cptr.ldI32o(gp, $instance_globals_p_p_trouble) > 0)
+            ? (cptr.ldI32o(u, $you_ublesscnt) > 200)
+            : ((cptr.ldI32o(gp, $instance_globals_p_p_trouble) < 0)
+                ? (cptr.ldI32o(u, $you_ublesscnt) > 100)
+                : (cptr.ldI32o(u, $you_ublesscnt) > 0)))
         cptr.stI32o(gp, $instance_globals_p_p_type, 0);  /* too soon... */
     else if (Luck() < 0 || cptr.ldI32o(u, $you_ugangr) || alignment < 0)
         cptr.stI32o(gp, $instance_globals_p_p_type, 1);  /* too naughty... */
     else {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && cptr.ld1so(u, $you_ualign) != cptr.ld1so(gp, $instance_globals_p_p_aligntyp))
+        if (((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+            NHC.ALTAR) &&
+                cptr.ld1so(u, $you_ualign) != cptr.ld1so(gp, $instance_globals_p_p_aligntyp))
             cptr.stI32o(gp, $instance_globals_p_p_type, 2);
         else
             cptr.stI32o(gp, $instance_globals_p_p_type, 3);
     }
 
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n) && !In_hell(cptr.add(u, $you_uz)) && (cptr.ld1so(gp, $instance_globals_p_p_aligntyp) == NHM.A_LAWFUL || (cptr.ld1so(gp, $instance_globals_p_p_aligntyp) == NHM.A_NEUTRAL && !rn2(10))))
+    if (((cptr.ldU64o(
+        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+        $permonst_mflags2
+    ) & 2n) != 0n) &&
+            !In_hell(cptr.add(u, $you_uz)) &&
+            (cptr.ld1so(gp, $instance_globals_p_p_aligntyp) == NHM.A_LAWFUL ||
+                (cptr.ld1so(gp, $instance_globals_p_p_aligntyp) == NHM.A_NEUTRAL && !rn2(10))))
         cptr.stI32o(gp, $instance_globals_p_p_type, -1);
     /* Note:  when !praying, the random factor for neutrals makes the
        return value a non-deterministic approximation for enlightenment.
        This case should be uncommon enough to live with... */
 
-    return schar((!praying ? schar((cptr.ldI32o(gp, $instance_globals_p_p_type) == 3 && !In_hell(cptr.add(u, $you_uz)) ? 1 : 0)) : 1));
+    return schar((!praying
+            ? schar((cptr.ldI32o(gp, $instance_globals_p_p_type) == 3 &&
+                !In_hell(cptr.add(u, $you_uz))
+                ? 1
+                : 0))
+            : 1));
 }
 
 /* return TRUE if praying revived a pet corpse */
@@ -2323,8 +3281,29 @@ export function can_pray(praying) {
 function pray_revive() {
     let otmp;
 
-    for (otmp = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v))
-        if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE || cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) && has_omonst(otmp) && cptr.ld1so((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)), $monst_mtame) && !(cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)), $monst_isminion) & 1))
+    for (
+        otmp = cptr.ldPtro3(
+            svl,
+            cptr.ldI16(u),
+            168,
+            cptr.ldI16o(u, $you_uy),
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_objects
+        );
+        otmp;
+        otmp = cptr.ldPtro(otmp, $obj_v)
+    )
+        if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE) &&
+                has_omonst(otmp) &&
+                cptr.ld1so(
+                    (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
+                    $monst_mtame
+                ) &&
+                !(cptr.ldI32o(
+                    (cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)),
+                    $monst_isminion
+                ) & 1))
             break;
 
     if (!otmp)
@@ -2333,7 +3312,10 @@ function pray_revive() {
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
         return schar((!cptr.eq(revive(otmp, 1), (null))));
     else {
-        return schar((!cptr.eq(animate_statue(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.ANIMATE_SPELL, null), (null))));
+        return schar((!cptr.eq(
+            animate_statue(otmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.ANIMATE_SPELL, null),
+            (null)
+        )));
     }
 }
 
@@ -2350,12 +3332,20 @@ export function dopray() {
      * than just "y" (will also require "no" to decline).
      */
     if (ParanoidPray()) {
-        ok = paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>> 0) != 0)), __s_are_you_sure_you_want_to_pray);
+        ok = paranoid_query(
+            schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_CONFIRM) >>> 0) != 0)),
+            __s_are_you_sure_you_want_to_pray
+        );
         if (!ok)
             return NHM.ECMD_OK;
     }
 
-    if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_gnostic, cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n)) - (1n)))
+    if (!((cptr.stI64o(
+        u,
+        $you_uconduct + $u_conduct_gnostic,
+        cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n
+    )) -
+            (1n)))
         /* breaking conduct should probably occur in can_pray() at
          * "You begin praying to %s", as demons who find praying repugnant
          * should not break conduct.  Also we can add more detail to the
@@ -2377,10 +3367,20 @@ export function dopray() {
             let save_doagain = schar(cptr.ldI32(gi));
 
             cptr.stI32(gi, 0);
-            ok = schar((yn_function(cptr.decay(__static_dopray_forcesuccess), cptr.decay(ynchars), 110, 0) == 121));
+            ok = schar((yn_function(
+                cptr.decay(__static_dopray_forcesuccess),
+                cptr.decay(ynchars),
+                110,
+                0
+            ) == 121));
             cptr.stI32(gi, save_doagain);
         } else {
-            ok = schar((yn_function(cptr.decay(__static_dopray_forcesuccess), cptr.decay(ynchars), 110, 1) == 121));
+            ok = schar((yn_function(
+                cptr.decay(__static_dopray_forcesuccess),
+                cptr.decay(ynchars),
+                110,
+                1
+            ) == 121));
         }
         if (ok) {
             cptr.stI32o(u, $you_ublesscnt, 0);
@@ -2426,7 +3426,12 @@ function prayer_done() {
         }  /* else use regular Inhell result below */
     } else if (cptr.ldI32o(gp, $instance_globals_p_p_type) == -1) {
         /* praying while poly'd into an undead creature while non-chaotic */
-        godvoice(alignment, (alignment == NHM.A_LAWFUL) ? __s_vile_creature_thou_durst_call_upon_me : __s_walk_no_more_perversion_of_nature);
+        godvoice(
+            alignment,
+            (alignment == NHM.A_LAWFUL)
+                ? __s_vile_creature_thou_durst_call_upon_me
+                : __s_walk_no_more_perversion_of_nature
+        );
         You_feel(__s_like_you_are_falling_apart);
         /* KMH -- Gods have mastery over unchanging */
         rehumanize();
@@ -2438,19 +3443,38 @@ function prayer_done() {
     if (In_hell(cptr.add(u, $you_uz))) {
         pline(__s_since_you_are_in_gehennom_s_can_t_help, align_gname(alignment));
         /* haltingly aligned is least likely to anger */
-        if (cptr.ldI32o(u, $you_ualign + $align_record) <= 0 || rnl(cptr.ldI32o(u, $you_ualign + $align_record)))
+        if (cptr.ldI32o(u, $you_ualign + $align_record) <= 0 ||
+                rnl(cptr.ldI32o(u, $you_ualign + $align_record)))
             angrygods(cptr.ld1so(u, $you_ualign));
         return 0;
     }
 
     if (cptr.ldI32o(gp, $instance_globals_p_p_type) == 0) {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && cptr.ld1so(u, $you_ualign) != alignment)
+        if (((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+            NHC.ALTAR) &&
+                cptr.ld1so(u, $you_ualign) != alignment)
             void water_prayer(0);
         cptr.stI32o(u, $you_ublesscnt, (cptr.ldI32o(u, $you_ublesscnt) + rnz(250)) | 0);
         change_luck(-3);
         gods_upset(cptr.ld1so(u, $you_ualign));
     } else if (cptr.ldI32o(gp, $instance_globals_p_p_type) == 1) {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && cptr.ld1so(u, $you_ualign) != alignment)
+        if (((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+            NHC.ALTAR) &&
+                cptr.ld1so(u, $you_ualign) != alignment)
             void water_prayer(0);
         angrygods(cptr.ld1so(u, $you_ualign));  /* naughty */
     } else if (cptr.ldI32o(gp, $instance_globals_p_p_type) == 2) {
@@ -2463,7 +3487,15 @@ function prayer_done() {
             pleased(alignment);
     } else {
         /* coaligned */
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR)) {
+        if (((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.ALTAR)) {
             void pray_revive();
             void water_prayer(1);
         }
@@ -2478,10 +3510,32 @@ function maybe_turn_mon_iter(mtmp) {
     /* 3.6.3: used to use cansee() here but the purpose is to prevent
        #turn operating through walls, not to require that the hero be
        able to see the target location */
-    if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) || dist2((cptr.ldI16o((mtmp), $monst_mx)), (cptr.ldI16o((mtmp), $monst_my)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > turn_undead_range)
+    if (!((cptr.ld1uo(
+        cptr.ldPtro(
+            cptr.ldPtro(gv, $instance_globals_v_viz_array),
+            cptr.ldI16o(mtmp, $monst_my),
+            8
+        ),
+        cptr.ldI16o(mtmp, $monst_mx)
+    ) &
+        NHM.COULD_SEE) != 0) ||
+            dist2(
+                (cptr.ldI16o((mtmp), $monst_mx)),
+                (cptr.ldI16o((mtmp), $monst_my)),
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy)
+            ) >
+                turn_undead_range)
         return;
 
-    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(mtmp) || (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) != 0n) && (cptr.ldI32o(u, $you_ulevel) > 15)))) {
+    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) &&
+            (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 2n) != 0n) ||
+                is_vampshifter(mtmp) ||
+                (((cptr.ldU64o(
+                    (cptr.ldPtro(mtmp, $monst_data)),
+                    $permonst_mflags2
+                ) & 256n) != 0n) &&
+                    (cptr.ldI32o(u, $you_ulevel) > 15)))) {
         cptr.stI32o(mtmp, $monst_msleeping, 0);
         if (HConfusion()) {
             if (!turn_undead_msg_cnt++)
@@ -2539,14 +3593,20 @@ export function doturn() {
     /* Knights & Priest(esse)s only please */
     let Gname;
 
-    if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT)) {
+    if (!(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC) &&
+            !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT)) {
         /* Try to use the "turn undead" spell. */
         if (known_spell(NHC.SPE_TURN_UNDEAD))
             return spelleffects(NHC.SPE_TURN_UNDEAD, 0, 0);
         You(__s_don_t_know_how_to_turn_undead);
         return NHM.ECMD_OK;
     }
-    if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_gnostic, cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n)) - (1n)))
+    if (!((cptr.stI64o(
+        u,
+        $you_uconduct + $u_conduct_gnostic,
+        cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) + 1n
+    )) -
+            (1n)))
         livelog_printf(32n, __s_rejected_atheism_by_turning_undead);
 
     Gname = halu_gname(cptr.ld1so(u, $you_ualign));
@@ -2554,20 +3614,40 @@ export function doturn() {
     /* [What about needing free hands (does #turn involve any gesturing)?] */
     if (!can_chant(cptr.add(gy, $instance_globals_y_youmonst))) {
         /* "evilness": "demons and undead" is too verbose and too precise */
-        You(__s_are_s_upon_s_to_turn_aside_evilness, Strangled() ? __s_not_able_to_call : __s_incapable_of_calling, Gname);
+        You(
+            __s_are_s_upon_s_to_turn_aside_evilness,
+            Strangled() ? __s_not_able_to_call : __s_incapable_of_calling,
+            Gname
+        );
         /* violates agnosticism due to intent; conduct tracking is not
            supposed to affect play but we make an exception here:  use a
            move if this is the first time agnostic conduct has been broken */
-        return (cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) == 1n) ? NHM.ECMD_TIME : NHM.ECMD_OK;
+        return (cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) == 1n)
+                ? NHM.ECMD_TIME
+                : NHM.ECMD_OK;
     }
-    if ((cptr.ld1so(u, $you_ualign) != -1 && (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 256n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags2) & 2n) != 0n) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst)))) || cptr.ldI32o(u, $you_ugangr) > 6) {
+    if ((cptr.ld1so(u, $you_ualign) != -1 &&
+        (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags2
+        ) & 256n) != 0n) ||
+            ((cptr.ldU64o(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mflags2
+            ) & 2n) != 0n) ||
+            is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst)))) ||
+            cptr.ldI32o(u, $you_ugangr) > 6) {
         pline(__s_for_some_reason_s_seems_to_ignore_you, Gname);
         aggravate();
         exercise(NHC.A_WIS, 0);
         return NHM.ECMD_TIME;
     }
     if (In_hell(cptr.add(u, $you_uz))) {
-        pline(__s_since_you_are_in_gehennom_s_s_help_you, Gname, !strcmp(Gname, Moloch) ? __s_won_t : __s_can_t);
+        pline(
+            __s_since_you_are_in_gehennom_s_s_help_you,
+            Gname,
+            !strcmp(Gname, Moloch) ? __s_won_t : __s_can_t
+        );
         aggravate();
         return NHM.ECMD_TIME;
     }
@@ -2598,7 +3678,11 @@ export function doturn() {
      */
     nomul(-((5 - ((((cptr.ldI32o(u, $you_ulevel) - 1) | 0) / 6) | 0)) | 0));  /* -5 .. -1 */
     cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_trying_to_turn_the_monsters);
-    cptr.stPtro(gn, $instance_globals_n_nomovemsg, cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again));
+    cptr.stPtro(
+        gn,
+        $instance_globals_n_nomovemsg,
+        cptr.ldPtro(c_common_strings, $c_common_strings_c_You_can_move_again)
+    );
     return NHM.ECMD_TIME;
 }
 
@@ -2607,12 +3691,39 @@ export function altarmask_at(x, y) {
     let res = 0;
 
     if (isok(x, y)) {
-        let mon = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+        let mon = (cptr.ldPtro3(
+            svl,
+            x,
+            168,
+            y,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters
+        ));
 
-        if (mon && (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && cptr.ldI32o(mon, $monst_mappearance) == NHC.S_altar)
-            res = has_mcorpsenm(mon) ? (cptr.ldI32o(cptr.ldPtro((mon), $monst_mextra), $mextra_mcorpsenm)) : 0;
-        else if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
-            res = (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0;
+        if (mon &&
+                (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE &&
+                cptr.ldI32o(mon, $monst_mappearance) == NHC.S_altar)
+            res = has_mcorpsenm(mon)
+                    ? (cptr.ldI32o(cptr.ldPtro((mon), $monst_mextra), $mextra_mcorpsenm))
+                    : 0;
+        else if (((cptr.ld1so3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.ALTAR))
+            res = (cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) |
+                    0;
     }
     return res;
 }
@@ -2625,10 +3736,50 @@ export function a_gname() {
 /* returns the name of an altar's deity */
 /** C ref: pray.c:2514 — @param {CInt} x @param {CInt} y @returns {CPtr<char>} */
 export function a_gname_at(x, y) {
-    if (!((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
+    if (!((cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) ==
+            NHC.ALTAR))
         return null;
 
-    return align_gname(((schar(((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))))));
+    return align_gname(((schar(((((((cptr.ldI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) &
+        NHM.AM_MASK) &
+        NHM.AM_MASK) == 0)
+            ? -128
+            : ((((((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) | 0) &
+                NHM.AM_MASK) &
+                NHM.AM_MASK) ==
+                NHM.AM_LAWFUL)
+                ? NHM.A_LAWFUL
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.AM_MASK) &
+                    NHM.AM_MASK)) - 2) | 0))))));
 }
 
 /* returns the name of the hero's deity */
@@ -2759,14 +3910,57 @@ export function align_gtitle(alignment) {
 
 /** C ref: pray.c:2652 — @param {CInt} x @param {CInt} y */
 export function altar_wrath(x, y) {
-    let altaralign = ((schar(((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0)))));
+    let altaralign = ((schar(((((((cptr.ldI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) &
+        NHM.AM_MASK) &
+        NHM.AM_MASK) == 0)
+            ? -128
+            : ((((((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) | 0) &
+                NHM.AM_MASK) &
+                NHM.AM_MASK) ==
+                NHM.AM_LAWFUL)
+                ? NHM.A_LAWFUL
+                : ((((((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.AM_MASK) &
+                    NHM.AM_MASK)) - 2) | 0)))));
 
-    if (cptr.ld1so(u, $you_ualign) == altaralign && cptr.ldI32o(u, $you_ualign + $align_record) > -rn2(4)) {
+    if (cptr.ld1so(u, $you_ualign) == altaralign &&
+            cptr.ldI32o(u, $you_ualign + $align_record) > -rn2(4)) {
         godvoice(altaralign, __s_how_darest_thou_desecrate_my_altar);
         void adjattrib(NHC.A_WIS, -1, 0);
-        (cptr.stI32o(u, $you_ualign + $align_record, cptr.ldI32o(u, $you_ualign + $align_record) + -1)) - (-1);
+        (cptr.stI32o(
+            u,
+            $you_ualign + $align_record,
+            cptr.ldI32o(u, $you_ualign + $align_record) + -1
+        )) -
+                (-1);
     } else {
-        pline(__s_s_s_s__2, !Deaf() ? __s_a_voice_could_it_be : __s_despite_your_deafness_you_seem_to_hear, align_gname(altaralign), !Deaf() ? __s_whispers : __s_say);
+        pline(
+            __s_s_s_s__2,
+            !Deaf() ? __s_a_voice_could_it_be : __s_despite_your_deafness_you_seem_to_hear,
+            align_gname(altaralign),
+            !Deaf() ? __s_whispers : __s_say
+        );
         ;
         verbalize(__s_thou_shalt_pay_infidel);
         /* higher luck is more likely to be reduced; as it approaches -5
@@ -2784,12 +3978,24 @@ function blocked_boulder(dx, dy) {
     let ny;
     let count = 0n;
 
-    for (otmp = cptr.ldPtro3(svl, (cptr.ldI16(u) + dx) | 0, 168, (cptr.ldI16o(u, $you_uy) + dy) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_objects); otmp; otmp = cptr.ldPtro(otmp, $obj_v)) {
+    for (
+        otmp = cptr.ldPtro3(
+            svl,
+            (cptr.ldI16(u) + dx) | 0,
+            168,
+            (cptr.ldI16o(u, $you_uy) + dy) | 0,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_objects
+        );
+        otmp;
+        otmp = cptr.ldPtro(otmp, $obj_v)
+    ) {
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BOULDER)
             count += cptr.ldI64o(otmp, $obj_quan);
     }
 
-    nx = (cptr.ldI16(u) + Math.imul(2, dx)) | 0, ny = (cptr.ldI16o(u, $you_uy) + Math.imul(2, dy)) | 0;  /* next spot beyond boulder(s) */
+    nx = (cptr.ldI16(u) + Math.imul(2, dx)) | 0,
+            ny = (cptr.ldI16o(u, $you_uy) + Math.imul(2, dy)) | 0;  /* next spot beyond boulder(s) */
     switch (count) {
         case 0n:
         /* no boulders--not blocked */
@@ -2809,11 +4015,23 @@ function blocked_boulder(dx, dy) {
         return 1;
     }
 
-    if (dx && dy && (cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules) & 1) | 0)
+    if (dx && dy &&
+            (cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_sokoban_rules
+            ) & 1) | 0)
         return 1;
     if (!isok(i16(nx), i16(ny)))
         return 1;
-    if (((cptr.ld1so3(svl, nx, $sizeof_rm_x21, ny, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) < NHC.POOL))
+    if (((cptr.ld1so3(
+        svl,
+        nx,
+        $sizeof_rm_x21,
+        ny,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) <
+            NHC.POOL))
         return 1;
     if (sobj_at(NHC.BOULDER, i16(nx), i16(ny)))
         return 1;
@@ -2825,7 +4043,14 @@ function blocked_boulder(dx, dy) {
 // 10 bindings: 0 rebound+refilled, 3 rebound, 7 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(Moloch), S(godvoices), S(turn_undead_range), S(turn_undead_msg_cnt), S(__static_fix_worst_trouble_leftglow), S(__static_fix_worst_trouble_rightglow), S(__static_pleased_msg), S(__static_offer_real_amulet_cloud_of_smoke), S(__static_dopray_forcesuccess), S(hallu_gods)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(Moloch), S(godvoices), S(turn_undead_range), S(turn_undead_msg_cnt),
+        S(__static_fix_worst_trouble_leftglow), S(__static_fix_worst_trouble_rightglow),
+        S(__static_pleased_msg), S(__static_offer_real_amulet_cloud_of_smoke),
+        S(__static_dopray_forcesuccess), S(hallu_gods)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("pray.js: __resetState before __captureState");

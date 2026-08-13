@@ -8,10 +8,21 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, Is_dragon_armor, Is_dragon_mail, canspotmon, glyph_is_trap, is_dlord, is_dprince, is_mplayer, ismnum, nonliving } from './nhmacrofn.js';
-import { Antimagic, BInvis, Blind, BlindedTimeout, Cold_resistance, Drain_resistance, ELevitation, Fire_resistance, HBlinded, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation, Poison_resistance, Role_switch, Shock_resistance, Sick, Slimed, Stone_resistance, Upolyd, create_nhwindow, destroy_nhwindow, end_menu, putstr, start_menu, tutorial_dnum } from './nhprop.js';
+import {
+    Is_container, Is_dragon_armor, Is_dragon_mail, canspotmon, glyph_is_trap, is_dlord, is_dprince,
+    is_mplayer, ismnum, nonliving
+} from './nhmacrofn.js';
+import {
+    Antimagic, BInvis, Blind, BlindedTimeout, Cold_resistance, Drain_resistance, ELevitation,
+    Fire_resistance, HBlinded, HConfusion, HStun, Half_physical_damage, Hallucination, Levitation,
+    Poison_resistance, Role_switch, Shock_resistance, Sick, Slimed, Stone_resistance, Upolyd,
+    create_nhwindow, destroy_nhwindow, end_menu, putstr, start_menu, tutorial_dnum
+} from './nhprop.js';
 import { aligns } from './role.js';
-import { c_color_names, c_common_strings, cg, disp, flags, gi, gm, gn, gs, gu, gv, gw, gy, iflags, program_state, svb, svc, svd, svl, svm, svn, svq, u, uarmg, uleft, uright, uswapwep, uwep } from './decl.js';
+import {
+    c_color_names, c_common_strings, cg, disp, flags, gi, gm, gn, gs, gu, gv, gw, gy, iflags,
+    program_state, svb, svc, svd, svl, svm, svn, svq, u, uarmg, uleft, uright, uswapwep, uwep
+} from './decl.js';
 import { sfi_arti_info, sfi_short, sfo_arti_info, sfo_xint16 } from './sfbase.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
@@ -20,19 +31,34 @@ import { bcsign, mksobj, obj_extract_self, uncurse, weight } from './mkobj.js';
 import { Monnam, hcolor, mon_nam, oname } from './do_name.js';
 import { inside_shop, obfree } from './shk.js';
 import { eos, fuzzymatch, nh_snprintf, s_suffix, sgn, strncmpi, upstart } from './hacklib.js';
-import { You, You_cant, You_feel, Your, impossible, livelog_printf, pline, pline_The, verbalize } from './pline.js';
-import { The, Tobjnam, aobjnam, bare_artifactname, distant_name, killer_xname, otense, simple_typename, the, vtense, xname, yname } from './objnam.js';
+import {
+    You, You_cant, You_feel, Your, impossible, livelog_printf, pline, pline_The, verbalize
+} from './pline.js';
+import {
+    The, Tobjnam, aobjnam, bare_artifactname, distant_name, killer_xname, otense, simple_typename,
+    the, vtense, xname, yname
+} from './objnam.js';
 import { obj_shuffle_range, observe_object } from './o_init.js';
-import { healup, make_blinded, make_confused, make_hallucinated, make_sick, make_slimed, make_stunned } from './potion.js';
-import { bypass_obj, clear_bypasses, nxt_unbypassed_obj, recalc_telepat_range, which_armor } from './worn.js';
-import { canseemon, glyph_at, map_invisible, newsym, nul_glyphinfo, see_monsters, sensemon, shieldeff } from './display.js';
+import {
+    healup, make_blinded, make_confused, make_hallucinated, make_sick, make_slimed, make_stunned
+} from './potion.js';
+import {
+    bypass_obj, clear_bypasses, nxt_unbypassed_obj, recalc_telepat_range, which_armor
+} from './worn.js';
+import {
+    canseemon, glyph_at, map_invisible, newsym, nul_glyphinfo, see_monsters, sensemon, shieldeff
+} from './display.js';
 import { mon_aligntyp } from './priest.js';
-import { Resists_Elem, attacktype, defended, hates_silver, resists_drli, sticks } from './mondata.js';
+import {
+    Resists_Elem, attacktype, defended, hates_silver, resists_drli, sticks
+} from './mondata.js';
 import { invocation_pos, losehp, nomul, spoteffects } from './hack.js';
 import { exercise } from './attrib.js';
 import { add_menu, select_menu, windowprocs } from './windows.js';
 import { align_str, enlightenment } from './insight.js';
-import { cancel_monst, destroy_items, flashburn, lightdamage, probe_monster, resist } from './zap.js';
+import {
+    cancel_monst, destroy_items, flashburn, lightdamage, probe_monster, resist
+} from './zap.js';
 import { healmon, migrate_mon, set_ustuck, wake_nearto } from './mon.js';
 import { monflee } from './monmove.js';
 import { float_down, float_up, ignite_items, selftouch, t_at, untrap } from './trap.js';
@@ -42,7 +68,9 @@ import { monhp_per_lvl } from './makemon.js';
 import { losexp } from './exper.js';
 import { freeinv, getobj, hold_another_object, nxtobj, update_inventory } from './invent.js';
 import { charge_ok, litroom, recharge, seffects } from './read.js';
-import { In_hell, In_quest, depth, dunlevs_in_dungeon, find_hell, ledger_no, surface } from './dungeon.js';
+import {
+    In_hell, In_quest, depth, dunlevs_in_dungeon, find_hell, ledger_no, surface
+} from './dungeon.js';
 import { do_blinding_ray, next_to_u } from './apply.js';
 import { dropx, goto_level, maybe_lvltport_feedback } from './do.js';
 import { getdir, isok } from './cmd.js';
@@ -58,90 +86,98 @@ import { dismount_steed } from './steed.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $Align_value = FLD.Align_value, $Race_hatemask = FLD.Race_hatemask, $Race_mnum = FLD.Race_mnum,
-    $Race_selfmask = FLD.Race_selfmask, $Role_mnum = FLD.Role_mnum, $Role_questarti = FLD.Role_questarti,
-    $abil2adtyp_tag_adtyp = FLD.abil2adtyp_tag_adtyp, $abil2spfx_tag_spfx = FLD.abil2spfx_tag_spfx,
-    $align_record = FLD.align_record, $arti_info_bones = FLD.arti_info_bones,
-    $arti_info_found = FLD.arti_info_found, $arti_info_gift = FLD.arti_info_gift,
-    $arti_info_lvldef = FLD.arti_info_lvldef, $arti_info_named = FLD.arti_info_named,
-    $arti_info_rndm = FLD.arti_info_rndm, $arti_info_viadip = FLD.arti_info_viadip,
-    $arti_info_wish = FLD.arti_info_wish, $artifact_acolor = FLD.artifact_acolor,
-    $artifact_alignment = FLD.artifact_alignment, $artifact_attk = FLD.artifact_attk,
-    $artifact_cary = FLD.artifact_cary, $artifact_cost = FLD.artifact_cost,
-    $artifact_cspfx = FLD.artifact_cspfx, $artifact_defn = FLD.artifact_defn,
-    $artifact_gen_spe = FLD.artifact_gen_spe, $artifact_gift_value = FLD.artifact_gift_value,
-    $artifact_inv_prop = FLD.artifact_inv_prop, $artifact_mtype = FLD.artifact_mtype,
-    $artifact_name = FLD.artifact_name, $artifact_race = FLD.artifact_race,
-    $artifact_role = FLD.artifact_role, $artifact_spfx = FLD.artifact_spfx, $attack_adtyp = FLD.attack_adtyp,
-    $attack_damd = FLD.attack_damd, $attack_damn = FLD.attack_damn,
-    $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind,
-    $c_common_strings_c_fakename = FLD.c_common_strings_c_fakename,
-    $c_common_strings_c_nothing_seems_to_happen = FLD.c_common_strings_c_nothing_seems_to_happen,
-    $color_and_attr_attr = FLD.color_and_attr_attr, $const_globals_zeroany = FLD.const_globals_zeroany,
-    $context_info_warntype = FLD.context_info_warntype, $d_level_dlevel = FLD.d_level_dlevel,
-    $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum,
-    $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_objects = FLD.dlevel_t_objects,
-    $dungeon_depth_start = FLD.dungeon_depth_start, $dungeon_dunlev_ureached = FLD.dungeon_dunlev_ureached,
-    $dungeon_entry_lev = FLD.dungeon_entry_lev, $flag_female = FLD.flag_female,
-    $flag_initalign = FLD.flag_initalign, $flag_verbose = FLD.flag_verbose,
-    $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
-    $instance_globals_n_nomovemsg = FLD.instance_globals_n_nomovemsg,
-    $instance_globals_n_notonhead = FLD.instance_globals_n_notonhead,
-    $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
-    $monst_m_lev = FLD.monst_m_lev, $monst_mconf = FLD.monst_mconf, $monst_mhp = FLD.monst_mhp,
-    $monst_mhpmax = FLD.monst_mhpmax, $monst_minvent = FLD.monst_minvent,
-    $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
-    $monst_mstun = FLD.monst_mstun, $monst_mtame = FLD.monst_mtame, $monst_mx = FLD.monst_mx,
-    $monst_my = FLD.monst_my, $obj_age = FLD.obj_age, $obj_bknown = FLD.obj_bknown,
-    $obj_blessed = FLD.obj_blessed, $obj_cobj = FLD.obj_cobj, $obj_corpsenm = FLD.obj_corpsenm,
-    $obj_cursed = FLD.obj_cursed, $obj_known = FLD.obj_known, $obj_lamplit = FLD.obj_lamplit,
-    $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass, $obj_oeroded = FLD.obj_oeroded,
-    $obj_oeroded2 = FLD.obj_oeroded2, $obj_otrapped = FLD.obj_otrapped, $obj_otyp = FLD.obj_otyp,
-    $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt, $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy,
-    $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe, $obj_v = FLD.obj_v, $obj_where = FLD.obj_where,
-    $objclass_oc_class = FLD.objclass_oc_class, $objclass_oc_cost = FLD.objclass_oc_cost,
-    $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx, $objclass_oc_material = FLD.objclass_oc_material,
-    $objclass_oc_name_known = FLD.objclass_oc_name_known, $objclass_oc_oprop = FLD.objclass_oc_oprop,
-    $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $objclass_oc_unique = FLD.objclass_oc_unique,
-    $objdescr_oc_descr = FLD.objdescr_oc_descr, $permonst_maligntyp = FLD.permonst_maligntyp,
-    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
-    $permonst_mflags3 = FLD.permonst_mflags3, $permonst_mlet = FLD.permonst_mlet,
-    $permonst_mr = FLD.permonst_mr, $permonst_msize = FLD.permonst_msize,
-    $permonst_msound = FLD.permonst_msound, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $q_score_killed_nemesis = FLD.q_score_killed_nemesis,
-    $rm_flags = FLD.rm_flags, $rm_lit = FLD.rm_lit, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
-    $sinfo_restoring = FLD.sinfo_restoring, $sizeof_Align = FLD.sizeof_Align,
-    $sizeof_abil2adtyp_tag = FLD.sizeof_abil2adtyp_tag, $sizeof_abil2spfx_tag = FLD.sizeof_abil2spfx_tag,
-    $sizeof_arti_info = FLD.sizeof_arti_info, $sizeof_artifact = FLD.sizeof_artifact,
-    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
-    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_skills = FLD.sizeof_skills,
-    $skills_max_skill = FLD.skills_max_skill,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
-    $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
-    $you_twoweap = FLD.you_twoweap, $you_ualign = FLD.you_ualign, $you_ucreamed = FLD.you_ucreamed,
-    $you_uen = FLD.you_uen, $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak,
-    $you_ugifts = FLD.you_ugifts, $you_uhave = FLD.you_uhave, $you_uhp = FLD.you_uhp,
-    $you_uhpmax = FLD.you_uhpmax, $you_ulycn = FLD.you_ulycn, $you_umonnum = FLD.you_umonnum,
-    $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed,
-    $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy,
-    $you_uz = FLD.you_uz, $you_weapon_skills = FLD.you_weapon_skills, $you_xray_range = FLD.you_xray_range;
+const $Align_value = FLD.Align_value, $Race_hatemask = FLD.Race_hatemask,
+      $Race_mnum = FLD.Race_mnum, $Race_selfmask = FLD.Race_selfmask, $Role_mnum = FLD.Role_mnum,
+      $Role_questarti = FLD.Role_questarti, $abil2adtyp_tag_adtyp = FLD.abil2adtyp_tag_adtyp,
+      $abil2spfx_tag_spfx = FLD.abil2spfx_tag_spfx, $align_record = FLD.align_record,
+      $arti_info_bones = FLD.arti_info_bones, $arti_info_found = FLD.arti_info_found,
+      $arti_info_gift = FLD.arti_info_gift, $arti_info_lvldef = FLD.arti_info_lvldef,
+      $arti_info_named = FLD.arti_info_named, $arti_info_rndm = FLD.arti_info_rndm,
+      $arti_info_viadip = FLD.arti_info_viadip, $arti_info_wish = FLD.arti_info_wish,
+      $artifact_acolor = FLD.artifact_acolor, $artifact_alignment = FLD.artifact_alignment,
+      $artifact_attk = FLD.artifact_attk, $artifact_cary = FLD.artifact_cary,
+      $artifact_cost = FLD.artifact_cost, $artifact_cspfx = FLD.artifact_cspfx,
+      $artifact_defn = FLD.artifact_defn, $artifact_gen_spe = FLD.artifact_gen_spe,
+      $artifact_gift_value = FLD.artifact_gift_value, $artifact_inv_prop = FLD.artifact_inv_prop,
+      $artifact_mtype = FLD.artifact_mtype, $artifact_name = FLD.artifact_name,
+      $artifact_race = FLD.artifact_race, $artifact_role = FLD.artifact_role,
+      $artifact_spfx = FLD.artifact_spfx, $attack_adtyp = FLD.attack_adtyp,
+      $attack_damd = FLD.attack_damd, $attack_damn = FLD.attack_damn,
+      $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind,
+      $c_common_strings_c_fakename = FLD.c_common_strings_c_fakename,
+      $c_common_strings_c_nothing_seems_to_happen = FLD.c_common_strings_c_nothing_seems_to_happen,
+      $color_and_attr_attr = FLD.color_and_attr_attr,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $context_info_warntype = FLD.context_info_warntype, $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum,
+      $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_objects = FLD.dlevel_t_objects,
+      $dungeon_depth_start = FLD.dungeon_depth_start,
+      $dungeon_dunlev_ureached = FLD.dungeon_dunlev_ureached,
+      $dungeon_entry_lev = FLD.dungeon_entry_lev, $flag_female = FLD.flag_female,
+      $flag_initalign = FLD.flag_initalign, $flag_verbose = FLD.flag_verbose,
+      $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_m_multi_reason = FLD.instance_globals_m_multi_reason,
+      $instance_globals_n_nomovemsg = FLD.instance_globals_n_nomovemsg,
+      $instance_globals_n_notonhead = FLD.instance_globals_n_notonhead,
+      $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
+      $monst_m_lev = FLD.monst_m_lev, $monst_mconf = FLD.monst_mconf, $monst_mhp = FLD.monst_mhp,
+      $monst_mhpmax = FLD.monst_mhpmax, $monst_minvent = FLD.monst_minvent,
+      $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
+      $monst_mstun = FLD.monst_mstun, $monst_mtame = FLD.monst_mtame, $monst_mx = FLD.monst_mx,
+      $monst_my = FLD.monst_my, $obj_age = FLD.obj_age, $obj_bknown = FLD.obj_bknown,
+      $obj_blessed = FLD.obj_blessed, $obj_cobj = FLD.obj_cobj, $obj_corpsenm = FLD.obj_corpsenm,
+      $obj_cursed = FLD.obj_cursed, $obj_known = FLD.obj_known, $obj_lamplit = FLD.obj_lamplit,
+      $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass,
+      $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2,
+      $obj_otrapped = FLD.obj_otrapped, $obj_otyp = FLD.obj_otyp,
+      $obj_owornmask = FLD.obj_owornmask, $obj_owt = FLD.obj_owt, $obj_ox = FLD.obj_ox,
+      $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe, $obj_v = FLD.obj_v,
+      $obj_where = FLD.obj_where, $objclass_oc_class = FLD.objclass_oc_class,
+      $objclass_oc_cost = FLD.objclass_oc_cost, $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx,
+      $objclass_oc_material = FLD.objclass_oc_material,
+      $objclass_oc_name_known = FLD.objclass_oc_name_known,
+      $objclass_oc_oprop = FLD.objclass_oc_oprop, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
+      $objclass_oc_unique = FLD.objclass_oc_unique, $objdescr_oc_descr = FLD.objdescr_oc_descr,
+      $permonst_maligntyp = FLD.permonst_maligntyp, $permonst_mflags1 = FLD.permonst_mflags1,
+      $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mflags3 = FLD.permonst_mflags3,
+      $permonst_mlet = FLD.permonst_mlet, $permonst_mr = FLD.permonst_mr,
+      $permonst_msize = FLD.permonst_msize, $permonst_msound = FLD.permonst_msound,
+      $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+      $q_score_killed_nemesis = FLD.q_score_killed_nemesis, $rm_flags = FLD.rm_flags,
+      $rm_lit = FLD.rm_lit, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
+      $sinfo_restoring = FLD.sinfo_restoring, $sizeof_Align = FLD.sizeof_Align,
+      $sizeof_abil2adtyp_tag = FLD.sizeof_abil2adtyp_tag,
+      $sizeof_abil2spfx_tag = FLD.sizeof_abil2spfx_tag, $sizeof_arti_info = FLD.sizeof_arti_info,
+      $sizeof_artifact = FLD.sizeof_artifact, $sizeof_dungeon = FLD.sizeof_dungeon,
+      $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_skills = FLD.sizeof_skills,
+      $skills_max_skill = FLD.skills_max_skill,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
+      $you_twoweap = FLD.you_twoweap, $you_ualign = FLD.you_ualign,
+      $you_ucreamed = FLD.you_ucreamed, $you_uen = FLD.you_uen, $you_uenmax = FLD.you_uenmax,
+      $you_uenpeak = FLD.you_uenpeak, $you_ugifts = FLD.you_ugifts, $you_uhave = FLD.you_uhave,
+      $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax, $you_ulycn = FLD.you_ulycn,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck,
+      $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz,
+      $you_weapon_skills = FLD.you_weapon_skills, $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
@@ -1232,11 +1268,17 @@ cptr.stI32(zero_artiexist, 0);
 /** C ref: artifact.c:87 */
 function hack_artifacts() {
     let art;
-    let alignmnt = cptr.ld1so2(aligns, cptr.ldI32o(flags, $flag_initalign), $sizeof_Align, $Align_value);
+    let alignmnt = cptr.ld1so2(
+        aligns,
+        cptr.ldI32o(flags, $flag_initalign),
+        $sizeof_Align,
+        $Align_value
+    );
 
     /* Fix up the alignments of "gift" artifacts */
     for (art = cptr.add(artilist, 1, 80); cptr.ldI16(art); art = cptr.add(art, 1, 80))
-        if (cptr.ldI16o(art, $artifact_role) == Role_switch() && cptr.ld1so(art, $artifact_alignment) != -128)
+        if (cptr.ldI16o(art, $artifact_role) == Role_switch() &&
+                cptr.ld1so(art, $artifact_alignment) != -128)
             cptr.st1o(art, $artifact_alignment, schar(alignmnt));
 
     /* Excalibur can be used by any lawful character, not just knights */
@@ -1245,8 +1287,20 @@ function hack_artifacts() {
 
     /* Fix up the quest artifact */
     if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti)) {
-        cptr.st1o2(artilist, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti), $sizeof_artifact, $artifact_alignment, schar(alignmnt));
-        cptr.stI16o2(artilist, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti), $sizeof_artifact, $artifact_role, Role_switch());
+        cptr.st1o2(
+            artilist,
+            cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti),
+            $sizeof_artifact,
+            $artifact_alignment,
+            schar(alignmnt)
+        );
+        cptr.stI16o2(
+            artilist,
+            cptr.ldI16o(gu, $instance_globals_u_urole + $Role_questarti),
+            $sizeof_artifact,
+            $artifact_role,
+            Role_switch()
+        );
     }
     return;
 }
@@ -1301,7 +1355,14 @@ export function artiname(artinum) {
    The max_giftvalue is the value of the sacrifice, for an artifact obtained
    by sacrificing, or 99 otherwise.
  */
-/** C ref: artifact.c:172 — @param {CPtr<struct obj>} otmp @param {CInt} alignment @param {CUInt} max_giftvalue @param {CInt} adjust_spe @returns {CPtr<struct obj>} */
+/**
+ * C ref: artifact.c:172
+ * @param {CPtr<struct obj>} otmp
+ * @param {CInt} alignment
+ * @param {CUInt} max_giftvalue
+ * @param {CInt} adjust_spe
+ * @returns {CPtr<struct obj>}
+ */
 export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
     let a;
     let m;
@@ -1309,19 +1370,30 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
     let altn;
     let by_align = schar((alignment != -128));
     let o_typ = i16(((by_align || !otmp) ? 0 : cptr.ldI16o(otmp, $obj_otyp)));
-    let unique = schar((!by_align && otmp && (cptr.ldI32o2(objects, o_typ, $sizeof_objclass, $objclass_oc_unique) & 1) | 0 ? 1 : 0));
+    let unique = schar((!by_align && otmp &&
+        (cptr.ldI32o2(objects, o_typ, $sizeof_objclass, $objclass_oc_unique) & 1) | 0
+            ? 1
+            : 0));
     let eligible = cptr.alloc(33 * 2);
     let skill_compatibility;
 
     n = (altn = 0);  /* no candidates found yet */
     cptr.stI16o(eligible, 0, 0, 2);  /* lint suppression */
     /* gather eligible artifacts */
-    for (m = 1, a = cptr.add(artilist, m, $sizeof_artifact); cptr.ldI16(a); a = cptr.add(a, 1, 80), m++) {
+    for (
+        m = 1,
+        a = cptr.add(artilist, m, $sizeof_artifact);
+        cptr.ldI16(a);
+        a = cptr.add(a, 1, 80),
+        m++
+    ) {
         if ((cptr.ldI32o(artiexist, m, $sizeof_arti_info) & 1))
             continue;
         if ((cptr.ldU64o(a, $artifact_spfx) & 1n) || unique)
             continue;
-        if (cptr.ld1uo(a, $artifact_gift_value) > max_giftvalue && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(a, $artifact_role))))
+        if (cptr.ld1uo(a, $artifact_gift_value) > max_giftvalue &&
+                !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                    (cptr.ldI16o(a, $artifact_role))))
             continue;
 
         if (!by_align) {
@@ -1334,9 +1406,20 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
 
         /* we're looking for an alignment-specific item
            suitable for hero's role+race */
-        if ((cptr.ld1so(a, $artifact_alignment) == alignment || cptr.ld1so(a, $artifact_alignment) == -128) && (cptr.ldI16o(a, $artifact_race) == NHC.NON_PM || !((cptr.ldU64o((cptr.add(mons, cptr.ldI16o(a, $artifact_race), $sizeof_permonst)), $permonst_mflags2) & BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hatemask)))) != 0n))) {
+        if ((cptr.ld1so(a, $artifact_alignment) == alignment ||
+            cptr.ld1so(a, $artifact_alignment) == -128) &&
+                (cptr.ldI16o(a, $artifact_race) == NHC.NON_PM ||
+                    !((cptr.ldU64o(
+                        (cptr.add(mons, cptr.ldI16o(a, $artifact_race), $sizeof_permonst)),
+                        $permonst_mflags2
+                    ) &
+                        BigInt.asUintN(
+                            64,
+                            BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_hatemask))
+                        )) != 0n))) {
             /* when a role-specific first choice is available, use it */
-            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(a, $artifact_role)))) {
+            if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                    (cptr.ldI16o(a, $artifact_role)))) {
                 /* make this be the only possibility in the list */
                 cptr.stI16o(eligible, 0, i16(m), 2);
                 n = 1;
@@ -1345,16 +1428,37 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
 
             /* check if this is skill-compatible */
             skill_compatibility = NHC.P_SKILLED;
-            if (cptr.ld1so2(objects, cptr.ldI16(a), $sizeof_objclass, $objclass_oc_class) == NHC.WEAPON_CLASS) {
-                let skill = cptr.ld1so2(objects, cptr.ldI16(a), $sizeof_objclass, $objclass_oc_subtyp);
+            if (cptr.ld1so2(objects, cptr.ldI16(a), $sizeof_objclass, $objclass_oc_class) ==
+                    NHC.WEAPON_CLASS) {
+                let skill = cptr.ld1so2(
+                    objects,
+                    cptr.ldI16(a),
+                    $sizeof_objclass,
+                    $objclass_oc_subtyp
+                );
                 if (skill < 0)
-                    skill_compatibility = (cptr.ldI16o2(u, -skill, $sizeof_skills, $you_weapon_skills + $skills_max_skill));
+                    skill_compatibility = (cptr.ldI16o2(
+                        u,
+                        -skill,
+                        $sizeof_skills,
+                        $you_weapon_skills + $skills_max_skill
+                    ));
                 else
-                    skill_compatibility = (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills + $skills_max_skill));
+                    skill_compatibility = (cptr.ldI16o2(
+                        u,
+                        skill,
+                        $sizeof_skills,
+                        $you_weapon_skills + $skills_max_skill
+                    ));
             }
 
             /* found something to consider for random selection */
-            if ((cptr.ld1so(a, $artifact_alignment) != -128 || cptr.ldI32o(u, $you_ugifts) > 0 || !rn2(3)) && (!rn2(4) || skill_compatibility >= NHC.P_SKILLED || (skill_compatibility >= NHC.P_BASIC && rn2(2)))) {
+            if ((cptr.ld1so(a, $artifact_alignment) != -128 ||
+                cptr.ldI32o(u, $you_ugifts) > 0 ||
+                !rn2(3)) &&
+                    (!rn2(4) ||
+                        skill_compatibility >= NHC.P_SKILLED ||
+                        (skill_compatibility >= NHC.P_BASIC && rn2(2)))) {
                 /* right alignment, or non-aligned with at least 1
                    previous gift bestowed, makes this one viable;
                    unaligned artifacts are possible even as the first
@@ -1400,7 +1504,9 @@ export function mk_artifact(otmp, alignment, max_giftvalue, adjust_spe) {
          * otmp should be nonnull at this point:
          * either the passed argument (if !by_align == A_NONE), or
          * the result of mksobj() just above if by_align is an alignment. */
-        (__builtin_expect(BigInt((!(otmp !== null))), 0n) ? __assert_rtn(__s_mk_artifact, __s_artifact_c, 278, __s_otmp_0) : void 0);
+        (__builtin_expect(BigInt((!(otmp !== null))), 0n)
+                ? __assert_rtn(__s_mk_artifact, __s_artifact_c, 278, __s_otmp_0)
+                : void 0);
         /* prevent erosion from generating */
         cptr.stI32o(otmp, $obj_oeroded, cptr.stI32o(otmp, $obj_oeroded2, 0));
         otmp = oname(otmp, cptr.ldPtro(a, $artifact_name), NHM.ONAME_NO_FLAGS);
@@ -1449,7 +1555,13 @@ function dispose_of_orig_obj(obj) {
  * The object type of the artifact is returned in otyp if the return value
  * is non-NULL.
  */
-/** C ref: artifact.c:329 — @param {CPtr<char>} name @param {CPtr<short>} otyp_p @param {CInt} fuzzy @returns {CPtr<char>} */
+/**
+ * C ref: artifact.c:329
+ * @param {CPtr<char>} name
+ * @param {CPtr<short>} otyp_p
+ * @param {CInt} fuzzy
+ * @returns {CPtr<char>}
+ */
 export function artifact_name(name, otyp_p, fuzzy) {
     let a;
     let aname;
@@ -1477,7 +1589,13 @@ export function exist_artifact(otyp, name) {
     let arex;
 
     if (otyp && cptr.ld1s(name))
-        for (a = cptr.add(artilist, 1, 80), arex = cptr.add(artiexist, 1, 36); cptr.ldI16(a); a = cptr.add(a, 1, 80), arex = cptr.add(arex, 1, 36))
+        for (
+            a = cptr.add(artilist, 1, 80),
+            arex = cptr.add(artiexist, 1, 36);
+            cptr.ldI16(a);
+            a = cptr.add(a, 1, 80),
+            arex = cptr.add(arex, 1, 36)
+        )
             if (cptr.ldI16(a) == otyp && !strcmp(cptr.ldPtro(a, $artifact_name), name))
                 return schar(((cptr.ldI32(arex) & 1) | 0 ? 1 : 0));
     return 0;
@@ -1485,13 +1603,20 @@ export function exist_artifact(otyp, name) {
 
 /* an artifact has just been created or is being "un-created" for a chance
    to be created again later */
-/** C ref: artifact.c:371 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} name @param {CInt} mod @param {CUInt} flgs */
+/**
+ * C ref: artifact.c:371
+ * @param {CPtr<struct obj>} otmp
+ * @param {CPtr<char>} name
+ * @param {CInt} mod
+ * @param {CUInt} flgs
+ */
 export function artifact_exists(otmp, name, mod, flgs) {
     let a;
 
     if (otmp && cptr.ld1s(name))
         for (a = cptr.add(artilist, 1, 80); cptr.ldI16(a); a = cptr.add(a, 1, 80))
-            if (cptr.ldI16(a) == cptr.ldI16o(otmp, $obj_otyp) && !strcmp(cptr.ldPtro(a, $artifact_name), name)) {
+            if (cptr.ldI16(a) == cptr.ldI16o(otmp, $obj_otyp) &&
+                    !strcmp(cptr.ldPtro(a, $artifact_name), name)) {
                 let m = Number(BigInt.asIntN(32, (cptr.diff(a, artilist) / 80n)));
 
                 cptr.st1o(otmp, $obj_oartifact, schar((mod ? m : 0)));
@@ -1549,7 +1674,16 @@ export function find_artifact(otmp) {
          * That's handled by caller:  dog_invent(), mpickstuff(), or
          * mdrop_obj() so that we get called before obj->where changes.
          */
-        where = ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR) ? ((inside_shop(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy)) != NHM.NO_ROOM) ? __s_in_a_shop : __s_on_the_floor) : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_CONTAINED) ? __s_in_a_container : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_MINVENT) ? __s_carried_by_a_monster : __s_empty)));
+        where = ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR)
+                ? ((inside_shop(cptr.ldI16o(otmp, $obj_ox), cptr.ldI16o(otmp, $obj_oy)) !=
+                    NHM.NO_ROOM)
+                    ? __s_in_a_shop
+                    : __s_on_the_floor)
+                : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_CONTAINED)
+                    ? __s_in_a_container
+                    : ((cptr.ld1so(otmp, $obj_where) == NHM.OBJ_MINVENT)
+                        ? __s_carried_by_a_monster
+                        : __s_empty)));
         livelog_printf(64n, __s_found_s_s, bare_artifactname(otmp), where);
     }
 }
@@ -1606,11 +1740,19 @@ export function artifact_origin(arti, aflags) {
     }
 }
 
-/** C ref: artifact.c:516 — @param {CPtr<struct obj>} otmp @param {CLongLong} abil @returns {CInt} */
+/**
+ * C ref: artifact.c:516
+ * @param {CPtr<struct obj>} otmp
+ * @param {CLongLong} abil
+ * @returns {CInt}
+ */
 export function spec_ability(otmp, abil) {
     let arti = get_artifact(otmp);
 
-    return schar((!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && (cptr.ldU64o(arti, $artifact_spfx) & abil) != 0n ? 1 : 0));
+    return schar((!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) &&
+        (cptr.ldU64o(arti, $artifact_spfx) & abil) != 0n
+            ? 1
+            : 0));
 }
 
 /* used so that callers don't need to known about SPFX_ codes */
@@ -1630,7 +1772,8 @@ export function arti_reflects(obj) {
 
     if (!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) {
         /* while being worn */
-        if ((cptr.ldI64o(obj, $obj_owornmask) & -4097n) && (cptr.ldU64o(arti, $artifact_spfx) & 67108864n))
+        if ((cptr.ldI64o(obj, $obj_owornmask) & -4097n) &&
+                (cptr.ldU64o(arti, $artifact_spfx) & 67108864n))
             return 1;
         /* just being carried */
         if (cptr.ldU64o(arti, $artifact_cspfx) & 67108864n)
@@ -1646,11 +1789,19 @@ export function shade_glare(obj) {
     let arti;
 
     /* any silver object is effective */
-    if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER)
+    if (((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_material
+    ) & 31) | 0) ==
+            NHC.SILVER)
         return 1;
     /* non-silver artifacts with bonus against undead also are effective */
     arti = get_artifact(obj);
-    if (!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && (cptr.ldU64o(arti, $artifact_spfx) & 8388608n) && cptr.ldU64o(arti, $artifact_mtype) == 2n)
+    if (!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) &&
+            (cptr.ldU64o(arti, $artifact_spfx) & 8388608n) &&
+            cptr.ldU64o(arti, $artifact_mtype) == 2n)
         return 1;
     /* [if there was anything with special bonus against noncorporeals,
        it would be effective too] */
@@ -1659,7 +1810,12 @@ export function shade_glare(obj) {
 }
 
 /* returns 1 if name is restricted for otmp->otyp */
-/** C ref: artifact.c:575 — @param {CPtr<struct obj>} otmp @param {CPtr<char>} name @returns {CInt} */
+/**
+ * C ref: artifact.c:575
+ * @param {CPtr<struct obj>} otmp
+ * @param {CPtr<char>} name
+ * @returns {CInt}
+ */
 export function restrict_name(otmp, name) {
     let a;
     let aname;
@@ -1682,14 +1838,39 @@ export function restrict_name(otmp, name) {
        otherwise, include all other undiscovered objects
        of the same class which have the same description
        or share the same pool of shuffled descriptions */
-    void __builtin___memset_chk(cptr.decay(sametype), 0, 481n, __builtin_object_size(cptr.decay(sametype), 0));  /* FALSE */
+    void __builtin___memset_chk(
+        cptr.decay(sametype),
+        0,
+        481n,
+        __builtin_object_size(cptr.decay(sametype), 0)
+    );  /* FALSE */
     cptr.st1o(cptr.decay(sametype), otyp, 1, 1);
-    if (!(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) && (odesc = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))) !== null) {
+    if (!(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) &&
+            (odesc = (cptr.ldPtro2(
+                obj_descr,
+                cptr.ldI16o((cptr.add(objects, otyp, $sizeof_objclass)), $objclass_oc_descr_idx),
+                $sizeof_objdescr,
+                $objdescr_oc_descr
+            ))) !== null) {
         obj_shuffle_range(otyp, lo, hi);
-        for (i = cptr.ldI32o2(svb, ocls, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS; i++) {
+        for (
+            i = cptr.ldI32o2(svb, ocls, 4, $instance_globals_saved_b_bases);
+            i < NHC.NUM_OBJECTS;
+            i++
+        ) {
             if (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != ocls)
                 break;
-            if (!(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) && (other = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))) !== null && (!strcmp(odesc, other) || (i >= lo.v && i <= hi.v)))
+            if (!(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) &&
+                    (other = (cptr.ldPtro2(
+                        obj_descr,
+                        cptr.ldI16o(
+                            (cptr.add(objects, i, $sizeof_objclass)),
+                            $objclass_oc_descr_idx
+                        ),
+                        $sizeof_objdescr,
+                        $objdescr_oc_descr
+                    ))) !== null &&
+                    (!strcmp(odesc, other) || (i >= lo.v && i <= hi.v)))
                 cptr.st1o(cptr.decay(sametype), i, 1, 1);
         }
     }
@@ -1705,7 +1886,10 @@ export function restrict_name(otmp, name) {
         if (!strncmpi(aname, __s_the, 4))
             aname = cptr.add(aname, 4);
         if (!strcmp(aname, name))
-            return schar(((cptr.ldU64o(a, $artifact_spfx) & 3n) != 0n || cptr.ldI64o(otmp, $obj_quan) > 1n ? 1 : 0));
+            return schar(((cptr.ldU64o(a, $artifact_spfx) & 3n) != 0n ||
+                cptr.ldI64o(otmp, $obj_quan) > 1n
+                    ? 1
+                    : 0));
     }
 
     return 0;
@@ -1715,7 +1899,10 @@ export function restrict_name(otmp, name) {
 export function attacks(adtyp, otmp) {
     let weap;
 
-    if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
+    if (!cptr.eq(
+        (weap = get_artifact(otmp)),
+        cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)
+    ))
         return schar((cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == adtyp));
     return 0;
 }
@@ -1726,7 +1913,10 @@ export function defends(adtyp, otmp) {
 
     if (!otmp)
         return 0;
-    if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
+    if (!cptr.eq(
+        (weap = get_artifact(otmp)),
+        cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)
+    ))
         return schar((cptr.ld1uo(weap, $artifact_defn + $attack_adtyp) == adtyp));
     if (Is_dragon_armor(otmp)) {
         let otyp = cptr.ldI16o(otmp, $obj_otyp);
@@ -1774,29 +1964,52 @@ export function defends(adtyp, otmp) {
 export function defends_when_carried(adtyp, otmp) {
     let weap;
 
-    if (!cptr.eq((weap = get_artifact(otmp)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
+    if (!cptr.eq(
+        (weap = get_artifact(otmp)),
+        cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)
+    ))
         return schar((cptr.ld1uo(weap, $artifact_cary + $attack_adtyp) == adtyp));
     return 0;
 }
 
 /* determine whether an item confers Protection */
-/** C ref: artifact.c:698 — @param {CPtr<struct obj>} otmp @param {CInt} being_worn @returns {CInt} */
+/**
+ * C ref: artifact.c:698
+ * @param {CPtr<struct obj>} otmp
+ * @param {CInt} being_worn
+ * @returns {CInt}
+ */
 export function protects(otmp, being_worn) {
     let arti;
 
-    if (being_worn && cptr.ld1uo2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) == NHC.PROTECTION)
+    if (being_worn &&
+            cptr.ld1uo2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_oprop
+            ) ==
+                NHC.PROTECTION)
         return 1;
     arti = get_artifact(otmp);
     if (cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
         return 0;
-    return schar(((cptr.ldU64o(arti, $artifact_cspfx) & 134217728n) != 0n || (being_worn && (cptr.ldU64o(arti, $artifact_spfx) & 134217728n) != 0n) ? 1 : 0));
+    return schar(((cptr.ldU64o(arti, $artifact_cspfx) & 134217728n) != 0n ||
+        (being_worn && (cptr.ldU64o(arti, $artifact_spfx) & 134217728n) != 0n)
+            ? 1
+            : 0));
 }
 
 /*
  * a potential artifact has just been worn/wielded/picked-up or
  * unworn/unwielded/dropped.  Pickup/drop only set/reset the W_ART mask.
  */
-/** C ref: artifact.c:716 — @param {CPtr<struct obj>} otmp @param {CInt} on @param {CLongLong} wp_mask */
+/**
+ * C ref: artifact.c:716
+ * @param {CPtr<struct obj>} otmp
+ * @param {CInt} on
+ * @param {CLongLong} wp_mask
+ */
 export function set_artifact_intrinsic(otmp, on, wp_mask) {
     let mask = null;
     let art;
@@ -1809,7 +2022,9 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
         return;
 
     /* effects from the defn field */
-    dtyp = uchar(((wp_mask != 4096n) ? cptr.ld1uo(oart, $artifact_defn + $attack_adtyp) : cptr.ld1uo(oart, $artifact_cary + $attack_adtyp)));
+    dtyp = uchar(((wp_mask != 4096n)
+            ? cptr.ld1uo(oart, $artifact_defn + $attack_adtyp)
+            : cptr.ld1uo(oart, $artifact_cary + $attack_adtyp)));
 
     if (dtyp == NHM.AD_FIRE)
         mask = cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, $sizeof_prop);
@@ -1832,7 +2047,8 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj)) {
             if (!cptr.eq(obj, otmp) && cptr.ld1so(obj, $obj_oartifact)) {
                 art = get_artifact(obj);
-                if (!cptr.eq(art, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && cptr.ld1uo(art, $artifact_cary + $attack_adtyp) == dtyp) {
+                if (!cptr.eq(art, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) &&
+                        cptr.ld1uo(art, $artifact_cary + $attack_adtyp) == dtyp) {
                     mask = null;
                     break;
                 }
@@ -1847,22 +2063,43 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     }
 
     /* intrinsics from the spfx field; there could be more than one */
-    spfx = BigInt.asIntN(64, ((wp_mask != 4096n) ? cptr.ldU64o(oart, $artifact_spfx) : cptr.ldU64o(oart, $artifact_cspfx)));
+    spfx = BigInt.asIntN(
+        64,
+        ((wp_mask != 4096n)
+            ? cptr.ldU64o(oart, $artifact_spfx)
+            : cptr.ldU64o(oart, $artifact_cspfx))
+    );
     if (spfx && wp_mask == 4096n && !on) {
         /* don't change any spfx also conferred by other artifacts */
         for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj))
             if (!cptr.eq(obj, otmp) && cptr.ld1so(obj, $obj_oartifact)) {
                 art = get_artifact(obj);
                 if (!cptr.eq(art, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)))
-                    spfx &= BigInt.asIntN(64, BigInt.asUintN(64, ~cptr.ldU64o(art, $artifact_cspfx)));
+                    spfx &= BigInt.asIntN(
+                        64,
+                        BigInt.asUintN(64, ~cptr.ldU64o(art, $artifact_cspfx))
+                    );
             }
     }
 
     if (spfx & 512n) {
         if (on)
-            cptr.stI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.SEARCHING,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.SEARCHING,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.SEARCHING, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
     if (spfx & 2048n) {
         /* make_hallucinated must (re)set the mask itself to get
@@ -1871,68 +2108,198 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
          * that can print a message--need to guard against being printed
          * when restoring a game
          */
-        void make_hallucinated(BigInt((!on)), schar((cptr.ldI32o(program_state, $sinfo_restoring) ? 0 : 1)), wp_mask);
+        void make_hallucinated(
+            BigInt((!on)),
+            schar((cptr.ldI32o(program_state, $sinfo_restoring) ? 0 : 1)),
+            wp_mask
+        );
     }
     if (spfx & 4096n) {
         if (on)
-            cptr.stI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.TELEPAT,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.TELEPAT,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.TELEPAT, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
         recalc_telepat_range();
         see_monsters();
     }
     if (spfx & 8192n) {
         if (on)
-            cptr.stI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.STEALTH,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.STEALTH,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.STEALTH, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
     if (spfx & 16384n) {
         if (on)
-            cptr.stI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.REGENERATION,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.REGENERATION,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.REGENERATION, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
     if (spfx & 262144n) {
         if (on)
-            cptr.stI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.TELEPORT_CONTROL,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.TELEPORT_CONTROL,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.TELEPORT_CONTROL, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
     if (spfx & 32n) {
         if (spec_m2(otmp)) {
             if (on) {
-                cptr.stI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops) | wp_mask);
-                cptr.stU64o(svc, $context_info_warntype, cptr.ldU64o(svc, $context_info_warntype) | BigInt.asUintN(64, spec_m2(otmp)));
+                cptr.stI64o2(
+                    u,
+                    NHC.WARN_OF_MON,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops) | wp_mask
+                );
+                cptr.stU64o(
+                    svc,
+                    $context_info_warntype,
+                    cptr.ldU64o(svc, $context_info_warntype) | BigInt.asUintN(64, spec_m2(otmp))
+                );
             } else {
-                cptr.stI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
-                cptr.stU64o(svc, $context_info_warntype, cptr.ldU64o(svc, $context_info_warntype) & BigInt.asUintN(64, BigInt.asIntN(64, ~spec_m2(otmp))));
+                cptr.stI64o2(
+                    u,
+                    NHC.WARN_OF_MON,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.WARN_OF_MON, $sizeof_prop, $you_uprops) &
+                        BigInt.asIntN(64, ~wp_mask)
+                );
+                cptr.stU64o(
+                    svc,
+                    $context_info_warntype,
+                    cptr.ldU64o(svc, $context_info_warntype) &
+                        BigInt.asUintN(64, BigInt.asIntN(64, ~spec_m2(otmp)))
+                );
             }
             see_monsters();
         } else {
             if (on)
-                cptr.stI64o2(u, NHC.WARNING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.WARNING, $sizeof_prop, $you_uprops) | wp_mask);
+                cptr.stI64o2(
+                    u,
+                    NHC.WARNING,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.WARNING, $sizeof_prop, $you_uprops) | wp_mask
+                );
             else
-                cptr.stI64o2(u, NHC.WARNING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.WARNING, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+                cptr.stI64o2(
+                    u,
+                    NHC.WARNING,
+                    $sizeof_prop,
+                    $you_uprops,
+                    cptr.ldI64o2(u, NHC.WARNING, $sizeof_prop, $you_uprops) &
+                        BigInt.asIntN(64, ~wp_mask)
+                );
         }
     }
     if (spfx & 32768n) {
         if (on)
-            cptr.stI64o2(u, NHC.ENERGY_REGENERATION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.ENERGY_REGENERATION, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.ENERGY_REGENERATION,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.ENERGY_REGENERATION, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.ENERGY_REGENERATION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.ENERGY_REGENERATION, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.ENERGY_REGENERATION,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.ENERGY_REGENERATION, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
     if (spfx & 65536n) {
         if (on)
-            cptr.stI64o2(u, NHC.HALF_SPDAM, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.HALF_SPDAM, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.HALF_SPDAM,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.HALF_SPDAM, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.HALF_SPDAM, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.HALF_SPDAM, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.HALF_SPDAM,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.HALF_SPDAM, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
     if (spfx & 131072n) {
         if (on)
-            cptr.stI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.HALF_PHDAM,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.HALF_PHDAM,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.HALF_PHDAM, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
     if (spfx & 33554432n) {
         /* this assumes that no one else is using xray_range */
@@ -1944,28 +2311,69 @@ export function set_artifact_intrinsic(otmp, on, wp_mask) {
     }
     if ((spfx & 67108864n) && (wp_mask & 256n)) {
         if (on)
-            cptr.stI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.REFLECTING,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.REFLECTING,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.REFLECTING, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
     if (spfx & 134217728n) {
         if (on)
-            cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.PROTECTION,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.PROTECTION,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.PROTECTION, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
 
     if (wp_mask == 4096n && !on && cptr.ld1uo(oart, $artifact_inv_prop)) {
         /* might have to turn off invoked power too */
-        if (cptr.ld1uo(oart, $artifact_inv_prop) <= NHC.LAST_PROP && (cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) & 8192n))
+        if (cptr.ld1uo(oart, $artifact_inv_prop) <= NHC.LAST_PROP &&
+                (cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) &
+                    8192n))
             void arti_invoke(otmp);
     }
 
     if (wp_mask == 256n && is_art(otmp, NHC.ART_SUNSWORD)) {
         if (on)
-            cptr.stI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops) | wp_mask);
+            cptr.stI64o2(
+                u,
+                NHC.BLND_RES,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops) | wp_mask
+            );
         else
-            cptr.stI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops) & BigInt.asIntN(64, ~wp_mask));
+            cptr.stI64o2(
+                u,
+                NHC.BLND_RES,
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, NHC.BLND_RES, $sizeof_prop, $you_uprops) &
+                    BigInt.asIntN(64, ~wp_mask)
+            );
     }
 }
 
@@ -1982,7 +2390,12 @@ let touch_blasted = 0;
  * Ignores such things as gauntlets, assuming the artifact is not
  * fooled by such trappings.
  */
-/** C ref: artifact.c:908 — @param {CPtr<struct obj>} obj @param {CPtr<struct monst>} mon @returns {CInt} */
+/**
+ * C ref: artifact.c:908
+ * @param {CPtr<struct obj>} obj
+ * @param {CPtr<struct monst>} mon
+ * @returns {CInt}
+ */
 export function touch_artifact(obj, mon) {
     let oart = get_artifact(obj);
     let badclass;
@@ -1999,11 +2412,34 @@ export function touch_artifact(obj, mon) {
        will have to be extended to explicitly include quest artifacts */
     self_willed = schar(((cptr.ldU64o(oart, $artifact_spfx) & 4n) != 0n));
     if (yours) {
-        badclass = schar((self_willed && ((cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM && !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == (cptr.ldI16o(oart, $artifact_role)))) || (cptr.ldI16o(oart, $artifact_race) != NHC.NON_PM && !(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == (cptr.ldI16o(oart, $artifact_race))))) ? 1 : 0));
-        badalign = schar(((cptr.ldU64o(oart, $artifact_spfx) & 2n) != 0n && cptr.ld1so(oart, $artifact_alignment) != -128 && (cptr.ld1so(oart, $artifact_alignment) != cptr.ld1so(u, $you_ualign) || cptr.ldI32o(u, $you_ualign + $align_record) < 0) ? 1 : 0));
-    } else if (!((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) & NHM.M3_COVETOUS)) && !is_mplayer(cptr.ldPtro(mon, $monst_data))) {
-        badclass = schar((self_willed && cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM && !cptr.eq(oart, cptr.add(artilist, NHC.ART_EXCALIBUR, $sizeof_artifact)) ? 1 : 0));
-        badalign = schar(((cptr.ldU64o(oart, $artifact_spfx) & 2n) && cptr.ld1so(oart, $artifact_alignment) != -128 && (cptr.ld1so(oart, $artifact_alignment) != mon_aligntyp(mon)) ? 1 : 0));
+        badclass = schar((self_willed &&
+            ((cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM &&
+                !(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) ==
+                    (cptr.ldI16o(oart, $artifact_role)))) ||
+                (cptr.ldI16o(oart, $artifact_race) != NHC.NON_PM &&
+                    !(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) ==
+                        (cptr.ldI16o(oart, $artifact_race)))))
+                ? 1
+                : 0));
+        badalign = schar(((cptr.ldU64o(oart, $artifact_spfx) & 2n) != 0n &&
+            cptr.ld1so(oart, $artifact_alignment) != -128 &&
+            (cptr.ld1so(oart, $artifact_alignment) != cptr.ld1so(u, $you_ualign) ||
+                cptr.ldI32o(u, $you_ualign + $align_record) < 0)
+                ? 1
+                : 0));
+    } else if (!((cptr.ldU16o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags3) &
+        NHM.M3_COVETOUS)) &&
+            !is_mplayer(cptr.ldPtro(mon, $monst_data))) {
+        badclass = schar((self_willed &&
+            cptr.ldI16o(oart, $artifact_role) != NHC.NON_PM &&
+            !cptr.eq(oart, cptr.add(artilist, NHC.ART_EXCALIBUR, $sizeof_artifact))
+                ? 1
+                : 0));
+        badalign = schar(((cptr.ldU64o(oart, $artifact_spfx) & 2n) &&
+            cptr.ld1so(oart, $artifact_alignment) != -128 &&
+            (cptr.ld1so(oart, $artifact_alignment) != mon_aligntyp(mon))
+                ? 1
+                : 0));
     } else {
         /* special monsters trying to take the Amulet, invocation tools or
            quest item can touch anything except `spec_applies' artifacts */
@@ -2025,8 +2461,19 @@ export function touch_artifact(obj, mon) {
         touch_blasted = 1;
         dmg = d(((Antimagic() ? 2 : 4)), ((self_willed ? 10 : 4)));
         /* add half (maybe quarter) of the usual silver damage bonus */
-        if (((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
-            tmp = rnd(10), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
+        if (((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) & 31) | 0) ==
+            NHC.SILVER &&
+                (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
+                    hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
+            tmp = rnd(10),
+                    dmg = (dmg +
+                        ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) |
+                        0;
         void cptr.sprintf(cptr.decay(buf), __s_touching_s, cptr.ldPtro(oart, $artifact_name));
         losehp(dmg, cptr.decay(buf), NHM.KILLED_BY);  /* magic damage, not physical */
         exercise(NHC.A_WIS, 0);
@@ -2056,14 +2503,24 @@ export function arti_immune(obj, dtyp) {
         return 0;
     if (dtyp == NHM.AD_PHYS)
         return 0;  /* nothing is immune to phys dmg */
-    return schar((cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == dtyp || cptr.ld1uo(weap, $artifact_defn + $attack_adtyp) == dtyp || cptr.ld1uo(weap, $artifact_cary + $attack_adtyp) == dtyp ? 1 : 0));
+    return schar((cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == dtyp ||
+        cptr.ld1uo(weap, $artifact_defn + $attack_adtyp) == dtyp ||
+        cptr.ld1uo(weap, $artifact_cary + $attack_adtyp) == dtyp
+            ? 1
+            : 0));
 }
 
-/** C ref: artifact.c:993 — @param {CPtr<struct artifact>} oart @param {CPtr<struct monst>} mon @returns {CInt} */
+/**
+ * C ref: artifact.c:993
+ * @param {CPtr<struct artifact>} oart
+ * @param {CPtr<struct monst>} mon
+ * @returns {CInt}
+ */
 function bane_applies(oart, mon) {
     let atmp = cptr.alloc(80);
 
-    if (!cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && (cptr.ldU64o(oart, $artifact_spfx) & 32505856n) != 0n) {
+    if (!cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) &&
+            (cptr.ldU64o(oart, $artifact_spfx) & 32505856n) != 0n) {
         cptr.memcpy(atmp, oart, 80);
         cptr.stU64o(atmp, $artifact_spfx, cptr.ldU64o(atmp, $artifact_spfx) & 32505856n);  /* clear other spfx fields */
         if (spec_applies(atmp, mon))
@@ -2073,7 +2530,12 @@ function bane_applies(oart, mon) {
 }
 
 /* decide whether an artifact's special attacks apply against mtmp */
-/** C ref: artifact.c:1009 — @param {CPtr<struct artifact>} weap @param {CPtr<struct monst>} mtmp @returns {CInt} */
+/**
+ * C ref: artifact.c:1009
+ * @param {CPtr<struct artifact>} weap
+ * @param {CPtr<struct monst>} mtmp
+ * @returns {CInt}
+ */
 function spec_applies(weap, mtmp) {
     let ptr;
     let yours;
@@ -2085,15 +2547,40 @@ function spec_applies(weap, mtmp) {
     ptr = cptr.ldPtro(mtmp, $monst_data);
 
     if (cptr.ldU64o(weap, $artifact_spfx) & 1048576n) {
-        return (cptr.eq(ptr, cptr.add(mons, Number(BigInt.asIntN(32, cptr.ldU64o(weap, $artifact_mtype))), $sizeof_permonst)));
+        return (cptr.eq(
+            ptr,
+            cptr.add(
+                mons,
+                Number(BigInt.asIntN(32, cptr.ldU64o(weap, $artifact_mtype))),
+                $sizeof_permonst
+            )
+        ));
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 2097152n) {
-        return (cptr.ldU64o(weap, $artifact_mtype) == BigInt.asUintN(64, BigInt(cptr.ld1so(ptr, $permonst_mlet))));
+        return (cptr.ldU64o(weap, $artifact_mtype) ==
+                BigInt.asUintN(64, BigInt(cptr.ld1so(ptr, $permonst_mlet))));
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 4194304n) {
         return ((cptr.ldU64o(ptr, $permonst_mflags1) & cptr.ldU64o(weap, $artifact_mtype)) != 0n);
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 8388608n) {
-        return ((cptr.ldU64o(ptr, $permonst_mflags2) & cptr.ldU64o(weap, $artifact_mtype)) || (yours && ((!Upolyd() && (BigInt.asUintN(64, BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))) & cptr.ldU64o(weap, $artifact_mtype))) || ((cptr.ldU64o(weap, $artifact_mtype) & 4n) && ismnum(cptr.ldI32o(u, $you_ulycn))))) ? 1 : 0);
+        return ((cptr.ldU64o(ptr, $permonst_mflags2) & cptr.ldU64o(weap, $artifact_mtype)) ||
+            (yours &&
+                ((!Upolyd() &&
+                    (BigInt.asUintN(
+                        64,
+                        BigInt(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_selfmask))
+                    ) &
+                        cptr.ldU64o(weap, $artifact_mtype))) ||
+                    ((cptr.ldU64o(weap, $artifact_mtype) & 4n) &&
+                        ismnum(cptr.ldI32o(u, $you_ulycn)))))
+                ? 1
+                : 0);
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 16777216n) {
-        return yours ? (cptr.ld1so(u, $you_ualign) != cptr.ld1so(weap, $artifact_alignment)) : (cptr.ld1so(ptr, $permonst_maligntyp) == -128 || sgn(cptr.ld1so(ptr, $permonst_maligntyp)) != cptr.ld1so(weap, $artifact_alignment) ? 1 : 0);
+        return yours
+                ? (cptr.ld1so(u, $you_ualign) != cptr.ld1so(weap, $artifact_alignment))
+                : (cptr.ld1so(ptr, $permonst_maligntyp) == -128 ||
+                    sgn(cptr.ld1so(ptr, $permonst_maligntyp)) !=
+                        cptr.ld1so(weap, $artifact_alignment)
+                    ? 1
+                    : 0);
     } else if (cptr.ldU64o(weap, $artifact_spfx) & 64n) {
         if (defended(mtmp, cptr.ld1uo(weap, $artifact_attk + $attack_adtyp)))
             return 0;
@@ -2133,24 +2620,40 @@ export function spec_m2(otmp) {
 }
 
 /* special attack bonus */
-/** C ref: artifact.c:1076 — @param {CPtr<struct obj>} otmp @param {CPtr<struct monst>} mon @returns {CInt} */
+/**
+ * C ref: artifact.c:1076
+ * @param {CPtr<struct obj>} otmp
+ * @param {CPtr<struct monst>} mon
+ * @returns {CInt}
+ */
 export function spec_abon(otmp, mon) {
     let weap = get_artifact(otmp);
 
     /* no need for an extra check for `NO_ATTK' because this will
        always return 0 for any artifact which has that attribute */
 
-    if (!cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) && cptr.ld1uo(weap, $artifact_attk + $attack_damn) && spec_applies(weap, mon))
+    if (!cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) &&
+            cptr.ld1uo(weap, $artifact_attk + $attack_damn) &&
+            spec_applies(weap, mon))
         return rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damn));
     return 0;
 }
 
 /* special damage bonus */
-/** C ref: artifact.c:1091 — @param {CPtr<struct obj>} otmp @param {CPtr<struct monst>} mon @param {CInt} tmp @returns {CInt} */
+/**
+ * C ref: artifact.c:1091
+ * @param {CPtr<struct obj>} otmp
+ * @param {CPtr<struct monst>} mon
+ * @param {CInt} tmp
+ * @returns {CInt}
+ */
 export function spec_dbon(otmp, mon, tmp) {
     let weap = get_artifact(otmp);
 
-    if ((cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) || (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS && cptr.ld1uo(weap, $artifact_attk + $attack_damn) == 0 && cptr.ld1uo(weap, $artifact_attk + $attack_damd) == 0))
+    if ((cptr.eq(weap, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) ||
+            (cptr.ld1uo(weap, $artifact_attk + $attack_adtyp) == NHM.AD_PHYS &&
+                cptr.ld1uo(weap, $artifact_attk + $attack_damn) == 0 &&
+                cptr.ld1uo(weap, $artifact_attk + $attack_damd) == 0))
         cptr.stI32(gs, 0);
     else if (is_art(otmp, NHC.ART_GRIMTOOTH))
         /* Grimtooth has SPFX settings to warn against elves but we want its
@@ -2160,7 +2663,9 @@ export function spec_dbon(otmp, mon, tmp) {
         cptr.stI32(gs, spec_applies(weap, mon));
 
     if (cptr.ldI32(gs))
-        return cptr.ld1uo(weap, $artifact_attk + $attack_damd) ? rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damd)) : ((tmp) > 1 ? (tmp) : 1);
+        return cptr.ld1uo(weap, $artifact_attk + $attack_damd)
+                ? rnd(cptr.ld1uo(weap, $artifact_attk + $attack_damd))
+                : ((tmp) > 1 ? (tmp) : 1);
     return 0;
 }
 
@@ -2212,7 +2717,11 @@ export function disp_artifact_discoveries(tmpwin) {
             continue;  /* for WIN_ERR, we just count */
 
         if (i == 0)
-            putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __s_artifacts);
+            putstr()(
+                tmpwin,
+                cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr),
+                __s_artifacts
+            );
         m = cptr.ldI16o(artidisco, i, 2);
         otyp = cptr.ldI16o(artilist, m, $sizeof_artifact);
         algnstr = align_str(cptr.ld1so2(artilist, m, $sizeof_artifact, $artifact_alignment));
@@ -2233,11 +2742,54 @@ export function dump_artifact_info(tmpwin) {
     let buf2 = new Uint8Array(256);
 
     /* not a menu, but header uses same bold or whatever attribute as such */
-    putstr()(tmpwin, cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), __s_artifacts);
+    putstr()(
+        tmpwin,
+        cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr),
+        __s_artifacts
+    );
     for (m = 1; m <= NHC.NROFARTIFACTS; ++m) {
-        nh_snprintf(__s_dump_artifact_info, 1197, cptr.decay(buf2), 256n, __s_s_s_s_s_s_s_s_s_s, (cptr.ldI32o(artiexist, m, $sizeof_arti_info) & 1) | 0 ? __s_exists : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_found) & 1) | 0 ? __s_hero_knows : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_gift) & 1) | 0 ? __s_gift : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_wish) & 1) | 0 ? __s_wish : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_named) & 1) | 0 ? __s_named : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_viadip) & 1) | 0 ? __s_viadip : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_lvldef) & 1) | 0 ? __s_lvldef : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_bones) & 1) | 0 ? __s_bones : __s_empty, (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_rndm) & 1) | 0 ? __s_random : __s_empty);
+        nh_snprintf(
+            __s_dump_artifact_info,
+            1197,
+            cptr.decay(buf2),
+            256n,
+            __s_s_s_s_s_s_s_s_s_s,
+            (cptr.ldI32o(artiexist, m, $sizeof_arti_info) & 1) | 0 ? __s_exists : __s_empty,
+            (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_found) & 1) | 0
+                ? __s_hero_knows
+                : __s_empty,
+            (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_gift) & 1) | 0
+                ? __s_gift
+                : __s_empty,
+            (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_wish) & 1) | 0
+                ? __s_wish
+                : __s_empty,
+            (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_named) & 1) | 0
+                ? __s_named
+                : __s_empty,
+            (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_viadip) & 1) | 0
+                ? __s_viadip
+                : __s_empty,
+            (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_lvldef) & 1) | 0
+                ? __s_lvldef
+                : __s_empty,
+            (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_bones) & 1) | 0
+                ? __s_bones
+                : __s_empty,
+            (cptr.ldI32o2(artiexist, m, $sizeof_arti_info, $arti_info_rndm) & 1) | 0
+                ? __s_random
+                : __s_empty
+        );
         /* "The Platinum Yendorian Express Card" is 35 characters */
-        nh_snprintf(__s_dump_artifact_info, 1204, cptr.decay(buf), 256n, __s_36_36s_s, artiname(m), cptr.decay(buf2));
+        nh_snprintf(
+            __s_dump_artifact_info,
+            1204,
+            cptr.decay(buf),
+            256n,
+            __s_36_36s_s,
+            artiname(m),
+            cptr.decay(buf2)
+        );
         putstr()(tmpwin, 0, cptr.decay(buf));
     }
     return;
@@ -2272,7 +2824,13 @@ export const MB_INDEX_CANCEL = 3;
 export const NUM_MB_INDICES = 4;
 
 /** C ref: artifact.c:1242 — char *[2][4] */
-const mb_verb = (function () { const flat = new Uint8Array(2 * 4 * 8); const a = []; for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8)); a.buf = flat; return a; })();
+const mb_verb = (function () {
+    const flat = new Uint8Array(2 * 4 * 8);
+    const a = [];
+    for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(mb_verb[0]), 0, __s_probe);
 cptr.stPtro(cptr.decay(mb_verb[0]), 8, __s_stun);
 cptr.stPtro(cptr.decay(mb_verb[0]), 16, __s_scare);
@@ -2283,7 +2841,17 @@ cptr.stPtro(cptr.decay(mb_verb[1]), 16, __s_tickle);
 cptr.stPtro(cptr.decay(mb_verb[1]), 24, __s_purge);
 
 /* called when someone is being hit by Magicbane */
-/** C ref: artifact.c:1249 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct obj>} mb @param {CPtr<int>} dmgptr @param {CInt} dieroll @param {CInt} vis @param {CPtr<char>} hittee @returns {CInt} */
+/**
+ * C ref: artifact.c:1249
+ * @param {CPtr<struct monst>} magr
+ * @param {CPtr<struct monst>} mdef
+ * @param {CPtr<struct obj>} mb
+ * @param {CPtr<int>} dmgptr
+ * @param {CInt} dieroll
+ * @param {CInt} vis
+ * @param {CPtr<char>} hittee
+ * @returns {CInt}
+ */
 function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     let old_mdat;
     let verb;
@@ -2310,7 +2878,8 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
        in that case it will only happen if the other effect fails;
        extra damage will apply regardless; 3.4.1: sometimes might
        just probe even when it hasn't been enchanted */
-    do_stun = schar((((cptr.ld1so(mb, $obj_spe)) > 0 ? (cptr.ld1so(mb, $obj_spe)) : 0) < rn2(cptr.ldI32(gs) ? 11 : 7)));
+    do_stun = schar((((cptr.ld1so(mb, $obj_spe)) > 0 ? (cptr.ld1so(mb, $obj_spe)) : 0) <
+            rn2(cptr.ldI32(gs) ? 11 : 7)));
 
     /* the special effects also boost physical damage; increments are
        generally cumulative, but since the stun effect is based on a
@@ -2348,7 +2917,9 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     /* now perform special effects */
     switch (attack_indx) {
         case NHC.MB_INDEX_CANCEL:
-        old_mdat = youdefend ? cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data) : cptr.ldPtro(mdef, $monst_data);
+        old_mdat = youdefend
+                ? cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)
+                : cptr.ldPtro(mdef, $monst_data);
         /* No mdef->mcan check: even a cancelled monster can be polymorphed
          * into a golem, and the "cancel" effect acts as if some magical
          * energy remains in spellcasting defenders to be absorbed later.
@@ -2372,7 +2943,10 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                    update its name if necessary */
                 if (!cptr.eq(cptr.ldPtro(mdef, $monst_data), old_mdat))
                     void cptr.strcpy(hittee, mon_nam(mdef));
-                if (cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_CLAY_GOLEM, $sizeof_permonst)))
+                if (cptr.eq(
+                    cptr.ldPtro(mdef, $monst_data),
+                    cptr.add(mons, NHC.PM_CLAY_GOLEM, $sizeof_permonst)
+                ))
                     cptr.stI32o(mdef, $monst_mhp, 1);  /* cancelled clay golems will die */
                 if (youattack && attacktype(cptr.ldPtro(mdef, $monst_data), NHM.AT_MAGC)) {
                     (cptr.stI32o(u, $you_uenmax, cptr.ldI32o(u, $you_uenmax) + 1)) - (1);
@@ -2393,7 +2967,9 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                 nomul(-3);
                 cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_being_scared_stiff);
                 cptr.stPtro(gn, $instance_globals_n_nomovemsg, __s_empty);
-                if (magr && cptr.eq(magr, cptr.ldPtro(u, $you_ustuck)) && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+                if (magr &&
+                        cptr.eq(magr, cptr.ldPtro(u, $you_ustuck)) &&
+                        sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
                     set_ustuck(null);
                     You(__s_release_s, mon_nam(magr));
                 }
@@ -2411,7 +2987,14 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         do_stun = 1;  /* (this is redundant...) */
         break;
         case NHC.MB_INDEX_PROBE:
-        if (youattack && (cptr.ld1so(mb, $obj_spe) == 0 || !(rng_log_enabled() ? (rng_log_set_caller(__s_artifact_c, 1382, __s_mb_hit), rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))) : rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))))) {
+        if (youattack &&
+                (cptr.ld1so(mb, $obj_spe) == 0 ||
+                    !(rng_log_enabled()
+                        ? (
+                            rng_log_set_caller(__s_artifact_c, 1382, __s_mb_hit),
+                            rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))
+                        )
+                        : rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))))) {
             pline_The(__s_s_is_insightful, verb);
             /* pre-damage status */
             probe_monster(mdef);
@@ -2443,8 +3026,18 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
     if (youattack || youdefend || vis) {
         void upstart(hittee);  /* capitalize */
         if (resisted) {
-            pline(__s_s_s, hittee, vtense(cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename), __s_resist));
-            shieldeff(i16((youdefend ? cptr.ldI16(u) : cptr.ldI16o(mdef, $monst_mx))), i16((youdefend ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mdef, $monst_my))));
+            pline(
+                __s_s_s,
+                hittee,
+                vtense(
+                    cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename),
+                    __s_resist
+                )
+            );
+            shieldeff(
+                i16((youdefend ? cptr.ldI16(u) : cptr.ldI16o(mdef, $monst_mx))),
+                i16((youdefend ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mdef, $monst_my)))
+            );
         }
         if ((do_stun || do_confuse) && cptr.ld1so(flags, $flag_verbose)) {
             let buf = new Uint8Array(256);
@@ -2456,7 +3049,16 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
                 void cptr.strcat(cptr.decay(buf), __s_and);
             if (do_confuse)
                 void cptr.strcat(cptr.decay(buf), __s_confused);
-            pline(__s_s_s_s_c, hittee, vtense(cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename), __s_are), cptr.decay(buf), (do_stun && do_confuse) ? 33 : 46);
+            pline(
+                __s_s_s_s_c,
+                hittee,
+                vtense(
+                    cptr.ldPtro2(c_common_strings, fakeidx, 8, $c_common_strings_c_fakename),
+                    __s_are
+                ),
+                cptr.decay(buf),
+                (do_stun && do_confuse) ? 33 : 46
+            );
         }
     }
 
@@ -2476,16 +3078,52 @@ const __static_artifact_hit_behead_msg = cptr.alloc(2 * 8);
 cptr.stPtro(__static_artifact_hit_behead_msg, 0, __s_s_beheads_s);
 cptr.stPtro(__static_artifact_hit_behead_msg, 8, __s_s_decapitates_s); /** C ref: artifact.c:1597 — char *[2] (function-static) */
 
-/** C ref: artifact.c:1447 — @param {CPtr<struct monst>} magr @param {CPtr<struct monst>} mdef @param {CPtr<struct obj>} otmp @param {CPtr<int>} dmgptr @param {CInt} dieroll @returns {CInt} */
+/**
+ * C ref: artifact.c:1447
+ * @param {CPtr<struct monst>} magr
+ * @param {CPtr<struct monst>} mdef
+ * @param {CPtr<struct obj>} otmp
+ * @param {CPtr<int>} dmgptr
+ * @param {CInt} dieroll
+ * @returns {CInt}
+ */
 export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     let youattack = schar((cptr.eq(magr, cptr.add(gy, $instance_globals_y_youmonst))));
     let youdefend = schar((cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))));
-    let vis = schar(((!youattack && magr && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(magr, $monst_my), 8), cptr.ldI16o(magr, $monst_mx)) & NHM.IN_SIGHT) != 0)) || (!youdefend && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mdef, $monst_my), 8), cptr.ldI16o(mdef, $monst_mx)) & NHM.IN_SIGHT) != 0)) || (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))) && !Blind()) ? 1 : 0));
+    let vis = schar(((!youattack && magr &&
+        ((cptr.ld1uo(
+            cptr.ldPtro(
+                cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                cptr.ldI16o(magr, $monst_my),
+                8
+            ),
+            cptr.ldI16o(magr, $monst_mx)
+        ) &
+            NHM.IN_SIGHT) != 0)) ||
+        (!youdefend &&
+            ((cptr.ld1uo(
+                cptr.ldPtro(
+                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                    cptr.ldI16o(mdef, $monst_my),
+                    8
+                ),
+                cptr.ldI16o(mdef, $monst_mx)
+            ) &
+                NHM.IN_SIGHT) != 0)) ||
+        (youattack &&
+            ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))) &&
+            !Blind())
+            ? 1
+            : 0));
     let realizes_damage;
     let wepdesc;
     let hittee = new Uint8Array(256);
 
-    void cptr.strcpy(cptr.decay(hittee), youdefend ? cptr.decay(__static_artifact_hit_you) : mon_nam(mdef));
+    void cptr.strcpy(
+        cptr.decay(hittee),
+        youdefend ? cptr.decay(__static_artifact_hit_you) : mon_nam(mdef)
+    );
 
     /* The following takes care of most of the damage, but not all--
      * the exception being for level draining, which is specially
@@ -2498,12 +3136,27 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         return 0;
     }
 
-    realizes_damage = schar((youdefend || vis || (youattack && cptr.eq(mdef, cptr.ldPtro(u, $you_ustuck))) ? 1 : 0));
+    realizes_damage = schar((youdefend || vis ||
+        (youattack && cptr.eq(mdef, cptr.ldPtro(u, $you_ustuck)))
+            ? 1
+            : 0));
 
     /* the four basic attacks: fire, cold, shock and missiles */
     if (attacks(NHM.AD_FIRE, otmp)) {
         if (realizes_damage)
-            pline_The(__s_fiery_blade_s_s_c, !cptr.ldI32(gs) ? __s_hits : ((cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_WATER_ELEMENTAL, $sizeof_permonst))) ? __s_vaporizes_part_of : __s_burns), cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
+            pline_The(
+                __s_fiery_blade_s_s_c,
+                !cptr.ldI32(gs)
+                    ? __s_hits
+                    : ((cptr.eq(
+                        cptr.ldPtro(mdef, $monst_data),
+                        cptr.add(mons, NHC.PM_WATER_ELEMENTAL, $sizeof_permonst)
+                    ))
+                        ? __s_vaporizes_part_of
+                        : __s_burns),
+                cptr.decay(hittee),
+                !cptr.ldI32(gs) ? 46 : 33
+            );
         if (!rn2(4)) {
             let itemdmg = destroy_items(mdef, NHM.AD_FIRE, cptr.ldI32(dmgptr));
             if (!youdefend)
@@ -2516,7 +3169,12 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     }
     if (attacks(NHM.AD_COLD, otmp)) {
         if (realizes_damage)
-            pline_The(__s_ice_cold_blade_s_s_c, !cptr.ldI32(gs) ? __s_hits : __s_freezes, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
+            pline_The(
+                __s_ice_cold_blade_s_s_c,
+                !cptr.ldI32(gs) ? __s_hits : __s_freezes,
+                cptr.decay(hittee),
+                !cptr.ldI32(gs) ? 46 : 33
+            );
         if (!rn2(4)) {
             let itemdmg = destroy_items(mdef, NHM.AD_COLD, cptr.ldI32(dmgptr));
             if (!youdefend)
@@ -2526,7 +3184,12 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     }
     if (attacks(NHM.AD_ELEC, otmp)) {
         if (realizes_damage)
-            pline_The(__s_massive_hammer_hits_s_s_c, !cptr.ldI32(gs) ? __s_empty : __s_lightning_strikes, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
+            pline_The(
+                __s_massive_hammer_hits_s_s_c,
+                !cptr.ldI32(gs) ? __s_empty : __s_lightning_strikes,
+                cptr.decay(hittee),
+                !cptr.ldI32(gs) ? 46 : 33
+            );
         if (cptr.ldI32(gs))
             wake_nearto(cptr.ldI16o(mdef, $monst_mx), cptr.ldI16o(mdef, $monst_my), 16);
         if (!rn2(5)) {
@@ -2538,7 +3201,12 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
     }
     if (attacks(NHM.AD_MAGM, otmp)) {
         if (realizes_damage)
-            pline_The(__s_imaginary_widget_hits_s_s_c, !cptr.ldI32(gs) ? __s_empty : __s_a_hail_of_magic_missiles_strikes, cptr.decay(hittee), !cptr.ldI32(gs) ? 46 : 33);
+            pline_The(
+                __s_imaginary_widget_hits_s_s_c,
+                !cptr.ldI32(gs) ? __s_empty : __s_a_hail_of_magic_missiles_strikes,
+                cptr.decay(hittee),
+                !cptr.ldI32(gs) ? 46 : 33
+            );
         return realizes_damage;
     }
 
@@ -2559,7 +3227,9 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
         if (is_art(otmp, NHC.ART_TSURUGI_OF_MURAMASA) && dieroll == 1) {
             wepdesc = __s_the_razor_sharp_blade;
             /* not really beheading, but so close, why add another SPFX */
-            if (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))) {
+            if (youattack &&
+                    ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                        (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef))))) {
                 You(__s_slice_s_wide_open, mon_nam(mdef));
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
                 return 1;
@@ -2569,7 +3239,8 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 if (cptr.ld1so(gn, $instance_globals_n_notonhead))
                     return 0;
 
-                if ((cptr.ld1uo((cptr.ldPtro(mdef, $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) {
+                if ((cptr.ld1uo((cptr.ldPtro(mdef, $monst_data)), $permonst_msize) >=
+                        NHM.MZ_LARGE)) {
                     if (youattack)
                         You(__s_slice_deeply_into_s, mon_nam(mdef));
                     else if (vis)
@@ -2582,7 +3253,11 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 observe_object(otmp);
                 return 1;
             } else {
-                if ((cptr.ld1uo((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_msize) >= NHM.MZ_LARGE)) {
+                if ((cptr.ld1uo(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_msize
+                ) >=
+                        NHM.MZ_LARGE)) {
                     pline(__s_s_cuts_deeply_into_you, magr ? Monnam(magr) : wepdesc);
                     cptr.stI32(dmgptr, Math.imul(cptr.ldI32(dmgptr), 2));
                     return 1;
@@ -2593,18 +3268,39 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                  * value to the damage so that this reduction in
                  * damage does not prevent death.
                  */
-                cptr.stI32(dmgptr, (Math.imul(2, (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) + 200) | 0);
+                cptr.stI32(
+                    dmgptr,
+                    (Math.imul(
+                        2,
+                        (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))
+                    ) + 200) | 0
+                );
                 pline(__s_s_cuts_you_in_half, wepdesc);
                 observe_object(otmp);
                 return 1;
             }
-        } else if (is_art(otmp, NHC.ART_VORPAL_BLADE) && (dieroll == 1 || cptr.eq(cptr.ldPtro(mdef, $monst_data), cptr.add(mons, NHC.PM_JABBERWOCK, $sizeof_permonst)))) {
+        } else if (is_art(otmp, NHC.ART_VORPAL_BLADE) &&
+                (dieroll == 1 ||
+                    cptr.eq(
+                        cptr.ldPtro(mdef, $monst_data),
+                        cptr.add(mons, NHC.PM_JABBERWOCK, $sizeof_permonst)
+                    ))) {
 
-            if (youattack && ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 && (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))))
+            if (youattack &&
+                    ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+                        (cptr.eq(cptr.ldPtro(u, $you_ustuck), (mdef)))))
                 return 0;
-            wepdesc = cptr.ldPtro2(artilist, NHC.ART_VORPAL_BLADE, $sizeof_artifact, $artifact_name);
+            wepdesc = cptr.ldPtro2(
+                artilist,
+                NHC.ART_VORPAL_BLADE,
+                $sizeof_artifact,
+                $artifact_name
+            );
             if (!youdefend) {
-                if (!((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 32768n) == 0n) || cptr.ld1so(gn, $instance_globals_n_notonhead) || (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
+                if (!((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) &
+                    32768n) == 0n) ||
+                        cptr.ld1so(gn, $instance_globals_n_notonhead) ||
+                        (cptr.ldI32o(u, $you_uswallow) & 1) | 0) {
                     if (youattack)
                         pline(__s_somehow_you_miss_s_wildly, mon_nam(mdef));
                     else if (vis)
@@ -2612,27 +3308,58 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                     cptr.stI32(dmgptr, 0);
                     return schar((youattack || vis ? 1 : 0));
                 }
-                if ((cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_GHOST) || ((cptr.ldU64o((cptr.ldPtro(mdef, $monst_data)), $permonst_mflags1) & 4n) != 0n)) {
-                    pline(__s_s_slices_through_s_s, wepdesc, s_suffix(mon_nam(mdef)), mbodypart(mdef, NHC.NECK));
+                if ((cptr.ld1so((cptr.ldPtro(mdef, $monst_data)), $permonst_mlet) == NHC.S_GHOST) ||
+                        ((cptr.ldU64o(
+                            (cptr.ldPtro(mdef, $monst_data)),
+                            $permonst_mflags1
+                        ) & 4n) != 0n)) {
+                    pline(
+                        __s_s_slices_through_s_s,
+                        wepdesc,
+                        s_suffix(mon_nam(mdef)),
+                        mbodypart(mdef, NHC.NECK)
+                    );
                     return 1;
                 }
                 cptr.stI32(dmgptr, (Math.imul(2, cptr.ldI32o(mdef, $monst_mhp)) + 200) | 0);
-                pline(cptr.ldPtro(__static_artifact_hit_behead_msg, rn2(2), 8), wepdesc, mon_nam(mdef));
+                pline(
+                    cptr.ldPtro(__static_artifact_hit_behead_msg, rn2(2), 8),
+                    wepdesc,
+                    mon_nam(mdef)
+                );
                 if (Hallucination() && !cptr.ld1so(flags, $flag_female))
                     pline(__s_good_job_henry_but_that_wasn_t_anne);
                 observe_object(otmp);
                 return 1;
             } else {
-                if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 32768n) == 0n)) {
+                if (!((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                        32768n) == 0n)) {
                     pline(__s_somehow_s_misses_you_wildly, magr ? mon_nam(magr) : wepdesc);
                     cptr.stI32(dmgptr, 0);
                     return 1;
                 }
-                if ((cptr.ld1so((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mlet) == NHC.S_GHOST) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4n) != 0n)) {
+                if ((cptr.ld1so(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mlet
+                ) ==
+                    NHC.S_GHOST) ||
+                        ((cptr.ldU64o(
+                            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                            $permonst_mflags1
+                        ) & 4n) != 0n)) {
                     pline(__s_s_slices_through_your_s, wepdesc, body_part(NHC.NECK));
                     return 1;
                 }
-                cptr.stI32(dmgptr, (Math.imul(2, (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))) + 200) | 0);
+                cptr.stI32(
+                    dmgptr,
+                    (Math.imul(
+                        2,
+                        (Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp))
+                    ) + 200) | 0
+                );
                 pline(cptr.ldPtro(__static_artifact_hit_behead_msg, rn2(2), 8), wepdesc, __s_you);
                 observe_object(otmp);
                 /* Should amulets fall off? */
@@ -2662,7 +3389,12 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 let otmpname = distant_name(otmp, xname);
 
                 if (is_art(otmp, NHC.ART_STORMBRINGER))
-                    pline_The(__s_s_blade_draws_the_s_from_s, hcolor(cptr.ldPtr(c_color_names)), life, mon_nam(mdef));
+                    pline_The(
+                        __s_s_blade_draws_the_s_from_s,
+                        hcolor(cptr.ldPtr(c_color_names)),
+                        life,
+                        mon_nam(mdef)
+                    );
                 else
                     pline(__s_s_draws_the_s_from_s, The(otmpname), life, mon_nam(mdef));
             }
@@ -2681,7 +3413,9 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
                 if (youattack) {
                     healup(drain, 0, 0, 0);
                 } else {
-                    (__builtin_expect(BigInt((!(magr !== null))), 0n) ? __assert_rtn(__s_artifact_hit, __s_artifact_c, 1688, __s_magr_0) : void 0);
+                    (__builtin_expect(BigInt((!(magr !== null))), 0n)
+                            ? __assert_rtn(__s_artifact_hit, __s_artifact_c, 1688, __s_magr_0)
+                            : void 0);
                     healmon(magr, drain, 0);
                 }
             }
@@ -2690,7 +3424,11 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             let oldhpmax = cptr.ldI32o(u, $you_uhpmax);
 
             if (Blind()) {
-                You_feel(__s_an_s_drain_your_s, is_art(otmp, NHC.ART_STORMBRINGER) ? __s_unholy_blade : __s_object, life);
+                You_feel(
+                    __s_an_s_drain_your_s,
+                    is_art(otmp, NHC.ART_STORMBRINGER) ? __s_unholy_blade : __s_object,
+                    life
+                );
             } else {
                 /* call distant_name() for possible side-effects even if
                    the result won't be printed */
@@ -2703,7 +3441,11 @@ export function artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             }
             losexp(__s_life_drainage);
             if (magr && cptr.ldI32o(magr, $monst_mhp) < cptr.ldI32o(magr, $monst_mhpmax)) {
-                healmon(magr, (((Math.abs((oldhpmax - cptr.ldI32o(u, $you_uhpmax)) | 0) + 1) | 0) / 2) | 0, 0);
+                healmon(
+                    magr,
+                    (((Math.abs((oldhpmax - cptr.ldI32o(u, $you_uhpmax)) | 0) + 1) | 0) / 2) | 0,
+                    0
+                );
             }
             return 1;
         }
@@ -2718,7 +3460,15 @@ function invoke_ok(obj) {
         return NHC.GETOBJ_EXCLUDE;
 
     /* artifacts and other special items */
-    if (cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_unique) & 1) | 0 || (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(obj, $obj_known) & 1)))
+    if (cptr.ld1so(obj, $obj_oartifact) ||
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_unique
+            ) & 1) | 0 ||
+            (cptr.ldI16o(obj, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR &&
+                !(cptr.ldI32o(obj, $obj_known) & 1)))
         return NHC.GETOBJ_SUGGEST;
 
     /* synonym for apply, though actually invoking it will do different things
@@ -2762,15 +3512,29 @@ function invoke_taming(obj) {
 
 /** C ref: artifact.c:1780 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_healing(obj) {
-    let healamt = (((((cptr.ldI32o(u, $you_uhpmax) + 1) | 0) - cptr.ldI32o(u, $you_uhp)) | 0) / 2) | 0;
+    let healamt = (((((cptr.ldI32o(u, $you_uhpmax) + 1) | 0) - cptr.ldI32o(u, $you_uhp)) | 0) / 2) |
+            0;
     let creamed = BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0);
 
     if (Upolyd())
-        healamt = (((((cptr.ldI32o(u, $you_mhmax) + 1) | 0) - cptr.ldI32o(u, $you_mh)) | 0) / 2) | 0;
-    if (healamt || Sick() || Slimed() || BigInt((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) && !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked) ? 1 : 0)) > creamed)
+        healamt = (((((cptr.ldI32o(u, $you_mhmax) + 1) | 0) - cptr.ldI32o(u, $you_mh)) | 0) / 2) |
+                0;
+    if (healamt ||
+            Sick() ||
+            Slimed() ||
+            BigInt((cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_intrinsic) &&
+                !cptr.ldI64o2(u, NHC.BLINDED, $sizeof_prop, $you_uprops + $prop_blocked)
+                ? 1
+                : 0)) >
+                creamed)
         You_feel(__s_better);
     if (healamt || Sick() || Slimed() || BlindedTimeout() > creamed)
-        You_feel(__s_sbetter, (!healamt && !Sick() && !Slimed() && (HBlinded() & -16777216n) != 0n) ? __s_slightly : __s_empty);
+        You_feel(
+            __s_sbetter,
+            (!healamt && !Sick() && !Slimed() && (HBlinded() & -16777216n) != 0n)
+                ? __s_slightly
+                : __s_empty
+        );
     else {
         nothing_special(obj);
         return NHM.ECMD_TIME;
@@ -2793,7 +3557,8 @@ function invoke_healing(obj) {
 
 /** C ref: artifact.c:1818 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_energy_boost(obj) {
-    let epboost = (((((cptr.ldI32o(u, $you_uenmax) + 1) | 0) - cptr.ldI32o(u, $you_uen)) | 0) / 2) | 0;
+    let epboost = (((((cptr.ldI32o(u, $you_uenmax) + 1) | 0) - cptr.ldI32o(u, $you_uen)) | 0) / 2) |
+            0;
 
     if (epboost > 120)
         epboost = 120;  /* arbitrary */
@@ -2829,7 +3594,11 @@ function invoke_charge_obj(obj) {
         cptr.stI64o(obj, $obj_age, 0n);
         return NHM.ECMD_CANCEL;
     }
-    b_effect = schar(((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 && (cptr.ldI16o(oart, $artifact_role) == Role_switch() || cptr.ldI16o(oart, $artifact_role) == NHC.NON_PM) ? 1 : 0));
+    b_effect = schar(((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 &&
+        (cptr.ldI16o(oart, $artifact_role) == Role_switch() ||
+            cptr.ldI16o(oart, $artifact_role) == NHC.NON_PM)
+            ? 1
+            : 0));
     recharge(otmp, b_effect ? 1 : ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 ? -1 : 0));
     update_inventory();
     return NHM.ECMD_TIME;
@@ -2854,7 +3623,17 @@ function invoke_create_portal(obj) {
         if (i == tutorial_dnum())
             continue;
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.add(svd, i, $sizeof_dungeon), NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.add(svd, i, $sizeof_dungeon),
+            NHM.MENU_ITEMFLAGS_NONE
+        );
         num_ok_dungeons++;
         last_ok_dungeon = i;
     }
@@ -2884,11 +3663,31 @@ function invoke_create_portal(obj) {
      */
     cptr.stI16(newlev, i16(i));
     if (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start) >= depth(cptr.add(u, $you_uz)))
-        cptr.stI16o(newlev, $d_level_dlevel, cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_entry_lev));
+        cptr.stI16o(
+            newlev,
+            $d_level_dlevel,
+            cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_entry_lev)
+        );
     else
-        cptr.stI16o(newlev, $d_level_dlevel, cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached));
+        cptr.stI16o(
+            newlev,
+            $d_level_dlevel,
+            cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached)
+        );
 
-    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 || (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (cptr.ldI16((newlev)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || cptr.ldI16(newlev) == cptr.ldI16o(u, $you_uz) || !next_to_u()) {
+    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ||
+            (cptr.ldI16((cptr.add(u, $you_uz))) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))) ||
+            (cptr.ldI16((newlev)) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))) ||
+            cptr.ldI16(newlev) == cptr.ldI16o(u, $you_uz) ||
+            !next_to_u()) {
         You_feel(__s_very_disoriented_for_a_moment);
     } else {
         if (!Blind())
@@ -2937,15 +3736,29 @@ function invoke_banish(obj) {
 
     find_hell(dest);
 
-    for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = mtmp2) {
+    for (
+        mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+        mtmp;
+        mtmp = mtmp2
+    ) {
         let chance = 1;
 
         mtmp2 = cptr.ldPtr(mtmp);
-        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || !isok(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
+        if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) ||
+                !isok(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
             continue;
-        if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) != 0n) && cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_IMP)
+        if (!((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 256n) != 0n) &&
+                cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mlet) != NHC.S_IMP)
             continue;
-        if (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0))
+        if (!((cptr.ld1uo(
+            cptr.ldPtro(
+                cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                cptr.ldI16o(mtmp, $monst_my),
+                8
+            ),
+            cptr.ldI16o(mtmp, $monst_mx)
+        ) &
+                NHM.COULD_SEE) != 0))
             continue;
         if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_NEMESIS)
             continue;
@@ -2957,7 +3770,11 @@ function invoke_banish(obj) {
         if (is_dlord(cptr.ldPtro(mtmp, $monst_data)))
             chance++;
 
-        cptr.stI32o(mtmp, $monst_msleeping, cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0))));
+        cptr.stI32o(
+            mtmp,
+            $monst_msleeping,
+            cptr.st1o(mtmp, $monst_mtame, schar(cptr.stI32o(mtmp, $monst_mpeaceful, 0)))
+        );
         if (chance <= 1 || !rn2(chance)) {
             if (!In_hell(cptr.add(u, $you_uz))) {
                 nvanished++;
@@ -2977,7 +3794,12 @@ function invoke_banish(obj) {
 
         if (nvanished == 1)
             cptr.st1((cptr.add(eos(cptr.decay(subject)), -(1))), 0);  /* remove 's' */
-        pline(__s_s_s_s_in_a_cloud_of_brimstone, nstayed ? ((nvanished > nstayed) ? __s_most_of_the : __s_some_of_the) : __s_the__2, cptr.decay(subject), vtense(cptr.decay(subject), __s_disappear));
+        pline(
+            __s_s_s_s_in_a_cloud_of_brimstone,
+            nstayed ? ((nvanished > nstayed) ? __s_most_of_the : __s_some_of_the) : __s_the__2,
+            cptr.decay(subject),
+            vtense(cptr.decay(subject), __s_disappear)
+        );
     }
     return NHM.ECMD_TIME;
 }
@@ -3002,7 +3824,9 @@ function invoke_fling_poison(obj) {
 /** C ref: artifact.c:2040 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function invoke_storm_spell(obj) {
     let oart = get_artifact(obj);
-    let storm = cptr.ld1uo(oart, $artifact_inv_prop) == NHC.SNOWSTORM ? NHC.SPE_CONE_OF_COLD : NHC.SPE_FIREBALL;
+    let storm = cptr.ld1uo(oart, $artifact_inv_prop) == NHC.SNOWSTORM
+            ? NHC.SPE_CONE_OF_COLD
+            : NHC.SPE_FIREBALL;
     let skill = spell_skilltype(storm);
     let expertise = (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills));
 
@@ -3022,16 +3846,42 @@ function invoke_blinding_ray(obj) {
                radius 0 for Sunsword, except on Rogue level where
                whole room gets lit and corridor spots remain unlit */
             litroom(1, obj);
-            pline(__s_pct_s, ((!Blind() && (cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1) | 0 && !(cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_waslit) & 1)) ? __s_it_is_lit_here_now : cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)));
+            pline(
+                __s_pct_s,
+                ((!Blind() &&
+                    (cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_lit
+                    ) & 1) | 0 &&
+                    !(cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_waslit
+                    ) & 1))
+                    ? __s_it_is_lit_here_now
+                    : cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen))
+            );
         } else {
             let vulnerable = schar((cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN));
-            let damg = (cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 15 : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 10 : 5);
+            let damg = (cptr.ldI32o(obj, $obj_blessed) & 1) | 0
+                    ? 15
+                    : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 10 : 5);
 
             if (vulnerable)
                 void lightdamage(obj, 1, Math.imul(2, damg));
 
             if (!flashburn(BigInt(((damg + rnd(damg)) | 0)), 0) && !vulnerable)
-                pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
+                pline(
+                    __s_pct_s,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)
+                );
         }
     } else {
         /* no direction picked */
@@ -3048,7 +3898,8 @@ function invoke_blinding_ray(obj) {
 function arti_invoke_cost_pw(obj) {
     let oart = get_artifact(obj);
 
-    if (cptr.ld1uo(oart, $artifact_inv_prop) == NHC.FLING_POISON || cptr.ld1uo(oart, $artifact_inv_prop) == NHC.BLINDING_RAY) {
+    if (cptr.ld1uo(oart, $artifact_inv_prop) == NHC.FLING_POISON ||
+            cptr.ld1uo(oart, $artifact_inv_prop) == NHC.BLINDING_RAY) {
         /* pretend it's a level 5 spell */
         return 25;
     }
@@ -3075,7 +3926,11 @@ function arti_invoke_cost(obj) {
             cptr.st1(disp, 1);
         }
     } else {
-        cptr.stI64o(obj, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz(100))));
+        cptr.stI64o(
+            obj,
+            $obj_age,
+            BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz(100)))
+        );
     }
     return 1;
 }
@@ -3091,7 +3946,8 @@ function arti_invoke(obj) {
         return NHM.ECMD_OK;
     }
     oart = get_artifact(obj.v);
-    if (cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) || !cptr.ld1uo(oart, $artifact_inv_prop)) {
+    if (cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) ||
+            !cptr.ld1uo(oart, $artifact_inv_prop)) {
         if (cptr.ldI16o(obj.v, $obj_otyp) == NHC.CRYSTAL_BALL)
             use_crystal_ball(obj);
         else
@@ -3154,13 +4010,32 @@ function arti_invoke(obj) {
         }
         return res;
     } else {
-        let eprop = (cptr.stI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops, cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) ^ 8192n));
-        let iprop = cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops + $prop_intrinsic);
+        let eprop = (cptr.stI64o2(
+            u,
+            cptr.ld1uo(oart, $artifact_inv_prop),
+            $sizeof_prop,
+            $you_uprops,
+            cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) ^ 8192n
+        ));
+        let iprop = cptr.ldI64o2(
+            u,
+            cptr.ld1uo(oart, $artifact_inv_prop),
+            $sizeof_prop,
+            $you_uprops + $prop_intrinsic
+        );
         let on = schar(((eprop & 8192n) != 0n));  /* true if prop just set */
 
-        if (on && cptr.ldI64o(obj.v, $obj_age) > cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
+        if (on &&
+                cptr.ldI64o(obj.v, $obj_age) > cptr.ldI64o(svm, $instance_globals_saved_m_moves)) {
             /* the artifact is tired :-) */
-            cptr.stI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops, cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) ^ 8192n);
+            cptr.stI64o2(
+                u,
+                cptr.ld1uo(oart, $artifact_inv_prop),
+                $sizeof_prop,
+                $you_uprops,
+                cptr.ldI64o2(u, cptr.ld1uo(oart, $artifact_inv_prop), $sizeof_prop, $you_uprops) ^
+                    8192n
+            );
             You_feel(__s_that_s_s_ignoring_you, the(xname(obj.v)), otense(obj.v, __s_are));
             /* can't just keep repeatedly trying */
             cptr.stI64o(obj.v, $obj_age, cptr.ldI64o(obj.v, $obj_age) + BigInt(d(3, 10)));
@@ -3168,7 +4043,14 @@ function arti_invoke(obj) {
         } else if (!on) {
             /* when turning off property, determine downtime */
             /* arbitrary for now until we can tune this -dlc */
-            cptr.stI64o(obj.v, $obj_age, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz(100))));
+            cptr.stI64o(
+                obj.v,
+                $obj_age,
+                BigInt.asIntN(
+                    64,
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnz(100))
+                )
+            );
         }
 
         if ((eprop & -8193n) || iprop) {
@@ -3197,7 +4079,10 @@ function arti_invoke(obj) {
             }
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             if (on)
-                Your(__s_body_takes_on_a_s_transparency, Hallucination() ? __s_normal : __s_strange);
+                Your(
+                    __s_body_takes_on_a_s_transparency,
+                    Hallucination() ? __s_normal : __s_strange
+                );
             else
                 Your(__s_body_seems_to_unfade);
             break;
@@ -3216,7 +4101,13 @@ export function finesse_ahriman(obj) {
 
     /* if we aren't levitating or this isn't an artifact which confers
        levitation via #invoke then freeinv() won't toggle levitation */
-    if (!Levitation() || cptr.eq((oart = get_artifact(obj)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) || cptr.ld1uo(oart, $artifact_inv_prop) != NHC.LEVITATION || !(ELevitation() & 8192n))
+    if (!Levitation() ||
+            cptr.eq(
+                (oart = get_artifact(obj)),
+                cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)
+            ) ||
+            cptr.ld1uo(oart, $artifact_inv_prop) != NHC.LEVITATION ||
+            !(ELevitation() & 8192n))
         return 0;
 
     /* arti_invoke(off) -> float_down() clears I_SPECIAL|TIMEOUT & W_ARTI;
@@ -3225,8 +4116,20 @@ export function finesse_ahriman(obj) {
        both conferring levitation--safe, since if there were two of them,
        invoking the 2nd would negate the 1st rather than stack with it) */
     cptr.memcpy(save_Lev, cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), 24);
-    cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-553648128n));
-    cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops, cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops) & (-8193n));
+    cptr.stI64o2(
+        u,
+        NHC.LEVITATION,
+        $sizeof_prop,
+        $you_uprops + $prop_intrinsic,
+        cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic) & (-553648128n)
+    );
+    cptr.stI64o2(
+        u,
+        NHC.LEVITATION,
+        $sizeof_prop,
+        $you_uprops,
+        cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops) & (-8193n)
+    );
     result = schar((!Levitation()));
     cptr.memcpy(cptr.add(cptr.add(u, $you_uprops), NHC.LEVITATION, $sizeof_prop), save_Lev, 24);
     return result;
@@ -3237,10 +4140,19 @@ export function finesse_ahriman(obj) {
 export function artifact_light(obj) {
     /* not artifacts but treat them as if they were because they emit
        light without burning */
-    if (obj && (cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALE_MAIL || cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALES) && (cptr.ldI64o(obj, $obj_owornmask) & 1n) != 0n)
+    if (obj &&
+            (cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALE_MAIL ||
+                cptr.ldI16o(obj, $obj_otyp) == NHC.GOLD_DRAGON_SCALES) &&
+            (cptr.ldI64o(obj, $obj_owornmask) & 1n) != 0n)
         return 1;
 
-    return schar(((!cptr.eq(get_artifact(obj), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) && is_art(obj, NHC.ART_SUNSWORD) ? 1 : 0));
+    return schar(((!cptr.eq(
+        get_artifact(obj),
+        cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)
+    )) &&
+        is_art(obj, NHC.ART_SUNSWORD)
+            ? 1
+            : 0));
 }
 
 /* KMH -- Talking artifacts are finally implemented */
@@ -3251,7 +4163,8 @@ export function arti_speak(obj) {
     let buf = new Uint8Array(256);
 
     /* Is this a speaking artifact? */
-    if (cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) || !(cptr.ldU64o(oart, $artifact_spfx) & 8n))
+    if (cptr.eq(oart, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)) ||
+            !(cptr.ldU64o(oart, $artifact_spfx) & 8n))
         return NHM.ECMD_OK;  /* nothing happened */
 
     line = getrumor(bcsign(obj), cptr.decay(buf), 1);
@@ -3263,27 +4176,73 @@ export function arti_speak(obj) {
     return NHM.ECMD_TIME;
 }
 
-/** C ref: artifact.c:2299 — @param {CPtr<struct obj>} otmp @param {CUInt} inv_prop @returns {CInt} */
+/**
+ * C ref: artifact.c:2299
+ * @param {CPtr<struct obj>} otmp
+ * @param {CUInt} inv_prop
+ * @returns {CInt}
+ */
 export function artifact_has_invprop(otmp, inv_prop) {
     let arti = get_artifact(otmp);
 
-    return schar(((!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) && (cptr.ld1uo(arti, $artifact_inv_prop) == inv_prop) ? 1 : 0));
+    return schar(((!cptr.eq(arti, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) &&
+        (cptr.ld1uo(arti, $artifact_inv_prop) == inv_prop)
+            ? 1
+            : 0));
 }
 
 /* Return the price sold to the hero of a given artifact or unique item */
 /** C ref: artifact.c:2309 — @param {CPtr<struct obj>} otmp @returns {CLongLong} */
 export function arti_cost(otmp) {
     if (!cptr.ld1so(otmp, $obj_oartifact))
-        return BigInt(cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_cost));
-    else if (cptr.ldI64o2(artilist, cptr.ld1so(otmp, $obj_oartifact), $sizeof_artifact, $artifact_cost))
-        return cptr.ldI64o2(artilist, cptr.ld1so(otmp, $obj_oartifact), $sizeof_artifact, $artifact_cost);
+        return BigInt(cptr.ldI16o2(
+            objects,
+            cptr.ldI16o(otmp, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_cost
+        ));
+    else if (cptr.ldI64o2(
+        artilist,
+        cptr.ld1so(otmp, $obj_oartifact),
+        $sizeof_artifact,
+        $artifact_cost
+    ))
+        return cptr.ldI64o2(
+            artilist,
+            cptr.ld1so(otmp, $obj_oartifact),
+            $sizeof_artifact,
+            $artifact_cost
+        );
     else
-        return (BigInt.asIntN(64, 100n * BigInt(cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_cost))));
+        return (BigInt.asIntN(
+            64,
+            100n *
+                BigInt(cptr.ldI16o2(
+                    objects,
+                    cptr.ldI16o(otmp, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_cost
+                ))
+        ));
 }
 
 /** C ref: artifact.c:2320 — @param {CPtr<long>} abil @returns {*} */
 function abil_to_adtyp(abil) {
-    let abil2adtyp = cptr.alloc(7 * $sizeof_abil2adtyp_tag); cptr.stPtro(abil2adtyp, 0, cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 0 + $abil2adtyp_tag_adtyp, NHM.AD_FIRE); cptr.stPtro(abil2adtyp, 16, cptr.add(cptr.add(u, $you_uprops), NHC.COLD_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 16 + $abil2adtyp_tag_adtyp, NHM.AD_COLD); cptr.stPtro(abil2adtyp, 32, cptr.add(cptr.add(u, $you_uprops), NHC.SHOCK_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 32 + $abil2adtyp_tag_adtyp, NHM.AD_ELEC); cptr.stPtro(abil2adtyp, 48, cptr.add(cptr.add(u, $you_uprops), NHC.ANTIMAGIC, $sizeof_prop)); cptr.st1o(abil2adtyp, 48 + $abil2adtyp_tag_adtyp, NHM.AD_MAGM); cptr.stPtro(abil2adtyp, 64, cptr.add(cptr.add(u, $you_uprops), NHC.DISINT_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 64 + $abil2adtyp_tag_adtyp, NHM.AD_DISN); cptr.stPtro(abil2adtyp, 80, cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 80 + $abil2adtyp_tag_adtyp, NHM.AD_DRST); cptr.stPtro(abil2adtyp, 96, cptr.add(cptr.add(u, $you_uprops), NHC.DRAIN_RES, $sizeof_prop)); cptr.st1o(abil2adtyp, 96 + $abil2adtyp_tag_adtyp, NHM.AD_DRLI);
+    let abil2adtyp = cptr.alloc(7 * $sizeof_abil2adtyp_tag);
+    cptr.stPtro(abil2adtyp, 0, cptr.add(cptr.add(u, $you_uprops), NHC.FIRE_RES, $sizeof_prop));
+    cptr.st1o(abil2adtyp, 0 + $abil2adtyp_tag_adtyp, NHM.AD_FIRE);
+    cptr.stPtro(abil2adtyp, 16, cptr.add(cptr.add(u, $you_uprops), NHC.COLD_RES, $sizeof_prop));
+    cptr.st1o(abil2adtyp, 16 + $abil2adtyp_tag_adtyp, NHM.AD_COLD);
+    cptr.stPtro(abil2adtyp, 32, cptr.add(cptr.add(u, $you_uprops), NHC.SHOCK_RES, $sizeof_prop));
+    cptr.st1o(abil2adtyp, 32 + $abil2adtyp_tag_adtyp, NHM.AD_ELEC);
+    cptr.stPtro(abil2adtyp, 48, cptr.add(cptr.add(u, $you_uprops), NHC.ANTIMAGIC, $sizeof_prop));
+    cptr.st1o(abil2adtyp, 48 + $abil2adtyp_tag_adtyp, NHM.AD_MAGM);
+    cptr.stPtro(abil2adtyp, 64, cptr.add(cptr.add(u, $you_uprops), NHC.DISINT_RES, $sizeof_prop));
+    cptr.st1o(abil2adtyp, 64 + $abil2adtyp_tag_adtyp, NHM.AD_DISN);
+    cptr.stPtro(abil2adtyp, 80, cptr.add(cptr.add(u, $you_uprops), NHC.POISON_RES, $sizeof_prop));
+    cptr.st1o(abil2adtyp, 80 + $abil2adtyp_tag_adtyp, NHM.AD_DRST);
+    cptr.stPtro(abil2adtyp, 96, cptr.add(cptr.add(u, $you_uprops), NHC.DRAIN_RES, $sizeof_prop));
+    cptr.st1o(abil2adtyp, 96 + $abil2adtyp_tag_adtyp, NHM.AD_DRLI);
     let k;
 
     for (k = 0; k < 7; k++) {
@@ -3294,29 +4253,77 @@ function abil_to_adtyp(abil) {
 }
 
 const __static_abil_to_spfx_abil2spfx = cptr.alloc(12 * $sizeof_abil2spfx_tag);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 0, cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    0,
+    cptr.add(cptr.add(u, $you_uprops), NHC.SEARCHING, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 0 + $abil2spfx_tag_spfx, 512n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 16, cptr.add(cptr.add(u, $you_uprops), NHC.HALLUC_RES, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    16,
+    cptr.add(cptr.add(u, $you_uprops), NHC.HALLUC_RES, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 16 + $abil2spfx_tag_spfx, 2048n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 32, cptr.add(cptr.add(u, $you_uprops), NHC.TELEPAT, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    32,
+    cptr.add(cptr.add(u, $you_uprops), NHC.TELEPAT, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 32 + $abil2spfx_tag_spfx, 4096n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 48, cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    48,
+    cptr.add(cptr.add(u, $you_uprops), NHC.STEALTH, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 48 + $abil2spfx_tag_spfx, 8192n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 64, cptr.add(cptr.add(u, $you_uprops), NHC.REGENERATION, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    64,
+    cptr.add(cptr.add(u, $you_uprops), NHC.REGENERATION, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 64 + $abil2spfx_tag_spfx, 16384n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 80, cptr.add(cptr.add(u, $you_uprops), NHC.TELEPORT_CONTROL, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    80,
+    cptr.add(cptr.add(u, $you_uprops), NHC.TELEPORT_CONTROL, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 80 + $abil2spfx_tag_spfx, 262144n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 96, cptr.add(cptr.add(u, $you_uprops), NHC.WARN_OF_MON, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    96,
+    cptr.add(cptr.add(u, $you_uprops), NHC.WARN_OF_MON, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 96 + $abil2spfx_tag_spfx, 32n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 112, cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    112,
+    cptr.add(cptr.add(u, $you_uprops), NHC.WARNING, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 112 + $abil2spfx_tag_spfx, 32n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 128, cptr.add(cptr.add(u, $you_uprops), NHC.ENERGY_REGENERATION, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    128,
+    cptr.add(cptr.add(u, $you_uprops), NHC.ENERGY_REGENERATION, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 128 + $abil2spfx_tag_spfx, 32768n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 144, cptr.add(cptr.add(u, $you_uprops), NHC.HALF_SPDAM, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    144,
+    cptr.add(cptr.add(u, $you_uprops), NHC.HALF_SPDAM, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 144 + $abil2spfx_tag_spfx, 65536n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 160, cptr.add(cptr.add(u, $you_uprops), NHC.HALF_PHDAM, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    160,
+    cptr.add(cptr.add(u, $you_uprops), NHC.HALF_PHDAM, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 160 + $abil2spfx_tag_spfx, 131072n);
-cptr.stPtro(__static_abil_to_spfx_abil2spfx, 176, cptr.add(cptr.add(u, $you_uprops), NHC.REFLECTING, $sizeof_prop));
+cptr.stPtro(
+    __static_abil_to_spfx_abil2spfx,
+    176,
+    cptr.add(cptr.add(u, $you_uprops), NHC.REFLECTING, $sizeof_prop)
+);
 cptr.stU64o(__static_abil_to_spfx_abil2spfx, 176 + $abil2spfx_tag_spfx, 67108864n); /** C ref: artifact.c:2349 — struct abil2spfx_tag[12] (function-static) */
 
 /** C ref: artifact.c:2344 — @param {CPtr<long>} abil @returns {CLongLong} */
@@ -3325,7 +4332,12 @@ function abil_to_spfx(abil) {
 
     for (k = 0; k < 12; k++) {
         if (cptr.eq(cptr.ldPtro(__static_abil_to_spfx_abil2spfx, k, $sizeof_abil2spfx_tag), abil))
-            return cptr.ldU64o2(__static_abil_to_spfx_abil2spfx, k, $sizeof_abil2spfx_tag, $abil2spfx_tag_spfx);
+            return cptr.ldU64o2(
+                __static_abil_to_spfx_abil2spfx,
+                k,
+                $sizeof_abil2spfx_tag,
+                $abil2spfx_tag_spfx
+            );
     }
     return 0n;
 }
@@ -3348,12 +4360,19 @@ export function what_gives(abil) {
     wornbits = (wornmask & cptr.ldI64(abil));
 
     for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = cptr.ldPtr(obj)) {
-        if (cptr.ld1so(obj, $obj_oartifact) && (!cptr.eq(abil, cptr.add(cptr.add(u, $you_uprops), NHC.WARN_OF_MON, $sizeof_prop)) || cptr.ldU64o(svc, $context_info_warntype))) {
+        if (cptr.ld1so(obj, $obj_oartifact) &&
+                (!cptr.eq(
+                    abil,
+                    cptr.add(cptr.add(u, $you_uprops), NHC.WARN_OF_MON, $sizeof_prop)
+                ) ||
+                    cptr.ldU64o(svc, $context_info_warntype))) {
             let art = get_artifact(obj);
 
             if (!cptr.eq(art, cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) {
                 if (dtyp) {
-                    if (cptr.ld1uo(art, $artifact_cary + $attack_adtyp) == dtyp || (cptr.ld1uo(art, $artifact_defn + $attack_adtyp) == dtyp && (cptr.ldI64o(obj, $obj_owornmask) & -12289n)))
+                    if (cptr.ld1uo(art, $artifact_cary + $attack_adtyp) == dtyp ||
+                            (cptr.ld1uo(art, $artifact_defn + $attack_adtyp) == dtyp &&
+                                (cptr.ldI64o(obj, $obj_owornmask) & -12289n)))
                         return obj;
                 }
                 if (spfx) {
@@ -3361,10 +4380,16 @@ export function what_gives(abil) {
                     if ((cptr.ldU64o(art, $artifact_cspfx) & spfx) == spfx)
                         return obj;
                     /* property conferred when wielded or worn */
-                    if ((cptr.ldU64o(art, $artifact_spfx) & spfx) == spfx && cptr.ldI64o(obj, $obj_owornmask))
+                    if ((cptr.ldU64o(art, $artifact_spfx) & spfx) == spfx &&
+                            cptr.ldI64o(obj, $obj_owornmask))
                         return obj;
                 }
-                if (cptr.eq(obj, uwep.v) && cptr.eq(abil, cptr.add(cptr.add(u, $you_uprops), NHC.BLND_RES, $sizeof_prop)) && (cptr.ldI64(abil) & 256n) != 0n) {
+                if (cptr.eq(obj, uwep.v) &&
+                        cptr.eq(
+                            abil,
+                            cptr.add(cptr.add(u, $you_uprops), NHC.BLND_RES, $sizeof_prop)
+                        ) &&
+                        (cptr.ldI64(abil) & 256n) != 0n) {
                     return obj;  /* Sunsword */
                 }
             }
@@ -3406,7 +4431,10 @@ const __static_glow_verb_resbuf = new Uint8Array(20); /** C ref: artifact.c:2454
 /** C ref: artifact.c:2451 — @param {CInt} count @param {CInt} ingsfx @returns {CPtr<char>} */
 export function glow_verb(count, ingsfx) {
 
-    void cptr.strcpy(cptr.decay(__static_glow_verb_resbuf), cptr.ldPtro(glow_verbs, glow_strength(count), 8));
+    void cptr.strcpy(
+        cptr.decay(__static_glow_verb_resbuf),
+        cptr.ldPtro(glow_verbs, glow_strength(count), 8)
+    );
     /* ing_suffix() will double the last consonant for all the words
        we're using and none of them should have that, so bypass it */
     if (ingsfx)
@@ -3417,14 +4445,20 @@ export function glow_verb(count, ingsfx) {
 /* use for warning "glow" for Sting, Orcrist, and Grimtooth */
 /** C ref: artifact.c:2466 — @param {CInt} orc_count */
 export function Sting_effects(orc_count) {
-    if (is_art(uwep.v, NHC.ART_STING) || is_art(uwep.v, NHC.ART_ORCRIST) || is_art(uwep.v, NHC.ART_GRIMTOOTH)) {
+    if (is_art(uwep.v, NHC.ART_STING) ||
+            is_art(uwep.v, NHC.ART_ORCRIST) ||
+            is_art(uwep.v, NHC.ART_GRIMTOOTH)) {
         let oldstr = glow_strength(cptr.ldI32(gw));
         let newstr = glow_strength(orc_count);
 
         if (orc_count == -1 && cptr.ldI32(gw) > 0) {
             /* -1 means that blindness has just been toggled; give a
                'continue' message that eventual 'stop' message will match */
-            pline(__s_s_is_s, bare_artifactname(uwep.v), glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1));
+            pline(
+                __s_s_is_s,
+                bare_artifactname(uwep.v),
+                glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1)
+            );
         } else if (newstr > 0 && newstr != oldstr) {
             /* goto_level() -> docrt() -> see_monsters() -> Sting_effects();
                if "you materialize on a different level" is pending, give
@@ -3433,12 +4467,22 @@ export function Sting_effects(orc_count) {
 
             /* 'start' message */
             if (!Blind())
-                pline(__s_s_s_s_c, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(orc_count, 0)), glow_color(cptr.ld1so(uwep.v, $obj_oartifact)), (newstr > oldstr) ? 33 : 46);
+                pline(
+                    __s_s_s_s_c,
+                    bare_artifactname(uwep.v),
+                    otense(uwep.v, glow_verb(orc_count, 0)),
+                    glow_color(cptr.ld1so(uwep.v, $obj_oartifact)),
+                    (newstr > oldstr) ? 33 : 46
+                );
             else if (oldstr == 0)
                 pline(__s_s_s_slightly, bare_artifactname(uwep.v), otense(uwep.v, glow_verb(0, 0)));
         } else if (orc_count == 0 && cptr.ldI32(gw) > 0) {
             /* 'stop' message */
-            pline(__s_s_stops_s, bare_artifactname(uwep.v), glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1));
+            pline(
+                __s_s_stops_s,
+                bare_artifactname(uwep.v),
+                glow_verb(Blind() ? 0 : cptr.ldI32(gw), 1)
+            );
         }
     }
 }
@@ -3446,12 +4490,19 @@ export function Sting_effects(orc_count) {
 /* called when hero is wielding/applying/invoking a carried item, or
    after undergoing a transformation (alignment change, lycanthropy,
    polymorph) which might affect item access */
-/** C ref: artifact.c:2508 — @param {CPtr<struct obj *>} objp @param {CInt} loseit @returns {CInt} */
+/**
+ * C ref: artifact.c:2508
+ * @param {CPtr<struct obj *>} objp
+ * @param {CInt} loseit
+ * @returns {CInt}
+ */
 export function retouch_object(objp, loseit) {
     let obj = cptr.ldPtr(objp);
 
     /* allow hero in silver-hating form to try to perform invocation ritual */
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING && invocation_pos(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.BELL_OF_OPENING &&
+            invocation_pos(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
+            !On_stairs(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
         return 1;
     }
 
@@ -3459,7 +4510,17 @@ export function retouch_object(objp, loseit) {
         let buf = new Uint8Array(256);
         let dmg = 0;
         let tmp;
-        let ag = schar((((cptr.ldI32o2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.SILVER && (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? 1 : 0));
+        let ag = schar((((cptr.ldI32o2(
+            objects,
+            cptr.ldI16o(obj, $obj_otyp),
+            $sizeof_objclass,
+            $objclass_oc_material
+        ) & 31) | 0) ==
+            NHC.SILVER &&
+            (cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
+                hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+                ? 1
+                : 0));
         let bane = bane_applies(get_artifact(obj), cptr.add(gy, $instance_globals_y_youmonst));
 
         /* nothing else to do if hero can successfully handle this object */
@@ -3468,7 +4529,11 @@ export function retouch_object(objp, loseit) {
 
         /* hero can't handle this object, but didn't get touch_artifact()'s
            "<obj> evades your grasp|control" message; give an alternate one */
-        You_cant(__s_handle_s_s, yname(obj), cptr.ldI64o(obj, $obj_owornmask) ? __s_anymore : __s_empty);
+        You_cant(
+            __s_handle_s_s,
+            yname(obj),
+            cptr.ldI64o(obj, $obj_owornmask) ? __s_anymore : __s_empty
+        );
         /* also inflict damage unless touch_artifact() already did so */
         if (!touch_blasted) {
             let what = killer_xname(obj);
@@ -3487,7 +4552,10 @@ export function retouch_object(objp, loseit) {
             /* damage is somewhat arbitrary; half the usual 1d20 physical
                for silver, 1d10 magical for <foo>bane, potentially both */
             if (ag)
-                tmp = rnd(10), dmg = (dmg + ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) | 0;
+                tmp = rnd(10),
+                        dmg = (dmg +
+                            ((Half_physical_damage()) ? (((((tmp) + 1) | 0) / 2) | 0) : (tmp))) |
+                            0;
             if (bane)
                 dmg = (dmg + rnd(10)) | 0;
             void cptr.sprintf(cptr.decay(buf), __s_handling_s, what);
@@ -3518,8 +4586,20 @@ export function retouch_object(objp, loseit) {
         } else {
             /* dropx gives a message if a dropped item lands on an altar;
                we provide one for other terrain */
-            if (!((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR))
-                pline(__s_s_to_the_s, Tobjnam(obj, __s_fall), surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+            if (!((cptr.ld1so3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )) ==
+                    NHC.ALTAR))
+                pline(
+                    __s_s_to_the_s,
+                    Tobjnam(obj, __s_fall),
+                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                );
             dropx(obj);
         }
         cptr.stPtr(objp, obj = null);  /* no longer in inventory */
@@ -3531,20 +4611,47 @@ export function retouch_object(objp, loseit) {
    or an artifact which conveys something via being carried or which
    has an #invoke effect currently in operation undergoes a touch test;
    if it fails, it will be unworn/unwielded and maybe dropped */
-/** C ref: artifact.c:2598 — @param {CPtr<struct obj>} obj @param {CInt} drop_untouchable @returns {CInt} */
+/**
+ * C ref: artifact.c:2598
+ * @param {CPtr<struct obj>} obj
+ * @param {CInt} drop_untouchable
+ * @returns {CInt}
+ */
 function untouchable(obj, drop_untouchable) {
     obj = cptr.box(obj);
     let art;
     let beingworn;
     let carryeffect;
     let invoked;
-    let wearmask = BigInt.asIntN(64, ~(512n | (cptr.ld1so(u, $you_twoweap) ? 0n : 1024n) | 2097152n));
+    let wearmask = BigInt.asIntN(
+        64,
+        ~(512n | (cptr.ld1so(u, $you_twoweap) ? 0n : 1024n) | 2097152n)
+    );
 
-    beingworn = schar((obj.v && ((cptr.ldI64o(obj.v, $obj_owornmask) & wearmask) != 0n || (cptr.ld1so(obj.v, $obj_oclass) == NHC.TOOL_CLASS && ((cptr.ldI32o(obj.v, $obj_lamplit) & 1) | 0 || (cptr.ldI16o(obj.v, $obj_otyp) == NHC.LEASH && cptr.ldI32o(obj.v, $obj_corpsenm)) || (Is_container(obj.v) && (cptr.ldPtro((obj.v), $obj_cobj) !== null))))) ? 1 : 0));
+    beingworn = schar((obj.v &&
+        ((cptr.ldI64o(obj.v, $obj_owornmask) & wearmask) != 0n ||
+            (cptr.ld1so(obj.v, $obj_oclass) == NHC.TOOL_CLASS &&
+                ((cptr.ldI32o(obj.v, $obj_lamplit) & 1) | 0 ||
+                    (cptr.ldI16o(obj.v, $obj_otyp) == NHC.LEASH &&
+                        cptr.ldI32o(obj.v, $obj_corpsenm)) ||
+                    (Is_container(obj.v) && (cptr.ldPtro((obj.v), $obj_cobj) !== null)))))
+            ? 1
+            : 0));
 
-    if (!cptr.eq((art = get_artifact(obj.v)), cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact))) {
-        carryeffect = schar((cptr.ld1uo(art, $artifact_cary + $attack_adtyp) || cptr.ldU64o(art, $artifact_cspfx) ? 1 : 0));
-        invoked = schar((cptr.ld1uo(art, $artifact_inv_prop) > 0 && cptr.ld1uo(art, $artifact_inv_prop) <= NHC.LAST_PROP && (cptr.ldI64o2(u, cptr.ld1uo(art, $artifact_inv_prop), $sizeof_prop, $you_uprops) & 8192n) != 0n ? 1 : 0));
+    if (!cptr.eq(
+        (art = get_artifact(obj.v)),
+        cptr.add(artilist, NHC.ART_NONARTIFACT, $sizeof_artifact)
+    )) {
+        carryeffect = schar((cptr.ld1uo(art, $artifact_cary + $attack_adtyp) ||
+            cptr.ldU64o(art, $artifact_cspfx)
+                ? 1
+                : 0));
+        invoked = schar((cptr.ld1uo(art, $artifact_inv_prop) > 0 &&
+            cptr.ld1uo(art, $artifact_inv_prop) <= NHC.LAST_PROP &&
+            (cptr.ldI64o2(u, cptr.ld1uo(art, $artifact_inv_prop), $sizeof_prop, $you_uprops) &
+                8192n) != 0n
+                ? 1
+                : 0));
     } else {
         carryeffect = (invoked = 0);
     }
@@ -3601,7 +4708,8 @@ export function retouch_equipment(dropflag) {
     }
 
     /* in case someone is daft enough to add artifact or silver saddle */
-    if (cptr.ldPtro(u, $you_usteed) && (obj = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) !== null) {
+    if (cptr.ldPtro(u, $you_usteed) &&
+            (obj = which_armor(cptr.ldPtro(u, $you_usteed), 1048576n)) !== null) {
         /* untouchable() calls retouch_object() which expects an object in
            hero's inventory, but remove_worn_item() will be harmless for
            saddle and we're suppressing drop, so this works as intended */
@@ -3624,7 +4732,9 @@ export function retouch_equipment(dropflag) {
     while ((obj = nxt_unbypassed_obj(cptr.ldPtro(gi, $instance_globals_i_invent))) !== null)
         void untouchable(obj, dropit);
 
-    if (had_rings != ((!!uleft.v + !!uright.v) | 0) && uarmg.v && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
+    if (had_rings != ((!!uleft.v + !!uright.v) | 0) &&
+            uarmg.v &&
+            (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
         uncurse(uarmg.v);  /* temporary? hack for ring removal plausibility */
     if (had_gloves && !uarmg.v)
         selftouch(__s_after_losing_your_gloves_you);
@@ -3658,12 +4768,28 @@ function count_surround_traps(x, y) {
                 ++ret;
                 continue;
             }
-            levp = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dx, $sizeof_rm_x21), dy, $sizeof_rm);
-            if (((cptr.ld1so(levp, $rm_typ)) == NHC.DOOR) && (((cptr.ldI32o(levp, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0) {
+            levp = cptr.add(
+                cptr.add(cptr.add(svl, $instance_globals_saved_l_level), dx, $sizeof_rm_x21),
+                dy,
+                $sizeof_rm
+            );
+            if (((cptr.ld1so(levp, $rm_typ)) == NHC.DOOR) &&
+                    (((cptr.ldI32o(levp, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) != 0) {
                 ++ret;
                 continue;
             }
-            for (o = cptr.ldPtro3(svl, dx, 168, dy, 8, $instance_globals_saved_l_level + $dlevel_t_objects); o; o = cptr.ldPtro(o, $obj_v))
+            for (
+                o = cptr.ldPtro3(
+                    svl,
+                    dx,
+                    168,
+                    dy,
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_objects
+                );
+                o;
+                o = cptr.ldPtro(o, $obj_v)
+            )
                 if (Is_container(o) && (cptr.ldI32o(o, $obj_otrapped) & 1) | 0) {
                     ++ret;  /* we're counting locations, so just */
                     break;  /* count the first one in a pile     */
@@ -3697,7 +4823,11 @@ export function mkot_trap_warn() {
 
         if (ntraps != cptr.ldI32(gm)) {
             idx = ((ntraps) < ((7 - 1) | 0) ? (ntraps) : ((7 - 1) | 0));
-            pline_The(__s_key_feels_s_c, cptr.ldPtro(__static_mkot_trap_warn_heat, idx, 8), (ntraps > 3) ? 33 : 46);
+            pline_The(
+                __s_key_feels_s_c,
+                cptr.ldPtro(__static_mkot_trap_warn_heat, idx, 8),
+                (ntraps > 3) ? 33 : 46
+            );
         }
         cptr.stI32(gm, ntraps);
     } else
@@ -3706,10 +4836,23 @@ export function mkot_trap_warn() {
 
 /* Master Key is magic key if its bless/curse state meets our criteria:
    not cursed for rogues or blessed for non-rogues */
-/** C ref: artifact.c:2775 — @param {CPtr<struct monst>} mon @param {CPtr<struct obj>} obj @returns {CInt} */
+/**
+ * C ref: artifact.c:2775
+ * @param {CPtr<struct monst>} mon
+ * @param {CPtr<struct obj>} obj
+ * @returns {CInt}
+ */
 export function is_magic_key(mon, obj) {
     if (is_art(obj, NHC.ART_MASTER_KEY_OF_THIEVERY)) {
-        if ((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE) : (mon && cptr.eq(cptr.ldPtro(mon, $monst_data), cptr.add(mons, NHC.PM_ROGUE, $sizeof_permonst)) ? 1 : 0))
+        if ((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)))
+                ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE)
+                : (mon &&
+                    cptr.eq(
+                        cptr.ldPtro(mon, $monst_data),
+                        cptr.add(mons, NHC.PM_ROGUE, $sizeof_permonst)
+                    )
+                    ? 1
+                    : 0))
             return schar((!(cptr.ldI32o(obj, $obj_cursed) & 1)));  /* a rogue; non-cursed suffices for magic */
         /* not a rogue; key must be blessed to behave as a magic one */
         return schar((cptr.ldI32o(obj, $obj_blessed) & 1));
@@ -3725,7 +4868,13 @@ export function has_magic_key(mon) {
 
     if (!mon)
         mon = cptr.add(gy, $instance_globals_y_youmonst);
-    for (o = ((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))) ? cptr.ldPtro(gi, $instance_globals_i_invent) : cptr.ldPtro(mon, $monst_minvent)); o; o = nxtobj(o, key, 0)) {
+    for (
+        o = ((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)))
+            ? cptr.ldPtro(gi, $instance_globals_i_invent)
+            : cptr.ldPtro(mon, $monst_minvent));
+        o;
+        o = nxtobj(o, key, 0)
+    ) {
         if (is_magic_key(mon, o))
             return o;
     }
@@ -3770,7 +4919,14 @@ export function permapoisoned(obj) {
 // 13 bindings: 1 rebound+refilled, 2 rebound, 10 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(artilist), S(artiexist), S(artidisco), S(zero_artiexist), S(touch_blasted), S(mb_verb), S(__static_artifact_hit_you), S(__static_artifact_hit_behead_msg), S(__static_abil_to_spfx_abil2spfx), S(glow_verbs), S(__static_glow_verb_resbuf), S(__static_retouch_equipment_nesting), S(__static_mkot_trap_warn_heat)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(artilist), S(artiexist), S(artidisco), S(zero_artiexist), S(touch_blasted), S(mb_verb),
+        S(__static_artifact_hit_you), S(__static_artifact_hit_behead_msg),
+        S(__static_abil_to_spfx_abil2spfx), S(glow_verbs), S(__static_glow_verb_resbuf),
+        S(__static_retouch_equipment_nesting), S(__static_mkot_trap_warn_heat)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("artifact.js: __resetState before __captureState");

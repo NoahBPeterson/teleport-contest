@@ -14,18 +14,19 @@ import * as FLD from './nhfield.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $attack_adtyp = FLD.attack_adtyp, $attack_damd = FLD.attack_damd, $attack_damn = FLD.attack_damn,
-    $permonst_ac = FLD.permonst_ac, $permonst_cnutrit = FLD.permonst_cnutrit,
-    $permonst_cwt = FLD.permonst_cwt, $permonst_difficulty = FLD.permonst_difficulty,
-    $permonst_geno = FLD.permonst_geno, $permonst_maligntyp = FLD.permonst_maligntyp,
-    $permonst_mattk = FLD.permonst_mattk, $permonst_mcolor = FLD.permonst_mcolor,
-    $permonst_mconveys = FLD.permonst_mconveys, $permonst_mflags1 = FLD.permonst_mflags1,
-    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mflags3 = FLD.permonst_mflags3,
-    $permonst_mlet = FLD.permonst_mlet, $permonst_mlevel = FLD.permonst_mlevel,
-    $permonst_mmove = FLD.permonst_mmove, $permonst_mr = FLD.permonst_mr,
-    $permonst_mresists = FLD.permonst_mresists, $permonst_msize = FLD.permonst_msize,
-    $permonst_msound = FLD.permonst_msound, $permonst_pmidx = FLD.permonst_pmidx,
-    $sizeof_attack = FLD.sizeof_attack, $sizeof_permonst = FLD.sizeof_permonst;
+const $attack_adtyp = FLD.attack_adtyp, $attack_damd = FLD.attack_damd,
+      $attack_damn = FLD.attack_damn, $permonst_ac = FLD.permonst_ac,
+      $permonst_cnutrit = FLD.permonst_cnutrit, $permonst_cwt = FLD.permonst_cwt,
+      $permonst_difficulty = FLD.permonst_difficulty, $permonst_geno = FLD.permonst_geno,
+      $permonst_maligntyp = FLD.permonst_maligntyp, $permonst_mattk = FLD.permonst_mattk,
+      $permonst_mcolor = FLD.permonst_mcolor, $permonst_mconveys = FLD.permonst_mconveys,
+      $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
+      $permonst_mflags3 = FLD.permonst_mflags3, $permonst_mlet = FLD.permonst_mlet,
+      $permonst_mlevel = FLD.permonst_mlevel, $permonst_mmove = FLD.permonst_mmove,
+      $permonst_mr = FLD.permonst_mr, $permonst_mresists = FLD.permonst_mresists,
+      $permonst_msize = FLD.permonst_msize, $permonst_msound = FLD.permonst_msound,
+      $permonst_pmidx = FLD.permonst_pmidx, $sizeof_attack = FLD.sizeof_attack,
+      $sizeof_permonst = FLD.sizeof_permonst;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_giant_ant = cptr.lit("giant ant");

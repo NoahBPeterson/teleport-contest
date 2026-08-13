@@ -20,23 +20,25 @@ import { apply_customizations, find_matching_customization } from './glyphs.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $classic_representation_symidx = FLD.classic_representation_symidx, $custom_urep_u = FLD.custom_urep_u,
-    $customization_detail_next = FLD.customization_detail_next,
-    $gbuf_entry_glyphinfo = FLD.gbuf_entry_glyphinfo, $glyph_map_entry_sym = FLD.glyph_map_entry_sym,
-    $glyph_map_entry_u = FLD.glyph_map_entry_u, $glyph_map_u = FLD.glyph_map_u,
-    $glyphinfo_gm = FLD.glyphinfo_gm,
-    $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
-    $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
-    $instance_globals_s_sym_customizations = FLD.instance_globals_s_sym_customizations,
-    $sizeof_gbuf_entry = FLD.sizeof_gbuf_entry, $sizeof_gbuf_entry_x80 = FLD.sizeof_gbuf_entry_x80,
-    $sizeof_glyph_map = FLD.sizeof_glyph_map, $sizeof_glyphinfo = FLD.sizeof_glyphinfo,
-    $sizeof_symset_customization = FLD.sizeof_symset_customization,
-    $sizeof_symset_customization_x4 = FLD.sizeof_symset_customization_x4,
-    $symset_customization_count = FLD.symset_customization_count,
-    $symset_customization_custtype = FLD.symset_customization_custtype,
-    $symset_customization_details = FLD.symset_customization_details,
-    $symset_customization_details_end = FLD.symset_customization_details_end,
-    $unicode_representation_utf8str = FLD.unicode_representation_utf8str;
+const $classic_representation_symidx = FLD.classic_representation_symidx,
+      $custom_urep_u = FLD.custom_urep_u,
+      $customization_detail_next = FLD.customization_detail_next,
+      $gbuf_entry_glyphinfo = FLD.gbuf_entry_glyphinfo,
+      $glyph_map_entry_sym = FLD.glyph_map_entry_sym, $glyph_map_entry_u = FLD.glyph_map_entry_u,
+      $glyph_map_u = FLD.glyph_map_u, $glyphinfo_gm = FLD.glyphinfo_gm,
+      $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
+      $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
+      $instance_globals_s_sym_customizations = FLD.instance_globals_s_sym_customizations,
+      $sizeof_gbuf_entry = FLD.sizeof_gbuf_entry,
+      $sizeof_gbuf_entry_x80 = FLD.sizeof_gbuf_entry_x80, $sizeof_glyph_map = FLD.sizeof_glyph_map,
+      $sizeof_glyphinfo = FLD.sizeof_glyphinfo,
+      $sizeof_symset_customization = FLD.sizeof_symset_customization,
+      $sizeof_symset_customization_x4 = FLD.sizeof_symset_customization_x4,
+      $symset_customization_count = FLD.symset_customization_count,
+      $symset_customization_custtype = FLD.symset_customization_custtype,
+      $symset_customization_details = FLD.symset_customization_details,
+      $symset_customization_details_end = FLD.symset_customization_details_end,
+      $unicode_representation_utf8str = FLD.unicode_representation_utf8str;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
@@ -51,17 +53,30 @@ export function* unicode_val(cp) {
 
     if (cp && cptr.ld1s(cp)) {
         cval = (dcount = 0);
-        if ((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117) && cptr.ld1so(cp, 1) == 43 && cptr.ld1so(cp, 2) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null) {
+        if ((cptr.ld1s(cp) == 85 || cptr.ld1s(cp) == 117) &&
+                cptr.ld1so(cp, 1) == 43 &&
+                cptr.ld1so(cp, 2) &&
+                (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1so(cp, 2))) !== null) {
             cp = cptr.add(cp, 2);  /* move past the 'U' and '+' */
             do {
-                cval = ((Math.imul(cval, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
-            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) && (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null && ++dcount < 7);
+                cval = ((Math.imul(cval, 16)) +
+                    ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) |
+                        0;
+            } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) &&
+                    (dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(cp))) !== null &&
+                    ++dcount < 7);
         }
     }
     return cval;
 }
 
-/** C ref: utf8map.c:37 — @param {CPtr<glyph_map>} gmap @param {CUInt} utf32ch @param {CPtr<uint8>} utf8str @returns {CInt} */
+/**
+ * C ref: utf8map.c:37
+ * @param {CPtr<glyph_map>} gmap
+ * @param {CUInt} utf32ch
+ * @param {CPtr<uint8>} utf8str
+ * @returns {CInt}
+ */
 export function* set_map_u(gmap, utf32ch, utf8str) {
     let tmpgm = gmap;
 
@@ -89,9 +104,19 @@ export function free_all_glyphmap_u() {
 
     for (glyph = 0; glyph < NHC.MAX_GLYPH; ++glyph) {
         if (cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u)) {
-            if (cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u), $unicode_representation_utf8str)) {
-                cptr.free(cptr.ldPtro(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u), $unicode_representation_utf8str));
-                cptr.stPtro(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u), $unicode_representation_utf8str, null);
+            if (cptr.ldPtro(
+                cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u),
+                $unicode_representation_utf8str
+            )) {
+                cptr.free(cptr.ldPtro(
+                    cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u),
+                    $unicode_representation_utf8str
+                ));
+                cptr.stPtro(
+                    cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u),
+                    $unicode_representation_utf8str,
+                    null
+                );
             }
             cptr.free(cptr.ldPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u));
             cptr.stPtro2(glyphmap, glyph, $sizeof_glyph_map, $glyph_map_entry_u, null);
@@ -100,7 +125,15 @@ export function free_all_glyphmap_u() {
     /* Prevent use after free from gg.gbuf */
     for (y = 0; y < NHM.ROWNO; ++y) {
         for (x = 0; x < NHM.COLNO; ++x) {
-            cptr.stPtro3(gg, y, $sizeof_gbuf_entry_x80, x, $sizeof_gbuf_entry, $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_u, null);
+            cptr.stPtro3(
+                gg,
+                y,
+                $sizeof_gbuf_entry_x80,
+                x,
+                $sizeof_gbuf_entry,
+                $gbuf_entry_glyphinfo + $glyphinfo_gm + $glyph_map_entry_u,
+                null
+            );
         }
     }
 }
@@ -108,7 +141,14 @@ export function free_all_glyphmap_u() {
 /* helper routine if a window port wants to embed any UTF-8 sequences
    for the glyph representation in the string in place of the \GNNNNNNNN
    reference */
-/** C ref: utf8map.c:86 — @param {CPtr<char>} buf @param {CLongLong} bufsz @param {CPtr<char>} str @param {CPtr<int>} retflags @returns {CPtr<char>} */
+/**
+ * C ref: utf8map.c:86
+ * @param {CPtr<char>} buf
+ * @param {CLongLong} bufsz
+ * @param {CPtr<char>} str
+ * @param {CPtr<int>} retflags
+ * @returns {CPtr<char>}
+ */
 export function* mixed_to_utf8(buf, bufsz, str, retflags) {
     let put = buf;
     let glyphinfo = cptr.alloc(48); cptr.memcpy(glyphinfo, nul_glyphinfo.v, $sizeof_glyphinfo);
@@ -129,16 +169,33 @@ export function* mixed_to_utf8(buf, bufsz, str, retflags) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    if (cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u) && cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u), $unicode_representation_utf8str)) {
-                        let ucp = cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u), $unicode_representation_utf8str);
+                    if (cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u) &&
+                            cptr.ldPtro(
+                                cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u),
+                                $unicode_representation_utf8str
+                            )) {
+                        let ucp = cptr.ldPtro(
+                            cptr.ldPtro(glyphinfo, $glyphinfo_gm + $glyph_map_entry_u),
+                            $unicode_representation_utf8str
+                        );
 
-                        while (cptr.ld1u(ucp) && cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
-                            cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; }))));
+                        while (cptr.ld1u(ucp) &&
+                                cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
+                            cptr.st1(
+                                cptr.postinc(() => put, (v) => { put = v; }),
+                                schar(cptr.ld1u(cptr.postinc(() => ucp, (v) => { ucp = v; })))
+                            );
                         if (retflags)
                             cptr.stI32(retflags, 1);
                     } else {
-                        so = cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx);
-                        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms)));
+                        so = cptr.ldI32o(
+                            glyphinfo,
+                            $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx
+                        );
+                        cptr.st1(
+                            cptr.postinc(() => put, (v) => { put = v; }),
+                            schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms))
+                        );
                         if (retflags)
                             cptr.stI32(retflags, 0);
                     }
@@ -165,15 +222,34 @@ export function* mixed_to_utf8(buf, bufsz, str, retflags) {
             }
         }
         if (cptr.cmp(put, cptr.add((cptr.add(buf, bufsz)), -(1))) < 0)
-            cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), cptr.ld1s(cptr.postinc(() => str, (v) => { str = v; })));
+            cptr.st1(
+                cptr.postinc(() => put, (v) => { put = v; }),
+                cptr.ld1s(cptr.postinc(() => str, (v) => { str = v; }))
+            );
     }
     cptr.st1(put, 0);
     return buf;
 }
 
-/** C ref: utf8map.c:148 — @param {CPtr<char>} customization_name @param {CInt} glyphidx @param {CUInt} utf32ch @param {CPtr<uint8>} utf8str @param {*} which_set @returns {CInt} */
+/**
+ * C ref: utf8map.c:148
+ * @param {CPtr<char>} customization_name
+ * @param {CInt} glyphidx
+ * @param {CUInt} utf32ch
+ * @param {CPtr<uint8>} utf8str
+ * @param {*} which_set
+ * @returns {CInt}
+ */
 export function* add_custom_urep_entry(customization_name, glyphidx, utf32ch, utf8str, which_set) {
-    let gdc = cptr.add(cptr.add(cptr.add(gs, $instance_globals_s_sym_customizations), which_set, $sizeof_symset_customization_x4), NHC.custom_ureps, $sizeof_symset_customization);
+    let gdc = cptr.add(
+        cptr.add(
+            cptr.add(gs, $instance_globals_s_sym_customizations),
+            which_set,
+            $sizeof_symset_customization_x4
+        ),
+        NHC.custom_ureps,
+        $sizeof_symset_customization
+    );
     let details;
     let newdetails = null;
 
@@ -188,9 +264,16 @@ export function* add_custom_urep_entry(customization_name, glyphidx, utf32ch, ut
         while (details) {
             if (cptr.ldI32(details) == glyphidx) {
                 if (cptr.ldPtro(details, $custom_urep_u + $unicode_representation_utf8str))
-                    cptr.free(cptr.ldPtro(details, $custom_urep_u + $unicode_representation_utf8str));
+                    cptr.free(cptr.ldPtro(
+                        details,
+                        $custom_urep_u + $unicode_representation_utf8str
+                    ));
                 if (utf32ch) {
-                    cptr.stPtro(details, $custom_urep_u + $unicode_representation_utf8str, (yield* dupstr(utf8str)));
+                    cptr.stPtro(
+                        details,
+                        $custom_urep_u + $unicode_representation_utf8str,
+                        (yield* dupstr(utf8str))
+                    );
                     cptr.stI32o(details, $custom_urep_u, utf32ch);
                 } else {
                     cptr.stPtro(details, $custom_urep_u + $unicode_representation_utf8str, null);
@@ -214,15 +297,27 @@ export function* add_custom_urep_entry(customization_name, glyphidx, utf32ch, ut
     if (cptr.eq(cptr.ldPtro(gdc, $symset_customization_details), (null))) {
         cptr.stPtro(gdc, $symset_customization_details, newdetails);
     } else {
-        cptr.stPtro(cptr.ldPtro(gdc, $symset_customization_details_end), $customization_detail_next, newdetails);
+        cptr.stPtro(
+            cptr.ldPtro(gdc, $symset_customization_details_end),
+            $customization_detail_next,
+            newdetails
+        );
     }
     cptr.stPtro(gdc, $symset_customization_details_end, newdetails);
-    (cptr.stI32o(gdc, $symset_customization_count, cptr.ldI32o(gdc, $symset_customization_count) + 1)) - (1);
+    (cptr.stI32o(
+        gdc,
+        $symset_customization_count,
+        cptr.ldI32o(gdc, $symset_customization_count) + 1
+    )) -
+            (1);
     return 1;
 }
 
 /** C ref: utf8map.c:211 */
 export function* reset_customsymbols() {
     free_all_glyphmap_u();
-    (yield* apply_customizations(cptr.ldI32o(gc, $instance_globals_c_currentgraphics), NHC.do_custom_symbols));
+    (yield* apply_customizations(
+        cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+        NHC.do_custom_symbols
+    ));
 }

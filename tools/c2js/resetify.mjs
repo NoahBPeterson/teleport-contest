@@ -71,6 +71,7 @@ import {
     analyzeModule, KIND, STRATEGY, repoRoot,
     RESET_BARREL as BARREL, RESET_BEGIN as BEGIN, RESET_END as END, stripResetBlock,
 } from './reset-census.mjs';
+import { fillItems, FMT_ON, FMT_COLS } from './jsfmt.mjs';
 
 /**
  * Does this declaration need anything doing to it, and what?
@@ -115,7 +116,9 @@ export function blockFor(src, file, genDirRel = 'js/generated') {
     }
     if (items.length === 0) return null;
 
-    const cap = items.map((it) => `S(${it.name})`).join(', ');
+    // filled to the column budget (tools/c2js/jsfmt.mjs) — decl.js's capture is
+    // 150 bindings and was 2.5 KB on one line
+    const capLines = fillItems(items.map((it) => `S(${it.name})`), 8);
     const put = items.map((it, i) => (it.rebind ? `${it.name} = P(r[${i}]);` : `P(r[${i}]);`));
 
     // Restores are one per line so a stack trace from a bad restore names the
@@ -130,7 +133,9 @@ export function blockFor(src, file, genDirRel = 'js/generated') {
             + items.filter((i) => !i.rebind && i.restore).length + ' refilled.',
         `// S/P are supplied by ${genDirRel}/__reset.js so this module needs no new import.`,
         'let __c2js_rs = null;',
-        `export function __captureState(S) { __c2js_rs = [${cap}]; }`,
+        ...(!FMT_ON || (capLines.length === 1 && capLines[0].trim().length + 47 <= FMT_COLS)
+            ? [`export function __captureState(S) { __c2js_rs = [${items.map((it) => `S(${it.name})`).join(', ')}]; }`]
+            : ['export function __captureState(S) {', '    __c2js_rs = [', ...capLines, '    ];', '}']),
         'export function __resetState(P) {',
         '    const r = __c2js_rs;',
         '    if (r === null) throw new Error(' + JSON.stringify(file + ': __resetState before __captureState') + ');',

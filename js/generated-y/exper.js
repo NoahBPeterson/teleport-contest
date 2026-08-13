@@ -30,26 +30,27 @@ import { achieve_rank, count_achievements, record_achievement } from './insight.
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Race_enadv = FLD.Race_enadv, $RoleAdvance_hifix = FLD.RoleAdvance_hifix,
-    $RoleAdvance_hirnd = FLD.RoleAdvance_hirnd, $RoleAdvance_inrnd = FLD.RoleAdvance_inrnd,
-    $RoleAdvance_lofix = FLD.RoleAdvance_lofix, $RoleAdvance_lornd = FLD.RoleAdvance_lornd,
-    $Role_enadv = FLD.Role_enadv, $Role_mnum = FLD.Role_mnum, $Role_xlev = FLD.Role_xlev,
-    $attack_adtyp = FLD.attack_adtyp, $attack_damd = FLD.attack_damd, $attack_damn = FLD.attack_damn,
-    $flag_beginner = FLD.flag_beginner, $flag_showexp = FLD.flag_showexp,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_format = FLD.kinfo_format,
-    $kinfo_name = FLD.kinfo_name, $monst_data = FLD.monst_data, $monst_m_lev = FLD.monst_m_lev,
-    $monst_mcloned = FLD.monst_mcloned, $monst_mrevived = FLD.monst_mrevived,
-    $permonst_mattk = FLD.permonst_mattk, $permonst_mflags1 = FLD.permonst_mflags1,
-    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
-    $permonst_mmove = FLD.permonst_mmove, $prop_intrinsic = FLD.prop_intrinsic,
-    $sizeof_attack = FLD.sizeof_attack, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_prop = FLD.sizeof_prop, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax, $you_uen = FLD.you_uen,
-    $you_ueninc = FLD.you_ueninc, $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak,
-    $you_uexp = FLD.you_uexp, $you_uhp = FLD.you_uhp, $you_uhpinc = FLD.you_uhpinc,
-    $you_uhpmax = FLD.you_uhpmax, $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax,
-    $you_ulevelpeak = FLD.you_ulevelpeak, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-    $you_uprops = FLD.you_uprops, $you_urexp = FLD.you_urexp;
+      $RoleAdvance_hirnd = FLD.RoleAdvance_hirnd, $RoleAdvance_inrnd = FLD.RoleAdvance_inrnd,
+      $RoleAdvance_lofix = FLD.RoleAdvance_lofix, $RoleAdvance_lornd = FLD.RoleAdvance_lornd,
+      $Role_enadv = FLD.Role_enadv, $Role_mnum = FLD.Role_mnum, $Role_xlev = FLD.Role_xlev,
+      $attack_adtyp = FLD.attack_adtyp, $attack_damd = FLD.attack_damd,
+      $attack_damn = FLD.attack_damn, $flag_beginner = FLD.flag_beginner,
+      $flag_showexp = FLD.flag_showexp, $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+      $kinfo_format = FLD.kinfo_format, $kinfo_name = FLD.kinfo_name, $monst_data = FLD.monst_data,
+      $monst_m_lev = FLD.monst_m_lev, $monst_mcloned = FLD.monst_mcloned,
+      $monst_mrevived = FLD.monst_mrevived, $permonst_mattk = FLD.permonst_mattk,
+      $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
+      $permonst_mlet = FLD.permonst_mlet, $permonst_mmove = FLD.permonst_mmove,
+      $prop_intrinsic = FLD.prop_intrinsic, $sizeof_attack = FLD.sizeof_attack,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $you_mh = FLD.you_mh,
+      $you_mhmax = FLD.you_mhmax, $you_uen = FLD.you_uen, $you_ueninc = FLD.you_ueninc,
+      $you_uenmax = FLD.you_uenmax, $you_uenpeak = FLD.you_uenpeak, $you_uexp = FLD.you_uexp,
+      $you_uhp = FLD.you_uhp, $you_uhpinc = FLD.you_uhpinc, $you_uhpmax = FLD.you_uhpmax,
+      $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax,
+      $you_ulevelpeak = FLD.you_ulevelpeak, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops, $you_urexp = FLD.you_urexp;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_levelchange = cptr.lit("#levelchange");
@@ -102,19 +103,47 @@ export function newpw() {
     let enfix;
 
     if (cptr.ldI32o(u, $you_ulevel) == 0) {
-        en = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) | 0;
+        en = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv) +
+            cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv)) |
+                0;
         if (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd) > 0)
-            en = (en + rnd(cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd))) | 0;
+            en = (en +
+                rnd(cptr.ldI16o(
+                    gu,
+                    $instance_globals_u_urole + $Role_enadv + $RoleAdvance_inrnd
+                ))) |
+                    0;
         if (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd) > 0)
-            en = (en + rnd(cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd))) | 0;
+            en = (en +
+                rnd(cptr.ldI16o(
+                    gu,
+                    $instance_globals_u_urace + $Race_enadv + $RoleAdvance_inrnd
+                ))) |
+                    0;
     } else {
         enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
-            enrnd = (enrnd + ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lornd) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lornd)) | 0)) | 0;
-            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lofix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lofix)) | 0;
+            enrnd = (enrnd +
+                ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lornd) +
+                    cptr.ldI16o(
+                        gu,
+                        $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lornd
+                    )) | 0)) |
+                    0;
+            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lofix) +
+                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lofix)) |
+                    0;
         } else {
-            enrnd = (enrnd + ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd)) | 0)) | 0;
-            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) + cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix)) | 0;
+            enrnd = (enrnd +
+                ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) +
+                    cptr.ldI16o(
+                        gu,
+                        $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd
+                    )) | 0)) |
+                    0;
+            enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) +
+                cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix)) |
+                    0;
         }
         en = enermod(((rn2(enrnd) + (enfix)) | 0));
     }
@@ -176,7 +205,10 @@ export function experience(mtmp, nk) {
         else if (tmp2 != NHM.AD_PHYS)
             tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
         /* extra heavy damage bonus */
-        if ((Math.imul(cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damd), cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damn))) > 23)
+        if ((Math.imul(
+            cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damd),
+            cptr.ld1uo2(ptr, i, $sizeof_attack, $permonst_mattk + $attack_damn)
+        )) > 23)
             tmp = (tmp + cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
         if (tmp2 == NHM.AD_WRAP && cptr.ld1so(ptr, $permonst_mlet) == NHC.S_EEL && !Amphibious())
             tmp = (tmp + 1000) | 0;
@@ -190,10 +222,14 @@ export function experience(mtmp, nk) {
     if (cptr.ld1uo(mtmp, $monst_m_lev) > 8)
         tmp = (tmp + 50) | 0;
     /* Mail daemons put up no fight. */
-    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst)))
+    if (cptr.eq(
+        cptr.ldPtro(mtmp, $monst_data),
+        cptr.add(mons, NHC.PM_MAIL_DAEMON, $sizeof_permonst)
+    ))
         tmp = 1;
 
-    if ((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 || (cptr.ldI32o(mtmp, $monst_mcloned) & 1) | 0) {
+    if ((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 ||
+            (cptr.ldI32o(mtmp, $monst_mcloned) & 1) | 0) {
         /*
          *      Reduce experience awarded for repeated killings of
          *      "the same monster".  Kill count includes all of this
@@ -246,7 +282,10 @@ export function* more_experienced(exper, rexp) {
     if (newrexp != oldrexp) {
         cptr.stI64o(u, $you_urexp, newrexp);
     }
-    if (cptr.ldI64o(u, $you_urexp) >= BigInt(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ? 1000 : 2000)))
+    if (cptr.ldI64o(u, $you_urexp) >=
+            BigInt(((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)
+                ? 1000
+                : 2000)))
         cptr.st1o(flags, $flag_beginner, 0);
 }
 
@@ -292,7 +331,12 @@ export function* losexp(drainer) {
         cptr.stI64o(u, $you_uexp, 0n);
         (yield* livelog_printf(4096n, __s_lost_all_experience));
     }
-    (__builtin_expect(BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))), 0n) ? __assert_rtn(__s_losexp, __s_exper_c, 247, __s_u_ulevel_0_u_ulevel_maxulev) : void 0);  /* valid array index */
+    (__builtin_expect(
+        BigInt((!(cptr.ldI32o(u, $you_ulevel) >= 0 && cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV))),
+        0n
+    )
+            ? __assert_rtn(__s_losexp, __s_exper_c, 247, __s_u_ulevel_0_u_ulevel_maxulev)
+            : void 0);  /* valid array index */
 
     olduhpmax = cptr.ldI32o(u, $you_uhpmax);
     uhpmin = minuhpmax(10);  /* same minimum as is used by life-saving */
@@ -346,7 +390,8 @@ export function* losexp(drainer) {
  */
 /** C ref: exper.c:300 */
 export function* newexplevel() {
-    if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV && cptr.ldI64o(u, $you_uexp) >= newuexp(cptr.ldI32o(u, $you_ulevel)))
+    if (cptr.ldI32o(u, $you_ulevel) < NHM.MAXULEV &&
+            cptr.ldI64o(u, $you_uexp) >= newuexp(cptr.ldI32o(u, $you_ulevel)))
         (yield* pluslvl(1));
 }
 
@@ -392,7 +437,11 @@ export function* pluslvl(incr) {
             cptr.stI64o(u, $you_uexp, newuexp(cptr.ldI32o(u, $you_ulevel)));
         }
         cptr.stI32o(u, $you_ulevel, cptr.ldI32o(u, $you_ulevel) + 1);
-        (yield* pline(__s_welcome_sto_experience_level_d, (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel)) ? __s_empty : __s_back, cptr.ldI32o(u, $you_ulevel)));
+        (yield* pline(
+            __s_welcome_sto_experience_level_d,
+            (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel)) ? __s_empty : __s_back,
+            cptr.ldI32o(u, $you_ulevel)
+        ));
         if (cptr.ldI32o(u, $you_ulevelmax) < cptr.ldI32o(u, $you_ulevel))
             cptr.stI32o(u, $you_ulevelmax, cptr.ldI32o(u, $you_ulevel));
         (yield* adjabil((cptr.ldI32o(u, $you_ulevel) - 1) | 0, cptr.ldI32o(u, $you_ulevel)));  /* give new intrinsics */
@@ -406,7 +455,14 @@ export function* pluslvl(incr) {
            hasn't changed or hero just regained a lost level and the rank
            achievement doesn't get repeated) */
         if (count_achievements() == old_ach_cnt)
-            (yield* livelog_printf(4096n, __s_sgained_experience_level_d, (cptr.ldI32o(u, $you_ulevel) <= cptr.ldI32o(u, $you_ulevelpeak)) ? __s_re : __s_empty, cptr.ldI32o(u, $you_ulevel)));
+            (yield* livelog_printf(
+                4096n,
+                __s_sgained_experience_level_d,
+                (cptr.ldI32o(u, $you_ulevel) <= cptr.ldI32o(u, $you_ulevelpeak))
+                    ? __s_re
+                    : __s_empty,
+                cptr.ldI32o(u, $you_ulevel)
+            ));
         if (cptr.ldI32o(u, $you_ulevel) > cptr.ldI32o(u, $you_ulevelpeak))
             cptr.stI32o(u, $you_ulevelpeak, cptr.ldI32o(u, $you_ulevel));
     }
@@ -424,13 +480,18 @@ export function rndexp(gaining) {
     let factor;
     let result;
 
-    minexp = (cptr.ldI32o(u, $you_ulevel) == 1) ? 0n : newuexp((cptr.ldI32o(u, $you_ulevel) - 1) | 0);
+    minexp = (cptr.ldI32o(u, $you_ulevel) == 1)
+            ? 0n
+            : newuexp((cptr.ldI32o(u, $you_ulevel) - 1) | 0);
     maxexp = newuexp(cptr.ldI32o(u, $you_ulevel));
     diff = BigInt.asIntN(64, maxexp - minexp), factor = 1n;
     /* make sure that `diff' is an argument which rn2() can handle */
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
-    result = BigInt.asIntN(64, minexp + BigInt.asIntN(64, factor * BigInt(rn2(Number(BigInt.asIntN(32, diff))))));
+    result = BigInt.asIntN(
+        64,
+        minexp + BigInt.asIntN(64, factor * BigInt(rn2(Number(BigInt.asIntN(32, diff)))))
+    );
     /* 3.4.1:  if already at level 30, add to current experience
        points rather than to threshold needed to reach the current
        level; otherwise blessed potions of gain level can result

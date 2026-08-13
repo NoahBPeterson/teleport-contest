@@ -19,12 +19,13 @@ import { NH_abort } from './end.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $instance_globals_c_crash_email = FLD.instance_globals_c_crash_email,
-    $instance_globals_c_crash_name = FLD.instance_globals_c_crash_name,
-    $instance_globals_c_crash_urlmax = FLD.instance_globals_c_crash_urlmax,
-    $instance_globals_s_saved_pline_index = FLD.instance_globals_s_saved_pline_index,
-    $instance_globals_s_saved_plines = FLD.instance_globals_s_saved_plines,
-    $sysopt_s_crashreporturl = FLD.sysopt_s_crashreporturl, $sysopt_s_gdbpath = FLD.sysopt_s_gdbpath,
-    $sysopt_s_greppath = FLD.sysopt_s_greppath, $window_procs_win_raw_print = FLD.window_procs_win_raw_print;
+      $instance_globals_c_crash_name = FLD.instance_globals_c_crash_name,
+      $instance_globals_c_crash_urlmax = FLD.instance_globals_c_crash_urlmax,
+      $instance_globals_s_saved_pline_index = FLD.instance_globals_s_saved_pline_index,
+      $instance_globals_s_saved_plines = FLD.instance_globals_s_saved_plines,
+      $sysopt_s_crashreporturl = FLD.sysopt_s_crashreporturl,
+      $sysopt_s_gdbpath = FLD.sysopt_s_gdbpath, $sysopt_s_greppath = FLD.sysopt_s_greppath,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_unknown = cptr.lit("unknown");
@@ -92,7 +93,8 @@ export function crashreport_init(argc, argv) {
         let segsize;
         let segment = new Uint8Array(4096);
 
-        while (0 < (segsize = Number(BigInt.asIntN(32, cptr.read(fd, cptr.decay(segment), 4096n))))) {
+        while (0 <
+                (segsize = Number(BigInt.asIntN(32, cptr.read(fd, cptr.decay(segment), 4096n))))) {
             if (!CC_MD4_Update(ctxp, cptr.decay(segment), segsize >>> 0))
                 break __lbl_skip;
         }
@@ -114,8 +116,22 @@ export function crashreport_init(argc, argv) {
             cnt = 19;
         while (cnt) {
             /* sprintf(p, "%02x", *in++), p += 2; */
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1so(cptr.decay(__static_crashreport_init_hexdigits), (cptr.ld1u(in$.v) >> 4) & 15, 1));
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1so(cptr.decay(__static_crashreport_init_hexdigits), cptr.ld1u(cptr.postinc(() => in$.v, (v) => { in$.v = v; })) & 15, 1));
+            cptr.st1(
+                cptr.postinc(() => p, (v) => { p = v; }),
+                cptr.ld1so(
+                    cptr.decay(__static_crashreport_init_hexdigits),
+                    (cptr.ld1u(in$.v) >> 4) & 15,
+                    1
+                )
+            );
+            cptr.st1(
+                cptr.postinc(() => p, (v) => { p = v; }),
+                cptr.ld1so(
+                    cptr.decay(__static_crashreport_init_hexdigits),
+                    cptr.ld1u(cptr.postinc(() => in$.v, (v) => { in$.v = v; })) & 15,
+                    1
+                )
+            );
             --cnt;
         }
         cptr.st1(p, 0);
@@ -137,7 +153,14 @@ export function crashreport_bidshow() {
 }
 
 /* On overflow, truncate to markp (but only if markp != NULL). */
-/** C ref: report.c:237 — @param {CPtr<char>} in @param {CPtr<char *>} out @param {CPtr<int>} remaining @param {CPtr<char>} markp @returns {CInt} */
+/**
+ * C ref: report.c:237
+ * @param {CPtr<char>} in
+ * @param {CPtr<char *>} out
+ * @param {CPtr<int>} remaining
+ * @param {CPtr<char>} markp
+ * @returns {CInt}
+ */
 export function swr_add_uricoded(in$, out, remaining, markp) {
     while (cptr.ld1s(in$)) {
         if (isalnum(cptr.ld1s(in$)) || cptr.strchr(__s_us_dash_dot_tilde, cptr.ld1s(in$))) {
@@ -194,10 +217,21 @@ let utmp = 0;
 /** C ref: report.c:287 — char * */
 let mark = null;
 
-/** C ref: report.c:290 — @param {CInt} cos @param {CPtr<char>} msg @param {CPtr<char>} why @returns {CInt} */
+/**
+ * C ref: report.c:290
+ * @param {CInt} cos
+ * @param {CPtr<char>} msg
+ * @param {CPtr<char>} why
+ * @returns {CInt}
+ */
 export function submit_web_report(cos, msg, why) {
     __lbl_full: {
-        urem.v = (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) < 0 || cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) > 8192) ? 8192 : (8192 < (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)) ? 8192 : (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)));
+        urem.v = (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) < 0 ||
+            cptr.ldI32o(gc, $instance_globals_c_crash_urlmax) > 8192)
+                ? 8192
+                : (8192 < (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax))
+                    ? 8192
+                    : (cptr.ldI32o(gc, $instance_globals_c_crash_urlmax)));
         let temp = new Uint8Array(200);
         let temp2 = new Uint8Array(200);
         let countpp = 0;  /* pre and post traceback lines */
@@ -205,11 +239,18 @@ export function submit_web_report(cos, msg, why) {
         // CRASHREPORTURL=https://nethack.org/links/cr-5.0.0.html
         if (!cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))
             return 0;
-        utmp = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))));
+        utmp = Number(BigInt.asIntN(
+            32,
+            cptr.strlen(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))
+        ));
         mark = uend.v;
         if (utmp >= urem.v)
             break __lbl_full;
-        cptr.memcpy(uend.v, cptr.ldPtro(sysopt, $sysopt_s_crashreporturl), BigInt.asUintN(64, BigInt(utmp)));
+        cptr.memcpy(
+            uend.v,
+            cptr.ldPtro(sysopt, $sysopt_s_crashreporturl),
+            BigInt.asUintN(64, BigInt(utmp))
+        );
         uend.v = cptr.add(uend.v, utmp);
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
@@ -242,7 +283,12 @@ export function submit_web_report(cos, msg, why) {
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            void cptr.sprintf(cptr.decay(temp), __s_40s_report_for_nethack_40s, msg, version_string(cptr.decay(temp2), 200n));
+            void cptr.sprintf(
+                cptr.decay(temp),
+                __s_40s_report_for_nethack_40s,
+                msg,
+                version_string(cptr.decay(temp2), 200n)
+            );
             if (swr_add_uricoded(cptr.decay(temp), uend, urem, mark))
                 break __lbl_full;
             ;
@@ -286,7 +332,12 @@ export function submit_web_report(cos, msg, why) {
             urem.v = (urem.v - utmp) | 0;
             cptr.st1(uend.v, 0);
             ;
-            if (swr_add_uricoded(cptr.ldPtro(gc, $instance_globals_c_crash_email), uend, urem, mark))
+            if (swr_add_uricoded(
+                cptr.ldPtro(gc, $instance_globals_c_crash_email),
+                uend,
+                urem,
+                mark
+            ))
                 break __lbl_full;
             ;
         }
@@ -339,7 +390,12 @@ export function submit_web_report(cos, msg, why) {
                 /* try to remove up to 16 blank spaces by removing 8 twice */
                 void strsubst(cptr.decay(temp), __s_sp8, __s_empty);
                 void strsubst(cptr.decay(temp), __s_sp8, __s_empty);
-                void __builtin___strncat_chk(cptr.decay(temp), __s_nl, 199n, __builtin_object_size(cptr.decay(temp), 1));
+                void __builtin___strncat_chk(
+                    cptr.decay(temp),
+                    __s_nl,
+                    199n,
+                    __builtin_object_size(cptr.decay(temp), 1)
+                );
                 if (swr_add_uricoded(cptr.decay(temp), uend, urem, mark))
                     break __lbl_full;
                 ;
@@ -380,19 +436,31 @@ export function submit_web_report(cos, msg, why) {
         urem.v = (urem.v - utmp) | 0;
         cptr.st1(uend.v, 0);
         ;
-        void cptr.sprintf(cptr.decay(temp), __s_pct_d, (((count + countpp) | 0) < 30 ? ((count + countpp) | 0) : 30));
+        void cptr.sprintf(
+            cptr.decay(temp),
+            __s_pct_d,
+            (((count + countpp) | 0) < 30 ? ((count + countpp) | 0) : 30)
+        );
         if (swr_add_uricoded(cptr.decay(temp), uend, urem, mark))
             break __lbl_full;
         ;
     }
     ;
-    let xargv = cptr.alloc(3 * 8); cptr.stPtro(xargv, 0, __s_usr_bin_open); cptr.stPtro(xargv, 8, cptr.decay(url)); cptr.stPtro(xargv, 16, null);
+    let xargv = cptr.alloc(3 * 8);
+    cptr.stPtro(xargv, 0, __s_usr_bin_open);
+    cptr.stPtro(xargv, 8, cptr.decay(url));
+    cptr.stPtro(xargv, 16, null);
     let pid = fork();
     if (pid == 0) {
         let err = new Uint8Array(400);
 
         void execve(__s_usr_bin_open, xargv, environ);
-        void cptr.sprintf(cptr.decay(err), __s_can_t_start_usr_bin_open_s, 372, strerror((cptr.ldI32(__error()))));
+        void cptr.sprintf(
+            cptr.decay(err),
+            __s_can_t_start_usr_bin_open_s,
+            372,
+            strerror((cptr.ldI32(__error())))
+        );
         raw_print()(cptr.decay(err));
         exit(1);
     } else {
@@ -409,7 +477,13 @@ export function submit_web_report(cos, msg, why) {
 /** C ref: report.c:461 @returns {CInt} */
 export function dobugreport() {
     if (!submit_web_report(2, null, __s_bugreport_command)) {
-        pline(__s_unable_to_send_bug_report_please_visit, (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) && cptr.ld1s(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl))) ? cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) : __s_https_www_nethack_org);
+        pline(
+            __s_unable_to_send_bug_report_please_visit,
+            (cptr.ldPtro(sysopt, $sysopt_s_crashreporturl) &&
+                cptr.ld1s(cptr.ldPtro(sysopt, $sysopt_s_crashreporturl)))
+                ? cptr.ldPtro(sysopt, $sysopt_s_crashreporturl)
+                : __s_https_www_nethack_org
+        );
     }
     return NHM.ECMD_OK;
 }
@@ -451,7 +525,17 @@ export function NH_panictrace_gdb() {
     if (cptr.eq(greppath, (null)) || cptr.ld1so(greppath, 0) == 0)
         return 0;
 
-    nh_snprintf(__s_nh_panictrace_gdb, 545, cptr.decay(buf), 256n, __s_s_n_q_s_d_2_1_s, gdbpath, ARGV0.v, getpid(), greppath);
+    nh_snprintf(
+        __s_nh_panictrace_gdb,
+        545,
+        cptr.decay(buf),
+        256n,
+        __s_s_n_q_s_d_2_1_s,
+        gdbpath,
+        ARGV0.v,
+        getpid(),
+        greppath
+    );
     gdb = popen(cptr.decay(buf), __s_w);
     if (gdb) {
         raw_print()(__s_generating_more_information_you_may);
@@ -474,7 +558,11 @@ export function get_saved_pline(lineno) {
 
     if (lineno >= NHM.DUMPLOG_MSG_COUNT)
         return null;
-    p = u32mod(((cptr.ldI32o(gs, $instance_globals_s_saved_pline_index) - 1) >>> 0), NHM.DUMPLOG_MSG_COUNT) | 0;
+    p = u32mod(
+        ((cptr.ldI32o(gs, $instance_globals_s_saved_pline_index) - 1) >>> 0),
+        NHM.DUMPLOG_MSG_COUNT
+    ) |
+            0;
 
     while (limit--) {
         if (cptr.ldPtro2(gs, p, 8, $instance_globals_s_saved_plines)) {
@@ -523,7 +611,12 @@ export function panictrace_setsignals(set) {
 // 8 bindings: 2 rebound+refilled, 3 rebound, 3 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(bid), S(__static_crashreport_init_once), S(__static_crashreport_init_hexdigits), S(url), S(urem), S(uend), S(utmp), S(mark)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(bid), S(__static_crashreport_init_once), S(__static_crashreport_init_hexdigits), S(url),
+        S(urem), S(uend), S(utmp), S(mark)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("report.js: __resetState before __captureState");

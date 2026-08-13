@@ -9,7 +9,9 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Is_candle, canspotmon, ignitable } from './nhmacrofn.js';
-import { create_nhwindow, destroy_nhwindow, display_nhwindow, nh_delay_output, putstr } from './nhprop.js';
+import {
+    create_nhwindow, destroy_nhwindow, display_nhwindow, nh_delay_output, putstr
+} from './nhprop.js';
 import { impossible } from './pline.js';
 import { alloc, fmt_ptr } from './alloc.js';
 import { cg, gb, gl, gm, gv, gy, svl, u, uskin } from './decl.js';
@@ -30,27 +32,28 @@ import { artifact_light } from './artifact.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NHFILE_mode = FLD.NHFILE_mode, $const_globals_zeroany = FLD.const_globals_zeroany,
-    $dlevel_t_monlist = FLD.dlevel_t_monlist, $instance_globals_b_bhitpos = FLD.instance_globals_b_bhitpos,
-    $instance_globals_l_light_base = FLD.instance_globals_l_light_base,
-    $instance_globals_m_migrating_mons = FLD.instance_globals_m_migrating_mons,
-    $instance_globals_m_mydogs = FLD.instance_globals_m_mydogs,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
-    $light_source_flags = FLD.light_source_flags, $light_source_id = FLD.light_source_id,
-    $light_source_range = FLD.light_source_range, $light_source_type = FLD.light_source_type,
-    $light_source_x = FLD.light_source_x, $light_source_y = FLD.light_source_y, $monst_isgd = FLD.monst_isgd,
-    $monst_m_id = FLD.monst_m_id, $monst_mhp = FLD.monst_mhp, $monst_mtemplit = FLD.monst_mtemplit,
-    $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y,
-    $obj_blessed = FLD.obj_blessed, $obj_cursed = FLD.obj_cursed, $obj_lamplit = FLD.obj_lamplit,
-    $obj_o_id = FLD.obj_o_id, $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
-    $obj_where = FLD.obj_where, $rm_lit = FLD.rm_lit, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr, $you_uy = FLD.you_uy;
+      $dlevel_t_monlist = FLD.dlevel_t_monlist,
+      $instance_globals_b_bhitpos = FLD.instance_globals_b_bhitpos,
+      $instance_globals_l_light_base = FLD.instance_globals_l_light_base,
+      $instance_globals_m_migrating_mons = FLD.instance_globals_m_migrating_mons,
+      $instance_globals_m_mydogs = FLD.instance_globals_m_mydogs,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+      $light_source_flags = FLD.light_source_flags, $light_source_id = FLD.light_source_id,
+      $light_source_range = FLD.light_source_range, $light_source_type = FLD.light_source_type,
+      $light_source_x = FLD.light_source_x, $light_source_y = FLD.light_source_y,
+      $monst_isgd = FLD.monst_isgd, $monst_m_id = FLD.monst_m_id, $monst_mhp = FLD.monst_mhp,
+      $monst_mtemplit = FLD.monst_mtemplit, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
+      $nhcoord_y = FLD.nhcoord_y, $obj_blessed = FLD.obj_blessed, $obj_cursed = FLD.obj_cursed,
+      $obj_lamplit = FLD.obj_lamplit, $obj_o_id = FLD.obj_o_id, $obj_otyp = FLD.obj_otyp,
+      $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe, $obj_where = FLD.obj_where,
+      $rm_lit = FLD.rm_lit, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_new_light_source_illegal_range_d = cptr.lit("new_light_source:  illegal range %d");
@@ -108,17 +111,34 @@ const __s_none = cptr.lit("<none>");
 
 /* Create a new light source.  Caller (and extern.h) doesn't need to know
    anything about type 'light_source'. */
-/** C ref: light.c:62 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr<anything>} id */
+/**
+ * C ref: light.c:62
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} range
+ * @param {CInt} type
+ * @param {CPtr<anything>} id
+ */
 export function new_light_source(x, y, range, type, id) {
     void new_light_core(x, y, range, type, id);
 }
 
 /* Create a new light source and return it.  Only used within this file. */
-/** C ref: light.c:69 — @param {CInt} x @param {CInt} y @param {CInt} range @param {CInt} type @param {CPtr<anything>} id @returns {CPtr<light_source>} */
+/**
+ * C ref: light.c:69
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} range
+ * @param {CInt} type
+ * @param {CPtr<anything>} id
+ * @returns {CPtr<light_source>}
+ */
 function new_light_core(x, y, range, type, id) {
     let ls;
 
-    if (range > NHM.MAX_RADIUS || range < 0 || (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null))) {
+    if (range > NHM.MAX_RADIUS ||
+            range < 0 ||
+            (range == 0 && (type != NHC.LS_OBJECT || cptr.ldPtr(id) !== null))) {
         impossible(__s_new_light_source_illegal_range_d, range);
         return null;
     }
@@ -170,7 +190,10 @@ export function del_light_source(type, id) {
     for (curr = cptr.ldPtro(gl, $instance_globals_l_light_base); curr; curr = cptr.ldPtr(curr)) {
         if (cptr.ldI16o(curr, $light_source_type) != type)
             continue;
-        if (cptr.eq(cptr.ldPtro(curr, $light_source_id), ((cptr.ldI16o(curr, $light_source_flags) & 2) ? cptr.ldPtr(tmp_id) : cptr.ldPtr(id))))
+        if (cptr.eq(
+            cptr.ldPtro(curr, $light_source_id),
+            ((cptr.ldI16o(curr, $light_source_flags) & 2) ? cptr.ldPtr(tmp_id) : cptr.ldPtr(id))
+        ))
             break;
     }
     if (curr) {
@@ -186,7 +209,13 @@ function delete_ls(ls) {
     let curr;
     let prev;
 
-    for (prev = null, curr = cptr.ldPtro(gl, $instance_globals_l_light_base); curr; prev = curr, curr = cptr.ldPtr(curr)) {
+    for (
+        prev = null,
+        curr = cptr.ldPtro(gl, $instance_globals_l_light_base);
+        curr;
+        prev = curr,
+        curr = cptr.ldPtr(curr)
+    ) {
         if (cptr.eq(curr, ls)) {
             if (prev)
                 cptr.stPtr(prev, cptr.ldPtr(curr));
@@ -196,7 +225,9 @@ function delete_ls(ls) {
         }
     }
     if (curr) {
-        (__builtin_expect(BigInt((!(cptr.eq(curr, ls)))), 0n) ? __assert_rtn(__s_delete_ls, __s_light_c, 157, __s_curr_ls) : void 0);
+        (__builtin_expect(BigInt((!(cptr.eq(curr, ls)))), 0n)
+                ? __assert_rtn(__s_delete_ls, __s_light_c, 157, __s_curr_ls)
+                : void 0);
         void __builtin___memset_chk(ls, 0, 32n, __builtin_object_size(ls, 0));
         cptr.free(ls);
         cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
@@ -230,16 +261,28 @@ export function do_light_sources(cs_rows) {
          * vision recalc.
          */
         if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
-            if (cptr.ldI16o(ls, $light_source_range) == 0 || get_obj_location(cptr.ldPtro(ls, $light_source_id), cptr.add(ls, $light_source_x), cptr.add(ls, $light_source_y), 0))
+            if (cptr.ldI16o(ls, $light_source_range) == 0 ||
+                    get_obj_location(
+                        cptr.ldPtro(ls, $light_source_id),
+                        cptr.add(ls, $light_source_x),
+                        cptr.add(ls, $light_source_y),
+                        0
+                    ))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 1);
         } else if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
-            if (get_mon_location(cptr.ldPtro(ls, $light_source_id), cptr.add(ls, $light_source_x), cptr.add(ls, $light_source_y), 0))
+            if (get_mon_location(
+                cptr.ldPtro(ls, $light_source_id),
+                cptr.add(ls, $light_source_x),
+                cptr.add(ls, $light_source_y),
+                0
+            ))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 1);
         }
 
         /* minor optimization: don't bother with duplicate light sources
            at hero */
-        if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
+        if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) &&
+                (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
             if (at_hero_range >= cptr.ldI16o(ls, $light_source_range))
                 cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) & -2);
             else
@@ -254,20 +297,32 @@ export function do_light_sources(cs_rows) {
              * Kevin's tests indicated that doing this brute-force
              * method is faster for radius <= 3 (or so).
              */
-            limits = (cptr.add(circle_data, cptr.ldI16o(circle_start, cptr.ldI16o(ls, $light_source_range), 2), 2));
-            if ((max_y = i16(((cptr.ldI16o(ls, $light_source_y) + cptr.ldI16o(ls, $light_source_range)) | 0))) >= NHM.ROWNO)
+            limits = (cptr.add(
+                circle_data,
+                cptr.ldI16o(circle_start, cptr.ldI16o(ls, $light_source_range), 2),
+                2
+            ));
+            if ((max_y = i16(((cptr.ldI16o(ls, $light_source_y) +
+                cptr.ldI16o(ls, $light_source_range)) | 0))) >=
+                    NHM.ROWNO)
                 max_y = 20;
-            if ((y = i16(((cptr.ldI16o(ls, $light_source_y) - cptr.ldI16o(ls, $light_source_range)) | 0))) < 0)
+            if ((y = i16(((cptr.ldI16o(ls, $light_source_y) -
+                    cptr.ldI16o(ls, $light_source_range)) | 0))) < 0)
                 y = 0;
             for (; y <= max_y; y++) {
                 row = cptr.ldPtro(cs_rows, y, 8);
-                offset = cptr.ldI16o(limits, Math.abs((y - cptr.ldI16o(ls, $light_source_y)) | 0), 2);
+                offset = cptr.ldI16o(
+                    limits,
+                    Math.abs((y - cptr.ldI16o(ls, $light_source_y)) | 0),
+                    2
+                );
                 if ((min_x = i16(((cptr.ldI16o(ls, $light_source_x) - offset) | 0))) < 1)
                     min_x = 1;
                 if ((max_x = i16(((cptr.ldI16o(ls, $light_source_x) + offset) | 0))) >= NHM.COLNO)
                     max_x = 79;
 
-                if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) && (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
+                if (((cptr.ldI16o(ls, $light_source_x)) == cptr.ldI16(u) &&
+                        (cptr.ldI16o(ls, $light_source_y)) == cptr.ldI16o(u, $you_uy))) {
                     /*
                      * If the light source is located at the hero, then
                      * we can use the COULD_SEE bits already calculated
@@ -284,7 +339,14 @@ export function do_light_sources(cs_rows) {
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
                 } else {
                     for (x = min_x; x <= max_x; x++)
-                        if ((cptr.ldI16o(ls, $light_source_x) == x && cptr.ldI16o(ls, $light_source_y) == y) || clear_path(cptr.ldI16o(ls, $light_source_x), cptr.ldI16o(ls, $light_source_y), x, y))
+                        if ((cptr.ldI16o(ls, $light_source_x) == x &&
+                            cptr.ldI16o(ls, $light_source_y) == y) ||
+                                clear_path(
+                                    cptr.ldI16o(ls, $light_source_x),
+                                    cptr.ldI16o(ls, $light_source_y),
+                                    x,
+                                    y
+                                ))
                             cptr.st1o(row, x, cptr.ld1uo(row, x) | NHM.TEMP_LIT);
                 }
             }
@@ -306,7 +368,14 @@ export function show_transient_light(obj, x, y) {
     /* Null object indicates camera flash */
     if (!obj) {
         /* no need to temporarily light an already lit spot */
-        if ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1))
+        if ((cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_lit
+        ) & 1))
             return;
 
         cptr.memcpy(cameraflash, cptr.add(cg, $const_globals_zeroany), 8);
@@ -314,7 +383,9 @@ export function show_transient_light(obj, x, y) {
         ls = new_light_core(x, y, 0, NHC.LS_OBJECT, cameraflash);
         /* pacify static analysis; 'ls' is never Null for
            new_light_core(,,0,LS_OBJECT,&zeroany) */
-        (__builtin_expect(BigInt((!(!cptr.eq(ls, (null))))), 0n) ? __assert_rtn(__s_show_transient_light, __s_light_c, 275, __s_ls_null) : void 0);
+        (__builtin_expect(BigInt((!(!cptr.eq(ls, (null))))), 0n)
+                ? __assert_rtn(__s_show_transient_light, __s_light_c, 275, __s_ls_null)
+                : void 0);
     } else {
         /* thrown or kicked object which is emitting light; validate its
            light source to obtain its radius (for monster sightings) */
@@ -324,15 +395,27 @@ export function show_transient_light(obj, x, y) {
             if (cptr.eq(cptr.ldPtro(ls, $light_source_id), obj))
                 break;
         }
-        (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n) ? __assert_rtn(__s_show_transient_light, __s_light_c, 285, __s_obj_null) : void 0);  /* necessary condition to get into this 'else' */
+        (__builtin_expect(BigInt((!(!cptr.eq(obj, (null))))), 0n)
+                ? __assert_rtn(__s_show_transient_light, __s_light_c, 285, __s_obj_null)
+                : void 0);  /* necessary condition to get into this 'else' */
         if (!ls || cptr.ld1so(obj, $obj_where) != NHM.OBJ_FREE) {
-            impossible(__s_transient_light_s_s_s_not_s, (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? __s_lit : __s_unlit, simpleonames(obj), otense(obj, __s_are), !ls ? __s_a_light_source : __s_free);
+            impossible(
+                __s_transient_light_s_s_s_not_s,
+                (cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 ? __s_lit : __s_unlit,
+                simpleonames(obj),
+                otense(obj, __s_are),
+                !ls ? __s_a_light_source : __s_free
+            );
             return;
         }
     }
 
     if (obj)
-        place_object(obj, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
+        place_object(
+            obj,
+            cptr.ldI16o(gb, $instance_globals_b_bhitpos),
+            cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)
+        );
     else
         cptr.stI16o(ls, $light_source_x, x), cptr.stI16o(ls, $light_source_y, y);
 
@@ -340,16 +423,25 @@ export function show_transient_light(obj, x, y) {
     vision_recalc(0);
     flush_screen(0);
 
-    radius_squared = Math.imul(cptr.ldI16o(ls, $light_source_range), cptr.ldI16o(ls, $light_source_range));
-    for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
-        if ((cptr.ldI32o((mon), $monst_mhp) < 1) || ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
+    radius_squared = Math.imul(
+        cptr.ldI16o(ls, $light_source_range),
+        cptr.ldI16o(ls, $light_source_range)
+    );
+    for (
+        mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+        mon;
+        mon = cptr.ldPtr(mon)
+    ) {
+        if ((cptr.ldI32o((mon), $monst_mhp) < 1) ||
+                ((cptr.ldI32o(mon, $monst_isgd) & 1) | 0 && !cptr.ldI16o(mon, $monst_mx)))
             continue;
         /* light range is the radius of a circle and we're limiting
            canseemon() to a square enclosing that circle, but setting
            mtemplit 'erroneously' for a seen monster is not a problem;
            it just flags monsters for another canseemon() check when
            'obj' has reached its destination after missile traversal */
-        if (dist2(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), x, y) <= radius_squared) {
+        if (dist2(cptr.ldI16o(mon, $monst_mx), cptr.ldI16o(mon, $monst_my), x, y) <=
+                radius_squared) {
             if (canseemon(mon))
                 cptr.stI32o(mon, $monst_mtemplit, 1);
         }
@@ -380,7 +472,11 @@ export function transient_light_cleanup() {
        monsters may have been mapped in light which has now gone away
        so need to be replaced by "remembered, unseen monster" glyph */
     mtempcount = 0;
-    for (mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mon; mon = cptr.ldPtr(mon)) {
+    for (
+        mon = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+        mon;
+        mon = cptr.ldPtr(mon)
+    ) {
         if ((cptr.ldI32o((mon), $monst_mhp) < 1))
             continue;
         if ((cptr.ldI32o(mon, $monst_mtemplit) & 1)) {
@@ -402,7 +498,8 @@ function discard_flashes() {
 
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = nxt_ls) {
         nxt_ls = cptr.ldPtr(ls);
-        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && !cptr.ldPtro(ls, $light_source_id))
+        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT &&
+                !cptr.ldPtro(ls, $light_source_id))
             delete_ls(ls);
     }
 }
@@ -414,11 +511,19 @@ export function find_mid(nid, fmflags) {
     if (((fmflags & NHM.FM_YOU) >>> 0) && nid == 1)
         return cptr.add(gy, $instance_globals_y_youmonst);
     if ((fmflags & NHM.FM_FMON) >>> 0)
-        for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (
+            mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+            mtmp;
+            mtmp = cptr.ldPtr(mtmp)
+        )
             if (!(cptr.ldI32o((mtmp), $monst_mhp) < 1) && cptr.ldI32o(mtmp, $monst_m_id) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MIGRATE) >>> 0)
-        for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (
+            mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons);
+            mtmp;
+            mtmp = cptr.ldPtr(mtmp)
+        )
             if (cptr.ldI32o(mtmp, $monst_m_id) == nid)
                 return mtmp;
     if ((fmflags & NHM.FM_MYDOGS) >>> 0)
@@ -435,11 +540,19 @@ function whereis_mon(mon, fmflags) {
     if (((fmflags & NHM.FM_YOU) >>> 0) && cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst)))
         return NHM.FM_YOU;
     if ((fmflags & NHM.FM_FMON) >>> 0)
-        for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (
+            mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+            mtmp;
+            mtmp = cptr.ldPtr(mtmp)
+        )
             if (cptr.eq(mtmp, mon))
                 return NHM.FM_FMON;
     if ((fmflags & NHM.FM_MIGRATE) >>> 0)
-        for (mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons); mtmp; mtmp = cptr.ldPtr(mtmp))
+        for (
+            mtmp = cptr.ldPtro(gm, $instance_globals_m_migrating_mons);
+            mtmp;
+            mtmp = cptr.ldPtr(mtmp)
+        )
             if (cptr.eq(mtmp, mon))
                 return NHM.FM_MIGRATE;
     if ((fmflags & NHM.FM_MYDOGS) >>> 0)
@@ -474,7 +587,10 @@ export function save_light_sources(nhfp, range) {
     }
 
     if ((cptr.ldI32o((nhfp), $NHFILE_mode) & NHM.FREEING)) {
-        for (prev = cptr.add(gl, $instance_globals_l_light_base); (curr = cptr.ldPtr(prev)) !== null; ) {
+        for (
+            prev = cptr.add(gl, $instance_globals_l_light_base);
+            (curr = cptr.ldPtr(prev)) !== null;
+        ) {
             if (!cptr.ldPtro(curr, $light_source_id)) {
                 impossible(__s_save_light_sources_no_id_range_d, range);
                 is_global = 0;
@@ -484,11 +600,18 @@ export function save_light_sources(nhfp, range) {
                     is_global = !obj_is_local(cptr.ldPtro(curr, $light_source_id));
                     break;
                     case NHC.LS_MONSTER:
-                    is_global = !(cptr.ldI16o((cptr.ldPtro(curr, $light_source_id)), $monst_mx) > 0);
+                    is_global = !(cptr.ldI16o(
+                        (cptr.ldPtro(curr, $light_source_id)),
+                        $monst_mx
+                    ) > 0);
                     break;
                     default:
                     is_global = 0;
-                    impossible(__s_save_light_sources_bad_type_d_range_d, cptr.ldI16o(curr, $light_source_type), range);
+                    impossible(
+                        __s_save_light_sources_bad_type_d_range_d,
+                        cptr.ldI16o(curr, $light_source_type),
+                        range
+                    );
                     break;
                 }
             /* if global and not doing local, or vice versa, remove it */
@@ -525,7 +648,13 @@ export function restore_light_sources(nhfp) {
 }
 
 /* to support '#stats' wizard-mode command */
-/** C ref: light.c:501 — @param {CPtr<char>} hdrfmt @param {CPtr<char>} hdrbuf @param {CPtr<long>} count @param {CPtr<long>} size */
+/**
+ * C ref: light.c:501
+ * @param {CPtr<char>} hdrfmt
+ * @param {CPtr<char>} hdrbuf
+ * @param {CPtr<long>} count
+ * @param {CPtr<long>} size
+ */
 export function light_stats(hdrfmt, hdrbuf, count, size) {
     let ls;
 
@@ -562,7 +691,8 @@ export function relink_light_sources(ghostly) {
 
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
         if (cptr.ldI16o(ls, $light_source_flags) & 2) {
-            if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT || cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
+            if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT ||
+                    cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
                 nid.v = cptr.ldI32o(ls, $light_source_id);
                 if (ghostly && !lookup_id_mapping(nid.v, nid))
                     panic(__s_relink_light_sources_no_id_mapping);
@@ -590,7 +720,13 @@ export function relink_light_sources(ghostly) {
  * sources that would be written.  If write_it is true, actually write
  * the light source out.
  */
-/** C ref: light.c:571 — @param {CPtr<NHFILE>} nhfp @param {CInt} range @param {CInt} write_it @returns {CInt} */
+/**
+ * C ref: light.c:571
+ * @param {CPtr<NHFILE>} nhfp
+ * @param {CInt} range
+ * @param {CInt} write_it
+ * @returns {CInt}
+ */
 function maybe_write_ls(nhfp, range, write_it) {
     let count = 0;
     let is_global;
@@ -610,7 +746,11 @@ function maybe_write_ls(nhfp, range, write_it) {
             break;
             default:
             is_global = 0;
-            impossible(__s_maybe_write_ls_bad_type_d_range_d, cptr.ldI16o(ls, $light_source_type), range);
+            impossible(
+                __s_maybe_write_ls_bad_type_d_range_d,
+                cptr.ldI16o(ls, $light_source_type),
+                range
+            );
             break;
         }
         /* if global and not doing local, or vice versa, count it */
@@ -657,7 +797,8 @@ function write_ls(nhfp, ls) {
     let otmp;
     let mtmp;
 
-    if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT || cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
+    if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT ||
+            cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER) {
         if (cptr.ldI16o(ls, $light_source_flags) & 2) {
             sfo_ls_t(nhfp, ls, __s_lightsource);
         } else {
@@ -665,7 +806,11 @@ function write_ls(nhfp, ls) {
             cptr.memcpy(arg_save, cptr.add(ls, $light_source_id), 8);
             if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT) {
                 otmp = cptr.ldPtro(ls, $light_source_id);
-                cptr.memcpy(cptr.add(ls, $light_source_id), cptr.add(cg, $const_globals_zeroany), 8);
+                cptr.memcpy(
+                    cptr.add(ls, $light_source_id),
+                    cptr.add(cg, $const_globals_zeroany),
+                    8
+                );
                 cptr.stI32o(ls, $light_source_id, cptr.ldI32o(otmp, $obj_o_id));
                 if (!cptr.eq(find_oid(cptr.ldI32o(ls, $light_source_id)), otmp)) {
                     impossible(__s_write_ls_can_t_find_obj_u, cptr.ldI32o(ls, $light_source_id));
@@ -691,11 +836,25 @@ function write_ls(nhfp, ls) {
                  * does not. */
 
                 if ((monloc = whereis_mon(mtmp, 15)) != 0) {
-                    cptr.memcpy(cptr.add(ls, $light_source_id), cptr.add(cg, $const_globals_zeroany), 8);
+                    cptr.memcpy(
+                        cptr.add(ls, $light_source_id),
+                        cptr.add(cg, $const_globals_zeroany),
+                        8
+                    );
                     cptr.stI32o(ls, $light_source_id, cptr.ldI32o(mtmp, $monst_m_id));
                     if (!cptr.eq(find_mid(cptr.ldI32o(ls, $light_source_id), monloc), mtmp)) {
-                        impossible(__s_write_ls_can_t_find_mon_s_u, (cptr.ldI32o((mtmp), $monst_mhp) < 1) ? __s_because_it_s_dead : __s_empty, cptr.ldI32o(ls, $light_source_id));
-                        cptr.stI16o(ls, $light_source_flags, cptr.ldI16o(ls, $light_source_flags) | 4);
+                        impossible(
+                            __s_write_ls_can_t_find_mon_s_u,
+                            (cptr.ldI32o((mtmp), $monst_mhp) < 1)
+                                ? __s_because_it_s_dead
+                                : __s_empty,
+                            cptr.ldI32o(ls, $light_source_id)
+                        );
+                        cptr.stI16o(
+                            ls,
+                            $light_source_flags,
+                            cptr.ldI16o(ls, $light_source_flags) | 4
+                        );
                     }
                 } else {
                     impossible(__s_write_ls_stashed_monst_ptr_not_in_any);
@@ -722,7 +881,8 @@ export function obj_move_light_source(src, dest) {
     let ls;
 
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), src))
+        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT &&
+                cptr.eq(cptr.ldPtro(ls, $light_source_id), src))
             cptr.stPtro(ls, $light_source_id, dest);
     cptr.stI32o(src, $obj_lamplit, 0);
     cptr.stI32o(dest, $obj_lamplit, 1);
@@ -749,7 +909,9 @@ export function snuff_light_source(x, y) {
          * will always be correct because the objects would have been
          * updated with the last vision update?  [Is that recent enough???]
          */
-        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.ldI16o(ls, $light_source_x) == x && cptr.ldI16o(ls, $light_source_y) == y) {
+        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT &&
+                cptr.ldI16o(ls, $light_source_x) == x &&
+                cptr.ldI16o(ls, $light_source_y) == y) {
             obj = cptr.ldPtro(ls, $light_source_id);
             if (obj_is_burning(obj)) {
                 /* The only way to snuff Sunsword is to unwield it.  Darkness
@@ -780,7 +942,10 @@ export function obj_sheds_light(obj) {
 /* Return TRUE if sheds light AND will be snuffed by end_burn(). */
 /** C ref: light.c:771 — @param {CPtr<struct obj>} obj @returns {CInt} */
 export function obj_is_burning(obj) {
-    return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 && (ignitable(obj) || artifact_light(obj)) ? 1 : 0));
+    return schar(((cptr.ldI32o(obj, $obj_lamplit) & 1) | 0 &&
+        (ignitable(obj) || artifact_light(obj))
+            ? 1
+            : 0));
 }
 
 /* copy the light source(s) attached to src, and attach it/them to dest */
@@ -790,7 +955,8 @@ export function obj_split_light_source(src, dest) {
     let new_ls;
 
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), src)) {
+        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT &&
+                cptr.eq(cptr.ldPtro(ls, $light_source_id), src)) {
             /*
              * Insert the new source at beginning of list.  This will
              * never interfere us walking down the list - we are already
@@ -822,7 +988,8 @@ export function obj_merge_light_sources(src, dest) {
         end_burn(src, 1);  /* extinguish candles */
 
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), dest)) {
+        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT &&
+                cptr.eq(cptr.ldPtro(ls, $light_source_id), dest)) {
             cptr.stI16o(ls, $light_source_range, i16(candle_light_range(dest)));
             cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);  /* in case range changed */
             break;
@@ -835,7 +1002,8 @@ export function obj_adjust_light_radius(obj, new_radius) {
     let ls;
 
     for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls))
-        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT && cptr.eq(cptr.ldPtro(ls, $light_source_id), obj)) {
+        if (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT &&
+                cptr.eq(cptr.ldPtro(ls, $light_source_id), obj)) {
             if (new_radius != cptr.ldI16o(ls, $light_source_range))
                 cptr.st1o(gv, $instance_globals_v_vision_full_recalc, 1);
             cptr.stI16o(ls, $light_source_range, i16(new_radius));
@@ -901,7 +1069,9 @@ export function arti_light_radius(obj) {
     /* cursed radius of 1 is not noticeable for an item that's
        carried by the hero but is if it's carried by a monster
        or left lit on the floor (not applicable for Sunsword) */
-    res = ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 3 : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 2 : 1));
+    res = ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0
+            ? 3
+            : (!(cptr.ldI32o(obj, $obj_cursed) & 1) ? 2 : 1));
 
     /* if poly'd into gold dragon with embedded scales, make the scales
        have minimum radiance (hero as light source will use light radius
@@ -945,7 +1115,12 @@ export function wiz_light_sources() {
     if (win == -1)
         return NHM.ECMD_OK;
 
-    void cptr.sprintf(cptr.decay(buf), __s_mobile_light_sources_hero_2d_2d, cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_mobile_light_sources_hero_2d_2d,
+        cptr.ldI16(u),
+        cptr.ldI16o(u, $you_uy)
+    );
     putstr()(win, 0, cptr.decay(buf));
     putstr()(win, 0, __s_empty);
 
@@ -953,7 +1128,27 @@ export function wiz_light_sources() {
         putstr()(win, 0, __s_location_range_flags_type_id);
         putstr()(win, 0, __s_dash8_sp_dash5_sp_dash6_sp_dash4_sp2);
         for (ls = cptr.ldPtro(gl, $instance_globals_l_light_base); ls; ls = cptr.ldPtr(ls)) {
-            void cptr.sprintf(cptr.decay(buf), __s_2d_2d_2d_0x_04x_s_s, cptr.ldI16o(ls, $light_source_x), cptr.ldI16o(ls, $light_source_y), cptr.ldI16o(ls, $light_source_range), cptr.ldI16o(ls, $light_source_flags), (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT ? __s_obj : (cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER ? ((cptr.ldI16o((cptr.ldPtro(ls, $light_source_id)), $monst_mx) > 0) ? __s_mon : ((cptr.eq(cptr.ldPtro(ls, $light_source_id), cptr.add(gy, $instance_globals_y_youmonst))) ? __s_you : __s_lt_m_gt)) : __s_query3)), fmt_ptr(cptr.ldPtro(ls, $light_source_id)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_2d_2d_2d_0x_04x_s_s,
+                cptr.ldI16o(ls, $light_source_x),
+                cptr.ldI16o(ls, $light_source_y),
+                cptr.ldI16o(ls, $light_source_range),
+                cptr.ldI16o(ls, $light_source_flags),
+                (cptr.ldI16o(ls, $light_source_type) == NHC.LS_OBJECT
+                    ? __s_obj
+                    : (cptr.ldI16o(ls, $light_source_type) == NHC.LS_MONSTER
+                        ? ((cptr.ldI16o((cptr.ldPtro(ls, $light_source_id)), $monst_mx) > 0)
+                            ? __s_mon
+                            : ((cptr.eq(
+                                cptr.ldPtro(ls, $light_source_id),
+                                cptr.add(gy, $instance_globals_y_youmonst)
+                            ))
+                                ? __s_you
+                                : __s_lt_m_gt))
+                        : __s_query3)),
+                fmt_ptr(cptr.ldPtro(ls, $light_source_id))
+            );
             putstr()(win, 0, cptr.decay(buf));
         }
     } else

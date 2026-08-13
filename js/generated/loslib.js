@@ -5,17 +5,25 @@
 
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
-import { luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_checkversion_, luaL_error, luaL_execresult, luaL_fileresult, luaL_optinteger, luaL_optlstring, luaL_prepbuffsize, luaL_pushresult, luaL_setfuncs } from './lauxlib.js';
-import { lua_createtable, lua_getfield, lua_pushboolean, lua_pushfstring, lua_pushinteger, lua_pushnumber, lua_pushstring, lua_setfield, lua_settop, lua_toboolean, lua_tointegerx, lua_type } from './lapi.js';
+import {
+    luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checklstring, luaL_checkoption,
+    luaL_checktype, luaL_checkversion_, luaL_error, luaL_execresult, luaL_fileresult,
+    luaL_optinteger, luaL_optlstring, luaL_prepbuffsize, luaL_pushresult, luaL_setfuncs
+} from './lauxlib.js';
+import {
+    lua_createtable, lua_getfield, lua_pushboolean, lua_pushfstring, lua_pushinteger,
+    lua_pushnumber, lua_pushstring, lua_setfield, lua_settop, lua_toboolean, lua_tointegerx,
+    lua_type
+} from './lapi.js';
 import { lua_close } from './lstate.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $luaL_Buffer_n = FLD.luaL_Buffer_n, $luaL_Buffer_size = FLD.luaL_Buffer_size,
-    $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg, $tm_tm_hour = FLD.tm_tm_hour,
-    $tm_tm_isdst = FLD.tm_tm_isdst, $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = FLD.tm_tm_min,
-    $tm_tm_mon = FLD.tm_tm_mon, $tm_tm_wday = FLD.tm_tm_wday, $tm_tm_yday = FLD.tm_tm_yday,
-    $tm_tm_year = FLD.tm_tm_year;
+      $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg,
+      $tm_tm_hour = FLD.tm_tm_hour, $tm_tm_isdst = FLD.tm_tm_isdst, $tm_tm_mday = FLD.tm_tm_mday,
+      $tm_tm_min = FLD.tm_tm_min, $tm_tm_mon = FLD.tm_tm_mon, $tm_tm_wday = FLD.tm_tm_wday,
+      $tm_tm_yday = FLD.tm_tm_yday, $tm_tm_year = FLD.tm_tm_year;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_tmp_lua_xxxxxx = cptr.lit("/tmp/lua_XXXXXX");
@@ -132,7 +140,13 @@ function os_clock(L) {
 ** time 0x1.e1853b0d184f6p+55 would cause an overflow when adding 1900
 ** to compute the year.
 */
-/** C ref: loslib.c:211 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @param {CInt} value @param {CInt} delta */
+/**
+ * C ref: loslib.c:211
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} key
+ * @param {CInt} value
+ * @param {CInt} delta
+ */
 function setfield(L, key, value, delta) {
     lua_pushinteger(L, BigInt.asIntN(64, BigInt(value) + BigInt(delta)));
     lua_setfield(L, -2, key);
@@ -170,7 +184,14 @@ function getboolfield(L, key) {
     return res;
 }
 
-/** C ref: loslib.c:253 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @param {CInt} d @param {CInt} delta @returns {CInt} */
+/**
+ * C ref: loslib.c:253
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} key
+ * @param {CInt} d
+ * @param {CInt} delta
+ * @returns {CInt}
+ */
 function getfield(L, key, d, delta) {
     let isnum = cptr.box(0);
     let t = lua_getfield(L, -1, key);  /* get field and its type */
@@ -182,7 +203,9 @@ function getfield(L, key, d, delta) {
             return luaL_error(L, __s_field_s_missing_in_date_table, key);
         res = BigInt(d);
     } else {
-        if (!(res >= 0n ? BigInt.asIntN(64, res - BigInt(delta)) <= 2147483647n : BigInt(((-2147483648 + delta) | 0)) <= res))
+        if (!(res >= 0n
+                ? BigInt.asIntN(64, res - BigInt(delta)) <= 2147483647n
+                : BigInt(((-2147483648 + delta) | 0)) <= res))
             return luaL_error(L, __s_field_s_is_out_of_bound, key);
         res -= BigInt(delta);
     }
@@ -190,7 +213,14 @@ function getfield(L, key, d, delta) {
     return Number(BigInt.asIntN(32, res));
 }
 
-/** C ref: loslib.c:274 — @param {CPtr<lua_State>} L @param {CPtr<char>} conv @param {CLongLong} convlen @param {CPtr<char>} buff @returns {CPtr<char>} */
+/**
+ * C ref: loslib.c:274
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} conv
+ * @param {CLongLong} convlen
+ * @param {CPtr<char>} buff
+ * @returns {CPtr<char>}
+ */
 function checkoption(L, conv, convlen, buff) {
     let option = __s_aabbccddefgghhijmmnprrsttuuvwwxxyyzz;
     let oplen = 1;  /* length of options being checked */
@@ -210,7 +240,10 @@ function checkoption(L, conv, convlen, buff) {
 /** C ref: loslib.c:293 — @param {CPtr<lua_State>} L @param {CInt} arg @returns {*} */
 function l_checktime(L, arg) {
     let t = luaL_checkinteger(L, arg);
-    (void ((__builtin_expect(BigInt(((t == t) != 0)), 1n)) || luaL_argerror(L, (arg), (__s_time_out_of_bounds)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t == t) != 0)), 1n)) ||
+        luaL_argerror(L, (arg), (__s_time_out_of_bounds))
+            ? 1
+            : 0));
     return t;
 }
 
@@ -239,7 +272,18 @@ function os_date(L) {
         luaL_buffinit(L, b);
         while (cptr.cmp(s, se) < 0) {
             if (cptr.ld1s(s) != 37)
-                (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; }))))));
+                (
+                    void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) ||
+                        luaL_prepbuffsize((b), 1n)
+                        ? 1
+                        : 0),
+                    (cptr.st1o(
+                        cptr.ldPtr((b)),
+                        (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) -
+                            (1n),
+                        (cptr.ld1s(cptr.postinc(() => s, (v) => { s = v; })))
+                    ))
+                );
             else {
                 let reslen;
                 let buff = luaL_prepbuffsize(b, 250n);
@@ -358,7 +402,11 @@ cptr.stPtro(syslib, 176 + $luaL_Reg_func, null);
 
 /** C ref: loslib.c:426 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_os(L) {
-    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))), luaL_setfuncs(L, syslib, 0));
+    (
+        luaL_checkversion_(L, 504, 136n),
+        lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))),
+        luaL_setfuncs(L, syslib, 0)
+    );
     return 1;
 }
 
@@ -366,7 +414,11 @@ export function luaopen_os(L) {
 // 3 bindings: 0 rebound+refilled, 0 rebound, 3 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__static_os_setlocale_cat), S(__static_os_setlocale_catnames), S(syslib)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__static_os_setlocale_cat), S(__static_os_setlocale_catnames), S(syslib)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("loslib.js: __resetState before __captureState");

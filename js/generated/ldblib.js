@@ -5,22 +5,38 @@
 
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
-import { lua_callk, lua_checkstack, lua_createtable, lua_getfield, lua_getiuservalue, lua_getmetatable, lua_getupvalue, lua_iscfunction, lua_pcallk, lua_pushboolean, lua_pushfstring, lua_pushinteger, lua_pushlightuserdata, lua_pushlstring, lua_pushnil, lua_pushstring, lua_pushthread, lua_pushvalue, lua_rawget, lua_rawset, lua_rotate, lua_setfield, lua_setiuservalue, lua_setmetatable, lua_settop, lua_setupvalue, lua_tolstring, lua_tothread, lua_type, lua_upvalueid, lua_upvaluejoin, lua_xmove } from './lapi.js';
-import { luaL_argerror, luaL_checkany, luaL_checkinteger, luaL_checklstring, luaL_checktype, luaL_checkversion_, luaL_error, luaL_getsubtable, luaL_loadbufferx, luaL_optinteger, luaL_optlstring, luaL_setfuncs, luaL_tolstring, luaL_traceback, luaL_typeerror } from './lauxlib.js';
-import { lua_gethook, lua_gethookcount, lua_gethookmask, lua_getinfo, lua_getlocal, lua_getstack, lua_sethook, lua_setlocal } from './ldebug.js';
+import {
+    lua_callk, lua_checkstack, lua_createtable, lua_getfield, lua_getiuservalue, lua_getmetatable,
+    lua_getupvalue, lua_iscfunction, lua_pcallk, lua_pushboolean, lua_pushfstring, lua_pushinteger,
+    lua_pushlightuserdata, lua_pushlstring, lua_pushnil, lua_pushstring, lua_pushthread,
+    lua_pushvalue, lua_rawget, lua_rawset, lua_rotate, lua_setfield, lua_setiuservalue,
+    lua_setmetatable, lua_settop, lua_setupvalue, lua_tolstring, lua_tothread, lua_type,
+    lua_upvalueid, lua_upvaluejoin, lua_xmove
+} from './lapi.js';
+import {
+    luaL_argerror, luaL_checkany, luaL_checkinteger, luaL_checklstring, luaL_checktype,
+    luaL_checkversion_, luaL_error, luaL_getsubtable, luaL_loadbufferx, luaL_optinteger,
+    luaL_optlstring, luaL_setfuncs, luaL_tolstring, luaL_traceback, luaL_typeerror
+} from './lauxlib.js';
+import {
+    lua_gethook, lua_gethookcount, lua_gethookmask, lua_getinfo, lua_getlocal, lua_getstack,
+    lua_sethook, lua_setlocal
+} from './ldebug.js';
 import { lua_setcstacklimit } from './lstate.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $luaL_Reg_func = FLD.luaL_Reg_func, $lua_Debug_currentline = FLD.lua_Debug_currentline,
-    $lua_Debug_ftransfer = FLD.lua_Debug_ftransfer, $lua_Debug_istailcall = FLD.lua_Debug_istailcall,
-    $lua_Debug_isvararg = FLD.lua_Debug_isvararg, $lua_Debug_lastlinedefined = FLD.lua_Debug_lastlinedefined,
-    $lua_Debug_linedefined = FLD.lua_Debug_linedefined, $lua_Debug_name = FLD.lua_Debug_name,
-    $lua_Debug_namewhat = FLD.lua_Debug_namewhat, $lua_Debug_nparams = FLD.lua_Debug_nparams,
-    $lua_Debug_ntransfer = FLD.lua_Debug_ntransfer, $lua_Debug_nups = FLD.lua_Debug_nups,
-    $lua_Debug_short_src = FLD.lua_Debug_short_src, $lua_Debug_source = FLD.lua_Debug_source,
-    $lua_Debug_srclen = FLD.lua_Debug_srclen, $lua_Debug_what = FLD.lua_Debug_what,
-    $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
+      $lua_Debug_ftransfer = FLD.lua_Debug_ftransfer,
+      $lua_Debug_istailcall = FLD.lua_Debug_istailcall,
+      $lua_Debug_isvararg = FLD.lua_Debug_isvararg,
+      $lua_Debug_lastlinedefined = FLD.lua_Debug_lastlinedefined,
+      $lua_Debug_linedefined = FLD.lua_Debug_linedefined, $lua_Debug_name = FLD.lua_Debug_name,
+      $lua_Debug_namewhat = FLD.lua_Debug_namewhat, $lua_Debug_nparams = FLD.lua_Debug_nparams,
+      $lua_Debug_ntransfer = FLD.lua_Debug_ntransfer, $lua_Debug_nups = FLD.lua_Debug_nups,
+      $lua_Debug_short_src = FLD.lua_Debug_short_src, $lua_Debug_source = FLD.lua_Debug_source,
+      $lua_Debug_srclen = FLD.lua_Debug_srclen, $lua_Debug_what = FLD.lua_Debug_what,
+      $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_hookkey = cptr.lit("_HOOKKEY");
@@ -116,7 +132,10 @@ function db_getmetatable(L) {
 /** C ref: ldblib.c:56 — @param {CPtr<lua_State>} L @returns {CInt} */
 function db_setmetatable(L) {
     let t = lua_type(L, 2);
-    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) || luaL_typeerror(L, 2, (__s_nil_or_table)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((t == 0 || t == 5 ? 1 : 0) != 0)), 1n)) ||
+        luaL_typeerror(L, 2, (__s_nil_or_table))
+            ? 1
+            : 0));
     lua_settop(L, 2);
     lua_setmetatable(L, 1);
     return 1;  /* return 1st argument */
@@ -151,7 +170,12 @@ function db_setuservalue(L) {
 ** 1 if this argument is present (so that functions can skip it to
 ** access their other arguments)
 */
-/** C ref: ldblib.c:94 — @param {CPtr<lua_State>} L @param {CPtr<int>} arg @returns {CPtr<lua_State>} */
+/**
+ * C ref: ldblib.c:94
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<int>} arg
+ * @returns {CPtr<lua_State>}
+ */
 function getthread(L, arg) {
     if ((lua_type(L, 1) == 8)) {
         cptr.stI32(arg, 1);
@@ -192,7 +216,12 @@ function settabsb(L, k, v) {
 ** 'lua_getinfo' on top of the result table so that it can call
 ** 'lua_setfield'.
 */
-/** C ref: ldblib.c:134 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} L1 @param {CPtr<char>} fname */
+/**
+ * C ref: ldblib.c:134
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<lua_State>} L1
+ * @param {CPtr<char>} fname
+ */
 function treatstackoption(L, L1, fname) {
     if (cptr.eq(L, L1))
         lua_rotate(L, -2, 1);  /* exchange object and table */
@@ -214,13 +243,20 @@ function db_getinfo(L) {
     let L1 = getthread(L, arg);
     let options = (luaL_optlstring(L, ((arg.v + 2) | 0), (__s_flnsrtu), null));
     checkstack(L, L1, 3);
-    (void ((__builtin_expect(BigInt(((cptr.ld1so(options, 0) != 62) != 0)), 1n)) || luaL_argerror(L, ((arg.v + 2) | 0), (__s_invalid_option)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((cptr.ld1so(options, 0) != 62) != 0)), 1n)) ||
+        luaL_argerror(L, ((arg.v + 2) | 0), (__s_invalid_option))
+            ? 1
+            : 0));
     if ((lua_type(L, ((arg.v + 1) | 0)) == 6)) {
         options = lua_pushfstring(L, __s_gt_pct_s, options);  /* add '>' to 'options' */
         lua_pushvalue(L, (arg.v + 1) | 0);  /* move function to 'L1' stack */
         lua_xmove(L, L1, 1);
     } else {
-        if (!lua_getstack(L1, Number(BigInt.asIntN(32, luaL_checkinteger(L, (arg.v + 1) | 0))), ar)) {
+        if (!lua_getstack(
+            L1,
+            Number(BigInt.asIntN(32, luaL_checkinteger(L, (arg.v + 1) | 0))),
+            ar
+        )) {
             lua_pushnil(L);  /* level out of range */
             return 1;
         }
@@ -341,14 +377,24 @@ function db_setupvalue(L) {
 ** Check whether a given upvalue from a given closure exists and
 ** returns its index
 */
-/** C ref: ldblib.c:285 — @param {CPtr<lua_State>} L @param {CInt} argf @param {CInt} argnup @param {CPtr<int>} pnup @returns {CPtr<void>} */
+/**
+ * C ref: ldblib.c:285
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} argf
+ * @param {CInt} argnup
+ * @param {CPtr<int>} pnup
+ * @returns {CPtr<void>}
+ */
 function checkupval(L, argf, argnup, pnup) {
     let id;
     let nup = Number(BigInt.asIntN(32, luaL_checkinteger(L, argnup)));  /* upvalue index */
     luaL_checktype(L, argf, 6);  /* closure */
     id = lua_upvalueid(L, argf, nup);
     if (pnup) {
-        (void ((__builtin_expect(BigInt(((!cptr.eq(id, (null))) != 0)), 1n)) || luaL_argerror(L, (argnup), (__s_invalid_upvalue_index)) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((!cptr.eq(id, (null))) != 0)), 1n)) ||
+            luaL_argerror(L, (argnup), (__s_invalid_upvalue_index))
+                ? 1
+                : 0));
         cptr.stI32(pnup, nup);
     }
     return id;
@@ -370,8 +416,14 @@ function db_upvaluejoin(L) {
     let n2 = cptr.box(0);
     checkupval(L, 1, 2, n1);
     checkupval(L, 3, 4, n2);
-    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 1)) != 0)), 1n)) || luaL_argerror(L, 1, (__s_lua_function_expected)) ? 1 : 0));
-    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 3)) != 0)), 1n)) || luaL_argerror(L, 3, (__s_lua_function_expected)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 1)) != 0)), 1n)) ||
+        luaL_argerror(L, 1, (__s_lua_function_expected))
+            ? 1
+            : 0));
+    (void ((__builtin_expect(BigInt(((!lua_iscfunction(L, 3)) != 0)), 1n)) ||
+        luaL_argerror(L, 3, (__s_lua_function_expected))
+            ? 1
+            : 0));
     lua_upvaluejoin(L, 1, n1.v, 3, n2.v);
     return 0;
 }
@@ -500,9 +552,17 @@ function db_debug(L) {
     for (; ; ) {
         let buffer = new Uint8Array(250);
         (fprintf(__stderrp, (__s_pct_s), (__s_lua_debug)), fflush(__stderrp));
-        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) || strcmp(cptr.decay(buffer), __s_cont) == 0)
+        if (cptr.eq(fgets(cptr.decay(buffer), 250, __stdinp), (null)) ||
+                strcmp(cptr.decay(buffer), __s_cont) == 0)
             return 0;
-        if (luaL_loadbufferx(L, cptr.decay(buffer), cptr.strlen(cptr.decay(buffer)), __s_debug_command, null) || lua_pcallk(L, 0, 0, 0, 0n, null))
+        if (luaL_loadbufferx(
+            L,
+            cptr.decay(buffer),
+            cptr.strlen(cptr.decay(buffer)),
+            __s_debug_command,
+            null
+        ) ||
+                lua_pcallk(L, 0, 0, 0, 0n, null))
             (fprintf(__stderrp, (__s_pct_s_nl), (luaL_tolstring(L, -1, null))), fflush(__stderrp));
         lua_settop(L, 0);  /* remove eventual returns */
     }
@@ -516,7 +576,10 @@ function db_traceback(L) {
     if (cptr.eq(msg, (null)) && !(lua_type(L, ((arg.v + 1) | 0)) <= 0))
         lua_pushvalue(L, (arg.v + 1) | 0);  /* return it untouched */
     else {
-        let level = Number(BigInt.asIntN(32, luaL_optinteger(L, (arg.v + 2) | 0, BigInt(((cptr.eq(L, L1)) ? 1 : 0)))));
+        let level = Number(BigInt.asIntN(
+            32,
+            luaL_optinteger(L, (arg.v + 2) | 0, BigInt(((cptr.eq(L, L1)) ? 1 : 0)))
+        ));
         luaL_traceback(L, L1, msg, level);
     }
     return 1;
@@ -571,7 +634,11 @@ cptr.stPtro(dblib, 272 + $luaL_Reg_func, null);
 
 /** C ref: ldblib.c:479 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_debug(L) {
-    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 288n / 16n - 1n)))), luaL_setfuncs(L, dblib, 0));
+    (
+        luaL_checkversion_(L, 504, 136n),
+        lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 288n / 16n - 1n)))),
+        luaL_setfuncs(L, dblib, 0)
+    );
     return 1;
 }
 

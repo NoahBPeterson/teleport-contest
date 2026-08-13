@@ -13,22 +13,26 @@ import { WIN_MESSAGE, gi, gt, iflags, program_state } from './decl.js';
 import { addtopl, more, putsyms, tty_doprev_message } from './topl.js';
 import { custompline, dumplogmsg, pline } from './pline.js';
 import { term_curs_set, tty_nhbell } from './termcap.js';
-import { extcmd_initiator, extcmd_via_menu, extcmds_getentry, extcmds_match, pgetchar } from './cmd.js';
+import {
+    extcmd_initiator, extcmd_via_menu, extcmds_getentry, extcmds_match, pgetchar
+} from './cmd.js';
 import { erase_char, kill_char } from './unixtty.js';
 import { eos, mungspaces, visctrl } from './hacklib.js';
 import { windowprocs } from './windows.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $DisplayDesc_dismiss_more = FLD.DisplayDesc_dismiss_more, $DisplayDesc_inread = FLD.DisplayDesc_inread,
-    $DisplayDesc_intr = FLD.DisplayDesc_intr, $DisplayDesc_toplin = FLD.DisplayDesc_toplin,
-    $WinDesc_maxcol = FLD.WinDesc_maxcol, $WinDesc_maxrow = FLD.WinDesc_maxrow,
-    $ext_func_tab_ef_txt = FLD.ext_func_tab_ef_txt, $instance_flags_cbreak = FLD.instance_flags_cbreak,
-    $instance_flags_extmenu = FLD.instance_flags_extmenu,
-    $instance_flags_prevmsg_window = FLD.instance_flags_prevmsg_window,
-    $instance_flags_term_gone = FLD.instance_flags_term_gone,
-    $instance_globals_t_toplines = FLD.instance_globals_t_toplines, $sinfo_done_hup = FLD.sinfo_done_hup,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow;
+const $DisplayDesc_dismiss_more = FLD.DisplayDesc_dismiss_more,
+      $DisplayDesc_inread = FLD.DisplayDesc_inread, $DisplayDesc_intr = FLD.DisplayDesc_intr,
+      $DisplayDesc_toplin = FLD.DisplayDesc_toplin, $WinDesc_maxcol = FLD.WinDesc_maxcol,
+      $WinDesc_maxrow = FLD.WinDesc_maxrow, $ext_func_tab_ef_txt = FLD.ext_func_tab_ef_txt,
+      $instance_flags_cbreak = FLD.instance_flags_cbreak,
+      $instance_flags_extmenu = FLD.instance_flags_extmenu,
+      $instance_flags_prevmsg_window = FLD.instance_flags_prevmsg_window,
+      $instance_flags_term_gone = FLD.instance_flags_term_gone,
+      $instance_globals_t_toplines = FLD.instance_globals_t_toplines,
+      $sinfo_done_hup = FLD.sinfo_done_hup,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_pct_s_sp = cptr.lit("%s ");
@@ -65,11 +69,17 @@ function hooked_tty_getlin(query, bufp, hook) {
     let cw = cptr.ldPtro(wins, WIN_MESSAGE.v, 8);
     let doprev = 0;
 
-    if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE && !(cptr.ldI32(cw) & NHM.WIN_STOP))
+    if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE &&
+            !(cptr.ldI32(cw) & NHM.WIN_STOP))
         more();
     cptr.stI32(cw, cptr.ldI32(cw) & -2);
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_SPECIAL_PROMPT);
-    (cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + 1)) - (1);
+    (cptr.stI32o(
+        ttyDisplay,
+        $DisplayDesc_inread,
+        cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + 1
+    )) -
+            (1);
 
     /*
      * Issue the prompt.
@@ -85,7 +95,10 @@ function hooked_tty_getlin(query, bufp, hook) {
 
     for (; ; ) {
         void fflush(__stdoutp);
-        void cptr.strcat(cptr.strcat(cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), query), __s_sp), obufp);
+        void cptr.strcat(
+            cptr.strcat(cptr.strcpy(cptr.add(gt, $instance_globals_t_toplines), query), __s_sp),
+            obufp
+        );
         term_curs_set(1);
         c = pgetchar();
         term_curs_set(0);
@@ -107,14 +120,20 @@ function hooked_tty_getlin(query, bufp, hook) {
             }
         }
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_intr)) {
-            (cptr.stI32o(ttyDisplay, $DisplayDesc_intr, cptr.ldI32o(ttyDisplay, $DisplayDesc_intr) + -1)) - (-1);
+            (cptr.stI32o(
+                ttyDisplay,
+                $DisplayDesc_intr,
+                cptr.ldI32o(ttyDisplay, $DisplayDesc_intr) + -1
+            )) -
+                    (-1);
             cptr.st1(bufp, 0);
         }
         if (c == 16) {
             let sav = cptr.ldI32o(ttyDisplay, $DisplayDesc_inread);
 
             cptr.stI32o(ttyDisplay, $DisplayDesc_inread, 0);
-            if (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 115 || (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 99 && !doprev)) {
+            if (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 115 ||
+                    (cptr.ld1so(iflags, $instance_flags_prevmsg_window) == 99 && !doprev)) {
                 /* msg_window:single, or msg_window:combination while it's
                    behaving like msg_window:single */
                 if (!doprev)
@@ -159,7 +178,9 @@ function hooked_tty_getlin(query, bufp, hook) {
                 tty_nhbell();
         } else if (c == 10 || c == 13) {
             break;
-        } else if (32 <= uchar(c) && c != 127 && (cptr.diff(bufp, obufp) < 255n && cptr.diff(bufp, obufp) < 80n)) {
+        } else if (32 <= uchar(c) &&
+                c != 127 &&
+                (cptr.diff(bufp, obufp) < 255n && cptr.diff(bufp, obufp) < 80n)) {
             let i = eos(bufp);
             cptr.st1(bufp, schar(c));
             cptr.st1o(bufp, 1, 0);
@@ -189,7 +210,12 @@ function hooked_tty_getlin(query, bufp, hook) {
             tty_nhbell();
     }
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NON_EMPTY);
-    (cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + -1)) - (-1);
+    (cptr.stI32o(
+        ttyDisplay,
+        $DisplayDesc_inread,
+        cptr.ldI32o(ttyDisplay, $DisplayDesc_inread) + -1
+    )) -
+            (-1);
     clear_nhwindow()(WIN_MESSAGE.v);  /* clean up after ourselves */
 
     if (suppress_history) {
@@ -277,15 +303,26 @@ export function tty_get_ext_cmd() {
      *                      ? ext_cmd_getlin_hook
      *                      : (getlin_hook_proc) 0);
      */
-    cptr.st1o(cptr.decay(extcmd_char), 0, extcmd_initiator(), 1), cptr.st1o(cptr.decay(extcmd_char), 1, 0, 1);
+    cptr.st1o(cptr.decay(extcmd_char), 0, extcmd_initiator(), 1),
+            cptr.st1o(cptr.decay(extcmd_char), 1, 0, 1);
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
-    hooked_tty_getlin(cptr.decay(extcmd_char), cptr.decay(buf), !cptr.ldI32(gi) ? ext_cmd_getlin_hook : no_hook);
+    hooked_tty_getlin(
+        cptr.decay(extcmd_char),
+        cptr.decay(buf),
+        !cptr.ldI32(gi) ? ext_cmd_getlin_hook : no_hook
+    );
     void mungspaces(cptr.decay(buf));
 
-    nmatches = (cptr.ld1so(cptr.decay(buf), 0, 1) == 0 || cptr.ld1so(cptr.decay(buf), 0, 1) == 27) ? -1 : extcmds_match(cptr.decay(buf), 3, ecmatches);
+    nmatches = (cptr.ld1so(cptr.decay(buf), 0, 1) == 0 || cptr.ld1so(cptr.decay(buf), 0, 1) == 27)
+            ? -1
+            : extcmds_match(cptr.decay(buf), 3, ecmatches);
     if (nmatches != 1) {
         if (nmatches != -1)
-            pline(__s_s_60s_unknown_extended_command, visctrl(cptr.ld1so(cptr.decay(extcmd_char), 0, 1)), cptr.decay(buf));
+            pline(
+                __s_s_60s_unknown_extended_command,
+                visctrl(cptr.ld1so(cptr.decay(extcmd_char), 0, 1)),
+                cptr.decay(buf)
+            );
         return -1;
     }
 

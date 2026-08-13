@@ -13,14 +13,44 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { has_mgivenname, is_ammo, is_metallic, is_rider, is_wet_towel, ismnum, vampshifted } from './nhmacrofn.js';
-import { Acid_resistance, Adornment, Aggravate_monster, Amphibious, Antimagic, BBlinded, BClairvoyant, BFlying, BInvis, BLevitation, BStealth, Blind, Blind_telepat, BlindedTimeout, Blindfolded_only, Blnd_resist, Breathless, Clairvoyant, Cold_resistance, Conflict, Deaf, Detect_monsters, Disint_resistance, Displaced, Drain_resistance, EBlinded, EClairvoyant, EInvis, EStealth, EWounded_legs, Fast, Fire_resistance, Fixed_abil, Flying, Free_action, Fumbling, Glib, HBlinded, HClairvoyant, HConfusion, HDetect_monsters, HInvis, HProtection, HSleepy, HStealth, HStun, Half_gas_damage, Half_physical_damage, Half_spell_damage, Halluc_resistance, Hallucination, Hunger, Infravision, Invis, Invisible, Invulnerable, Jumping, Lev_at_will, Levitation, Lifesaved, Luck, Passes_walls, PermaBlind, Poison_resistance, Polymorph, Polymorph_control, Protection, Protection_from_shape_changers, Punished, Reflecting, Regeneration, Role_switch, Searching, See_invisible, Shock_resistance, Sick, Sleep_resistance, Sleepy, Slimed, Slow_digestion, Stealth, Stone_resistance, Stoned, Strangled, Swimming, Teleport_control, Teleportation, URIGHTY, U_AP_TYPE, Unchanging, Undead_warning, Underwater, Upolyd, Very_fast, Vomiting, Warn_of_mon, Warning, Wounded_legs, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, putstr, start_menu, wizard } from './nhprop.js';
-import { c_common_strings, cg, flags, ga, gb, ge, gf, gg, gi, gu, gy, iflags, program_state, svc, svd, svk, svl, svm, svp, svs, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball, ublindf, uleft, urealtime, uright, uswapwep, uwep, ynaqchars, ynqchars } from './decl.js';
+import {
+    has_mgivenname, is_ammo, is_metallic, is_rider, is_wet_towel, ismnum, vampshifted
+} from './nhmacrofn.js';
+import {
+    Acid_resistance, Adornment, Aggravate_monster, Amphibious, Antimagic, BBlinded, BClairvoyant,
+    BFlying, BInvis, BLevitation, BStealth, Blind, Blind_telepat, BlindedTimeout, Blindfolded_only,
+    Blnd_resist, Breathless, Clairvoyant, Cold_resistance, Conflict, Deaf, Detect_monsters,
+    Disint_resistance, Displaced, Drain_resistance, EBlinded, EClairvoyant, EInvis, EStealth,
+    EWounded_legs, Fast, Fire_resistance, Fixed_abil, Flying, Free_action, Fumbling, Glib, HBlinded,
+    HClairvoyant, HConfusion, HDetect_monsters, HInvis, HProtection, HSleepy, HStealth, HStun,
+    Half_gas_damage, Half_physical_damage, Half_spell_damage, Halluc_resistance, Hallucination,
+    Hunger, Infravision, Invis, Invisible, Invulnerable, Jumping, Lev_at_will, Levitation,
+    Lifesaved, Luck, Passes_walls, PermaBlind, Poison_resistance, Polymorph, Polymorph_control,
+    Protection, Protection_from_shape_changers, Punished, Reflecting, Regeneration, Role_switch,
+    Searching, See_invisible, Shock_resistance, Sick, Sleep_resistance, Sleepy, Slimed,
+    Slow_digestion, Stealth, Stone_resistance, Stoned, Strangled, Swimming, Teleport_control,
+    Teleportation, URIGHTY, U_AP_TYPE, Unchanging, Undead_warning, Underwater, Upolyd, Very_fast,
+    Vomiting, Warn_of_mon, Warning, Wounded_legs, create_nhwindow, destroy_nhwindow, discover,
+    display_nhwindow, end_menu, putstr, start_menu, wizard
+} from './nhprop.js';
+import {
+    c_common_strings, cg, flags, ga, gb, ge, gf, gg, gi, gu, gy, iflags, program_state, svc, svd,
+    svk, svl, svm, svp, svs, u, uamul, uarm, uarmc, uarmf, uarmg, uarmh, uarms, uarmu, uball,
+    ublindf, uleft, urealtime, uright, uswapwep, uwep, ynaqchars, ynqchars
+} from './decl.js';
 import { add_menu, add_menu_str, select_menu, windowprocs } from './windows.js';
-import { digit, eos, highc, lcase, lowc, mungspaces, nh_deterministic_qsort, nh_snprintf, ordin, s_suffix, strncmpi, strstri, strsubst, upstart } from './hacklib.js';
-import { an, ansimpleoname, just_an, makeplural, reorder_fruit, shield_simple_name, simple_typename, simpleonames, suit_simple_name, the } from './objnam.js';
+import {
+    digit, eos, highc, lcase, lowc, mungspaces, nh_deterministic_qsort, nh_snprintf, ordin,
+    s_suffix, strncmpi, strstri, strsubst, upstart
+} from './hacklib.js';
+import {
+    an, ansimpleoname, just_an, makeplural, reorder_fruit, shield_simple_name, simple_typename,
+    simpleonames, suit_simple_name, the
+} from './objnam.js';
 import { acurr, attrname, from_what, stone_luck } from './attrib.js';
-import { In_quest, ceiling, depth, dunlev, endgamelevelname, has_ceiling, on_level, surface } from './dungeon.js';
+import {
+    In_quest, ceiling, depth, dunlev, endgamelevelname, has_ceiling, on_level, surface
+} from './dungeon.js';
 import { is_lava, is_pool, is_pool_or_lava } from './dbridge.js';
 import { a_monnam, hliquid, pmname, x_monnam } from './do_name.js';
 import { t_at, trapname } from './trap.js';
@@ -62,111 +92,127 @@ import { reg_damg, visible_region_at } from './region.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Race_adj = FLD.Race_adj, $Race_attrmax = FLD.Race_attrmax, $RoleName_f = FLD.RoleName_f,
-    $Role_allow = FLD.Role_allow, $Role_mnum = FLD.Role_mnum, $Role_spelarmr = FLD.Role_spelarmr,
-    $achievement_tracking_mines_prize_otyp = FLD.achievement_tracking_mines_prize_otyp,
-    $achievement_tracking_soko_prize_otyp = FLD.achievement_tracking_soko_prize_otyp,
-    $align_record = FLD.align_record, $c_common_strings_c_something = FLD.c_common_strings_c_something,
-    $class_sym_explain = FLD.class_sym_explain, $color_and_attr_attr = FLD.color_and_attr_attr,
-    $const_globals_zeroany = FLD.const_globals_zeroany, $context_info_achieveo = FLD.context_info_achieveo,
-    $context_info_warntype = FLD.context_info_warntype, $contrctn_contrctn = FLD.contrctn_contrctn,
-    $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_bigroom_level = FLD.dgn_topology_d_bigroom_level,
-    $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
-    $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
-    $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level, $dlevel_t_objects = FLD.dlevel_t_objects,
-    $edog_apport = FLD.edog_apport, $edog_hungrytime = FLD.edog_hungrytime, $flag_bones = FLD.flag_bones,
-    $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female,
-    $flag_friday13 = FLD.flag_friday13, $flag_initgend = FLD.flag_initgend,
-    $flag_made_fruit = FLD.flag_made_fruit, $flag_moonphase = FLD.flag_moonphase,
-    $flag_pickup = FLD.flag_pickup, $flag_pickup_thrown = FLD.flag_pickup_thrown,
-    $flag_pickup_types = FLD.flag_pickup_types, $flag_vanq_sortmode = FLD.flag_vanq_sortmode,
-    $fruit_fid = FLD.fruit_fid, $fruit_nextf = FLD.fruit_nextf, $gamelog_line_flags = FLD.gamelog_line_flags,
-    $gamelog_line_next = FLD.gamelog_line_next, $gamelog_line_text = FLD.gamelog_line_text,
-    $instance_flags_at_midnight = FLD.instance_flags_at_midnight,
-    $instance_flags_at_night = FLD.instance_flags_at_night,
-    $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
-    $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
-    $instance_flags_tux_penalty = FLD.instance_flags_tux_penalty,
-    $instance_globals_a_apelist = FLD.instance_globals_a_apelist,
-    $instance_globals_b_bhitpos = FLD.instance_globals_b_bhitpos,
-    $instance_globals_e_en_via_menu = FLD.instance_globals_e_en_via_menu,
-    $instance_globals_f_ffruit = FLD.instance_globals_f_ffruit,
-    $instance_globals_g_gamelog = FLD.instance_globals_g_gamelog,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
-    $instance_globals_saved_p_pl_fruit = FLD.instance_globals_saved_p_pl_fruit,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_name = FLD.kinfo_name,
-    $ll_achieve_msg_msg = FLD.ll_achieve_msg_msg, $mextra_edog = FLD.mextra_edog,
-    $monst_cham = FLD.monst_cham, $monst_data = FLD.monst_data, $monst_isminion = FLD.monst_isminion,
-    $monst_m_ap_type = FLD.monst_m_ap_type, $monst_m_lev = FLD.monst_m_lev,
-    $monst_mappearance = FLD.monst_mappearance, $monst_mblinded = FLD.monst_mblinded,
-    $monst_mcan = FLD.monst_mcan, $monst_mcanmove = FLD.monst_mcanmove, $monst_mcansee = FLD.monst_mcansee,
-    $monst_mconf = FLD.monst_mconf, $monst_meating = FLD.monst_meating, $monst_mextra = FLD.monst_mextra,
-    $monst_mflee = FLD.monst_mflee, $monst_mfrozen = FLD.monst_mfrozen, $monst_mhp = FLD.monst_mhp,
-    $monst_mhpmax = FLD.monst_mhpmax, $monst_minvis = FLD.monst_minvis, $monst_mleashed = FLD.monst_mleashed,
-    $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
-    $monst_mspeed = FLD.monst_mspeed, $monst_mstrategy = FLD.monst_mstrategy, $monst_mstun = FLD.monst_mstun,
-    $monst_mtame = FLD.monst_mtame, $monst_mtrapped = FLD.monst_mtrapped,
-    $monst_mundetected = FLD.monst_mundetected, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
-    $mvitals_died = FLD.mvitals_died, $mvitals_mvflags = FLD.mvitals_mvflags, $nhcoord_y = FLD.nhcoord_y,
-    $obj_cursed = FLD.obj_cursed, $obj_dknown = FLD.obj_dknown, $obj_oclass = FLD.obj_oclass,
-    $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_quan = FLD.obj_quan,
-    $obj_spe = FLD.obj_spe, $objclass_oc_material = FLD.objclass_oc_material,
-    $objclass_oc_name_known = FLD.objclass_oc_name_known, $objclass_oc_oprop = FLD.objclass_oc_oprop,
-    $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $permonst_difficulty = FLD.permonst_difficulty,
-    $permonst_geno = FLD.permonst_geno, $permonst_mflags1 = FLD.permonst_mflags1,
-    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
-    $permonst_mlevel = FLD.permonst_mlevel, $permonst_msize = FLD.permonst_msize,
-    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $sinfo_stopprint = FLD.sinfo_stopprint, $sizeof_Gender = FLD.sizeof_Gender,
-    $sizeof_class_sym = FLD.sizeof_class_sym, $sizeof_contrctn = FLD.sizeof_contrctn,
-    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_ll_achieve_msg = FLD.sizeof_ll_achieve_msg,
-    $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_mvitals = FLD.sizeof_mvitals,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
-    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
-    $sizeof_skills = FLD.sizeof_skills, $sizeof_spell = FLD.sizeof_spell, $trap_ttyp = FLD.trap_ttyp,
-    $u_conduct_food = FLD.u_conduct_food, $u_conduct_gnostic = FLD.u_conduct_gnostic,
-    $u_conduct_killer = FLD.u_conduct_killer, $u_conduct_literate = FLD.u_conduct_literate,
-    $u_conduct_pets = FLD.u_conduct_pets, $u_conduct_polypiles = FLD.u_conduct_polypiles,
-    $u_conduct_polyselfs = FLD.u_conduct_polyselfs, $u_conduct_sokocheat = FLD.u_conduct_sokocheat,
-    $u_conduct_unvegan = FLD.u_conduct_unvegan, $u_conduct_weaphit = FLD.u_conduct_weaphit,
-    $u_conduct_wisharti = FLD.u_conduct_wisharti, $u_conduct_wishes = FLD.u_conduct_wishes,
-    $u_event_ascended = FLD.u_event_ascended, $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth,
-    $u_have_bell = FLD.u_have_bell, $u_have_book = FLD.u_have_book, $u_have_menorah = FLD.u_have_menorah,
-    $u_realtime_start_timing = FLD.u_realtime_start_timing, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $u_roleplay_nudist = FLD.u_roleplay_nudist, $u_roleplay_numbones = FLD.u_roleplay_numbones,
-    $u_roleplay_numrerolls = FLD.u_roleplay_numrerolls, $u_roleplay_pauper = FLD.u_roleplay_pauper,
-    $u_roleplay_reroll = FLD.u_roleplay_reroll, $warntype_info_polyd = FLD.warntype_info_polyd,
-    $warntype_info_speciesidx = FLD.warntype_info_speciesidx,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_acurr = FLD.you_acurr,
-    $you_amax = FLD.you_amax, $you_mfemale = FLD.you_mfemale, $you_mh = FLD.you_mh,
-    $you_mhmax = FLD.you_mhmax, $you_moreluck = FLD.you_moreluck, $you_mtimedone = FLD.you_mtimedone,
-    $you_twoweap = FLD.you_twoweap, $you_uac = FLD.you_uac, $you_uachieved = FLD.you_uachieved,
-    $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase, $you_ublesscnt = FLD.you_ublesscnt,
-    $you_ublessed = FLD.you_ublessed, $you_uburied = FLD.you_uburied, $you_uconduct = FLD.you_uconduct,
-    $you_ucreamed = FLD.you_ucreamed, $you_udaminc = FLD.you_udaminc, $you_uedibility = FLD.you_uedibility,
-    $you_uen = FLD.you_uen, $you_uenmax = FLD.you_uenmax, $you_uevent = FLD.you_uevent,
-    $you_uexp = FLD.you_uexp, $you_ugangr = FLD.you_ugangr, $you_uhandedness = FLD.you_uhandedness,
-    $you_uhave = FLD.you_uhave, $you_uhitinc = FLD.you_uhitinc, $you_uhp = FLD.you_uhp,
-    $you_uhpmax = FLD.you_uhpmax, $you_uhs = FLD.you_uhs, $you_uhunger = FLD.you_uhunger,
-    $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel, $you_uluck = FLD.you_uluck,
-    $you_ulycn = FLD.you_ulycn, $you_umconf = FLD.you_umconf, $you_umonnum = FLD.you_umonnum,
-    $you_umonster = FLD.you_umonster, $you_umortality = FLD.you_umortality, $you_uprops = FLD.you_uprops,
-    $you_uroleplay = FLD.you_uroleplay, $you_usick_type = FLD.you_usick_type,
-    $you_uspellprot = FLD.you_uspellprot, $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck,
-    $you_uswallow = FLD.you_uswallow, $you_uswldtim = FLD.you_uswldtim, $you_utrap = FLD.you_utrap,
-    $you_utraptype = FLD.you_utraptype, $you_uundetected = FLD.you_uundetected, $you_uy = FLD.you_uy,
-    $you_uz = FLD.you_uz, $you_weapon_skills = FLD.you_weapon_skills;
+      $Role_allow = FLD.Role_allow, $Role_mnum = FLD.Role_mnum, $Role_spelarmr = FLD.Role_spelarmr,
+      $achievement_tracking_mines_prize_otyp = FLD.achievement_tracking_mines_prize_otyp,
+      $achievement_tracking_soko_prize_otyp = FLD.achievement_tracking_soko_prize_otyp,
+      $align_record = FLD.align_record,
+      $c_common_strings_c_something = FLD.c_common_strings_c_something,
+      $class_sym_explain = FLD.class_sym_explain, $color_and_attr_attr = FLD.color_and_attr_attr,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $context_info_achieveo = FLD.context_info_achieveo,
+      $context_info_warntype = FLD.context_info_warntype,
+      $contrctn_contrctn = FLD.contrctn_contrctn, $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dgn_topology_d_bigroom_level = FLD.dgn_topology_d_bigroom_level,
+      $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
+      $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
+      $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
+      $dlevel_t_objects = FLD.dlevel_t_objects, $edog_apport = FLD.edog_apport,
+      $edog_hungrytime = FLD.edog_hungrytime, $flag_bones = FLD.flag_bones,
+      $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore,
+      $flag_female = FLD.flag_female, $flag_friday13 = FLD.flag_friday13,
+      $flag_initgend = FLD.flag_initgend, $flag_made_fruit = FLD.flag_made_fruit,
+      $flag_moonphase = FLD.flag_moonphase, $flag_pickup = FLD.flag_pickup,
+      $flag_pickup_thrown = FLD.flag_pickup_thrown, $flag_pickup_types = FLD.flag_pickup_types,
+      $flag_vanq_sortmode = FLD.flag_vanq_sortmode, $fruit_fid = FLD.fruit_fid,
+      $fruit_nextf = FLD.fruit_nextf, $gamelog_line_flags = FLD.gamelog_line_flags,
+      $gamelog_line_next = FLD.gamelog_line_next, $gamelog_line_text = FLD.gamelog_line_text,
+      $instance_flags_at_midnight = FLD.instance_flags_at_midnight,
+      $instance_flags_at_night = FLD.instance_flags_at_night,
+      $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
+      $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
+      $instance_flags_tux_penalty = FLD.instance_flags_tux_penalty,
+      $instance_globals_a_apelist = FLD.instance_globals_a_apelist,
+      $instance_globals_b_bhitpos = FLD.instance_globals_b_bhitpos,
+      $instance_globals_e_en_via_menu = FLD.instance_globals_e_en_via_menu,
+      $instance_globals_f_ffruit = FLD.instance_globals_f_ffruit,
+      $instance_globals_g_gamelog = FLD.instance_globals_g_gamelog,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+      $instance_globals_saved_p_pl_fruit = FLD.instance_globals_saved_p_pl_fruit,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $kinfo_name = FLD.kinfo_name,
+      $ll_achieve_msg_msg = FLD.ll_achieve_msg_msg, $mextra_edog = FLD.mextra_edog,
+      $monst_cham = FLD.monst_cham, $monst_data = FLD.monst_data,
+      $monst_isminion = FLD.monst_isminion, $monst_m_ap_type = FLD.monst_m_ap_type,
+      $monst_m_lev = FLD.monst_m_lev, $monst_mappearance = FLD.monst_mappearance,
+      $monst_mblinded = FLD.monst_mblinded, $monst_mcan = FLD.monst_mcan,
+      $monst_mcanmove = FLD.monst_mcanmove, $monst_mcansee = FLD.monst_mcansee,
+      $monst_mconf = FLD.monst_mconf, $monst_meating = FLD.monst_meating,
+      $monst_mextra = FLD.monst_mextra, $monst_mflee = FLD.monst_mflee,
+      $monst_mfrozen = FLD.monst_mfrozen, $monst_mhp = FLD.monst_mhp,
+      $monst_mhpmax = FLD.monst_mhpmax, $monst_minvis = FLD.monst_minvis,
+      $monst_mleashed = FLD.monst_mleashed, $monst_mpeaceful = FLD.monst_mpeaceful,
+      $monst_msleeping = FLD.monst_msleeping, $monst_mspeed = FLD.monst_mspeed,
+      $monst_mstrategy = FLD.monst_mstrategy, $monst_mstun = FLD.monst_mstun,
+      $monst_mtame = FLD.monst_mtame, $monst_mtrapped = FLD.monst_mtrapped,
+      $monst_mundetected = FLD.monst_mundetected, $monst_mx = FLD.monst_mx,
+      $monst_my = FLD.monst_my, $mvitals_died = FLD.mvitals_died,
+      $mvitals_mvflags = FLD.mvitals_mvflags, $nhcoord_y = FLD.nhcoord_y,
+      $obj_cursed = FLD.obj_cursed, $obj_dknown = FLD.obj_dknown, $obj_oclass = FLD.obj_oclass,
+      $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_quan = FLD.obj_quan,
+      $obj_spe = FLD.obj_spe, $objclass_oc_material = FLD.objclass_oc_material,
+      $objclass_oc_name_known = FLD.objclass_oc_name_known,
+      $objclass_oc_oprop = FLD.objclass_oc_oprop, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
+      $permonst_difficulty = FLD.permonst_difficulty, $permonst_geno = FLD.permonst_geno,
+      $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
+      $permonst_mlet = FLD.permonst_mlet, $permonst_mlevel = FLD.permonst_mlevel,
+      $permonst_msize = FLD.permonst_msize, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $sinfo_stopprint = FLD.sinfo_stopprint,
+      $sizeof_Gender = FLD.sizeof_Gender, $sizeof_class_sym = FLD.sizeof_class_sym,
+      $sizeof_contrctn = FLD.sizeof_contrctn, $sizeof_dungeon = FLD.sizeof_dungeon,
+      $sizeof_ll_achieve_msg = FLD.sizeof_ll_achieve_msg, $sizeof_menu_item = FLD.sizeof_menu_item,
+      $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_skills = FLD.sizeof_skills,
+      $sizeof_spell = FLD.sizeof_spell, $trap_ttyp = FLD.trap_ttyp,
+      $u_conduct_food = FLD.u_conduct_food, $u_conduct_gnostic = FLD.u_conduct_gnostic,
+      $u_conduct_killer = FLD.u_conduct_killer, $u_conduct_literate = FLD.u_conduct_literate,
+      $u_conduct_pets = FLD.u_conduct_pets, $u_conduct_polypiles = FLD.u_conduct_polypiles,
+      $u_conduct_polyselfs = FLD.u_conduct_polyselfs,
+      $u_conduct_sokocheat = FLD.u_conduct_sokocheat, $u_conduct_unvegan = FLD.u_conduct_unvegan,
+      $u_conduct_weaphit = FLD.u_conduct_weaphit, $u_conduct_wisharti = FLD.u_conduct_wisharti,
+      $u_conduct_wishes = FLD.u_conduct_wishes, $u_event_ascended = FLD.u_event_ascended,
+      $u_event_uhand_of_elbereth = FLD.u_event_uhand_of_elbereth, $u_have_bell = FLD.u_have_bell,
+      $u_have_book = FLD.u_have_book, $u_have_menorah = FLD.u_have_menorah,
+      $u_realtime_start_timing = FLD.u_realtime_start_timing,
+      $u_roleplay_deaf = FLD.u_roleplay_deaf, $u_roleplay_nudist = FLD.u_roleplay_nudist,
+      $u_roleplay_numbones = FLD.u_roleplay_numbones,
+      $u_roleplay_numrerolls = FLD.u_roleplay_numrerolls,
+      $u_roleplay_pauper = FLD.u_roleplay_pauper, $u_roleplay_reroll = FLD.u_roleplay_reroll,
+      $warntype_info_polyd = FLD.warntype_info_polyd,
+      $warntype_info_speciesidx = FLD.warntype_info_speciesidx,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_acurr = FLD.you_acurr,
+      $you_amax = FLD.you_amax, $you_mfemale = FLD.you_mfemale, $you_mh = FLD.you_mh,
+      $you_mhmax = FLD.you_mhmax, $you_moreluck = FLD.you_moreluck,
+      $you_mtimedone = FLD.you_mtimedone, $you_twoweap = FLD.you_twoweap, $you_uac = FLD.you_uac,
+      $you_uachieved = FLD.you_uachieved, $you_ualign = FLD.you_ualign,
+      $you_ualignbase = FLD.you_ualignbase, $you_ublesscnt = FLD.you_ublesscnt,
+      $you_ublessed = FLD.you_ublessed, $you_uburied = FLD.you_uburied,
+      $you_uconduct = FLD.you_uconduct, $you_ucreamed = FLD.you_ucreamed,
+      $you_udaminc = FLD.you_udaminc, $you_uedibility = FLD.you_uedibility, $you_uen = FLD.you_uen,
+      $you_uenmax = FLD.you_uenmax, $you_uevent = FLD.you_uevent, $you_uexp = FLD.you_uexp,
+      $you_ugangr = FLD.you_ugangr, $you_uhandedness = FLD.you_uhandedness,
+      $you_uhave = FLD.you_uhave, $you_uhitinc = FLD.you_uhitinc, $you_uhp = FLD.you_uhp,
+      $you_uhpmax = FLD.you_uhpmax, $you_uhs = FLD.you_uhs, $you_uhunger = FLD.you_uhunger,
+      $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel, $you_uluck = FLD.you_uluck,
+      $you_ulycn = FLD.you_ulycn, $you_umconf = FLD.you_umconf, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_umortality = FLD.you_umortality,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_usick_type = FLD.you_usick_type, $you_uspellprot = FLD.you_uspellprot,
+      $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
+      $you_uswldtim = FLD.you_uswldtim, $you_utrap = FLD.you_utrap,
+      $you_utraptype = FLD.you_utraptype, $you_uundetected = FLD.you_uundetected,
+      $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_weapon_skills = FLD.you_weapon_skills;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
@@ -1024,7 +1070,13 @@ cptr.stPtro(__static_enlght_line_contra, 64 + $contrctn_contrctn, __s_can_t);
 cptr.stPtro(__static_enlght_line_contra, 80, __s_could_not);
 cptr.stPtro(__static_enlght_line_contra, 80 + $contrctn_contrctn, __s_couldn_t); /** C ref: insight.c:136 — struct contrctn[6] (function-static) */
 
-/** C ref: insight.c:127 — @param {CPtr<char>} start @param {CPtr<char>} middle @param {CPtr<char>} end @param {CPtr<char>} ps */
+/**
+ * C ref: insight.c:127
+ * @param {CPtr<char>} start
+ * @param {CPtr<char>} middle
+ * @param {CPtr<char>} end
+ * @param {CPtr<char>} ps
+ */
 function* enlght_line(start, middle, end, ps) {
     let i;
     let buf = new Uint8Array(256);
@@ -1032,13 +1084,24 @@ function* enlght_line(start, middle, end, ps) {
     void cptr.sprintf(cptr.decay(buf), __s_s_s_s_s, start, middle, end, ps);
     if ((yield* strstri(cptr.decay(buf), __s_not))) {
         for (i = 0; i < 6; ++i)
-            void strsubst(cptr.decay(buf), cptr.ldPtro(__static_enlght_line_contra, i, $sizeof_contrctn), cptr.ldPtro2(__static_enlght_line_contra, i, $sizeof_contrctn, $contrctn_contrctn));
+            void strsubst(
+                cptr.decay(buf),
+                cptr.ldPtro(__static_enlght_line_contra, i, $sizeof_contrctn),
+                cptr.ldPtro2(__static_enlght_line_contra, i, $sizeof_contrctn, $contrctn_contrctn)
+            );
     }
     (yield* enlght_out(cptr.decay(buf)));
 }
 
 /* format increased chance to hit or damage or defense (Protection) */
-/** C ref: insight.c:160 — @param {CPtr<char>} inctyp @param {CInt} incamt @param {CInt} final @param {CPtr<char>} outbuf @returns {CPtr<char>} */
+/**
+ * C ref: insight.c:160
+ * @param {CPtr<char>} inctyp
+ * @param {CInt} incamt
+ * @param {CInt} final
+ * @param {CPtr<char>} outbuf
+ * @returns {CPtr<char>}
+ */
 function* enlght_combatinc(inctyp, incamt, final, outbuf) {
     let modif;
     let bonus;
@@ -1090,8 +1153,18 @@ function* enlght_halfdmg(category, final) {
         category_name = __s_unknown;
         break;
     }
-    void cptr.sprintf(cptr.decay(buf), __s_s_s_damage, (final || wizard()) ? __s_half : __s_reduced, category_name);
-    (yield* enlght_line(cptr.decay((You_)), final ? (__s_took) : (__s_take), cptr.decay((buf)), ((yield* from_what(category)))));
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_s_s_damage,
+        (final || wizard()) ? __s_half : __s_reduced,
+        category_name
+    );
+    (yield* enlght_line(
+        cptr.decay((You_)),
+        final ? (__s_took) : (__s_take),
+        cptr.decay((buf)),
+        ((yield* from_what(category)))
+    ));
 }
 
 /* is hero actively using water walking capability on water (or lava)? */
@@ -1099,11 +1172,39 @@ function* enlght_halfdmg(category, final) {
 function walking_on_water() {
     if ((cptr.ldI32o(u, $you_uinwater) & 1) | 0 || Levitation() || Flying())
         return 0;
-    return schar((((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0));
+    return schar((((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+        cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) &&
+        !(((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                )
+            )))) &&
+        is_pool_or_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+            ? 1
+            : 0));
 }
 
 /* describe u.utraptype; used by status_enlightenment() and self_lookat() */
-/** C ref: insight.c:233 — @param {CPtr<char>} outbuf @param {CInt} final @param {CInt} wizxtra @returns {CPtr<char>} */
+/**
+ * C ref: insight.c:233
+ * @param {CPtr<char>} outbuf
+ * @param {CInt} final
+ * @param {CInt} wizxtra
+ * @returns {CPtr<char>}
+ */
 export function* trap_predicament(outbuf, final, wizxtra) {
     let t;
 
@@ -1117,12 +1218,20 @@ export function* trap_predicament(outbuf, final, wizxtra) {
         void cptr.sprintf(outbuf, __s_sinking_into_s, final ? __s_lava : hliquid(__s_lava));
         break;
         case NHC.TT_INFLOOR:
-        void cptr.sprintf(outbuf, __s_stuck_in_s, (yield* the(surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))));
+        void cptr.sprintf(
+            outbuf,
+            __s_stuck_in_s,
+            (yield* the(surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))))
+        );
         break;
         default:
         void cptr.strcpy(outbuf, __s_trapped);
         if ((t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null)
-            void cptr.sprintf(eos(outbuf), __s_in_s, (yield* an((yield* trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0)))));
+            void cptr.sprintf(
+                eos(outbuf),
+                __s_in_s,
+                (yield* an((yield* trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0))))
+            );
         break;
     }
     if (wizxtra) {
@@ -1146,14 +1255,28 @@ function cause_known(propindx) {
     for (o = cptr.ldPtro(gi, $instance_globals_i_invent); o; o = cptr.ldPtr(o)) {
         if (!(cptr.ldI64o(o, $obj_owornmask) & mask))
             continue;
-        if (cptr.ld1uo2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) == propindx && (cptr.ldI32o2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 && (cptr.ldI32o(o, $obj_dknown) & 1) | 0)
+        if (cptr.ld1uo2(objects, cptr.ldI16o(o, $obj_otyp), $sizeof_objclass, $objclass_oc_oprop) ==
+            propindx &&
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(o, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_name_known
+                ) & 1) | 0 &&
+                (cptr.ldI32o(o, $obj_dknown) & 1) | 0)
             return 1;
     }
     return 0;
 }
 
 /* format a characteristic value, accommodating Strength's strangeness */
-/** C ref: insight.c:287 — @param {CInt} attrindx @param {CInt} attrvalue @param {CPtr<char>} resultbuf @returns {CPtr<char>} */
+/**
+ * C ref: insight.c:287
+ * @param {CInt} attrindx
+ * @param {CInt} attrvalue
+ * @param {CPtr<char>} resultbuf
+ * @returns {CPtr<char>}
+ */
 function attrval(attrindx, attrvalue, resultbuf) {
     if (attrindx != NHC.A_STR || attrvalue <= 18)
         void cptr.sprintf(resultbuf, __s_pct_d, attrvalue);
@@ -1209,19 +1332,34 @@ function* fmt_elapsed_time(outbuf, final) {
         --fieldcnt;  /* edays has been processed */
     }
     if (ehours) {
-        void cptr.sprintf(eos(outbuf), __s_ld_hour_s, ehours, (((ehours) == 1n) ? __s_empty : __s_s));
+        void cptr.sprintf(
+            eos(outbuf),
+            __s_ld_hour_s,
+            ehours,
+            (((ehours) == 1n) ? __s_empty : __s_s)
+        );
         if (fieldcnt > 1)
             void cptr.strcat(outbuf, (fieldcnt == 2) ? __s_and : __s_comma);
         --fieldcnt;  /* ehours has been processed */
     }
     if (eminutes) {
-        void cptr.sprintf(eos(outbuf), __s_ld_minute_s, eminutes, (((eminutes) == 1n) ? __s_empty : __s_s));
+        void cptr.sprintf(
+            eos(outbuf),
+            __s_ld_minute_s,
+            eminutes,
+            (((eminutes) == 1n) ? __s_empty : __s_s)
+        );
         if (fieldcnt > 1)
             void cptr.strcat(outbuf, __s_and);
         /* eminutes has been processed but no need to decrement fieldcnt */
     }
     if (eseconds)
-        void cptr.sprintf(eos(outbuf), __s_ld_second_s, eseconds, (((eseconds) == 1n) ? __s_empty : __s_s));
+        void cptr.sprintf(
+            eos(outbuf),
+            __s_ld_second_s,
+            eseconds,
+            (((eseconds) == 1n) ? __s_empty : __s_s)
+        );
     return outbuf;
 }
 
@@ -1260,7 +1398,18 @@ export function* enlightenment(mode, final) {
     cptr.st1(cptr.decay(tmpbuf), highc(cptr.ld1s(cptr.decay(tmpbuf))));  /* same adjustment as bottom line */
     /* as in background_enlightenment, when poly'd we need to use the saved
        gender in u.mfemale rather than the current you-as-monster gender */
-    nh_snprintf(__s_enlightenment, 401, cptr.decay(buf), 256n, __s_s_the_s_s_attributes, cptr.decay(tmpbuf), ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole));
+    nh_snprintf(
+        __s_enlightenment,
+        401,
+        cptr.decay(buf),
+        256n,
+        __s_s_the_s_s_attributes,
+        cptr.decay(tmpbuf),
+        ((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) &&
+            cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
+            ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
+            : cptr.ldPtro(gu, $instance_globals_u_urole)
+    );
 
     /* title */
     (yield* enlght_out(cptr.decay(buf)));  /* "Conan the Archeologist's attributes:" */
@@ -1289,23 +1438,63 @@ export function* enlightenment(mode, final) {
     /* reminder to player and/or information for dumplog */
     if ((mode & NHM.BASICENLIGHTENMENT) != 0 && (wizard() || discover() || final)) {
         if (wizard() || discover()) {
-            void cptr.sprintf(cptr.decay(buf), __s_running_in_s_mode, wizard() ? __s_debug : __s_explore);
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_running_in_s_mode,
+                wizard() ? __s_debug : __s_explore
+            );
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                cptr.decay(((buf))),
+                ((__s_empty))
+            ));
         }
 
         if (!cptr.ld1so(flags, $flag_bones)) {
             /* mention not saving bones iff hero just died */
-            void cptr.sprintf(cptr.decay(buf), __s_disabled_loading_s_of_bones_levels, (final == NHM.ENL_GAMEOVERDEAD) ? __s_and_storing : __s_empty);
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_disabled_loading_s_of_bones_levels,
+                (final == NHM.ENL_GAMEOVERDEAD) ? __s_and_storing : __s_empty
+            );
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                cptr.decay(((buf))),
+                (__s_empty)
+            ));
         } else if (!cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones)) {
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_didn_t_encounter) : (__s_haven_t_encountered), (__s_any_bones_levels), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_didn_t_encounter) : (__s_haven_t_encountered),
+                (__s_any_bones_levels),
+                (__s_empty)
+            ));
         } else {
-            void cptr.sprintf(cptr.decay(buf), __s_encountered_ld_bones_level_s, cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones), (((cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones)) == 1n) ? __s_empty : __s_s));
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_encountered_ld_bones_level_s,
+                cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones),
+                (((cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numbones)) == 1n)
+                    ? __s_empty
+                    : __s_s)
+            );
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                cptr.decay(((buf))),
+                (__s_empty)
+            ));
         }
     }
     void (yield* fmt_elapsed_time(cptr.decay(buf), final));
-    (yield* enlght_line((__s_total_elapsed_playing_time), final ? (__s_was) : (__s_is), cptr.decay((buf)), (__s_empty)));
+    (yield* enlght_line(
+        (__s_total_elapsed_playing_time),
+        final ? (__s_was) : (__s_is),
+        cptr.decay((buf)),
+        (__s_empty)
+    ));
 
     if (!cptr.ld1so(ge, $instance_globals_e_en_via_menu)) {
         (yield* Y.icall(display_nhwindow()(cptr.ldI32(ge), 1)));
@@ -1335,8 +1524,14 @@ function* background_enlightenment(unused_mode, final) {
 
     /* note that if poly'd, we need to use u.mfemale instead of flags.female
        to access hero's saved gender-as-human/elf/&c rather than current */
-    innategend = (Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)) ? 1 : 0;
-    role_titl = (innategend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole);
+    innategend = (Upolyd()
+        ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
+        : cptr.ld1so(flags, $flag_female))
+            ? 1
+            : 0;
+    role_titl = (innategend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
+            ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
+            : cptr.ldPtro(gu, $instance_globals_u_urole);
     rank_titl = rank_of(cptr.ldI32o(u, $you_ulevel), Role_switch(), schar(innategend));
 
     (yield* enlght_out(__s_empty));  /* separator after title */
@@ -1355,42 +1550,127 @@ function* background_enlightenment(unused_mode, final) {
 
         cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
         /* here we always use current gender, not saved role gender */
-        if (!((cptr.ldU64o((uasmon), $permonst_mflags2) & 65536n) != 0n) && !((cptr.ldU64o((uasmon), $permonst_mflags2) & 131072n) != 0n) && !((cptr.ldU64o((uasmon), $permonst_mflags2) & 262144n) != 0n))
-            void cptr.sprintf(cptr.decay(tmpbuf), __s_pct_s_sp, cptr.ldPtro(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender));
+        if (!((cptr.ldU64o((uasmon), $permonst_mflags2) & 65536n) != 0n) &&
+                !((cptr.ldU64o((uasmon), $permonst_mflags2) & 131072n) != 0n) &&
+                !((cptr.ldU64o((uasmon), $permonst_mflags2) & 262144n) != 0n))
+            void cptr.sprintf(
+                cptr.decay(tmpbuf),
+                __s_pct_s_sp,
+                cptr.ldPtro(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender)
+            );
         if (altphrasing)
-            void cptr.sprintf(eos(cptr.decay(tmpbuf)), __s_s_in, pmname(cptr.add(mons, cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham), $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
-        nh_snprintf(__s_background_enlightenment, 506, cptr.decay(buf), 256n, __s_s_s_s_s_form, !final ? __s_currently : __s_empty, altphrasing ? (yield* just_an(cptr.decay(anbuf), cptr.decay(tmpbuf))) : __s_in, cptr.decay(tmpbuf), pmname(uasmon, cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                eos(cptr.decay(tmpbuf)),
+                __s_s_in,
+                pmname(
+                    cptr.add(
+                        mons,
+                        cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham),
+                        $sizeof_permonst
+                    ),
+                    cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
+                )
+            );
+        nh_snprintf(
+            __s_background_enlightenment,
+            506,
+            cptr.decay(buf),
+            256n,
+            __s_s_s_s_s_form,
+            !final ? __s_currently : __s_empty,
+            altphrasing ? (yield* just_an(cptr.decay(anbuf), cptr.decay(tmpbuf))) : __s_in,
+            cptr.decay(tmpbuf),
+            pmname(uasmon, cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE)
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
 
     /* report role; omit gender if it's redundant (eg, "female priestess") */
     cptr.st1o(cptr.decay(tmpbuf), 0, 0, 1);
-    if (!cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) && ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) & NHM.ROLE_GENDMASK) == 12288 || innategend != cptr.ldI32o(flags, $flag_initgend)))
-        void cptr.sprintf(cptr.decay(tmpbuf), __s_pct_s_sp, cptr.ldPtro(genders, innategend, $sizeof_Gender));
+    if (!cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) &&
+            ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) & NHM.ROLE_GENDMASK) ==
+                12288 ||
+                innategend != cptr.ldI32o(flags, $flag_initgend)))
+        void cptr.sprintf(
+            cptr.decay(tmpbuf),
+            __s_pct_s_sp,
+            cptr.ldPtro(genders, innategend, $sizeof_Gender)
+        );
     cptr.st1o(cptr.decay(buf), 0, 0, 1);
     if (Upolyd())
         void cptr.strcpy(cptr.decay(buf), __s_actually);  /* "You are actually a ..." */
     if (!(yield* strncmpi((rank_titl), (role_titl), -1))) {
         /* omit role when rank title matches it */
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_s_level_d_s_s, (yield* an(rank_titl)), cptr.ldI32o(u, $you_ulevel), cptr.decay(tmpbuf), cptr.ldPtro(gu, $instance_globals_u_urace));
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_s_level_d_s_s,
+            (yield* an(rank_titl)),
+            cptr.ldI32o(u, $you_ulevel),
+            cptr.decay(tmpbuf),
+            cptr.ldPtro(gu, $instance_globals_u_urace)
+        );
     } else {
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_s_a_level_d_s_s_s, (yield* an(rank_titl)), cptr.ldI32o(u, $you_ulevel), cptr.decay(tmpbuf), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj), role_titl);
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_s_a_level_d_s_s_s,
+            (yield* an(rank_titl)),
+            cptr.ldI32o(u, $you_ulevel),
+            cptr.decay(tmpbuf),
+            cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj),
+            role_titl
+        );
     }
-    (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+    (yield* enlght_line(
+        cptr.decay((You_)),
+        final ? cptr.decay((were)) : cptr.decay((are)),
+        cptr.decay(((buf))),
+        ((__s_empty))
+    ));
 
     /* report alignment (bypass you_are() in order to omit ending period);
        adverb is used to distinguish between temporary change (helm of opp.
        alignment), permanent change (one-time conversion), and original */
-    void cptr.sprintf(cptr.decay(buf), __s_s_s_s_son_a_mission_for_s, cptr.decay(You_), !final ? cptr.decay(are) : cptr.decay(were), align_str(cptr.ld1so(u, $you_ualign)), (cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)) ? (!final ? __s_currently : __s_temporarily) : ((cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) ? (!final ? __s_now : __s_belatedly) : ((!cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) && cptr.ldI64o(svm, $instance_globals_saved_m_moves) > 1000n) ? __s_nominally : __s_empty)), (yield* u_gname()));
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_s_s_s_son_a_mission_for_s,
+        cptr.decay(You_),
+        !final ? cptr.decay(are) : cptr.decay(were),
+        align_str(cptr.ld1so(u, $you_ualign)),
+        (cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase))
+            ? (!final ? __s_currently : __s_temporarily)
+            : ((cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))
+                ? (!final ? __s_now : __s_belatedly)
+                : ((!cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic) &&
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) > 1000n)
+                    ? __s_nominally
+                    : __s_empty)),
+        (yield* u_gname())
+    );
     (yield* enlght_out(cptr.decay(buf)));
     /* show the rest of this game's pantheon (finishes previous sentence)
        [appending "also Moloch" at the end would allow for straightforward
        trailing "and" on all three aligned entries but looks too verbose] */
     void cptr.sprintf(cptr.decay(buf), __s_who_s_opposed_by, !final ? __s_is : __s_was);
     if (cptr.ld1so(u, $you_ualign) != NHM.A_LAWFUL)
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_and, (yield* align_gname(NHM.A_LAWFUL)), align_str(NHM.A_LAWFUL));
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_s_s_and,
+            (yield* align_gname(NHM.A_LAWFUL)),
+            align_str(NHM.A_LAWFUL)
+        );
     if (cptr.ld1so(u, $you_ualign) != NHM.A_NEUTRAL)
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s__2, (yield* align_gname(NHM.A_NEUTRAL)), align_str(NHM.A_NEUTRAL), (cptr.ld1so(u, $you_ualign) != -1) ? __s_and : __s_empty);
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_s_s_s__2,
+            (yield* align_gname(NHM.A_NEUTRAL)),
+            align_str(NHM.A_NEUTRAL),
+            (cptr.ld1so(u, $you_ualign) != -1) ? __s_and : __s_empty
+        );
     if (cptr.ld1so(u, $you_ualign) != -1)
         void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, (yield* align_gname(-1)), align_str(-1));
     void cptr.strcat(cptr.decay(buf), __s_dot);  /* terminate sentence */
@@ -1401,21 +1681,54 @@ function* background_enlightenment(unused_mode, final) {
        for tricky phrasing otherwise necessitated by possibility of having
        helm of opposite alignment mask a permanent alignment conversion */
     difgend = (innategend != cptr.ldI32o(flags, $flag_initgend));
-    difalgn = ((((cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)) ? 1 : 0) + ((cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) != cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) ? 2 : 0)) | 0);
+    difalgn = ((((cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase))
+        ? 1
+        : 0) +
+            ((cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) !=
+                cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase))
+                ? 2
+                : 0)) | 0);
     if (difalgn & 1) {
-        void cptr.sprintf(cptr.decay(buf), __s_actually_s, align_str(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_actually_s,
+            align_str(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase))
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
         difalgn &= -2;  /* suppress helm from "started out <foo>" message */
     }
     if (difgend || difalgn) {
-        void cptr.sprintf(cptr.decay(buf), __s_you_started_out_s_s_s, difgend ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender) : __s_empty, (difgend && difalgn) ? __s_and__2 : __s_empty, difalgn ? align_str(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_you_started_out_s_s_s,
+            difgend
+                ? cptr.ldPtro(genders, cptr.ldI32o(flags, $flag_initgend), $sizeof_Gender)
+                : __s_empty,
+            (difgend && difalgn) ? __s_and__2 : __s_empty,
+            difalgn ? align_str(cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase)) : __s_empty
+        );
         (yield* enlght_out(cptr.decay(buf)));
     }
 
     /* "You are left-handed." won't work well if polymorphed into something
        without hands; use "You are normally left-handed." in that situation */
-    void cptr.sprintf(cptr.decay(buf), __s_s_s_handed, !strcmp((yield* body_part(NHC.HANDED)), __s_handed) ? __s_empty : __s_normally, URIGHTY() ? __s_right : __s_left);
-    (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_s_s_handed,
+        !strcmp((yield* body_part(NHC.HANDED)), __s_handed) ? __s_empty : __s_normally,
+        URIGHTY() ? __s_right : __s_left
+    );
+    (yield* enlght_line(
+        cptr.decay((You_)),
+        final ? cptr.decay((were)) : cptr.decay((are)),
+        cptr.decay(((buf))),
+        ((__s_empty))
+    ));
 
     /* As of 3.6.2: dungeon level, so that ^X really has all status info as
        claimed by the comment below; this reveals more information than
@@ -1423,39 +1736,136 @@ function* background_enlightenment(unused_mode, final) {
        similar information is revealed by #overview; the "You died in
        <location>" given by really_done() is more rudimentary than this */
     cptr.st1(cptr.decay(buf), cptr.st1(cptr.decay(tmpbuf), 0));
-    if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            ))))) {
         let egdepth = observable_depth(cptr.add(u, $you_uz));
 
         void endgamelevelname(cptr.decay(tmpbuf), egdepth);
-        nh_snprintf(__s_background_enlightenment, 609, cptr.decay(buf), 256n, __s_in_the_endgame_on_the_s_s, !cptr.strncmp(cptr.decay(tmpbuf), __s_plane, 5n) ? __s_elemental : __s_empty, cptr.decay(tmpbuf));
-    } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))) {
+        nh_snprintf(
+            __s_background_enlightenment,
+            609,
+            cptr.decay(buf),
+            256n,
+            __s_in_the_endgame_on_the_s_s,
+            !cptr.strncmp(cptr.decay(tmpbuf), __s_plane, 5n) ? __s_elemental : __s_empty,
+            cptr.decay(tmpbuf)
+        );
+    } else if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                )
+            )))) {
         /* this gives away the fact that the knox branch is only 1 level */
-        void cptr.sprintf(cptr.decay(buf), __s_on_the_s_level, cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_on_the_s_level,
+            cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon)
+        );
         /* TODO? maybe phrase it differently when actually inside the fort,
            if we're able to determine that (not trivial) */
     } else {
         let dgnbuf = new Uint8Array(128);
 
-        void cptr.strcpy(cptr.decay(dgnbuf), cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon));
+        void cptr.strcpy(
+            cptr.decay(dgnbuf),
+            cptr.add(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon)
+        );
         if (!(yield* strncmpi(cptr.decay(dgnbuf), __s_the, 4)))
             cptr.st1(cptr.decay(dgnbuf), lowc(cptr.ld1s(cptr.decay(dgnbuf))));
-        void cptr.sprintf(cptr.decay(tmpbuf), __s_level_d, In_quest(cptr.add(u, $you_uz)) ? dunlev(cptr.add(u, $you_uz)) : depth(cptr.add(u, $you_uz)));
+        void cptr.sprintf(
+            cptr.decay(tmpbuf),
+            __s_level_d,
+            In_quest(cptr.add(u, $you_uz))
+                ? dunlev(cptr.add(u, $you_uz))
+                : depth(cptr.add(u, $you_uz))
+        );
         /* TODO? maybe extend this bit to include various other automatic
            annotations from the dungeon overview code */
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))))
+        if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+            )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                    )
+                ))))
             void cptr.strcat(cptr.decay(tmpbuf), __s_a_primitive_area);
-        else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)))) && !Blind())
+        else if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level
+                )
+            ))) &&
+                !Blind())
             void cptr.strcat(cptr.decay(tmpbuf), __s_a_very_big_room);
-        nh_snprintf(__s_background_enlightenment, 629, cptr.decay(buf), 256n, __s_in_s_on_s, cptr.decay(dgnbuf), cptr.decay(tmpbuf));
+        nh_snprintf(
+            __s_background_enlightenment,
+            629,
+            cptr.decay(buf),
+            256n,
+            __s_in_s_on_s,
+            cptr.decay(dgnbuf),
+            cptr.decay(tmpbuf)
+        );
     }
-    (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+    (yield* enlght_line(
+        cptr.decay((You_)),
+        final ? cptr.decay((were)) : cptr.decay((are)),
+        cptr.decay(((buf))),
+        ((__s_empty))
+    ));
 
     /* this is shown even if the 'time' option is off */
     if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) == 1n) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_just_started_your_adventure)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_just_started_your_adventure)),
+            ((__s_empty))
+        ));
     } else {
         /* 'turns' grates on the nerves in this context... */
-        void cptr.sprintf(cptr.decay(buf), __s_the_dungeon_ld_turn_s_ago, cptr.ldI64o(svm, $instance_globals_saved_m_moves), (((cptr.ldI64o(svm, $instance_globals_saved_m_moves)) == 1n) ? __s_empty : __s_s));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_the_dungeon_ld_turn_s_ago,
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves),
+            (((cptr.ldI64o(svm, $instance_globals_saved_m_moves)) == 1n) ? __s_empty : __s_s)
+        );
         /* same phrasing for current and final: "entered" is unconditional */
         (yield* enlght_line(cptr.decay(You_), __s_entered, cptr.decay(buf), __s_empty));
     }
@@ -1464,20 +1874,42 @@ function* background_enlightenment(unused_mode, final) {
        won't vary if user leaves a disclosure prompt or --More-- unanswered
        long enough for the dynamic value to change between then and now */
     if (final ? cptr.ldI32o(iflags, $instance_flags_at_midnight) : (yield* midnight())) {
-        (yield* enlght_line((__s_it), final ? (__s_was__2) : (__s_is__2), (__s_the_midnight_hour), (__s_empty)));
+        (yield* enlght_line(
+            (__s_it),
+            final ? (__s_was__2) : (__s_is__2),
+            (__s_the_midnight_hour),
+            (__s_empty)
+        ));
     } else if (final ? cptr.ldI32o(iflags, $instance_flags_at_night) : (yield* night())) {
         (yield* enlght_line((__s_it), final ? (__s_was__2) : (__s_is__2), (__s_nighttime), (__s_empty)));
     }
     /* other environmental factors */
-    if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON || cptr.ldI32o(flags, $flag_moonphase) == NHM.NEW_MOON) {
+    if (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ||
+            cptr.ldI32o(flags, $flag_moonphase) == NHM.NEW_MOON) {
         /* [This had "tonight" but has been changed to "in effect".
            There is a similar issue to Friday the 13th--it's the value
            at the start of the current session but that session might
            have dragged on for an arbitrary amount of time.  We want to
            report the values that currently affect play--or affected
            play when game ended--rather than actual outside situation.] */
-        void cptr.sprintf(cptr.decay(buf), __s_a_s_moon_in_effect_s, (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON) ? __s_full : ((cptr.ldI32o(flags, $flag_moonphase) == NHM.NEW_MOON) ? __s_new : ((cptr.ldI32o(flags, $flag_moonphase) < NHM.FULL_MOON) ? __s_first_quarter : __s_last_quarter)), final ? __s_when_your_adventure_ended : __s_empty);
-        (yield* enlght_line((__s_there), final ? (__s_was__2) : (__s_is__2), cptr.decay((buf)), (__s_empty)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_a_s_moon_in_effect_s,
+            (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON)
+                ? __s_full
+                : ((cptr.ldI32o(flags, $flag_moonphase) == NHM.NEW_MOON)
+                    ? __s_new
+                    : ((cptr.ldI32o(flags, $flag_moonphase) < NHM.FULL_MOON)
+                        ? __s_first_quarter
+                        : __s_last_quarter)),
+            final ? __s_when_your_adventure_ended : __s_empty
+        );
+        (yield* enlght_line(
+            (__s_there),
+            final ? (__s_was__2) : (__s_is__2),
+            cptr.decay((buf)),
+            (__s_empty)
+        ));
     }
     if (cptr.ld1so(flags, $flag_friday13)) {
         /* let player know that friday13 penalty is/was in effect;
@@ -1485,7 +1917,13 @@ function* background_enlightenment(unused_mode, final) {
            the start of the session and it might be past midnight (or
            days later if the game has been paused without save/restore),
            so phrase this similar to the start up message */
-        void cptr.sprintf(cptr.decay(buf), __s_bad_things_s_on_friday_the_13th, !final ? __s_can_happen : ((final == NHM.ENL_GAMEOVERALIVE) ? __s_could_have_happened : __s_happened));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_bad_things_s_on_friday_the_13th,
+            !final
+                ? __s_can_happen
+                : ((final == NHM.ENL_GAMEOVERALIVE) ? __s_could_have_happened : __s_happened)
+        );
         (yield* enlght_out(cptr.decay(buf)));
     }
 
@@ -1494,7 +1932,12 @@ function* background_enlightenment(unused_mode, final) {
         /* [flags.showexp currently does not matter; should it?] */
 
         /* experience level is already shown above */
-        void cptr.sprintf(cptr.decay(buf), __s_1ld_experience_point_s, cptr.ldI64o(u, $you_uexp), (((cptr.ldI64o(u, $you_uexp)) == 1n) ? __s_empty : __s_s));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_1ld_experience_point_s,
+            cptr.ldI64o(u, $you_uexp),
+            (((cptr.ldI64o(u, $you_uexp)) == 1n) ? __s_empty : __s_s)
+        );
         /* TODO?
          *  Remove wizard-mode restriction since patient players can
          *  determine the numbers needed without resorting to spoilers
@@ -1507,9 +1950,22 @@ function* background_enlightenment(unused_mode, final) {
             let nxtlvl = newuexp(ulvl);
             let delta = BigInt.asIntN(64, nxtlvl - cptr.ldI64o(u, $you_uexp));
 
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_ld_s_sneeded_s_level_d, delta, (cptr.ldI64o(u, $you_uexp) > 0n) ? __s_more : __s_empty, !final ? __s_empty : ((delta == 1n) ? __s_was__2 : __s_were), (ulvl < 18) ? __s_to_attain : __s_for, ((ulvl + 1) | 0));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_ld_s_sneeded_s_level_d,
+                delta,
+                (cptr.ldI64o(u, $you_uexp) > 0n) ? __s_more : __s_empty,
+                !final ? __s_empty : ((delta == 1n) ? __s_was__2 : __s_were),
+                (ulvl < 18) ? __s_to_attain : __s_for,
+                ((ulvl + 1) | 0)
+            );
         }
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
 }
 
@@ -1535,20 +1991,57 @@ function* basics_enlightenment(mode, final) {
     if (hp == hpmax && hpmax > 1)
         void cptr.sprintf(cptr.decay(buf), __s_all_d_hit_points, hpmax);
     else
-        void cptr.sprintf(cptr.decay(buf), __s_d_out_of_d_hit_point_s, hp, hpmax, (((hpmax) == 1) ? __s_empty : __s_s));
-    (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_d_out_of_d_hit_point_s,
+            hp,
+            hpmax,
+            (((hpmax) == 1) ? __s_empty : __s_s)
+        );
+    (yield* enlght_line(
+        cptr.decay((You_)),
+        final ? cptr.decay((had)) : cptr.decay((have)),
+        cptr.decay(((buf))),
+        ((__s_empty))
+    ));
 
     /* low max energy is feasible, so handle couple of extra special cases */
     if (pwmax == 0 || (pw == pwmax && pwmax == 2))
-        void cptr.sprintf(cptr.decay(buf), __s_s_s__2, !pwmax ? __s_no : __s_both, cptr.decay(__static_basics_enlightenment_Power));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s__2,
+            !pwmax ? __s_no : __s_both,
+            cptr.decay(__static_basics_enlightenment_Power)
+        );
     else if (pw == pwmax && pwmax > 2)
-        void cptr.sprintf(cptr.decay(buf), __s_all_d_s, pwmax, cptr.decay(__static_basics_enlightenment_Power));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_all_d_s,
+            pwmax,
+            cptr.decay(__static_basics_enlightenment_Power)
+        );
     else
-        void cptr.sprintf(cptr.decay(buf), __s_d_out_of_d_s, pw, pwmax, cptr.decay(__static_basics_enlightenment_Power));
-    (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_d_out_of_d_s,
+            pw,
+            pwmax,
+            cptr.decay(__static_basics_enlightenment_Power)
+        );
+    (yield* enlght_line(
+        cptr.decay((You_)),
+        final ? cptr.decay((had)) : cptr.decay((have)),
+        cptr.decay(((buf))),
+        ((__s_empty))
+    ));
 
     if (Upolyd()) {
-        switch (cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel)) {
+        switch (cptr.ld1so2(
+            mons,
+            cptr.ldI32o(u, $you_umonnum),
+            $sizeof_permonst,
+            $permonst_mlevel
+        )) {
             case 0:
             /* status line currently being explained shows "HD:0" */
             void cptr.strcpy(cptr.decay(buf), __s_0_hit_dice_actually_1_2);
@@ -1557,17 +2050,35 @@ function* basics_enlightenment(mode, final) {
             void cptr.strcpy(cptr.decay(buf), __s_1_hit_die);
             break;
             default:
-            void cptr.sprintf(cptr.decay(buf), __s_d_hit_dice, cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_d_hit_dice,
+                cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel)
+            );
             break;
         }
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
 
     find_ac();  /* enforces AC_MAX cap */
     void cptr.sprintf(cptr.decay(buf), __s_pct_d, cptr.ld1so(u, $you_uac));
     if (Math.abs(cptr.ld1so(u, $you_uac)) == NHM.AC_MAX)
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_the_s_possible, (cptr.ld1so(u, $you_uac) < 0) ? __s_best : __s_worst);
-    (yield* enlght_line((__s_your_armor_class), final ? (__s_was__2) : (__s_is__2), cptr.decay((buf)), (__s_empty)));
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_the_s_possible,
+            (cptr.ld1so(u, $you_uac) < 0) ? __s_best : __s_worst
+        );
+    (yield* enlght_line(
+        (__s_your_armor_class),
+        final ? (__s_was__2) : (__s_is__2),
+        cptr.decay((buf)),
+        (__s_empty)
+    ));
 
     /* gold; similar to doprgold (#showgold) but without shop billing info;
        includes container contents, unlike status line but like doprgold */
@@ -1578,7 +2089,13 @@ function* basics_enlightenment(mode, final) {
         if (!umoney) {
             void cptr.sprintf(cptr.decay(buf), __s_your_wallet_s_empty, !final ? __s_is : __s_was);
         } else {
-            void cptr.sprintf(cptr.decay(buf), __s_your_wallet_contain_s_ld_s, !final ? __s_s : __s_ed, umoney, (yield* currency(umoney)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_your_wallet_contain_s_ld_s,
+                !final ? __s_s : __s_ed,
+                umoney,
+                (yield* currency(umoney))
+            );
         }
         /* terminate the wallet line if appropriate, otherwise add an
            introduction to subsequent continuation; output now either way */
@@ -1588,7 +2105,12 @@ function* basics_enlightenment(mode, final) {
         /* put contained gold on its own line to avoid excessive width; it's
            phrased as a continuation of the wallet line so not capitalized */
         if (hmoney) {
-            void cptr.sprintf(cptr.decay(buf), __s_ld_s_stashed_away_in_your_pack, hmoney, umoney ? __s_more__2 : (yield* currency(hmoney)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_ld_s_stashed_away_in_your_pack,
+                hmoney,
+                umoney ? __s_more__2 : (yield* currency(hmoney))
+            );
             (yield* enlght_line((__s_you), final ? (__s_had) : (__s_have), cptr.decay((buf)), (__s_empty)));
         }
     }
@@ -1602,7 +2124,13 @@ function* basics_enlightenment(mode, final) {
             void cptr.strcat(cptr.decay(buf), __s_but_temporarily_disabled_while_inside);
         } else {
             (yield* oc_to_str(cptr.add(flags, $flag_pickup_types), cptr.decay(ocl)));
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_for_s_s_s, cptr.ld1s(cptr.decay(ocl)) ? __s_apos : __s_empty, cptr.ld1s(cptr.decay(ocl)) ? cptr.decay(ocl) : __s_all_types, cptr.ld1s(cptr.decay(ocl)) ? __s_apos : __s_empty);
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_for_s_s_s,
+                cptr.ld1s(cptr.decay(ocl)) ? __s_apos : __s_empty,
+                cptr.ld1s(cptr.decay(ocl)) ? cptr.decay(ocl) : __s_all_types,
+                cptr.ld1s(cptr.decay(ocl)) ? __s_apos : __s_empty
+            );
             if (cptr.ld1so(flags, $flag_pickup_thrown) && cptr.ld1s(cptr.decay(ocl)))
                 void cptr.strcat(cptr.decay(buf), __s_plus_thrown);  /* show when not 'all types' */
             if (cptr.ldPtro(ga, $instance_globals_a_apelist))
@@ -1610,7 +2138,12 @@ function* basics_enlightenment(mode, final) {
         }
     } else
         void cptr.strcpy(cptr.decay(buf), __s_off);
-    (yield* enlght_line((__s_autopickup), final ? (__s_was__2) : (__s_is__2), cptr.decay((buf)), (__s_empty)));
+    (yield* enlght_line(
+        (__s_autopickup),
+        final ? (__s_was__2) : (__s_is__2),
+        cptr.decay((buf)),
+        (__s_empty)
+    ));
 }
 
 /* characteristics: expanded version of bottom line strength, dexterity, &c */
@@ -1654,12 +2187,15 @@ function* one_characteristic(mode, final, attrindx) {
     if (Upolyd()) {
         hide_innate_value = 1;
     } else if (Fixed_abil()) {
-        if ((yield* stuck_ring(uleft.v, NHC.RIN_SUSTAIN_ABILITY)) || (yield* stuck_ring(uright.v, NHC.RIN_SUSTAIN_ABILITY)))
+        if ((yield* stuck_ring(uleft.v, NHC.RIN_SUSTAIN_ABILITY)) ||
+                (yield* stuck_ring(uright.v, NHC.RIN_SUSTAIN_ABILITY)))
             hide_innate_value = 1;
     }
     switch (attrindx) {
         case NHC.A_STR:
-        if (uarmg.v && cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER && (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
+        if (uarmg.v &&
+                cptr.ldI16o(uarmg.v, $obj_otyp) == NHC.GAUNTLETS_OF_POWER &&
+                (cptr.ldI32o(uarmg.v, $obj_cursed) & 1) | 0)
             hide_innate_value = 1;
         break;
         case NHC.A_DEX:
@@ -1669,11 +2205,15 @@ function* one_characteristic(mode, final, attrindx) {
             hide_innate_value = 1;
         break;
         case NHC.A_INT:
-        if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP && (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
+        if (uarmh.v &&
+                cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
+                (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
             hide_innate_value = 1;
         break;
         case NHC.A_WIS:
-        if (uarmh.v && cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP && (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
+        if (uarmh.v &&
+                cptr.ldI16o(uarmh.v, $obj_otyp) == NHC.DUNCE_CAP &&
+                (cptr.ldI32o(uarmh.v, $obj_cursed) & 1) | 0)
             hide_innate_value = 1;
         break;
         case NHC.A_CHA:
@@ -1700,26 +2240,49 @@ function* one_characteristic(mode, final, attrindx) {
            from abase (at end of game; this attribute wasn't maxed out) */
         abase = (cptr.ld1so2(u, attrindx, 1, $you_acurr));
         apeak = (cptr.ld1so2(u, attrindx, 1, $you_amax));
-        alimit = ((attrindx == NHC.A_STR && Upolyd()) ? uasmon_maxStr() : cptr.ldI16o2(gu, attrindx, 2, $instance_globals_u_urace + $Race_attrmax));
+        alimit = ((attrindx == NHC.A_STR && Upolyd())
+                ? uasmon_maxStr()
+                : cptr.ldI16o2(gu, attrindx, 2, $instance_globals_u_urace + $Race_attrmax));
         /* criterium for whether the limit is interesting varies */
         interesting_alimit = schar((final ? 1 : (alimit != (attrindx != NHC.A_STR ? 18 : 118))));
         paren_pfx = final ? __s_sp_lparen : __s_current;
         if (acurrent != abase) {
-            void cptr.sprintf(eos(cptr.decay(valubuf)), __s_sbase_s, paren_pfx, attrval(attrindx, abase, cptr.decay(valstring)));
+            void cptr.sprintf(
+                eos(cptr.decay(valubuf)),
+                __s_sbase_s,
+                paren_pfx,
+                attrval(attrindx, abase, cptr.decay(valstring))
+            );
             paren_pfx = __s_comma_sp;
         }
         if (abase != apeak) {
-            void cptr.sprintf(eos(cptr.decay(valubuf)), __s_speak_s, paren_pfx, attrval(attrindx, apeak, cptr.decay(valstring)));
+            void cptr.sprintf(
+                eos(cptr.decay(valubuf)),
+                __s_speak_s,
+                paren_pfx,
+                attrval(attrindx, apeak, cptr.decay(valstring))
+            );
             paren_pfx = __s_comma_sp;
         }
         if (interesting_alimit) {
-            void cptr.sprintf(eos(cptr.decay(valubuf)), __s_s_slimit_s, paren_pfx, (acurrent > alimit) ? __s_innate : __s_empty, attrval(attrindx, alimit, cptr.decay(valstring)));
+            void cptr.sprintf(
+                eos(cptr.decay(valubuf)),
+                __s_s_slimit_s,
+                paren_pfx,
+                (acurrent > alimit) ? __s_innate : __s_empty,
+                attrval(attrindx, alimit, cptr.decay(valstring))
+            );
             /* paren_pfx = ", "; */
         }
         if (acurrent != abase || abase != apeak || interesting_alimit)
             void cptr.strcat(cptr.decay(valubuf), __s_rparen);
     }
-    (yield* enlght_line(cptr.decay((subjbuf)), final ? (__s_was__2) : (__s_is__2), cptr.decay((valubuf)), (__s_empty)));
+    (yield* enlght_line(
+        cptr.decay((subjbuf)),
+        final ? (__s_was__2) : (__s_is__2),
+        cptr.decay((valubuf)),
+        (__s_empty)
+    ));
 }
 
 /* status: selected obvious capabilities, assorted troubles */
@@ -1730,8 +2293,21 @@ function* status_enlightenment(mode, final) {
     let buf = new Uint8Array(256);
     let youtoo = new Uint8Array(256);
     let heldmon = new Uint8Array(256);
-    let Riding = schar((cptr.ldPtro(u, $you_usteed) && !(final == NHM.ENL_GAMEOVERDEAD && !strcmp(cptr.add(svk, $kinfo_name), __s_riding_accident)) ? 1 : 0));
-    let steedname = (!Riding ? null : (yield* x_monnam(cptr.ldPtro(u, $you_usteed), cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame) ? NHM.ARTICLE_YOUR : NHM.ARTICLE_THE, null, 12, 0)));
+    let Riding = schar((cptr.ldPtro(u, $you_usteed) &&
+        !(final == NHM.ENL_GAMEOVERDEAD && !strcmp(cptr.add(svk, $kinfo_name), __s_riding_accident))
+            ? 1
+            : 0));
+    let steedname = (!Riding
+            ? null
+            : (yield* x_monnam(
+                cptr.ldPtro(u, $you_usteed),
+                cptr.ld1so(cptr.ldPtro(u, $you_usteed), $monst_mtame)
+                    ? NHM.ARTICLE_YOUR
+                    : NHM.ARTICLE_THE,
+                null,
+                12,
+                0
+            )));
 
     /*\
      * Status (many are abbreviated on bottom line; others are or
@@ -1746,33 +2322,86 @@ function* status_enlightenment(mode, final) {
     if (Upolyd()) {
         void cptr.strcpy(cptr.decay(buf), __s_transformed);
         if (ugenocided())
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_and_s_s_inside, final ? __s_felt : __s_feel, udeadinside());
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_and_s_s_inside,
+                final ? __s_felt : __s_feel,
+                udeadinside()
+            );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     /* not a trouble, but we want to display riding status before maybe
        reporting steed as trapped or hero stuck to cursed saddle */
     if (Riding) {
         void cptr.sprintf(cptr.decay(buf), __s_riding_s, steedname);
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
         void cptr.sprintf(eos(cptr.decay(youtoo)), __s_and_s, steedname);
     }
     /* other movement situations that hero should always know */
     if (Levitation()) {
         if (Lev_at_will() && magic)
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_levitating_at_will)), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                ((__s_levitating_at_will)),
+                ((__s_empty))
+            ));
         else
-            (yield* enlght_line(cptr.decay((youtoo)), final ? cptr.decay((were)) : cptr.decay((are)), (__s_levitating), ((yield* from_what(NHC.LEVITATION)))));
+            (yield* enlght_line(
+                cptr.decay((youtoo)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                (__s_levitating),
+                ((yield* from_what(NHC.LEVITATION)))
+            ));
     } else if (Flying()) {
-        (yield* enlght_line(cptr.decay((youtoo)), final ? cptr.decay((were)) : cptr.decay((are)), (__s_flying), ((yield* from_what(NHC.FLYING)))));
+        (yield* enlght_line(
+            cptr.decay((youtoo)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            (__s_flying),
+            ((yield* from_what(NHC.FLYING)))
+        ));
     }
     if (Underwater()) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_underwater)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_underwater)),
+            ((__s_empty))
+        ));
     } else if ((cptr.ldI32o(u, $you_uinwater) & 1)) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((Swimming() ? __s_swimming : __s_in_water)), (((yield* from_what(NHC.SWIMMING))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((Swimming() ? __s_swimming : __s_in_water)),
+            (((yield* from_what(NHC.SWIMMING))))
+        ));
     } else if (walking_on_water()) {
         /* show active Wwalking here, potential Wwalking elsewhere */
-        void cptr.sprintf(cptr.decay(buf), __s_walking_on_s, is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_water : (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? __s_lava : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.WWALKING))))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_walking_on_s,
+            is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                ? __s_water
+                : (is_lava(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                    ? __s_lava
+                    : surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            (((yield* from_what(NHC.WWALKING))))
+        ));
     }
     if (Upolyd() && ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || U_AP_TYPE() != NHC.M_AP_NOTHING))
         (yield* youhiding(1, final));
@@ -1782,17 +2411,32 @@ function* status_enlightenment(mode, final) {
         if (final && (Stoned() & 536870912n))
             (yield* enlght_out(__s_you_turned_into_stone));
         else
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_turning_to_stone)), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                ((__s_turning_to_stone)),
+                ((__s_empty))
+            ));
     }
     if (Slimed()) {
         if (final && (Slimed() & 536870912n))
             (yield* enlght_out(__s_you_turned_into_slime));
         else
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_turning_into_slime)), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                ((__s_turning_into_slime)),
+                ((__s_empty))
+            ));
     }
     if (Strangled()) {
         if ((cptr.ldI32o(u, $you_uburied) & 1)) {
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_buried)), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                ((__s_buried)),
+                ((__s_empty))
+            ));
         } else {
             if (final && (Strangled() & 536870912n)) {
                 (yield* enlght_out(__s_you_died_from_strangulation));
@@ -1800,7 +2444,12 @@ function* status_enlightenment(mode, final) {
                 void cptr.strcpy(cptr.decay(buf), __s_being_strangled);
                 if (wizard())
                     void cptr.sprintf(eos(cptr.decay(buf)), __s_ld, (Strangled() & 16777215n));
-                (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.STRANGLED))))));
+                (yield* enlght_line(
+                    cptr.decay((You_)),
+                    final ? cptr.decay((were)) : cptr.decay((are)),
+                    cptr.decay(((buf))),
+                    (((yield* from_what(NHC.STRANGLED))))
+                ));
             }
         }
     }
@@ -1810,35 +2459,96 @@ function* status_enlightenment(mode, final) {
            puts TermIll before FoodPois and death due to timeout reports
            terminal illness if both are in effect, so do the same here */
         if (final && (Sick() & 536870912n)) {
-            void cptr.sprintf(cptr.decay(buf), __s_sdied_from_s, cptr.decay(You_), (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE) ? __s_terminal_illness : __s_food_poisoning);  /* has trailing space */
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_sdied_from_s,
+                cptr.decay(You_),
+                (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
+                    ? __s_terminal_illness
+                    : __s_food_poisoning
+            );  /* has trailing space */
             (yield* enlght_out(cptr.decay(buf)));
         } else {
             /* unlike death due to sickness, report the two cases separately
                because it is possible to cure one without curing the other */
             if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_NONVOMITABLE)
-                (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_terminally_sick_from_illness)), ((__s_empty))));
+                (yield* enlght_line(
+                    cptr.decay((You_)),
+                    final ? cptr.decay((were)) : cptr.decay((are)),
+                    ((__s_terminally_sick_from_illness)),
+                    ((__s_empty))
+                ));
             if (((cptr.ldI32o(u, $you_usick_type) & 3) | 0) & NHM.SICK_VOMITABLE)
-                (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_terminally_sick_from_food_poisoning)), ((__s_empty))));
+                (yield* enlght_line(
+                    cptr.decay((You_)),
+                    final ? cptr.decay((were)) : cptr.decay((are)),
+                    ((__s_terminally_sick_from_food_poisoning)),
+                    ((__s_empty))
+                ));
         }
     }
     if (Vomiting())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_nauseated)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_nauseated)),
+            ((__s_empty))
+        ));
     if (HStun())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_stunned)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_stunned)),
+            ((__s_empty))
+        ));
     if (HConfusion())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_confused)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_confused)),
+            ((__s_empty))
+        ));
     if (Hallucination())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_hallucinating)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_hallucinating)),
+            ((__s_empty))
+        ));
     if (Blind()) {
         /* check the reasons in same order as from_what() */
-        void cptr.sprintf(cptr.decay(buf), __s_s_blind, (HBlinded() & 67108864n) != 0n ? __s_permanently : ((HBlinded() & 268435456n) ? __s_innately : (Blindfolded_only() ? __s_deliberately : __s_temporarily__2)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_blind,
+            (HBlinded() & 67108864n) != 0n
+                ? __s_permanently
+                : ((HBlinded() & 268435456n)
+                    ? __s_innately
+                    : (Blindfolded_only() ? __s_deliberately : __s_temporarily__2))
+        );
         if (wizard() && (HBlinded() == BlindedTimeout() && !EBlinded()))
             void cptr.sprintf(eos(cptr.decay(buf)), __s_ld, BlindedTimeout());
         /* !haseyes: avoid "you are innately blind innately" */
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n) ? __s_empty : (yield* from_what(NHC.BLINDED))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((!((cptr.ldU64o(
+                (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                $permonst_mflags1
+            ) &
+                4096n) == 0n)
+                ? __s_empty
+                : (yield* from_what(NHC.BLINDED))))
+        ));
     }
     if (Deaf())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_deaf)), (((yield* from_what(NHC.DEAF))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_deaf)),
+            (((yield* from_what(NHC.DEAF))))
+        ));
 
     /* external troubles, more or less */
     if (Punished()) {
@@ -1848,7 +2558,12 @@ function* status_enlightenment(mode, final) {
             (yield* impossible(__s_punished_without_uball));
             void cptr.strcpy(cptr.decay(buf), __s_punished);
         }
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     if (cptr.ldI32o(u, $you_utrap)) {
         let predicament = new Uint8Array(256);
@@ -1856,46 +2571,123 @@ function* status_enlightenment(mode, final) {
 
         void (yield* trap_predicament(cptr.decay(predicament), final, wizard()));
         if (cptr.ldPtro(u, $you_usteed)) {
-            void cptr.sprintf(cptr.decay(buf), __s_s_s__3, anchored ? __s_you_and : __s_empty, steedname);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_s_s__3,
+                anchored ? __s_you_and : __s_empty,
+                steedname
+            );
             cptr.st1(cptr.decay(buf), highc(cptr.ld1s(cptr.decay(buf))));
-            (yield* enlght_line(cptr.decay((buf)), final ? ((anchored ? __s_were : __s_was__2)) : ((anchored ? __s_are : __s_is__2)), cptr.decay((predicament)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((buf)),
+                final ? ((anchored ? __s_were : __s_was__2)) : ((anchored ? __s_are : __s_is__2)),
+                cptr.decay((predicament)),
+                (__s_empty)
+            ));
         } else
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((predicament))), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                cptr.decay(((predicament))),
+                ((__s_empty))
+            ));
     }  /* (u.utrap) */
     cptr.st1o(cptr.decay(heldmon), 0, 0, 1);  /* lint suppression */
     if (cptr.ldPtro(u, $you_ustuck)) {
         void cptr.strcpy(cptr.decay(heldmon), (yield* a_monnam(cptr.ldPtro(u, $you_ustuck))));
-        if (!strcmp(cptr.decay(heldmon), __s_it__2) && (!has_mgivenname(cptr.ldPtro(u, $you_ustuck)) || strcmp((cptr.ldPtr(cptr.ldPtro((cptr.ldPtro(u, $you_ustuck)), $monst_mextra))), __s_it__2) != 0))
+        if (!strcmp(cptr.decay(heldmon), __s_it__2) &&
+                (!has_mgivenname(cptr.ldPtro(u, $you_ustuck)) ||
+                    strcmp(
+                        (cptr.ldPtr(cptr.ldPtro((cptr.ldPtro(u, $you_ustuck)), $monst_mextra))),
+                        __s_it__2
+                    ) != 0))
             void cptr.strcpy(cptr.decay(heldmon), __s_an_unseen_creature);
     }
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(u, $you_ustuck), (null))))), 0n) ? __assert_rtn(__s_status_enlightenment, __s_insight_c, 1108, __s_u_ustuck_null) : void 0);  /* implied by u.uswallow */
-        nh_snprintf(__s_status_enlightenment, 1111, cptr.decay(buf), 256n, __s_s_by_s, (dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_swallowed : __s_engulfed, cptr.decay(heldmon));
+        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(u, $you_ustuck), (null))))), 0n)
+                ? __assert_rtn(__s_status_enlightenment, __s_insight_c, 1108, __s_u_ustuck_null)
+                : void 0);  /* implied by u.uswallow */
+        nh_snprintf(
+            __s_status_enlightenment,
+            1111,
+            cptr.decay(buf),
+            256n,
+            __s_s_by_s,
+            (dmgtype_fromattack(
+                (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
+                NHM.AD_DGST,
+                NHM.AT_ENGL
+            ) !== null)
+                ? __s_swallowed
+                : __s_engulfed,
+            cptr.decay(heldmon)
+        );
         if (dmgtype(cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data), NHM.AD_DGST)) {
             /* if final, death via digestion can be deduced by u.uswallow
                still being True and u.uswldtim having been decremented to 0 */
             if (final && !cptr.ldI32o(u, $you_uswldtim))
                 void cptr.strcat(cptr.decay(buf), __s_and_got_totally_digested);
             else
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_and_s_being_digested, final ? __s_were__2 : __s_are__2);
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_and_s_being_digested,
+                    final ? __s_were__2 : __s_are__2
+                );
         }
         if (wizard())
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_u_rparen, cptr.ldI32o(u, $you_uswldtim));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_sp_lparen_pct_u_rparen,
+                cptr.ldI32o(u, $you_uswldtim)
+            );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     } else if (cptr.ldPtro(u, $you_ustuck)) {
-        let ustick = schar((Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? 1 : 0));
+        let ustick = schar((Upolyd() &&
+            sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))
+                ? 1
+                : 0));
         let dx = (cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_mx) - cptr.ldI16(u)) | 0;
-        let dy = (cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_my) - cptr.ldI16o(u, $you_uy)) | 0;
+        let dy = (cptr.ldI16o(cptr.ldPtro(u, $you_ustuck), $monst_my) - cptr.ldI16o(u, $you_uy)) |
+                0;
 
-        nh_snprintf(__s_status_enlightenment, 1130, cptr.decay(buf), 256n, __s_s_s_s__3, ustick ? __s_holding : __s_held_by, cptr.decay(heldmon), dxdy_to_dist_descr(i16(dx), i16(dy), 1));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        nh_snprintf(
+            __s_status_enlightenment,
+            1130,
+            cptr.decay(buf),
+            256n,
+            __s_s_s_s__3,
+            ustick ? __s_holding : __s_held_by,
+            cptr.decay(heldmon),
+            dxdy_to_dist_descr(i16(dx), i16(dy), 1)
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     if (Riding) {
         let saddle = (yield* which_armor(cptr.ldPtro(u, $you_usteed), 1048576n));
 
         if (saddle && (cptr.ldI32o(saddle, $obj_cursed) & 1) | 0) {
-            void cptr.sprintf(cptr.decay(buf), __s_stuck_to_s_s, (yield* s_suffix(steedname)), (yield* simpleonames(saddle)));
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_stuck_to_s_s,
+                (yield* s_suffix(steedname)),
+                (yield* simpleonames(saddle))
+            );
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                cptr.decay(((buf))),
+                ((__s_empty))
+            ));
         }
     }
     if (Wounded_legs()) {
@@ -1903,7 +2695,9 @@ function* status_enlightenment(mode, final) {
            form of extrinsic impairment; HWounded_legs is used for timeout;
            both apply to steed instead of hero when mounted */
         let whichleg = (EWounded_legs() & 393216n);
-        let bp = cptr.ldPtro(u, $you_usteed) ? (yield* mbodypart(cptr.ldPtro(u, $you_usteed), NHC.LEG)) : (yield* body_part(NHC.LEG));
+        let bp = cptr.ldPtro(u, $you_usteed)
+                ? (yield* mbodypart(cptr.ldPtro(u, $you_usteed), NHC.LEG))
+                : (yield* body_part(NHC.LEG));
         let article = __s_a_sp;
         let leftright = __s_empty;
 
@@ -1921,34 +2715,64 @@ function* status_enlightenment(mode, final) {
 
                 void cptr.strcpy(cptr.decay(steednambuf), steedname);
                 cptr.st1(cptr.decay(steednambuf), highc(cptr.ld1s(cptr.decay(steednambuf))));
-                (yield* enlght_line(cptr.decay((steednambuf)), final ? (__s_had__2) : (__s_has), cptr.decay((buf)), (__s_empty)));
+                (yield* enlght_line(
+                    cptr.decay((steednambuf)),
+                    final ? (__s_had__2) : (__s_has),
+                    cptr.decay((buf)),
+                    (__s_empty)
+                ));
             }
         } else {
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((had)) : cptr.decay((have)),
+                cptr.decay(((buf))),
+                ((__s_empty))
+            ));
         }
     }
     if (Glib()) {
         void cptr.sprintf(cptr.decay(buf), __s_slippery_s, (yield* fingers_or_gloves(1)));
         if (wizard())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_ld, (Glib() & 16777215n));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     if (Fumbling()) {
         if (magic || cause_known(NHC.FUMBLING))
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_fumbled) : (__s_fumble), (__s_empty), ((yield* from_what(NHC.FUMBLING)))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_fumbled) : (__s_fumble),
+                (__s_empty),
+                ((yield* from_what(NHC.FUMBLING)))
+            ));
     }
     if (Sleepy()) {
         if (magic || cause_known(NHC.SLEEPY)) {
             void cptr.strcpy(cptr.decay(buf), (yield* from_what(NHC.SLEEPY)));
             if (wizard())
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_ld, (HSleepy() & 16777215n));
-            (yield* enlght_line((__s_you__2), final ? (__s_fell) : (__s_fall), (__s_asleep_uncontrollably), cptr.decay((buf))));
+            (yield* enlght_line(
+                (__s_you__2),
+                final ? (__s_fell) : (__s_fall),
+                (__s_asleep_uncontrollably),
+                cptr.decay((buf))
+            ));
         }
     }
     /* hunger/nutrition */
     if (Hunger()) {
         if (magic || cause_known(NHC.HUNGER))
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_hungered) : (__s_hunger), (__s_rapidly), ((yield* from_what(NHC.HUNGER)))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_hungered) : (__s_hunger),
+                (__s_rapidly),
+                ((yield* from_what(NHC.HUNGER)))
+            ));
     }
     void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(hu_stat, cptr.ldI32o(u, $you_uhs), 8));  /* hunger status; omitted if "normal" */
     (yield* mungspaces(cptr.decay(buf)));  /* strip trailing spaces */
@@ -1963,8 +2787,17 @@ function* status_enlightenment(mode, final) {
         else if (!cptr.strncmp(cptr.decay(buf), __s_faint, 5n))
             void cptr.strcat(cptr.decay(buf), __s_due_to_starvation);
         if (wizard())
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lt_pct_d_gt, cptr.ldI32o(u, $you_uhunger));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_sp_lt_pct_d_gt,
+                cptr.ldI32o(u, $you_uhunger)
+            );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     /* encumbrance */
     if ((cap = near_capacity()) > NHC.UNENCUMBERED) {
@@ -1991,8 +2824,19 @@ function* status_enlightenment(mode, final) {
         }
         if (wizard())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lt_pct_d_gt, inv_weight());
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_movement_s_s_s, !final ? __s_is : __s_was, adj, (cap < NHC.OVERLOADED) ? __s_slowed : __s_empty);
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_movement_s_s_s,
+            !final ? __s_is : __s_was,
+            adj,
+            (cap < NHC.OVERLOADED) ? __s_slowed : __s_empty
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     } else {
         /* last resort entry, guarantees Status section is non-empty
            (no longer needed for that purpose since weapon status added;
@@ -2000,25 +2844,50 @@ function* status_enlightenment(mode, final) {
         void cptr.strcpy(cptr.decay(buf), __s_unencumbered);
         if (wizard())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lt_pct_d_gt, inv_weight());
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     /* current weapon(s) and corresponding skill level(s) */
     (yield* weapon_insight(final));
     /* unlike ring of increase accuracy's effect, the monk's suit penalty
        is too blatant to be restricted to magical enlightenment */
     if (cptr.ld1so(iflags, $instance_flags_tux_penalty) && !Upolyd()) {
-        void (yield* enlght_combatinc(__s_to_hit, -cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr), final, cptr.decay(buf)));
+        void (yield* enlght_combatinc(
+            __s_to_hit,
+            -cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr),
+            final,
+            cptr.decay(buf)
+        ));
         /* if from_what() ever gets extended from wizard mode to normal
            play, it could be adapted to handle this */
         void cptr.sprintf(eos(cptr.decay(buf)), __s_due_to_your_s, suit_simple_name(uarm.v));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     /* report 'nudity' */
     if (!uarm.v && !uarmu.v && !uarmc.v && !uarms.v && !uarmg.v && !uarmf.v && !uarmh.v) {
         if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_nudist))
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_did) : (__s_do), (__s_not_wear_any_armor), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_did) : (__s_do),
+                (__s_not_wear_any_armor),
+                (__s_empty)
+            ));
         else
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_not_wearing_any_armor)), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((were)) : cptr.decay((are)),
+                ((__s_not_wearing_any_armor)),
+                ((__s_empty))
+            ));
     }
 }
 
@@ -2034,12 +2903,22 @@ function* weapon_insight(final) {
     /* report being weaponless; distinguish whether gloves are worn
        [perhaps mention silver ring(s) when not wearing gloves?] */
     if (!uwep.v) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((empty_handed())), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((empty_handed())),
+            ((__s_empty))
+        ));
 
         /* two-weaponing implies hands and
            a weapon or wep-tool (not other odd stuff) in each hand */
     } else if (cptr.ld1so(u, $you_twoweap)) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_wielding_two_weapons_at_once)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_wielding_two_weapons_at_once)),
+            ((__s_empty))
+        ));
 
         /* report most weapons by their skill class (so a katana will be
            described as a long sword, for instance; mattock, hook, and aklys
@@ -2053,12 +2932,23 @@ function* weapon_insight(final) {
         else if (is_wet_towel(uwep.v))
             what = __s_wet_towel;
 
-        if (!(yield* strncmpi((what), (__s_armor), -1)) || !(yield* strncmpi((what), (__s_food), -1)) || !(yield* strncmpi((what), (__s_venom), -1)))
+        if (!(yield* strncmpi((what), (__s_armor), -1)) ||
+                !(yield* strncmpi((what), (__s_food), -1)) ||
+                !(yield* strncmpi((what), (__s_venom), -1)))
             void cptr.sprintf(cptr.decay(buf), __s_wielding_some_s, what);
         else
             /* [maybe include known blessed?] */
-            void cptr.sprintf(cptr.decay(buf), __s_wielding_s, (cptr.ldI64o(uwep.v, $obj_quan) == 1n) ? (yield* an(what)) : (yield* makeplural(what)));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_wielding_s,
+                (cptr.ldI64o(uwep.v, $obj_quan) == 1n) ? (yield* an(what)) : (yield* makeplural(what))
+            );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
 
     /*
@@ -2076,15 +2966,35 @@ function* weapon_insight(final) {
             void lcase(skill_level_name(wtype, cptr.decay(sklvlbuf)));
         /* "you have no/basic/expert/master/grand-master skill with <skill>"
            or "you are unskilled/skilled in <skill>" */
-        void cptr.sprintf(cptr.decay(buf), __s_s_s_s, cptr.decay(sklvlbuf), hav ? __s_skill_with : __s_in__2, skill_name(wtype));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s_s,
+            cptr.decay(sklvlbuf),
+            hav ? __s_skill_with : __s_in__2,
+            skill_name(wtype)
+        );
 
         if (!cptr.ld1so(u, $you_twoweap)) {
             if (can_advance(wtype, 0))
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_and_s_that, !final ? __s_can_enhance : __s_could_have_enhanced);
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_and_s_that,
+                    !final ? __s_can_enhance : __s_could_have_enhanced
+                );
             if (hav)
-                (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+                (yield* enlght_line(
+                    cptr.decay((You_)),
+                    final ? cptr.decay((had)) : cptr.decay((have)),
+                    cptr.decay(((buf))),
+                    ((__s_empty))
+                ));
             else
-                (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+                (yield* enlght_line(
+                    cptr.decay((You_)),
+                    final ? cptr.decay((were)) : cptr.decay((are)),
+                    cptr.decay(((buf))),
+                    ((__s_empty))
+                ));
 
         } else {
             let pfx = new Uint8Array(128);
@@ -2099,7 +3009,12 @@ function* weapon_insight(final) {
             let verb_past;
             let wtype2 = weapon_type(uswapwep.v);
             let sklvl2 = (cptr.ldI16o2(u, wtype2, $sizeof_skills, $you_weapon_skills));
-            let twoskl = (cptr.ldI16o2(u, NHC.P_TWO_WEAPON_COMBAT, $sizeof_skills, $you_weapon_skills));
+            let twoskl = (cptr.ldI16o2(
+                u,
+                NHC.P_TWO_WEAPON_COMBAT,
+                $sizeof_skills,
+                $you_weapon_skills
+            ));
             let a1;
             let a2;
             let ab;
@@ -2124,7 +3039,11 @@ function* weapon_insight(final) {
             if (twoskl < sklvl) {
                 /* twoskil won't be restricted so sklvl is at least basic */
                 void cptr.sprintf(cptr.decay(pfx), __s_your_skill_in_s, skill_name(wtype));
-                void cptr.sprintf(cptr.decay(sfx), __s_limited_by_being_s_with_two_weapons, cptr.decay(twobuf));
+                void cptr.sprintf(
+                    cptr.decay(sfx),
+                    __s_limited_by_being_s_with_two_weapons,
+                    cptr.decay(twobuf)
+                );
                 also = cptr.decay(__static_weapon_insight_also_);
             } else if (twoskl > sklvl) {
                 /* sklvl might be restricted */
@@ -2141,11 +3060,26 @@ function* weapon_insight(final) {
                 also3 = cptr.decay(__static_weapon_insight_also_);
             }
             if (cptr.ld1s(cptr.decay(pfx)))
-                (yield* enlght_line(cptr.decay((pfx)), final ? (__s_was) : (__s_is), cptr.decay((sfx)), (__s_empty)));
+                (yield* enlght_line(
+                    cptr.decay((pfx)),
+                    final ? (__s_was) : (__s_is),
+                    cptr.decay((sfx)),
+                    (__s_empty)
+                ));
             else if (hav)
-                (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+                (yield* enlght_line(
+                    cptr.decay((You_)),
+                    final ? cptr.decay((had)) : cptr.decay((have)),
+                    cptr.decay(((buf))),
+                    ((__s_empty))
+                ));
             else
-                (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+                (yield* enlght_line(
+                    cptr.decay((You_)),
+                    final ? cptr.decay((were)) : cptr.decay((are)),
+                    cptr.decay(((buf))),
+                    ((__s_empty))
+                ));
 
             /* skip comparison between secondary and two-weapons if it is
                identical to the comparison between primary and twoweap */
@@ -2153,11 +3087,21 @@ function* weapon_insight(final) {
                 void cptr.strcpy(cptr.decay(sknambuf2), skill_name(wtype2));
                 void lcase(skill_level_name(wtype2, cptr.decay(sklvlbuf2)));
                 verb_present = __s_is, verb_past = __s_was;
-                cptr.st1o(cptr.decay(pfx), 0, cptr.st1o(cptr.decay(sfx), 0, cptr.st1o(cptr.decay(buf), 0, 0, 1), 1), 1);
+                cptr.st1o(
+                    cptr.decay(pfx),
+                    0,
+                    cptr.st1o(cptr.decay(sfx), 0, cptr.st1o(cptr.decay(buf), 0, 0, 1), 1),
+                    1
+                );
                 if (twoskl < sklvl2) {
                     /* twoskil is at least unskilled, sklvl2 at least basic */
                     void cptr.sprintf(cptr.decay(pfx), __s_your_skill_in_s, cptr.decay(sknambuf2));
-                    void cptr.sprintf(cptr.decay(sfx), __s_slimited_by_being_s_with_two_weapons, also, cptr.decay(twobuf));
+                    void cptr.sprintf(
+                        cptr.decay(sfx),
+                        __s_slimited_by_being_s_with_two_weapons,
+                        also,
+                        cptr.decay(twobuf)
+                    );
                 } else if (twoskl > sklvl2) {
                     /* sklvl2 might be restricted */
                     void cptr.strcpy(cptr.decay(pfx), __s_your_two_weapon_skill);
@@ -2172,21 +3116,50 @@ function* weapon_insight(final) {
                        too; "you [also] have basic/expert/master/grand-master
                        skill with <skill>" or "you [also] are unskilled/
                        skilled in <skill> */
-                    void cptr.sprintf(cptr.decay(buf), __s_s_s_s, cptr.decay(sklvlbuf2), hav2 ? __s_skill_with : __s_in__2, cptr.decay(sknambuf2));
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_s_s_s,
+                        cptr.decay(sklvlbuf2),
+                        hav2 ? __s_skill_with : __s_in__2,
+                        cptr.decay(sknambuf2)
+                    );
                     void cptr.strcat(cptr.decay(buf), __s_and_two_weapons);
                     if (also3) {
                         void cptr.strcpy(cptr.decay(pfx), __s_you_also);
-                        nh_snprintf(__s_weapon_insight, 1419, cptr.decay(sfx), 128n, __s_sp_pct_s, cptr.decay(buf)), cptr.st1o(cptr.decay(buf), 0, 0, 1);
+                        nh_snprintf(
+                            __s_weapon_insight,
+                            1419,
+                            cptr.decay(sfx),
+                            128n,
+                            __s_sp_pct_s,
+                            cptr.decay(buf)
+                        ),
+                                cptr.st1o(cptr.decay(buf), 0, 0, 1);
                         verb_present = hav2 ? __s_have__2 : __s_are__2;
                         verb_past = hav2 ? __s_had__3 : __s_were__2;
                     }
                 }
                 if (cptr.ld1s(cptr.decay(pfx)))
-                    (yield* enlght_line(cptr.decay((pfx)), final ? (verb_past) : (verb_present), cptr.decay((sfx)), (__s_empty)));
+                    (yield* enlght_line(
+                        cptr.decay((pfx)),
+                        final ? (verb_past) : (verb_present),
+                        cptr.decay((sfx)),
+                        (__s_empty)
+                    ));
                 else if (hav2)
-                    (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+                    (yield* enlght_line(
+                        cptr.decay((You_)),
+                        final ? cptr.decay((had)) : cptr.decay((have)),
+                        cptr.decay(((buf))),
+                        ((__s_empty))
+                    ));
                 else
-                    (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+                    (yield* enlght_line(
+                        cptr.decay((You_)),
+                        final ? cptr.decay((were)) : cptr.decay((are)),
+                        cptr.decay(((buf))),
+                        ((__s_empty))
+                    ));
             }  /* wtype2 != wtype */
 
             /* if training and available skill credits already allow
@@ -2208,21 +3181,53 @@ function* weapon_insight(final) {
                    (no 'also's or extra 'with's for case 5); when primary
                    and secondary use the same skill, only cases 1 and 3 are
                    possible because 'a2' gets forced to False above */
-                void cptr.sprintf(cptr.decay(sfx), __s_skill_s_with_s_s_s_s_s, (((((a1 + a2) | 0) + ab) | 0) > 1) ? __s_s : __s_empty, a1 ? skill_name(wtype) : __s_empty, ((a1 && a2 && ab) ? __s_comma_sp : ((a1 && (a2 || ab)) ? cptr.decay(__static_weapon_insight_also_wik_) : __s_empty)), a2 ? skill_name(wtype2) : __s_empty, ((a1 && a2 && ab) ? __s_and__4 : ((a2 && ab) ? cptr.decay(__static_weapon_insight_also_wik_) : __s_empty)), ab ? __s_two_weapons : __s_empty);
-                (yield* enlght_line(cptr.decay((You_)), final ? (__s_could_have_enhanced) : (__s_can_enhance), cptr.decay((sfx)), (__s_empty)));
+                void cptr.sprintf(
+                    cptr.decay(sfx),
+                    __s_skill_s_with_s_s_s_s_s,
+                    (((((a1 + a2) | 0) + ab) | 0) > 1) ? __s_s : __s_empty,
+                    a1 ? skill_name(wtype) : __s_empty,
+                    ((a1 && a2 && ab)
+                        ? __s_comma_sp
+                        : ((a1 && (a2 || ab))
+                            ? cptr.decay(__static_weapon_insight_also_wik_)
+                            : __s_empty)),
+                    a2 ? skill_name(wtype2) : __s_empty,
+                    ((a1 && a2 && ab)
+                        ? __s_and__4
+                        : ((a2 && ab) ? cptr.decay(__static_weapon_insight_also_wik_) : __s_empty)),
+                    ab ? __s_two_weapons : __s_empty
+                );
+                (yield* enlght_line(
+                    cptr.decay((You_)),
+                    final ? (__s_could_have_enhanced) : (__s_can_enhance),
+                    cptr.decay((sfx)),
+                    (__s_empty)
+                ));
             }
         }  /* two-weapon */
     }  /* skill applies */
 }
 
-/** C ref: insight.c:1468 — @param {CInt} adtyp @param {CPtr<char>} prot_message @param {CInt} final */
+/**
+ * C ref: insight.c:1468
+ * @param {CInt} adtyp
+ * @param {CPtr<char>} prot_message
+ * @param {CInt} final
+ */
 function* item_resistance_message(adtyp, prot_message, final) {
     let protection = u_adtyp_resistance_obj(adtyp);
 
     if (protection) {
         let somewhat = schar((protection < 99));
 
-        (yield* enlght_line((__s_your_items), final ? (somewhat ? __s_were_somewhat : __s_were__2) : (somewhat ? __s_are_somewhat : __s_are__2), (prot_message), ((yield* item_what(adtyp)))));
+        (yield* enlght_line(
+            (__s_your_items),
+            final
+                ? (somewhat ? __s_were_somewhat : __s_were__2)
+                : (somewhat ? __s_are_somewhat : __s_are__2),
+            (prot_message),
+            ((yield* item_what(adtyp)))
+        ));
     }
 }
 
@@ -2252,102 +3257,318 @@ function* attributes_enlightenment(unused_mode, final) {
     (yield* enlght_out(final ? __s_final_attributes : __s_attributes));
 
     if ((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3)) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((cptr.ldPtro(__static_attributes_enlightenment_hofe_titles, (((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0) - 1) | 0, 8))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((cptr.ldPtro(
+                __static_attributes_enlightenment_hofe_titles,
+                (((cptr.ldI32o(u, $you_uevent + $u_event_uhand_of_elbereth) & 3) | 0) - 1) | 0,
+                8
+            ))),
+            ((__s_empty))
+        ));
     }
 
     void cptr.sprintf(cptr.decay(buf), __s_pct_s, piousness(1, __s_aligned));
     if (cptr.ldI32o(u, $you_ualign + $align_record) >= 0)
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     else
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
 
     if (wizard()) {
-        void cptr.sprintf(cptr.decay(buf), __s_sp_pct_d, cptr.ldI32o(u, $you_ualign + $align_record));
-        (yield* enlght_line((__s_your_alignment), final ? (__s_was) : (__s_is), cptr.decay((buf)), (__s_empty)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_sp_pct_d,
+            cptr.ldI32o(u, $you_ualign + $align_record)
+        );
+        (yield* enlght_line(
+            (__s_your_alignment),
+            final ? (__s_was) : (__s_is),
+            cptr.decay((buf)),
+            (__s_empty)
+        ));
     }
 
     /*** Resistances to troubles ***/
     if (Invulnerable())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_invulnerable)), (((yield* from_what(NHC.INVULNERABLE))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_invulnerable)),
+            (((yield* from_what(NHC.INVULNERABLE))))
+        ));
     if (Antimagic())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_magic_protected)), (((yield* from_what(NHC.ANTIMAGIC))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_magic_protected)),
+            (((yield* from_what(NHC.ANTIMAGIC))))
+        ));
     if (Fire_resistance())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_fire_resistant)), (((yield* from_what(NHC.FIRE_RES))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_fire_resistant)),
+            (((yield* from_what(NHC.FIRE_RES))))
+        ));
     (yield* item_resistance_message(NHM.AD_FIRE, __s_protected_from_fire, final));
     if (Cold_resistance())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_cold_resistant)), (((yield* from_what(NHC.COLD_RES))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_cold_resistant)),
+            (((yield* from_what(NHC.COLD_RES))))
+        ));
     (yield* item_resistance_message(NHM.AD_COLD, __s_protected_from_cold, final));
     if (Sleep_resistance())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_sleep_resistant)), (((yield* from_what(NHC.SLEEP_RES))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_sleep_resistant)),
+            (((yield* from_what(NHC.SLEEP_RES))))
+        ));
     if (Disint_resistance())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_disintegration_resistant)), (((yield* from_what(NHC.DISINT_RES))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_disintegration_resistant)),
+            (((yield* from_what(NHC.DISINT_RES))))
+        ));
     (yield* item_resistance_message(NHM.AD_DISN, __s_protected_from_disintegration, final));
     if (Shock_resistance())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_shock_resistant)), (((yield* from_what(NHC.SHOCK_RES))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_shock_resistant)),
+            (((yield* from_what(NHC.SHOCK_RES))))
+        ));
     (yield* item_resistance_message(NHM.AD_ELEC, __s_protected_from_electric_shocks, final));
     if (Poison_resistance())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_poison_resistant)), (((yield* from_what(NHC.POISON_RES))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_poison_resistant)),
+            (((yield* from_what(NHC.POISON_RES))))
+        ));
     if (Acid_resistance()) {
-        void cptr.sprintf(cptr.decay(buf), __s_20s_30s, temp_resist(NHC.ACID_RES) ? __s_temporarily : __s_empty, __s_acid_resistant);
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.ACID_RES))))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_20s_30s,
+            temp_resist(NHC.ACID_RES) ? __s_temporarily : __s_empty,
+            __s_acid_resistant
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            (((yield* from_what(NHC.ACID_RES))))
+        ));
     }
     (yield* item_resistance_message(NHM.AD_ACID, __s_protected_from_acid, final));
     if (Drain_resistance())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_level_drain_resistant)), (((yield* from_what(NHC.DRAIN_RES))))));
-    if ((cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) || (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE))))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_immune_to_sickness)), (((yield* from_what(NHC.SICK_RES))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_level_drain_resistant)),
+            (((yield* from_what(NHC.DRAIN_RES))))
+        ));
+    if ((cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+            cptr.ldI64o2(u, NHC.SICK_RES, $sizeof_prop, $you_uprops) ||
+            (yield* defended(cptr.add(gy, $instance_globals_y_youmonst), NHM.AD_DISE))))
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_immune_to_sickness)),
+            (((yield* from_what(NHC.SICK_RES))))
+        ));
     if (Stone_resistance()) {
-        void cptr.sprintf(cptr.decay(buf), __s_20s_30s, temp_resist(NHC.STONE_RES) ? __s_temporarily : __s_empty, __s_petrification_resistant);
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.STONE_RES))))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_20s_30s,
+            temp_resist(NHC.STONE_RES) ? __s_temporarily : __s_empty,
+            __s_petrification_resistant
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            (((yield* from_what(NHC.STONE_RES))))
+        ));
     }
     if (Halluc_resistance())
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_resisted) : (__s_resist), (__s_hallucinations), ((yield* from_what(NHC.HALLUC_RES)))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_resisted) : (__s_resist),
+            (__s_hallucinations),
+            ((yield* from_what(NHC.HALLUC_RES)))
+        ));
     if ((cptr.ldI32o(u, $you_uedibility) & 1))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_recognize_detrimental_food)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_recognize_detrimental_food)),
+            ((__s_empty))
+        ));
 
     /*** Vision and senses ***/
     if ((HBlinded() || EBlinded()) && BBlinded())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_see)), (((yield* from_what(-15))))));  /* Eyes of the Overworld */
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_see)),
+            (((yield* from_what(-15))))
+        ));  /* Eyes of the Overworld */
     if (Blnd_resist() && !Blind())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_not_subject_to_light_induced_blindness)), (((yield* from_what(NHC.BLND_RES))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_not_subject_to_light_induced_blindness)),
+            (((yield* from_what(NHC.BLND_RES))))
+        ));
     if (See_invisible()) {
         if (!Blind())
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_saw) : (__s_see), (__s_invisible), ((yield* from_what(NHC.SEE_INVIS)))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_saw) : (__s_see),
+                (__s_invisible),
+                ((yield* from_what(NHC.SEE_INVIS)))
+            ));
         else if (!PermaBlind())
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_seen) : (__s_will_see), (__s_invisible_when_not_blind), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_would_have_seen) : (__s_will_see),
+                (__s_invisible_when_not_blind),
+                (__s_empty)
+            ));
         else
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_seen) : (__s_would_see), (__s_invisible_if_not_blind), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_would_have_seen) : (__s_would_see),
+                (__s_invisible_if_not_blind),
+                (__s_empty)
+            ));
     }
     if (Blind_telepat())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_telepathic)), (((yield* from_what(NHC.TELEPAT))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_telepathic)),
+            (((yield* from_what(NHC.TELEPAT))))
+        ));
     if (Warning())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_warned)), (((yield* from_what(NHC.WARNING))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_warned)),
+            (((yield* from_what(NHC.WARNING))))
+        ));
     if (Warn_of_mon() && cptr.ldU64o(svc, $context_info_warntype)) {
-        void cptr.sprintf(cptr.decay(buf), __s_aware_of_the_presence_of_s, (cptr.ldU64o(svc, $context_info_warntype) & 128n) ? __s_orcs : ((cptr.ldU64o(svc, $context_info_warntype) & 16n) ? __s_elves : ((cptr.ldU64o(svc, $context_info_warntype) & 256n) ? __s_demons : cptr.ldPtro(c_common_strings, $c_common_strings_c_something))));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.WARN_OF_MON))))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_aware_of_the_presence_of_s,
+            (cptr.ldU64o(svc, $context_info_warntype) & 128n)
+                ? __s_orcs
+                : ((cptr.ldU64o(svc, $context_info_warntype) & 16n)
+                    ? __s_elves
+                    : ((cptr.ldU64o(svc, $context_info_warntype) & 256n)
+                        ? __s_demons
+                        : cptr.ldPtro(c_common_strings, $c_common_strings_c_something)))
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            (((yield* from_what(NHC.WARN_OF_MON))))
+        ));
     }
     if (Warn_of_mon() && cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd)) {
-        void cptr.sprintf(cptr.decay(buf), __s_aware_of_the_presence_of_s, ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 24n) == 24n) ? __s_humans_and_elves : ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 8n) ? __s_humans : ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 16n) ? __s_elves : ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 128n) ? __s_orcs : ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 256n) ? __s_demons : __s_certain_monsters)))));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_aware_of_the_presence_of_s,
+            ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 24n) == 24n)
+                ? __s_humans_and_elves
+                : ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 8n)
+                    ? __s_humans
+                    : ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 16n)
+                        ? __s_elves
+                        : ((cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd) & 128n)
+                            ? __s_orcs
+                            : ((cptr.ldU64o(
+                                svc,
+                                $context_info_warntype + $warntype_info_polyd
+                            ) & 256n)
+                                ? __s_demons
+                                : __s_certain_monsters))))
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     warnspecies = cptr.ldI16o(svc, $context_info_warntype + $warntype_info_speciesidx);
     if (Warn_of_mon() && ismnum(warnspecies)) {
-        void cptr.sprintf(cptr.decay(buf), __s_aware_of_the_presence_of_s, (yield* makeplural(cptr.ldPtro3(mons, warnspecies, $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.WARN_OF_MON))))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_aware_of_the_presence_of_s,
+            (yield* makeplural(cptr.ldPtro3(mons, warnspecies, $sizeof_permonst, NHC.NEUTRAL, 8, 0)))
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            (((yield* from_what(NHC.WARN_OF_MON))))
+        ));
     }
     if (Undead_warning())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_warned_of_undead)), (((yield* from_what(NHC.WARN_UNDEAD))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_warned_of_undead)),
+            (((yield* from_what(NHC.WARN_UNDEAD))))
+        ));
     if (Searching())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_automatic_searching)), (((yield* from_what(NHC.SEARCHING))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_automatic_searching)),
+            (((yield* from_what(NHC.SEARCHING))))
+        ));
     if (Clairvoyant()) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_clairvoyant)), (((yield* from_what(NHC.CLAIRVOYANT))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_clairvoyant)),
+            (((yield* from_what(NHC.CLAIRVOYANT))))
+        ));
     } else if ((HClairvoyant() || EClairvoyant()) && BClairvoyant()) {
         void cptr.strcpy(cptr.decay(buf), (yield* from_what(-35)));
         void strsubst(cptr.decay(buf), __s_because_of, __s_if_not_for);
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_could_have_been) : (__s_could_be), (__s_clairvoyant__2), cptr.decay((buf))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_could_have_been) : (__s_could_be),
+            (__s_clairvoyant__2),
+            cptr.decay((buf))
+        ));
     }
     if (Infravision())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_infravision)), (((yield* from_what(NHC.INFRAVISION))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_infravision)),
+            (((yield* from_what(NHC.INFRAVISION))))
+        ));
     if (Detect_monsters()) {
         void cptr.strcpy(cptr.decay(buf), __s_sensing_the_presence_of_monsters);
         if (wizard()) {
@@ -2356,7 +3577,12 @@ function* attributes_enlightenment(unused_mode, final) {
             if (detectmon_timeout)
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_ld, detectmon_timeout);
         }
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     if (cptr.ldI32o(u, $you_umconf)) {
         void cptr.strcpy(cptr.decay(buf), __s_monsters_when_hitting_them);
@@ -2364,9 +3590,18 @@ function* attributes_enlightenment(unused_mode, final) {
             if (cptr.ldI32o(u, $you_umconf) == 1)
                 void cptr.strcat(cptr.decay(buf), __s_next_hit_only);
             else
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_next_u_hits, cptr.ldI32o(u, $you_umconf));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_next_u_hits,
+                    cptr.ldI32o(u, $you_umconf)
+                );
         }
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_confused) : (__s_will_confuse), cptr.decay((buf)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_would_have_confused) : (__s_will_confuse),
+            cptr.decay((buf)),
+            (__s_empty)
+        ));
     }
 
     /*** Appearance and behavior ***/
@@ -2380,35 +3615,103 @@ function* attributes_enlightenment(unused_mode, final) {
         /* the sum might be 0 (+0 ring or two which negate each other);
            that yields "you are charismatic" (which isn't pointless
            because it potentially impacts seduction attacks) */
-        void cptr.sprintf(cptr.decay(buf), __s_scharismatic, (adorn > 0) ? __s_more : ((adorn < 0) ? __s_less : __s_empty));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), (((yield* from_what(NHC.ADORNED))))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_scharismatic,
+            (adorn > 0) ? __s_more : ((adorn < 0) ? __s_less : __s_empty)
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            (((yield* from_what(NHC.ADORNED))))
+        ));
     }
     if (Invisible())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_invisible__2)), (((yield* from_what(NHC.INVIS))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_invisible__2)),
+            (((yield* from_what(NHC.INVIS))))
+        ));
     else if (Invis())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_invisible_to_others)), (((yield* from_what(NHC.INVIS))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_invisible_to_others)),
+            (((yield* from_what(NHC.INVIS))))
+        ));
     else if ((HInvis() || EInvis()) && BInvis())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_visible)), (((yield* from_what(-40))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_visible)),
+            (((yield* from_what(-40))))
+        ));
     if (Displaced())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_displaced)), (((yield* from_what(NHC.DISPLACED))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_displaced)),
+            (((yield* from_what(NHC.DISPLACED))))
+        ));
     if (Stealth()) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_stealthy)), (((yield* from_what(NHC.STEALTH))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_stealthy)),
+            (((yield* from_what(NHC.STEALTH))))
+        ));
     } else if (BStealth() && (HStealth() || EStealth())) {
-        void cptr.sprintf(cptr.decay(buf), __s_stealthy_s, (BStealth() == 67108864n) ? __s_if_not_mounted : __s_empty);
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_been) : (__s_would_be), cptr.decay((buf)), (__s_empty)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_stealthy_s,
+            (BStealth() == 67108864n) ? __s_if_not_mounted : __s_empty
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_would_have_been) : (__s_would_be),
+            cptr.decay((buf)),
+            (__s_empty)
+        ));
     }
     if (Aggravate_monster())
-        (yield* enlght_line((__s_you_aggravate), final ? (__s_d) : (__s_empty), (__s_monsters), ((yield* from_what(NHC.AGGRAVATE_MONSTER)))));
+        (yield* enlght_line(
+            (__s_you_aggravate),
+            final ? (__s_d) : (__s_empty),
+            (__s_monsters),
+            ((yield* from_what(NHC.AGGRAVATE_MONSTER)))
+        ));
     if (Conflict())
-        (yield* enlght_line((__s_you_cause), final ? (__s_d) : (__s_empty), (__s_conflict), ((yield* from_what(NHC.CONFLICT)))));
+        (yield* enlght_line(
+            (__s_you_cause),
+            final ? (__s_d) : (__s_empty),
+            (__s_conflict),
+            ((yield* from_what(NHC.CONFLICT)))
+        ));
 
     /*** Transportation ***/
     if (Jumping())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_jump)), (((yield* from_what(NHC.JUMPING))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_jump)),
+            (((yield* from_what(NHC.JUMPING))))
+        ));
     if (Teleportation())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_teleport)), (((yield* from_what(NHC.TELEPORT))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_teleport)),
+            (((yield* from_what(NHC.TELEPORT))))
+        ));
     if (Teleport_control())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_teleport_control)), (((yield* from_what(NHC.TELEPORT_CONTROL))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_teleport_control)),
+            (((yield* from_what(NHC.TELEPORT_CONTROL))))
+        ));
     /* actively levitating handled earlier as a status condition */
     if (BLevitation()) {
         let save_BLev = BLevitation();
@@ -2421,8 +3724,21 @@ function* attributes_enlightenment(unused_mode, final) {
             let trapped = schar(((save_BLev & 536870912n) != 0n));
             let terrain = schar(((save_BLev & 67108864n) != 0n));
 
-            void cptr.sprintf(cptr.decay(buf), __s_s_s_s__4, trapped ? __s_if_not_trapped : __s_empty, (trapped && terrain) ? __s_and : __s_empty, terrain ? cptr.decay(__static_attributes_enlightenment_if_surroundings_permitted) : __s_empty);
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_levitated) : (__s_would_levitate), cptr.decay((buf)), (__s_empty)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_s_s_s__4,
+                trapped ? __s_if_not_trapped : __s_empty,
+                (trapped && terrain) ? __s_and : __s_empty,
+                terrain
+                    ? cptr.decay(__static_attributes_enlightenment_if_surroundings_permitted)
+                    : __s_empty
+            );
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_would_have_levitated) : (__s_would_levitate),
+                cptr.decay((buf)),
+                (__s_empty)
+            ));
         }
         cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked, save_BLev);
     }
@@ -2432,49 +3748,164 @@ function* attributes_enlightenment(unused_mode, final) {
 
         cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked, 0n);
         if (Flying()) {
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_would_have_flown) : (__s_would_fly), (Levitation() ? __s_if_you_weren_t_levitating : ((save_BFly == 536870912n) ? __s_if_you_weren_t_trapped : ((save_BFly == 67108864n) ? cptr.decay(__static_attributes_enlightenment_if_surroundings_permitted) : __s_if_circumstances_permitted))), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_would_have_flown) : (__s_would_fly),
+                (Levitation()
+                    ? __s_if_you_weren_t_levitating
+                    : ((save_BFly == 536870912n)
+                        ? __s_if_you_weren_t_trapped
+                        : ((save_BFly == 67108864n)
+                            ? cptr.decay(__static_attributes_enlightenment_if_surroundings_permitted)
+                            : __s_if_circumstances_permitted))),
+                (__s_empty)
+            ));
         }
         cptr.stI64o2(u, NHC.FLYING, $sizeof_prop, $you_uprops + $prop_blocked, save_BFly);
     }
     /* including this might bring attention to the fact that ceiling
        clinging has inconsistencies... */
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n)) {
+    if (((cptr.ldU64o(
+        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+        $permonst_mflags1
+    ) & 16n) != 0n)) {
         let has_lid = has_ceiling(cptr.add(u, $you_uz));
 
         if (has_lid && !(cptr.ldI32o(u, $you_uinwater) & 1)) {
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_cling_to_the_ceiling)), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((could)) : cptr.decay((can)),
+                ((__s_cling_to_the_ceiling)),
+                ((__s_empty))
+            ));
         } else {
-            void cptr.sprintf(cptr.decay(buf), __s_to_the_ceiling_if_s_s_s, !has_lid ? __s_there_was_one : __s_empty, (!has_lid && (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __s_and__2 : __s_empty, (cptr.ldI32o(u, $you_uinwater) & 1) | 0 ? (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 ? __s_you_weren_t_underwater : __s_you_weren_t_in_the_water) : __s_empty);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_to_the_ceiling_if_s_s_s,
+                !has_lid ? __s_there_was_one : __s_empty,
+                (!has_lid && (cptr.ldI32o(u, $you_uinwater) & 1) | 0) ? __s_and__2 : __s_empty,
+                (cptr.ldI32o(u, $you_uinwater) & 1) | 0
+                    ? (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0
+                        ? __s_you_weren_t_underwater
+                        : __s_you_weren_t_in_the_water)
+                    : __s_empty
+            );
             /* past tense is applicable for death while Unchanging */
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_could_have_clung) : (__s_could_cling), cptr.decay((buf)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_could_have_clung) : (__s_could_cling),
+                cptr.decay((buf)),
+                (__s_empty)
+            ));
         }
     }
     /* actively walking on water handled earlier as a status condition */
-    if (((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) || cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) && !walking_on_water())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_walk_on_water)), (((yield* from_what(NHC.WWALKING))))));
+    if (((cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops + $prop_intrinsic) ||
+        cptr.ldI64o2(u, NHC.WWALKING, $sizeof_prop, $you_uprops)) &&
+        !(((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                )
+            )))) &&
+            !walking_on_water())
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_walk_on_water)),
+            (((yield* from_what(NHC.WWALKING))))
+        ));
     /* actively swimming (in water but not under it) handled earlier */
-    if (Swimming() && (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || !(cptr.ldI32o(u, $you_uinwater) & 1)))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_swim)), (((yield* from_what(NHC.SWIMMING))))));
+    if (Swimming() &&
+            (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 || !(cptr.ldI32o(u, $you_uinwater) & 1)))
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_swim)),
+            (((yield* from_what(NHC.SWIMMING))))
+        ));
     if (Breathless())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_survive_without_air)), (((yield* from_what(NHC.MAGICAL_BREATHING))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_survive_without_air)),
+            (((yield* from_what(NHC.MAGICAL_BREATHING))))
+        ));
     else if (Amphibious())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_breathe_water)), (((yield* from_what(NHC.MAGICAL_BREATHING))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_breathe_water)),
+            (((yield* from_what(NHC.MAGICAL_BREATHING))))
+        ));
     if (Passes_walls())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_walk_through_walls)), (((yield* from_what(NHC.PASSES_WALLS))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_walk_through_walls)),
+            (((yield* from_what(NHC.PASSES_WALLS))))
+        ));
 
     /*** Physical attributes ***/
     if (Regeneration())
-        (yield* enlght_line((__s_you_regenerate), final ? (__s_d) : (__s_empty), (__s_empty), ((yield* from_what(NHC.REGENERATION)))));
+        (yield* enlght_line(
+            (__s_you_regenerate),
+            final ? (__s_d) : (__s_empty),
+            (__s_empty),
+            ((yield* from_what(NHC.REGENERATION)))
+        ));
     if (Slow_digestion())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_slower_digestion)), (((yield* from_what(NHC.SLOW_DIGESTION))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_slower_digestion)),
+            (((yield* from_what(NHC.SLOW_DIGESTION))))
+        ));
     if (cptr.ld1so(u, $you_uhitinc)) {
         void (yield* enlght_combatinc(__s_to_hit, cptr.ld1so(u, $you_uhitinc), final, cptr.decay(buf)));
         if (cptr.ld1so(iflags, $instance_flags_tux_penalty) && !Upolyd())
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_s_your_suit_s_penalty, (cptr.ld1so(u, $you_uhitinc) < 0) ? __s_increasing : ((cptr.ld1so(u, $you_uhitinc) < ((Math.imul(4, cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)) / 5) | 0)) ? __s_partly_offsetting : ((cptr.ld1so(u, $you_uhitinc) < cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)) ? __s_nearly_offsetting : __s_overcoming)));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_s_your_suit_s_penalty,
+                (cptr.ld1so(u, $you_uhitinc) < 0)
+                    ? __s_increasing
+                    : ((cptr.ld1so(u, $you_uhitinc) <
+                        ((Math.imul(
+                            4,
+                            cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr)
+                        ) / 5) | 0))
+                        ? __s_partly_offsetting
+                        : ((cptr.ld1so(u, $you_uhitinc) <
+                            cptr.ldI32o(gu, $instance_globals_u_urole + $Role_spelarmr))
+                            ? __s_nearly_offsetting
+                            : __s_overcoming))
+            );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     if (cptr.ld1so(u, $you_udaminc))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), (((yield* enlght_combatinc(__s_damage, cptr.ld1so(u, $you_udaminc), final, cptr.decay(buf))))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            (((yield* enlght_combatinc(__s_damage, cptr.ld1so(u, $you_udaminc), final, cptr.decay(buf))))),
+            ((__s_empty))
+        ));
     if (cptr.ld1uo(u, $you_uspellprot) || Protection()) {
         let prot = 0;
 
@@ -2488,20 +3919,35 @@ function* attributes_enlightenment(unused_mode, final) {
             prot = (prot + cptr.ldI32o(u, $you_ublessed)) | 0;
         prot = (prot + cptr.ld1uo(u, $you_uspellprot)) | 0;
         if (prot)
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), (((yield* enlght_combatinc(__s_defense, prot, final, cptr.decay(buf))))), ((__s_empty))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((had)) : cptr.decay((have)),
+                (((yield* enlght_combatinc(__s_defense, prot, final, cptr.decay(buf))))),
+                ((__s_empty))
+            ));
     }
     if ((armpro = magic_negation(cptr.add(gy, $instance_globals_y_youmonst))) > 0) {
         /* sanity check */
         if (armpro >= 4)
             armpro = (4 - 1) | 0;
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((cptr.ldPtro(__static_attributes_enlightenment_mc_types, armpro, 8))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((cptr.ldPtro(__static_attributes_enlightenment_mc_types, armpro, 8))),
+            ((__s_empty))
+        ));
     }
     if (Half_physical_damage())
         (yield* enlght_halfdmg(NHC.HALF_PHDAM, final));
     if (Half_spell_damage())
         (yield* enlght_halfdmg(NHC.HALF_SPDAM, final));
     if (Half_gas_damage())
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_took) : (__s_take), (__s_reduced_poison_gas_damage), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_took) : (__s_take),
+            (__s_reduced_poison_gas_damage),
+            (__s_empty)
+        ));
     if (cptr.ldI16o(svs, 0, $sizeof_spell) > NHM.NO_SPELL) {
         /* greatly simplified edition of percent_success(spell.c)--may need
            to be suppressed if oversimplification leads to player confusion */
@@ -2511,21 +3957,40 @@ function* attributes_enlightenment(unused_mode, final) {
 
         cptr.st1(cptr.decay(cast_adj), 0);
         if (suit)
-            void cptr.sprintf(cptr.decay(cast_adj), __s_impaired_by_metallic_armor_s, robe ? __s_mitigated_by_your_robe : __s_empty);
+            void cptr.sprintf(
+                cptr.decay(cast_adj),
+                __s_impaired_by_metallic_armor_s,
+                robe ? __s_mitigated_by_your_robe : __s_empty
+            );
         else if (robe)
             void cptr.strcpy(cptr.decay(cast_adj), __s_enhanced_by_wearing_a_robe);
 
         if (cptr.ld1s(cptr.decay(cast_adj)))
-            (yield* enlght_line((__s_your_spell_casting), final ? (__s_was) : (__s_is), cptr.decay((cast_adj)), (__s_empty)));
+            (yield* enlght_line(
+                (__s_your_spell_casting),
+                final ? (__s_was) : (__s_is),
+                cptr.decay((cast_adj)),
+                (__s_empty)
+            ));
     }
     /* polymorph and other shape change */
     if (Protection_from_shape_changers())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_protected_from_shape_changers)), (((yield* from_what(NHC.PROT_FROM_SHAPE_CHANGERS))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_protected_from_shape_changers)),
+            (((yield* from_what(NHC.PROT_FROM_SHAPE_CHANGERS))))
+        ));
     if (Unchanging()) {
         let what = null;
 
         if (!Upolyd())
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_not_change_from_your_current_form)), (((yield* from_what(NHC.UNCHANGING))))));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((could)) : cptr.decay((can)),
+                ((__s_not_change_from_your_current_form)),
+                (((yield* from_what(NHC.UNCHANGING))))
+            ));
         /* blocked shape changes */
         if (Polymorph())
             what = !final ? __s_polymorph : __s_have_polymorphed;
@@ -2534,77 +3999,233 @@ function* attributes_enlightenment(unused_mode, final) {
         if (what) {
             void cptr.sprintf(cptr.decay(buf), __s_would_s_periodically, what);
             /* omit from_what(UNCHANGING); too verbose */
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((buf)) : cptr.decay((buf)), (__s_if_not_locked_into_your_current_form), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((buf)) : cptr.decay((buf)),
+                (__s_if_not_locked_into_your_current_form),
+                (__s_empty)
+            ));
         }
     } else if (Polymorph()) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_polymorphing_periodically)), (((yield* from_what(NHC.POLYMORPH))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_polymorphing_periodically)),
+            (((yield* from_what(NHC.POLYMORPH))))
+        ));
     }
     if (Polymorph_control())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_polymorph_control)), (((yield* from_what(NHC.POLYMORPH_CONTROL))))));
-    if (Upolyd() && cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_ulycn) && !(final == NHM.ENL_GAMEOVERDEAD && cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREEN_SLIME && !Unchanging())) {
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_polymorph_control)),
+            (((yield* from_what(NHC.POLYMORPH_CONTROL))))
+        ));
+    if (Upolyd() &&
+            cptr.ldI32o(u, $you_umonnum) != cptr.ldI32o(u, $you_ulycn) &&
+            !(final == NHM.ENL_GAMEOVERDEAD &&
+                cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREEN_SLIME &&
+                !Unchanging())) {
         /* foreign shape (except were-form which is handled below) */
         if (!vampshifted(cptr.add(gy, $instance_globals_y_youmonst)))
-            void cptr.sprintf(cptr.decay(buf), __s_polymorphed_into_s, (yield* an(pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE))));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_polymorphed_into_s,
+                (yield* an(pmname(
+                    cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                    cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
+                )))
+            );
         else
-            void cptr.sprintf(cptr.decay(buf), __s_polymorphed_into_s_in_s_form, (yield* an(pmname(cptr.add(mons, cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham), $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE))), pmname(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_polymorphed_into_s_in_s_form,
+                (yield* an(pmname(
+                    cptr.add(
+                        mons,
+                        cptr.ldI16o(gy, $instance_globals_y_youmonst + $monst_cham),
+                        $sizeof_permonst
+                    ),
+                    cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
+                ))),
+                pmname(
+                    cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                    cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
+                )
+            );
         if (wizard())
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_d_rparen, cptr.ldI32o(u, $you_mtimedone));
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_sp_lparen_pct_d_rparen,
+                cptr.ldI32o(u, $you_mtimedone)
+            );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
-    if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4194304n) != 0n) && cptr.ld1so(flags, $flag_female))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_lay_eggs)), ((__s_empty))));
+    if (((cptr.ldU64o(
+        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+        $permonst_mflags1
+    ) &
+        4194304n) != 0n) &&
+            cptr.ld1so(flags, $flag_female))
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_lay_eggs)),
+            ((__s_empty))
+        ));
     if (ismnum(cptr.ldI32o(u, $you_ulycn))) {
         /* "you are a werecreature [in beast form]" */
-        void cptr.strcpy(cptr.decay(buf), (yield* an(pmname(cptr.add(mons, cptr.ldI32o(u, $you_ulycn), $sizeof_permonst), cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE))));
+        void cptr.strcpy(
+            cptr.decay(buf),
+            (yield* an(pmname(
+                cptr.add(mons, cptr.ldI32o(u, $you_ulycn), $sizeof_permonst),
+                cptr.ld1so(flags, $flag_female) ? NHC.FEMALE : NHC.MALE
+            )))
+        );
         if (cptr.ldI32o(u, $you_umonnum) == cptr.ldI32o(u, $you_ulycn)) {
             void cptr.strcat(cptr.decay(buf), __s_in_beast_form);
             if (wizard())
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_d_rparen, cptr.ldI32o(u, $you_mtimedone));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_sp_lparen_pct_d_rparen,
+                    cptr.ldI32o(u, $you_mtimedone)
+                );
         }
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     }
     if (Unchanging() && Upolyd())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), ((__s_not_change_from_your_current_form)), (((yield* from_what(NHC.UNCHANGING))))));
-    if ((cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM || hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((__s_harmed_by_silver)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((could)) : cptr.decay((can)),
+            ((__s_not_change_from_your_current_form)),
+            (((yield* from_what(NHC.UNCHANGING))))
+        ));
+    if ((cptr.ldI32o(u, $you_ulycn) >= NHC.LOW_PM ||
+            hates_silver(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))))
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((__s_harmed_by_silver)),
+            ((__s_empty))
+        ));
     /* movement and non-armor-based protection */
     if (Fast())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), ((Very_fast() ? __s_very_fast : __s_fast)), (((yield* from_what(NHC.FAST))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            ((Very_fast() ? __s_very_fast : __s_fast)),
+            (((yield* from_what(NHC.FAST))))
+        ));
     if (Reflecting())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_reflection)), (((yield* from_what(NHC.REFLECTING))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_reflection)),
+            (((yield* from_what(NHC.REFLECTING))))
+        ));
     if (Free_action())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_free_action)), (((yield* from_what(NHC.FREE_ACTION))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_free_action)),
+            (((yield* from_what(NHC.FREE_ACTION))))
+        ));
     if (Fixed_abil())
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_fixed_abilities)), (((yield* from_what(NHC.FIXED_ABIL))))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_fixed_abilities)),
+            (((yield* from_what(NHC.FIXED_ABIL))))
+        ));
     if (Lifesaved())
-        (yield* enlght_line((__s_your_life), final ? (__s_would_have_been) : (__s_will_be), (__s_saved), (__s_empty)));
+        (yield* enlght_line(
+            (__s_your_life),
+            final ? (__s_would_have_been) : (__s_will_be),
+            (__s_saved),
+            (__s_empty)
+        ));
 
     /*** Miscellany ***/
     if (Luck()) {
         ltmp = Math.abs(Luck());
-        void cptr.sprintf(cptr.decay(buf), __s_s_slucky, ltmp >= 10 ? __s_extremely__2 : (ltmp >= 5 ? __s_very__2 : __s_empty), Luck() < 0 ? __s_un : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_slucky,
+            ltmp >= 10 ? __s_extremely__2 : (ltmp >= 5 ? __s_very__2 : __s_empty),
+            Luck() < 0 ? __s_un : __s_empty
+        );
         if (wizard())
             void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_d_rparen, Luck());
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     } else if (wizard())
         (yield* enlght_line((__s_your_luck), final ? (__s_was) : (__s_is), (__s_zero), (__s_empty)));
     if (cptr.ld1so(u, $you_moreluck) > 0)
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_extra_luck)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_extra_luck)),
+            ((__s_empty))
+        ));
     else if (cptr.ld1so(u, $you_moreluck) < 0)
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((had)) : cptr.decay((have)), ((__s_reduced_luck)), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((had)) : cptr.decay((have)),
+            ((__s_reduced_luck)),
+            ((__s_empty))
+        ));
     if (carrying(NHC.LUCKSTONE) || stone_luck(1)) {
         ltmp = stone_luck(0);
         if (ltmp <= 0)
-            (yield* enlght_line((__s_bad_luck), final ? (__s_did) : (__s_does), (__s_not_time_out_for_you), (__s_empty)));
+            (yield* enlght_line(
+                (__s_bad_luck),
+                final ? (__s_did) : (__s_does),
+                (__s_not_time_out_for_you),
+                (__s_empty)
+            ));
         if (ltmp >= 0)
-            (yield* enlght_line((__s_good_luck), final ? (__s_did) : (__s_does), (__s_not_time_out_for_you), (__s_empty)));
+            (yield* enlght_line(
+                (__s_good_luck),
+                final ? (__s_did) : (__s_does),
+                (__s_not_time_out_for_you),
+                (__s_empty)
+            ));
     }
 
     if (cptr.ldI32o(u, $you_ugangr)) {
-        void cptr.sprintf(cptr.decay(buf), __s_sangry_with_you, cptr.ldI32o(u, $you_ugangr) > 6 ? __s_extremely__2 : (cptr.ldI32o(u, $you_ugangr) > 3 ? __s_very__2 : __s_empty));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_sangry_with_you,
+            cptr.ldI32o(u, $you_ugangr) > 6
+                ? __s_extremely__2
+                : (cptr.ldI32o(u, $you_ugangr) > 3 ? __s_very__2 : __s_empty)
+        );
         if (wizard())
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_d_rparen, cptr.ldI32o(u, $you_ugangr));
-        (yield* enlght_line(((yield* u_gname())), final ? (__s_was__3) : (__s_is__3), cptr.decay((buf)), (__s_empty)));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_sp_lparen_pct_d_rparen,
+                cptr.ldI32o(u, $you_ugangr)
+            );
+        (yield* enlght_line(
+            ((yield* u_gname())),
+            final ? (__s_was__3) : (__s_is__3),
+            cptr.decay((buf)),
+            (__s_empty)
+        ));
     } else {
         /*
          * We need to suppress this when the game is over, because death
@@ -2612,10 +4233,23 @@ function* attributes_enlightenment(unused_mode, final) {
          * resulting in a false claim that you could have prayed safely.
          */
         if (!final) {
-            void cptr.sprintf(cptr.decay(buf), __s_ssafely_pray, (yield* can_pray(0)) ? __s_empty : __s_not__2);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_ssafely_pray,
+                (yield* can_pray(0)) ? __s_empty : __s_not__2
+            );
             if (wizard())
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_d_rparen, cptr.ldI32o(u, $you_ublesscnt));
-            (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((could)) : cptr.decay((can)), cptr.decay(((buf))), ((__s_empty))));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_sp_lparen_pct_d_rparen,
+                    cptr.ldI32o(u, $you_ublesscnt)
+                );
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? cptr.decay((could)) : cptr.decay((can)),
+                cptr.decay(((buf))),
+                ((__s_empty))
+            ));
         }
     }
     /* named fruit debugging (doesn't really belong here...); to enable,
@@ -2628,9 +4262,19 @@ function* attributes_enlightenment(unused_mode, final) {
             void cptr.sprintf(cptr.decay(buf), __s_fruit_d, cptr.ldI32o(f, $fruit_fid));
             (yield* enlght_line(cptr.decay((buf)), final ? (__s_was__2) : (__s_is__2), (f), (__s_empty)));
         }
-        (yield* enlght_line((__s_the_current_fruit), final ? (__s_was__2) : (__s_is__2), (cptr.add(svp, $instance_globals_saved_p_pl_fruit)), (__s_empty)));
+        (yield* enlght_line(
+            (__s_the_current_fruit),
+            final ? (__s_was__2) : (__s_is__2),
+            (cptr.add(svp, $instance_globals_saved_p_pl_fruit)),
+            (__s_empty)
+        ));
         void cptr.sprintf(cptr.decay(buf), __s_pct_d, cptr.ld1so(flags, $flag_made_fruit));
-        (yield* enlght_line((__s_the_made_fruit_flag), final ? (__s_was__2) : (__s_is__2), cptr.decay((buf)), (__s_empty)));
+        (yield* enlght_line(
+            (__s_the_made_fruit_flag),
+            final ? (__s_was__2) : (__s_is__2),
+            cptr.decay((buf)),
+            (__s_empty)
+        ));
     }
 
     {
@@ -2653,12 +4297,22 @@ function* attributes_enlightenment(unused_mode, final) {
                 case 1:
                 break;  /* just "are dead" */
                 default:
-                void cptr.sprintf(cptr.decay(buf), __s_d_s_time, cptr.ldI32o(u, $you_umortality), ordin(cptr.ldI32o(u, $you_umortality)));
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_d_s_time,
+                    cptr.ldI32o(u, $you_umortality),
+                    ordin(cptr.ldI32o(u, $you_umortality))
+                );
                 break;
             }
         }
         if (p)
-            (yield* enlght_line(cptr.decay((You_)), final ? (p) : (__s_have_been_killed), cptr.decay((buf)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (p) : (__s_have_been_killed),
+                cptr.decay((buf)),
+                (__s_empty)
+            ));
     }
 }
 
@@ -2687,7 +4341,14 @@ export function* youhiding(via_enlghtmt, msgflag) {
            for the hypothetical furniture and monster cases */
         bp = eos(cptr.strcpy(cptr.decay(buf), __s_mimicking));
         if (U_AP_TYPE() == NHC.M_AP_OBJECT) {
-            void cptr.sprintf(bp, __s_sp_pct_s, (yield* an((yield* simple_typename(cptr.ldI32o(gy, $instance_globals_y_youmonst + $monst_mappearance) | 0)))));
+            void cptr.sprintf(
+                bp,
+                __s_sp_pct_s,
+                (yield* an((yield* simple_typename(cptr.ldI32o(
+                    gy,
+                    $instance_globals_y_youmonst + $monst_mappearance
+                ) | 0))))
+            );
         } else if (U_AP_TYPE() == NHC.M_AP_FURNITURE) {
             void cptr.strcpy(bp, __s_something);
         } else if (U_AP_TYPE() == NHC.M_AP_MONSTER) {
@@ -2697,15 +4358,37 @@ export function* youhiding(via_enlghtmt, msgflag) {
         }
     } else if ((cptr.ldI32o(u, $you_uundetected) & 1)) {
         bp = eos(cptr.decay(buf));  /* points past "hiding" */
-        if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL) {
+        if (cptr.ld1so(
+            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+            $permonst_mlet
+        ) ==
+                NHC.S_EEL) {
             if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
-                void cptr.sprintf(bp, __s_in_the_s, waterbody_name(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
-        } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
-            let o = cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects);
+                void cptr.sprintf(
+                    bp,
+                    __s_in_the_s,
+                    waterbody_name(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                );
+        } else if (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags1
+        ) & 128n) != 0n)) {
+            let o = cptr.ldPtro3(
+                svl,
+                cptr.ldI16(u),
+                168,
+                cptr.ldI16o(u, $you_uy),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_objects
+            );
 
             if (o)
                 void cptr.sprintf(bp, __s_underneath_s, (yield* ansimpleoname(o)));
-        } else if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 16n) != 0n) || Flying()) {
+        } else if (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags1
+        ) & 16n) != 0n) ||
+                Flying()) {
             /* Flying: 'lurker above' hides on ceiling but doesn't cling */
             void cptr.sprintf(bp, __s_on_the_s, (yield* ceiling(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))));
         } else {
@@ -2713,9 +4396,19 @@ export function* youhiding(via_enlghtmt, msgflag) {
             if (cptr.ldI32o(u, $you_utrap) && cptr.ldI32o(u, $you_utraptype) == NHC.TT_PIT) {
                 let t = t_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
 
-                void cptr.sprintf(bp, __s_in_a_spit, (t && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT) ? __s_spiked : __s_empty);
+                void cptr.sprintf(
+                    bp,
+                    __s_in_a_spit,
+                    (t && ((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.SPIKED_PIT)
+                        ? __s_spiked
+                        : __s_empty
+                );
             } else
-                void cptr.sprintf(bp, __s_on_the_s, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)));
+                void cptr.sprintf(
+                    bp,
+                    __s_on_the_s,
+                    surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
+                );
         }
     } else {
         ;  /* shouldn't happen; will result in generic "you are hiding" */
@@ -2724,7 +4417,12 @@ export function* youhiding(via_enlghtmt, msgflag) {
     if (via_enlghtmt) {
         let final = msgflag;  /* 'final' is used by you_are() macro */
 
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((are)), cptr.decay(((buf))), ((__s_empty))));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((are)),
+            cptr.decay(((buf))),
+            ((__s_empty))
+        ));
     } else {
         /* for dohide(), when player uses '#monster' command */
         (yield* You(__s_are_s_s, msgflag ? __s_already : __s_now__2, cptr.decay(buf)));
@@ -2758,78 +4456,220 @@ export function* show_conduct(final) {
     else if (!cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numrerolls))
         void cptr.strcpy(cptr.decay(buf), __s_your_character_was_not_rerolled);
     else
-        void cptr.sprintf(cptr.decay(buf), __s_your_character_was_rerolled_s, N_times(cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numrerolls), cptr.decay(bufN)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_your_character_was_rerolled_s,
+            N_times(cptr.ldI64o(u, $you_uroleplay + $u_roleplay_numrerolls), cptr.decay(bufN))
+        );
     (yield* enlght_out(cptr.decay(buf)));
 
     if (cptr.ld1so(u, $you_uroleplay))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_blind_from_birth)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((have_been)),
+            ((__s_blind_from_birth)),
+            (__s_empty)
+        ));
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_deaf))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_deaf_from_birth)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((have_been)),
+            ((__s_deaf_from_birth)),
+            (__s_empty)
+        ));
     /* note: we don't report "you are without possessions" unless the
        game started with the pauper option set */
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper))
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_started_out) : (cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_started : __s_are__2), (__s_without_possessions), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final
+                ? (__s_started_out)
+                : (cptr.ldPtro(gi, $instance_globals_i_invent) ? __s_started : __s_are__2),
+            (__s_without_possessions),
+            (__s_empty)
+        ));
     /* nudist is far more than a subset of possessionless, and a much
        more impressive accomplishment, but showing "started out without
        possessions" before "faithfully nudist" looks more logical */
     if (cptr.ld1so(u, $you_uroleplay + $u_roleplay_nudist))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_faithfully_nudist)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((have_been)),
+            ((__s_faithfully_nudist)),
+            (__s_empty)
+        ));
 
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_food))
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_went) : (__s_have_gone), (__s_without_food), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_went) : (__s_have_gone),
+            (__s_without_food),
+            (__s_empty)
+        ));
     else if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_unvegan))
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_followed_a_strict_vegan_diet)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_empty) : cptr.decay((have)),
+            ((__s_followed_a_strict_vegan_diet)),
+            (__s_empty)
+        ));
     else if (!cptr.ldI64o(u, $you_uconduct))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_vegetarian)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((have_been)),
+            ((__s_vegetarian)),
+            (__s_empty)
+        ));
 
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_gnostic))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_an_atheist)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((have_been)),
+            ((__s_an_atheist)),
+            (__s_empty)
+        ));
 
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit)) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_hit_with_a_wielded_weapon)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((never)) : cptr.decay((have_never)),
+            ((__s_hit_with_a_wielded_weapon)),
+            (__s_empty)
+        ));
     } else if (wizard()) {
-        void cptr.sprintf(cptr.decay(buf), __s_hit_with_a_wielded_weapon_ld_time_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit), (((cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit)) == 1n) ? __s_empty : __s_s));
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_hit_with_a_wielded_weapon_ld_time_s,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit),
+            (((cptr.ldI64o(u, $you_uconduct + $u_conduct_weaphit)) == 1n) ? __s_empty : __s_s)
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_empty) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            (__s_empty)
+        ));
     }
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_killer))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_a_pacifist)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((have_been)),
+            ((__s_a_pacifist)),
+            (__s_empty)
+        ));
 
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_literate)) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((were)) : cptr.decay((have_been)), ((__s_illiterate)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((were)) : cptr.decay((have_been)),
+            ((__s_illiterate)),
+            (__s_empty)
+        ));
     } else if (wizard()) {
-        void cptr.sprintf(cptr.decay(buf), __s_read_items_or_engraved_ld_time_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate), (((cptr.ldI64o(u, $you_uconduct + $u_conduct_literate)) == 1n) ? __s_empty : __s_s));
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_read_items_or_engraved_ld_time_s,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_literate),
+            (((cptr.ldI64o(u, $you_uconduct + $u_conduct_literate)) == 1n) ? __s_empty : __s_s)
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_empty) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            (__s_empty)
+        ));
     }
 
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_pets))
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_had_a_pet)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((never)) : cptr.decay((have_never)),
+            ((__s_had_a_pet)),
+            (__s_empty)
+        ));
 
     ngenocided = (yield* num_genocides());
     if (ngenocided == 0) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_genocided_any_monsters)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((never)) : cptr.decay((have_never)),
+            ((__s_genocided_any_monsters)),
+            (__s_empty)
+        ));
     } else {
-        void cptr.sprintf(cptr.decay(buf), __s_genocided_d_type_s_of_monster_s, ngenocided, (((ngenocided) == 1) ? __s_empty : __s_s), (((ngenocided) == 1) ? __s_empty : __s_s));
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_genocided_d_type_s_of_monster_s,
+            ngenocided,
+            (((ngenocided) == 1) ? __s_empty : __s_s),
+            (((ngenocided) == 1) ? __s_empty : __s_s)
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_empty) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            (__s_empty)
+        ));
     }
 
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles)) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_polymorphed_an_object)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((never)) : cptr.decay((have_never)),
+            ((__s_polymorphed_an_object)),
+            (__s_empty)
+        ));
     } else if (wizard()) {
-        void cptr.sprintf(cptr.decay(buf), __s_polymorphed_ld_item_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles), (((cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles)) == 1n) ? __s_empty : __s_s));
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_polymorphed_ld_item_s,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles),
+            (((cptr.ldI64o(u, $you_uconduct + $u_conduct_polypiles)) == 1n) ? __s_empty : __s_s)
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_empty) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            (__s_empty)
+        ));
     }
 
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs)) {
-        (yield* enlght_line(cptr.decay((You_)), final ? cptr.decay((never)) : cptr.decay((have_never)), ((__s_changed_form)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? cptr.decay((never)) : cptr.decay((have_never)),
+            ((__s_changed_form)),
+            (__s_empty)
+        ));
     } else if (wizard()) {
-        void cptr.sprintf(cptr.decay(buf), __s_changed_form_ld_time_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs), (((cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs)) == 1n) ? __s_empty : __s_s));
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_changed_form_ld_time_s,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs),
+            (((cptr.ldI64o(u, $you_uconduct + $u_conduct_polyselfs)) == 1n) ? __s_empty : __s_s)
+        );
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_empty) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            (__s_empty)
+        ));
     }
 
     if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes)) {
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_used_no_wishes)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_empty) : cptr.decay((have)),
+            ((__s_used_no_wishes)),
+            (__s_empty)
+        ));
     } else {
-        void cptr.sprintf(cptr.decay(buf), __s_used_ld_wish_s, cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes), (cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes) > 1n) ? __s_es : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_used_ld_wish_s,
+            cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes),
+            (cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes) > 1n) ? __s_es : __s_empty
+        );
         if (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti)) {
             /* if wisharti == wishes
              *  1 wish (for an artifact)
@@ -2839,17 +4679,46 @@ export function* show_conduct(final) {
              *  N wishes (1 for an artifact)
              *  N wishes (M for artifacts)
              */
-            if (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) == cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes))
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_s, (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) > 2n) ? __s_all : ((cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) == 2n) ? __s_both__2 : __s_empty));
+            if (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) ==
+                    cptr.ldI64o(u, $you_uconduct + $u_conduct_wishes))
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_sp_lparen_pct_s,
+                    (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) > 2n)
+                        ? __s_all
+                        : ((cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) == 2n)
+                            ? __s_both__2
+                            : __s_empty)
+                );
             else
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_ld__2, cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_ld__2,
+                    cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti)
+                );
 
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_for_s, (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) == 1n) ? __s_an_artifact : __s_artifacts);
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_for_s,
+                (cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti) == 1n)
+                    ? __s_an_artifact
+                    : __s_artifacts
+            );
         }
-        (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (__s_empty) : cptr.decay((have)),
+            cptr.decay(((buf))),
+            (__s_empty)
+        ));
 
         if (!cptr.ldI64o(u, $you_uconduct + $u_conduct_wisharti))
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_did_not_wish) : (__s_have_not_wished), (__s_for_any_artifacts), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_did_not_wish) : (__s_have_not_wished),
+                (__s_for_any_artifacts),
+                (__s_empty)
+            ));
     }
 
     /* only report Sokoban conduct if the Sokoban branch has been entered */
@@ -2863,9 +4732,17 @@ export function* show_conduct(final) {
             void cptr.strcpy(cptr.decay(buf), __s_any_of_the_special_sokoban_rules);
         } else {
             void cptr.strcpy(cptr.decay(buf), __s_the_special_sokoban_rules);
-            void cptr.strcat(cptr.decay(buf), N_times(cptr.ldI64o(u, $you_uconduct + $u_conduct_sokocheat), cptr.decay(bufN)));
+            void cptr.strcat(
+                cptr.decay(buf),
+                N_times(cptr.ldI64o(u, $you_uconduct + $u_conduct_sokocheat), cptr.decay(bufN))
+            );
         }
-        (yield* enlght_line(cptr.decay((You_)), final ? (pastverb) : (presentverb), cptr.decay((buf)), (__s_empty)));
+        (yield* enlght_line(
+            cptr.decay((You_)),
+            final ? (pastverb) : (presentverb),
+            cptr.decay((buf)),
+            (__s_empty)
+        ));
     }
 
     (yield* show_achievements(final));
@@ -2930,74 +4807,206 @@ function* show_achievements(final) {
 
         switch (absidx) {
             case NHC.ACH_BLND:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_explored) : (__s_are_exploring), (__s_without_being_able_to_see), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_explored) : (__s_are_exploring),
+                (__s_without_being_able_to_see),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_NUDE:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_went) : (__s_have_gone), (__s_without_any_armor), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_went) : (__s_have_gone),
+                (__s_without_any_armor),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_MINE:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_entered_the_gnomish_mines)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_entered_the_gnomish_mines)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_TOWN:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_entered_minetown)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_entered_minetown)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_SHOP:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_entered_a_shop)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_entered_a_shop)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_TMPL:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_entered_a_temple)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_entered_a_temple)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_ORCL:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_consulted_the_oracle_of_delphi)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_consulted_the_oracle_of_delphi)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_NOVL:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_read_from_a_discworld_novel)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_read_from_a_discworld_novel)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_SOKO:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_entered_sokoban)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_entered_sokoban)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_SOKO_PRIZE:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_completed_sokoban)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_completed_sokoban)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_MINE_PRIZE:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_completed_the_gnomish_mines)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_completed_the_gnomish_mines)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_BGRM:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_entered_the_big_room)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_entered_the_big_room)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_MEDU:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_defeated_medusa)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_defeated_medusa)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_TUNE:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_learned_the_tune_to_open_and_close_the)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_learned_the_tune_to_open_and_close_the)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_BELL:
             /* alternate phrasing for present vs past and also for
                possessing the item vs once held it */
-            (yield* enlght_line(cptr.decay((You_)), final ? ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0 ? __s_had__3 : __s_handled) : ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0 ? __s_have__2 : __s_have_handled), (__s_the_bell_of_opening), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final
+                    ? ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0
+                        ? __s_had__3
+                        : __s_handled)
+                    : ((cptr.ldI32o(u, $you_uhave + $u_have_bell) & 1) | 0
+                        ? __s_have__2
+                        : __s_have_handled),
+                (__s_the_bell_of_opening),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_HELL:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : (__s_have), (__s_entered_gehennom), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : (__s_have),
+                (__s_entered_gehennom),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_CNDL:
-            (yield* enlght_line(cptr.decay((You_)), final ? ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0 ? __s_had__3 : __s_handled) : ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0 ? __s_have__2 : __s_have_handled), (__s_the_candelabrum_of_invocation), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final
+                    ? ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0
+                        ? __s_had__3
+                        : __s_handled)
+                    : ((cptr.ldI32o(u, $you_uhave + $u_have_menorah) & 1) | 0
+                        ? __s_have__2
+                        : __s_have_handled),
+                (__s_the_candelabrum_of_invocation),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_BOOK:
-            (yield* enlght_line(cptr.decay((You_)), final ? ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0 ? __s_had__3 : __s_handled) : ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0 ? __s_have__2 : __s_have_handled), (__s_the_book_of_the_dead), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final
+                    ? ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0
+                        ? __s_had__3
+                        : __s_handled)
+                    : ((cptr.ldI32o(u, $you_uhave + $u_have_book) & 1) | 0
+                        ? __s_have__2
+                        : __s_have_handled),
+                (__s_the_book_of_the_dead),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_INVK:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_gained_access_to_moloch_s_sanctum)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_gained_access_to_moloch_s_sanctum)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_AMUL:
             /* alternate wording for ascended (always past tense) since
                hero had it until #offer forced it to be relinquished */
-            (yield* enlght_line(cptr.decay((You_)), final ? ((cptr.ldI32o(u, $you_uevent + $u_event_ascended) & 1) | 0 ? __s_delivered : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_had__3 : __s_had_obtained)) : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_have__2 : __s_have_obtained), (__s_the_amulet_of_yendor), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final
+                    ? ((cptr.ldI32o(u, $you_uevent + $u_event_ascended) & 1) | 0
+                        ? __s_delivered
+                        : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_had__3 : __s_had_obtained))
+                    : ((cptr.ldI32o(u, $you_uhave) & 1) | 0 ? __s_have__2 : __s_have_obtained),
+                (__s_the_amulet_of_yendor),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_ENDG:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_reached_the_elemental_planes)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_reached_the_elemental_planes)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_ASTR:
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), ((__s_reached_the_astral_plane)), (__s_empty)));
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                ((__s_reached_the_astral_plane)),
+                (__s_empty)
+            ));
             break;
             case NHC.ACH_UWIN:
             /* the ultimate achievement... */
@@ -3011,8 +5020,21 @@ function* show_achievements(final) {
             case NHC.ACH_RNK6:
             case NHC.ACH_RNK7:
             case NHC.ACH_RNK8:
-            void cptr.sprintf(cptr.decay(buf), __s_attained_the_rank_of_s, rank_of(rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0), Role_switch(), schar(((achidx < 0) ? 1 : 0))));
-            (yield* enlght_line(cptr.decay((You_)), final ? (__s_empty) : cptr.decay((have)), cptr.decay(((buf))), (__s_empty)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_attained_the_rank_of_s,
+                rank_of(
+                    rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0),
+                    Role_switch(),
+                    schar(((achidx < 0) ? 1 : 0))
+                )
+            );
+            (yield* enlght_line(
+                cptr.decay((You_)),
+                final ? (__s_empty) : cptr.decay((have)),
+                cptr.decay(((buf))),
+                (__s_empty)
+            ));
             break;
             default:
             void cptr.sprintf(cptr.decay(buf), __s_unexpected_achievement_d, achidx);
@@ -3072,17 +5094,44 @@ export function* record_achievement(achidx) {
         return;
 
     if (absidx >= NHC.ACH_RNK1 && absidx <= NHC.ACH_RNK8) {
-        (yield* livelog_printf(cptr.ldI64o(achieve_msg, absidx, $sizeof_ll_achieve_msg), __s_attained_the_rank_of_s_level_d, rank_of(rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0), Role_switch(), schar(((achidx < 0) ? 1 : 0))), cptr.ldI32o(u, $you_ulevel)));
+        (yield* livelog_printf(
+            cptr.ldI64o(achieve_msg, absidx, $sizeof_ll_achieve_msg),
+            __s_attained_the_rank_of_s_level_d,
+            rank_of(
+                rank_to_xlev((absidx - ((NHC.ACH_RNK1 - 1) | 0)) | 0),
+                Role_switch(),
+                schar(((achidx < 0) ? 1 : 0))
+            ),
+            cptr.ldI32o(u, $you_ulevel)
+        ));
     } else if (achidx == NHC.ACH_SOKO_PRIZE || achidx == NHC.ACH_MINE_PRIZE) {
         /* need to supply extra information for these two */
-        let otyp = i16(((achidx == NHC.ACH_SOKO_PRIZE) ? cptr.ldI16o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_otyp) : cptr.ldI16o(svc, $context_info_achieveo + $achievement_tracking_mines_prize_otyp)));
+        let otyp = i16(((achidx == NHC.ACH_SOKO_PRIZE)
+                ? cptr.ldI16o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_otyp)
+                : cptr.ldI16o(
+                    svc,
+                    $context_info_achieveo + $achievement_tracking_mines_prize_otyp
+                )));
 
         /* note: OBJ_NAME() works here because both "bag of holding" and
            "amulet of reflection" are fully named in their objects[] entry
            but that's not true in the general case */
-        (yield* livelog_printf(cptr.ldI64o(achieve_msg, achidx, $sizeof_ll_achieve_msg), __s_s_s__2, cptr.ldPtro2(achieve_msg, achidx, $sizeof_ll_achieve_msg, $ll_achieve_msg_msg), (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))), $sizeof_objdescr))));
+        (yield* livelog_printf(
+            cptr.ldI64o(achieve_msg, achidx, $sizeof_ll_achieve_msg),
+            __s_s_s__2,
+            cptr.ldPtro2(achieve_msg, achidx, $sizeof_ll_achieve_msg, $ll_achieve_msg_msg),
+            (cptr.ldPtro(
+                obj_descr,
+                cptr.ldI16((cptr.add(objects, otyp, $sizeof_objclass))),
+                $sizeof_objdescr
+            ))
+        ));
     } else {
-        (yield* livelog_printf(cptr.ldI64o(achieve_msg, absidx, $sizeof_ll_achieve_msg), __s_pct_s, cptr.ldPtro2(achieve_msg, absidx, $sizeof_ll_achieve_msg, $ll_achieve_msg_msg)));
+        (yield* livelog_printf(
+            cptr.ldI64o(achieve_msg, absidx, $sizeof_ll_achieve_msg),
+            __s_pct_s,
+            cptr.ldPtro2(achieve_msg, absidx, $sizeof_ll_achieve_msg, $ll_achieve_msg_msg)
+        ));
     }
 }
 
@@ -3161,14 +5210,26 @@ export function* show_gamelog(final) {
     win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
     void cptr.sprintf(cptr.decay(buf), __s_s_events, final ? __s_major : __s_logged);
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-    for (llmsg = cptr.ldPtro(gg, $instance_globals_g_gamelog); llmsg; llmsg = cptr.ldPtro(llmsg, $gamelog_line_next)) {
+    for (
+        llmsg = cptr.ldPtro(gg, $instance_globals_g_gamelog);
+        llmsg;
+        llmsg = cptr.ldPtro(llmsg, $gamelog_line_next)
+    ) {
         if (final && !((cptr.ldI64o((llmsg), $gamelog_line_flags) & 16607n) != 0n))
             continue;
         if (!final && !wizard() && ((cptr.ldI64o((llmsg), $gamelog_line_flags) & 8192n) != 0n))
             continue;
         if (!eventcnt++)
             (yield* Y.icall(putstr()(win, 0, __s_turn)));
-        nh_snprintf(__s_show_gamelog, 2579, cptr.decay(buf), 256n, __s_5ld_s, cptr.ldI64(llmsg), cptr.ldPtro(llmsg, $gamelog_line_text));
+        nh_snprintf(
+            __s_show_gamelog,
+            2579,
+            cptr.decay(buf),
+            256n,
+            __s_5ld_s,
+            cptr.ldI64(llmsg),
+            cptr.ldPtro(llmsg, $gamelog_line_text)
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     }
     /* since start of game is logged as a major event, 'eventcnt' should
@@ -3188,7 +5249,13 @@ export function* show_gamelog(final) {
 /* the two uppercase choices are implemented but suppressed from menu.
    also used in options.c */
 /** C ref: insight.c:2601 — char *[8][3] */
-export const vanqorders = (function () { const flat = new Uint8Array(8 * 3 * 8); const a = []; for (let r = 0; r < 8; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
+export const vanqorders = (function () {
+    const flat = new Uint8Array(8 * 3 * 8);
+    const a = [];
+    for (let r = 0; r < 8; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(vanqorders[0]), 0, __s_t);
 cptr.stPtro(cptr.decay(vanqorders[0]), 8, __s_traditional_by_monster_level);
 cptr.stPtro(cptr.decay(vanqorders[0]), 16, __s_traditional_by_monster_level_by);
@@ -3214,7 +5281,15 @@ cptr.stPtro(cptr.decay(vanqorders[7]), 0, __s_z);
 cptr.stPtro(cptr.decay(vanqorders[7]), 8, __s_by_count_low_to_high);
 cptr.stPtro(cptr.decay(vanqorders[7]), 16, __s_by_count_low_to_high_by_internal_index);
 
-const __static_vanqsort_cmp_punctclasses = [NHC.S_LIZARD, NHC.S_EEL, NHC.S_GOLEM, NHC.S_GHOST, NHC.S_DEMON, NHC.S_HUMAN, 0]; /** C ref: insight.c:2674 — char[7] (function-static) */
+const __static_vanqsort_cmp_punctclasses = [
+    NHC.S_LIZARD,
+    NHC.S_EEL,
+    NHC.S_GOLEM,
+    NHC.S_GHOST,
+    NHC.S_DEMON,
+    NHC.S_HUMAN,
+    0
+]; /** C ref: insight.c:2674 — char[7] (function-static) */
 
 /** C ref: insight.c:2621 — @param {CPtr<void>} vptr1 @param {CPtr<void>} vptr2 @returns {CInt} */
 function* vanqsort_cmp(vptr1, vptr2) {
@@ -3250,8 +5325,14 @@ function* vanqsort_cmp(vptr1, vptr2) {
         res = (mstr2 - mstr1) | 0;  /* monstr high to low */
         break;
         case NHC.VANQ_ALPHA_SEP:
-        uniq1 = ((cptr.ldU16o2(mons, indx1, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) && indx1 != NHC.PM_HIGH_CLERIC ? 1 : 0);
-        uniq2 = ((cptr.ldU16o2(mons, indx2, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) && indx2 != NHC.PM_HIGH_CLERIC ? 1 : 0);
+        uniq1 = ((cptr.ldU16o2(mons, indx1, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) &&
+            indx1 != NHC.PM_HIGH_CLERIC
+                ? 1
+                : 0);
+        uniq2 = ((cptr.ldU16o2(mons, indx2, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) &&
+            indx2 != NHC.PM_HIGH_CLERIC
+                ? 1
+                : 0);
         if (uniq1 ^ uniq2) {
             res = (uniq2 - uniq1) | 0;
             break;
@@ -3276,17 +5357,33 @@ function* vanqsort_cmp(vptr1, vptr2) {
            punctuation characters are used for classes beyond those */
         if (mcls1 > NHC.S_ZOMBIE && mcls2 > NHC.S_ZOMBIE) {
 
-            if ((punct = cptr.strchr(cptr.decay(__static_vanqsort_cmp_punctclasses), mcls1)) !== null)
-                mcls1 = schar(((((NHC.S_ZOMBIE + 1) | 0) + Number(BigInt.asIntN(32, (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))))) | 0));
-            if ((punct = cptr.strchr(cptr.decay(__static_vanqsort_cmp_punctclasses), mcls2)) !== null)
-                mcls2 = schar(((((NHC.S_ZOMBIE + 1) | 0) + Number(BigInt.asIntN(32, (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))))) | 0));
+            if ((punct = cptr.strchr(
+                cptr.decay(__static_vanqsort_cmp_punctclasses),
+                mcls1
+            )) !== null)
+                mcls1 = schar(((((NHC.S_ZOMBIE + 1) | 0) +
+                        Number(BigInt.asIntN(
+                            32,
+                            (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))
+                        ))) | 0));
+            if ((punct = cptr.strchr(
+                cptr.decay(__static_vanqsort_cmp_punctclasses),
+                mcls2
+            )) !== null)
+                mcls2 = schar(((((NHC.S_ZOMBIE + 1) | 0) +
+                        Number(BigInt.asIntN(
+                            32,
+                            (cptr.diff(punct, cptr.decay(__static_vanqsort_cmp_punctclasses)))
+                        ))) | 0));
         }
         res = (mcls1 - mcls2) | 0;  /* class */
         if (res == 0) {
             /* Riders are in the same class as major demons, yielding res==0
                above when both mcls1 and mcls2 are either Riders or demons or
                one of each; force Riders to be sorted before demons */
-            res = (is_rider(cptr.add(mons, indx2, $sizeof_permonst)) - is_rider(cptr.add(mons, indx1, $sizeof_permonst))) | 0;
+            res = (is_rider(cptr.add(mons, indx2, $sizeof_permonst)) -
+                is_rider(cptr.add(mons, indx1, $sizeof_permonst))) |
+                    0;
             /* res -1 => #1 is a Rider, #2 isn't;
                     0 => both Riders or neither;
                    +1 => #2 is a Rider, #1 isn't */
@@ -3301,8 +5398,18 @@ function* vanqsort_cmp(vptr1, vptr2) {
         break;
         case NHC.VANQ_COUNT_H_L:
         case NHC.VANQ_COUNT_L_H:
-        died1 = cptr.ld1uo2(svm, indx1, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died);
-        died2 = cptr.ld1uo2(svm, indx2, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died);
+        died1 = cptr.ld1uo2(
+            svm,
+            indx1,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_died
+        );
+        died2 = cptr.ld1uo2(
+            svm,
+            indx2,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_died
+        );
         res = (died2 - died1) | 0;  /* dead count high to low */
         if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_L_H)
             res = -res;  /* dead count low to high */
@@ -3343,9 +5450,25 @@ export function* set_vanq_order(for_vanq) {
         if (!for_vanq && i == NHC.VANQ_ALPHA_SEP)
             desc = __s_alphabetically;
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, cptr.ld1s(cptr.ldPtro(cptr.decay(vanqorders[i]), 0, 8)), 0, NHM.ATR_NONE, clr, desc, (i == cptr.ld1uo(flags, $flag_vanq_sortmode)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            cptr.ld1s(cptr.ldPtro(cptr.decay(vanqorders[i]), 0, 8)),
+            0,
+            NHM.ATR_NONE,
+            clr,
+            desc,
+            (i == cptr.ld1uo(flags, $flag_vanq_sortmode))
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
-    void cptr.sprintf(cptr.decay(buf), __s_sort_order_for_s, for_vanq ? __s_vanquished_monster_counts_also : __s_genocided_monster_types_also_vanquished);
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_sort_order_for_s,
+        for_vanq ? __s_vanquished_monster_counts_also : __s_genocided_monster_types_also_vanquished
+    );
     (yield* Y.icall(end_menu()(tmpwin, cptr.decay(buf))));
 
     n = (yield* select_menu(tmpwin, NHM.PICK_ONE, selected));
@@ -3407,7 +5530,12 @@ export function* list_vanquished(defquery, ask) {
     /* get totals first */
     ntypes = 0;
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++) {
-        if ((nkilled = cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died)) == 0)
+        if ((nkilled = cptr.ld1uo2(
+            svm,
+            i,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_died
+        )) == 0)
             continue;
         cptr.stI16o(mindx, ntypes++, i16(i), 2);
         total_killed += BigInt(nkilled);
@@ -3436,13 +5564,23 @@ export function* list_vanquished(defquery, ask) {
                 if (defquery == 97)
                     defquery = 121;
             }
-            c = (yield* yn_function(__s_do_you_want_an_account_of_creatures, cptr.decay(allow_yn), defquery, 1));
+            c = (yield* yn_function(
+                __s_do_you_want_an_account_of_creatures,
+                cptr.decay(allow_yn),
+                defquery,
+                1
+            ));
         } else {
             c = defquery;
         }
 
         if (c == 113)
-            (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_stopprint,
+                cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+            )) -
+                    (1);
         if (c == 121 || c == 97) {
             if (c == 97 && ntypes > 1) {
                 /* choose value for vanq_sortmode via menu; ESC cancels list
@@ -3451,7 +5589,11 @@ export function* list_vanquished(defquery, ask) {
                     return;
             }
             uniq_header = schar((cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_ALPHA_SEP));
-            class_header = schar(((cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_LTOH || cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL) && ntypes > 1 ? 1 : 0));
+            class_header = schar(((cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_LTOH ||
+                cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL) &&
+                ntypes > 1
+                    ? 1
+                    : 0));
 
             klwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
             (yield* Y.icall(putstr()(klwin, 0, __s_vanquished_creatures)));
@@ -3461,12 +5603,20 @@ export function* list_vanquished(defquery, ask) {
             (yield* nh_deterministic_qsort((mindx), BigInt((ntypes) >>> 0), 2n, (vanqsort_cmp)));
             for (ni = 0; ni < ntypes; ni++) {
                 i = cptr.ldI16o(mindx, ni, 2);
-                nkilled = cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died);
+                nkilled = cptr.ld1uo2(
+                    svm,
+                    i,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_died
+                );
                 Rider = schar(is_rider(cptr.add(mons, i, $sizeof_permonst)));
                 mlet = cptr.ld1so2(mons, i, $sizeof_permonst, $permonst_mlet);
                 if (class_header && (mlet != prev_mlet || (special_hdr && !Rider))) {
                     if (!Rider) {
-                        void cptr.strcpy(cptr.decay(buf), cptr.ldPtro2(def_monsyms, mlet, $sizeof_class_sym, $class_sym_explain));
+                        void cptr.strcpy(
+                            cptr.decay(buf),
+                            cptr.ldPtro2(def_monsyms, mlet, $sizeof_class_sym, $class_sym_explain)
+                        );
                         special_hdr = 0;
                     } else {
                         void cptr.strcpy(cptr.decay(buf), __s_rider);
@@ -3474,13 +5624,35 @@ export function* list_vanquished(defquery, ask) {
                     }
                     /* 'ask' implies final disclosure, where highlighting
                        of various header lines is suppressed */
-                    (yield* Y.icall(putstr()(klwin, ask ? NHM.ATR_NONE : cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), upstart(cptr.decay(buf)))));
+                    (yield* Y.icall(putstr()(
+                        klwin,
+                        ask
+                            ? NHM.ATR_NONE
+                            : cptr.ldI32o(
+                                iflags,
+                                $instance_flags_menu_headings + $color_and_attr_attr
+                            ),
+                        upstart(cptr.decay(buf))
+                    )));
                     prev_mlet = mlet;
                 }
-                if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 && i != NHC.PM_HIGH_CLERIC)) {
-                    void cptr.sprintf(cptr.decay(buf), __s_s_s__4, !((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) & 524288n) != 0n) ? __s_the__2 : __s_empty, cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
+                if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 &&
+                        i != NHC.PM_HIGH_CLERIC)) {
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_s_s__4,
+                        !((cptr.ldU64o((cptr.add(mons, i, $sizeof_permonst)), $permonst_mflags2) &
+                            524288n) != 0n)
+                            ? __s_the__2
+                            : __s_empty,
+                        cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+                    );
                     if (nkilled > 1)
-                        void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_pct_s_rparen, N_times(BigInt(nkilled), cptr.decay(buftoo)));
+                        void cptr.sprintf(
+                            eos(cptr.decay(buf)),
+                            __s_sp_lparen_pct_s_rparen,
+                            N_times(BigInt(nkilled), cptr.decay(buftoo))
+                        );
                     was_uniq = 1;
                 } else {
                     if (uniq_header && was_uniq) {
@@ -3490,15 +5662,38 @@ export function* list_vanquished(defquery, ask) {
                     /* trolls or undead might have come back,
                        but we don't keep track of that */
                     if (nkilled == 1)
-                        void cptr.strcpy(cptr.decay(buf), (yield* an(cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
+                        void cptr.strcpy(
+                            cptr.decay(buf),
+                            (yield* an(cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)))
+                        );
                     else
-                        void cptr.sprintf(cptr.decay(buf), __s_3d_s, nkilled, (yield* makeplural(cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            __s_3d_s,
+                            nkilled,
+                            (yield* makeplural(cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)))
+                        );
                 }
                 /* number of leading spaces to match 3 digit prefix */
-                pfx = !(yield* strncmpi(cptr.decay(buf), __s_the__2, 4)) ? 0 : (!(yield* strncmpi(cptr.decay(buf), __s_an, 3)) ? 1 : (!(yield* strncmpi(cptr.decay(buf), __s_a_sp, 2)) ? 2 : (!digit(cptr.ld1so(cptr.decay(buf), 2, 1)) ? 4 : 0)));
+                pfx = !(yield* strncmpi(cptr.decay(buf), __s_the__2, 4))
+                        ? 0
+                        : (!(yield* strncmpi(cptr.decay(buf), __s_an, 3))
+                            ? 1
+                            : (!(yield* strncmpi(cptr.decay(buf), __s_a_sp, 2))
+                                ? 2
+                                : (!digit(cptr.ld1so(cptr.decay(buf), 2, 1)) ? 4 : 0)));
                 if (class_header)
                     ++pfx;
-                nh_snprintf(__s_list_vanquished, 2916, cptr.decay(buftoo), 256n, __s_s_s__5, pfx, __s_empty, cptr.decay(buf));
+                nh_snprintf(
+                    __s_list_vanquished,
+                    2916,
+                    cptr.decay(buftoo),
+                    256n,
+                    __s_s_s__5,
+                    pfx,
+                    __s_empty,
+                    cptr.decay(buf)
+                );
                 (yield* Y.icall(putstr()(klwin, 0, cptr.decay(buftoo))));
             }
             /*
@@ -3536,10 +5731,21 @@ export function* num_genocides() {
     let n = 0;
 
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; ++i) {
-        if (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) {
+        if (cptr.ld1uo2(
+            svm,
+            i,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_mvflags
+        ) &
+                NHM.G_GENOD) {
             ++n;
-            if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 && i != NHC.PM_HIGH_CLERIC))
-                (yield* impossible(__s_unique_creature_d_s_genocided, i, cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)));
+            if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 &&
+                    i != NHC.PM_HIGH_CLERIC))
+                (yield* impossible(
+                    __s_unique_creature_d_s_genocided,
+                    i,
+                    cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+                ));
         }
     }
     return n;
@@ -3552,9 +5758,16 @@ function num_extinct() {
     let n = 0;
 
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; ++i) {
-        if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 && i != NHC.PM_HIGH_CLERIC))
+        if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 &&
+                i != NHC.PM_HIGH_CLERIC))
             continue;
-        if ((cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) == NHM.G_EXTINCT)
+        if ((cptr.ld1uo2(
+            svm,
+            i,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_mvflags
+        ) & 3) ==
+                NHM.G_EXTINCT)
             ++n;
     }
     return n;
@@ -3572,10 +5785,16 @@ function num_gone(mvflags, mindx) {
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; ++i) {
         /* uniques can't be genocided but can become extinct;
            however, they're never reported as extinct, so skip them */
-        if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 && i != NHC.PM_HIGH_CLERIC))
+        if (((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_UNIQ) != 0 &&
+                i != NHC.PM_HIGH_CLERIC))
             continue;
 
-        if ((cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & mflg) != 0)
+        if ((cptr.ld1uo2(
+            svm,
+            i,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_mvflags
+        ) & mflg) != 0)
             cptr.stI32o(mindx, n++, i, 4);
     }
     return n;
@@ -3617,10 +5836,23 @@ export function* list_genocided(defquery, ask) {
 
     /* genocided or extinct species list */
     if (ngone > 0) {
-        void cptr.sprintf(cptr.decay(buf), __s_do_you_want_a_list_of_sspecies_s_s, (nextinct && !ngenocided) ? __s_extinct : __s_empty, (ngenocided) ? __s_genocided : __s_empty, (nextinct && ngenocided) ? __s_and_extinct : __s_empty);
-        c = schar((ask ? (yield* yn_function(cptr.decay(buf), (ngone > 1) ? __s_ynaq : __s_ynq_a, defquery, 1)) : defquery));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_do_you_want_a_list_of_sspecies_s_s,
+            (nextinct && !ngenocided) ? __s_extinct : __s_empty,
+            (ngenocided) ? __s_genocided : __s_empty,
+            (nextinct && ngenocided) ? __s_and_extinct : __s_empty
+        );
+        c = schar((ask
+                ? (yield* yn_function(cptr.decay(buf), (ngone > 1) ? __s_ynaq : __s_ynq_a, defquery, 1))
+                : defquery));
         if (c == 113)
-            (cptr.stI32o(program_state, $sinfo_stopprint, cptr.ldI32o(program_state, $sinfo_stopprint) + 1)) - (1);
+            (cptr.stI32o(
+                program_state,
+                $sinfo_stopprint,
+                cptr.ldI32o(program_state, $sinfo_stopprint) + 1
+            )) -
+                    (1);
         if (c == 121 || c == 97) {
             let save_sortmode;
             let mlet;
@@ -3639,15 +5871,30 @@ export function* list_genocided(defquery, ask) {
                    note: the tie breaker for by-class is level-high-to-low
                    or level-low-to-high rather than count so is ok as-is */
                 save_sortmode = cptr.ld1uo(flags, $flag_vanq_sortmode);
-                if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_H_L || cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_L_H)
+                if (cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_H_L ||
+                        cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_COUNT_L_H)
                     cptr.st1o(flags, $flag_vanq_sortmode, NHC.VANQ_ALPHA_MIX);
-                (yield* nh_deterministic_qsort((mindx), BigInt.asUintN(64, BigInt((ngone))), 4n, (vanqsort_cmp)));
-                class_header = schar((cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_LTOH || cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL ? 1 : 0));
+                (yield* nh_deterministic_qsort(
+                    (mindx),
+                    BigInt.asUintN(64, BigInt((ngone))),
+                    4n,
+                    (vanqsort_cmp)
+                ));
+                class_header = schar((cptr.ld1uo(flags, $flag_vanq_sortmode) ==
+                    NHC.VANQ_MCLS_LTOH ||
+                    cptr.ld1uo(flags, $flag_vanq_sortmode) == NHC.VANQ_MCLS_HTOL
+                        ? 1
+                        : 0));
                 cptr.st1o(flags, $flag_vanq_sortmode, uchar(save_sortmode));
             }
 
             klwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
-            void cptr.sprintf(cptr.decay(buf), __s_s_s_species, (ngenocided) ? __s_genocided__2 : __s_extinct__2, (nextinct && ngenocided) ? __s_or_extinct : __s_empty);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_s_s_species,
+                (ngenocided) ? __s_genocided__2 : __s_extinct__2,
+                (nextinct && ngenocided) ? __s_or_extinct : __s_empty
+            );
             (yield* Y.icall(putstr()(klwin, 0, cptr.decay(buf))));
             if (!dumping)
                 (yield* Y.icall(putstr()(klwin, 0, __s_empty)));
@@ -3656,13 +5903,29 @@ export function* list_genocided(defquery, ask) {
                 mndx = cptr.ldI32o(mindx, i, 4);
                 mlet = cptr.ld1so2(mons, mndx, $sizeof_permonst, $permonst_mlet);
                 if (class_header && mlet != prev_mlet) {
-                    void cptr.strcpy(cptr.decay(buf), cptr.ldPtro2(def_monsyms, mlet, $sizeof_class_sym, $class_sym_explain));
+                    void cptr.strcpy(
+                        cptr.decay(buf),
+                        cptr.ldPtro2(def_monsyms, mlet, $sizeof_class_sym, $class_sym_explain)
+                    );
                     /* 'ask' implies final disclosure, where highlighting
                        of various header lines is suppressed */
-                    (yield* Y.icall(putstr()(klwin, ask ? NHM.ATR_NONE : cptr.ldI32o(iflags, $instance_flags_menu_headings + $color_and_attr_attr), upstart(cptr.decay(buf)))));
+                    (yield* Y.icall(putstr()(
+                        klwin,
+                        ask
+                            ? NHM.ATR_NONE
+                            : cptr.ldI32o(
+                                iflags,
+                                $instance_flags_menu_headings + $color_and_attr_attr
+                            ),
+                        upstart(cptr.decay(buf))
+                    )));
                     prev_mlet = mlet;
                 }
-                void cptr.sprintf(cptr.decay(buf), __s_sp_pct_s, (yield* makeplural(cptr.ldPtro3(mons, mndx, $sizeof_permonst, NHC.NEUTRAL, 8, 0))));
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_sp_pct_s,
+                    (yield* makeplural(cptr.ldPtro3(mons, mndx, $sizeof_permonst, NHC.NEUTRAL, 8, 0)))
+                );
                 /*
                  * "Extinct" is unfortunate terminology.  A species
                  * is marked extinct when its birth limit is reached,
@@ -3673,7 +5936,13 @@ export function* list_genocided(defquery, ask) {
                  * clear.  During normal play, 'mndx' won't be in the
                  * collected list unless that bit is set.
                  */
-                if ((cptr.ld1uo2(svm, mndx, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) == NHM.G_EXTINCT)
+                if ((cptr.ld1uo2(
+                    svm,
+                    mndx,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                ) & 3) ==
+                        NHM.G_EXTINCT)
                     void cptr.strcat(cptr.decay(buf), __s_extinct__3);
                 (yield* Y.icall(putstr()(klwin, 0, cptr.decay(buf))));
             }
@@ -3720,15 +5989,78 @@ export function* doborn() {
 
     (yield* Y.icall(putstr()(datawin, 0, __s_died_born)));
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++)
-        if (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals) || cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died) || (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) != 0) {
-            void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_doborn_fmt), cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died), cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals), ((cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) == NHM.G_EXTINCT) ? 69 : (((cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) == NHM.G_GENOD) ? 71 : (((cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) != 0) ? 88 : 32)), cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0));
+        if (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals) ||
+                cptr.ld1uo2(
+                    svm,
+                    i,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_died
+                ) ||
+                (cptr.ld1uo2(
+                    svm,
+                    i,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                ) & 3) != 0) {
+            void cptr.sprintf(
+                cptr.decay(buf),
+                cptr.decay(__static_doborn_fmt),
+                cptr.ld1uo2(
+                    svm,
+                    i,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_died
+                ),
+                cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals),
+                ((cptr.ld1uo2(
+                    svm,
+                    i,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                ) & 3) ==
+                    NHM.G_EXTINCT)
+                    ? 69
+                    : (((cptr.ld1uo2(
+                        svm,
+                        i,
+                        $sizeof_mvitals,
+                        $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                    ) & 3) ==
+                        NHM.G_GENOD)
+                        ? 71
+                        : (((cptr.ld1uo2(
+                            svm,
+                            i,
+                            $sizeof_mvitals,
+                            $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                        ) & 3) != 0)
+                            ? 88
+                            : 32)),
+                cptr.ldPtro3(mons, i, $sizeof_permonst, NHC.NEUTRAL, 8, 0)
+            );
             (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
-            nborn = (nborn + cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals)) | 0;
-            ndied = (ndied + cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_died)) | 0;
+            nborn = (nborn +
+                cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals)) |
+                    0;
+            ndied = (ndied +
+                cptr.ld1uo2(
+                    svm,
+                    i,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_died
+                )) |
+                    0;
         }
 
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
-    void cptr.sprintf(cptr.decay(buf), cptr.decay(__static_doborn_fmt), ndied, nborn, 32, __s_empty);
+    void cptr.sprintf(
+        cptr.decay(buf),
+        cptr.decay(__static_doborn_fmt),
+        ndied,
+        nborn,
+        32,
+        __s_empty
+    );
 
     (yield* Y.icall(display_nhwindow()(datawin, 0)));
     (yield* Y.icall(destroy_nhwindow()(datawin)));
@@ -3791,7 +6123,12 @@ function size_str(msize) {
 /* used for self-probing */
 const __static_piousness_buf = new Uint8Array(32); /** C ref: insight.c:3237 — char[32] (function-static) */
 
-/** C ref: insight.c:3235 — @param {CInt} showneg @param {CPtr<char>} suffix @returns {CPtr<char>} */
+/**
+ * C ref: insight.c:3235
+ * @param {CInt} showneg
+ * @param {CPtr<char>} suffix
+ * @returns {CPtr<char>}
+ */
 export function piousness(showneg, suffix) {
     let pio;
 
@@ -3839,15 +6176,33 @@ export function* mstatusline(mtmp) {
     if (cptr.ld1so(mtmp, $monst_mtame)) {
         void cptr.strcat(cptr.decay(info), __s_tame);
         if (wizard()) {
-            void cptr.sprintf(eos(cptr.decay(info)), __s_sp_lparen_pct_d, cptr.ld1so(mtmp, $monst_mtame));
+            void cptr.sprintf(
+                eos(cptr.decay(info)),
+                __s_sp_lparen_pct_d,
+                cptr.ld1so(mtmp, $monst_mtame)
+            );
             if (!(cptr.ldI32o(mtmp, $monst_isminion) & 1))
-                void cptr.sprintf(eos(cptr.decay(info)), __s_hungry_ld_apport_d, cptr.ldI64o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_hungrytime), cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)), $edog_apport));
+                void cptr.sprintf(
+                    eos(cptr.decay(info)),
+                    __s_hungry_ld_apport_d,
+                    cptr.ldI64o(
+                        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                        $edog_hungrytime
+                    ),
+                    cptr.ldI32o(
+                        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_edog)),
+                        $edog_apport
+                    )
+                );
             void cptr.strcat(cptr.decay(info), __s_rparen);
         }
     } else if ((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1))
         void cptr.strcat(cptr.decay(info), __s_peaceful);
 
-    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst))) {
+    if (cptr.eq(
+        cptr.ldPtro(mtmp, $monst_data),
+        cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)
+    )) {
         let segndx;
         let nsegs = count_wsegs(mtmp);
 
@@ -3858,11 +6213,25 @@ export function* mstatusline(mtmp) {
             void cptr.strcat(cptr.decay(info), __s_single_segment);
         } else {
             ++nsegs;  /* include head in the segment count */
-            segndx = wseg_at(mtmp, cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y));
-            void cptr.sprintf(eos(cptr.decay(info)), __s_d_s_of_d_segments, segndx, ordin(segndx), nsegs);
+            segndx = wseg_at(
+                mtmp,
+                cptr.ldI16o(gb, $instance_globals_b_bhitpos),
+                cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)
+            );
+            void cptr.sprintf(
+                eos(cptr.decay(info)),
+                __s_d_s_of_d_segments,
+                segndx,
+                ordin(segndx),
+                nsegs
+            );
         }
     }
-    if (ismnum(cptr.ldI16o(mtmp, $monst_cham)) && !cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst)))
+    if (ismnum(cptr.ldI16o(mtmp, $monst_cham)) &&
+            !cptr.eq(
+                cptr.ldPtro(mtmp, $monst_data),
+                cptr.add(mons, cptr.ldI16o(mtmp, $monst_cham), $sizeof_permonst)
+            ))
         /* don't reveal the innate form (chameleon, vampire, &c),
            just expose the fact that this current form isn't it */
         void cptr.strcat(cptr.decay(info), __s_shapechanger);
@@ -3871,7 +6240,12 @@ export function* mstatusline(mtmp) {
         void cptr.strcat(cptr.decay(info), __s_eating);
     /* a stethoscope exposes mimic before getting here so this
        won't be relevant for it, but wand of probing doesn't */
-    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || cptr.ld1uo(mtmp, $monst_m_ap_type) || visible_region_at(cptr.ldI16o(gb, $instance_globals_b_bhitpos), cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)))
+    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
+            cptr.ld1uo(mtmp, $monst_m_ap_type) ||
+            visible_region_at(
+                cptr.ldI16o(gb, $instance_globals_b_bhitpos),
+                cptr.ldI16o(gb, $instance_globals_b_bhitpos + $nhcoord_y)
+            ))
         (yield* mhidden_description(mtmp, 15, eos(cptr.decay(info))));
     if ((cptr.ldI32o(mtmp, $monst_mcan) & 1))
         void cptr.strcat(cptr.decay(info), __s_cancelled);
@@ -3883,7 +6257,8 @@ export function* mstatusline(mtmp) {
         void cptr.strcat(cptr.decay(info), __s_stunned__2);
     if ((cptr.ldI32o(mtmp, $monst_msleeping) & 1))
         void cptr.strcat(cptr.decay(info), __s_asleep);
-    else if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0 || !(cptr.ldI32o(mtmp, $monst_mcanmove) & 1))
+    else if ((cptr.ldI32o(mtmp, $monst_mfrozen) & 127) | 0 ||
+            !(cptr.ldI32o(mtmp, $monst_mcanmove) & 1))
         void cptr.strcat(cptr.decay(info), __s_can_t_move);
     else if ((cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n) != 0n)
         void cptr.strcat(cptr.decay(info), __s_meditating);
@@ -3892,7 +6267,14 @@ export function* mstatusline(mtmp) {
     if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1))
         void cptr.strcat(cptr.decay(info), __s_trapped__2);
     if ((cptr.ldI32o(mtmp, $monst_mspeed) & 3))
-        void cptr.strcat(cptr.decay(info), (((cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0) == NHM.MFAST) ? __s_fast__2 : ((((cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0) == NHM.MSLOW) ? __s_slow : __s_speed));
+        void cptr.strcat(
+            cptr.decay(info),
+            (((cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0) == NHM.MFAST)
+                ? __s_fast__2
+                : ((((cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0) == NHM.MSLOW)
+                    ? __s_slow
+                    : __s_speed)
+        );
     if ((cptr.ldI32o(mtmp, $monst_minvis) & 1))
         void cptr.strcat(cptr.decay(info), __s_invisible__3);
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_ustuck))) {
@@ -3900,7 +6282,19 @@ export function* mstatusline(mtmp) {
 
         /* being swallowed/engulfed takes priority over sticks(youmonst);
            this used to have that backwards and checked sticks() first */
-        void cptr.strcat(cptr.decay(info), (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ? ((dmgtype_fromattack((pm), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_digesting_you : ((((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) && !(dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null)) ? __s_swallowing_you : __s_engulfing_you)) : (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) ? __s_holding_you : __s_held_by_you));
+        void cptr.strcat(
+            cptr.decay(info),
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0
+                ? ((dmgtype_fromattack((pm), NHM.AD_DGST, NHM.AT_ENGL) !== null)
+                    ? __s_digesting_you
+                    : ((((cptr.ldU64o((pm), $permonst_mflags1) & 262144n) != 0n) &&
+                        !(dmgtype_fromattack((pm), NHM.AD_WRAP, NHM.AT_ENGL) !== null))
+                        ? __s_swallowing_you
+                        : __s_engulfing_you))
+                : (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))
+                    ? __s_holding_you
+                    : __s_held_by_you)
+        );
     }
     if (cptr.eq(mtmp, cptr.ldPtro(u, $you_usteed))) {
         void cptr.strcat(cptr.decay(info), __s_carrying_you);
@@ -3923,7 +6317,17 @@ export function* mstatusline(mtmp) {
     /* and unlike a normal mon_nam, use "saddled" even if it has a name */
     void cptr.strcpy(cptr.decay(monnambuf), (yield* x_monnam(mtmp, NHM.ARTICLE_YOUR, null, 3, 0)));
 
-    (yield* pline(__s_status_of_s_s_s_level_d_hp_d_d_ac_d_s, cptr.decay(monnambuf), align_str(alignment), size_str(cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msize)), cptr.ld1uo(mtmp, $monst_m_lev), cptr.ldI32o(mtmp, $monst_mhp), cptr.ldI32o(mtmp, $monst_mhpmax), find_mac(mtmp), cptr.decay(info)));
+    (yield* pline(
+        __s_status_of_s_s_s_level_d_hp_d_d_ac_d_s,
+        cptr.decay(monnambuf),
+        align_str(alignment),
+        size_str(cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msize)),
+        cptr.ld1uo(mtmp, $monst_m_lev),
+        cptr.ldI32o(mtmp, $monst_mhp),
+        cptr.ldI32o(mtmp, $monst_mhpmax),
+        find_mac(mtmp),
+        cptr.decay(info)
+    ));
 }
 
 /* stethoscope or probing applied to hero -- one-line feedback */
@@ -3957,7 +6361,13 @@ export function* ustatusline() {
     if (Blind()) {
         void cptr.strcat(cptr.decay(info), __s_blind);
         if (cptr.ldI32o(u, $you_ucreamed)) {
-            if (BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) < BlindedTimeout() || EBlinded() || !((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n))
+            if (BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) < BlindedTimeout() ||
+                    EBlinded() ||
+                    !((cptr.ldU64o(
+                        (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                        $permonst_mflags1
+                    ) &
+                        4096n) == 0n))
                 void cptr.strcat(cptr.decay(info), __s_cover);
             void cptr.strcat(cptr.decay(info), __s_ed_by_sticky_goop);
         }  /* note: "goop" == "glop"; variation is intentional */
@@ -3991,7 +6401,16 @@ export function* ustatusline() {
         void cptr.strcat(cptr.decay(info), __s_invisible__3);
     if (cptr.ldPtro(u, $you_ustuck)) {
         if ((cptr.ldI32o(u, $you_uswallow) & 1))
-            void cptr.strcat(cptr.decay(info), (dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_being_digested_by : __s_engulfed_by);
+            void cptr.strcat(
+                cptr.decay(info),
+                (dmgtype_fromattack(
+                    (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
+                    NHM.AD_DGST,
+                    NHM.AT_ENGL
+                ) !== null)
+                    ? __s_being_digested_by
+                    : __s_engulfed_by
+            );
         else if (!sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
             void cptr.strcat(cptr.decay(info), __s_held_by__2);
         else
@@ -4002,17 +6421,49 @@ export function* ustatusline() {
            fiddling with just for self-probing while engulfed */
         void cptr.strcat(cptr.decay(info), (yield* a_monnam(cptr.ldPtro(u, $you_ustuck))));
     }
-    if (!(cptr.ldI32o(u, $you_uswallow) & 1) && (reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null && (ln = cptr.strlen(cptr.decay(info))) < 256n)
-        nh_snprintf(__s_ustatusline, 3483, eos(cptr.decay(info)), BigInt.asUintN(64, 256n - ln), __s_in_a_cloud_of_s, reg_damg(reg) ? __s_poison_gas : __s_vapor);
+    if (!(cptr.ldI32o(u, $you_uswallow) & 1) &&
+            (reg = visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) !== null &&
+            (ln = cptr.strlen(cptr.decay(info))) < 256n)
+        nh_snprintf(
+            __s_ustatusline,
+            3483,
+            eos(cptr.decay(info)),
+            BigInt.asUintN(64, 256n - ln),
+            __s_in_a_cloud_of_s,
+            reg_damg(reg) ? __s_poison_gas : __s_vapor
+        );
 
-    (yield* pline(__s_status_of_s_s_level_d_hp_d_d_ac_d_s, svp, piousness(0, align_str(cptr.ld1so(u, $you_ualign))), Upolyd() ? cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel) : cptr.ldI32o(u, $you_ulevel), Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp), Upolyd() ? cptr.ldI32o(u, $you_mhmax) : cptr.ldI32o(u, $you_uhpmax), cptr.ld1so(u, $you_uac), cptr.decay(info)));
+    (yield* pline(
+        __s_status_of_s_s_level_d_hp_d_d_ac_d_s,
+        svp,
+        piousness(0, align_str(cptr.ld1so(u, $you_ualign))),
+        Upolyd()
+            ? cptr.ld1so2(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst, $permonst_mlevel)
+            : cptr.ldI32o(u, $you_ulevel),
+        Upolyd() ? cptr.ldI32o(u, $you_mh) : cptr.ldI32o(u, $you_uhp),
+        Upolyd() ? cptr.ldI32o(u, $you_mhmax) : cptr.ldI32o(u, $you_uhpmax),
+        cptr.ld1so(u, $you_uac),
+        cptr.decay(info)
+    ));
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
 // 23 bindings: 0 rebound+refilled, 0 rebound, 23 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(You_), S(are), S(were), S(have), S(had), S(can), S(could), S(have_been), S(have_never), S(never), S(achieve_msg), S(__static_enlght_line_contra), S(__static_basics_enlightenment_Power), S(__static_weapon_insight_also_), S(__static_weapon_insight_also_wik_), S(__static_attributes_enlightenment_if_surroundings_permitted), S(__static_attributes_enlightenment_hofe_titles), S(__static_attributes_enlightenment_mc_types), S(vanqorders), S(__static_vanqsort_cmp_punctclasses), S(__static_doborn_fmt), S(__static_size_str_outbuf), S(__static_piousness_buf)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(You_), S(are), S(were), S(have), S(had), S(can), S(could), S(have_been), S(have_never),
+        S(never), S(achieve_msg), S(__static_enlght_line_contra),
+        S(__static_basics_enlightenment_Power), S(__static_weapon_insight_also_),
+        S(__static_weapon_insight_also_wik_),
+        S(__static_attributes_enlightenment_if_surroundings_permitted),
+        S(__static_attributes_enlightenment_hofe_titles),
+        S(__static_attributes_enlightenment_mc_types), S(vanqorders),
+        S(__static_vanqsort_cmp_punctclasses), S(__static_doborn_fmt), S(__static_size_str_outbuf),
+        S(__static_piousness_buf)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("insight.js: __resetState before __captureState");

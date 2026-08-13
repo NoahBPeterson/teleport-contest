@@ -13,9 +13,14 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { create_nhwindow, ctrl_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putmixed, putstr, start_menu } from './nhprop.js';
+import {
+    create_nhwindow, ctrl_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putmixed,
+    putstr, start_menu
+} from './nhprop.js';
 import { tty_procs, win_tty_init } from './wintty.js';
-import { WIN_STATUS, cg, flags, gb, gl, gm, go, gs, hexdd, iflags, program_state, svc } from './decl.js';
+import {
+    WIN_STATUS, cg, flags, gb, gl, gm, go, gs, hexdd, iflags, program_state, svc
+} from './decl.js';
 import { eos, mungspaces, strncmpi } from './hacklib.js';
 import { pline, raw_printf } from './pline.js';
 import { nh_terminate, panic } from './end.js';
@@ -30,87 +35,90 @@ import { cmdq_pop } from './cmd.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $_cmd_queue_key = FLD._cmd_queue_key, $class_sym_explain = FLD.class_sym_explain,
-    $classic_representation_symidx = FLD.classic_representation_symidx,
-    $color_and_attr_attr = FLD.color_and_attr_attr, $color_attr_attr = FLD.color_attr_attr,
-    $const_globals_zeroany = FLD.const_globals_zeroany, $context_info_rndencode = FLD.context_info_rndencode,
-    $flag_pickup = FLD.flag_pickup, $from_core_invmode = FLD.from_core_invmode,
-    $from_core_menu_promptstyle = FLD.from_core_menu_promptstyle,
-    $glyph_map_entry_sym = FLD.glyph_map_entry_sym, $glyphinfo_gm = FLD.glyphinfo_gm,
-    $glyphinfo_ttychar = FLD.glyphinfo_ttychar, $instance_flags_altmeta = FLD.instance_flags_altmeta,
-    $instance_flags_in_dumplog = FLD.instance_flags_in_dumplog,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
-    $instance_flags_menuinvertmode = FLD.instance_flags_menuinvertmode,
-    $instance_flags_raw_printed = FLD.instance_flags_raw_printed,
-    $instance_flags_use_menu_color = FLD.instance_flags_use_menu_color,
-    $instance_flags_wc_color = FLD.instance_flags_wc_color,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_globals_b_bot_disabled = FLD.instance_globals_b_bot_disabled,
-    $instance_globals_l_last_winchoice = FLD.instance_globals_l_last_winchoice,
-    $instance_globals_m_menu_colorings = FLD.instance_globals_m_menu_colorings,
-    $instance_globals_o_opt_need_promptstyle = FLD.instance_globals_o_opt_need_promptstyle,
-    $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
-    $menucoloring_attr = FLD.menucoloring_attr, $menucoloring_color = FLD.menucoloring_color,
-    $menucoloring_next = FLD.menucoloring_next, $sinfo_in_getlin = FLD.sinfo_in_getlin,
-    $sizeof_any = FLD.sizeof_any, $sizeof_class_sym = FLD.sizeof_class_sym,
-    $sizeof_glyphinfo = FLD.sizeof_glyphinfo, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_win_choices = FLD.sizeof_win_choices, $sizeof_win_request_info_t = FLD.sizeof_win_request_info_t,
-    $sizeof_window_procs = FLD.sizeof_window_procs, $to_core_active = FLD.to_core_active,
-    $to_core_havecols = FLD.to_core_havecols, $to_core_haverows = FLD.to_core_haverows,
-    $to_core_maxslot = FLD.to_core_maxslot, $to_core_needcols = FLD.to_core_needcols,
-    $to_core_needrows = FLD.to_core_needrows,
-    $to_core_use_update_inventory = FLD.to_core_use_update_inventory,
-    $win_choices_ini_routine = FLD.win_choices_ini_routine,
-    $win_request_info_t_fromcore = FLD.win_request_info_t_fromcore,
-    $window_procs_has_color = FLD.window_procs_has_color,
-    $window_procs_win_add_menu = FLD.window_procs_win_add_menu,
-    $window_procs_win_askname = FLD.window_procs_win_askname,
-    $window_procs_win_can_suspend = FLD.window_procs_win_can_suspend,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_ctrl_nhwindow = FLD.window_procs_win_ctrl_nhwindow,
-    $window_procs_win_curs = FLD.window_procs_win_curs,
-    $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_file = FLD.window_procs_win_display_file,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_doprev_message = FLD.window_procs_win_doprev_message,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
-    $window_procs_win_get_ext_cmd = FLD.window_procs_win_get_ext_cmd,
-    $window_procs_win_get_nh_event = FLD.window_procs_win_get_nh_event,
-    $window_procs_win_getlin = FLD.window_procs_win_getlin,
-    $window_procs_win_getmsghistory = FLD.window_procs_win_getmsghistory,
-    $window_procs_win_init_nhwindows = FLD.window_procs_win_init_nhwindows,
-    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
-    $window_procs_win_message_menu = FLD.window_procs_win_message_menu,
-    $window_procs_win_nh_poskey = FLD.window_procs_win_nh_poskey,
-    $window_procs_win_nhbell = FLD.window_procs_win_nhbell,
-    $window_procs_win_nhgetch = FLD.window_procs_win_nhgetch,
-    $window_procs_win_number_pad = FLD.window_procs_win_number_pad,
-    $window_procs_win_outrip = FLD.window_procs_win_outrip,
-    $window_procs_win_player_selection = FLD.window_procs_win_player_selection,
-    $window_procs_win_preference_update = FLD.window_procs_win_preference_update,
-    $window_procs_win_print_glyph = FLD.window_procs_win_print_glyph,
-    $window_procs_win_putmixed = FLD.window_procs_win_putmixed,
-    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
-    $window_procs_win_raw_print_bold = FLD.window_procs_win_raw_print_bold,
-    $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
-    $window_procs_win_select_menu = FLD.window_procs_win_select_menu,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
-    $window_procs_win_status_enablefield = FLD.window_procs_win_status_enablefield,
-    $window_procs_win_status_finish = FLD.window_procs_win_status_finish,
-    $window_procs_win_status_init = FLD.window_procs_win_status_init,
-    $window_procs_win_status_update = FLD.window_procs_win_status_update,
-    $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
-    $window_procs_win_update_inventory = FLD.window_procs_win_update_inventory,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
-    $window_procs_win_yn_function = FLD.window_procs_win_yn_function,
-    $window_procs_wincap = FLD.window_procs_wincap, $window_procs_wincap2 = FLD.window_procs_wincap2,
-    $window_procs_wp_id = FLD.window_procs_wp_id;
+      $classic_representation_symidx = FLD.classic_representation_symidx,
+      $color_and_attr_attr = FLD.color_and_attr_attr, $color_attr_attr = FLD.color_attr_attr,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $context_info_rndencode = FLD.context_info_rndencode, $flag_pickup = FLD.flag_pickup,
+      $from_core_invmode = FLD.from_core_invmode,
+      $from_core_menu_promptstyle = FLD.from_core_menu_promptstyle,
+      $glyph_map_entry_sym = FLD.glyph_map_entry_sym, $glyphinfo_gm = FLD.glyphinfo_gm,
+      $glyphinfo_ttychar = FLD.glyphinfo_ttychar,
+      $instance_flags_altmeta = FLD.instance_flags_altmeta,
+      $instance_flags_in_dumplog = FLD.instance_flags_in_dumplog,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
+      $instance_flags_menuinvertmode = FLD.instance_flags_menuinvertmode,
+      $instance_flags_raw_printed = FLD.instance_flags_raw_printed,
+      $instance_flags_use_menu_color = FLD.instance_flags_use_menu_color,
+      $instance_flags_wc_color = FLD.instance_flags_wc_color,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_globals_b_bot_disabled = FLD.instance_globals_b_bot_disabled,
+      $instance_globals_l_last_winchoice = FLD.instance_globals_l_last_winchoice,
+      $instance_globals_m_menu_colorings = FLD.instance_globals_m_menu_colorings,
+      $instance_globals_o_opt_need_promptstyle = FLD.instance_globals_o_opt_need_promptstyle,
+      $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
+      $menucoloring_attr = FLD.menucoloring_attr, $menucoloring_color = FLD.menucoloring_color,
+      $menucoloring_next = FLD.menucoloring_next, $sinfo_in_getlin = FLD.sinfo_in_getlin,
+      $sizeof_any = FLD.sizeof_any, $sizeof_class_sym = FLD.sizeof_class_sym,
+      $sizeof_glyphinfo = FLD.sizeof_glyphinfo, $sizeof_menu_item = FLD.sizeof_menu_item,
+      $sizeof_win_choices = FLD.sizeof_win_choices,
+      $sizeof_win_request_info_t = FLD.sizeof_win_request_info_t,
+      $sizeof_window_procs = FLD.sizeof_window_procs, $to_core_active = FLD.to_core_active,
+      $to_core_havecols = FLD.to_core_havecols, $to_core_haverows = FLD.to_core_haverows,
+      $to_core_maxslot = FLD.to_core_maxslot, $to_core_needcols = FLD.to_core_needcols,
+      $to_core_needrows = FLD.to_core_needrows,
+      $to_core_use_update_inventory = FLD.to_core_use_update_inventory,
+      $win_choices_ini_routine = FLD.win_choices_ini_routine,
+      $win_request_info_t_fromcore = FLD.win_request_info_t_fromcore,
+      $window_procs_has_color = FLD.window_procs_has_color,
+      $window_procs_win_add_menu = FLD.window_procs_win_add_menu,
+      $window_procs_win_askname = FLD.window_procs_win_askname,
+      $window_procs_win_can_suspend = FLD.window_procs_win_can_suspend,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_ctrl_nhwindow = FLD.window_procs_win_ctrl_nhwindow,
+      $window_procs_win_curs = FLD.window_procs_win_curs,
+      $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_file = FLD.window_procs_win_display_file,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_doprev_message = FLD.window_procs_win_doprev_message,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+      $window_procs_win_get_ext_cmd = FLD.window_procs_win_get_ext_cmd,
+      $window_procs_win_get_nh_event = FLD.window_procs_win_get_nh_event,
+      $window_procs_win_getlin = FLD.window_procs_win_getlin,
+      $window_procs_win_getmsghistory = FLD.window_procs_win_getmsghistory,
+      $window_procs_win_init_nhwindows = FLD.window_procs_win_init_nhwindows,
+      $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+      $window_procs_win_message_menu = FLD.window_procs_win_message_menu,
+      $window_procs_win_nh_poskey = FLD.window_procs_win_nh_poskey,
+      $window_procs_win_nhbell = FLD.window_procs_win_nhbell,
+      $window_procs_win_nhgetch = FLD.window_procs_win_nhgetch,
+      $window_procs_win_number_pad = FLD.window_procs_win_number_pad,
+      $window_procs_win_outrip = FLD.window_procs_win_outrip,
+      $window_procs_win_player_selection = FLD.window_procs_win_player_selection,
+      $window_procs_win_preference_update = FLD.window_procs_win_preference_update,
+      $window_procs_win_print_glyph = FLD.window_procs_win_print_glyph,
+      $window_procs_win_putmixed = FLD.window_procs_win_putmixed,
+      $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+      $window_procs_win_raw_print_bold = FLD.window_procs_win_raw_print_bold,
+      $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
+      $window_procs_win_select_menu = FLD.window_procs_win_select_menu,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+      $window_procs_win_status_enablefield = FLD.window_procs_win_status_enablefield,
+      $window_procs_win_status_finish = FLD.window_procs_win_status_finish,
+      $window_procs_win_status_init = FLD.window_procs_win_status_init,
+      $window_procs_win_status_update = FLD.window_procs_win_status_update,
+      $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
+      $window_procs_win_update_inventory = FLD.window_procs_win_update_inventory,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
+      $window_procs_win_yn_function = FLD.window_procs_win_yn_function,
+      $window_procs_wincap = FLD.window_procs_wincap,
+      $window_procs_wincap2 = FLD.window_procs_wincap2, $window_procs_wp_id = FLD.window_procs_wp_id;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_tty = cptr.lit("tty");
@@ -184,7 +192,12 @@ export function genl_can_suspend_yes() {
 function def_raw_print(s) {
     puts(s);
     if (cptr.ld1s(s))
-        (cptr.stI32o(iflags, $instance_flags_raw_printed, cptr.ldI32o(iflags, $instance_flags_raw_printed) + 1)) - (1);
+        (cptr.stI32o(
+            iflags,
+            $instance_flags_raw_printed,
+            cptr.ldI32o(iflags, $instance_flags_raw_printed) + 1
+        )) -
+                (1);
 }
 
 /** C ref: windows.c:215 */
@@ -244,11 +257,27 @@ export function* choose_windows(s) {
         if (!(yield* strncmpi((s), (cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices))), -1))) {
             cptr.memcpy(windowprocs, cptr.ldPtro(winchoices, i, $sizeof_win_choices), 416);
 
-            if (cptr.ldPtro(gl, $instance_globals_l_last_winchoice) && cptr.ldPtro(cptr.ldPtro(gl, $instance_globals_l_last_winchoice), $win_choices_ini_routine))
-                (yield* Y.icall((cptr.ldPtro(cptr.ldPtro(gl, $instance_globals_l_last_winchoice), $win_choices_ini_routine))(NHM.WININIT_UNDO)));
+            if (cptr.ldPtro(gl, $instance_globals_l_last_winchoice) &&
+                    cptr.ldPtro(
+                        cptr.ldPtro(gl, $instance_globals_l_last_winchoice),
+                        $win_choices_ini_routine
+                    ))
+                (yield* Y.icall((cptr.ldPtro(
+                    cptr.ldPtro(gl, $instance_globals_l_last_winchoice),
+                    $win_choices_ini_routine
+                ))(NHM.WININIT_UNDO)));
             if (cptr.ldPtro2(winchoices, i, $sizeof_win_choices, $win_choices_ini_routine))
-                (yield* Y.icall((cptr.ldPtro2(winchoices, i, $sizeof_win_choices, $win_choices_ini_routine))(NHM.WININIT)));
-            cptr.stPtro(gl, $instance_globals_l_last_winchoice, cptr.add(winchoices, i, $sizeof_win_choices));
+                (yield* Y.icall((cptr.ldPtro2(
+                    winchoices,
+                    i,
+                    $sizeof_win_choices,
+                    $win_choices_ini_routine
+                ))(NHM.WININIT)));
+            cptr.stPtro(
+                gl,
+                $instance_globals_l_last_winchoice,
+                cptr.add(winchoices, i, $sizeof_win_choices)
+            );
             return;
         }
     }
@@ -271,7 +300,11 @@ export function* choose_windows(s) {
     }
 
     if (!cptr.ldPtro(winchoices, 1, $sizeof_win_choices)) {
-        (yield* config_error_add(__s_window_type_s_not_recognized_the_only, s, cptr.ldPtr(cptr.ldPtro(winchoices, 0, $sizeof_win_choices))));
+        (yield* config_error_add(
+            __s_window_type_s_not_recognized_the_only,
+            s,
+            cptr.ldPtr(cptr.ldPtro(winchoices, 0, $sizeof_win_choices))
+        ));
     } else {
         let buf = new Uint8Array(256);
         let first = 1;
@@ -282,7 +315,12 @@ export function* choose_windows(s) {
                 continue;
             if (45 == cptr.ld1so(cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)), 0))
                 continue;
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, first ? __s_empty : __s_comma_sp, cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices)));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_s_s,
+                first ? __s_empty : __s_comma_sp,
+                cptr.ldPtr(cptr.ldPtro(winchoices, i, $sizeof_win_choices))
+            );
             first = 0;
         }
         (yield* config_error_add(__s_window_type_s_not_recognized_choices, s, cptr.decay(buf)));
@@ -299,7 +337,13 @@ export function* choose_windows(s) {
  * --More-- prompt; other interfaces generally don't need that.
  */
 /*ARGSUSED*/
-/** C ref: windows.c:451 — @param {CInt} let @param {CInt} how @param {CPtr<char>} mesg @returns {CInt} */
+/**
+ * C ref: windows.c:451
+ * @param {CInt} let
+ * @param {CInt} how
+ * @param {CPtr<char>} mesg
+ * @returns {CInt}
+ */
 export function* genl_message_menu(let$, how, mesg) {
     (yield* pline(__s_pct_s, mesg));
     return 0;
@@ -442,12 +486,14 @@ export function nhwindows_hangup() {
     /* don't call exit_nhwindows() directly here; if a hangup occurs
        while interface code is executing, exit_nhwindows could knock
        the interface's active data structures out from under itself */
-    if (cptr.ld1so(iflags, $instance_flags_window_inited) && cptr.ldPtro(windowprocs, $window_procs_win_exit_nhwindows) !== hup_exit_nhwindows)
+    if (cptr.ld1so(iflags, $instance_flags_window_inited) &&
+            cptr.ldPtro(windowprocs, $window_procs_win_exit_nhwindows) !== hup_exit_nhwindows)
         previnterface_exit_nhwindows = cptr.ldPtro(windowprocs, $window_procs_win_exit_nhwindows);
 
     /* also, we have to leave the old interface's getmsghistory()
        in place because it will be called while saving the game */
-    if (cptr.ldPtro(windowprocs, $window_procs_win_getmsghistory) !== cptr.ldPtro(hup_procs, $window_procs_win_getmsghistory))
+    if (cptr.ldPtro(windowprocs, $window_procs_win_getmsghistory) !==
+            cptr.ldPtro(hup_procs, $window_procs_win_getmsghistory))
         previnterface_getmsghistory = cptr.ldPtro(windowprocs, $window_procs_win_getmsghistory);
 
     cptr.memcpy(windowprocs, hup_procs, 416);
@@ -475,7 +521,13 @@ function hup_nhgetch() {
 }
 
 /*ARGSUSED*/
-/** C ref: windows.c:664 — @param {CPtr<char>} prompt @param {CPtr<char>} resp @param {CInt} deflt @returns {CInt} */
+/**
+ * C ref: windows.c:664
+ * @param {CPtr<char>} prompt
+ * @param {CPtr<char>} resp
+ * @param {CInt} deflt
+ * @returns {CInt}
+ */
 function hup_yn_function(prompt, resp, deflt) {
     if (!deflt)
         deflt = 27;
@@ -483,7 +535,13 @@ function hup_yn_function(prompt, resp, deflt) {
 }
 
 /*ARGSUSED*/
-/** C ref: windows.c:676 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
+/**
+ * C ref: windows.c:676
+ * @param {CPtr<coordxy>} x
+ * @param {CPtr<coordxy>} y
+ * @param {CPtr<int>} mod
+ * @returns {CInt}
+ */
 function hup_nh_poskey(x, y, mod) {
     return 27;
 }
@@ -507,13 +565,30 @@ function hup_create_nhwindow(type) {
 }
 
 /*ARGSUSED*/
-/** C ref: windows.c:704 — @param {CInt} window @param {CInt} how @param {CPtr<struct mi *>} menu_list @returns {CInt} */
+/**
+ * C ref: windows.c:704
+ * @param {CInt} window
+ * @param {CInt} how
+ * @param {CPtr<struct mi *>} menu_list
+ * @returns {CInt}
+ */
 function hup_select_menu(window, how, menu_list) {
     return -1;
 }
 
 /*ARGSUSED*/
-/** C ref: windows.c:714 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} sel @param {CInt} grpsel @param {CInt} attr @param {CInt} clr @param {CPtr<char>} txt @param {CUInt} itemflags */
+/**
+ * C ref: windows.c:714
+ * @param {CInt} window
+ * @param {CPtr<glyph_info>} glyphinfo
+ * @param {CPtr<anything>} identifier
+ * @param {CInt} sel
+ * @param {CInt} grpsel
+ * @param {CInt} attr
+ * @param {CInt} clr
+ * @param {CPtr<char>} txt
+ * @param {CUInt} itemflags
+ */
 function hup_add_menu(window, glyphinfo, identifier, sel, grpsel, attr, clr, txt, itemflags) {
     return;
 }
@@ -531,7 +606,14 @@ function hup_putstr(window, attr, text) {
 }
 
 /*ARGSUSED*/
-/** C ref: windows.c:744 — @param {CInt} window @param {CInt} x @param {CInt} y @param {CPtr<glyph_info>} glyphinfo @param {CPtr<glyph_info>} bkglyphinfo */
+/**
+ * C ref: windows.c:744
+ * @param {CInt} window
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<glyph_info>} glyphinfo
+ * @param {CPtr<glyph_info>} bkglyphinfo
+ */
 function hup_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     return;
 }
@@ -567,7 +649,15 @@ function hup_cliparound(x, y) {
 }
 
 /*ARGSUSED*/
-/** C ref: windows.c:816 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} pc @param {CInt} color @param {CPtr<unsigned long>} colormasks */
+/**
+ * C ref: windows.c:816
+ * @param {CInt} idx
+ * @param {CPtr} ptr
+ * @param {CInt} chg
+ * @param {CInt} pc
+ * @param {CInt} color
+ * @param {CPtr<unsigned long>} colormasks
+ */
 function hup_status_update(idx, ptr, chg, pc, color, colormasks) {
     return;
 }
@@ -611,7 +701,13 @@ function hup_void_fdecl_constchar_p(string) {
 }
 
 /*ARGUSED*/
-/** C ref: windows.c:872 — @param {CInt} window @param {CInt} request @param {CPtr<win_request_info>} wri @returns {CPtr<win_request_info>} */
+/**
+ * C ref: windows.c:872
+ * @param {CInt} window
+ * @param {CInt} request
+ * @param {CPtr<win_request_info>} wri
+ * @returns {CPtr<win_request_info>}
+ */
 export function hup_ctrl_nhwindow(window, request, wri) {
     return null;
 }
@@ -659,7 +755,13 @@ export function genl_status_finish() {
     }
 }
 
-/** C ref: windows.c:922 — @param {CInt} fieldidx @param {CPtr<char>} nm @param {CPtr<char>} fmt @param {CInt} enable */
+/**
+ * C ref: windows.c:922
+ * @param {CInt} fieldidx
+ * @param {CPtr<char>} nm
+ * @param {CPtr<char>} fmt
+ * @param {CInt} enable
+ */
 export function genl_status_enablefield(fieldidx, nm, fmt, enable) {
     cptr.stPtro(status_fieldfmt, fieldidx, fmt, 8);
     cptr.stPtro(status_fieldnm, fieldidx, nm, 8);
@@ -667,7 +769,13 @@ export function genl_status_enablefield(fieldidx, nm, fmt, enable) {
 }
 
 /* call once for each field, then call with BL_FLUSH to output the result */
-const __static_genl_status_update_fieldorder = (function () { const flat = new Uint8Array(5 * 15 * 4); const a = []; for (let r = 0; r < 5; r++) a.push(flat.subarray(r * 15 * 4, (r + 1) * 15 * 4)); a.buf = flat; return a; })();
+const __static_genl_status_update_fieldorder = (function () {
+    const flat = new Uint8Array(5 * 15 * 4);
+    const a = [];
+    for (let r = 0; r < 5; r++) a.push(flat.subarray(r * 15 * 4, (r + 1) * 15 * 4));
+    a.buf = flat;
+    return a;
+})();
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 0, NHC.BL_TITLE);
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 4, NHC.BL_STR);
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), 8, NHC.BL_DX);
@@ -744,7 +852,15 @@ cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 48, NHC.BL_HD
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 52, NHC.BL_TIME);
 cptr.stI32o(cptr.decay(__static_genl_status_update_fieldorder[4]), 56, NHC.BL_FLUSH); /** C ref: windows.c:950 — enum statusfields[5][15] (function-static) */
 
-/** C ref: windows.c:937 — @param {CInt} idx @param {CPtr} ptr @param {CInt} chg @param {CInt} percent @param {CInt} color @param {CPtr<unsigned long>} colormasks */
+/**
+ * C ref: windows.c:937
+ * @param {CInt} idx
+ * @param {CPtr} ptr
+ * @param {CInt} chg
+ * @param {CInt} percent
+ * @param {CInt} color
+ * @param {CPtr<unsigned long>} colormasks
+ */
 export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
     let newbot1 = new Uint8Array(200);
     let newbot2 = new Uint8Array(200);
@@ -762,7 +878,11 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
     /* in case interface is using genl_status_update() but has not
        specified WC2_FLUSH_STATUS (status_update() for field values
        is buffered so final BL_FLUSH is needed to produce output) */
-    cptr.stU64o(windowprocs, $window_procs_wincap2, cptr.ldU64o(windowprocs, $window_procs_wincap2) | 128n);
+    cptr.stU64o(
+        windowprocs,
+        $window_procs_wincap2,
+        cptr.ldU64o(windowprocs, $window_procs_wincap2) | 128n
+    );
 
     if (idx >= 0) {
         if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
@@ -800,7 +920,13 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
                 void cptr.strcpy(nb = eos(nb), __s_ride);
             break;
             default:
-            void cptr.sprintf(cptr.ldPtro(status_vals, idx, 8), cptr.ldPtro(status_fieldfmt, idx, 8) ? cptr.ldPtro(status_fieldfmt, idx, 8) : __s_pct_s, text ? text : __s_empty);
+            void cptr.sprintf(
+                cptr.ldPtro(status_vals, idx, 8),
+                cptr.ldPtro(status_fieldfmt, idx, 8)
+                    ? cptr.ldPtro(status_fieldfmt, idx, 8)
+                    : __s_pct_s,
+                text ? text : __s_empty
+            );
             break;
         }
         return;  /* processed one field other than BL_FLUSH */
@@ -818,13 +944,22 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
        in the loop below because it is the only entry used to pad the
        end of the fieldorder array. We could stop on any
        negative (illegal) index, but this should be fine */
-    for (i = 0; (idx1 = cptr.ldI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), i, 4)) != NHC.BL_FLUSH; ++i) {
+    for (
+        i = 0;
+        (idx1 = cptr.ldI32o(cptr.decay(__static_genl_status_update_fieldorder[0]), i, 4)) !=
+            NHC.BL_FLUSH;
+        ++i
+    ) {
         if (cptr.ld1so(cptr.decay(status_activefields), idx1, 1))
             void cptr.strcpy(nb = eos(nb), cptr.ldPtro(status_vals, idx1, 8));
     }
     /* if '$' is encoded, buffer length of \GXXXXNNNN is 9 greater than
        single char; we want to subtract that 9 when checking display length */
-    lndelta = ((cptr.ld1so(cptr.decay(status_activefields), NHC.BL_GOLD, 1) && cptr.strstr(cptr.ldPtro(status_vals, NHC.BL_GOLD, 8), __s_bslash_g)) ? 9 : 0) >>> 0;
+    lndelta = ((cptr.ld1so(cptr.decay(status_activefields), NHC.BL_GOLD, 1) &&
+        cptr.strstr(cptr.ldPtro(status_vals, NHC.BL_GOLD, 8), __s_bslash_g))
+        ? 9
+        : 0) >>>
+            0;
     /* basic bot2 formats groups of second line fields into five buffers,
        then decides how to order those buffers based on comparing lengths
        of [sub]sets of them to the width of the map; we have more control
@@ -868,7 +1003,12 @@ export function* genl_status_update(idx, ptr, chg, percent, color, colormasks) {
                 void cptr.strcpy(nb = eos(nb), val);  /* status_vals[idx2] */
             }  /* status_activefields[idx2] */
 
-            if (idx2 == NHC.BL_CONDITION && pass < 4 && BigInt.asUintN(64, cptr.strlen(cptr.decay(newbot2)) - BigInt(lndelta >>> 0)) > 80n)
+            if (idx2 == NHC.BL_CONDITION &&
+                    pass < 4 &&
+                    BigInt.asUintN(
+                        64,
+                        cptr.strlen(cptr.decay(newbot2)) - BigInt(lndelta >>> 0)
+                    ) > 80n)
                 break;  /* switch to next order */
         }  /* i */
 
@@ -903,7 +1043,13 @@ export function dump_close_log() {
     }
 }
 
-/** C ref: windows.c:1276 — @param {CInt} win @param {CInt} attr @param {CPtr<char>} str @param {CInt} no_forward */
+/**
+ * C ref: windows.c:1276
+ * @param {CInt} win
+ * @param {CInt} attr
+ * @param {CPtr<char>} str
+ * @param {CInt} no_forward
+ */
 export function* dump_forward_putstr(win, attr, str, no_forward) {
     if (dumplog_file)
         fprintf(dumplog_file, __s_pct_s_nl, str);
@@ -948,7 +1094,18 @@ function dump_start_menu(win, mbehavior) {
 }
 
 /*ARGSUSED*/
-/** C ref: windows.c:1328 — @param {CInt} win @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr<char>} str @param {CUInt} itemflags */
+/**
+ * C ref: windows.c:1328
+ * @param {CInt} win
+ * @param {CPtr<glyph_info>} glyphinfo
+ * @param {CPtr<anything>} identifier
+ * @param {CInt} ch
+ * @param {CInt} gch
+ * @param {CInt} attr
+ * @param {CInt} clr
+ * @param {CPtr<char>} str
+ * @param {CUInt} itemflags
+ */
 function dump_add_menu(win, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     if (dumplog_file) {
         if (cptr.ldI32(glyphinfo) == NHC.MAX_GLYPH)
@@ -969,7 +1126,13 @@ function dump_end_menu(win, str) {
     }
 }
 
-/** C ref: windows.c:1359 — @param {CInt} win @param {CInt} how @param {CPtr<menu_item *>} item @returns {CInt} */
+/**
+ * C ref: windows.c:1359
+ * @param {CInt} win
+ * @param {CInt} how
+ * @param {CPtr<menu_item *>} item
+ * @returns {CInt}
+ */
 function dump_select_menu(win, how, item) {
     cptr.stPtr(item, null);
     return 0;
@@ -999,7 +1162,12 @@ export function dump_redirect(onoff_flag) {
 
 /** C ref: windows.c:1397 — @param {CInt} color @returns {CInt} */
 export function has_color(color) {
-    return (cptr.ld1so(iflags, $instance_flags_wc_color) && cptr.ldPtr(windowprocs) && (cptr.ldU64o(windowprocs, $window_procs_wincap) & 1n) && cptr.ld1so2(windowprocs, color, 1, $window_procs_has_color) ? 1 : 0);
+    return (cptr.ld1so(iflags, $instance_flags_wc_color) &&
+        cptr.ldPtr(windowprocs) &&
+        (cptr.ldU64o(windowprocs, $window_procs_wincap) & 1n) &&
+        cptr.ld1so2(windowprocs, color, 1, $window_procs_has_color)
+            ? 1
+            : 0);
 }
 
 /** C ref: windows.c:1410 — @param {CInt} glyph @returns {CInt} */
@@ -1015,7 +1183,10 @@ export function glyph2symidx(glyph) {
     let glyphinfo = cptr.alloc(48);
 
     map_glyphinfo(0, 0, glyph, 0, glyphinfo);
-    return cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx);
+    return cptr.ldI32o(
+        glyphinfo,
+        $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx
+    );
 }
 
 const __static_encglyph_encbuf = new Uint8Array(20); /** C ref: windows.c:1430 — char[20] (function-static) */
@@ -1023,7 +1194,12 @@ const __static_encglyph_encbuf = new Uint8Array(20); /** C ref: windows.c:1430 �
 /** C ref: windows.c:1428 — @param {CInt} glyph @returns {CPtr<char>} */
 export function encglyph(glyph) {
 
-    void cptr.sprintf(cptr.decay(__static_encglyph_encbuf), __s_g_04x_04x, cptr.ldI32o(svc, $context_info_rndencode), glyph);
+    void cptr.sprintf(
+        cptr.decay(__static_encglyph_encbuf),
+        __s_g_04x_04x,
+        cptr.ldI32o(svc, $context_info_rndencode),
+        glyph
+    );
     return cptr.decay(__static_encglyph_encbuf);
 }
 
@@ -1039,7 +1215,9 @@ export function decode_glyph(str, glyph_ptr) {
     for (; cptr.ld1s(str) && ++dcount <= 4; str = cptr.add(str, 1)) {
         if ((dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(str))) !== null) {
             retval++;
-            rndchk = ((Math.imul(rndchk, 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0;
+            rndchk = ((Math.imul(rndchk, 16)) +
+                ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) |
+                    0;
         } else
             break;
     }
@@ -1048,7 +1226,14 @@ export function decode_glyph(str, glyph_ptr) {
         for (; cptr.ld1s(str) && ++dcount <= 4; str = cptr.add(str, 1)) {
             if ((dp = cptr.strchr(cptr.decay(hexdd), cptr.ld1s(str))) !== null) {
                 retval++;
-                cptr.stI32(glyph_ptr, ((Math.imul(cptr.ldI32(glyph_ptr), 16)) + ((Number(BigInt.asIntN(32, (cptr.diff(dp, cptr.decay(hexdd))))) / 2) | 0)) | 0);
+                cptr.stI32(
+                    glyph_ptr,
+                    ((Math.imul(cptr.ldI32(glyph_ptr), 16)) +
+                        ((Number(BigInt.asIntN(
+                            32,
+                            (cptr.diff(dp, cptr.decay(hexdd)))
+                        )) / 2) | 0)) | 0
+                );
             } else
                 break;
         }
@@ -1078,8 +1263,14 @@ export function* decode_mixed(buf, str) {
                 if ((dcount = decode_glyph(cptr.add(str, 1), ggv))) {
                     str = cptr.add(str, ((dcount + 1) | 0));
                     map_glyphinfo(0, 0, ggv.v, 0, glyphinfo);
-                    so = cptr.ldI32o(glyphinfo, $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx);
-                    cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms)));
+                    so = cptr.ldI32o(
+                        glyphinfo,
+                        $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx
+                    );
+                    cptr.st1(
+                        cptr.postinc(() => put, (v) => { put = v; }),
+                        schar(cptr.ld1uo2(gs, so, 1, $instance_globals_s_showsyms))
+                    );
                     /* 'str' is ready for the next loop iteration and '*str'
                        should not be copied at the end of this iteration */
                     continue;
@@ -1101,7 +1292,10 @@ export function* decode_mixed(buf, str) {
                 break;
             }
         }
-        cptr.st1(cptr.postinc(() => put, (v) => { put = v; }), cptr.ld1s(cptr.postinc(() => str, (v) => { str = v; })));
+        cptr.st1(
+            cptr.postinc(() => put, (v) => { put = v; }),
+            cptr.ld1s(cptr.postinc(() => str, (v) => { str = v; }))
+        );
     }
     cptr.st1(put, 0);
     return buf;
@@ -1151,7 +1345,13 @@ export function genl_display_file(fname, complain) {
  * Window port helper function for menu invert routines to move the decision
  * logic into one place instead of 7 different window-port routines.
  */
-/** C ref: windows.c:1562 — @param {CInt} mode @param {CUInt} itemflags @param {CInt} is_selected @returns {CInt} */
+/**
+ * C ref: windows.c:1562
+ * @param {CInt} mode
+ * @param {CUInt} itemflags
+ * @param {CInt} is_selected
+ * @returns {CInt}
+ */
 export function menuitem_invert_test(mode, itemflags, is_selected) {
     let skipinvert = schar((((itemflags & NHM.MENU_ITEMFLAGS_SKIPINVERT) >>> 0) != 0));
 
@@ -1185,7 +1385,12 @@ export function menuitem_invert_test(mode, itemflags, is_selected) {
  * including the utf8 representation under ENHANCED_SYMBOLS,
  * will be stored in the glyph_info struct pointed to by gip.
  */
-/** C ref: windows.c:1600 — @param {CPtr<char>} str @param {CPtr<glyph_info>} gip @returns {CPtr<char>} */
+/**
+ * C ref: windows.c:1600
+ * @param {CPtr<char>} str
+ * @param {CPtr<glyph_info>} gip
+ * @returns {CPtr<char>}
+ */
 export function mixed_to_glyphinfo(str, gip) {
     let dcount;
     let ggv = cptr.box(0);
@@ -1229,7 +1434,15 @@ export function mixed_to_glyphinfo(str, gip) {
  *
  * Returns number selected.
  */
-/** C ref: windows.c:1644 — @param {CPtr<char>} prompt @param {CInt} category @param {CInt} way @param {CPtr<char>} class_list @param {CPtr<char>} class_select @returns {CInt} */
+/**
+ * C ref: windows.c:1644
+ * @param {CPtr<char>} prompt
+ * @param {CInt} category
+ * @param {CInt} way
+ * @param {CPtr<char>} class_list
+ * @param {CPtr<char>} class_select
+ * @returns {CInt}
+ */
 export function* choose_classes_menu(prompt, category, way, class_list, class_select) {
     let pick_list = cptr.box(null);
     let win;
@@ -1284,7 +1497,17 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
             }
         }
         cptr.stI32(any, cptr.ld1s(class_list));
-        (yield* add_menu(win, nul_glyphinfo.v, any, schar(accelerator), schar((category ? cptr.ld1s(class_list) : 0)), NHM.ATR_NONE, clr, cptr.decay(buf), selected ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            win,
+            nul_glyphinfo.v,
+            any,
+            schar(accelerator),
+            schar((category ? cptr.ld1s(class_list) : 0)),
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            selected ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+        ));
         if (category > 0) {
             if (next_accelerator == 90)
                 break;
@@ -1300,16 +1523,36 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
         (yield* add_menu_str(win, __s_empty));
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         cptr.stI32(any, 32);
-        void cptr.sprintf(cptr.decay(buf), __s_c_s__2, schar(cptr.ldI32(any)), __s_all_classes_of_objects);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_c_s__2,
+            schar(cptr.ldI32(any)),
+            __s_all_classes_of_objects
+        );
         /* we won't preselect this even if the incoming list is empty;
            having it selected means that it would have to be explicitly
            de-selected in order to select anything else */
-        (yield* add_menu(win, nul_glyphinfo.v, any, 65, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_SKIPINVERT));
+        (yield* add_menu(
+            win,
+            nul_glyphinfo.v,
+            any,
+            65,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            NHM.MENU_ITEMFLAGS_SKIPINVERT
+        ));
         if (!strcmp(prompt, __s_autopickup_what)) {
             (yield* add_menu_str(win, __s_note_when_no_choices_are_selected_all));
             /* for 'O', "toggle" should be intuitive; for 'm O', it would
                probably be better to say "Set 'autopickup' to true|false" */
-            (yield* add_menu_str(win, cptr.ld1so(flags, $flag_pickup) ? __s_toggle_off_autopickup_to_not_pick_up : __s_toggle_on_autopickup_to_automatically));
+            (yield* add_menu_str(
+                win,
+                cptr.ld1so(flags, $flag_pickup)
+                    ? __s_toggle_off_autopickup_to_not_pick_up
+                    : __s_toggle_on_autopickup_to_automatically
+            ));
         }
     }
     (yield* Y.icall(end_menu()(win, prompt)));
@@ -1326,7 +1569,10 @@ export function* choose_classes_menu(prompt, category, way, class_list, class_se
                 }
         }
         for (i = 0; i < n; ++i)
-            cptr.st1(cptr.postinc(() => class_select, (v) => { class_select = v; }), schar(cptr.ldI32o(pick_list.v, i, $sizeof_menu_item)));
+            cptr.st1(
+                cptr.postinc(() => class_select, (v) => { class_select = v; }),
+                schar(cptr.ldI32o(pick_list.v, i, $sizeof_menu_item))
+            );
         cptr.free(pick_list.v);
         ret = n;
     } else if (n == -1) {
@@ -1354,13 +1600,21 @@ cptr.stI32o(zerowri, $to_core_havecols, 0);
 cptr.stI32o(zerowri, $win_request_info_t_fromcore, 0);
 cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_invmode, 0);
 cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_menu_promptstyle, NHM.NO_COLOR);
-cptr.stI32o(zerowri, $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr, NHM.ATR_NONE);
+cptr.stI32o(
+    zerowri,
+    $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr,
+    NHM.ATR_NONE
+);
 
 /** C ref: windows.c:1769 — @param {CInt} window @param {CPtr<color_attr>} style */
 export function* adjust_menu_promptstyle(window, style) {
     let wri = cptr.alloc(48); cptr.memcpy(wri, zerowri, $sizeof_win_request_info_t);
     cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle, cptr.ldI32(style));
-    cptr.stI32o(wri, $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr, cptr.ldI32o(style, $color_attr_attr));
+    cptr.stI32o(
+        wri,
+        $win_request_info_t_fromcore + $from_core_menu_promptstyle + $color_and_attr_attr,
+        cptr.ldI32o(style, $color_attr_attr)
+    );
     /*  relay the style change to the window port */
     void (yield* Y.icall(ctrl_nhwindow()(window, NHC.set_menu_promptstyle, wri)));
     cptr.st1o(go, $instance_globals_o_opt_need_promptstyle, 0);
@@ -1371,7 +1625,18 @@ export function* adjust_menu_promptstyle(window, style) {
  *   add_menu() to allow single-spot adjustments to the parameters,
  *   such as those done by menu_colors.
  */
-/** C ref: windows.c:1785 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} color @param {CPtr<char>} str @param {CUInt} itemflags */
+/**
+ * C ref: windows.c:1785
+ * @param {CInt} window
+ * @param {CPtr<glyph_info>} glyphinfo
+ * @param {CPtr<anything>} identifier
+ * @param {CInt} ch
+ * @param {CInt} gch
+ * @param {CInt} attr
+ * @param {CInt} color
+ * @param {CPtr<char>} str
+ * @param {CUInt} itemflags
+ */
 export function* add_menu(window, glyphinfo, identifier, ch, gch, attr, color, str, itemflags) {
     attr = cptr.box(attr);
     color = cptr.box(color);
@@ -1394,7 +1659,17 @@ export function* add_menu(window, glyphinfo, identifier, ch, gch, attr, color, s
     /* this is the only function that cared about this flag; remove it now */
     itemflags &= ~NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS;
 
-    (yield* Y.icall((cptr.ldPtro(windowprocs, $window_procs_win_add_menu))(window, glyphinfo, identifier, ch, gch, attr.v, color.v, str, itemflags)));
+    (yield* Y.icall((cptr.ldPtro(windowprocs, $window_procs_win_add_menu))(
+        window,
+        glyphinfo,
+        identifier,
+        ch,
+        gch,
+        attr.v,
+        color.v,
+        str,
+        itemflags
+    )));
 }
 
 /* insert a non-selectable, possibly highlighted line of text into a menu */
@@ -1408,7 +1683,17 @@ export function* add_menu_heading(tmpwin, buf) {
     if (cptr.ldI32(program_state))
         attr = NHM.ATR_NONE, color = NHM.NO_COLOR;
 
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, attr, color, buf, NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        0,
+        0,
+        attr,
+        color,
+        buf,
+        NHM.MENU_ITEMFLAGS_SKIPMENUCOLORS
+    ));
 }
 
 /* insert a non-selectable, unhighlighted line of text into a menu */
@@ -1416,15 +1701,35 @@ export function* add_menu_heading(tmpwin, buf) {
 export function* add_menu_str(tmpwin, buf) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), $sizeof_any);
 
-    (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, buf, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        tmpwin,
+        nul_glyphinfo.v,
+        any,
+        0,
+        0,
+        NHM.ATR_NONE,
+        NHM.NO_COLOR,
+        buf,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
 }
 
-/** C ref: windows.c:1841 — @param {CPtr<char>} str @param {CPtr<int>} color @param {CPtr<int>} attr @returns {CInt} */
+/**
+ * C ref: windows.c:1841
+ * @param {CPtr<char>} str
+ * @param {CPtr<int>} color
+ * @param {CPtr<int>} attr
+ * @returns {CInt}
+ */
 function get_menu_coloring(str, color, attr) {
     let tmpmc;
 
     if (cptr.ld1so(iflags, $instance_flags_use_menu_color))
-        for (tmpmc = cptr.ldPtro(gm, $instance_globals_m_menu_colorings); tmpmc; tmpmc = cptr.ldPtro(tmpmc, $menucoloring_next))
+        for (
+            tmpmc = cptr.ldPtro(gm, $instance_globals_m_menu_colorings);
+            tmpmc;
+            tmpmc = cptr.ldPtro(tmpmc, $menucoloring_next)
+        )
             if (regex_match(str, cptr.ldPtr(tmpmc))) {
                 cptr.stI32(color, cptr.ldI32o(tmpmc, $menucoloring_color));
                 cptr.stI32(attr, cptr.ldI32o(tmpmc, $menucoloring_attr));
@@ -1433,7 +1738,13 @@ function get_menu_coloring(str, color, attr) {
     return 0;
 }
 
-/** C ref: windows.c:1856 — @param {CInt} window @param {CInt} how @param {CPtr<menu_item *>} menu_list @returns {CInt} */
+/**
+ * C ref: windows.c:1856
+ * @param {CInt} window
+ * @param {CInt} how
+ * @param {CPtr<menu_item *>} menu_list
+ * @returns {CInt}
+ */
 export function* select_menu(window, how, menu_list) {
     let reslt;
     let old_bot_disabled = cptr.ld1so(gb, $instance_globals_b_bot_disabled);
@@ -1454,7 +1765,12 @@ export function* getlin(query, bufp) {
     while ((cmdq = cmdq_pop()) !== null) {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             got_cmdq = 1;
-            cptr.st1(bufp, schar(((cptr.ld1so(cmdq, $_cmd_queue_key) != 10) ? cptr.ld1so(cmdq, $_cmd_queue_key) : 0)));
+            cptr.st1(
+                bufp,
+                schar(((cptr.ld1so(cmdq, $_cmd_queue_key) != 10)
+                    ? cptr.ld1so(cmdq, $_cmd_queue_key)
+                    : 0))
+            );
             bufp = cptr.add(bufp, 1);
             if (cptr.ld1so(cmdq, $_cmd_queue_key) == 10)
                 break;
@@ -1484,7 +1800,14 @@ export function* getlin(query, bufp) {
 // 13 bindings: 4 rebound+refilled, 2 rebound, 7 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(windowprocs), S(winchoices), S(hup_procs), S(previnterface_exit_nhwindows), S(status_fieldnm), S(status_fieldfmt), S(status_vals), S(status_activefields), S(__static_genl_status_update_fieldorder), S(dumplog_windowprocs_backup), S(dumplog_file), S(__static_encglyph_encbuf), S(zerowri)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(windowprocs), S(winchoices), S(hup_procs), S(previnterface_exit_nhwindows),
+        S(status_fieldnm), S(status_fieldfmt), S(status_vals), S(status_activefields),
+        S(__static_genl_status_update_fieldorder), S(dumplog_windowprocs_backup), S(dumplog_file),
+        S(__static_encglyph_encbuf), S(zerowri)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("windows.js: __resetState before __captureState");

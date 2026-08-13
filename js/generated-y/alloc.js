@@ -23,7 +23,10 @@ export function* alloc(lth) {
     {
         if (!(lth) || BigInt((lth) >>> 0) % 8n != 0n)
 
-            lth = Number(BigInt.asUintN(32, BigInt(lth >>> 0) + BigInt.asUintN(64, 8n - BigInt((lth) >>> 0) % 8n)));
+            lth = Number(BigInt.asUintN(
+                32,
+                BigInt(lth >>> 0) + BigInt.asUintN(64, 8n - BigInt((lth) >>> 0) % 8n)
+            ));
     }
     ptr = cptr.malloc(BigInt(lth >>> 0));
     if (!ptr)
@@ -38,7 +41,10 @@ export function* re_alloc(oldptr, newlth) {
     {
         if (!(newlth) || BigInt((newlth) >>> 0) % 8n != 0n)
 
-            newlth = Number(BigInt.asUintN(32, BigInt(newlth >>> 0) + BigInt.asUintN(64, 8n - BigInt((newlth) >>> 0) % 8n)));
+            newlth = Number(BigInt.asUintN(
+                32,
+                BigInt(newlth >>> 0) + BigInt.asUintN(64, 8n - BigInt((newlth) >>> 0) % 8n)
+            ));
     }
     newptr = realloc(oldptr, BigInt(newlth >>> 0));
     /* "extend to":  assume it won't ever fail if asked to shrink */
@@ -48,7 +54,13 @@ export function* re_alloc(oldptr, newlth) {
 }
 
 /** C ref: alloc.c:120 — char[4][32] */
-const ptrbuf = (function () { const flat = new Uint8Array(4 * (32 * 1)); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * (32 * 1), (r + 1) * (32 * 1))); a.buf = flat; return a; })();
+const ptrbuf = (function () {
+    const flat = new Uint8Array(4 * (32 * 1));
+    const a = [];
+    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * (32 * 1), (r + 1) * (32 * 1)));
+    a.buf = flat;
+    return a;
+})();
 
 /** C ref: alloc.c:121 — int */
 let ptrbufidx = 0;
@@ -81,7 +93,13 @@ export function* dupstr(string) {
 }
 
 /* cast to int or panic on overflow; use via macro */
-/** C ref: alloc.c:266 — @param {CLongLong} i @param {CPtr<char>} file @param {CInt} line @returns {CInt} */
+/**
+ * C ref: alloc.c:266
+ * @param {CLongLong} i
+ * @param {CPtr<char>} file
+ * @param {CInt} line
+ * @returns {CInt}
+ */
 export function* FITSint_(i, file, line) {
     let iret = Number(BigInt.asIntN(32, i));
 
@@ -90,7 +108,13 @@ export function* FITSint_(i, file, line) {
     return iret;
 }
 
-/** C ref: alloc.c:276 — @param {CLongLong} ull @param {CPtr<char>} file @param {CInt} line @returns {CUInt} */
+/**
+ * C ref: alloc.c:276
+ * @param {CLongLong} ull
+ * @param {CPtr<char>} file
+ * @param {CInt} line
+ * @returns {CUInt}
+ */
 export function* FITSuint_(ull, file, line) {
     let uret = Number(BigInt.asUintN(32, ull));
 

@@ -14,7 +14,11 @@ import { flags, gc, gd, gn, go, gw, iflags, program_state, svp } from './decl.js
 import { windowprocs } from './windows.js';
 import { paranoid_query, parseautocomplete } from './cmd.js';
 import { strbuf_empty, strbuf_init } from './strutil.js';
-import { add_autopickup_exception, all_options_strbuf, allopt_array_init, assign_warnings, disregard_all_options, disregard_this_option, heed_all_options, heed_this_option, match_optname, msgtype_parse_add, nh_getenv, parsebindings, parseoptions, reset_duplicate_opt_detection } from './options.js';
+import {
+    add_autopickup_exception, all_options_strbuf, allopt_array_init, assign_warnings,
+    disregard_all_options, disregard_this_option, heed_all_options, heed_this_option, match_optname,
+    msgtype_parse_add, nh_getenv, parsebindings, parseoptions, reset_duplicate_opt_detection
+} from './options.js';
 import { debugcore, do_deferred_showpaths, fqname } from './files.js';
 import { c_eos, eos, mungspaces, nh_snprintf, trimspaces } from './hacklib.js';
 import { rn2 } from './rnd.js';
@@ -32,56 +36,63 @@ import { nhl_add_table_entry_int, nhl_add_table_entry_str } from './nhlua.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $_cnf_parser_state_buf = FLD._cnf_parser_state_buf,
-    $_cnf_parser_state_cont = FLD._cnf_parser_state_cont, $_cnf_parser_state_ep = FLD._cnf_parser_state_ep,
-    $_cnf_parser_state_inbufsz = FLD._cnf_parser_state_inbufsz,
-    $_cnf_parser_state_morelines = FLD._cnf_parser_state_morelines,
-    $_cnf_parser_state_pbreak = FLD._cnf_parser_state_pbreak,
-    $_cnf_parser_state_rv = FLD._cnf_parser_state_rv, $_cnf_parser_state_skip = FLD._cnf_parser_state_skip,
-    $_config_error_errmsg_errormsg = FLD._config_error_errmsg_errormsg,
-    $_config_error_errmsg_next = FLD._config_error_errmsg_next,
-    $_config_error_frame_fromfile = FLD._config_error_frame_fromfile,
-    $_config_error_frame_next = FLD._config_error_frame_next,
-    $_config_error_frame_num_errors = FLD._config_error_frame_num_errors,
-    $_config_error_frame_origline = FLD._config_error_frame_origline,
-    $_config_error_frame_origline_shown = FLD._config_error_frame_origline_shown,
-    $_config_error_frame_secure = FLD._config_error_frame_secure,
-    $_config_error_frame_source = FLD._config_error_frame_source, $flag_initrole = FLD.flag_initrole,
-    $flag_suppress_alert = FLD.flag_suppress_alert, $instance_flags_in_lua = FLD.instance_flags_in_lua,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_parse_config_file_src = FLD.instance_flags_parse_config_file_src,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_globals_c_catname = FLD.instance_globals_c_catname,
-    $instance_globals_c_cmdline_rcfile = FLD.instance_globals_c_cmdline_rcfile,
-    $instance_globals_c_config_section_chosen = FLD.instance_globals_c_config_section_chosen,
-    $instance_globals_c_config_section_current = FLD.instance_globals_c_config_section_current,
-    $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
-    $instance_globals_d_dogname = FLD.instance_globals_d_dogname,
-    $instance_globals_n_no_sound_notified = FLD.instance_globals_n_no_sound_notified,
-    $instance_globals_o_opt_phase = FLD.instance_globals_o_opt_phase,
-    $instance_globals_o_ov_primary_syms = FLD.instance_globals_o_ov_primary_syms,
-    $instance_globals_w_wizkit = FLD.instance_globals_w_wizkit,
-    $match_config_line_stmt_fn = FLD.match_config_line_stmt_fn,
-    $match_config_line_stmt_len = FLD.match_config_line_stmt_len,
-    $match_config_line_stmt_origbuf = FLD.match_config_line_stmt_origbuf,
-    $match_config_line_stmt_syscnf_only = FLD.match_config_line_stmt_syscnf_only,
-    $sinfo_config_error_ready = FLD.sinfo_config_error_ready,
-    $sizeof_match_config_line_stmt = FLD.sizeof_match_config_line_stmt, $strbuf_str = FLD.strbuf_str,
-    $sysopt_s_accessibility = FLD.sysopt_s_accessibility, $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools,
-    $sysopt_s_check_plname = FLD.sysopt_s_check_plname,
-    $sysopt_s_check_save_uid = FLD.sysopt_s_check_save_uid,
-    $sysopt_s_crashreporturl = FLD.sysopt_s_crashreporturl, $sysopt_s_debugfiles = FLD.sysopt_s_debugfiles,
-    $sysopt_s_entrymax = FLD.sysopt_s_entrymax, $sysopt_s_env_dbgfl = FLD.sysopt_s_env_dbgfl,
-    $sysopt_s_explorers = FLD.sysopt_s_explorers, $sysopt_s_fmtd_wizard_list = FLD.sysopt_s_fmtd_wizard_list,
-    $sysopt_s_gdbpath = FLD.sysopt_s_gdbpath, $sysopt_s_genericusers = FLD.sysopt_s_genericusers,
-    $sysopt_s_greppath = FLD.sysopt_s_greppath, $sysopt_s_hideusage = FLD.sysopt_s_hideusage,
-    $sysopt_s_livelog = FLD.sysopt_s_livelog, $sysopt_s_maxplayers = FLD.sysopt_s_maxplayers,
-    $sysopt_s_msghandler = FLD.sysopt_s_msghandler, $sysopt_s_panictrace_gdb = FLD.sysopt_s_panictrace_gdb,
-    $sysopt_s_panictrace_libc = FLD.sysopt_s_panictrace_libc,
-    $sysopt_s_pers_is_uid = FLD.sysopt_s_pers_is_uid, $sysopt_s_persmax = FLD.sysopt_s_persmax,
-    $sysopt_s_pointsmin = FLD.sysopt_s_pointsmin, $sysopt_s_recover = FLD.sysopt_s_recover,
-    $sysopt_s_seduce = FLD.sysopt_s_seduce, $sysopt_s_shellers = FLD.sysopt_s_shellers,
-    $sysopt_s_tt_oname_maxrank = FLD.sysopt_s_tt_oname_maxrank, $sysopt_s_wizards = FLD.sysopt_s_wizards,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
+      $_cnf_parser_state_cont = FLD._cnf_parser_state_cont,
+      $_cnf_parser_state_ep = FLD._cnf_parser_state_ep,
+      $_cnf_parser_state_inbufsz = FLD._cnf_parser_state_inbufsz,
+      $_cnf_parser_state_morelines = FLD._cnf_parser_state_morelines,
+      $_cnf_parser_state_pbreak = FLD._cnf_parser_state_pbreak,
+      $_cnf_parser_state_rv = FLD._cnf_parser_state_rv,
+      $_cnf_parser_state_skip = FLD._cnf_parser_state_skip,
+      $_config_error_errmsg_errormsg = FLD._config_error_errmsg_errormsg,
+      $_config_error_errmsg_next = FLD._config_error_errmsg_next,
+      $_config_error_frame_fromfile = FLD._config_error_frame_fromfile,
+      $_config_error_frame_next = FLD._config_error_frame_next,
+      $_config_error_frame_num_errors = FLD._config_error_frame_num_errors,
+      $_config_error_frame_origline = FLD._config_error_frame_origline,
+      $_config_error_frame_origline_shown = FLD._config_error_frame_origline_shown,
+      $_config_error_frame_secure = FLD._config_error_frame_secure,
+      $_config_error_frame_source = FLD._config_error_frame_source,
+      $flag_initrole = FLD.flag_initrole, $flag_suppress_alert = FLD.flag_suppress_alert,
+      $instance_flags_in_lua = FLD.instance_flags_in_lua,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_parse_config_file_src = FLD.instance_flags_parse_config_file_src,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_globals_c_catname = FLD.instance_globals_c_catname,
+      $instance_globals_c_cmdline_rcfile = FLD.instance_globals_c_cmdline_rcfile,
+      $instance_globals_c_config_section_chosen = FLD.instance_globals_c_config_section_chosen,
+      $instance_globals_c_config_section_current = FLD.instance_globals_c_config_section_current,
+      $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
+      $instance_globals_d_dogname = FLD.instance_globals_d_dogname,
+      $instance_globals_n_no_sound_notified = FLD.instance_globals_n_no_sound_notified,
+      $instance_globals_o_opt_phase = FLD.instance_globals_o_opt_phase,
+      $instance_globals_o_ov_primary_syms = FLD.instance_globals_o_ov_primary_syms,
+      $instance_globals_w_wizkit = FLD.instance_globals_w_wizkit,
+      $match_config_line_stmt_fn = FLD.match_config_line_stmt_fn,
+      $match_config_line_stmt_len = FLD.match_config_line_stmt_len,
+      $match_config_line_stmt_origbuf = FLD.match_config_line_stmt_origbuf,
+      $match_config_line_stmt_syscnf_only = FLD.match_config_line_stmt_syscnf_only,
+      $sinfo_config_error_ready = FLD.sinfo_config_error_ready,
+      $sizeof_match_config_line_stmt = FLD.sizeof_match_config_line_stmt,
+      $strbuf_str = FLD.strbuf_str, $sysopt_s_accessibility = FLD.sysopt_s_accessibility,
+      $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools,
+      $sysopt_s_check_plname = FLD.sysopt_s_check_plname,
+      $sysopt_s_check_save_uid = FLD.sysopt_s_check_save_uid,
+      $sysopt_s_crashreporturl = FLD.sysopt_s_crashreporturl,
+      $sysopt_s_debugfiles = FLD.sysopt_s_debugfiles, $sysopt_s_entrymax = FLD.sysopt_s_entrymax,
+      $sysopt_s_env_dbgfl = FLD.sysopt_s_env_dbgfl, $sysopt_s_explorers = FLD.sysopt_s_explorers,
+      $sysopt_s_fmtd_wizard_list = FLD.sysopt_s_fmtd_wizard_list,
+      $sysopt_s_gdbpath = FLD.sysopt_s_gdbpath, $sysopt_s_genericusers = FLD.sysopt_s_genericusers,
+      $sysopt_s_greppath = FLD.sysopt_s_greppath, $sysopt_s_hideusage = FLD.sysopt_s_hideusage,
+      $sysopt_s_livelog = FLD.sysopt_s_livelog, $sysopt_s_maxplayers = FLD.sysopt_s_maxplayers,
+      $sysopt_s_msghandler = FLD.sysopt_s_msghandler,
+      $sysopt_s_panictrace_gdb = FLD.sysopt_s_panictrace_gdb,
+      $sysopt_s_panictrace_libc = FLD.sysopt_s_panictrace_libc,
+      $sysopt_s_pers_is_uid = FLD.sysopt_s_pers_is_uid, $sysopt_s_persmax = FLD.sysopt_s_persmax,
+      $sysopt_s_pointsmin = FLD.sysopt_s_pointsmin, $sysopt_s_recover = FLD.sysopt_s_recover,
+      $sysopt_s_seduce = FLD.sysopt_s_seduce, $sysopt_s_shellers = FLD.sysopt_s_shellers,
+      $sysopt_s_tt_oname_maxrank = FLD.sysopt_s_tt_oname_maxrank,
+      $sysopt_s_wizards = FLD.sysopt_s_wizards,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_nethackrc = cptr.lit(".nethackrc");
@@ -284,7 +295,12 @@ export function do_write_config_file() {
    if may be used in option reject messages */
 /** C ref: cfgfiles.c:216 — @param {CPtr<char>} fname */
 export function set_configfile_name(fname) {
-    void __builtin___strncpy_chk(cptr.decay(configfile), fname, 255n, __builtin_object_size(cptr.decay(configfile), 1));
+    void __builtin___strncpy_chk(
+        cptr.decay(configfile),
+        fname,
+        255n,
+        __builtin_object_size(cptr.decay(configfile), 1)
+    );
     cptr.st1o(cptr.decay(configfile), 255n, 0, 1);
 }
 
@@ -309,10 +325,19 @@ function fopen_config_file(filename, src) {
      */
     if (filename && cptr.ld1s(filename)) {
         set_configfile_name(filename);
-        if (!cptr.strncmp(cptr.decay(configfile), __s_tilde_slash, 2n) && (envp = nh_getenv(__s_home)) !== null) {
+        if (!cptr.strncmp(cptr.decay(configfile), __s_tilde_slash, 2n) &&
+                (envp = nh_getenv(__s_home)) !== null) {
             /* support for command line '--nethackrc=~/path' (or for
                NETHACKOPTIONS='@~/path'; we don't support ~user/path) */
-            nh_snprintf(__s_fopen_config_file, 251, cptr.decay(tmp_config), 256n, __s_s_s, envp, cptr.add(cptr.decay(configfile), 2));
+            nh_snprintf(
+                __s_fopen_config_file,
+                251,
+                cptr.decay(tmp_config),
+                256n,
+                __s_s_s,
+                envp,
+                cptr.add(cptr.decay(configfile), 2)
+            );
             set_configfile_name(cptr.decay(tmp_config));
         }
         if (access(cptr.decay(configfile), 4) == -1) {
@@ -329,7 +354,11 @@ function fopen_config_file(filename, src) {
             return fp;
         } else {
             /* access() above probably caught most problems for UNIX */
-            raw_printf(__s_couldn_t_open_requested_config_file_s_d, cptr.decay(configfile), (cptr.ldI32(__error())));
+            raw_printf(
+                __s_couldn_t_open_requested_config_file_s_d,
+                cptr.decay(configfile),
+                (cptr.ldI32(__error()))
+            );
             wait_synch()();
         }
     }
@@ -349,12 +378,28 @@ function fopen_config_file(filename, src) {
         let alt_config = new Uint8Array(256);
 
         /* OSX-style configuration settings */
-        nh_snprintf(__s_fopen_config_file, 338, cptr.decay(alt_config), 256n, __s_s_s, envp, __s_library_preferences_nethack_defaults);
+        nh_snprintf(
+            __s_fopen_config_file,
+            338,
+            cptr.decay(alt_config),
+            256n,
+            __s_s_s,
+            envp,
+            __s_library_preferences_nethack_defaults
+        );
         set_configfile_name(cptr.decay(alt_config));
         if ((fp = fopen(cptr.decay(configfile), __s_r)) !== null)
             return fp;
         /* may be easier for user to edit if filename has '.txt' suffix */
-        nh_snprintf(__s_fopen_config_file, 344, cptr.decay(alt_config), 256n, __s_s_s, envp, __s_library_preferences_nethack_defaults_txt);
+        nh_snprintf(
+            __s_fopen_config_file,
+            344,
+            cptr.decay(alt_config),
+            256n,
+            __s_s_s,
+            envp,
+            __s_library_preferences_nethack_defaults_txt
+        );
         set_configfile_name(cptr.decay(alt_config));
         if ((fp = fopen(cptr.decay(configfile), __s_r)) !== null)
             return fp;
@@ -369,7 +414,12 @@ function fopen_config_file(filename, src) {
         let details;
         if ((details = strerror((cptr.ldI32(__error())))) === null)
             details = __s_empty;
-        raw_printf(__s_couldn_t_open_default_config_file_s_s_d, cptr.decay(configfile), details, (cptr.ldI32(__error())));
+        raw_printf(
+            __s_couldn_t_open_default_config_file_s_s_d,
+            cptr.decay(configfile),
+            details,
+            (cptr.ldI32(__error()))
+        );
         wait_synch()();
     }
     return null;
@@ -381,7 +431,15 @@ function fopen_config_file(filename, src) {
  * NOTE: zeros are inserted unless modlist is TRUE, in which case the list
  *  location is unchanged.  Callers must handle zeros if modlist is FALSE.
  */
-/** C ref: cfgfiles.c:381 — @param {CPtr<char>} bufp @param {CPtr<uchar>} list @param {CInt} modlist @param {CInt} size @param {CPtr<char>} name @returns {CInt} */
+/**
+ * C ref: cfgfiles.c:381
+ * @param {CPtr<char>} bufp
+ * @param {CPtr<uchar>} list
+ * @param {CInt} modlist
+ * @param {CInt} size
+ * @param {CPtr<char>} name
+ * @returns {CInt}
+ */
 function get_uchars(bufp, list, modlist, size, name) {
     let num = 0;
     let count = 0;
@@ -522,7 +580,8 @@ function handle_config_section(buf) {
 
     if (sect) {
         if (cptr.ldPtro(gc, $instance_globals_c_config_section_current))
-            cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_current)), cptr.stPtro(gc, $instance_globals_c_config_section_current, null);
+            cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_current)),
+                    cptr.stPtro(gc, $instance_globals_c_config_section_current, null);
         /* is_config_section() removed brackets from 'sect' */
         if (!cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)) {
             config_error_add(__s_section_s_without_choose, sect);
@@ -533,7 +592,10 @@ function handle_config_section(buf) {
             {
                 if (debugcore(__s_cfgfiles_c, 1)) {
                     let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                    pline(__s_set_config_section_s, cptr.ldPtro(gc, $instance_globals_c_config_section_current));
+                    pline(
+                        __s_set_config_section_s,
+                        cptr.ldPtro(gc, $instance_globals_c_config_section_current)
+                    );
                     cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                 }
             }
@@ -553,7 +615,10 @@ function handle_config_section(buf) {
     if (cptr.ldPtro(gc, $instance_globals_c_config_section_current)) {
         if (!cptr.ldPtro(gc, $instance_globals_c_config_section_chosen))
             return 1;
-        if (strcmp(cptr.ldPtro(gc, $instance_globals_c_config_section_current), cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)))
+        if (strcmp(
+            cptr.ldPtro(gc, $instance_globals_c_config_section_current),
+            cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)
+        ))
             return 1;
     }
     return 0;
@@ -674,13 +739,23 @@ function cnf_line_ROLE(bufp) {
 
 /** C ref: cfgfiles.c:778 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_dogname(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gd, $instance_globals_d_dogname), bufp, 62n, __builtin_object_size(cptr.add(gd, $instance_globals_d_dogname), 1));
+    void __builtin___strncpy_chk(
+        cptr.add(gd, $instance_globals_d_dogname),
+        bufp,
+        62n,
+        __builtin_object_size(cptr.add(gd, $instance_globals_d_dogname), 1)
+    );
     return 1;
 }
 
 /** C ref: cfgfiles.c:785 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_catname(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gc, $instance_globals_c_catname), bufp, 62n, __builtin_object_size(cptr.add(gc, $instance_globals_c_catname), 1));
+    void __builtin___strncpy_chk(
+        cptr.add(gc, $instance_globals_c_catname),
+        bufp,
+        62n,
+        __builtin_object_size(cptr.add(gc, $instance_globals_c_catname), 1)
+    );
     return 1;
 }
 
@@ -689,13 +764,18 @@ function cnf_line_WIZARDS(bufp) {
     if (cptr.ldPtro(sysopt, $sysopt_s_wizards))
         cptr.free(cptr.ldPtro(sysopt, $sysopt_s_wizards));
     cptr.stPtro(sysopt, $sysopt_s_wizards, dupstr(bufp));
-    if (cptr.strlen(cptr.ldPtro(sysopt, $sysopt_s_wizards)) && strcmp(cptr.ldPtro(sysopt, $sysopt_s_wizards), __s_star)) {
+    if (cptr.strlen(cptr.ldPtro(sysopt, $sysopt_s_wizards)) &&
+            strcmp(cptr.ldPtro(sysopt, $sysopt_s_wizards), __s_star)) {
         /* pre-format WIZARDS list now; it's displayed during a panic
            and since that panic might be due to running out of memory,
            we don't want to risk attempting to allocate any memory then */
         if (cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list))
             cptr.free(cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list));
-        cptr.stPtro(sysopt, $sysopt_s_fmtd_wizard_list, build_english_list(cptr.ldPtro(sysopt, $sysopt_s_wizards)));
+        cptr.stPtro(
+            sysopt,
+            $sysopt_s_fmtd_wizard_list,
+            build_english_list(cptr.ldPtro(sysopt, $sysopt_s_wizards))
+        );
     }
     return 1;
 }
@@ -983,7 +1063,19 @@ function cnf_line_PORTABLE_DEVICE_PATHS(bufp) {
 
 /** C ref: cfgfiles.c:1156 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_BOULDER(bufp) {
-    void get_uchars(bufp, cptr.add(cptr.add(go, $instance_globals_o_ov_primary_syms), ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1), 1, 1, __s_boulder);
+    void get_uchars(
+        bufp,
+        cptr.add(
+            cptr.add(go, $instance_globals_o_ov_primary_syms),
+            ((NHC.SYM_BOULDER +
+                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+            1
+        ),
+        1,
+        1,
+        __s_boulder
+    );
     return 1;
 }
 
@@ -1029,7 +1121,12 @@ function cnf_line_SYMBOLS(bufp) {
 
 /** C ref: cfgfiles.c:1214 — @param {CPtr<char>} bufp @returns {CInt} */
 function cnf_line_WIZKIT(bufp) {
-    void __builtin___strncpy_chk(cptr.add(gw, $instance_globals_w_wizkit), bufp, 127n, __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1));
+    void __builtin___strncpy_chk(
+        cptr.add(gw, $instance_globals_w_wizkit),
+        bufp,
+        127n,
+        __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1)
+    );
     return 1;
 }
 
@@ -1059,7 +1156,10 @@ function cnf_line_QT_COMPACT(bufp) {
 
 /** C ref: cfgfiles.c:1294 — typedef config_line_stmt_func (type alias only, no runtime output) */
 
-/** C ref: cfgfiles.c:1303 — struct match_config_line_stmt { name, len, syscnf_only, origbuf, fn } (memory model v0.5) */
+/**
+ * C ref: cfgfiles.c:1303 — struct match_config_line_stmt { name, len, syscnf_only, origbuf, fn }
+ *     (memory model v0.5)
+ */
 
 /** C ref: cfgfiles.c:1309 — struct match_config_line_stmt[59] */
 const config_line_stmt = cptr.alloc(59 * $sizeof_match_config_line_stmt);
@@ -1372,7 +1472,12 @@ export function parse_config_line(origbuf) {
 
     while (cptr.ld1s(origbuf) == 32 || cptr.ld1s(origbuf) == 9)
         origbuf = cptr.add(origbuf, 1);  /* (caller probably already did this) */
-    void __builtin___strncpy_chk(cptr.decay(buf), origbuf, 1023n, __builtin_object_size(cptr.decay(buf), 1));
+    void __builtin___strncpy_chk(
+        cptr.decay(buf),
+        origbuf,
+        1023n,
+        __builtin_object_size(cptr.decay(buf), 1)
+    );
     cptr.st1o(cptr.decay(buf), 1023n, 0, 1);  /* strncpy not guaranteed to NUL terminate */
     /* convert any tab to space, condense consecutive spaces into one,
        remove leading and trailing spaces (exception: if there is nothing
@@ -1392,13 +1497,41 @@ export function parse_config_line(origbuf) {
         bufp = cptr.add(bufp, 1);
 
     for (i = 0; i < 59; i++) {
-        if (cptr.ld1so2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_syscnf_only) && !in_sysconf)
+        if (cptr.ld1so2(
+            config_line_stmt,
+            i,
+            $sizeof_match_config_line_stmt,
+            $match_config_line_stmt_syscnf_only
+        ) &&
+                !in_sysconf)
             continue;
-        if (match_optname(cptr.decay(buf), cptr.ldPtro(config_line_stmt, i, $sizeof_match_config_line_stmt), cptr.ldI32o2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_len), 1)) {
-            let parm = cptr.ld1so2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_origbuf) ? origbuf : bufp;
+        if (match_optname(
+            cptr.decay(buf),
+            cptr.ldPtro(config_line_stmt, i, $sizeof_match_config_line_stmt),
+            cptr.ldI32o2(
+                config_line_stmt,
+                i,
+                $sizeof_match_config_line_stmt,
+                $match_config_line_stmt_len
+            ),
+            1
+        )) {
+            let parm = cptr.ld1so2(
+                config_line_stmt,
+                i,
+                $sizeof_match_config_line_stmt,
+                $match_config_line_stmt_origbuf
+            )
+                    ? origbuf
+                    : bufp;
 
             if (!cptr.ld1so(cptr.decay(disregarded_config_lines), i, 1))
-                return cptr.ldPtro2(config_line_stmt, i, $sizeof_match_config_line_stmt, $match_config_line_stmt_fn)(parm);
+                return cptr.ldPtro2(
+                    config_line_stmt,
+                    i,
+                    $sizeof_match_config_line_stmt,
+                    $match_config_line_stmt_fn
+                )(parm);
         }
     }
 
@@ -1407,9 +1540,15 @@ export function parse_config_line(origbuf) {
     return 0;
 }
 
-/** C ref: cfgfiles.c:1449 — struct _config_error_errmsg { line_num, errormsg, next } (memory model v0.5) */
+/**
+ * C ref: cfgfiles.c:1449 — struct _config_error_errmsg { line_num, errormsg, next } (memory model
+ *     v0.5)
+ */
 
-/** C ref: cfgfiles.c:1455 — struct _config_error_frame { line_num, num_errors, origline_shown, fromfile, secure, origline, source, next } (memory model v0.5) */
+/**
+ * C ref: cfgfiles.c:1455 — struct _config_error_frame { line_num, num_errors, origline_shown,
+ *     fromfile, secure, origline, source, next } (memory model v0.5)
+ */
 
 /** C ref: cfgfiles.c:1466 — struct _config_error_frame * */
 let config_error_data = null;
@@ -1417,7 +1556,12 @@ let config_error_data = null;
 /** C ref: cfgfiles.c:1467 — struct _config_error_errmsg * */
 let config_error_msg = null;
 
-/** C ref: cfgfiles.c:1470 — @param {CInt} from_file @param {CPtr<char>} sourcename @param {CInt} secure */
+/**
+ * C ref: cfgfiles.c:1470
+ * @param {CInt} from_file
+ * @param {CPtr<char>} sourcename
+ * @param {CInt} secure
+ */
 export function config_error_init(from_file, sourcename, secure) {
     let tmp = alloc(1304);
 
@@ -1428,7 +1572,12 @@ export function config_error_init(from_file, sourcename, secure) {
     cptr.st1o(tmp, $_config_error_frame_secure, secure);
     cptr.st1o2(tmp, 0, 1, $_config_error_frame_origline, 0);
     if (sourcename && cptr.ld1so(sourcename, 0)) {
-        void __builtin___strncpy_chk(cptr.add(tmp, $_config_error_frame_source), sourcename, 255n, __builtin_object_size(cptr.add(tmp, $_config_error_frame_source), 1));
+        void __builtin___strncpy_chk(
+            cptr.add(tmp, $_config_error_frame_source),
+            sourcename,
+            255n,
+            __builtin_object_size(cptr.add(tmp, $_config_error_frame_source), 1)
+        );
         cptr.st1o2(tmp, 255n, 1, $_config_error_frame_source, 0);
     } else
         cptr.st1o2(tmp, 0, 1, $_config_error_frame_source, 0);
@@ -1445,13 +1594,19 @@ function config_error_nextline(line) {
     if (!ced)
         return 0;
 
-    if (cptr.ldI32o(ced, $_config_error_frame_num_errors) && cptr.ld1so(ced, $_config_error_frame_secure))
+    if (cptr.ldI32o(ced, $_config_error_frame_num_errors) &&
+            cptr.ld1so(ced, $_config_error_frame_secure))
         return 0;
 
     (cptr.stI32(ced, cptr.ldI32(ced) + 1)) - (1);
     cptr.st1o(ced, $_config_error_frame_origline_shown, 0);
     if (line && cptr.ld1so(line, 0)) {
-        void __builtin___strncpy_chk(cptr.add(ced, $_config_error_frame_origline), line, 1023n, __builtin_object_size(cptr.add(ced, $_config_error_frame_origline), 1));
+        void __builtin___strncpy_chk(
+            cptr.add(ced, $_config_error_frame_origline),
+            line,
+            1023n,
+            __builtin_object_size(cptr.add(ced, $_config_error_frame_origline), 1)
+        );
         cptr.st1o2(ced, 1023n, 1, $_config_error_frame_origline, 0);
     } else
         cptr.st1o2(ced, 0, 1, $_config_error_frame_origline, 0);
@@ -1501,7 +1656,12 @@ export function config_erradd(buf) {
     if (!cptr.ldI32o(program_state, $sinfo_config_error_ready)) {
         /* either very early, where pline() will use raw_print(), or
            player gave bad value when prompted by interactive 'O' command */
-        pline(__s_s_s_s, !cptr.ld1so(iflags, $instance_flags_window_inited) ? __s_config_error_add : __s_empty, buf, punct);
+        pline(
+            __s_s_s_s,
+            !cptr.ld1so(iflags, $instance_flags_window_inited) ? __s_config_error_add : __s_empty,
+            buf,
+            punct
+        );
         wait_synch()();
         return;
     }
@@ -1516,17 +1676,30 @@ export function config_erradd(buf) {
         return;
     }
 
-    (cptr.stI32o(config_error_data, $_config_error_frame_num_errors, cptr.ldI32o(config_error_data, $_config_error_frame_num_errors) + 1)) - (1);
-    if (!cptr.ld1so(config_error_data, $_config_error_frame_origline_shown) && !cptr.ld1so(config_error_data, $_config_error_frame_secure)) {
+    (cptr.stI32o(
+        config_error_data,
+        $_config_error_frame_num_errors,
+        cptr.ldI32o(config_error_data, $_config_error_frame_num_errors) + 1
+    )) -
+            (1);
+    if (!cptr.ld1so(config_error_data, $_config_error_frame_origline_shown) &&
+            !cptr.ld1so(config_error_data, $_config_error_frame_secure)) {
         pline(__s_nl_pct_s, cptr.add(config_error_data, $_config_error_frame_origline));
         cptr.st1o(config_error_data, $_config_error_frame_origline_shown, 1);
     }
-    if (cptr.ldI32(config_error_data) > 0 && !cptr.ld1so(config_error_data, $_config_error_frame_secure)) {
+    if (cptr.ldI32(config_error_data) > 0 &&
+            !cptr.ld1so(config_error_data, $_config_error_frame_secure)) {
         void cptr.sprintf(cptr.decay(lineno), __s_line_d, cptr.ldI32(config_error_data));
     } else
         cptr.st1o(cptr.decay(lineno), 0, 0, 1);
 
-    pline(__s_s_s_s_s, cptr.ld1so(config_error_data, $_config_error_frame_secure) ? __s_error__2 : __s_sp_star, cptr.decay(lineno), buf, punct);
+    pline(
+        __s_s_s_s_s,
+        cptr.ld1so(config_error_data, $_config_error_frame_secure) ? __s_error__2 : __s_sp_star,
+        cptr.decay(lineno),
+        buf,
+        punct
+    );
 }
 
 /** C ref: cfgfiles.c:1592 @returns {CInt} */
@@ -1545,9 +1718,20 @@ export function config_error_done() {
         cptr.stI32o(gn, $instance_globals_n_no_sound_notified, 0);
     }
     if (n) {
-        let cmdline = schar((!strcmp(cptr.add(config_error_data, $_config_error_frame_source), __s_command_line)));
+        let cmdline = schar((!strcmp(
+            cptr.add(config_error_data, $_config_error_frame_source),
+            __s_command_line
+        )));
 
-        pline(__s_d_error_s_s_s, n, (((n) == 1) ? __s_empty : __s_s), cmdline ? __s_on : __s_in, cptr.ld1so(config_error_data, $_config_error_frame_source) ? cptr.add(config_error_data, $_config_error_frame_source) : cptr.decay(configfile));
+        pline(
+            __s_d_error_s_s_s,
+            n,
+            (((n) == 1) ? __s_empty : __s_s),
+            cmdline ? __s_on : __s_in,
+            cptr.ld1so(config_error_data, $_config_error_frame_source)
+                ? cptr.add(config_error_data, $_config_error_frame_source)
+                : cptr.decay(configfile)
+        );
         wait_synch()();
     }
     config_error_data = cptr.ldPtro(tmp, $_config_error_frame_next);
@@ -1577,7 +1761,10 @@ export function read_config_file(filename, src) {
     return rv;
 }
 
-/** C ref: cfgfiles.c:1649 — struct _cnf_parser_state { inbuf, inbufsz, rv, ep, buf, skip, morelines, cont, pbreak } (memory model v0.5) */
+/**
+ * C ref: cfgfiles.c:1649 — struct _cnf_parser_state { inbuf, inbufsz, rv, ep, buf, skip, morelines,
+ *     cont, pbreak } (memory model v0.5)
+ */
 
 /* Initialize config parser data */
 /** C ref: cfgfiles.c:1662 — @param {CPtr<struct _cnf_parser_state>} parser */
@@ -1590,7 +1777,12 @@ function cnf_parser_init(parser) {
     cptr.stPtr(parser, alloc(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz)));
     cptr.st1o(parser, $_cnf_parser_state_cont, 0);
     cptr.st1o(parser, $_cnf_parser_state_pbreak, 0);
-    __builtin___memset_chk(cptr.ldPtr(parser), 0, BigInt(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0), __builtin_object_size(cptr.ldPtr(parser), 0));
+    __builtin___memset_chk(
+        cptr.ldPtr(parser),
+        0,
+        BigInt(cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) >>> 0),
+        __builtin_object_size(cptr.ldPtr(parser), 0)
+    );
 }
 
 /* caller has finished with 'parser' (except for 'rv' so leave that intact) */
@@ -1600,7 +1792,8 @@ function cnf_parser_done(parser) {
     if (cptr.ldPtr(parser))
         cptr.free(cptr.ldPtr(parser)), cptr.stPtr(parser, null);
     if (cptr.ldPtro(parser, $_cnf_parser_state_buf))
-        cptr.free(cptr.ldPtro(parser, $_cnf_parser_state_buf)), cptr.stPtro(parser, $_cnf_parser_state_buf, null);
+        cptr.free(cptr.ldPtro(parser, $_cnf_parser_state_buf)),
+                cptr.stPtro(parser, $_cnf_parser_state_buf, null);
 }
 
 /*
@@ -1619,7 +1812,8 @@ function parse_conf_buf(p, proc) {
             cptr.st1o(p, $_cnf_parser_state_skip, 0);  /* found newline; next line is normal */
     } else {
         if (!cptr.ldPtro(p, $_cnf_parser_state_ep)) {
-            if (cptr.strlen(cptr.ldPtr(p)) < BigInt(((cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 2) >>> 0) >>> 0)) {
+            if (cptr.strlen(cptr.ldPtr(p)) <
+                    BigInt(((cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 2) >>> 0) >>> 0)) {
                 /* likely the last line of file is just
                    missing a newline; process it anyway  */
                 cptr.stPtro(p, $_cnf_parser_state_ep, eos(cptr.ldPtr(p)));
@@ -1637,28 +1831,56 @@ function parse_conf_buf(p, proc) {
             let oldline = 0;
 
             /* line continuation (trailing '\') */
-            cptr.st1o(p, $_cnf_parser_state_morelines, schar((cptr.cmp(cptr.predec(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }), cptr.ldPtr(p)) >= 0 && cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 92 ? 1 : 0)));
+            cptr.st1o(
+                p,
+                $_cnf_parser_state_morelines,
+                schar((cptr.cmp(
+                    cptr.predec(
+                        () => cptr.ldPtro(p, $_cnf_parser_state_ep),
+                        (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }
+                    ),
+                    cptr.ldPtr(p)
+                ) >= 0 &&
+                    cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 92
+                    ? 1
+                    : 0))
+            );
             if (cptr.ld1so(p, $_cnf_parser_state_morelines))
                 cptr.st1(cptr.ldPtro(p, $_cnf_parser_state_ep), 0);
 
             /* trim off spaces at end of line */
-            while (cptr.cmp(cptr.ldPtro(p, $_cnf_parser_state_ep), cptr.ldPtr(p)) >= 0 && (cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 32 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 9 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 13))
-                cptr.st1(cptr.postdec(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }), 0);
+            while (cptr.cmp(cptr.ldPtro(p, $_cnf_parser_state_ep), cptr.ldPtr(p)) >= 0 &&
+                    (cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 32 ||
+                        cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 9 ||
+                        cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 13))
+                cptr.st1(
+                    cptr.postdec(
+                        () => cptr.ldPtro(p, $_cnf_parser_state_ep),
+                        (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }
+                    ),
+                    0
+                );
 
             if (!config_error_nextline(cptr.ldPtr(p))) {
                 cptr.stI32o(p, $_cnf_parser_state_rv, 0);
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf))
-                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
+                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)),
+                            cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 cptr.st1o(p, $_cnf_parser_state_pbreak, 1);
                 return;
             }
 
             cptr.stPtro(p, $_cnf_parser_state_ep, cptr.ldPtr(p));
-            while (cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 32 || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 9)
-                cptr.preinc(() => cptr.ldPtro(p, $_cnf_parser_state_ep), (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); });
+            while (cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 32 ||
+                    cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 9)
+                cptr.preinc(
+                    () => cptr.ldPtro(p, $_cnf_parser_state_ep),
+                    (v) => { cptr.stPtro(p, $_cnf_parser_state_ep, v); }
+                );
 
             /* ignore empty lines and full-line comment lines */
-            if (!cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) || cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 35)
+            if (!cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) ||
+                    cptr.ld1s(cptr.ldPtro(p, $_cnf_parser_state_ep)) == 35)
                 ignoreline = 1;
 
             if (cptr.ldPtro(p, $_cnf_parser_state_buf))
@@ -1666,25 +1888,48 @@ function parse_conf_buf(p, proc) {
 
             /* merge now read line with previous ones, if necessary */
             if (!ignoreline) {
-                len = (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_ep)))) + 1) | 0;  /* +1: final '\0' */
+                len = (Number(BigInt.asIntN(
+                    32,
+                    cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_ep))
+                )) + 1) |
+                        0;  /* +1: final '\0' */
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf))
-                    len = (len + ((Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)))) + 1) | 0)) | 0;  /* +1: space */
+                    len = (len +
+                        ((Number(BigInt.asIntN(
+                            32,
+                            cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf))
+                        )) + 1) | 0)) |
+                            0;  /* +1: space */
                 tmpbuf = alloc(len >>> 0);
                 cptr.st1(tmpbuf, 0);
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf)) {
-                    void cptr.strcat(cptr.strcpy(tmpbuf, cptr.ldPtro(p, $_cnf_parser_state_buf)), __s_sp);
-                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
+                    void cptr.strcat(
+                        cptr.strcpy(tmpbuf, cptr.ldPtro(p, $_cnf_parser_state_buf)),
+                        __s_sp
+                    );
+                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)),
+                            cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 }
-                cptr.stPtro(p, $_cnf_parser_state_buf, cptr.strcat(tmpbuf, cptr.ldPtro(p, $_cnf_parser_state_ep)));
-                if (cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)) >= BigInt(cptr.ldI32o(p, $_cnf_parser_state_inbufsz) >>> 0))
-                    cptr.st1o(cptr.ldPtro(p, $_cnf_parser_state_buf), (cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 1) >>> 0, 0);
+                cptr.stPtro(
+                    p,
+                    $_cnf_parser_state_buf,
+                    cptr.strcat(tmpbuf, cptr.ldPtro(p, $_cnf_parser_state_ep))
+                );
+                if (cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf)) >=
+                        BigInt(cptr.ldI32o(p, $_cnf_parser_state_inbufsz) >>> 0))
+                    cptr.st1o(
+                        cptr.ldPtro(p, $_cnf_parser_state_buf),
+                        (cptr.ldI32o(p, $_cnf_parser_state_inbufsz) - 1) >>> 0,
+                        0
+                    );
             }
 
             if (cptr.ld1so(p, $_cnf_parser_state_morelines) || (ignoreline && !oldline))
                 return;
 
             if (handle_config_section(cptr.ldPtro(p, $_cnf_parser_state_buf))) {
-                cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
+                cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)),
+                        cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 return;
             }
 
@@ -1697,12 +1942,14 @@ function parse_conf_buf(p, proc) {
                 if (!bufp) {
                     config_error_add(__s_format_is_choose_section1_section2);
                     cptr.stI32o(p, $_cnf_parser_state_rv, 0);
-                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
+                    cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)),
+                            cptr.stPtro(p, $_cnf_parser_state_buf, null);
                     return;
                 }
                 bufp = cptr.add(bufp, 1);
                 if (cptr.ldPtro(gc, $instance_globals_c_config_section_chosen))
-                    cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)), cptr.stPtro(gc, $instance_globals_c_config_section_chosen, null);
+                    cptr.free(cptr.ldPtro(gc, $instance_globals_c_config_section_chosen)),
+                            cptr.stPtro(gc, $instance_globals_c_config_section_chosen, null);
                 section = choose_random_part(bufp, 44);
                 if (section) {
                     cptr.stPtro(gc, $instance_globals_c_config_section_chosen, dupstr(section));
@@ -1710,14 +1957,16 @@ function parse_conf_buf(p, proc) {
                     config_error_add(__s_no_config_section_to_choose);
                     cptr.stI32o(p, $_cnf_parser_state_rv, 0);
                 }
-                cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
+                cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)),
+                        cptr.stPtro(p, $_cnf_parser_state_buf, null);
                 return;
             }
 
             if (!(proc)(cptr.ldPtro(p, $_cnf_parser_state_buf)))
                 cptr.stI32o(p, $_cnf_parser_state_rv, 0);
 
-            cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)), cptr.stPtro(p, $_cnf_parser_state_buf, null);
+            cptr.free(cptr.ldPtro(p, $_cnf_parser_state_buf)),
+                    cptr.stPtro(p, $_cnf_parser_state_buf, null);
         }
     }
 }
@@ -1732,7 +1981,8 @@ export function parse_conf_str(str, proc) {
     config_error_init(0, __s_parse_conf_str, 0);
     while (str && cptr.ld1s(str)) {
         len = 0n;
-        while (cptr.ld1s(str) && len < BigInt(((cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) - 1) >>> 0) >>> 0)) {
+        while (cptr.ld1s(str) &&
+                len < BigInt(((cptr.ldI32o(parser, $_cnf_parser_state_inbufsz) - 1) >>> 0) >>> 0)) {
             cptr.st1o(cptr.ldPtr(parser), len, cptr.ld1s(str));
             len++;
             str = cptr.add(str, 1);
@@ -1855,7 +2105,8 @@ export function rcfile() {
     }
 
     if (cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile))
-        cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile)), cptr.stPtro(gc, $instance_globals_c_cmdline_rcfile, null);
+        cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_rcfile)),
+                cptr.stPtro(gc, $instance_globals_c_cmdline_rcfile, null);
     /*[end of nethackrc handling]*/
 }
 
@@ -1943,7 +2194,13 @@ export function assure_syscf_file() {
 // 8 bindings: 0 rebound+refilled, 5 rebound, 3 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(ignore_errors_on_unmatched), S(ignore_statement_errors), S(default_configfile), S(configfile), S(config_line_stmt), S(disregarded_config_lines), S(config_error_data), S(config_error_msg)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(ignore_errors_on_unmatched), S(ignore_statement_errors), S(default_configfile),
+        S(configfile), S(config_line_stmt), S(disregarded_config_lines), S(config_error_data),
+        S(config_error_msg)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("cfgfiles.js: __resetState before __captureState");

@@ -28,19 +28,21 @@ import { dump_all_glyphids } from './glyphs.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $de_params_dumpflgs = FLD.de_params_dumpflgs, $de_params_pfx = FLD.de_params_pfx,
-    $de_params_szd = FLD.de_params_szd, $de_params_unprefixed_count = FLD.de_params_unprefixed_count,
-    $debug_flags_ttystatus = FLD.debug_flags_ttystatus, $early_opt_minlength = FLD.early_opt_minlength,
-    $early_opt_name = FLD.early_opt_name, $early_opt_valallowed = FLD.early_opt_valallowed,
-    $enum_dump_nm = FLD.enum_dump_nm, $instance_flags_debug = FLD.instance_flags_debug,
-    $instance_flags_fuzzerpending = FLD.instance_flags_fuzzerpending,
-    $instance_flags_initoptions_noterminate = FLD.instance_flags_initoptions_noterminate,
-    $instance_globals_c_cmdline_rcfile = FLD.instance_globals_c_cmdline_rcfile,
-    $instance_globals_c_cmdline_windowsys = FLD.instance_globals_c_cmdline_windowsys,
-    $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
-    $instance_globals_d_deferred_showpaths_dir = FLD.instance_globals_d_deferred_showpaths_dir,
-    $sinfo_early_options = FLD.sinfo_early_options, $sizeof_de_params = FLD.sizeof_de_params,
-    $sizeof_early_opt = FLD.sizeof_early_opt, $sizeof_enum_dump = FLD.sizeof_enum_dump,
-    $window_procs_win_raw_print = FLD.window_procs_win_raw_print;
+      $de_params_szd = FLD.de_params_szd,
+      $de_params_unprefixed_count = FLD.de_params_unprefixed_count,
+      $debug_flags_ttystatus = FLD.debug_flags_ttystatus,
+      $early_opt_minlength = FLD.early_opt_minlength, $early_opt_name = FLD.early_opt_name,
+      $early_opt_valallowed = FLD.early_opt_valallowed, $enum_dump_nm = FLD.enum_dump_nm,
+      $instance_flags_debug = FLD.instance_flags_debug,
+      $instance_flags_fuzzerpending = FLD.instance_flags_fuzzerpending,
+      $instance_flags_initoptions_noterminate = FLD.instance_flags_initoptions_noterminate,
+      $instance_globals_c_cmdline_rcfile = FLD.instance_globals_c_cmdline_rcfile,
+      $instance_globals_c_cmdline_windowsys = FLD.instance_globals_c_cmdline_windowsys,
+      $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
+      $instance_globals_d_deferred_showpaths_dir = FLD.instance_globals_d_deferred_showpaths_dir,
+      $sinfo_early_options = FLD.sinfo_early_options, $sizeof_de_params = FLD.sizeof_de_params,
+      $sizeof_early_opt = FLD.sizeof_early_opt, $sizeof_enum_dump = FLD.sizeof_enum_dump,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_debug = cptr.lit("debug");
@@ -1380,12 +1382,23 @@ export const ArgErr_mask = 8;
 
 /* approximate 'getopt_long()' for one option; all the comments refer to
    "-windowtype" but the code isn't specific to that  */
-/** C ref: earlyarg.c:71 — @param {CPtr<char>} arg @param {CInt} lflags @param {CPtr<char>} optname @param {CPtr<char>} origarg @param {CPtr<int>} argc_p @param {CPtr<char **>} argv_p @returns {CPtr<char>} */
+/**
+ * C ref: earlyarg.c:71
+ * @param {CPtr<char>} arg
+ * @param {CInt} lflags
+ * @param {CPtr<char>} optname
+ * @param {CPtr<char>} origarg
+ * @param {CPtr<int>} argc_p
+ * @param {CPtr<char **>} argv_p
+ * @returns {CPtr<char>}
+ */
 function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
     let argc = cptr.ldI32(argc_p);
     let argv = cptr.ldPtr(argv_p);
     let p;
-    let nextarg = (argc > 1 && cptr.ld1so(cptr.ldPtro(argv, 1, 8), 0) != 45) ? cptr.ldPtro(argv, 1, 8) : null;
+    let nextarg = (argc > 1 && cptr.ld1so(cptr.ldPtro(argv, 1, 8), 0) != 45)
+            ? cptr.ldPtro(argv, 1, 8)
+            : null;
     let l;
     let opttype = (lflags & NHC.ArgVal_mask);
     let oneletterok = schar(((lflags & NHC.ArgNam_mask) == NHC.ArgNamOneLetter));
@@ -1439,7 +1452,9 @@ function lopt(arg, lflags, optname, origarg, argc_p, argv_p) {
         /* "-w[indowtype]" w/o '='/':' if there is a next element, use
            it for "foo"; if not, supply a non-Null bogus value */
         if (nextarg && (opttype == NHC.ArgValRequired || opttype == NHC.ArgValOptional))
-            p = nextarg, cptr.stI32(argc_p, cptr.ldI32(argc_p) + -1), cptr.preinc(() => cptr.ldPtr(argv_p), (v) => { cptr.stPtr(argv_p, v); }, 8);
+            p = nextarg,
+                    cptr.stI32(argc_p, cptr.ldI32(argc_p) + -1),
+                    cptr.preinc(() => cptr.ldPtr(argv_p), (v) => { cptr.stPtr(argv_p, v); }, 8);
         else if (opttype == NHC.ArgValRequired)
             {
                 if (complain)
@@ -1486,7 +1501,12 @@ function consume_two_args(ndx, ac_p, av_p) {
 }
 
 /* process some command line arguments before loading options */
-/** C ref: earlyarg.c:180 — @param {CPtr<int>} argc_p @param {CPtr<char **>} argv_p @param {CPtr<char *>} hackdir_p */
+/**
+ * C ref: earlyarg.c:180
+ * @param {CPtr<int>} argc_p
+ * @param {CPtr<char **>} argv_p
+ * @param {CPtr<char *>} hackdir_p
+ */
 export function early_options(argc_p, argv_p, hackdir_p) {
     let argv = cptr.box(0);
     let arg;
@@ -1522,7 +1542,10 @@ export function early_options(argc_p, argv_p, hackdir_p) {
         if (cptr.ld1s(arg) != 45)
             continue;
         /* allow second dash if arg name is longer than one character */
-        if (cptr.ld1so(arg, 0) == 45 && cptr.ld1so(arg, 1) == 45 && cptr.ld1so(arg, 2) != 0 && (cptr.ld1so(arg, 3) != 0 && cptr.ld1so(arg, 3) != 61 && cptr.ld1so(arg, 3) != 58))
+        if (cptr.ld1so(arg, 0) == 45 &&
+                cptr.ld1so(arg, 1) == 45 &&
+                cptr.ld1so(arg, 2) != 0 &&
+                (cptr.ld1so(arg, 3) != 0 && cptr.ld1so(arg, 3) != 61 && cptr.ld1so(arg, 3) != 58))
             arg = cptr.add(arg, 1);
 
         switch (cptr.ld1so(arg, 1)) {
@@ -1546,7 +1569,14 @@ export function early_options(argc_p, argv_p, hackdir_p) {
                 /*NOTREACHED*/
             } else {
                 oldargc = argc.v;
-                arg = lopt(arg, (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrSilent), __s_directory, origarg, argc, argv);
+                arg = lopt(
+                    arg,
+                    (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrSilent),
+                    __s_directory,
+                    origarg,
+                    argc,
+                    argv
+                );
                 if (!arg)
                     error(__s_flag_d_must_be_followed_by_a_directory);
                 if (cptr.ld1s(arg) != 101) {
@@ -1560,7 +1590,15 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             break;
             case 104:
             case 63:
-            if (lopt(arg, NHC.ArgValDisallowed, __s_help, origarg, argc, argv) || lopt(arg, (NHC.ArgValDisallowed | NHC.ArgNamOneLetter), __s_dash_query, origarg, argc, argv))
+            if (lopt(arg, NHC.ArgValDisallowed, __s_help, origarg, argc, argv) ||
+                    lopt(
+                        arg,
+                        (NHC.ArgValDisallowed | NHC.ArgNamOneLetter),
+                        __s_dash_query,
+                        origarg,
+                        argc,
+                        argv
+                    ))
                 opt_usage(cptr.ldPtr(hackdir_p));  /* doesn't return */
             break;
             case 110:
@@ -1568,7 +1606,14 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             if (!strcmp(arg, __s_no_nethackrc))
                 arg = (__s_dev_null);
             else
-                arg = lopt(arg, (NHC.ArgValRequired | NHC.ArgErrComplain), __s_nethackrc, origarg, argc, argv);
+                arg = lopt(
+                    arg,
+                    (NHC.ArgValRequired | NHC.ArgErrComplain),
+                    __s_nethackrc,
+                    origarg,
+                    argc,
+                    argv
+                );
             if (arg) {
                 cptr.stPtro(gc, $instance_globals_c_cmdline_rcfile, dupstr(arg));
                 if (oldargc == argc.v)
@@ -1585,7 +1630,15 @@ export function early_options(argc_p, argv_p, hackdir_p) {
                 return;
             }
             /* check for "-s" request to show scores */
-            if (lopt(arg, ((NHC.ArgValDisallowed | NHC.ArgErrComplain) | ((cptr.ld1so(origarg, 1) != 45) ? NHC.ArgNamOneLetter : 0)), __s_scores, origarg, argc, argv)) {
+            if (lopt(
+                arg,
+                ((NHC.ArgValDisallowed | NHC.ArgErrComplain) |
+                    ((cptr.ld1so(origarg, 1) != 45) ? NHC.ArgNamOneLetter : 0)),
+                __s_scores,
+                origarg,
+                argc,
+                argv
+            )) {
                 /* at this point, argv[0] contains "-scores" or a leading
                    substring of it; prscore() (via scores_only()) expects
                    that to be in argv[1] so we adjust the pointer to make
@@ -1608,7 +1661,14 @@ export function early_options(argc_p, argv_p, hackdir_p) {
             }
             break;
             case 119:
-            arg = lopt(arg, (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrComplain), __s_windowtype, origarg, argc, argv);
+            arg = lopt(
+                arg,
+                (NHC.ArgValRequired | NHC.ArgNamOneLetter | NHC.ArgErrComplain),
+                __s_windowtype,
+                origarg,
+                argc,
+                argv
+            );
             if (cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys))
                 cptr.free(cptr.ldPtro(gc, $instance_globals_c_cmdline_windowsys));
             cptr.stPtro(gc, $instance_globals_c_cmdline_windowsys, arg ? dupstr(arg) : null);
@@ -1679,7 +1739,13 @@ function scores_only(argc, argv, dir) {
  *    1 = found and skip past this argument
  *    2 = found and trigger immediate exit
  */
-/** C ref: earlyarg.c:450 — @param {CInt} argc @param {CPtr<char *>} argv @param {*} e_arg @returns {CInt} */
+/**
+ * C ref: earlyarg.c:450
+ * @param {CInt} argc
+ * @param {CPtr<char *>} argv
+ * @param {*} e_arg
+ * @returns {CInt}
+ */
 export function argcheck(argc, argv, e_arg) {
     let i;
     let idx;
@@ -1704,7 +1770,12 @@ export function argcheck(argc, argv, e_arg) {
         } else {
             userea = cptr.add(cptr.ldPtro(argv, i, 8), 1);
         }
-        match = match_optname(userea, cptr.ldPtro2(earlyopts, idx, $sizeof_early_opt, $early_opt_name), cptr.ldI32o2(earlyopts, idx, $sizeof_early_opt, $early_opt_minlength), cptr.ld1so2(earlyopts, idx, $sizeof_early_opt, $early_opt_valallowed));
+        match = match_optname(
+            userea,
+            cptr.ldPtro2(earlyopts, idx, $sizeof_early_opt, $early_opt_name),
+            cptr.ldI32o2(earlyopts, idx, $sizeof_early_opt, $early_opt_minlength),
+            cptr.ld1so2(earlyopts, idx, $sizeof_early_opt, $early_opt_valallowed)
+        );
         if (match)
             break;
     }
@@ -1807,7 +1878,8 @@ function debug_fields(opts) {
     while (isspace(uchar(cptr.ld1s(opts))))
         opts = cptr.add(opts, 1);
     op = eos(opts);
-    while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 && isspace(uchar(cptr.ld1s(op))))
+    while (cptr.cmp(cptr.predec(() => op, (v) => { op = v; }), opts) >= 0 &&
+            isspace(uchar(cptr.ld1s(op))))
         cptr.st1(op, 0);
 
     if (!cptr.ld1s(opts)) {
@@ -4401,15 +4473,67 @@ function dump_enums() {
 
     for (i = 0; i < NHC.NUM_ENUM_DUMPS; ++i) {
         raw_printf(__s_enum_s, cptr.ldPtro(__static_dump_enums_edmp, i, $sizeof_de_params));
-        for (j = 0; j < cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd); ++j) {
-            nmprefix = (j >= ((cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd) - cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_unprefixed_count)) | 0)) ? __s_empty : cptr.ldPtro2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_pfx);  /* "" or "PM_" */
+        for (
+            j = 0;
+            j < cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd);
+            ++j
+        ) {
+            nmprefix = (j >=
+                ((cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_szd) -
+                    cptr.ldI32o2(
+                        __static_dump_enums_edmp,
+                        i,
+                        $sizeof_de_params,
+                        $de_params_unprefixed_count
+                    )) | 0))
+                    ? __s_empty
+                    : cptr.ldPtro2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_pfx);  /* "" or "PM_" */
             nmwidth = (27 - Number(BigInt.asIntN(32, cptr.strlen(nmprefix)))) | 0;  /* 27 or 24 */
-            if (cptr.ldI32o2(__static_dump_enums_edmp, i, $sizeof_de_params, $de_params_dumpflgs) > 0) {
-                nh_snprintf(__s_dump_enums, 788, cptr.decay(comment), 256n, __s_sp4_slash_star_sp_apos_pct_c_apos_sp, (cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) >= 32 && cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) <= 126) ? cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump) : 32);
+            if (cptr.ldI32o2(
+                __static_dump_enums_edmp,
+                i,
+                $sizeof_de_params,
+                $de_params_dumpflgs
+            ) > 0) {
+                nh_snprintf(
+                    __s_dump_enums,
+                    788,
+                    cptr.decay(comment),
+                    256n,
+                    __s_sp4_slash_star_sp_apos_pct_c_apos_sp,
+                    (cptr.ldI32o(
+                        cptr.ldPtro(__static_dump_enums_ed, i, 8),
+                        j,
+                        $sizeof_enum_dump
+                    ) >= 32 &&
+                        cptr.ldI32o(
+                            cptr.ldPtro(__static_dump_enums_ed, i, 8),
+                            j,
+                            $sizeof_enum_dump
+                        ) <= 126)
+                        ? cptr.ldI32o(
+                            cptr.ldPtro(__static_dump_enums_ed, i, 8),
+                            j,
+                            $sizeof_enum_dump
+                        )
+                        : 32
+                );
             } else {
                 cptr.st1o(cptr.decay(comment), 0, 0, 1);
             }
-            raw_printf(__s_s_s_3d_s, nmprefix, -nmwidth, cptr.ldPtro2(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump, $enum_dump_nm), cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump), cptr.decay(comment));
+            raw_printf(
+                __s_s_s_3d_s,
+                nmprefix,
+                -nmwidth,
+                cptr.ldPtro2(
+                    cptr.ldPtro(__static_dump_enums_ed, i, 8),
+                    j,
+                    $sizeof_enum_dump,
+                    $enum_dump_nm
+                ),
+                cptr.ldI32o(cptr.ldPtro(__static_dump_enums_ed, i, 8), j, $sizeof_enum_dump),
+                cptr.decay(comment)
+            );
         }
         raw_print()(__s_rbrace_semi);
         raw_print()(__s_empty);
@@ -4426,7 +4550,14 @@ export function dump_glyphids() {
 // 15 bindings: 0 rebound+refilled, 0 rebound, 15 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(earlyopts), S(ArgVal_novalue), S(monsdump), S(objdump), S(defsym_cmap_dump), S(defsym_mon_syms_dump), S(defsym_mon_defchars_dump), S(objclass_defchars_dump), S(objclass_classes_dump), S(objclass_syms_dump), S(arti_enum_dump), S(mcastu_enum_dump), S(__static_dump_enums_omdump), S(__static_dump_enums_ed), S(__static_dump_enums_edmp)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(earlyopts), S(ArgVal_novalue), S(monsdump), S(objdump), S(defsym_cmap_dump),
+        S(defsym_mon_syms_dump), S(defsym_mon_defchars_dump), S(objclass_defchars_dump),
+        S(objclass_classes_dump), S(objclass_syms_dump), S(arti_enum_dump), S(mcastu_enum_dump),
+        S(__static_dump_enums_omdump), S(__static_dump_enums_ed), S(__static_dump_enums_edmp)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("earlyarg.js: __resetState before __captureState");

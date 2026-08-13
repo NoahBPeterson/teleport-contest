@@ -13,52 +13,105 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { IS_TREE, Is_container, canspotmon, glyph_is_cmap, has_mgivenname, is_mind_flayer, is_unicorn, is_vampshifter, webmaker } from './nhmacrofn.js';
-import { ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch, nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum, wait_synch, wizard } from './nhprop.js';
-import { add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs } from './windows.js';
-import { WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs, gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars, rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars, ynqchars, zdir } from './decl.js';
-import { doddoremarm, doputon, doremring, dotakeoff, dowear, ia_dotakeoff, remarm_swapwep, reset_remarm } from './do_wear.js';
+import {
+    IS_TREE, Is_container, canspotmon, glyph_is_cmap, has_mgivenname, is_mind_flayer, is_unicorn,
+    is_vampshifter, webmaker
+} from './nhmacrofn.js';
+import {
+    ParanoidConfirm, Punished, Ugender, Upolyd, clear_nhwindow, create_nhwindow, destroy_nhwindow,
+    discover, display_nhwindow, end_menu, exit_nhwindows, get_ext_cmd, mark_synch,
+    nh_doprev_message, nh_poskey, nhbell, nhgetch, putmsghistory, putstr, start_menu, tutorial_dnum,
+    wait_synch, wizard
+} from './nhprop.js';
+import {
+    add_menu, add_menu_heading, add_menu_str, getlin, nhwindows_hangup, select_menu, windowprocs
+} from './windows.js';
+import {
+    WIN_MESSAGE, a11y, c_common_strings, cg, dirs_ord, flags, gc, gd, ge, gi, gk, gl, gm, go, gs,
+    gt, gu, gv, gy, hidespinchars, iflags, nhcb_counts, nhcb_name, program_state, quitchars,
+    rightleftchars, svc, svd, svl, svu, u, uball, urealtime, xdir, ydir, ynaqchars, ynchars,
+    ynqchars, zdir
+} from './decl.js';
+import {
+    doddoremarm, doputon, doremring, dotakeoff, dowear, ia_dotakeoff, remarm_swapwep, reset_remarm
+} from './do_wear.js';
 import { doclose, doforce, doopen, maybe_reset_pick, reset_pick } from './lock.js';
 import { doapply, dojump, dorub, reset_trapset, use_unicorn_horn } from './apply.js';
 import { alloc } from './alloc.js';
 import { lua_getglobal, lua_pushstring, lua_settop, lua_toboolean } from './lapi.js';
 import { nhl_pcall_handle } from './nhlua.js';
-import { Norep, There, You, You_cant, custompline, dumplogmsg, impossible, pline, pline_xy, raw_printf, set_msg_xy } from './pline.js';
-import { copynchars, digit, dist2, eos, highc, letter, mungspaces, nh_snprintf, sgn, strncmpi, strstri, strsubst, trimspaces, upstart, visctrl } from './hacklib.js';
-import { canseemon, cls, docrt, docrt_flags, doredraw, flush_screen, glyph_at, nul_glyphinfo, sensemon } from './display.js';
+import {
+    Norep, There, You, You_cant, custompline, dumplogmsg, impossible, pline, pline_xy, raw_printf,
+    set_msg_xy
+} from './pline.js';
+import {
+    copynchars, digit, dist2, eos, highc, letter, mungspaces, nh_snprintf, sgn, strncmpi, strstri,
+    strsubst, trimspaces, upstart, visctrl
+} from './hacklib.js';
+import {
+    canseemon, cls, docrt, docrt_flags, doredraw, flush_screen, glyph_at, nul_glyphinfo, sensemon
+} from './display.js';
 import { Strlen_, pmatchi, strbuf_append } from './strutil.js';
 import { mons } from './monst.js';
 import { attacktype } from './mondata.js';
-import { dobreathe, dogaze, dohide, domindblast, dopoly, doremove, dospinweb, dospit, dosummon } from './polyself.js';
+import {
+    dobreathe, dogaze, dohide, domindblast, dopoly, doremove, dospinweb, dospit, dosummon
+} from './polyself.js';
 import { dip_into, dodip, dodrink, split_mon } from './potion.js';
 import { dryup } from './fountain.js';
 import { is_pool } from './dbridge.js';
 import { aggravate } from './wizard.js';
 import { pet_ranged_attk } from './dogmove.js';
 import { authorize_explore_mode } from './unixmain.js';
-import { makemap_remove_mons, wiz_custom, wiz_detect, wiz_display_macros, wiz_flip_level, wiz_fuzzer, wiz_genesis, wiz_identify, wiz_intrinsic, wiz_kill, wiz_level_change, wiz_level_tele, wiz_levltyp_legend, wiz_load_lua, wiz_load_splua, wiz_makemap, wiz_map, wiz_map_levltyp, wiz_migrate_mons, wiz_mon_diff, wiz_objprobs, wiz_panic, wiz_polyself, wiz_rumor_check, wiz_show_nhuuid, wiz_show_seenv, wiz_show_stats, wiz_show_vision, wiz_show_wmodes, wiz_smell, wiz_telekinesis, wiz_where, wiz_wish } from './wizcmds.js';
-import { donamelevel, dooverview, ledger_no, on_level, recalc_mapseen, rm_mapseen, u_on_rndspot } from './dungeon.js';
-import { do_gamelog, doattributes, doborn, doconduct, dogenocided, dovanquished, remove_achievement } from './insight.js';
+import {
+    makemap_remove_mons, wiz_custom, wiz_detect, wiz_display_macros, wiz_flip_level, wiz_fuzzer,
+    wiz_genesis, wiz_identify, wiz_intrinsic, wiz_kill, wiz_level_change, wiz_level_tele,
+    wiz_levltyp_legend, wiz_load_lua, wiz_load_splua, wiz_makemap, wiz_map, wiz_map_levltyp,
+    wiz_migrate_mons, wiz_mon_diff, wiz_objprobs, wiz_panic, wiz_polyself, wiz_rumor_check,
+    wiz_show_nhuuid, wiz_show_seenv, wiz_show_stats, wiz_show_vision, wiz_show_wmodes, wiz_smell,
+    wiz_telekinesis, wiz_where, wiz_wish
+} from './wizcmds.js';
+import {
+    donamelevel, dooverview, ledger_no, on_level, recalc_mapseen, rm_mapseen, u_on_rndspot
+} from './dungeon.js';
+import {
+    do_gamelog, doattributes, doborn, doconduct, dogenocided, dovanquished, remove_achievement
+} from './insight.js';
 import { ballrelease, placebc, unplacebc } from './ball.js';
 import { dountrap, reset_utrap, t_at } from './trap.js';
-import { check_special_room, domove, dopickup, set_uinwater, test_move, u_maybe_impaired } from './hack.js';
+import {
+    check_special_room, domove, dopickup, set_uinwater, test_move, u_maybe_impaired
+} from './hack.js';
 import { dmonsfree, kill_genocided_monsters } from './mon.js';
 import { dobjsfree } from './mkobj.js';
 import { clearlocks, close_nhfile, debugcore, get_freeing_nhfile, paniclog } from './files.js';
 import { dosave, dosave0, savelev } from './save.js';
 import { vision_reset } from './vision.js';
 import { losedogs } from './dog.js';
-import { doddrop, dodown, dodrop, donull, doup, dowipe, save_currentstate, u_collide_m } from './do.js';
+import {
+    doddrop, dodown, dodrop, donull, doup, dowipe, save_currentstate, u_collide_m
+} from './do.js';
 import { initrack } from './track.js';
 import { deliver_splev_message } from './questpgr.js';
 import { dosearch, reveal_terrain } from './detect.js';
-import { selection_floodfill, selection_free, selection_getbounds, selection_getpoint, selection_new, selection_size_description, set_selection_floodfillchk } from './selvar.js';
+import {
+    selection_floodfill, selection_free, selection_getbounds, selection_getpoint, selection_new,
+    selection_size_description, set_selection_floodfillchk
+} from './selvar.js';
 import { an, doname } from './objnam.js';
 import { glyph_to_cmap } from './glyphs.js';
 import { auto_describe, gather_locs_interesting, getpos, getpos_menu } from './getpos.js';
-import { do_screen_description, dohelp, dohistory, doidtrap, doquickwhatis, dowhatdoes, dowhatdoes_core, dowhatis } from './pager.js';
-import { doset, doset_simple, dotogglepickup, show_menu_controls, toggle_bool_option } from './options.js';
-import { adjust_split, carrying, ddoinv, dolook, doorganize, doperminv, dopramulet, doprarm, doprgold, doprinuse, doprring, doprtool, doprwep, dotypeinv } from './invent.js';
+import {
+    do_screen_description, dohelp, dohistory, doidtrap, doquickwhatis, dowhatdoes, dowhatdoes_core,
+    dowhatis
+} from './pager.js';
+import {
+    doset, doset_simple, dotogglepickup, show_menu_controls, toggle_bool_option
+} from './options.js';
+import {
+    adjust_split, carrying, ddoinv, dolook, doorganize, doperminv, dopramulet, doprarm, doprgold,
+    doprinuse, doprring, doprtool, doprwep, dotypeinv
+} from './invent.js';
 import { dobugreport } from './report.js';
 import { docallcmd, mon_nam, x_monnam } from './do_name.js';
 import { docast, dovspell, dowizcast, num_spells } from './spell.js';
@@ -98,116 +151,125 @@ import { dosh } from './unixunix.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Cmd_bind_cmd = FLD.Cmd_bind_cmd, $Cmd_bind_next = FLD.Cmd_bind_next,
-    $Cmd_bind_param = FLD.Cmd_bind_param, $Cmd_bind_userbind = FLD.Cmd_bind_userbind,
-    $Race_mnum = FLD.Race_mnum, $_cmd_queue_dirx = FLD._cmd_queue_dirx,
-    $_cmd_queue_diry = FLD._cmd_queue_diry, $_cmd_queue_dirz = FLD._cmd_queue_dirz,
-    $_cmd_queue_ec_entry = FLD._cmd_queue_ec_entry, $_cmd_queue_intval = FLD._cmd_queue_intval,
-    $_cmd_queue_key = FLD._cmd_queue_key, $_cmd_queue_next = FLD._cmd_queue_next,
-    $achievement_tracking_soko_prize_oid = FLD.achievement_tracking_soko_prize_oid,
-    $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind,
-    $cmd_alphadirchars = FLD.cmd_alphadirchars, $cmd_cmdbinds = FLD.cmd_cmdbinds,
-    $cmd_dirchars = FLD.cmd_dirchars, $cmd_extcmd_char = FLD.cmd_extcmd_char,
-    $cmd_mousebtn = FLD.cmd_mousebtn, $cmd_num_pad = FLD.cmd_num_pad,
-    $cmd_pcHack_compat = FLD.cmd_pcHack_compat, $cmd_phone_layout = FLD.cmd_phone_layout,
-    $cmd_spkeys = FLD.cmd_spkeys, $cmd_swap_yz = FLD.cmd_swap_yz,
-    $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
-    $const_globals_zeroany = FLD.const_globals_zeroany, $context_info_achieveo = FLD.context_info_achieveo,
-    $context_info_digging = FLD.context_info_digging, $context_info_forcefight = FLD.context_info_forcefight,
-    $context_info_move = FLD.context_info_move, $context_info_mv = FLD.context_info_mv,
-    $context_info_nopick = FLD.context_info_nopick, $context_info_polearm = FLD.context_info_polearm,
-    $context_info_run = FLD.context_info_run, $context_info_travel = FLD.context_info_travel,
-    $context_info_travel1 = FLD.context_info_travel1, $coord_y = FLD.coord_y,
-    $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_mineend_level = FLD.dgn_topology_d_mineend_level,
-    $dgn_topology_d_sokoend_level = FLD.dgn_topology_d_sokoend_level,
-    $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum, $dig_info_level = FLD.dig_info_level,
-    $dlevel_t_flags = FLD.dlevel_t_flags, $dlevel_t_monsters = FLD.dlevel_t_monsters,
-    $dlevel_t_objects = FLD.dlevel_t_objects, $ext_func_tab_ef_desc = FLD.ext_func_tab_ef_desc,
-    $ext_func_tab_ef_funct = FLD.ext_func_tab_ef_funct, $ext_func_tab_ef_txt = FLD.ext_func_tab_ef_txt,
-    $ext_func_tab_f_text = FLD.ext_func_tab_f_text, $ext_func_tab_flags = FLD.ext_func_tab_flags,
-    $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female,
-    $flag_paranoia_bits = FLD.flag_paranoia_bits, $flag_rest_on_space = FLD.flag_rest_on_space,
-    $flag_showrace = FLD.flag_showrace, $flag_travelcmd = FLD.flag_travelcmd,
-    $instance_flags_altmeta = FLD.instance_flags_altmeta,
-    $instance_flags_cmdassist = FLD.instance_flags_cmdassist,
-    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
-    $instance_flags_extmenu = FLD.instance_flags_extmenu,
-    $instance_flags_getdir_click = FLD.instance_flags_getdir_click,
-    $instance_flags_getloc_filter = FLD.instance_flags_getloc_filter,
-    $instance_flags_getloc_travelmode = FLD.instance_flags_getloc_travelmode,
-    $instance_flags_in_parse = FLD.instance_flags_in_parse,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
-    $instance_flags_num_pad = FLD.instance_flags_num_pad,
-    $instance_flags_num_pad_mode = FLD.instance_flags_num_pad_mode,
-    $instance_flags_query_menu = FLD.instance_flags_query_menu,
-    $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
-    $instance_flags_sanity_no_check = FLD.instance_flags_sanity_no_check,
-    $instance_flags_travelcc = FLD.instance_flags_travelcc,
-    $instance_flags_wc_eight_bit_input = FLD.instance_flags_wc_eight_bit_input,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
-    $instance_globals_c_clicklook_cc = FLD.instance_globals_c_clicklook_cc,
-    $instance_globals_c_cmd_bind = FLD.instance_globals_c_cmd_bind,
-    $instance_globals_c_cmd_key = FLD.instance_globals_c_cmd_key,
-    $instance_globals_c_command_count = FLD.instance_globals_c_command_count,
-    $instance_globals_d_domove_attempting = FLD.instance_globals_d_domove_attempting,
-    $instance_globals_e_ext_tlist = FLD.instance_globals_e_ext_tlist,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_l_luacore = FLD.instance_globals_l_luacore,
-    $instance_globals_m_multi = FLD.instance_globals_m_multi,
-    $instance_globals_o_occtime = FLD.instance_globals_o_occtime,
-    $instance_globals_o_occtxt = FLD.instance_globals_o_occtxt,
-    $instance_globals_o_occupation = FLD.instance_globals_o_occupation,
-    $instance_globals_s_saved_pline_index = FLD.instance_globals_s_saved_pline_index,
-    $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_t_travelmap = FLD.instance_globals_t_travelmap,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
-    $levelflags_arboreal = FLD.levelflags_arboreal, $monst_cham = FLD.monst_cham,
-    $monst_data = FLD.monst_data, $monst_mextra = FLD.monst_mextra, $monst_mpeaceful = FLD.monst_mpeaceful,
-    $monst_mtame = FLD.monst_mtame, $nhcoord_y = FLD.nhcoord_y, $nhrect_hx = FLD.nhrect_hx,
-    $nhrect_hy = FLD.nhrect_hy, $nhrect_ly = FLD.nhrect_ly, $obj_invlet = FLD.obj_invlet,
-    $obj_oclass = FLD.obj_oclass, $obj_otyp = FLD.obj_otyp, $obj_v = FLD.obj_v,
-    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
-    $permonst_mlet = FLD.permonst_mlet, $permonst_msound = FLD.permonst_msound, $rm_flags = FLD.rm_flags,
-    $rm_typ = FLD.rm_typ, $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_exiting = FLD.sinfo_exiting,
-    $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $sinfo_input_state = FLD.sinfo_input_state,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
-    $sizeof_ext_func_tab = FLD.sizeof_ext_func_tab, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_nhrect = FLD.sizeof_nhrect, $sizeof_permonst = FLD.sizeof_permonst, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_symdef = FLD.sizeof_symdef,
-    $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
-    $stairway_isladder = FLD.stairway_isladder, $stairway_up = FLD.stairway_up,
-    $symdef_explanation = FLD.symdef_explanation, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
-    $u_realtime_start_timing = FLD.u_realtime_start_timing,
-    $window_procs_win_can_suspend = FLD.window_procs_win_can_suspend,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_doprev_message = FLD.window_procs_win_doprev_message,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
-    $window_procs_win_get_ext_cmd = FLD.window_procs_win_get_ext_cmd,
-    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
-    $window_procs_win_nh_poskey = FLD.window_procs_win_nh_poskey,
-    $window_procs_win_nhbell = FLD.window_procs_win_nhbell,
-    $window_procs_win_nhgetch = FLD.window_procs_win_nhgetch,
-    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
-    $window_procs_win_yn_function = FLD.window_procs_win_yn_function, $you_dx = FLD.you_dx,
-    $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_last_str_turn = FLD.you_last_str_turn,
-    $you_mfemale = FLD.you_mfemale, $you_tx = FLD.you_tx, $you_ty = FLD.you_ty,
-    $you_uburied = FLD.you_uburied, $you_uhave = FLD.you_uhave, $you_umonnum = FLD.you_umonnum,
-    $you_umonster = FLD.you_umonster, $you_urooms = FLD.you_urooms, $you_usteed = FLD.you_usteed,
-    $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_uswldtim = FLD.you_uswldtim,
-    $you_uundetected = FLD.you_uundetected, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
+      $Cmd_bind_param = FLD.Cmd_bind_param, $Cmd_bind_userbind = FLD.Cmd_bind_userbind,
+      $Race_mnum = FLD.Race_mnum, $_cmd_queue_dirx = FLD._cmd_queue_dirx,
+      $_cmd_queue_diry = FLD._cmd_queue_diry, $_cmd_queue_dirz = FLD._cmd_queue_dirz,
+      $_cmd_queue_ec_entry = FLD._cmd_queue_ec_entry, $_cmd_queue_intval = FLD._cmd_queue_intval,
+      $_cmd_queue_key = FLD._cmd_queue_key, $_cmd_queue_next = FLD._cmd_queue_next,
+      $achievement_tracking_soko_prize_oid = FLD.achievement_tracking_soko_prize_oid,
+      $c_common_strings_c_Never_mind = FLD.c_common_strings_c_Never_mind,
+      $cmd_alphadirchars = FLD.cmd_alphadirchars, $cmd_cmdbinds = FLD.cmd_cmdbinds,
+      $cmd_dirchars = FLD.cmd_dirchars, $cmd_extcmd_char = FLD.cmd_extcmd_char,
+      $cmd_mousebtn = FLD.cmd_mousebtn, $cmd_num_pad = FLD.cmd_num_pad,
+      $cmd_pcHack_compat = FLD.cmd_pcHack_compat, $cmd_phone_layout = FLD.cmd_phone_layout,
+      $cmd_spkeys = FLD.cmd_spkeys, $cmd_swap_yz = FLD.cmd_swap_yz,
+      $const_globals_zeroNhRect = FLD.const_globals_zeroNhRect,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $context_info_achieveo = FLD.context_info_achieveo,
+      $context_info_digging = FLD.context_info_digging,
+      $context_info_forcefight = FLD.context_info_forcefight,
+      $context_info_move = FLD.context_info_move, $context_info_mv = FLD.context_info_mv,
+      $context_info_nopick = FLD.context_info_nopick,
+      $context_info_polearm = FLD.context_info_polearm, $context_info_run = FLD.context_info_run,
+      $context_info_travel = FLD.context_info_travel,
+      $context_info_travel1 = FLD.context_info_travel1, $coord_y = FLD.coord_y,
+      $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_mineend_level = FLD.dgn_topology_d_mineend_level,
+      $dgn_topology_d_sokoend_level = FLD.dgn_topology_d_sokoend_level,
+      $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum,
+      $dig_info_level = FLD.dig_info_level, $dlevel_t_flags = FLD.dlevel_t_flags,
+      $dlevel_t_monsters = FLD.dlevel_t_monsters, $dlevel_t_objects = FLD.dlevel_t_objects,
+      $ext_func_tab_ef_desc = FLD.ext_func_tab_ef_desc,
+      $ext_func_tab_ef_funct = FLD.ext_func_tab_ef_funct,
+      $ext_func_tab_ef_txt = FLD.ext_func_tab_ef_txt,
+      $ext_func_tab_f_text = FLD.ext_func_tab_f_text, $ext_func_tab_flags = FLD.ext_func_tab_flags,
+      $flag_debug = FLD.flag_debug, $flag_explore = FLD.flag_explore,
+      $flag_female = FLD.flag_female, $flag_paranoia_bits = FLD.flag_paranoia_bits,
+      $flag_rest_on_space = FLD.flag_rest_on_space, $flag_showrace = FLD.flag_showrace,
+      $flag_travelcmd = FLD.flag_travelcmd, $instance_flags_altmeta = FLD.instance_flags_altmeta,
+      $instance_flags_cmdassist = FLD.instance_flags_cmdassist,
+      $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+      $instance_flags_extmenu = FLD.instance_flags_extmenu,
+      $instance_flags_getdir_click = FLD.instance_flags_getdir_click,
+      $instance_flags_getloc_filter = FLD.instance_flags_getloc_filter,
+      $instance_flags_getloc_travelmode = FLD.instance_flags_getloc_travelmode,
+      $instance_flags_in_parse = FLD.instance_flags_in_parse,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
+      $instance_flags_num_pad = FLD.instance_flags_num_pad,
+      $instance_flags_num_pad_mode = FLD.instance_flags_num_pad_mode,
+      $instance_flags_query_menu = FLD.instance_flags_query_menu,
+      $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
+      $instance_flags_sanity_no_check = FLD.instance_flags_sanity_no_check,
+      $instance_flags_travelcc = FLD.instance_flags_travelcc,
+      $instance_flags_wc_eight_bit_input = FLD.instance_flags_wc_eight_bit_input,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
+      $instance_globals_c_clicklook_cc = FLD.instance_globals_c_clicklook_cc,
+      $instance_globals_c_cmd_bind = FLD.instance_globals_c_cmd_bind,
+      $instance_globals_c_cmd_key = FLD.instance_globals_c_cmd_key,
+      $instance_globals_c_command_count = FLD.instance_globals_c_command_count,
+      $instance_globals_d_domove_attempting = FLD.instance_globals_d_domove_attempting,
+      $instance_globals_e_ext_tlist = FLD.instance_globals_e_ext_tlist,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_l_luacore = FLD.instance_globals_l_luacore,
+      $instance_globals_m_multi = FLD.instance_globals_m_multi,
+      $instance_globals_o_occtime = FLD.instance_globals_o_occtime,
+      $instance_globals_o_occtxt = FLD.instance_globals_o_occtxt,
+      $instance_globals_o_occupation = FLD.instance_globals_o_occupation,
+      $instance_globals_s_saved_pline_index = FLD.instance_globals_s_saved_pline_index,
+      $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_t_travelmap = FLD.instance_globals_t_travelmap,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+      $levelflags_arboreal = FLD.levelflags_arboreal, $monst_cham = FLD.monst_cham,
+      $monst_data = FLD.monst_data, $monst_mextra = FLD.monst_mextra,
+      $monst_mpeaceful = FLD.monst_mpeaceful, $monst_mtame = FLD.monst_mtame,
+      $nhcoord_y = FLD.nhcoord_y, $nhrect_hx = FLD.nhrect_hx, $nhrect_hy = FLD.nhrect_hy,
+      $nhrect_ly = FLD.nhrect_ly, $obj_invlet = FLD.obj_invlet, $obj_oclass = FLD.obj_oclass,
+      $obj_otyp = FLD.obj_otyp, $obj_v = FLD.obj_v, $permonst_mflags1 = FLD.permonst_mflags1,
+      $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
+      $permonst_msound = FLD.permonst_msound, $rm_flags = FLD.rm_flags, $rm_typ = FLD.rm_typ,
+      $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_exiting = FLD.sinfo_exiting,
+      $sinfo_in_moveloop = FLD.sinfo_in_moveloop, $sinfo_input_state = FLD.sinfo_input_state,
+      $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+      $sizeof_ext_func_tab = FLD.sizeof_ext_func_tab, $sizeof_menu_item = FLD.sizeof_menu_item,
+      $sizeof_nhrect = FLD.sizeof_nhrect, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+      $sizeof_symdef = FLD.sizeof_symdef,
+      $sound_procs_sound_exit_nhsound = FLD.sound_procs_sound_exit_nhsound,
+      $stairway_isladder = FLD.stairway_isladder, $stairway_up = FLD.stairway_up,
+      $symdef_explanation = FLD.symdef_explanation, $trap_tseen = FLD.trap_tseen,
+      $trap_ttyp = FLD.trap_ttyp, $u_realtime_start_timing = FLD.u_realtime_start_timing,
+      $window_procs_win_can_suspend = FLD.window_procs_win_can_suspend,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_doprev_message = FLD.window_procs_win_doprev_message,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+      $window_procs_win_get_ext_cmd = FLD.window_procs_win_get_ext_cmd,
+      $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+      $window_procs_win_nh_poskey = FLD.window_procs_win_nh_poskey,
+      $window_procs_win_nhbell = FLD.window_procs_win_nhbell,
+      $window_procs_win_nhgetch = FLD.window_procs_win_nhgetch,
+      $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
+      $window_procs_win_yn_function = FLD.window_procs_win_yn_function, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_last_str_turn = FLD.you_last_str_turn,
+      $you_mfemale = FLD.you_mfemale, $you_tx = FLD.you_tx, $you_ty = FLD.you_ty,
+      $you_uburied = FLD.you_uburied, $you_uhave = FLD.you_uhave, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_urooms = FLD.you_urooms, $you_usteed = FLD.you_usteed,
+      $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
+      $you_uswldtim = FLD.you_uswldtim, $you_uundetected = FLD.you_uundetected,
+      $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_empty = cptr.lit("");
@@ -907,7 +969,12 @@ function* doprev_message() {
 function* timed_occupation() {
     (yield* Y.icall((timed_occ_fn)()));
     if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n)
-        (cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + -1n)) - (-1n);
+        (cptr.stI64o(
+            gm,
+            $instance_globals_m_multi,
+            cptr.ldI64o(gm, $instance_globals_m_multi) + -1n
+        )) -
+                (-1n);
     return cptr.ldI64o(gm, $instance_globals_m_multi) > 0n;
 }
 
@@ -1083,7 +1150,9 @@ export function cmdq_shift(q) {
     let tmp = null;
     let cq = cptr.ldPtro(gc, q, 8);
 
-    while (cq && cptr.ldPtro(cq, $_cmd_queue_next) && cptr.ldPtro(cptr.ldPtro(cq, $_cmd_queue_next), $_cmd_queue_next))
+    while (cq &&
+            cptr.ldPtro(cq, $_cmd_queue_next) &&
+            cptr.ldPtro(cptr.ldPtro(cq, $_cmd_queue_next), $_cmd_queue_next))
         cq = cptr.ldPtro(cq, $_cmd_queue_next);
 
     if (cq)
@@ -1184,11 +1253,24 @@ export function extcmd_initiator() {
 function* can_do_extcmd(extcmd) {
     let ecflags = cptr.ldI32o(extcmd, $ext_func_tab_flags) | 0;
 
-    if (cptr.ldPtro(gl, $instance_globals_l_luacore) && cptr.ldI32o(nhcb_counts, NHC.NHCB_CMD_BEFORE, 4)) {
+    if (cptr.ldPtro(gl, $instance_globals_l_luacore) &&
+            cptr.ldI32o(nhcb_counts, NHC.NHCB_CMD_BEFORE, 4)) {
         (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __s_nh_callback_run));
-        (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cptr.ldPtro(nhcb_name, NHC.NHCB_CMD_BEFORE, 8)));
-        (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)));
-        (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 2, 1, __s_can_do_extcmd, NHC.NHLpa_panic));
+        (yield* lua_pushstring(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            cptr.ldPtro(nhcb_name, NHC.NHCB_CMD_BEFORE, 8)
+        ));
+        (yield* lua_pushstring(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)
+        ));
+        (yield* nhl_pcall_handle(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            2,
+            1,
+            __s_can_do_extcmd,
+            NHC.NHLpa_panic
+        ));
         if (!lua_toboolean(cptr.ldPtro(gl, $instance_globals_l_luacore), -1)) {
             (yield* lua_settop(cptr.ldPtro(gl, $instance_globals_l_luacore), 0));
             return 0;
@@ -1224,12 +1306,21 @@ export function* doextcmd() {
         func = cptr.ldPtro2(extcmdlist, idx, $sizeof_ext_func_tab, $ext_func_tab_ef_funct);
         if (!(yield* can_do_extcmd(cptr.add(extcmdlist, idx, $sizeof_ext_func_tab))))
             return NHM.ECMD_OK;
-        if (cptr.ld1so(iflags, $instance_flags_menu_requested) && !accept_menu_prefix(cptr.add(extcmdlist, idx, $sizeof_ext_func_tab))) {
-            (yield* pline(__s_s_prefix_has_no_effect_for_the_s_command, visctrl(cmd_from_func(do_reqmenu)), cptr.ldPtro2(extcmdlist, idx, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)));
+        if (cptr.ld1so(iflags, $instance_flags_menu_requested) &&
+                !accept_menu_prefix(cptr.add(extcmdlist, idx, $sizeof_ext_func_tab))) {
+            (yield* pline(
+                __s_s_prefix_has_no_effect_for_the_s_command,
+                visctrl(cmd_from_func(do_reqmenu)),
+                cptr.ldPtro2(extcmdlist, idx, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)
+            ));
             cptr.st1o(iflags, $instance_flags_menu_requested, 0);
         }
         /* tell rhack() what command is actually executing */
-        cptr.stPtro(ge, $instance_globals_e_ext_tlist, cptr.add(extcmdlist, idx, $sizeof_ext_func_tab));
+        cptr.stPtro(
+            ge,
+            $instance_globals_e_ext_tlist,
+            cptr.add(extcmdlist, idx, $sizeof_ext_func_tab)
+        );
 
         retval = (yield* Y.icall((func)()));
     } while (func === doextlist);
@@ -1240,7 +1331,12 @@ export function* doextcmd() {
 /* format extended command flags for display */
 const __static_doc_extcmd_flagstr_Abuf = new Uint8Array(10); /** C ref: cmd.c:528 — char[10] (function-static) */
 
-/** C ref: cmd.c:524 — @param {CInt} menuwin @param {CPtr<struct ext_func_tab>} efp @returns {CPtr<char>} */
+/**
+ * C ref: cmd.c:524
+ * @param {CInt} menuwin
+ * @param {CPtr<struct ext_func_tab>} efp
+ * @returns {CPtr<char>}
+ */
 function* doc_extcmd_flagstr(menuwin, efp) {
 
     /* note: tag shown for menu prefix is 'm' even if m-prefix action
@@ -1249,12 +1345,17 @@ function* doc_extcmd_flagstr(menuwin, efp) {
         let qbuf = new Uint8Array(128);
 
         (yield* add_menu_str(menuwin, __s_a_command_autocompletes));
-        void cptr.sprintf(cptr.decay(qbuf), __s_m_command_accepts_s_prefix, visctrl(cmd_from_func(do_reqmenu)));
+        void cptr.sprintf(
+            cptr.decay(qbuf),
+            __s_m_command_accepts_s_prefix,
+            visctrl(cmd_from_func(do_reqmenu))
+        );
         (yield* add_menu_str(menuwin, cptr.decay(qbuf)));
         return null;
     } else {
         let mprefix = accept_menu_prefix(efp);
-        let autocomplete = schar((((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) != 0));
+        let autocomplete = schar((((cptr.ldI32o(efp, $ext_func_tab_flags) &
+                NHM.AUTOCOMPLETE) >>> 0) != 0));
         let p = cptr.decay(__static_doc_extcmd_flagstr_Abuf);
 
         /* "" or "[m]" or "[A]" or "[mA]" */
@@ -1307,9 +1408,23 @@ export function* doextlist() {
         (yield* add_menu_str(menuwin, __s_extended_commands_list));
         (yield* add_menu_str(menuwin, __s_empty));
 
-        void cptr.sprintf(cptr.decay(buf), __s_switch_to_s_commands_that_don_t, menumode ? __s_including : __s_excluding);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_switch_to_s_commands_that_don_t,
+            menumode ? __s_including : __s_excluding
+        );
         cptr.stI32(any, 1);
-        (yield* add_menu(menuwin, nul_glyphinfo.v, any, 97, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            menuwin,
+            nul_glyphinfo.v,
+            any,
+            97,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
 
         if (!cptr.ld1s(cptr.decay(searchbuf))) {
             cptr.stI32(any, 2);
@@ -1318,22 +1433,65 @@ export function* doextlist() {
                actual list of extended commands shown via separator lines;
                having ':' as an explicit selector overrides the default
                menu behavior for it; we retain 's' as a group accelerator */
-            (yield* add_menu(menuwin, nul_glyphinfo.v, any, 58, 115, NHM.ATR_NONE, clr, __s_search_extended_commands, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                menuwin,
+                nul_glyphinfo.v,
+                any,
+                58,
+                115,
+                NHM.ATR_NONE,
+                clr,
+                __s_search_extended_commands,
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         } else {
             void cptr.strcpy(cptr.decay(buf), __s_switch_back_from_search);
-            if (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + cptr.strlen(cptr.decay(searchbuf))) + cptr.strlen(__s_sp_lparen_quot2_rparen)) < 128n)
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lparen_quot_pct_s_quot_rparen, cptr.decay(searchbuf));
+            if (BigInt.asUintN(
+                64,
+                BigInt.asUintN(
+                    64,
+                    cptr.strlen(cptr.decay(buf)) + cptr.strlen(cptr.decay(searchbuf))
+                ) +
+                    cptr.strlen(__s_sp_lparen_quot2_rparen)
+            ) < 128n)
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_sp_lparen_quot_pct_s_quot_rparen,
+                    cptr.decay(searchbuf)
+                );
             cptr.stI32(any, 3);
             /* specifying ':' as a group accelerator here is mostly a
                statement of intent (we'd like to accept it as a synonym but
                also want to hide it from general menu use) because it won't
                work for interfaces which support ':' to search; use as a
                general menu command takes precedence over group accelerator */
-            (yield* add_menu(menuwin, nul_glyphinfo.v, any, 115, 58, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                menuwin,
+                nul_glyphinfo.v,
+                any,
+                115,
+                58,
+                NHM.ATR_NONE,
+                clr,
+                cptr.decay(buf),
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         }
         if (wizard()) {
             cptr.stI32(any, 4);
-            (yield* add_menu(menuwin, nul_glyphinfo.v, any, 122, 0, NHM.ATR_NONE, clr, onelist ? __s_switch_to_showing_debugging_commands_in : __s_switch_to_showing_all_alphabetically, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                menuwin,
+                nul_glyphinfo.v,
+                any,
+                122,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                onelist
+                    ? __s_switch_to_showing_debugging_commands_in
+                    : __s_switch_to_showing_all_alphabetically,
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         }
         (yield* add_menu_str(menuwin, __s_empty));
         cptr.stI32o(menushown, 0, cptr.stI32o(menushown, 1, 0, 4), 4);
@@ -1343,13 +1501,18 @@ export function* doextlist() {
                commands are being integrated into a single list */
             if (pass == 1 && (onelist || !wizard()))
                 break;
-            for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
+            for (
+                efp = extcmdlist;
+                cptr.ldPtro(efp, $ext_func_tab_ef_txt);
+                efp = cptr.add(efp, 1, 48)
+            ) {
                 let wizc;
 
                 if (((cptr.ldI32o(efp, $ext_func_tab_flags) & 80) >>> 0) != 0)
                     continue;
                 /* if hiding non-autocomplete commands, skip such */
-                if (menumode == 1 && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) == 0)
+                if (menumode == 1 &&
+                        ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) == 0)
                     continue;
                 /* skip wizard mode commands if not in wizard mode;
                    when showing two sections, skip wizard mode commands
@@ -1363,10 +1526,21 @@ export function* doextlist() {
                 cmd_desc = cptr.ldPtro(efp, $ext_func_tab_ef_desc);
                 /* suppress part of the description for #genocided if it
                    doesn't apply during the current game */
-                if (!wizard() && !discover() && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.GENERALCMD) >>> 0) != 0 && (yield* strstri(cmd_desc, __s_extinct)))
-                    cmd_desc = strsubst(cptr.strcpy(cptr.decay(descbuf), cmd_desc), __s_been_genocided_or_become_extinct, __s_been_genocided);
+                if (!wizard() &&
+                        !discover() &&
+                        ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.GENERALCMD) >>> 0) != 0 &&
+                        (yield* strstri(cmd_desc, __s_extinct)))
+                    cmd_desc = strsubst(
+                        cptr.strcpy(cptr.decay(descbuf), cmd_desc),
+                        __s_been_genocided_or_become_extinct,
+                        __s_been_genocided
+                    );
                 /* if searching, skip this command if it doesn't match */
-                if (cptr.ld1s(cptr.decay(searchbuf)) && !(yield* strstri(cptr.ldPtro(efp, $ext_func_tab_ef_txt), cptr.decay(searchbuf))) && !(yield* strstri(cmd_desc, cptr.decay(searchbuf))) && !(yield* pmatchi(cptr.decay(searchbuf), cptr.ldPtro(efp, $ext_func_tab_ef_txt))) && !(yield* pmatchi(cptr.decay(searchbuf), cmd_desc)))
+                if (cptr.ld1s(cptr.decay(searchbuf)) &&
+                        !(yield* strstri(cptr.ldPtro(efp, $ext_func_tab_ef_txt), cptr.decay(searchbuf))) &&
+                        !(yield* strstri(cmd_desc, cptr.decay(searchbuf))) &&
+                        !(yield* pmatchi(cptr.decay(searchbuf), cptr.ldPtro(efp, $ext_func_tab_ef_txt))) &&
+                        !(yield* pmatchi(cptr.decay(searchbuf), cmd_desc)))
                     continue;
 
                 /* We're about to show an item, have we shown the menu yet?
@@ -1374,13 +1548,22 @@ export function* doextlist() {
                    heading with no subordinate entries on the search
                    results menu. */
                 if (!cptr.ldI32o(menushown, pass, 4)) {
-                    void cptr.strcpy(cptr.decay(buf), cptr.ldPtro(__static_doextlist_headings, pass, 8));
+                    void cptr.strcpy(
+                        cptr.decay(buf),
+                        cptr.ldPtro(__static_doextlist_headings, pass, 8)
+                    );
                     (yield* add_menu_heading(menuwin, cptr.decay(buf)));
                     cptr.stI32o(menushown, pass, 1, 4);
                 }
                 /* longest ef_txt at present is "wizrumorcheck" (13 chars);
                    2nd field will be "    " or " [A]" or " [m]" or "[mA]" */
-                void cptr.sprintf(cptr.decay(buf), __s_14s_4s_s, cptr.ldPtro(efp, $ext_func_tab_ef_txt), (yield* doc_extcmd_flagstr(menuwin, efp)), cmd_desc);
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_14s_4s_s,
+                    cptr.ldPtro(efp, $ext_func_tab_ef_txt),
+                    (yield* doc_extcmd_flagstr(menuwin, efp)),
+                    cmd_desc
+                );
                 (yield* add_menu_str(menuwin, cptr.decay(buf)));
                 ++n;
             }
@@ -1479,11 +1662,22 @@ export function* extcmd_via_menu() {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         /* populate choices */
         for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
-            if (((cptr.ldI32o(efp, $ext_func_tab_flags) & 80) >>> 0) || !((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) || (!wizard() && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0)))
+            if (((cptr.ldI32o(efp, $ext_func_tab_flags) & 80) >>> 0) ||
+                    !((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ||
+                    (!wizard() && ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0)))
                 continue;
-            if (!matchlevel || !cptr.strncmp(cptr.ldPtro(efp, $ext_func_tab_ef_txt), cptr.decay(cbuf), BigInt.asUintN(64, BigInt(matchlevel)))) {
+            if (!matchlevel ||
+                    !cptr.strncmp(
+                        cptr.ldPtro(efp, $ext_func_tab_ef_txt),
+                        cptr.decay(cbuf),
+                        BigInt.asUintN(64, BigInt(matchlevel))
+                    )) {
                 cptr.stPtro(choices, i, efp, 8);
-                if ((len = Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(efp, $ext_func_tab_ef_desc))))) > biggest)
+                if ((len = Number(BigInt.asIntN(
+                    32,
+                    cptr.strlen(cptr.ldPtro(efp, $ext_func_tab_ef_desc))
+                ))) >
+                        biggest)
                     biggest = len;
                 if (++i > 200) {
                     cptr.st1o(iflags, $instance_flags_extmenu, 0);
@@ -1495,7 +1689,12 @@ export function* extcmd_via_menu() {
         nchoices = i;
         /* if we're down to one, we have our selection so get out of here */
         if (nchoices <= 1) {
-            ret = (nchoices == 1) ? Number(BigInt.asIntN(32, (cptr.diff(cptr.ldPtro(choices, 0, 8), extcmdlist) / 48n))) : -1;
+            ret = (nchoices == 1)
+                    ? Number(BigInt.asIntN(
+                        32,
+                        (cptr.diff(cptr.ldPtro(choices, 0, 8), extcmdlist) / 48n)
+                    ))
+                    : -1;
             break;
         }
 
@@ -1510,15 +1709,38 @@ export function* extcmd_via_menu() {
         prevaccelerator = 0;
         acount = 0;
         for (i = 0; cptr.ldPtro(choices, i, 8); ++i) {
-            accelerator = cptr.ld1so(cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt), matchlevel);
+            accelerator = cptr.ld1so(
+                cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt),
+                matchlevel
+            );
             if (accelerator != prevaccelerator || one_per_line)
                 wastoolong = 0;
-            if (accelerator != prevaccelerator || one_per_line || (acount >= 2 && (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(cptr.decay(prompt)) + 4n) + cptr.strlen(cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt))) >= 74n))) {
+            if (accelerator != prevaccelerator ||
+                    one_per_line ||
+                    (acount >= 2 &&
+                        (BigInt.asUintN(
+                            64,
+                            BigInt.asUintN(64, cptr.strlen(cptr.decay(prompt)) + 4n) +
+                                cptr.strlen(cptr.ldPtro(
+                                    cptr.ldPtro(choices, i, 8),
+                                    $ext_func_tab_ef_txt
+                                ))
+                        ) >= 74n))) {
                 if (acount) {
                     /* flush extended cmds for that letter already in buf */
                     void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.decay(prompt));
                     cptr.st1(any, schar(prevaccelerator));
-                    (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+                    (yield* add_menu(
+                        win,
+                        nul_glyphinfo.v,
+                        any,
+                        cptr.ld1s(any),
+                        0,
+                        NHM.ATR_NONE,
+                        clr,
+                        cptr.decay(buf),
+                        NHM.MENU_ITEMFLAGS_NONE
+                    ));
                     acount = 0;
                     if (!(accelerator != prevaccelerator || one_per_line))
                         wastoolong = 1;
@@ -1526,12 +1748,27 @@ export function* extcmd_via_menu() {
             }
             prevaccelerator = accelerator;
             if (!acount || one_per_line) {
-                void cptr.sprintf(cptr.decay(prompt), __s_s_s_s, wastoolong ? __s_or : __s_empty, cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_desc));
+                void cptr.sprintf(
+                    cptr.decay(prompt),
+                    __s_s_s_s,
+                    wastoolong ? __s_or : __s_empty,
+                    cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt),
+                    cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_desc)
+                );
             } else if (acount == 1) {
-                void cptr.sprintf(cptr.decay(prompt), __s_s_s_or_s, wastoolong ? __s_or : __s_empty, cptr.ldPtro(cptr.ldPtro(choices, (i - 1) | 0, 8), $ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt));
+                void cptr.sprintf(
+                    cptr.decay(prompt),
+                    __s_s_s_or_s,
+                    wastoolong ? __s_or : __s_empty,
+                    cptr.ldPtro(cptr.ldPtro(choices, (i - 1) | 0, 8), $ext_func_tab_ef_txt),
+                    cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt)
+                );
             } else {
                 void cptr.strcat(cptr.decay(prompt), __s_or__2);
-                void cptr.strcat(cptr.decay(prompt), cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt));
+                void cptr.strcat(
+                    cptr.decay(prompt),
+                    cptr.ldPtro(cptr.ldPtro(choices, i, 8), $ext_func_tab_ef_txt)
+                );
             }
             ++acount;
         }
@@ -1539,9 +1776,26 @@ export function* extcmd_via_menu() {
             /* flush buf */
             void cptr.sprintf(cptr.decay(buf), cptr.decay(fmtstr), cptr.decay(prompt));
             cptr.st1(any, schar(prevaccelerator));
-            (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1s(any), 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                win,
+                nul_glyphinfo.v,
+                any,
+                cptr.ld1s(any),
+                0,
+                NHM.ATR_NONE,
+                clr,
+                cptr.decay(buf),
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         }
-        nh_snprintf(__s_extcmd_via_menu, 856, cptr.decay(prompt), 128n, __s_extended_command_s, cptr.decay(cbuf));
+        nh_snprintf(
+            __s_extcmd_via_menu,
+            856,
+            cptr.decay(prompt),
+            128n,
+            __s_extended_command_s,
+            cptr.decay(cbuf)
+        );
         (yield* Y.icall(end_menu()(win, cptr.decay(prompt))));
         n = (yield* select_menu(win, NHM.PICK_ONE, pick_list));
         (yield* Y.icall(destroy_nhwindow()(win)));
@@ -1550,7 +1804,12 @@ export function* extcmd_via_menu() {
                 cptr.free(pick_list.v);
                 ret = -1;
             } else {
-                cptr.st1o(cptr.decay(cbuf), matchlevel++, cptr.ld1so(pick_list.v, 0, $sizeof_menu_item), 1);
+                cptr.st1o(
+                    cptr.decay(cbuf),
+                    matchlevel++,
+                    cptr.ld1so(pick_list.v, 0, $sizeof_menu_item),
+                    1
+                );
                 cptr.st1o(cptr.decay(cbuf), matchlevel, 0, 1);
                 cptr.free(pick_list.v);
             }
@@ -1569,7 +1828,10 @@ export function* extcmd_via_menu() {
 /** C ref: cmd.c:890 @returns {CInt} */
 export function* domonability() {
     let uptr = cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data);
-    let might_hide = schar((((cptr.ldU64o((uptr), $permonst_mflags1) & 256n) != 0n) || ((cptr.ldU64o((uptr), $permonst_mflags1) & 128n) != 0n) ? 1 : 0));
+    let might_hide = schar((((cptr.ldU64o((uptr), $permonst_mflags1) & 256n) != 0n) ||
+        ((cptr.ldU64o((uptr), $permonst_mflags1) & 128n) != 0n)
+            ? 1
+            : 0));
     let c = 0;
 
     if (might_hide && webmaker(uptr)) {
@@ -1594,7 +1856,15 @@ export function* domonability() {
     else if (is_mind_flayer(uptr))
         return (yield* domindblast());
     else if (cptr.ldI32o(u, $you_umonnum) == NHC.PM_GREMLIN) {
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
+        if (((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.FOUNTAIN)) {
             if ((yield* split_mon(cptr.add(gy, $instance_globals_y_youmonst), null)))
                 (yield* dryup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1));
         } else if (is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
@@ -1613,9 +1883,11 @@ export function* domonability() {
             (yield* pline(__s_unfortunately_sound_does_not_carry_well));
         else
             (yield* aggravate());
-    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) || is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst))) {
+    } else if ((cptr.ld1so((uptr), $permonst_mlet) == NHC.S_VAMPIRE) ||
+            is_vampshifter(cptr.add(gy, $instance_globals_y_youmonst))) {
         return (yield* dopoly());
-    } else if (cptr.ldPtro(u, $you_usteed) && attacktype(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), NHM.AT_BREA)) {
+    } else if (cptr.ldPtro(u, $you_usteed) &&
+            attacktype(cptr.ldPtro(cptr.ldPtro(u, $you_usteed), $monst_data), NHM.AT_BREA)) {
         void (yield* pet_ranged_attk(cptr.ldPtro(u, $you_usteed), 1));
         return NHM.ECMD_TIME;
     } else if (Upolyd()) {
@@ -1643,7 +1915,10 @@ export function* enter_explore_mode() {
             }
         }
         (yield* pline(__s_beware_from_explore_mode_there_will_be, oldmode));
-        if ((yield* paranoid_query(schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)), __s_do_you_want_to_enter_explore_mode))) {
+        if ((yield* paranoid_query(
+            schar((((cptr.ldI32o(flags, $flag_paranoia_bits) & NHM.PARANOID_QUIT) >>> 0) != 0)),
+            __s_do_you_want_to_enter_explore_mode
+        ))) {
             cptr.st1o(flags, $flag_explore, 1);
             cptr.st1o(flags, $flag_debug, 0);
             (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
@@ -1671,11 +1946,47 @@ export function* makemap_prepost(pre, wiztower) {
             /* achievement tracking; if replacing a level that has a
                special prize, lose credit for previously finding it and
                reset for the new instance of that prize */
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level))))) {
+            if ((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level
+                )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_mineend_level
+                        )
+                    )))) {
                 if (remove_achievement(NHC.ACH_MINE_PRIZE))
                     (yield* pline(cptr.decay(__static_makemap_prepost_Unachieve), __s_mine_s_end));
                 cptr.stI32o(svc, $context_info_achieveo, 0);
-            } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level))))) {
+            } else if ((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level
+                )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_sokoend_level
+                        )
+                    )))) {
                 if (remove_achievement(NHC.ACH_SOKO_PRIZE))
                     (yield* pline(cptr.decay(__static_makemap_prepost_Unachieve), __s_soko_prize));
                 cptr.stI32o(svc, $context_info_achieveo + $achievement_tracking_soko_prize_oid, 0);
@@ -1689,14 +2000,28 @@ export function* makemap_prepost(pre, wiztower) {
         maybe_reset_pick(null);
         /* reset interrupted digging if it was taking place on this level */
         if (on_level(cptr.add(svc, $context_info_digging + $dig_info_level), cptr.add(u, $you_uz)))
-            void __builtin___memset_chk(cptr.add(svc, $context_info_digging), 0, 32n, __builtin_object_size(cptr.add(svc, $context_info_digging), 0));
+            void __builtin___memset_chk(
+                cptr.add(svc, $context_info_digging),
+                0,
+                32n,
+                __builtin_object_size(cptr.add(svc, $context_info_digging), 0)
+            );
         /* reset cached targets */
-        cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));  /* travel destination */
+        cptr.stI16o(
+            iflags,
+            $instance_flags_travelcc,
+            cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0)
+        );  /* travel destination */
         cptr.stPtro(svc, $context_info_polearm, null);  /* polearm target */
         /* escape from trap */
         (yield* reset_utrap(0));
         (yield* check_special_room(1));  /* room exit */
-        void __builtin___memset_chk(cptr.add(svd, $instance_globals_saved_d_dndest), 0, 16n, __builtin_object_size(cptr.add(svd, $instance_globals_saved_d_dndest), 0));
+        void __builtin___memset_chk(
+            cptr.add(svd, $instance_globals_saved_d_dndest),
+            0,
+            16n,
+            __builtin_object_size(cptr.add(svd, $instance_globals_saved_d_dndest), 0)
+        );
         void __builtin___memset_chk(svu, 0, 16n, __builtin_object_size(svu, 0));
         cptr.stPtro(u, $you_ustuck, null);
         cptr.stI32o(u, $you_uswallow, cptr.stI32o(u, $you_uswldtim, 0));
@@ -1721,7 +2046,14 @@ export function* makemap_prepost(pre, wiztower) {
         /* u_on_rndspot() might pick a spot that has a monster, or losedogs()
            might pick the hero's spot (only if there isn't already a monster
            there), so we might have to move hero or the co-located monster */
-        if ((mtmp = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null)
+        if ((mtmp = (cptr.ldPtro3(
+            svl,
+            cptr.ldI16(u),
+            168,
+            cptr.ldI16o(u, $you_uy),
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters
+        ))) !== null)
             (yield* u_collide_m(mtmp));
         initrack();
         if (Punished()) {
@@ -1816,19 +2148,79 @@ function* doterrain() {
     (yield* Y.icall(start_menu()(men, 0n)));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.stI32(any, 1);
-    (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_known_map_without_monsters_objects_and, NHM.MENU_ITEMFLAGS_SELECTED));
+    (yield* add_menu(
+        men,
+        nul_glyphinfo.v,
+        any,
+        0,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_known_map_without_monsters_objects_and,
+        NHM.MENU_ITEMFLAGS_SELECTED
+    ));
     cptr.stI32(any, 2);
-    (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_known_map_without_monsters_and_objects, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        men,
+        nul_glyphinfo.v,
+        any,
+        0,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_known_map_without_monsters_and_objects,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
     cptr.stI32(any, 3);
-    (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_known_map_without_monsters, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        men,
+        nul_glyphinfo.v,
+        any,
+        0,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_known_map_without_monsters,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
     if (discover() || wizard()) {
         cptr.stI32(any, 4);
-        (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_full_map_without_monsters_objects_and, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            men,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            __s_full_map_without_monsters_objects_and,
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
         if (wizard()) {
             cptr.stI32(any, 5);
-            (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_internal_levl_typ_codes_in_base_36, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                men,
+                nul_glyphinfo.v,
+                any,
+                0,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                __s_internal_levl_typ_codes_in_base_36,
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
             cptr.stI32(any, 6);
-            (yield* add_menu(men, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_legend_of_base_36_levl_typ_codes, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                men,
+                nul_glyphinfo.v,
+                any,
+                0,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                __s_legend_of_base_36_levl_typ_codes,
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         }
     }
     (yield* Y.icall(end_menu()(men, __s_view_which)));
@@ -1877,13 +2269,16 @@ function* doterrain() {
 function u_have_seen_whole_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     selection_getbounds(sel, rect);
 
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
-            if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
+            if (isok(x, y) &&
+                    selection_getpoint(x, y, sel) &&
+                    glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
                 return 0;
 
     return 1;
@@ -1894,24 +2289,33 @@ function u_have_seen_whole_selection(sel) {
 function u_have_seen_bounds_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     selection_getbounds(sel, rect);
 
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++) {
         y = cptr.ldI16o(rect, $nhrect_ly);
-        if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
+        if (isok(x, y) &&
+                selection_getpoint(x, y, sel) &&
+                glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
         y = cptr.ldI16o(rect, $nhrect_hy);
-        if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
+        if (isok(x, y) &&
+                selection_getpoint(x, y, sel) &&
+                glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
     }
     for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++) {
         x = cptr.ldI16(rect);
-        if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
+        if (isok(x, y) &&
+                selection_getpoint(x, y, sel) &&
+                glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
         x = cptr.ldI16o(rect, $nhrect_hx);
-        if (isok(x, y) && selection_getpoint(x, y, sel) && glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
+        if (isok(x, y) &&
+                selection_getpoint(x, y, sel) &&
+                glyph_at(x, y) == NHC.GLYPH_UNEXPLORED_OFF)
             return 0;
     }
 
@@ -1923,13 +2327,20 @@ function u_have_seen_bounds_selection(sel) {
 function u_can_see_whole_selection(sel) {
     let x;
     let y;
-    let rect = cptr.alloc(8); cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
+    let rect = cptr.alloc(8);
+    cptr.memcpy(rect, cptr.add(cg, $const_globals_zeroNhRect), $sizeof_nhrect);
 
     selection_getbounds(sel, rect);
 
     for (x = cptr.ldI16(rect); x <= cptr.ldI16o(rect, $nhrect_hx); x++)
         for (y = cptr.ldI16o(rect, $nhrect_ly); y <= cptr.ldI16o(rect, $nhrect_hy); y++)
-            if (isok(x, y) && selection_getpoint(x, y, sel) && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
+            if (isok(x, y) &&
+                    selection_getpoint(x, y, sel) &&
+                    !((cptr.ld1uo(
+                        cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                        x
+                    ) &
+                        NHM.IN_SIGHT) != 0))
                 return 0;
 
     return 1;
@@ -1938,9 +2349,24 @@ function u_can_see_whole_selection(sel) {
 /* selection_floofill callback to get all locations in a room */
 /** C ref: cmd.c:1263 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function dolookaround_floodfill_findroom(x, y) {
-    let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    let typ = cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    );
 
-    if (((typ) <= NHC.DBWALL) || ((typ) == NHC.DOOR) || IS_TREE(typ) || ((typ) == NHC.WATER) || typ == NHC.LAVAWALL || typ == NHC.IRONBARS || typ == NHC.SCORR || typ == NHC.SDOOR || typ == NHC.DRAWBRIDGE_UP)
+    if (((typ) <= NHC.DBWALL) ||
+            ((typ) == NHC.DOOR) ||
+            IS_TREE(typ) ||
+            ((typ) == NHC.WATER) ||
+            typ == NHC.LAVAWALL ||
+            typ == NHC.IRONBARS ||
+            typ == NHC.SCORR ||
+            typ == NHC.SDOOR ||
+            typ == NHC.DRAWBRIDGE_UP)
         return 0;
     return 1;
 }
@@ -1961,11 +2387,29 @@ function* lookaround_known_room(x, y) {
     if (u_have_seen_whole_selection(sel)) {
         let u_in = schar(selection_getpoint(x, y, sel));
 
-        (yield* You(__s_s_s_s__2, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && u_in && u_can_see_whole_selection(sel) ? __s_are_in : ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy))) ? __s_remember_this_as : __s_remember_that_as), (yield* an(selection_size_description(sel, cptr.decay(qbuf)))), rmno >= 0 ? __s_room : __s_area));
+        (yield* You(
+            __s_s_s_s__2,
+            ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && u_in &&
+                u_can_see_whole_selection(sel)
+                ? __s_are_in
+                : ((((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+                    ? __s_remember_this_as
+                    : __s_remember_that_as),
+            (yield* an(selection_size_description(sel, cptr.decay(qbuf)))),
+            rmno >= 0 ? __s_room : __s_area
+        ));
     } else if (u_have_seen_bounds_selection(sel)) {
-        (yield* You(__s_guess_s_to_be_s_s, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __s_this : __s_that, (yield* an(selection_size_description(sel, cptr.decay(qbuf)))), rmno >= 0 ? __s_room : __s_area));
+        (yield* You(
+            __s_guess_s_to_be_s_s,
+            ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __s_this : __s_that,
+            (yield* an(selection_size_description(sel, cptr.decay(qbuf)))),
+            rmno >= 0 ? __s_room : __s_area
+        ));
     } else {
-        (yield* You(__s_can_t_guess_the_size_of_s_area, ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __s_this : __s_that));
+        (yield* You(
+            __s_can_t_guess_the_size_of_s_area,
+            ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ? __s_this : __s_that
+        ));
     }
     selection_free(sel, 1);
 }
@@ -1980,19 +2424,44 @@ export function* dolookaround() {
     let corr_next2u = 0;
 
     cptr.st1(a11y, 1);
-    if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.CORR) {
+    if (cptr.ld1so3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    ) ==
+            NHC.CORR) {
         /* In a corridor, mention corridors next to you. */
         corr_next2u = 1;
         /* TODO: if we know, describe where the corridor goes,
            perhaps by describing the rooms? */
-    } else if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+    } else if (((cptr.ld1so3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) ==
+            NHC.DOOR)) {
         /* In a doorway, describe the rooms next to you */
         let i;
 
         for (i = NHC.DIR_W; i < ((NHC.N_DIRS_Z - 2) | 0); i = (i + 2) | 0) {
             x = i16(((cptr.ldI16(u) + cptr.ld1so(cptr.decay(xdir), i, 1)) | 0));
             y = i16(((cptr.ldI16o(u, $you_uy) + cptr.ld1so(cptr.decay(ydir), i, 1)) | 0));
-            if (isok(x, y) && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM))
+            if (isok(x, y) &&
+                    ((cptr.ld1so3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) >=
+                        NHC.ROOM))
                 (yield* lookaround_known_room(x, y));
         }
         corr_next2u = 1;
@@ -2007,9 +2476,15 @@ export function* dolookaround() {
         for (x = 1; x < NHM.COLNO; x++) {
             let glyph;
             let mapsym;
-            let iscorr = schar((corr_next2u && (glyph = glyph_at(x, y)) >= 0 && glyph_is_cmap(glyph) && ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr) ? 1 : 0));
+            let iscorr = schar((corr_next2u &&
+                (glyph = glyph_at(x, y)) >= 0 &&
+                glyph_is_cmap(glyph) &&
+                ((mapsym = glyph_to_cmap(glyph)) == NHC.S_corr || mapsym == NHC.S_litcorr)
+                    ? 1
+                    : 0));
 
-            if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && ((yield* gather_locs_interesting(x, y, NHC.GLOC_INTERESTING)) || iscorr)) {
+            if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
+                    ((yield* gather_locs_interesting(x, y, NHC.GLOC_INTERESTING)) || iscorr)) {
                 let buf = new Uint8Array(256);
                 let cc = cptr.alloc(4);
                 let sym = 0;
@@ -2033,8 +2508,12 @@ export function* dolookaround() {
    BIND=@:toggle(autopickup) */
 /** C ref: cmd.c:1376 @returns {CInt} */
 export function* dotoggleoption() {
-    if (cptr.ldPtro(gc, $instance_globals_c_cmd_bind) && cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_param)) {
-        return (yield* toggle_bool_option(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_param)));
+    if (cptr.ldPtro(gc, $instance_globals_c_cmd_bind) &&
+            cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_param)) {
+        return (yield* toggle_bool_option(cptr.ldPtro(
+            cptr.ldPtro(gc, $instance_globals_c_cmd_bind),
+            $Cmd_bind_param
+        )));
     } else {
         (yield* pline(__s_use_optionsfull_to_set_any_option));
         return NHM.ECMD_OK;
@@ -2052,7 +2531,12 @@ export function set_move_cmd(dir, run) {
     cptr.st1o(svc, $context_info_travel, cptr.st1o(svc, $context_info_travel1, 0));
     if (!cptr.ldI64o(gd, $instance_globals_d_domove_attempting) && !cptr.ldI32o(u, $you_dz)) {
         cptr.stI32o(svc, $context_info_run, run >>> 0);
-        cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | BigInt((!run ? NHM.DOMOVE_WALK : NHM.DOMOVE_RUSH)));
+        cptr.stI64o(
+            gd,
+            $instance_globals_d_domove_attempting,
+            cptr.ldI64o(gd, $instance_globals_d_domove_attempting) |
+                BigInt((!run ? NHM.DOMOVE_WALK : NHM.DOMOVE_RUSH))
+        );
     }
 }
 
@@ -2227,7 +2711,11 @@ export function* do_rush() {
     }
 
     cptr.stI32o(svc, $context_info_run, 2);
-    cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
+    cptr.stI64o(
+        gd,
+        $instance_globals_d_domove_attempting,
+        cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n
+    );
     return NHM.ECMD_OK;
 }
 
@@ -2242,7 +2730,11 @@ export function* do_run() {
     }
 
     cptr.stI32o(svc, $context_info_run, 3);
-    cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
+    cptr.stI64o(
+        gd,
+        $instance_globals_d_domove_attempting,
+        cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n
+    );
     return NHM.ECMD_OK;
 }
 
@@ -2257,7 +2749,11 @@ export function* do_fight() {
     }
 
     cptr.st1o(svc, $context_info_forcefight, 1);
-    cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 1n);
+    cptr.stI64o(
+        gd,
+        $instance_globals_d_domove_attempting,
+        cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 1n
+    );
     return NHM.ECMD_OK;
 }
 
@@ -3322,7 +3818,13 @@ cptr.stPtro(extcmdlist, 8160 + $ext_func_tab_f_text, null);
 
 /* mapping direction and move mode to extended command function */
 /** C ref: cmd.c:2070 — int (*[10][3])(void) */
-const move_funcs = (function () { const flat = new Uint8Array(10 * 3 * 8); const a = []; for (let r = 0; r < 10; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })();
+const move_funcs = (function () {
+    const flat = new Uint8Array(10 * 3 * 8);
+    const a = [];
+    for (let r = 0; r < 10; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(move_funcs[0]), 0, do_move_west);
 cptr.stPtro(cptr.decay(move_funcs[0]), 8, do_run_west);
 cptr.stPtro(cptr.decay(move_funcs[0]), 16, do_rush_west);
@@ -3396,7 +3898,12 @@ function cmdbind_get(key) {
     return bind;
 }
 
-/** C ref: cmd.c:2126 — @param {CUInt} key @param {CPtr<struct ext_func_tab>} extcmd @param {CInt} user */
+/**
+ * C ref: cmd.c:2126
+ * @param {CUInt} key
+ * @param {CPtr<struct ext_func_tab>} extcmd
+ * @param {CInt} user
+ */
 function* cmdbind_add(key, extcmd, user) {
     let bind = cmdbind_get(key);
 
@@ -3437,7 +3944,11 @@ function cmdbind_remove(key) {
             if (prev)
                 cptr.stPtro(prev, $Cmd_bind_next, cptr.ldPtro(bind, $Cmd_bind_next));
             else
-                cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds, cptr.ldPtro(bind, $Cmd_bind_next));
+                cptr.stPtro(
+                    gc,
+                    $instance_globals_c_Cmd + $cmd_cmdbinds,
+                    cptr.ldPtro(bind, $Cmd_bind_next)
+                );
             if (cptr.ldPtro(bind, $Cmd_bind_param))
                 cptr.free(cptr.ldPtro(bind, $Cmd_bind_param));
             cptr.free(bind);
@@ -3453,9 +3964,15 @@ export function cmdbind_freeall() {
     let next;
 
     while (cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds)) {
-        next = cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds), $Cmd_bind_next);
+        next = cptr.ldPtro(
+            cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds),
+            $Cmd_bind_next
+        );
         if (cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds), $Cmd_bind_param))
-            cptr.free(cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds), $Cmd_bind_param));
+            cptr.free(cptr.ldPtro(
+                cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds),
+                $Cmd_bind_param
+            ));
         cptr.free(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds));
         cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds, next);
     }
@@ -3481,12 +3998,19 @@ export function count_bind_keys() {
     let nbinds = 0;
     let keys = new Uint8Array(256);
 
-    void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
+    void __builtin___memset_chk(
+        cptr.decay(keys),
+        0,
+        256n,
+        __builtin_object_size(cptr.decay(keys), 0)
+    );
 
     /* commands bound to different key */
     while (bind) {
         cptr.st1o(cptr.decay(keys), cptr.ld1u(bind), 1, 1);
-        if (cptr.ld1so(bind, $Cmd_bind_userbind) && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
+        if (cptr.ld1so(bind, $Cmd_bind_userbind) &&
+                cptr.ldPtro(bind, $Cmd_bind_cmd) &&
+                cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
             nbinds++;
         }
         bind = cptr.ldPtro(bind, $Cmd_bind_next);
@@ -3494,7 +4018,8 @@ export function count_bind_keys() {
 
     /* commands which should be bound to a key, but aren't */
     for (i = 0; i < extcmdlist_length; i++)
-        if (cptr.ld1uo(extcmdlist, i, $sizeof_ext_func_tab) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1uo(extcmdlist, i, $sizeof_ext_func_tab), 1))
+        if (cptr.ld1uo(extcmdlist, i, $sizeof_ext_func_tab) &&
+                !cptr.ld1uo(cptr.decay(keys), cptr.ld1uo(extcmdlist, i, $sizeof_ext_func_tab), 1))
             nbinds++;
 
     return nbinds;
@@ -3510,7 +4035,12 @@ export function* get_changed_key_binds(sbuf) {
     let bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
     let keys = new Uint8Array(256);
 
-    void __builtin___memset_chk(cptr.decay(keys), 0, 256n, __builtin_object_size(cptr.decay(keys), 0));
+    void __builtin___memset_chk(
+        cptr.decay(keys),
+        0,
+        256n,
+        __builtin_object_size(cptr.decay(keys), 0)
+    );
 
     if (!sbuf)
         win = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
@@ -3518,11 +4048,27 @@ export function* get_changed_key_binds(sbuf) {
     /* commands bound to different key */
     while (bind) {
         cptr.st1o(cptr.decay(keys), cptr.ld1u(bind), 1, 1);
-        if (cptr.ld1so(bind, $Cmd_bind_userbind) && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
-            if (((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0)
-                void cptr.sprintf(cptr.decay(buf), __s_bind_s_s_s_s, key2txt(cptr.ld1u(bind), cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.ldPtro(bind, $Cmd_bind_param), sbuf ? __s_nl : __s_empty);
+        if (cptr.ld1so(bind, $Cmd_bind_userbind) &&
+                cptr.ldPtro(bind, $Cmd_bind_cmd) &&
+                cptr.ld1u(cptr.ldPtro(bind, $Cmd_bind_cmd)) != cptr.ld1u(bind)) {
+            if (((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) &
+                    NHM.CMD_PARAM) >>> 0) != 0)
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_bind_s_s_s_s,
+                    key2txt(cptr.ld1u(bind), cptr.decay(buf2)),
+                    cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt),
+                    cptr.ldPtro(bind, $Cmd_bind_param),
+                    sbuf ? __s_nl : __s_empty
+                );
             else
-                void cptr.sprintf(cptr.decay(buf), __s_bind_s_s_s, key2txt(cptr.ld1u(bind), cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt), sbuf ? __s_nl : __s_empty);
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_bind_s_s_s,
+                    key2txt(cptr.ld1u(bind), cptr.decay(buf2)),
+                    cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt),
+                    sbuf ? __s_nl : __s_empty
+                );
             if (sbuf)
                 (yield* strbuf_append(sbuf, cptr.decay(buf)));
             else
@@ -3536,7 +4082,12 @@ export function* get_changed_key_binds(sbuf) {
         let ec = cptr.add(extcmdlist, i, $sizeof_ext_func_tab);
 
         if (cptr.ld1u(ec) && !cptr.ld1uo(cptr.decay(keys), cptr.ld1u(ec), 1)) {
-            void cptr.sprintf(cptr.decay(buf), __s_bind_s_nothing_s, key2txt(cptr.ld1u(ec), cptr.decay(buf2)), sbuf ? __s_nl : __s_empty);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_bind_s_nothing_s,
+                key2txt(cptr.ld1u(ec), cptr.decay(buf2)),
+                sbuf ? __s_nl : __s_empty
+            );
             if (sbuf)
                 (yield* strbuf_append(sbuf, cptr.decay(buf)));
             else
@@ -3579,16 +4130,35 @@ function* handler_rebind_keys_add(keyfirst) {
         let bind = cmdbind_get(key);
 
         if (bind && cptr.ldPtro(bind, $Cmd_bind_cmd)) {
-            void cptr.sprintf(cptr.decay(buf), __s_key_s_is_currently_bound_to_s, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_key_s_is_currently_bound_to_s,
+                key2txt(key, cptr.decay(buf2)),
+                cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt)
+            );
         } else {
-            void cptr.sprintf(cptr.decay(buf), __s_key_s_is_not_bound_to_anything, key2txt(key, cptr.decay(buf2)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_key_s_is_not_bound_to_anything,
+                key2txt(key, cptr.decay(buf2))
+            );
         }
         (yield* add_menu_str(win, cptr.decay(buf)));
         (yield* add_menu_str(win, __s_empty));
     }
 
     cptr.stI32(any, -1);
-    (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_nothing_unbind_the_key, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        win,
+        nul_glyphinfo.v,
+        any,
+        0,
+        0,
+        NHM.ATR_NONE,
+        clr,
+        __s_nothing_unbind_the_key,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
 
     (yield* add_menu_str(win, __s_empty));
 
@@ -3599,11 +4169,30 @@ function* handler_rebind_keys_add(keyfirst) {
             continue;
 
         cptr.stI32(any, ((i + 1) | 0));
-        void cptr.sprintf(cptr.decay(buf), __s_s_s, cptr.ldPtro(ec, $ext_func_tab_ef_txt), cptr.ldPtro(ec, $ext_func_tab_ef_desc));
-        (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s,
+            cptr.ldPtro(ec, $ext_func_tab_ef_txt),
+            cptr.ldPtro(ec, $ext_func_tab_ef_desc)
+        );
+        (yield* add_menu(
+            win,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     if (key)
-        void cptr.sprintf(cptr.decay(buf), __s_bind_s_to_what_command, key2txt(key, cptr.decay(buf2)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_bind_s_to_what_command,
+            key2txt(key, cptr.decay(buf2))
+        );
     else
         void cptr.sprintf(cptr.decay(buf), __s_bind_what_command);
     (yield* Y.icall(end_menu()(win, cptr.decay(buf))));
@@ -3629,10 +4218,22 @@ function* handler_rebind_keys_add(keyfirst) {
                     let querybuf = new Uint8Array(256);
 
                     cptr.st1o(cptr.decay(parambuf), 0, 0, 1);
-                    void cptr.sprintf(cptr.decay(querybuf), __s_command_s_requires_a_parameter, cptr.ldPtro(ec, $ext_func_tab_ef_txt));
+                    void cptr.sprintf(
+                        cptr.decay(querybuf),
+                        __s_command_s_requires_a_parameter,
+                        cptr.ldPtro(ec, $ext_func_tab_ef_txt)
+                    );
                     (yield* getlin(cptr.decay(querybuf), cptr.decay(parambuf)));
                     void (yield* mungspaces(cptr.decay(parambuf)));
-                    nh_snprintf(__s_handler_rebind_keys_add, 2376, cptr.decay(cmdstr), 255n, __s_s_s__2, cptr.ldPtro(ec, $ext_func_tab_ef_txt), cptr.decay(parambuf));
+                    nh_snprintf(
+                        __s_handler_rebind_keys_add,
+                        2376,
+                        cptr.decay(cmdstr),
+                        255n,
+                        __s_s_s__2,
+                        cptr.ldPtro(ec, $ext_func_tab_ef_txt),
+                        cptr.decay(parambuf)
+                    );
                     cptr.st1o(cptr.decay(cmdstr), 255, 0, 1);
                 } else {
                     void cptr.strcat(cptr.decay(cmdstr), cptr.ldPtro(ec, $ext_func_tab_ef_txt));
@@ -3651,7 +4252,12 @@ function* handler_rebind_keys_add(keyfirst) {
 
         if ((yield* bind_key(key, cptr.decay(cmdstr), 1))) {
             if (prevcmd && !cptr.eq(cptr.ldPtro(prevcmd, $Cmd_bind_cmd), ec)) {
-                (yield* pline(__s_changed_key_s_from_s_to_s, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(prevcmd, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.decay(cmdstr)));
+                (yield* pline(
+                    __s_changed_key_s_from_s_to_s,
+                    key2txt(key, cptr.decay(buf2)),
+                    cptr.ldPtro(cptr.ldPtro(prevcmd, $Cmd_bind_cmd), $ext_func_tab_ef_txt),
+                    cptr.decay(cmdstr)
+                ));
             } else if (!prevcmd) {
                 (yield* pline(__s_bound_key_s_to_s, key2txt(key, cptr.decay(buf2)), cptr.decay(cmdstr)));
             }
@@ -3675,12 +4281,42 @@ export function* handler_rebind_keys() {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
 
         cptr.stI32(any, 1);
-        (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_bind_key_to_a_command, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            win,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            __s_bind_key_to_a_command,
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
         cptr.stI32(any, 2);
-        (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_bind_command_to_a_key, NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            win,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            __s_bind_command_to_a_key,
+            NHM.MENU_ITEMFLAGS_NONE
+        ));
         if (count_bind_keys()) {
             cptr.stI32(any, 3);
-            (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_view_changed_key_binds, NHM.MENU_ITEMFLAGS_NONE));
+            (yield* add_menu(
+                win,
+                nul_glyphinfo.v,
+                any,
+                0,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                __s_view_changed_key_binds,
+                NHM.MENU_ITEMFLAGS_NONE
+            ));
         }
         (yield* Y.icall(end_menu()(win, __s_do_what)));
         npick = (yield* select_menu(win, NHM.PICK_ONE, picks));
@@ -3724,8 +4360,26 @@ export function* handler_change_autocompletions() {
             continue;
 
         cptr.stI32(any, ((i + 1) | 0));
-        void cptr.sprintf(cptr.decay(buf), __s_c_s_s, ((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) ? 42 : 32, cptr.ldPtro(ec, $ext_func_tab_ef_txt), cptr.ldPtro(ec, $ext_func_tab_ef_desc));
-        (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(buf), ((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_c_s_s,
+            ((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) ? 42 : 32,
+            cptr.ldPtro(ec, $ext_func_tab_ef_txt),
+            cptr.ldPtro(ec, $ext_func_tab_ef_desc)
+        );
+        (yield* add_menu(
+            win,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(buf),
+            ((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0)
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
 
     (yield* Y.icall(end_menu()(win, __s_which_commands_autocomplete)));
@@ -3746,7 +4400,14 @@ export function* handler_change_autocompletions() {
             void cptr.sprintf(cptr.decay(buf), __s_pct_s, cptr.ldPtro(ec, $ext_func_tab_ef_txt));
 
             for (j = 0; j < n; ++j) {
-                if (cptr.eq(ec, cptr.add(extcmdlist, ((cptr.ldI32o(picks.v, j, $sizeof_menu_item) - 1) | 0), $sizeof_ext_func_tab))) {
+                if (cptr.eq(
+                    ec,
+                    cptr.add(
+                        extcmdlist,
+                        ((cptr.ldI32o(picks.v, j, $sizeof_menu_item) - 1) | 0),
+                        $sizeof_ext_func_tab
+                    )
+                )) {
                     (yield* parseautocomplete(cptr.decay(buf), 1));
                     setit = 1;
                     break;
@@ -3772,7 +4433,13 @@ export function* handler_change_autocompletions() {
 const __static_extcmds_match_retmatchlist = cptr.alloc(171 * 4);
 cptr.stI32o(__static_extcmds_match_retmatchlist, 0, 0); /** C ref: cmd.c:2525 — int[171] (function-static) */
 
-/** C ref: cmd.c:2523 — @param {CPtr<char>} findstr @param {CInt} ecmflags @param {CPtr<int *>} matchlist @returns {CInt} */
+/**
+ * C ref: cmd.c:2523
+ * @param {CPtr<char>} findstr
+ * @param {CInt} ecmflags
+ * @param {CPtr<int *>} matchlist
+ * @returns {CInt}
+ */
 export function* extcmds_match(findstr, ecmflags, matchlist) {
     let i;
     let mi = 0;
@@ -3784,20 +4451,38 @@ export function* extcmds_match(findstr, ecmflags, matchlist) {
     for (i = 0; cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt); i++) {
         if ((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) & 80) >>> 0)
             continue;
-        if (!wizard() && ((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0))
+        if (!wizard() &&
+                ((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) &
+                    NHM.WIZMODECMD) >>> 0))
             continue;
-        if (!ignoreac && !((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0))
+        if (!ignoreac &&
+                !((cptr.ldI32o2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_flags) &
+                    NHM.AUTOCOMPLETE) >>> 0))
             continue;
-        if (no1charcmd && (cptr.strlen(cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)) == 1n))
+        if (no1charcmd &&
+                (cptr.strlen(cptr.ldPtro2(
+                    extcmdlist,
+                    i,
+                    $sizeof_ext_func_tab,
+                    $ext_func_tab_ef_txt
+                )) == 1n))
             continue;
         if (!findstr) {
             cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
         } else if (exactmatch) {
-            if (!(yield* strncmpi((findstr), (cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)), -1))) {
+            if (!(yield* strncmpi(
+                (findstr),
+                (cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt)),
+                -1
+            ))) {
                 cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
             }
         } else {
-            if (!(yield* strncmpi(findstr, cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt), fslen))) {
+            if (!(yield* strncmpi(
+                findstr,
+                cptr.ldPtro2(extcmdlist, i, $sizeof_ext_func_tab, $ext_func_tab_ef_txt),
+                fslen
+            ))) {
                 cptr.stI32o(__static_extcmds_match_retmatchlist, mi++, i, 4);
             }
         }
@@ -3831,13 +4516,25 @@ export function* key2extcmddesc(key) {
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_rush);
     else if (movecmd(schar((k = key)), NHC.MV_RUN))
         void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_run);
-    if (digit(schar(key)) || (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) && digit(schar((127 & (key)))))) {
+    if (digit(schar(key)) ||
+            (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) &&
+                digit(schar((127 & (key)))))) {
         cptr.st1o(cptr.decay(__static_key2extcmddesc_key2cmdbuf), 0, 0, 1);
         if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad))
-            void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_start_of_or_continuation_of_a_count);
+            void cptr.strcpy(
+                cptr.decay(__static_key2extcmddesc_key2cmdbuf),
+                __s_start_of_or_continuation_of_a_count
+            );
         else if (key == 53 || key == M_5)
-            void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_s_prefix, (!!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ^ (key == M_5)) ? __s_run : __s_rush);
-        else if (key == 48 || (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) && key == M_0))
+            void cptr.sprintf(
+                cptr.decay(__static_key2extcmddesc_key2cmdbuf),
+                __s_s_prefix,
+                (!!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) ^ (key == M_5))
+                    ? __s_run
+                    : __s_rush
+            );
+        else if (key == 48 ||
+                (cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat) && key == M_0))
             void cptr.strcpy(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_synonym_for_i);
         if (cptr.ld1s(cptr.decay(__static_key2extcmddesc_key2cmdbuf)))
             return cptr.decay(__static_key2extcmddesc_key2cmdbuf);
@@ -3851,18 +4548,37 @@ export function* key2extcmddesc(key) {
             return cptr.ldPtro2(misc_keys, i, 24, 8);
     }
     /* finally, check whether 'key' is a command */
-    if ((cmdbind = cmdbind_get(key)) !== null && cptr.ldPtro(cmdbind, $Cmd_bind_cmd) && (txt = cptr.ldPtro(cptr.ldPtro(cmdbind, $Cmd_bind_cmd), $ext_func_tab_ef_txt)) !== null) {
-        void cptr.sprintf(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_s_s__3, cptr.ldPtro(cptr.ldPtro(cmdbind, $Cmd_bind_cmd), $ext_func_tab_ef_desc), txt);
+    if ((cmdbind = cmdbind_get(key)) !== null &&
+            cptr.ldPtro(cmdbind, $Cmd_bind_cmd) &&
+            (txt = cptr.ldPtro(
+                cptr.ldPtro(cmdbind, $Cmd_bind_cmd),
+                $ext_func_tab_ef_txt
+            )) !== null) {
+        void cptr.sprintf(
+            cptr.decay(__static_key2extcmddesc_key2cmdbuf),
+            __s_s_s__3,
+            cptr.ldPtro(cptr.ldPtro(cmdbind, $Cmd_bind_cmd), $ext_func_tab_ef_desc),
+            txt
+        );
 
         /* special case: for reqmenu prefix (normally 'm'), replace
            "prefix: request menu or modify command (#reqmenu)"
            with two-line "movement prefix:...\nnon-movement prefix:..." */
-        if (!(yield* strncmpi(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_prefix, 7)) && !(yield* strncmpi((txt), (__s_reqmenu), -1)))
-            void strsubst(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_prefix, __s_movement_prefix_move_without_autopickup);  /* and rest of buf */
+        if (!(yield* strncmpi(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_prefix, 7)) &&
+                !(yield* strncmpi((txt), (__s_reqmenu), -1)))
+            void strsubst(
+                cptr.decay(__static_key2extcmddesc_key2cmdbuf),
+                __s_prefix,
+                __s_movement_prefix_move_without_autopickup
+            );  /* and rest of buf */
 
         /* another special case: 'txt' for '#' is "#" and showing that as
            "perform an extended command (##)" looks silly; strip "(##)" off */
-        return strsubst(cptr.decay(__static_key2extcmddesc_key2cmdbuf), __s_sp_lparen_hash2_rparen, __s_empty);
+        return strsubst(
+            cptr.decay(__static_key2extcmddesc_key2cmdbuf),
+            __s_sp_lparen_hash2_rparen,
+            __s_empty
+        );
     }
     return null;
 }
@@ -3883,7 +4599,11 @@ export function* bind_mousebtn(btn, command) {
         return 1;
     }
 
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    ) {
         if ((yield* strncmpi((command), (cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)), -1)))
             continue;
         if (!((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.MOUSECMD) >>> 0))
@@ -3895,7 +4615,13 @@ export function* bind_mousebtn(btn, command) {
     return 0;
 }
 
-/** C ref: cmd.c:2662 — @param {CUInt} key @param {CPtr<char>} command @param {CInt} user @returns {CInt} */
+/**
+ * C ref: cmd.c:2662
+ * @param {CUInt} key
+ * @param {CPtr<char>} command
+ * @param {CInt} user
+ * @returns {CInt}
+ */
 export function* bind_key(key, command, user) {
     let extcmd;
     let len;
@@ -3912,17 +4638,28 @@ export function* bind_key(key, command, user) {
     /* copy command to buf for modification */
     len = BigInt.asIntN(64, BigInt.asUintN(64, cptr.strlen(command) + 1n));
     buf = (yield* alloc(Number(BigInt.asUintN(32, len))));
-    void __builtin___strncpy_chk(buf, command, BigInt.asUintN(64, len), __builtin_object_size(buf, 1));
+    void __builtin___strncpy_chk(
+        buf,
+        command,
+        BigInt.asUintN(64, len),
+        __builtin_object_size(buf, 1)
+    );
 
     /* does buf have a parameter in parenthesis? */
-    if ((p = cptr.strchr(buf, 40)) !== null && (lastp = cptr.strrchr(buf, 41)) !== null && (cptr.cmp(lastp, p) > 0)) {
+    if ((p = cptr.strchr(buf, 40)) !== null &&
+            (lastp = cptr.strrchr(buf, 41)) !== null &&
+            (cptr.cmp(lastp, p) > 0)) {
         cptr.st1(p, 0);
         cptr.st1(lastp, 0);
         /* p points to the parameter */
         p = cptr.add(p, 1);
     }
 
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    ) {
         if ((yield* strncmpi((buf), (cptr.ldPtro(extcmd, $ext_func_tab_ef_txt)), -1)))
             continue;
         if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.INTERNALCMD) >>> 0) != 0)
@@ -3934,13 +4671,21 @@ export function* bind_key(key, command, user) {
                 (yield* config_error_add(__s_s_requires_a_parameter, buf));
             } else {
                 let bind = cmdbind_get(key);
-                let maxlen = Number(BigInt.asIntN(32, BigInt.asUintN(64, (30n < (cptr.strlen(p)) ? 30n : (cptr.strlen(p))) + 1n)));
+                let maxlen = Number(BigInt.asIntN(
+                    32,
+                    BigInt.asUintN(64, (30n < (cptr.strlen(p)) ? 30n : (cptr.strlen(p))) + 1n)
+                ));
 
                 if (maxlen <= 1) {
                     (yield* config_error_add(__s_required_parameter_cannot_be_empty));
                 } else {
                     cptr.stPtro(bind, $Cmd_bind_param, (yield* alloc(maxlen >>> 0)));
-                    void __builtin___strncpy_chk(cptr.ldPtro(bind, $Cmd_bind_param), p, BigInt.asUintN(64, BigInt(maxlen)), __builtin_object_size(cptr.ldPtro(bind, $Cmd_bind_param), 1));
+                    void __builtin___strncpy_chk(
+                        cptr.ldPtro(bind, $Cmd_bind_param),
+                        p,
+                        BigInt.asUintN(64, BigInt(maxlen)),
+                        __builtin_object_size(cptr.ldPtro(bind, $Cmd_bind_param), 1)
+                    );
                     cptr.st1o(cptr.ldPtro(bind, $Cmd_bind_param), (maxlen - 1) | 0, 0);
                 }
             }
@@ -3959,7 +4704,11 @@ export function* bind_key(key, command, user) {
 function* bind_key_fn(key, fn) {
     let extcmd;
 
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    ) {
         if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) !== fn)
             continue;
         if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.INTERNALCMD) >>> 0) != 0)
@@ -3976,7 +4725,11 @@ function* bind_key_fn(key, fn) {
 function* commands_init() {
     let extcmd;
 
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    )
         if (cptr.ld1u(extcmd))
             (yield* cmdbind_add(cptr.ld1u(extcmd), extcmd, 0));
 
@@ -4002,7 +4755,12 @@ function* commands_init() {
     void (yield* bind_key(206, __s_name, 0));
 }
 
-/** C ref: cmd.c:2785 — @param {CPtr<struct ext_func_tab>} extcmd @param {CPtr<boolean>} skip_keys_used @returns {CInt} */
+/**
+ * C ref: cmd.c:2785
+ * @param {CPtr<struct ext_func_tab>} extcmd
+ * @param {CPtr<boolean>} skip_keys_used
+ * @returns {CInt}
+ */
 function keylist_func_has_key(extcmd, skip_keys_used) {
     let i;
     let bind;
@@ -4011,13 +4769,22 @@ function keylist_func_has_key(extcmd, skip_keys_used) {
         if (cptr.ld1so(skip_keys_used, i))
             continue;
 
-        if (((bind = cmdbind_get(uchar(i))) !== null) && (cptr.eq(cptr.ldPtro(bind, $Cmd_bind_cmd), extcmd)))
+        if (((bind = cmdbind_get(uchar(i))) !== null) &&
+                (cptr.eq(cptr.ldPtro(bind, $Cmd_bind_cmd), extcmd)))
             return 1;
     }
     return 0;
 }
 
-/** C ref: cmd.c:2802 — @param {CInt} datawin @param {CInt} docount @param {CInt} incl_flags @param {CInt} excl_flags @param {CPtr<boolean>} keys_used @returns {CInt} */
+/**
+ * C ref: cmd.c:2802
+ * @param {CInt} datawin
+ * @param {CInt} docount
+ * @param {CInt} incl_flags
+ * @param {CInt} excl_flags
+ * @param {CPtr<boolean>} keys_used
+ * @returns {CInt}
+ */
 function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
     let extcmd;
     let i;
@@ -4037,23 +4804,49 @@ function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
             continue;
         bind = cmdbind_get(key);
         if (bind && cptr.ldPtro(bind, $Cmd_bind_cmd) !== null) {
-            if ((incl_flags && !((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) & incl_flags >>> 0) >>> 0)) || (excl_flags && ((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) & excl_flags >>> 0) >>> 0)))
+            if ((incl_flags &&
+                !((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) &
+                    incl_flags >>> 0) >>> 0)) ||
+                    (excl_flags &&
+                        ((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) &
+                            excl_flags >>> 0) >>> 0)))
                 continue;
             if (docount) {
                 count++;
                 continue;
             }
-            if (((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) & NHM.CMD_PARAM) >>> 0) != 0)
-                void cptr.sprintf(cptr.decay(buf), __s_7s_13s_s_s, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_desc), cptr.ldPtro(bind, $Cmd_bind_param));
+            if (((cptr.ldI32o(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_flags) &
+                    NHM.CMD_PARAM) >>> 0) != 0)
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_7s_13s_s_s,
+                    key2txt(key, cptr.decay(buf2)),
+                    cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt),
+                    cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_desc),
+                    cptr.ldPtro(bind, $Cmd_bind_param)
+                );
             else
-                void cptr.sprintf(cptr.decay(buf), __s_7s_13s_s, key2txt(key, cptr.decay(buf2)), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt), cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_desc));
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_7s_13s_s,
+                    key2txt(key, cptr.decay(buf2)),
+                    cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_txt),
+                    cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_desc)
+                );
             (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
             cptr.st1o(keys_used, i, 1);
         }
     }
     /* also list commands that lack key assignments; most are wizard mode */
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
-        if ((incl_flags && !((cptr.ldI32o(extcmd, $ext_func_tab_flags) & incl_flags >>> 0) >>> 0)) || (excl_flags && ((cptr.ldI32o(extcmd, $ext_func_tab_flags) & excl_flags >>> 0) >>> 0)))
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    ) {
+        if ((incl_flags &&
+            !((cptr.ldI32o(extcmd, $ext_func_tab_flags) & incl_flags >>> 0) >>> 0)) ||
+                (excl_flags &&
+                    ((cptr.ldI32o(extcmd, $ext_func_tab_flags) & excl_flags >>> 0) >>> 0)))
             continue;
         /* can't just check for non-Null extcmd->key; it holds the
            default assignment and a user-specified binding might hijack
@@ -4068,7 +4861,12 @@ function* keylist_putcmds(datawin, docount, incl_flags, excl_flags, keys_used) {
             continue;
         }
         /* '#'+20 for one column here == 7+' '+13 for two columns above */
-        void cptr.sprintf(cptr.decay(buf), __s_20s_s, cptr.ldPtro(extcmd, $ext_func_tab_ef_txt), cptr.ldPtro(extcmd, $ext_func_tab_ef_desc));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_20s_s,
+            cptr.ldPtro(extcmd, $ext_func_tab_ef_txt),
+            cptr.ldPtro(extcmd, $ext_func_tab_ef_desc)
+        );
         (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
     }
     return count;
@@ -4089,7 +4887,12 @@ export function* dokeylist() {
     let j;
     let pfx_seen = cptr.alloc(256 * 4);
 
-    void __builtin___memset_chk(cptr.decay(keys_used), 0, 256n, __builtin_object_size(cptr.decay(keys_used), 0));
+    void __builtin___memset_chk(
+        cptr.decay(keys_used),
+        0,
+        256n,
+        __builtin_object_size(cptr.decay(keys_used), 0)
+    );
     void __builtin___memset_chk(pfx_seen, 0, 1024n, __builtin_object_size(pfx_seen, 0));
     /* this is actually ambiguous; tty raw mode will override SIGINT;
        when enabled, treat it like a movement command since assigning
@@ -4117,9 +4920,18 @@ export function* dokeylist() {
     (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
     void cptr.sprintf(cptr.decay(buf), __s_7s_s, __s_empty, __s_full_current_key_bindings_list);
     (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    )
         if (spkey_gap || !keylist_func_has_key(extcmd, cptr.decay(keys_used))) {
-            void cptr.sprintf(cptr.decay(buf), __s_7s_s, __s_empty, __s_also_commands_with_no_key_assignment);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_7s_s,
+                __s_empty,
+                __s_also_commands_with_no_key_assignment
+            );
             (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
             break;
         }
@@ -4152,8 +4964,15 @@ export function* dokeylist() {
             continue;
         j = cptr.ldI32o(misc_keys, i, 24);
         key = uchar(cptr.ld1so2(gc, j, 1, $instance_globals_c_Cmd + $cmd_spkeys));
-        if (key && !cptr.ld1so(cptr.decay(mov_seen), key, 1) && (cptr.ldI32o(pfx_seen, key, 4) == j)) {
-            void cptr.sprintf(cptr.decay(buf), __s_7s_s__2, key2txt(key, cptr.decay(buf2)), cptr.ldPtro2(misc_keys, i, 24, 8));
+        if (key &&
+                !cptr.ld1so(cptr.decay(mov_seen), key, 1) &&
+                (cptr.ldI32o(pfx_seen, key, 4) == j)) {
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_7s_s__2,
+                key2txt(key, cptr.decay(buf2)),
+                cptr.ldPtro2(misc_keys, i, 24, 8)
+            );
             (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
         }
     }
@@ -4174,7 +4993,15 @@ export function* dokeylist() {
                 void cptr.sprintf(cptr.decay(buf2), __s_lbrack_pct_s_rbrack, spkey_name(j));
                 /* lines up with the other unassigned commands which use
                    "#%-20s ", but not with the other special keys */
-                nh_snprintf(__s_dokeylist, 2976, cptr.decay(buf), 256n, __s_21s_s, cptr.decay(buf2), cptr.ldPtro2(misc_keys, i, 24, 8));
+                nh_snprintf(
+                    __s_dokeylist,
+                    2976,
+                    cptr.decay(buf),
+                    256n,
+                    __s_21s_s,
+                    cptr.decay(buf2),
+                    cptr.ldPtro2(misc_keys, i, 24, 8)
+                );
                 (yield* Y.icall(putstr()(datawin, 0, cptr.decay(buf))));
             }
         }
@@ -4195,7 +5022,8 @@ export function* dokeylist() {
         void (yield* keylist_putcmds(datawin, 0, 0, 1100, cptr.decay(keys_used)));
     }
 
-    if (wizard() && (yield* keylist_putcmds(datawin, 1, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)))) {
+    if (wizard() &&
+            (yield* keylist_putcmds(datawin, 1, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)))) {
         (yield* Y.icall(putstr()(datawin, 0, __s_empty)));
         (yield* Y.icall(putstr()(datawin, 0, __s_debug_mode_commands)));
         void (yield* keylist_putcmds(datawin, 0, NHM.WIZMODECMD, NHM.INTERNALCMD, cptr.decay(keys_used)));
@@ -4209,7 +5037,11 @@ export function* dokeylist() {
 export function ext_func_tab_from_func(fn) {
     let extcmd;
 
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    )
         if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn)
             return extcmd;
 
@@ -4229,7 +5061,11 @@ export function cmd_from_func(fn) {
     let ret = 0;
     let bind;
 
-    for (bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds); bind; bind = cptr.ldPtro(bind, $Cmd_bind_next)) {
+    for (
+        bind = cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_cmdbinds);
+        bind;
+        bind = cptr.ldPtro(bind, $Cmd_bind_next)
+    ) {
         i = cptr.ld1u(bind);
         /* skip space; we'll use it below as last resort if no other
            keystroke invokes space's command */
@@ -4237,10 +5073,12 @@ export function cmd_from_func(fn) {
             continue;
         /* skip digits if number_pad is Off; also skip '-' unless it has
            been bound to something other than what number_pad assigns */
-        if (((i >= 48 && i <= 57) || (i == 45 && fn === do_fight)) && !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad))
+        if (((i >= 48 && i <= 57) || (i == 45 && fn === do_fight)) &&
+                !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad))
             continue;
 
-        if (cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === fn) {
+        if (cptr.ldPtro(bind, $Cmd_bind_cmd) &&
+                cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === fn) {
             if (i >= 32 && i <= 126)
                 return schar(i);
             else {
@@ -4248,7 +5086,9 @@ export function cmd_from_func(fn) {
             }
         }
     }
-    if ((bind = cmdbind_get(32)) !== null && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === fn)
+    if ((bind = cmdbind_get(32)) !== null &&
+            cptr.ldPtro(bind, $Cmd_bind_cmd) &&
+            cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === fn)
         return 32;
     return ret;
 }
@@ -4261,14 +5101,26 @@ const __static_cmd_from_ecname_cmdnamebuf = new Uint8Array(128); /** C ref: cmd.
 export function cmd_from_ecname(ecname) {
     let extcmd;
 
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    )
         if (!strcmp(cptr.ldPtro(extcmd, $ext_func_tab_ef_txt), ecname)) {
             let key = cmd_from_func(cptr.ldPtro(extcmd, $ext_func_tab_ef_funct));
 
             if (key)
-                void cptr.sprintf(cptr.decay(__static_cmd_from_ecname_cmdnamebuf), __s_pct_s, visctrl(key));
+                void cptr.sprintf(
+                    cptr.decay(__static_cmd_from_ecname_cmdnamebuf),
+                    __s_pct_s,
+                    visctrl(key)
+                );
             else
-                void cptr.sprintf(cptr.decay(__static_cmd_from_ecname_cmdnamebuf), __s_hash_pct_s, ecname);
+                void cptr.sprintf(
+                    cptr.decay(__static_cmd_from_ecname_cmdnamebuf),
+                    __s_hash_pct_s,
+                    ecname
+                );
             return cptr.decay(__static_cmd_from_ecname_cmdnamebuf);
         }
 
@@ -4281,7 +5133,11 @@ export function ecname_from_fn(fn) {
     let extcmd;
     let cmdptr = null;
 
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    )
         if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn) {
             cmdptr = extcmd;
             return cptr.ldPtro(cmdptr, $ext_func_tab_ef_txt);
@@ -4290,13 +5146,23 @@ export function ecname_from_fn(fn) {
 }
 
 /* return extended command name (without leading '#') for command (*fn)() */
-/** C ref: cmd.c:3106 — @param {CPtr} fn @param {CPtr<char>} outbuf @param {CInt} fullname @returns {CPtr<char>} */
+/**
+ * C ref: cmd.c:3106
+ * @param {CPtr} fn
+ * @param {CPtr<char>} outbuf
+ * @param {CInt} fullname
+ * @returns {CPtr<char>}
+ */
 export function* cmdname_from_func(fn, outbuf, fullname) {
     let extcmd;
     let cmdptr = null;
     let res = null;
 
-    for (extcmd = extcmdlist; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48))
+    for (
+        extcmd = extcmdlist;
+        cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+        extcmd = cptr.add(extcmd, 1, 48)
+    )
         if (cptr.ldPtro(extcmd, $ext_func_tab_ef_funct) === fn) {
             cmdptr = extcmd;
             res = cptr.ldPtro(cmdptr, $ext_func_tab_ef_txt);
@@ -4319,12 +5185,23 @@ export function* cmdname_from_func(fn, outbuf, fullname) {
         do {
             if (++len >= maxlen)
                 break;
-            for (extcmd = matchcmd; cptr.ldPtro(extcmd, $ext_func_tab_ef_txt); extcmd = cptr.add(extcmd, 1, 48)) {
+            for (
+                extcmd = matchcmd;
+                cptr.ldPtro(extcmd, $ext_func_tab_ef_txt);
+                extcmd = cptr.add(extcmd, 1, 48)
+            ) {
                 if (cptr.eq(extcmd, cmdptr))
                     continue;
-                if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.CMD_NOT_AVAILABLE) >>> 0) != 0 || (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0 && !wizard()))
+                if (((cptr.ldI32o(extcmd, $ext_func_tab_flags) &
+                    NHM.CMD_NOT_AVAILABLE) >>> 0) != 0 ||
+                        (((cptr.ldI32o(extcmd, $ext_func_tab_flags) & NHM.WIZMODECMD) >>> 0) != 0 &&
+                            !wizard()))
                     continue;
-                if (!cptr.strncmp(res, cptr.ldPtro(extcmd, $ext_func_tab_ef_txt), BigInt(len >>> 0))) {
+                if (!cptr.strncmp(
+                    res,
+                    cptr.ldPtro(extcmd, $ext_func_tab_ef_txt),
+                    BigInt(len >>> 0)
+                )) {
                     matchcmd = extcmd;
                     break;
                 }
@@ -4442,9 +5319,16 @@ export function bind_specialkey(key, command) {
     let i;
 
     for (i = 0; i < 29; i++) {
-        if (!cptr.ldPtro2(spkeys_binds, i, 16, 8) || strcmp(command, cptr.ldPtro2(spkeys_binds, i, 16, 8)))
+        if (!cptr.ldPtro2(spkeys_binds, i, 16, 8) ||
+                strcmp(command, cptr.ldPtro2(spkeys_binds, i, 16, 8)))
             continue;
-        cptr.st1o2(gc, cptr.ldI32o(spkeys_binds, i, 16), 1, $instance_globals_c_Cmd + $cmd_spkeys, schar(key));
+        cptr.st1o2(
+            gc,
+            cptr.ldI32o(spkeys_binds, i, 16),
+            1,
+            $instance_globals_c_Cmd + $cmd_spkeys,
+            schar(key)
+        );
         return 1;
     }
     return 0;
@@ -4489,7 +5373,8 @@ export function* parseautocomplete(autocomplete, condition) {
     let autoc;
 
     /* break off first autocomplete from the rest; parse the rest */
-    if ((autoc = cptr.strchr(autocomplete, 44)) !== null || (autoc = cptr.strchr(autocomplete, 58)) !== null) {
+    if ((autoc = cptr.strchr(autocomplete, 44)) !== null ||
+            (autoc = cptr.strchr(autocomplete, 58)) !== null) {
         cptr.st1(cptr.postinc(() => autoc, (v) => { autoc = v; }), 0);
         (yield* parseautocomplete(autoc, condition));
     }
@@ -4512,16 +5397,33 @@ export function* parseautocomplete(autocomplete, condition) {
     /* find and modify the extended command */
     for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48)) {
         if (!strcmp(autocomplete, cptr.ldPtro(efp, $ext_func_tab_ef_txt))) {
-            if (condition == (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? 0 : 1)) {
+            if (condition ==
+                    (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? 0 : 1)) {
                 if (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0))
-                    cptr.stI32o(efp, $ext_func_tab_flags, cptr.ldI32o(efp, $ext_func_tab_flags) & 4294959103);
+                    cptr.stI32o(
+                        efp,
+                        $ext_func_tab_flags,
+                        cptr.ldI32o(efp, $ext_func_tab_flags) & 4294959103
+                    );
                 else
-                    cptr.stI32o(efp, $ext_func_tab_flags, cptr.ldI32o(efp, $ext_func_tab_flags) | NHM.AUTOCOMP_ADJ);
+                    cptr.stI32o(
+                        efp,
+                        $ext_func_tab_flags,
+                        cptr.ldI32o(efp, $ext_func_tab_flags) | NHM.AUTOCOMP_ADJ
+                    );
             }
             if (condition)
-                cptr.stI32o(efp, $ext_func_tab_flags, cptr.ldI32o(efp, $ext_func_tab_flags) | NHM.AUTOCOMPLETE);
+                cptr.stI32o(
+                    efp,
+                    $ext_func_tab_flags,
+                    cptr.ldI32o(efp, $ext_func_tab_flags) | NHM.AUTOCOMPLETE
+                );
             else
-                cptr.stI32o(efp, $ext_func_tab_flags, cptr.ldI32o(efp, $ext_func_tab_flags) & 4294967293);
+                cptr.stI32o(
+                    efp,
+                    $ext_func_tab_flags,
+                    cptr.ldI32o(efp, $ext_func_tab_flags) & 4294967293
+                );
             return;
         }
     }
@@ -4539,7 +5441,14 @@ export function* all_options_autocomplete(sbuf) {
 
     for (efp = extcmdlist; cptr.ldPtro(efp, $ext_func_tab_ef_txt); efp = cptr.add(efp, 1, 48))
         if (((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMP_ADJ) >>> 0) != 0) {
-            void cptr.sprintf(cptr.decay(buf), __s_autocomplete_s_s, ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0) ? __s_empty : __s_bang, cptr.ldPtro(efp, $ext_func_tab_ef_txt));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_autocomplete_s_s,
+                ((cptr.ldI32o(efp, $ext_func_tab_flags) & NHM.AUTOCOMPLETE) >>> 0)
+                    ? __s_empty
+                    : __s_bang,
+                cptr.ldPtro(efp, $ext_func_tab_ef_txt)
+            );
             (yield* strbuf_append(sbuf, cptr.decay(buf)));
         }
 }
@@ -4567,12 +5476,23 @@ export function lock_mouse_buttons(savebtns) {
 
     if (savebtns) {
         for (i = 0; i < NHM.NUM_MOUSE_BUTTONS; i++) {
-            cptr.stPtro(__static_lock_mouse_buttons_mousebtn, i, cptr.ldPtro2(gc, i, 8, $instance_globals_c_Cmd + $cmd_mousebtn), 8);
+            cptr.stPtro(
+                __static_lock_mouse_buttons_mousebtn,
+                i,
+                cptr.ldPtro2(gc, i, 8, $instance_globals_c_Cmd + $cmd_mousebtn),
+                8
+            );
             cptr.stPtro2(gc, i, 8, $instance_globals_c_Cmd + $cmd_mousebtn, null);
         }
     } else {
         for (i = 0; i < NHM.NUM_MOUSE_BUTTONS; i++)
-            cptr.stPtro2(gc, i, 8, $instance_globals_c_Cmd + $cmd_mousebtn, cptr.ldPtro(__static_lock_mouse_buttons_mousebtn, i, 8));
+            cptr.stPtro2(
+                gc,
+                i,
+                8,
+                $instance_globals_c_Cmd + $cmd_mousebtn,
+                cptr.ldPtro(__static_lock_mouse_buttons_mousebtn, i, 8)
+            );
     }
 }
 
@@ -4588,8 +5508,20 @@ cptr.stI32o(__static_reset_commands_ylist, 8, 25);
 cptr.stI32o(__static_reset_commands_ylist, 12, -7);
 cptr.stI32o(__static_reset_commands_ylist, 16, -39);
 cptr.stI32o(__static_reset_commands_ylist, 20, -103); /** C ref: cmd.c:3350 — int[6] (function-static) */
-const __static_reset_commands_back_dir_cmd = (function () { const flat = new Uint8Array(8 * 3 * 8); const a = []; for (let r = 0; r < 8; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8)); a.buf = flat; return a; })(); /** C ref: cmd.c:3353 — struct ext_func_tab *[8][3] (function-static) */
-const __static_reset_commands_back_dir_key = (function () { const flat = new Uint8Array(8 * (3 * 1)); const a = []; for (let r = 0; r < 8; r++) a.push(flat.subarray(r * (3 * 1), (r + 1) * (3 * 1))); a.buf = flat; return a; })(); /** C ref: cmd.c:3354 — unsigned char[8][3] (function-static) */
+const __static_reset_commands_back_dir_cmd = (function () {
+    const flat = new Uint8Array(8 * 3 * 8);
+    const a = [];
+    for (let r = 0; r < 8; r++) a.push(flat.subarray(r * 3 * 8, (r + 1) * 3 * 8));
+    a.buf = flat;
+    return a;
+})(); /** C ref: cmd.c:3353 — struct ext_func_tab *[8][3] (function-static) */
+const __static_reset_commands_back_dir_key = (function () {
+    const flat = new Uint8Array(8 * (3 * 1));
+    const a = [];
+    for (let r = 0; r < 8; r++) a.push(flat.subarray(r * (3 * 1), (r + 1) * (3 * 1)));
+    a.buf = flat;
+    return a;
+})(); /** C ref: cmd.c:3354 — unsigned char[8][3] (function-static) */
 let __static_reset_commands_backed_dir_cmd = 0; /** C ref: cmd.c:3355 — signed char (function-static) */
 
 /** C ref: cmd.c:3344 — @param {CInt} initial */
@@ -4604,15 +5536,33 @@ export function* reset_commands(initial) {
     if (initial) {
         updated = 1;
         cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_num_pad, 0);
-        cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat, cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_phone_layout, cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_swap_yz, 0)));
+        cptr.st1o(
+            gc,
+            $instance_globals_c_Cmd + $cmd_pcHack_compat,
+            cptr.st1o(
+                gc,
+                $instance_globals_c_Cmd + $cmd_phone_layout,
+                cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_swap_yz, 0)
+            )
+        );
         for (i = 0; i < 29; i++)
-            cptr.st1o2(gc, cptr.ldI32o(spkeys_binds, i, 16), 1, $instance_globals_c_Cmd + $cmd_spkeys, schar(cptr.ld1uo2(spkeys_binds, i, 16, 4)));
+            cptr.st1o2(
+                gc,
+                cptr.ldI32o(spkeys_binds, i, 16),
+                1,
+                $instance_globals_c_Cmd + $cmd_spkeys,
+                schar(cptr.ld1uo2(spkeys_binds, i, 16, 4))
+            );
         (yield* commands_init());
     } else {
         if (__static_reset_commands_backed_dir_cmd) {
             for (dir = 0; dir < ((NHC.N_DIRS_Z - 2) | 0); dir++) {
                 for (mode = 0; mode < NHC.N_MOVEMODES; mode++) {
-                    (yield* cmdbind_add(cptr.ld1uo(cptr.decay(__static_reset_commands_back_dir_key[dir]), mode, 1), cptr.ldPtro(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, 8), 0));
+                    (yield* cmdbind_add(
+                        cptr.ld1uo(cptr.decay(__static_reset_commands_back_dir_key[dir]), mode, 1),
+                        cptr.ldPtro(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, 8),
+                        0
+                    ));
                 }
             }
         }
@@ -4625,7 +5575,9 @@ export function* reset_commands(initial) {
         }
         /* swap_yz mode (only applicable for !num_pad); intended for
            QWERTZ keyboard used in Central Europe, particularly Germany */
-        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 1) ? !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
+        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 1)
+                ? !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)
+                : 0));
         if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz)) {
             cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_swap_yz, flagtemp);
             ++updated;
@@ -4638,7 +5590,9 @@ export function* reset_commands(initial) {
             }
         }
         /* MSDOS compatibility mode (only applicable for num_pad) */
-        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 1) ? cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
+        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 1)
+                ? cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)
+                : 0));
         if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat)) {
             cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_pcHack_compat, flagtemp);
             ++updated;
@@ -4650,7 +5604,9 @@ export function* reset_commands(initial) {
                 cmdbind_remove(uchar(c));
         }
         /* phone keypad layout (only applicable for num_pad) */
-        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 2) ? cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) : 0));
+        flagtemp = schar(((cptr.ld1uo(iflags, $instance_flags_num_pad_mode) & 2)
+                ? cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)
+                : 0));
         if (flagtemp != cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout)) {
             cptr.st1o(gc, $instance_globals_c_Cmd + $cmd_phone_layout, flagtemp);
             ++updated;
@@ -4666,14 +5622,34 @@ export function* reset_commands(initial) {
 
     /* choose updated movement keys */
     if (updated)
-        (cptr.stI32o(gc, $instance_globals_c_Cmd, cptr.ldI32o(gc, $instance_globals_c_Cmd) + 1)) - (1);
-    cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars, !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz) ? cptr.decay(__static_reset_commands_sdir) : cptr.decay(__static_reset_commands_sdir_swap_yz)) : (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout) ? cptr.decay(__static_reset_commands_ndir) : cptr.decay(__static_reset_commands_ndir_phone_layout)));
-    cptr.stPtro(gc, $instance_globals_c_Cmd + $cmd_alphadirchars, !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars) : cptr.decay(__static_reset_commands_sdir));
+        (cptr.stI32o(gc, $instance_globals_c_Cmd, cptr.ldI32o(gc, $instance_globals_c_Cmd) + 1)) -
+                (1);
+    cptr.stPtro(
+        gc,
+        $instance_globals_c_Cmd + $cmd_dirchars,
+        !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)
+            ? (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_swap_yz)
+                ? cptr.decay(__static_reset_commands_sdir)
+                : cptr.decay(__static_reset_commands_sdir_swap_yz))
+            : (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_phone_layout)
+                ? cptr.decay(__static_reset_commands_ndir)
+                : cptr.decay(__static_reset_commands_ndir_phone_layout))
+    );
+    cptr.stPtro(
+        gc,
+        $instance_globals_c_Cmd + $cmd_alphadirchars,
+        !cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)
+            ? cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars)
+            : cptr.decay(__static_reset_commands_sdir)
+    );
 
     /* back up the commands & keys overwritten by new movement keys */
     for (dir = 0; dir < ((NHC.N_DIRS_Z - 2) | 0); dir++) {
         for (mode = NHC.MV_WALK; mode < NHC.N_MOVEMODES; mode++) {
-            let di = uchar(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), dir));
+            let di = uchar(cptr.ld1so(
+                cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                dir
+            ));
             let bind;
 
             if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
@@ -4689,7 +5665,12 @@ export function* reset_commands(initial) {
             }
             cptr.st1o(cptr.decay(__static_reset_commands_back_dir_key[dir]), mode, di, 1);
             if ((bind = cmdbind_get(di)) !== null)
-                cptr.stPtro(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, cptr.ldPtro(bind, $Cmd_bind_cmd), 8);
+                cptr.stPtro(
+                    cptr.decay(__static_reset_commands_back_dir_cmd[dir]),
+                    mode,
+                    cptr.ldPtro(bind, $Cmd_bind_cmd),
+                    8
+                );
             else
                 cptr.stPtro(cptr.decay(__static_reset_commands_back_dir_cmd[dir]), mode, null, 8);
             cmdbind_remove(di);
@@ -4699,13 +5680,32 @@ export function* reset_commands(initial) {
 
     /* bind the new keys to movement commands */
     for (i = 0; i < ((NHC.N_DIRS_Z - 2) | 0); i++) {
-        void (yield* bind_key_fn(uchar(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_WALK, 8)));
+        void (yield* bind_key_fn(
+            uchar(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)),
+            cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_WALK, 8)
+        ));
         if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)) {
-            void (yield* bind_key_fn(uchar(highc(cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8)));
-            void (yield* bind_key_fn(uchar((31 & (cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)))), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUSH, 8)));
+            void (yield* bind_key_fn(
+                uchar(highc(cptr.ld1so(
+                    cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                    i
+                ))),
+                cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8)
+            ));
+            void (yield* bind_key_fn(
+                uchar((31 &
+                    (cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)))),
+                cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUSH, 8)
+            ));
         } else {
             /* M(number) works when altmeta is on */
-            void (yield* bind_key_fn(uchar((((cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), i)) - 128) | 0)), cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8)));
+            void (yield* bind_key_fn(
+                uchar((((cptr.ld1so(
+                    cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                    i
+                )) - 128) | 0)),
+                cptr.ldPtro(cptr.decay(move_funcs[i]), NHC.MV_RUN, 8)
+            ));
             /* can't bind highc() or C() of digits. just use the 5 prefix. */
         }
     }
@@ -4720,7 +5720,11 @@ export function* reset_commands(initial) {
 let __static_update_rest_on_space_restonspace = cptr.alloc($sizeof_ext_func_tab); /** C ref: cmd.c:3489 — struct ext_func_tab (function-static) */
 cptr.st1(__static_update_rest_on_space_restonspace, 32);
 cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_txt, __s_wait);
-cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_desc, __s_rest_one_move_via_rest_on_space_option);
+cptr.stPtro(
+    __static_update_rest_on_space_restonspace,
+    $ext_func_tab_ef_desc,
+    __s_rest_one_move_via_rest_on_space_option
+);
 cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_ef_funct, donull);
 cptr.stI32o(__static_update_rest_on_space_restonspace, $ext_func_tab_flags, 129);
 cptr.stPtro(__static_update_rest_on_space_restonspace, $ext_func_tab_f_text, __s_waiting);
@@ -4734,9 +5738,16 @@ export function* update_rest_on_space() {
        when it is Off, <space> will use 'unrestonspace' which will either
        be Null and elicit "Unknown command ' '." or have some non-Null
        command bound in player's RC file */
-    if (bind && !cptr.eq(cptr.ldPtro(bind, $Cmd_bind_cmd), __static_update_rest_on_space_restonspace))
+    if (bind &&
+            !cptr.eq(cptr.ldPtro(bind, $Cmd_bind_cmd), __static_update_rest_on_space_restonspace))
         __static_update_rest_on_space_unrestonspace = cptr.ldPtro(bind, $Cmd_bind_cmd);
-    (yield* cmdbind_add(32, cptr.ld1so(flags, $flag_rest_on_space) ? __static_update_rest_on_space_restonspace : __static_update_rest_on_space_unrestonspace, 0));
+    (yield* cmdbind_add(
+        32,
+        cptr.ld1so(flags, $flag_rest_on_space)
+            ? __static_update_rest_on_space_restonspace
+            : __static_update_rest_on_space_unrestonspace,
+        0
+    ));
 }
 
 /* commands which accept 'm' prefix to request menu operation or other
@@ -4744,7 +5755,9 @@ export function* update_rest_on_space() {
    there is no overlap between the two groups of commands */
 /** C ref: cmd.c:3509 — @param {CPtr<struct ext_func_tab>} ec @returns {CInt} */
 function accept_menu_prefix(ec) {
-    return schar((ec && (((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.CMD_M_PREFIX) >>> 0) != 0) ? 1 : 0));
+    return schar((ec && (((cptr.ldI32o(ec, $ext_func_tab_flags) & NHM.CMD_M_PREFIX) >>> 0) != 0)
+            ? 1
+            : 0));
 }
 
 /* choose a random character, biased towards movement commands, primarily
@@ -4757,7 +5770,9 @@ export function randomkey() {
     let c;
 
     /* give ^A and ^P a high probability of being repeated */
-    if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) && cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp && rn2(5))
+    if ((__static_randomkey_last_c == 1 || __static_randomkey_last_c == 16) &&
+            cptr.ldI32o(program_state, $sinfo_input_state) == NHC.commandInp &&
+            rn2(5))
         return __static_randomkey_last_c;
 
     switch (rn2(16)) {
@@ -4783,7 +5798,11 @@ export function randomkey() {
         c = schar(((rn2(26) + 65) | 0));
         break;
         case 8:
-        c = schar(cptr.ld1uo(extcmdlist, u32mod(__static_randomkey_i++, 171 >>> 0), $sizeof_ext_func_tab));
+        c = schar(cptr.ld1uo(
+            extcmdlist,
+            u32mod(__static_randomkey_i++, 171 >>> 0),
+            $sizeof_ext_func_tab
+        ));
         break;
         case 9:
         c = 35;
@@ -4857,7 +5876,21 @@ function reset_cmd_vars(reset_cmdq) {
 
 /** C ref: cmd.c:3627 — @param {CInt} key */
 export function* rhack(key) {
-    let bad_command, firsttime, cq, cmdq, cmdq_ec, prefix_seen, was_m_prefix, func, tlist, res, pfxidx, which, ch, up, down;
+    let bad_command,
+            firsttime,
+            cq,
+            cmdq,
+            cmdq_ec,
+            prefix_seen,
+            was_m_prefix,
+            func,
+            tlist,
+            res,
+            pfxidx,
+            which,
+            ch,
+            up,
+            down;
     let __pc = 0;
     __dispatch: while (true) {
         switch (__pc) {
@@ -4885,7 +5918,8 @@ export function* rhack(key) {
         /* doing queued commands */
         cptr.memcpy(cq, cmdq, 32);
         cptr.free(cmdq);
-        if (cptr.ldI32(cq) == NHC.CMDQ_EXTCMD && (cmdq_ec = cptr.ldPtro(cq, $_cmd_queue_ec_entry)) !== null) { __pc = 7; continue; }
+        if (cptr.ldI32(cq) == NHC.CMDQ_EXTCMD &&
+                (cmdq_ec = cptr.ldPtro(cq, $_cmd_queue_ec_entry)) !== null) { __pc = 7; continue; }
         __pc = 6; continue;
         }
         case 7: {
@@ -4922,12 +5956,18 @@ export function* rhack(key) {
         case 3: {
 
         /* if there's no command, there's nothing to do except reset */
-        if (!key || key == -1 || key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
+        if (!key ||
+                key == -1 ||
+                key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
             if (key == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys))
                 /* don't perform next sanity check if player typed ESC for
                    the current command, similar to handling for CMD_INSANE
                    flag below (^P and ^R) */
-                cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));
+                cptr.st1o(
+                    iflags,
+                    $instance_flags_sanity_no_check,
+                    cptr.ld1so(iflags, $instance_flags_sanity_check)
+                );
             else
                 (yield* Y.icall(nhbell()()));
             reset_cmd_vars(1);
@@ -4945,7 +5985,9 @@ export function* rhack(key) {
         if (cmdq_ec)
             tlist = cmdq_ec;
         else
-            tlist = cptr.ldPtro(gc, $instance_globals_c_cmd_bind) ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_cmd) : null;
+            tlist = cptr.ldPtro(gc, $instance_globals_c_cmd_bind)
+                    ? cptr.ldPtro(cptr.ldPtro(gc, $instance_globals_c_cmd_bind), $Cmd_bind_cmd)
+                    : null;
         if (tlist !== null) { __pc = 13; continue; }
         __pc = 12; continue;
         }
@@ -4961,12 +6003,21 @@ export function* rhack(key) {
         continue;
         }
         case 16: {
-        if (prefix_seen && !((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) && !((cptr.ldI32o(tlist, $ext_func_tab_flags) & (was_m_prefix ? NHM.CMD_M_PREFIX : NHM.CMD_gGF_PREFIX) >>> 0) >>> 0)) { __pc = 18; continue; }
+        if (prefix_seen &&
+                !((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) &&
+                !((cptr.ldI32o(tlist, $ext_func_tab_flags) &
+                    (was_m_prefix
+                        ? NHM.CMD_M_PREFIX
+                        : NHM.CMD_gGF_PREFIX) >>> 0) >>> 0)) { __pc = 18; continue; }
         __pc = 19; continue;
         }
         case 18: {
         pfxidx = cmd_from_func(cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct));
-        which = (pfxidx != 0) ? visctrl(pfxidx) : ((cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct) === do_reqmenu) ? __s_move_no_pickup_or_request_menu : cptr.ldPtro(prefix_seen, $ext_func_tab_ef_txt));
+        which = (pfxidx != 0)
+                ? visctrl(pfxidx)
+                : ((cptr.ldPtro(prefix_seen, $ext_func_tab_ef_funct) === do_reqmenu)
+                    ? __s_move_no_pickup_or_request_menu
+                    : cptr.ldPtro(prefix_seen, $ext_func_tab_ef_txt));
 
         /*
          * We got a prefix previously and looped for another
@@ -4975,13 +6026,24 @@ export function* rhack(key) {
          * the former call to help_dir() (for 'bad_command' below).
          */
         if (was_m_prefix) {
-            (yield* custompline(NHM.SUPPRESS_HISTORY, __s_the_s_command_does_not_accept_s_prefix, cptr.ldPtro(tlist, $ext_func_tab_ef_txt), which));
+            (yield* custompline(
+                NHM.SUPPRESS_HISTORY,
+                __s_the_s_command_does_not_accept_s_prefix,
+                cptr.ldPtro(tlist, $ext_func_tab_ef_txt),
+                which
+            ));
         } else {
             ch = cptr.ld1u(tlist);
             up = schar((ch == 60 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === doup ? 1 : 0));
-            down = schar((ch == 62 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === dodown ? 1 : 0));
+            down = schar((ch == 62 || cptr.ldPtro(tlist, $ext_func_tab_ef_funct) === dodown
+                    ? 1
+                    : 0));
 
-            (yield* pline(__s_the_s_prefix_should_be_followed_by_a, which, (up || down) ? __s_other_than_up_or_down : __s_empty));
+            (yield* pline(
+                __s_the_s_prefix_should_be_followed_by_a,
+                which,
+                (up || down) ? __s_other_than_up_or_down : __s_empty
+            ));
         }
         res = NHM.ECMD_FAIL;
         prefix_seen = null;
@@ -4992,8 +6054,14 @@ export function* rhack(key) {
         /* we discard 'const' because some compilers seem to have
            trouble with the pointer passed to set_occupation() */
         func = cptr.ldPtro((tlist), $ext_func_tab_ef_funct);
-        if (cptr.ldPtro(tlist, $ext_func_tab_f_text) && !cptr.ldPtro(go, $instance_globals_o_occupation) && cptr.ldI64o(gm, $instance_globals_m_multi))
-            set_occupation(func, cptr.ldPtro(tlist, $ext_func_tab_f_text), cptr.ldI64o(gm, $instance_globals_m_multi));
+        if (cptr.ldPtro(tlist, $ext_func_tab_f_text) &&
+                !cptr.ldPtro(go, $instance_globals_o_occupation) &&
+                cptr.ldI64o(gm, $instance_globals_m_multi))
+            set_occupation(
+                func,
+                cptr.ldPtro(tlist, $ext_func_tab_f_text),
+                cptr.ldI64o(gm, $instance_globals_m_multi)
+            );
         cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
 
         if (!cptr.ldI32(gi) && func !== do_repeat && func !== doextcmd) {
@@ -5009,7 +6077,11 @@ export function* rhack(key) {
            if it produces output that might interfere with them;
            note: if sanity_check is False, this has no effect */
         if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.CMD_INSANE) >>> 0) != 0)
-            cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));
+            cptr.st1o(
+                iflags,
+                $instance_flags_sanity_no_check,
+                cptr.ld1so(iflags, $instance_flags_sanity_check)
+            );
 
         res = (yield* Y.icall((func)()));  /* perform the command */
         /* if 'func' is doextcmd(), 'tlist' is for Cmd.commands['#']
@@ -5017,13 +6089,15 @@ export function* rhack(key) {
            doextcmd() notifies us what that was via ext_tlist;
            other commands leave it Null */
         if (cptr.ldPtro(ge, $instance_globals_e_ext_tlist)) {
-            tlist = cptr.ldPtro(ge, $instance_globals_e_ext_tlist), cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
+            tlist = cptr.ldPtro(ge, $instance_globals_e_ext_tlist),
+                    cptr.stPtro(ge, $instance_globals_e_ext_tlist, null);
             /* Add the command post-execution */
             (yield* cmdq_add_ec(NHC.CQ_REPEAT, cptr.ldPtro((tlist), $ext_func_tab_ef_funct)));
             /* shift the command to first */
             cmdq_shift(NHC.CQ_REPEAT);
         }
-        if (((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.PREFIXCMD) >>> 0) != 0) { __pc = 21; continue; }
+        if (((cptr.ldI32o(tlist, $ext_func_tab_flags) &
+                NHM.PREFIXCMD) >>> 0) != 0) { __pc = 21; continue; }
         __pc = 22; continue;
         }
         case 21: {
@@ -5040,10 +6114,13 @@ export function* rhack(key) {
         { __pc = 1; continue; }
         }
         case 22: {
-        if (!((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.MOVEMENTCMD) >>> 0) && cptr.ldI64o(gd, $instance_globals_d_domove_attempting)) {
+        if (!((cptr.ldI32o(tlist, $ext_func_tab_flags) & NHM.MOVEMENTCMD) >>> 0) &&
+                cptr.ldI64o(gd, $instance_globals_d_domove_attempting)) {
             /* not a movement command, but a move prefix earlier? */
             ;  /* just do nothing */
-        } else if (((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 3n) != 0n) && !cptr.ld1so(svc, $context_info_travel) && !dxdy_moveok()) {
+        } else if (((cptr.ldI64o(gd, $instance_globals_d_domove_attempting) & 3n) != 0n) &&
+                !cptr.ld1so(svc, $context_info_travel) &&
+                !dxdy_moveok()) {
             /* trying to move diagonally as a grid bug */
             (yield* You_cant(__s_get_there_from_here));
             reset_cmd_vars(1);
@@ -5111,7 +6188,11 @@ export function* rhack(key) {
             (yield* custompline(NHM.SUPPRESS_HISTORY, __s_unknown_command_s, visctrl(schar(key))));
             cmdq_clear(NHC.CQ_CANNED);
             cmdq_clear(NHC.CQ_REPEAT);
-            cptr.st1o(iflags, $instance_flags_sanity_no_check, cptr.ld1so(iflags, $instance_flags_sanity_check));  /* skip sanity check */
+            cptr.st1o(
+                iflags,
+                $instance_flags_sanity_no_check,
+                cptr.ld1so(iflags, $instance_flags_sanity_check)
+            );  /* skip sanity check */
         }
         /* didn't move */
         cptr.st1o(svc, $context_info_move, 0);
@@ -5154,7 +6235,9 @@ export function movecmd(sym, mode) {
 
         if (mode == NHC.MV_ANY) {
             for (d = ((NHC.N_DIRS_Z - 1) | 0); d > NHC.DIR_ERR; d--)
-                if (fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_WALK, 8) || fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUN, 8) || fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUSH, 8))
+                if (fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_WALK, 8) ||
+                        fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUN, 8) ||
+                        fnc === cptr.ldPtro(cptr.decay(move_funcs[d]), NHC.MV_RUSH, 8))
                     break;
         } else {
             for (d = ((NHC.N_DIRS_Z - 1) | 0); d > NHC.DIR_ERR; d--)
@@ -5176,7 +6259,9 @@ export function movecmd(sym, mode) {
 /* grid bug handling */
 /** C ref: cmd.c:3902 @returns {CInt} */
 export function dxdy_moveok() {
-    if (cptr.ldI32o(u, $you_dx) && cptr.ldI32o(u, $you_dy) && ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
+    if (cptr.ldI32o(u, $you_dx) &&
+            cptr.ldI32o(u, $you_dy) &&
+            ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
         cptr.stI32o(u, $you_dx, cptr.stI32o(u, $you_dy, 0));
     return cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy) ? 1 : 0;
 }
@@ -5187,7 +6272,11 @@ export function redraw_cmd(c) {
     let uc = uchar(c);
     let bind = cmdbind_get(uc);
 
-    return schar((bind && cptr.ldPtro(bind, $Cmd_bind_cmd) && cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doredraw ? 1 : 0));
+    return schar((bind &&
+        cptr.ldPtro(bind, $Cmd_bind_cmd) &&
+        cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doredraw
+            ? 1
+            : 0));
 }
 
 /*
@@ -5200,7 +6289,15 @@ export function redraw_cmd(c) {
  *
  * Returns non-zero if coordinates in cc are valid.
  */
-/** C ref: cmd.c:3931 — @param {CPtr<char>} prompt @param {CPtr<char>} emsg @param {CInt} x @param {CInt} y @param {CPtr<coord>} cc @returns {CInt} */
+/**
+ * C ref: cmd.c:3931
+ * @param {CPtr<char>} prompt
+ * @param {CPtr<char>} emsg
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<coord>} cc
+ * @returns {CInt}
+ */
 export function* get_adjacent_loc(prompt, emsg, x, y, cc) {
     let new_x;
     let new_y;
@@ -5237,9 +6334,15 @@ export function* getdir(s) {
         case 4: {
         if (cptr.ldI32(cmdq) == NHC.CMDQ_DIR) {
             if (!cptr.ld1so(cmdq, $_cmd_queue_dirz)) {
-                dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), xytodir(cptr.ld1so(cmdq, $_cmd_queue_dirx), cptr.ld1so(cmdq, $_cmd_queue_diry)));
+                dirsym = cptr.ld1so(
+                    cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                    xytodir(cptr.ld1so(cmdq, $_cmd_queue_dirx), cptr.ld1so(cmdq, $_cmd_queue_diry))
+                );
             } else {
-                dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), (cptr.ld1so(cmdq, $_cmd_queue_dirz) > 0) ? NHC.DIR_DOWN : NHC.DIR_UP);
+                dirsym = cptr.ld1so(
+                    cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                    (cptr.ld1so(cmdq, $_cmd_queue_dirz) > 0) ? NHC.DIR_DOWN : NHC.DIR_UP
+                );
             }
         } else if (cptr.ldI32(cmdq) == NHC.CMDQ_KEY) {
             dirsym = cptr.ld1so(cmdq, $_cmd_queue_key);
@@ -5270,13 +6373,24 @@ export function* getdir(s) {
             if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && rn2(20)) {
                 switch (rn2(20)) {
                     case 0:
-                    dirsym = cptr.ld1so2(gc, rn2(2) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys);
+                    dirsym = cptr.ld1so2(
+                        gc,
+                        rn2(2) ? NHC.NHKF_GETDIR_SELF : NHC.NHKF_ESC,
+                        1,
+                        $instance_globals_c_Cmd + $cmd_spkeys
+                    );
                     break;
                     case 1:
-                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), rn2(2) ? NHC.DIR_DOWN : NHC.DIR_UP);
+                    dirsym = cptr.ld1so(
+                        cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                        rn2(2) ? NHC.DIR_DOWN : NHC.DIR_UP
+                    );
                     break;
                     default:
-                    dirsym = cptr.ld1so(cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars), rn2(((NHC.N_DIRS_Z - 2) | 0)));
+                    dirsym = cptr.ld1so(
+                        cptr.ldPtro(gc, $instance_globals_c_Cmd + $cmd_dirchars),
+                        rn2(((NHC.N_DIRS_Z - 2) | 0))
+                    );
                     break;
                 }
             }
@@ -5297,7 +6411,15 @@ export function* getdir(s) {
         continue;
         }
         case 2 /* got_dirsym: */: {
-        if (dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys) || dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF2, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 8; continue; }
+        if (dirsym ==
+            cptr.ld1so2(gc, NHC.NHKF_GETDIR_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys) ||
+                dirsym ==
+                    cptr.ld1so2(
+                        gc,
+                        NHC.NHKF_GETDIR_SELF2,
+                        1,
+                        $instance_globals_c_Cmd + $cmd_spkeys
+                    )) { __pc = 8; continue; }
         __pc = 9; continue;
         }
         case 8: {
@@ -5306,7 +6428,13 @@ export function* getdir(s) {
         continue;
         }
         case 9: {
-        if (dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_MOUSE, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 11; continue; }
+        if (dirsym ==
+                cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETDIR_MOUSE,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )) { __pc = 11; continue; }
         __pc = 12; continue;
         }
         case 11: {
@@ -5331,7 +6459,17 @@ export function* getdir(s) {
          * locations relative to each other so ruin the memory aid of
          * "," being left of ".".)
          */
-        void cptr.sprintf(cptr.decay(qbuf), __s_desired_location_then_type_s_for_left, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        void cptr.sprintf(
+            cptr.decay(qbuf),
+            __s_desired_location_then_type_s_for_left,
+            visctrl(cptr.ld1so2(
+                gc,
+                NHC.NHKF_GETPOS_PICK_Q,
+                1,
+                $instance_globals_c_Cmd + $cmd_spkeys
+            )),
+            visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys))
+        );
         cptr.stI16(cc, cptr.ldI16(u)), cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));  /* starting cursor location for getpos() */
         pos = (yield* getpos(cc, 1, cptr.decay(qbuf)));
 
@@ -5375,7 +6513,8 @@ export function* getdir(s) {
         return (pos >= 0);
         }
         case 12: {
-        if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) && !cptr.ldI32o(u, $you_dz)) { __pc = 14; continue; }
+        if (!(is_mov = movecmd(dirsym, NHC.MV_ANY)) &&
+                !cptr.ldI32o(u, $you_dz)) { __pc = 14; continue; }
         __pc = 15; continue;
         }
         case 14: {
@@ -5384,12 +6523,18 @@ export function* getdir(s) {
         __pc = 16; continue;
         }
         case 17: {
-        help_requested = schar((dirsym == cptr.ld1so2(gc, NHC.NHKF_GETDIR_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
-        if (help_requested || cptr.ld1so(iflags, $instance_flags_cmdassist)) { __pc = 19; continue; }
+        help_requested = schar((dirsym ==
+                cptr.ld1so2(gc, NHC.NHKF_GETDIR_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        if (help_requested ||
+                cptr.ld1so(iflags, $instance_flags_cmdassist)) { __pc = 19; continue; }
         __pc = 18; continue;
         }
         case 19: {
-        did_help = (yield* help_dir(schar(((s && cptr.ld1s(s) == 94) ? dirsym : 0)), uchar(cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)), help_requested ? null : __s_invalid_direction_key));
+        did_help = (yield* help_dir(
+            schar(((s && cptr.ld1s(s) == 94) ? dirsym : 0)),
+            uchar(cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)),
+            help_requested ? null : __s_invalid_direction_key
+        ));
         if (help_requested) { __pc = 21; continue; }
         __pc = 20; continue;
         }
@@ -5443,22 +6588,54 @@ function* show_direction_keys(win, centerchar, nodiag) {
         centerchar = 32;
 
     if (nodiag) {
-        void cptr.sprintf(cptr.decay(buf), __s_sp13_pct_s_sp3, visctrl(cmd_from_func(do_move_north)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_sp13_pct_s_sp3,
+            visctrl(cmd_from_func(do_move_north))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         (yield* Y.icall(putstr()(win, 0, __s_sp13_bar_sp3)));
-        void cptr.sprintf(cptr.decay(buf), __s_s_c_s, visctrl(cmd_from_func(do_move_west)), centerchar, visctrl(cmd_from_func(do_move_east)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_c_s,
+            visctrl(cmd_from_func(do_move_west)),
+            centerchar,
+            visctrl(cmd_from_func(do_move_east))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         (yield* Y.icall(putstr()(win, 0, __s_sp13_bar_sp3)));
-        void cptr.sprintf(cptr.decay(buf), __s_sp13_pct_s_sp3, visctrl(cmd_from_func(do_move_south)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_sp13_pct_s_sp3,
+            visctrl(cmd_from_func(do_move_south))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     } else {
-        void cptr.sprintf(cptr.decay(buf), __s_s_s_s__3, visctrl(cmd_from_func(do_move_northwest)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_northeast)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s_s__3,
+            visctrl(cmd_from_func(do_move_northwest)),
+            visctrl(cmd_from_func(do_move_north)),
+            visctrl(cmd_from_func(do_move_northeast))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         (yield* Y.icall(putstr()(win, 0, __s_sp11_bslash_sp_bar_sp_slash_sp)));
-        void cptr.sprintf(cptr.decay(buf), __s_s_c_s, visctrl(cmd_from_func(do_move_west)), centerchar, visctrl(cmd_from_func(do_move_east)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_c_s,
+            visctrl(cmd_from_func(do_move_west)),
+            centerchar,
+            visctrl(cmd_from_func(do_move_east))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         (yield* Y.icall(putstr()(win, 0, __s_sp11_slash_sp_bar_sp_bslash_sp)));
-        void cptr.sprintf(cptr.decay(buf), __s_s_s_s__3, visctrl(cmd_from_func(do_move_southwest)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_southeast)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s_s__3,
+            visctrl(cmd_from_func(do_move_southwest)),
+            visctrl(cmd_from_func(do_move_south)),
+            visctrl(cmd_from_func(do_move_southeast))
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     }
     ;
@@ -5469,7 +6646,13 @@ function* show_direction_keys(win, centerchar, nodiag) {
    might be bogus but could be up, down, or self when not applicable */
 const __static_help_dir_wiz_only_list = cptr.bytes("EFGIVW"); /** C ref: cmd.c:4176 — char[7] (function-static) */
 
-/** C ref: cmd.c:4171 — @param {CInt} sym @param {CUInt} spkey @param {CPtr<char>} msg @returns {CInt} */
+/**
+ * C ref: cmd.c:4171
+ * @param {CInt} sym
+ * @param {CUInt} spkey
+ * @param {CPtr<char>} msg
+ * @returns {CInt}
+ */
 function* help_dir(sym, spkey, msg) {
     let ctrl;
     let win;
@@ -5481,7 +6664,8 @@ function* help_dir(sym, spkey, msg) {
 
     /* NHKF_ESC indicates that player asked for help at getdir prompt */
     /* viawindow = (spkey == gc.Cmd.spkeys[NHKF_ESC] || iflags.cmdassist); */
-    prefixhandling = schar((spkey != cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+    prefixhandling = schar((spkey !=
+            cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
     /*
      * Handling for prefix keys that don't want special directions.
      * Delivered via pline if 'cmdassist' is off, or instead of the
@@ -5510,8 +6694,16 @@ function* help_dir(sym, spkey, msg) {
         /* '[': old 'cmdhelp' showed ESC as ^[ */
         sym = highc(sym);  /* @A-Z[ (note: letter() accepts '@') */
         ctrl = schar(((((sym - 65) | 0) + 1) | 0));  /* 0-27 (note: 28-31 aren't applicable) */
-        if ((explain = (yield* dowhatdoes_core(ctrl, cptr.decay(buf2)))) !== null && (!cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) || wizard())) {
-            void cptr.sprintf(cptr.decay(buf), __s_are_you_trying_to_use_c_s, sym, cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) ? __s_empty : __s_as_specified_in_the_guidebook);
+        if ((explain = (yield* dowhatdoes_core(ctrl, cptr.decay(buf2)))) !== null &&
+                (!cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) || wizard())) {
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_are_you_trying_to_use_c_s,
+                sym,
+                cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym)
+                    ? __s_empty
+                    : __s_as_specified_in_the_guidebook
+            );
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
             (yield* Y.icall(putstr()(win, 0, __s_empty)));
             (yield* Y.icall(putstr()(win, 0, explain)));
@@ -5523,9 +6715,19 @@ function* help_dir(sym, spkey, msg) {
         }
     }
 
-    void cptr.sprintf(cptr.decay(buf), __s_valid_direction_keys_s_s_s_are, prefixhandling ? __s_to : __s_empty, prefixhandling ? dothat : __s_empty, ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? __s_in_your_current_form : __s_empty);
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_valid_direction_keys_s_s_s_are,
+        prefixhandling ? __s_to : __s_empty,
+        prefixhandling ? dothat : __s_empty,
+        ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? __s_in_your_current_form : __s_empty
+    );
     (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
-    (yield* show_direction_keys(win, schar((!prefixhandling ? 46 : 32)), schar(((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))));
+    (yield* show_direction_keys(
+        win,
+        schar((!prefixhandling ? 46 : 32)),
+        schar(((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG))
+    ));
 
     if (!prefixhandling) {
         /* NOPICKUP: unlike the other prefix keys, 'm' allows up/down for
@@ -5536,9 +6738,15 @@ function* help_dir(sym, spkey, msg) {
         (yield* Y.icall(putstr()(win, 0, __s_up__2)));
         (yield* Y.icall(putstr()(win, 0, __s_down__2)));
         if (!prefixhandling) {
-            let selfi = cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ? NHC.NHKF_GETDIR_SELF2 : NHC.NHKF_GETDIR_SELF;
+            let selfi = cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad)
+                    ? NHC.NHKF_GETDIR_SELF2
+                    : NHC.NHKF_GETDIR_SELF;
 
-            void cptr.sprintf(cptr.decay(buf), __s_4s_direct_at_yourself, visctrl(cptr.ld1so2(gc, selfi, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_4s_direct_at_yourself,
+                visctrl(cptr.ld1so2(gc, selfi, 1, $instance_globals_c_Cmd + $cmd_spkeys))
+            );
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
     }
@@ -5557,7 +6765,9 @@ function* help_dir(sym, spkey, msg) {
 /** C ref: cmd.c:4300 — @param {CInt} force_impairment */
 export function confdir(force_impairment) {
     if (force_impairment || u_maybe_impaired()) {
-        let kmax = ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG) ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0) : ((NHC.N_DIRS_Z - 2) | 0);
+        let kmax = ((cptr.ldI32o(u, $you_umonnum)) == NHC.PM_GRID_BUG)
+                ? ((((NHC.N_DIRS_Z - 2) | 0) / 2) | 0)
+                : ((NHC.N_DIRS_Z - 2) | 0);
         let k = cptr.ld1so(cptr.decay(dirs_ord), rn2(kmax), 1);
 
         cptr.stI32o(u, $you_dx, cptr.ld1so(cptr.decay(xdir), k, 1));
@@ -5616,7 +6826,11 @@ function* dotherecmdmenu() {
             ch = (yield* here_cmd_menu());
         else
             ch = (yield* there_cmd_menu(x, y, cptr.ldI32o(iflags, $instance_flags_getdir_click)));
-        cptr.stI16o(gc, $instance_globals_c_clicklook_cc, cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, -1));
+        cptr.stI16o(
+            gc,
+            $instance_globals_c_clicklook_cc,
+            cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, -1)
+        );
         cptr.stI32o(iflags, $instance_flags_getdir_click, 0);
         return (ch && ch != 27) ? NHM.ECMD_TIME : NHM.ECMD_OK;
     }
@@ -5625,11 +6839,19 @@ function* dotherecmdmenu() {
     click = cptr.ldI32o(iflags, $instance_flags_getdir_click);
     cptr.stI32o(iflags, $instance_flags_getdir_click, 0);
 
-    if (!dir || !isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))))
+    if (!dir ||
+            !isok(
+                i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)),
+                i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))
+            ))
         return NHM.ECMD_CANCEL;
 
     if (cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy))
-        ch = (yield* there_cmd_menu(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)), click));
+        ch = (yield* there_cmd_menu(
+            i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)),
+            i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)),
+            click
+        ));
     else
         ch = (yield* here_cmd_menu());
 
@@ -5688,11 +6910,25 @@ function* mcmd_addmenu(win, act, txt) {
 }
 
 /* command menu entries when targeting self */
-/** C ref: cmd.c:4435 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CPtr<int>} act @returns {CInt} */
+/**
+ * C ref: cmd.c:4435
+ * @param {CInt} win
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<int>} act
+ * @returns {CInt}
+ */
 function* there_cmd_menu_self(win, x, y, act) {
     let K = 0;
     let buf = new Uint8Array(256);
-    let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    let typ = cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    );
     let stway = stairway_at(x, y);
     let ttmp;
 
@@ -5700,7 +6936,16 @@ function* there_cmd_menu_self(win, x, y, act) {
         return K;
 
     if ((((typ) == NHC.FOUNTAIN) || ((typ) == NHC.SINK)) && can_reach_floor(0)) {
-        void cptr.sprintf(cptr.decay(buf), __s_drink_from_the_s, cptr.ldPtro2(defsyms, ((typ) == NHC.FOUNTAIN) ? NHC.S_fountain : NHC.S_sink, $sizeof_symdef, $symdef_explanation));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_drink_from_the_s,
+            cptr.ldPtro2(
+                defsyms,
+                ((typ) == NHC.FOUNTAIN) ? NHC.S_fountain : NHC.S_sink,
+                $sizeof_symdef,
+                $symdef_explanation
+            )
+        );
         (yield* mcmd_addmenu(win, NHC.MCMD_QUAFF, cptr.decay(buf))), ++K;
     }
     if (((typ) == NHC.FOUNTAIN) && can_reach_floor(0))
@@ -5711,22 +6956,52 @@ function* there_cmd_menu_self(win, x, y, act) {
         (yield* mcmd_addmenu(win, NHC.MCMD_OFFER, __s_sacrifice_something_on_the_altar)), ++K;
 
     if (stway && cptr.ld1so(stway, $stairway_up)) {
-        void cptr.sprintf(cptr.decay(buf), __s_go_up_the_s, cptr.ld1so(stway, $stairway_isladder) ? __s_ladder : __s_stairs);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_go_up_the_s,
+            cptr.ld1so(stway, $stairway_isladder) ? __s_ladder : __s_stairs
+        );
         (yield* mcmd_addmenu(win, NHC.MCMD_UP, cptr.decay(buf))), ++K;
     }
     if (stway && !cptr.ld1so(stway, $stairway_up)) {
-        void cptr.sprintf(cptr.decay(buf), __s_go_down_the_s, cptr.ld1so(stway, $stairway_isladder) ? __s_ladder : __s_stairs);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_go_down_the_s,
+            cptr.ld1so(stway, $stairway_isladder) ? __s_ladder : __s_stairs
+        );
         (yield* mcmd_addmenu(win, NHC.MCMD_DOWN, cptr.decay(buf))), ++K;
     }
     if (cptr.ldPtro(u, $you_usteed)) {
-        void cptr.sprintf(cptr.decay(buf), __s_dismount_s, (yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_dismount_s,
+            (yield* x_monnam(cptr.ldPtro(u, $you_usteed), NHM.ARTICLE_THE, null, NHM.SUPPRESS_SADDLE, 0))
+        );
         (yield* mcmd_addmenu(win, NHC.MCMD_DISMOUNT, cptr.decay(buf))), ++K;
     }
 
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects) !== null)) {
-        let otmp = cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects);
+    if ((cptr.ldPtro3(
+        svl,
+        x,
+        168,
+        y,
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_objects
+    ) !== null)) {
+        let otmp = cptr.ldPtro3(
+            svl,
+            x,
+            168,
+            y,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_objects
+        );
 
-        void cptr.sprintf(cptr.decay(buf), __s_pick_up_s, cptr.ldPtro(otmp, $obj_v) ? __s_items : (yield* doname(otmp)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_pick_up_s,
+            cptr.ldPtro(otmp, $obj_v) ? __s_items : (yield* doname(otmp))
+        );
         (yield* mcmd_addmenu(win, NHC.MCMD_PICKUP, cptr.decay(buf))), ++K;
 
         if (Is_container(otmp)) {
@@ -5761,11 +7036,26 @@ function* there_cmd_menu_self(win, x, y, act) {
 }
 
 /* add entries to there_cmd_menu, when x,y is next to hero */
-/** C ref: cmd.c:4524 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr<int>} act @returns {CInt} */
+/**
+ * C ref: cmd.c:4524
+ * @param {CInt} win
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} mod
+ * @param {CPtr<int>} act
+ * @returns {CInt}
+ */
 function* there_cmd_menu_next2u(win, x, y, mod, act) {
     let K = 0;
     let buf = new Uint8Array(256);
-    let typ = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    let typ = cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    );
     let ttmp;
     let mtmp;
 
@@ -5775,7 +7065,15 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
     if (((typ) == NHC.DOOR)) {
         let key_or_pick;
         let card;
-        let dm = (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0;
+        let dm = (cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) & 31) |
+                0;
 
         if ((dm & 12)) {
             (yield* mcmd_addmenu(win, NHC.MCMD_OPEN_DOOR, __s_open_the_door)), ++K;
@@ -5784,7 +7082,11 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
             key_or_pick = schar((carrying(NHC.SKELETON_KEY) || carrying(NHC.LOCK_PICK) ? 1 : 0));
             card = schar((carrying(NHC.CREDIT_CARD) !== null));
             if (key_or_pick || card) {
-                void cptr.sprintf(cptr.decay(buf), __s_sunlock_the_door, key_or_pick ? __s_lock_or : __s_empty);
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_sunlock_the_door,
+                    key_or_pick ? __s_lock_or : __s_empty
+                );
                 (yield* mcmd_addmenu(win, NHC.MCMD_LOCK_DOOR, upstart(cptr.decay(buf)))), ++K;
             }
             /* unfortunately there's no tknown flag for doors (or chests)
@@ -5807,7 +7109,8 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __s_move_on_the_trap)), ++K;
     }
 
-    if (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level) == (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
+    if (cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level) ==
+            (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0))
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, __s_push_the_boulder)), ++K;
 
     mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
@@ -5834,12 +7137,23 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
         void cptr.sprintf(cptr.decay(buf), __s_swap_places_with_s, (yield* mon_nam(mtmp)));
         (yield* mcmd_addmenu(win, NHC.MCMD_MOVE_DIR, cptr.decay(buf))), ++K;
 
-        void cptr.sprintf(cptr.decay(buf), __s_s_s__4, !has_mgivenname(mtmp) ? __s_name__2 : __s_rename, (yield* mon_nam(mtmp)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s__4,
+            !has_mgivenname(mtmp) ? __s_name__2 : __s_rename,
+            (yield* mon_nam(mtmp))
+        );
         (yield* mcmd_addmenu(win, NHC.MCMD_NAME, cptr.decay(buf))), ++K;
     }
 
-    if ((mtmp && !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) || ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
-        void cptr.sprintf(cptr.decay(buf), __s_attack_s, mtmp ? (yield* mon_nam(mtmp)) : __s_unseen_creature);
+    if ((mtmp &&
+        !((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 || cptr.ld1so(mtmp, $monst_mtame))) ||
+            ((glyph_at(x, y)) == NHC.GLYPH_INVIS_OFF)) {
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_attack_s,
+            mtmp ? (yield* mon_nam(mtmp)) : __s_unseen_creature
+        );
         (yield* mcmd_addmenu(win, NHC.MCMD_ATTACK_NEXT2U, cptr.decay(buf))), ++K;
         /* attacking overrides any other automatic action */
         cptr.stI32(act, NHC.MCMD_ATTACK_NEXT2U);
@@ -5849,12 +7163,20 @@ function* there_cmd_menu_next2u(win, x, y, mod, act) {
     return K;
 }
 
-/** C ref: cmd.c:4624 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @returns {CInt} */
+/**
+ * C ref: cmd.c:4624
+ * @param {CInt} win
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} mod
+ * @returns {CInt}
+ */
 function* there_cmd_menu_far(win, x, y, mod) {
     let K = 0;
 
     if (mod == NHM.CLICK_1) {
-        if (linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1) && dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y) < 324)
+        if (linedup(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, 1) &&
+                dist2(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y) < 324)
             (yield* mcmd_addmenu(win, NHC.MCMD_THROW_OBJ, __s_throw_something__2)), ++K;
 
         (yield* mcmd_addmenu(win, NHC.MCMD_TRAVEL, __s_travel_here)), ++K;
@@ -5862,14 +7184,30 @@ function* there_cmd_menu_far(win, x, y, mod) {
     return K;
 }
 
-/** C ref: cmd.c:4639 — @param {CInt} win @param {CInt} x @param {CInt} y @param {CInt} mod @param {CPtr<int>} act @returns {CInt} */
+/**
+ * C ref: cmd.c:4639
+ * @param {CInt} win
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} mod
+ * @param {CPtr<int>} act
+ * @returns {CInt}
+ */
 function* there_cmd_menu_common(win, x, y, mod, act) {
     let K = 0;
 
     if (mod == NHM.CLICK_1 || mod == NHM.CLICK_2) {
         /* for self, only include "look at map symbol" if it isn't the
            ordinary hero symbol (steed, invisible w/o see invisible, ?) */
-        if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || Upolyd() || glyph_at(x, y) != ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace)) ? cptr.ldI32o(u, $you_umonnum) : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) + ((((Ugender())) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0))
+        if (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ||
+                Upolyd() ||
+                glyph_at(x, y) !=
+                    ((((Upolyd() || !cptr.ld1so(flags, $flag_showrace))
+                        ? cptr.ldI32o(u, $you_umonnum)
+                        : cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum)) +
+                        ((((Ugender())) == NHC.MALE)
+                            ? NHC.GLYPH_MON_MALE_OFF
+                            : NHC.GLYPH_MON_FEM_OFF)) | 0))
             (yield* mcmd_addmenu(win, NHC.MCMD_LOOK_AT, __s_look_at_map_symbol)), ++K;
     }
     return K;
@@ -5901,8 +7239,16 @@ function* act_on_act(act, dx, dy) {
            from the menu but it will only work if flags.travelcmd is True.
            That option is intended as way to guard against stray mouse
            clicks and shouldn't inhibit explicit travel. */
-        cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + dx) | 0))));
-        cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + dy) | 0))));
+        cptr.stI16o(
+            iflags,
+            $instance_flags_travelcc,
+            cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + dx) | 0)))
+        );
+        cptr.stI16o(
+            iflags,
+            $instance_flags_travelcc + $nhcoord_y,
+            cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + dy) | 0)))
+        );
         (yield* cmdq_add_ec(NHC.CQ_CANNED, dotravel_target));
         break;
         case NHC.MCMD_THROW_OBJ:
@@ -6037,7 +7383,11 @@ function* act_on_act(act, dx, dy) {
         break;
         case NHC.MCMD_LOOK_AT:
         cptr.stI16o(gc, $instance_globals_c_clicklook_cc, i16(((cptr.ldI16(u) + dx) | 0)));
-        cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, i16(((cptr.ldI16o(u, $you_uy) + dy) | 0)));
+        cptr.stI16o(
+            gc,
+            $instance_globals_c_clicklook_cc + $nhcoord_y,
+            i16(((cptr.ldI16o(u, $you_uy) + dy) | 0))
+        );
         (yield* cmdq_add_ec(NHC.CQ_CANNED, doclicklook));
         break;
         case NHC.MCMD_UNTRAP_HERE:
@@ -6083,7 +7433,8 @@ function* there_cmd_menu(x, y, mod) {
 
     if (!K) {
         /* no menu options, try to move */
-        if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) && (yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), dx, dy, NHM.TEST_MOVE))) {
+        if ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) &&
+                (yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), dx, dy, NHM.TEST_MOVE))) {
             let dir = xytodir(dx, dy);
 
             (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.decay(move_funcs[dir]), NHC.MV_WALK, 8)));
@@ -6127,7 +7478,13 @@ export function* click_to_cmd(x, y, mod) {
     cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, y);
 
     if (cptr.ldPtro2(gc, (mod - 1) | 0, 8, $instance_globals_c_Cmd + $cmd_mousebtn))
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, cptr.ldPtro(cptr.ldPtro2(gc, (mod - 1) | 0, 8, $instance_globals_c_Cmd + $cmd_mousebtn), $ext_func_tab_ef_funct)));
+        (yield* cmdq_add_ec(
+            NHC.CQ_CANNED,
+            cptr.ldPtro(
+                cptr.ldPtro2(gc, (mod - 1) | 0, 8, $instance_globals_c_Cmd + $cmd_mousebtn),
+                $ext_func_tab_ef_funct
+            )
+        ));
 }
 
 /** C ref: cmd.c:4916 @returns {CInt} */
@@ -6138,24 +7495,58 @@ function* domouseaction() {
     let dir;
 
     x = i16(((cptr.ldI16o(gc, $instance_globals_c_clicklook_cc) - cptr.ldI16(u)) | 0));
-    y = i16(((cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y) - cptr.ldI16o(u, $you_uy)) | 0));
+    y = i16(((cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y) -
+            cptr.ldI16o(u, $you_uy)) | 0));
 
     if (cptr.ld1so(flags, $flag_travelcmd)) {
         if (Math.abs(x) <= 1 && Math.abs(y) <= 1) {
             x = i16(sgn(x)), y = i16(sgn(y));
         } else {
-            cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + x) | 0))));
-            cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + y) | 0))));
+            cptr.stI16o(
+                iflags,
+                $instance_flags_travelcc,
+                cptr.stI16o(u, $you_tx, i16(((cptr.ldI16(u) + x) | 0)))
+            );
+            cptr.stI16o(
+                iflags,
+                $instance_flags_travelcc + $nhcoord_y,
+                cptr.stI16o(u, $you_ty, i16(((cptr.ldI16o(u, $you_uy) + y) | 0)))
+            );
             (yield* cmdq_add_ec(NHC.CQ_CANNED, dotravel_target));
             return NHM.ECMD_OK;
         }
 
         if (x == 0 && y == 0) {
             /* here */
-            if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) || ((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
+            if (((cptr.ld1so3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )) ==
+                NHC.FOUNTAIN) ||
+                    ((cptr.ld1so3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    )) ==
+                        NHC.SINK)) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dodrink));
                 return NHM.ECMD_OK;
-            } else if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
+            } else if (((cptr.ld1so3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )) ==
+                    NHC.THRONE)) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dosit));
                 return NHM.ECMD_OK;
             } else if (On_stairs_up(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
@@ -6164,7 +7555,14 @@ function* domouseaction() {
             } else if (On_stairs_dn(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dodown));
                 return NHM.ECMD_OK;
-            } else if ((o = (cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_objects))) !== null) {
+            } else if ((o = (cptr.ldPtro3(
+                svl,
+                cptr.ldI16(u),
+                168,
+                cptr.ldI16o(u, $you_uy),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_objects
+            ))) !== null) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, Is_container(o) ? doloot : dopickup));
                 return NHM.ECMD_OK;
             } else {
@@ -6176,19 +7574,59 @@ function* domouseaction() {
         /* directional commands */
 
         dir = xytodir(x, y);
-        if (!(cptr.ldPtro3(svl, (cptr.ldI16(u) + x) | 0, 168, (cptr.ldI16o(u, $you_uy) + y) | 0, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)) && !(yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, NHM.TEST_MOVE))) {
-            if (((cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
+        if (!(cptr.ldPtro3(
+            svl,
+            (cptr.ldI16(u) + x) | 0,
+            168,
+            (cptr.ldI16o(u, $you_uy) + y) | 0,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters
+        )) &&
+                !(yield* test_move(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y, NHM.TEST_MOVE))) {
+            if (((cptr.ld1so3(
+                svl,
+                (cptr.ldI16(u) + x) | 0,
+                $sizeof_rm_x21,
+                (cptr.ldI16o(u, $you_uy) + y) | 0,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )) ==
+                    NHC.DOOR)) {
                 /* slight assistance to player: choose kick/open for them */
-                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED) {
+                if (((cptr.ldI32o3(
+                    svl,
+                    (cptr.ldI16(u) + x) | 0,
+                    $sizeof_rm_x21,
+                    (cptr.ldI16o(u, $you_uy) + y) | 0,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                        NHM.D_LOCKED) {
                     (yield* cmdq_add_ec(NHC.CQ_CANNED, dokick));
                     return NHM.ECMD_OK;
                 }
-                if (((cptr.ldI32o3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_CLOSED) {
+                if (((cptr.ldI32o3(
+                    svl,
+                    (cptr.ldI16(u) + x) | 0,
+                    $sizeof_rm_x21,
+                    (cptr.ldI16o(u, $you_uy) + y) | 0,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                        NHM.D_CLOSED) {
                     (yield* cmdq_add_ec(NHC.CQ_CANNED, doopen));
                     return NHM.ECMD_OK;
                 }
             }
-            if (cptr.ld1so3(svl, (cptr.ldI16(u) + x) | 0, $sizeof_rm_x21, (cptr.ldI16o(u, $you_uy) + y) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) <= NHC.SCORR) {
+            if (cptr.ld1so3(
+                svl,
+                (cptr.ldI16(u) + x) | 0,
+                $sizeof_rm_x21,
+                (cptr.ldI16o(u, $you_uy) + y) | 0,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) <=
+                    NHC.SCORR) {
                 (yield* cmdq_add_ec(NHC.CQ_CANNED, dosearch));
                 return NHM.ECMD_OK;
             }
@@ -6222,7 +7660,15 @@ function* domouseaction() {
 }
 
 /* gather typed digits into a number in *count; return the next non-digit */
-/** C ref: cmd.c:5010 — @param {CPtr<char>} allowchars @param {CInt} inkey @param {CLongLong} maxcount @param {CPtr<cmdcount_nht>} count @param {CUInt} gc_flags @returns {CInt} */
+/**
+ * C ref: cmd.c:5010
+ * @param {CPtr<char>} allowchars
+ * @param {CInt} inkey
+ * @param {CLongLong} maxcount
+ * @param {CPtr<cmdcount_nht>} count
+ * @param {CUInt} gc_flags
+ * @returns {CInt}
+ */
 export function* get_count(allowchars, inkey, maxcount, count, gc_flags) {
     let qbuf = new Uint8Array(128);
     let key;
@@ -6251,7 +7697,9 @@ export function* get_count(allowchars, inkey, maxcount, count, gc_flags) {
             let dgt = BigInt(((key - 48) | 0));
 
             /* cnt = (10 * cnt) + (key - '0'); */
-            cnt = (((cnt) < 922337203685477580n || ((cnt) == 922337203685477580n && (dgt) <= 7n)) ? BigInt.asIntN(64, BigInt.asIntN(64, (cnt) * 10n) + (dgt)) : -1n);
+            cnt = (((cnt) < 922337203685477580n || ((cnt) == 922337203685477580n && (dgt) <= 7n))
+                    ? BigInt.asIntN(64, BigInt.asIntN(64, (cnt) * 10n) + (dgt))
+                    : -1n);
             if (cnt < 0n)
                 cnt = 0n;
             else if (maxcount > 0n && cnt > maxcount)
@@ -6312,7 +7760,9 @@ function* parse() {
        is always reset to otherInp by readchar() */
     cptr.stI32o(program_state, $sinfo_input_state, NHC.commandInp);
 
-    if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) || (foo = (yield* readchar())) == cptr.ld1so2(gc, NHC.NHKF_COUNT, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
+    if (!cptr.ld1so(gc, $instance_globals_c_Cmd + $cmd_num_pad) ||
+            (foo = (yield* readchar())) ==
+                cptr.ld1so2(gc, NHC.NHKF_COUNT, 1, $instance_globals_c_Cmd + $cmd_spkeys)) {
         /* if 'num_pad' is On then readchar() has just reset input_state;
            set it back to commandInp, so that get_count() supports 'altmeta';
            otherwise "n<count>ESC<character>" becomes "n<count>ESC" (with
@@ -6320,7 +7770,13 @@ function* parse() {
            and meta keystroke "n<count>M-<character>" */
         cptr.stI32o(program_state, $sinfo_input_state, NHC.commandInp);
 
-        foo = (yield* get_count(null, 0, 32767n, cptr.add(gc, $instance_globals_c_command_count), NHM.GC_NOFLAGS));
+        foo = (yield* get_count(
+            null,
+            0,
+            32767n,
+            cptr.add(gc, $instance_globals_c_command_count),
+            NHM.GC_NOFLAGS
+        ));
     }
     cptr.stI64(gl, cptr.ldI64o(gc, $instance_globals_c_command_count));
 
@@ -6330,7 +7786,14 @@ function* parse() {
         cptr.stI64(gl, 0n);
     } else if (cptr.ldI32(gi)) {
         cptr.stI64o(gc, $instance_globals_c_command_count, cptr.ldI64(gl));
-    } else if (foo && (bind = cmdbind_get(uchar((foo & 255)))) !== null && bind && cptr.ldPtro(bind, $Cmd_bind_cmd) && (cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === do_repeat || cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doprev_message || cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === doextcmd)) {
+    } else if (foo &&
+            (bind = cmdbind_get(uchar((foo & 255)))) !== null && bind &&
+            cptr.ldPtro(bind, $Cmd_bind_cmd) &&
+            (cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) === do_repeat ||
+                cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) ===
+                    doprev_message ||
+                cptr.ldPtro(cptr.ldPtro(bind, $Cmd_bind_cmd), $ext_func_tab_ef_funct) ===
+                    doextcmd)) {
         /* gc.command_count will be set again when we
            re-enter with gi.in_doagain set true */
         cptr.stI64o(gc, $instance_globals_c_command_count, cptr.ldI64(gl));
@@ -6338,7 +7801,12 @@ function* parse() {
 
     cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gc, $instance_globals_c_command_count));
     if (cptr.ldI64o(gm, $instance_globals_m_multi))
-        (cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + -1n)) - (-1n);
+        (cptr.stI64o(
+            gm,
+            $instance_globals_m_multi,
+            cptr.ldI64o(gm, $instance_globals_m_multi) + -1n
+        )) -
+                (-1n);
 
     cptr.stI32o(gc, $instance_globals_c_cmd_key, foo);
     (yield* Y.icall(clear_nhwindow()(WIN_MESSAGE.v)));
@@ -6362,9 +7830,11 @@ export function* hangup(sig_unused) {
        protects against losing objects in the process of being thrown,
        but also potentially riskier because the disconnected program
        must continue running longer before attempting a hangup save. */
-    (cptr.stI32o(program_state, $sinfo_done_hup, cptr.ldI32o(program_state, $sinfo_done_hup) + 1)) - (1);
+    (cptr.stI32o(program_state, $sinfo_done_hup, cptr.ldI32o(program_state, $sinfo_done_hup) + 1)) -
+            (1);
     /* defer hangup iff game appears to be in progress */
-    if (cptr.ldI32o(program_state, $sinfo_in_moveloop) && cptr.ldI32o(program_state, $sinfo_something_worth_saving))
+    if (cptr.ldI32o(program_state, $sinfo_in_moveloop) &&
+            cptr.ldI32o(program_state, $sinfo_something_worth_saving))
         return;
     (yield* end_of_input());
 }
@@ -6385,7 +7855,13 @@ export function* end_of_input() {
     return;
 }
 
-/** C ref: cmd.c:5213 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
+/**
+ * C ref: cmd.c:5213
+ * @param {CPtr<coordxy>} x
+ * @param {CPtr<coordxy>} y
+ * @param {CPtr<int>} mod
+ * @returns {CInt}
+ */
 function* readchar_core(x, y, mod) {
     let sym;
     __lbl_readchar_done: {
@@ -6416,19 +7892,27 @@ function* readchar_core(x, y, mod) {
         if (sym == -1) {
             (yield* hangup(0));  /* call end_of_input() or set program_state.done_hup */
             sym = 27;
-        } else if (sym == 27 && cptr.ld1so(iflags, $instance_flags_altmeta) && cptr.ldI32o(program_state, $sinfo_input_state) != NHC.otherInp) {
+        } else if (sym == 27 &&
+                cptr.ld1so(iflags, $instance_flags_altmeta) &&
+                cptr.ldI32o(program_state, $sinfo_input_state) != NHC.otherInp) {
             /* iflags.altmeta: treat two character ``ESC c'' as single `M-c' but
                only when we're called by parse() [possibly via get_count()]
                or getpos() [to support Alt+digit] or getdir() [for arrow keys
                under curses] */
-            sym = cptr.ld1s(readchar_queue) ? cptr.ld1s(cptr.postinc(() => readchar_queue, (v) => { readchar_queue = v; })) : (yield* pgetchar());
+            sym = cptr.ld1s(readchar_queue)
+                    ? cptr.ld1s(cptr.postinc(() => readchar_queue, (v) => { readchar_queue = v; }))
+                    : (yield* pgetchar());
             if (sym == -1 || sym == 0)
                 sym = 27;
             else if (sym != 27)
                 sym |= 128;  /* force 8th bit on */
         } else if (sym == 0) {
             /* click event */
-            cptr.stI16o(gc, $instance_globals_c_clicklook_cc, cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, -1));
+            cptr.stI16o(
+                gc,
+                $instance_globals_c_clicklook_cc,
+                cptr.stI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y, -1)
+            );
             (yield* click_to_cmd(cptr.ldI16(x), cptr.ldI16(y), cptr.ldI32(mod)));
         }
     }
@@ -6451,7 +7935,13 @@ export function* readchar() {
 }
 
 /* used by getpos() to accept mouse input as well as keyboard input */
-/** C ref: cmd.c:5288 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
+/**
+ * C ref: cmd.c:5288
+ * @param {CPtr<coordxy>} x
+ * @param {CPtr<coordxy>} y
+ * @param {CPtr<int>} mod
+ * @returns {CInt}
+ */
 export function* readchar_poskey(x, y, mod) {
     let ch;
 
@@ -6503,7 +7993,11 @@ function* dotravel() {
         }
     }
     cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(u, $you_tx, cptr.ldI16(cc)));
-    cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, cptr.stI16o(u, $you_ty, cptr.ldI16o(cc, $nhcoord_y)));
+    cptr.stI16o(
+        iflags,
+        $instance_flags_travelcc + $nhcoord_y,
+        cptr.stI16o(u, $you_ty, cptr.ldI16o(cc, $nhcoord_y))
+    );
 
     return (yield* dotravel_target());
 }
@@ -6511,15 +8005,24 @@ function* dotravel() {
 /* #retravel, travel to iflags.travelcc, which must be set */
 /** C ref: cmd.c:5348 @returns {CInt} */
 function* dotravel_target() {
-    if (!isok(cptr.ldI16o(iflags, $instance_flags_travelcc), cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y))) {
+    if (!isok(
+        cptr.ldI16o(iflags, $instance_flags_travelcc),
+        cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y)
+    )) {
         /* assume <0,0>, the value assigned when travel reaches destination */
         (yield* pline(__s_no_travel_destination_set));
         return NHM.ECMD_OK;
-    } else if (((cptr.ldI16o(iflags, $instance_flags_travelcc)) == cptr.ldI16(u) && (cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y)) == cptr.ldI16o(u, $you_uy))) {
+    } else if (((cptr.ldI16o(iflags, $instance_flags_travelcc)) == cptr.ldI16(u) &&
+            (cptr.ldI16o(iflags, $instance_flags_travelcc + $nhcoord_y)) ==
+                cptr.ldI16o(u, $you_uy))) {
         /* maybe interrupted while traveling then just walked rest of way
            so destination hasn't been reset yet */
         (yield* You(__s_are_already_here));
-        cptr.stI16o(iflags, $instance_flags_travelcc, cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0));
+        cptr.stI16o(
+            iflags,
+            $instance_flags_travelcc,
+            cptr.stI16o(iflags, $instance_flags_travelcc + $nhcoord_y, 0)
+        );
         return NHM.ECMD_OK;
     }
 
@@ -6529,7 +8032,11 @@ function* dotravel_target() {
     cptr.st1o(svc, $context_info_travel1, 1);
     cptr.stI32o(svc, $context_info_run, 8);
     cptr.st1o(svc, $context_info_nopick, 1);
-    cptr.stI64o(gd, $instance_globals_d_domove_attempting, cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n);
+    cptr.stI64o(
+        gd,
+        $instance_globals_d_domove_attempting,
+        cptr.ldI64o(gd, $instance_globals_d_domove_attempting) | 2n
+    );
 
     if (!cptr.ldI64o(gm, $instance_globals_m_multi))
         cptr.stI64o(gm, $instance_globals_m_multi, 80n);
@@ -6543,11 +8050,17 @@ function* dotravel_target() {
 /* mouse click look command */
 /** C ref: cmd.c:5381 @returns {CInt} */
 function* doclicklook() {
-    if (!isok(cptr.ldI16o(gc, $instance_globals_c_clicklook_cc), cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y)))
+    if (!isok(
+        cptr.ldI16o(gc, $instance_globals_c_clicklook_cc),
+        cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y)
+    ))
         return NHM.ECMD_OK;
 
     cptr.st1o(svc, $context_info_move, 0);
-    (yield* auto_describe(cptr.ldI16o(gc, $instance_globals_c_clicklook_cc), cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y)));
+    (yield* auto_describe(
+        cptr.ldI16o(gc, $instance_globals_c_clicklook_cc),
+        cptr.ldI16o(gc, $instance_globals_c_clicklook_cc + $nhcoord_y)
+    ));
 
     return NHM.ECMD_OK;
 }
@@ -6555,23 +8068,54 @@ function* doclicklook() {
 /* can we use menu entries to respond to a query? */
 /** C ref: cmd.c:5394 — @param {CPtr<char>} resp @returns {CInt} */
 function yn_menuable_resp(resp) {
-    return schar((cptr.ld1so(iflags, $instance_flags_query_menu) && cptr.ld1so(iflags, $instance_flags_window_inited) && (cptr.eq(resp, cptr.decay(ynchars)) || cptr.eq(resp, cptr.decay(ynqchars)) || cptr.eq(resp, cptr.decay(ynaqchars)) || cptr.eq(resp, cptr.decay(rightleftchars)) || cptr.eq(resp, cptr.decay(hidespinchars))) ? 1 : 0));
+    return schar((cptr.ld1so(iflags, $instance_flags_query_menu) &&
+        cptr.ld1so(iflags, $instance_flags_window_inited) &&
+        (cptr.eq(resp, cptr.decay(ynchars)) ||
+            cptr.eq(resp, cptr.decay(ynqchars)) ||
+            cptr.eq(resp, cptr.decay(ynaqchars)) ||
+            cptr.eq(resp, cptr.decay(rightleftchars)) ||
+            cptr.eq(resp, cptr.decay(hidespinchars)))
+            ? 1
+            : 0));
 }
 
-/** C ref: cmd.c:5402 — @param {CInt} win @param {CInt} key @param {CPtr<char>} text @param {CInt} def */
+/**
+ * C ref: cmd.c:5402
+ * @param {CInt} win
+ * @param {CInt} key
+ * @param {CPtr<char>} text
+ * @param {CInt} def
+ */
 function* yn_func_menu_opt(win, key, text, def) {
     let any = cptr.alloc(8);
 
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     cptr.st1(any, key);
-    (yield* add_menu(win, nul_glyphinfo.v, any, key, 0, NHM.ATR_NONE, NHM.NO_COLOR, text, (def == key) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        win,
+        nul_glyphinfo.v,
+        any,
+        key,
+        0,
+        NHM.ATR_NONE,
+        NHM.NO_COLOR,
+        text,
+        (def == key) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE
+    ));
 
 }
 
 /* use a menu to ask a specific response to a query.
    returns TRUE if the menu was shown to the user.
    puts the response char into res. */
-/** C ref: cmd.c:5419 — @param {CPtr<char>} query @param {CPtr<char>} resp @param {CInt} def @param {CPtr<char>} res @returns {CInt} */
+/**
+ * C ref: cmd.c:5419
+ * @param {CPtr<char>} query
+ * @param {CPtr<char>} resp
+ * @param {CInt} def
+ * @param {CPtr<char>} res
+ * @returns {CInt}
+ */
 function* yn_function_menu(query, resp, def, res) {
     if (yn_menuable_resp(resp)) {
         let win = (yield* Y.icall(create_nhwindow()(NHM.NHW_MENU)));
@@ -6592,7 +8136,9 @@ function* yn_function_menu(query, resp, def, res) {
         }
         if (cptr.eq(resp, cptr.decay(ynaqchars)))
             (yield* yn_func_menu_opt(win, 97, __s_all, def));
-        if (cptr.eq(resp, cptr.decay(ynqchars)) || cptr.eq(resp, cptr.decay(ynaqchars)) || cptr.eq(resp, cptr.decay(hidespinchars)))
+        if (cptr.eq(resp, cptr.decay(ynqchars)) ||
+                cptr.eq(resp, cptr.decay(ynaqchars)) ||
+                cptr.eq(resp, cptr.decay(hidespinchars)))
             (yield* yn_func_menu_opt(win, 113, __s_quit__2, def));
         (yield* Y.icall(end_menu()(win, query)));
         n = (yield* select_menu(win, NHM.PICK_ONE, sel));
@@ -6618,7 +8164,14 @@ function* yn_function_menu(query, resp, def, res) {
  *   the core from sending too long a prompt string to the
  *   window port causing a buffer overflow there.
  */
-/** C ref: cmd.c:5471 — @param {CPtr<char>} query @param {CPtr<char>} resp @param {CInt} def @param {CInt} addcmdq @returns {CInt} */
+/**
+ * C ref: cmd.c:5471
+ * @param {CPtr<char>} query
+ * @param {CPtr<char>} resp
+ * @param {CInt} def
+ * @param {CInt} addcmdq
+ * @returns {CInt}
+ */
 export function* yn_function(query, resp, def, addcmdq) {
     let res = cptr.box(27);
     let qbuf = new Uint8Array(128);
@@ -6634,7 +8187,12 @@ export function* yn_function(query, resp, def, addcmdq) {
     if (cptr.strlen(query) >= 128n) {
         /* caller shouldn't have passed anything this long */
         (yield* paniclog(__s_query_truncated, query));
-        void __builtin___strncpy_chk(cptr.decay(qbuf), query, 124n, __builtin_object_size(cptr.decay(qbuf), 1));
+        void __builtin___strncpy_chk(
+            cptr.decay(qbuf),
+            query,
+            124n,
+            __builtin_object_size(cptr.decay(qbuf), 1)
+        );
         void cptr.strcpy(cptr.add(cptr.decay(qbuf), 124, 1), __s_dot3);
         query = cptr.decay(qbuf);
     }
@@ -6656,7 +8214,9 @@ export function* yn_function(query, resp, def, addcmdq) {
 
         /* for the fuzzer, usually force a valid response, but sometimes let
            it exercise windowport yn_function and invalid response handling */
-    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp && cptr.ld1s(resp) && rn2(20)) {
+    } else if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer) && resp &&
+            cptr.ld1s(resp) &&
+            rn2(20)) {
         let ln = Number(BigInt.asIntN(32, cptr.strlen(resp)));
         let ridx = rn2(ln);
 
@@ -6704,10 +8264,23 @@ export function* yn_function(query, resp, def, addcmdq) {
             let fuzzing = cptr.ld1so(iflags, $instance_flags_debug_fuzzer);
             let dbg_buf = new Uint8Array(256);
 
-            nh_snprintf(__s_yn_function, 5570, cptr.decay(dbg_buf), 256n, __s_s_s_s__4, query, resp ? resp : __s_empty, def ? visctrl(def) : __s_empty);
+            nh_snprintf(
+                __s_yn_function,
+                5570,
+                cptr.decay(dbg_buf),
+                256n,
+                __s_s_s_s__4,
+                query,
+                resp ? resp : __s_empty,
+                def ? visctrl(def) : __s_empty
+            );
             (yield* paniclog(__s_yn_debug, cptr.decay(dbg_buf)));
             cptr.st1o(iflags, $instance_flags_debug_fuzzer, NHC.fuzzer_impossible_continue);
-            (yield* impossible(__s_yn_function_returned_s_using_s_instead, visctrl(res.v), visctrl(schar(altres))));
+            (yield* impossible(
+                __s_yn_function_returned_s_using_s_instead,
+                visctrl(res.v),
+                visctrl(schar(altres))
+            ));
             cptr.st1o(iflags, $instance_flags_debug_fuzzer, fuzzing);
         }
         res.v = schar(altres);
@@ -6719,7 +8292,13 @@ export function* yn_function(query, resp, def, addcmdq) {
 
 /* for paranoid_confirm:quit,die,attack,&c prompting; allows yes, n|no,
    or q|quit; result is one of 'y' or 'n' or 'q'; ESC yields 'q' */
-/** C ref: cmd.c:5588 — @param {CInt} be_paranoid @param {CPtr<char>} prompt @param {CInt} accept_q @returns {CInt} */
+/**
+ * C ref: cmd.c:5588
+ * @param {CInt} be_paranoid
+ * @param {CPtr<char>} prompt
+ * @param {CInt} accept_q
+ * @returns {CInt}
+ */
 export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
     let c = 110;  /* default result */
 
@@ -6731,7 +8310,9 @@ export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
         let qbuf = new Uint8Array(128);
         let ans = new Uint8Array(256);
         let promptprefix = __s_empty;
-        let responsetype = ParanoidConfirm() ? (accept_q ? __s_yes_no_quit : __s_yes_no) : (accept_q ? __s_yes_n_q_n : __s_yes_n_n);
+        let responsetype = ParanoidConfirm()
+                ? (accept_q ? __s_yes_no_quit : __s_yes_no)
+                : (accept_q ? __s_yes_n_q_n : __s_yes_n_n);
         let k;
         let trylimit = 6;  /* 1 normal, 5 more with "Yes or No:" prefix */
 
@@ -6743,13 +8324,31 @@ export function* paranoid_ynq(be_paranoid, prompt, accept_q) {
            (except we won't loop if response is ESC; it means no) */
         do {
             /* make sure we won't overflow a QBUFSZ sized buffer */
-            k = Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(promptprefix) + 1n) + cptr.strlen(responsetype)))));
+            k = Number(BigInt.asIntN(
+                32,
+                (BigInt.asUintN(
+                    64,
+                    BigInt.asUintN(64, cptr.strlen(promptprefix) + 1n) + cptr.strlen(responsetype)
+                ))
+            ));
             if (((Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(pbuf)))) + k) | 0) > 127) {
                 /* chop off some at the end */
-                void cptr.strcpy(cptr.add(cptr.add(cptr.add(cptr.decay(pbuf), 127), -(k)), -(4)), __s_dot3_query);  /* -4: "...?" */
+                void cptr.strcpy(
+                    cptr.add(cptr.add(cptr.add(cptr.decay(pbuf), 127), -(k)), -(4)),
+                    __s_dot3_query
+                );  /* -4: "...?" */
             }
 
-            nh_snprintf(__s_paranoid_ynq, 5624, cptr.decay(qbuf), 128n, __s_s_s_s__5, promptprefix, cptr.decay(pbuf), responsetype);
+            nh_snprintf(
+                __s_paranoid_ynq,
+                5624,
+                cptr.decay(qbuf),
+                128n,
+                __s_s_s_s__5,
+                promptprefix,
+                cptr.decay(pbuf),
+                responsetype
+            );
             cptr.st1(cptr.decay(ans), 0);
             (yield* getlin(cptr.decay(qbuf), cptr.decay(ans)));
             void (yield* mungspaces(cptr.decay(ans)));
@@ -6791,7 +8390,11 @@ function* dosuspend_core() {
     if ((yield* Y.icall((cptr.ldPtro(windowprocs, $window_procs_win_can_suspend))()))) {
         let now = (yield* getnow());
 
-        cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, $u_realtime_start_timing)));
+        cptr.stI64(
+            urealtime,
+            cptr.ldI64(urealtime) +
+                timet_delta(now, cptr.ldI64o(urealtime, $u_realtime_start_timing))
+        );
         cptr.stI64o(urealtime, $u_realtime_start_timing, now);  /* as a safeguard against panic save */
         /* NB: SYSCF SHELLERS handled in port code. */
         (yield* dosuspend());
@@ -6806,7 +8409,10 @@ function* dosuspend_core() {
 function* dosh_core() {
     let now = (yield* getnow());
 
-    cptr.stI64(urealtime, cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, $u_realtime_start_timing)));
+    cptr.stI64(
+        urealtime,
+        cptr.ldI64(urealtime) + timet_delta(now, cptr.ldI64o(urealtime, $u_realtime_start_timing))
+    );
     cptr.stI64o(urealtime, $u_realtime_start_timing, now);  /* (see dosuspend_core) */
     /* access restrictions, if any, are handled in port code */
     (yield* dosh());
@@ -6823,7 +8429,23 @@ function dummyfunction() {
 // 31 bindings: 1 rebound+refilled, 7 rebound, 23 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(timed_occ_fn), S(readchar_queue), S(unavailcmd), S(cmdnotavail), S(__static_doc_extcmd_flagstr_Abuf), S(__static_doextlist_headings), S(__static_makemap_prepost_Unachieve), S(levltyp), S(extcmdlist), S(move_funcs), S(misc_keys), S(extcmdlist_length), S(__static_extcmds_match_retmatchlist), S(__static_key2extcmddesc_key2cmdbuf), S(__static_cmd_from_ecname_cmdnamebuf), S(spkeys_binds), S(__static_lock_mouse_buttons_mousebtn), S(__static_reset_commands_sdir), S(__static_reset_commands_sdir_swap_yz), S(__static_reset_commands_ndir), S(__static_reset_commands_ndir_phone_layout), S(__static_reset_commands_ylist), S(__static_reset_commands_back_dir_cmd), S(__static_reset_commands_back_dir_key), S(__static_reset_commands_backed_dir_cmd), S(__static_update_rest_on_space_restonspace), S(__static_update_rest_on_space_unrestonspace), S(__static_randomkey_i), S(__static_randomkey_last_c), S(__static_help_dir_wiz_only_list), S(__static_directionname_dirnames)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(timed_occ_fn), S(readchar_queue), S(unavailcmd), S(cmdnotavail),
+        S(__static_doc_extcmd_flagstr_Abuf), S(__static_doextlist_headings),
+        S(__static_makemap_prepost_Unachieve), S(levltyp), S(extcmdlist), S(move_funcs),
+        S(misc_keys), S(extcmdlist_length), S(__static_extcmds_match_retmatchlist),
+        S(__static_key2extcmddesc_key2cmdbuf), S(__static_cmd_from_ecname_cmdnamebuf),
+        S(spkeys_binds), S(__static_lock_mouse_buttons_mousebtn), S(__static_reset_commands_sdir),
+        S(__static_reset_commands_sdir_swap_yz), S(__static_reset_commands_ndir),
+        S(__static_reset_commands_ndir_phone_layout), S(__static_reset_commands_ylist),
+        S(__static_reset_commands_back_dir_cmd), S(__static_reset_commands_back_dir_key),
+        S(__static_reset_commands_backed_dir_cmd), S(__static_update_rest_on_space_restonspace),
+        S(__static_update_rest_on_space_unrestonspace), S(__static_randomkey_i),
+        S(__static_randomkey_last_c), S(__static_help_dir_wiz_only_list),
+        S(__static_directionname_dirnames)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("cmd.js: __resetState before __captureState");

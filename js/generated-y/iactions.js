@@ -13,13 +13,20 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Is_container, ammo_and_launcher, bimanual, cantwield, could_twoweap, has_oname, is_ammo, is_blade, is_graystone, is_launcher, is_missile, is_plural, is_weptool, is_wet_towel } from './nhmacrofn.js';
+import {
+    Is_container, ammo_and_launcher, bimanual, cantwield, could_twoweap, has_oname, is_ammo,
+    is_blade, is_graystone, is_launcher, is_missile, is_plural, is_weptool, is_wet_towel
+} from './nhmacrofn.js';
 import { create_nhwindow, destroy_nhwindow, end_menu, start_menu } from './nhprop.js';
 import { call_ok, docallcmd, name_ok } from './do_name.js';
-import { an, armor_simple_name, cxname, makeplural, simpleonames, the, the_unique_obj } from './objnam.js';
+import {
+    an, armor_simple_name, cxname, makeplural, simpleonames, the, the_unique_obj
+} from './objnam.js';
 import { doinvoke, undiscovered_artifact } from './artifact.js';
 import { objects } from './objects.js';
-import { cg, gy, svl, u, uamul, uarms, ublindf, uleft, uquiver, uright, uswapwep, uwep } from './decl.js';
+import {
+    cg, gy, svl, u, uamul, uarms, ublindf, uleft, uquiver, uright, uswapwep, uwep
+} from './decl.js';
 import { add_menu, select_menu, windowprocs } from './windows.js';
 import { nul_glyphinfo } from './display.js';
 import { impossible } from './pline.js';
@@ -48,24 +55,26 @@ import { armcat_to_wornmask, wearmask_to_obj } from './worn.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $const_globals_zeroany = FLD.const_globals_zeroany,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
-    $obj_cknown = FLD.obj_cknown, $obj_cobj = FLD.obj_cobj, $obj_dknown = FLD.obj_dknown,
-    $obj_invlet = FLD.obj_invlet, $obj_known = FLD.obj_known, $obj_lamplit = FLD.obj_lamplit,
-    $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass, $obj_oextra = FLD.obj_oextra,
-    $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask, $obj_quan = FLD.obj_quan,
-    $obj_spe = FLD.obj_spe, $obj_unpaid = FLD.obj_unpaid, $objclass_oc_big = FLD.objclass_oc_big,
-    $objclass_oc_name_known = FLD.objclass_oc_name_known, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
-    $objclass_oc_tough = FLD.objclass_oc_tough, $objclass_oc_uname = FLD.objclass_oc_uname,
-    $objclass_oc_unique = FLD.objclass_oc_unique, $permonst_mattk = FLD.permonst_mattk,
-    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_msize = FLD.permonst_msize, $rm_typ = FLD.rm_typ,
-    $sizeof_attack = FLD.sizeof_attack, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_twoweap = FLD.you_twoweap,
-    $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy;
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
+      $obj_cknown = FLD.obj_cknown, $obj_cobj = FLD.obj_cobj, $obj_dknown = FLD.obj_dknown,
+      $obj_invlet = FLD.obj_invlet, $obj_known = FLD.obj_known, $obj_lamplit = FLD.obj_lamplit,
+      $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass,
+      $obj_oextra = FLD.obj_oextra, $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask,
+      $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe, $obj_unpaid = FLD.obj_unpaid,
+      $objclass_oc_big = FLD.objclass_oc_big, $objclass_oc_name_known = FLD.objclass_oc_name_known,
+      $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $objclass_oc_tough = FLD.objclass_oc_tough,
+      $objclass_oc_uname = FLD.objclass_oc_uname, $objclass_oc_unique = FLD.objclass_oc_unique,
+      $permonst_mattk = FLD.permonst_mattk, $permonst_mflags1 = FLD.permonst_mflags1,
+      $permonst_msize = FLD.permonst_msize, $rm_typ = FLD.rm_typ,
+      $sizeof_attack = FLD.sizeof_attack, $sizeof_menu_item = FLD.sizeof_menu_item,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+      $you_twoweap = FLD.you_twoweap, $you_uswallow = FLD.you_uswallow, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_s_s_s = cptr.lit("%s %s %s");
@@ -240,12 +249,28 @@ const __static_item_naming_classification_Rename = cptr.bytes("Rename or un-name
 const __static_item_naming_classification_Call = cptr.bytes("Call"); /** C ref: iactions.c:54 — char[5] (function-static) */
 const __static_item_naming_classification_Recall = cptr.bytes("Re-call or un-call"); /** C ref: iactions.c:57 — char[19] (function-static) */
 
-/** C ref: iactions.c:46 — @param {CPtr<struct obj>} obj @param {CPtr<char>} onamebuf @param {CPtr<char>} ocallbuf @returns {CInt} */
+/**
+ * C ref: iactions.c:46
+ * @param {CPtr<struct obj>} obj
+ * @param {CPtr<char>} onamebuf
+ * @param {CPtr<char>} ocallbuf
+ * @returns {CInt}
+ */
 function* item_naming_classification(obj, onamebuf, ocallbuf) {
 
     cptr.st1o(onamebuf, 0, cptr.st1o(ocallbuf, 0, 0));
     if (name_ok(obj) == NHC.GETOBJ_SUGGEST) {
-        void cptr.sprintf(onamebuf, __s_s_s_s, (!has_oname(obj) || !cptr.ld1s((cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra))))) ? cptr.decay(__static_item_naming_classification_Name) : cptr.decay(__static_item_naming_classification_Rename), the_unique_obj(obj) ? __s_the : (!is_plural(obj) ? __s_this_specific : __s_this_stack_of), (yield* simpleonames(obj)));
+        void cptr.sprintf(
+            onamebuf,
+            __s_s_s_s,
+            (!has_oname(obj) || !cptr.ld1s((cptr.ldPtr(cptr.ldPtro((obj), $obj_oextra)))))
+                ? cptr.decay(__static_item_naming_classification_Name)
+                : cptr.decay(__static_item_naming_classification_Rename),
+            the_unique_obj(obj)
+                ? __s_the
+                : (!is_plural(obj) ? __s_this_specific : __s_this_stack_of),
+            (yield* simpleonames(obj))
+        );
     }
     if (call_ok(obj) == NHC.GETOBJ_SUGGEST) {
         let callname = (yield* simpleonames(obj));
@@ -255,13 +280,36 @@ function* item_naming_classification(obj, onamebuf, ocallbuf) {
             callname = (yield* the(callname));
         else if (!is_plural(obj))
             callname = (yield* makeplural(callname));
-        void cptr.sprintf(ocallbuf, __s_s_the_type_for_s, (!cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_uname) || !cptr.ld1s(cptr.ldPtro2(objects, cptr.ldI16o(obj, $obj_otyp), $sizeof_objclass, $objclass_oc_uname))) ? cptr.decay(__static_item_naming_classification_Call) : cptr.decay(__static_item_naming_classification_Recall), callname);
+        void cptr.sprintf(
+            ocallbuf,
+            __s_s_the_type_for_s,
+            (!cptr.ldPtro2(
+                objects,
+                cptr.ldI16o(obj, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_uname
+            ) ||
+                !cptr.ld1s(cptr.ldPtro2(
+                    objects,
+                    cptr.ldI16o(obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_uname
+                )))
+                ? cptr.decay(__static_item_naming_classification_Call)
+                : cptr.decay(__static_item_naming_classification_Recall),
+            callname
+        );
     }
     return schar(((cptr.ld1s(onamebuf) || cptr.ld1s(ocallbuf)) ? 1 : 0));
 }
 
 /* construct text for the menu entries for IA_READ_OBJ */
-/** C ref: iactions.c:86 — @param {CPtr<struct obj>} obj @param {CPtr<char>} outbuf @returns {CInt} */
+/**
+ * C ref: iactions.c:86
+ * @param {CPtr<struct obj>} obj
+ * @param {CPtr<char>} outbuf
+ * @returns {CInt}
+ */
 function* item_reading_classification(obj, outbuf) {
     let otyp = cptr.ldI16o(obj, $obj_otyp);
     let res = NHC.IA_READ_OBJ;
@@ -276,22 +324,44 @@ function* item_reading_classification(obj, outbuf) {
     } else if (otyp == NHC.HAWAIIAN_SHIRT) {
         void cptr.strcpy(outbuf, __s_look_at_the_pattern_on_the_shirt);
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.SCROLL_CLASS) {
-        let magic = (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 && otyp != NHC.SCR_MAIL && (otyp != NHC.SCR_BLANK_PAPER || !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1))) ? __s_to_activate_its_magic : __s_empty);
+        let magic = (((cptr.ldI32o(obj, $obj_dknown) & 1) | 0 &&
+            otyp != NHC.SCR_MAIL &&
+            (otyp != NHC.SCR_BLANK_PAPER ||
+                !(cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1)))
+                ? __s_to_activate_its_magic
+                : __s_empty);
 
         void cptr.sprintf(outbuf, __s_read_this_scroll_s, magic);
     } else if (cptr.ld1so(obj, $obj_oclass) == NHC.SPBOOK_CLASS) {
         let novel = schar((otyp == NHC.SPE_NOVEL));
-        let blank = schar((otyp == NHC.SPE_BLANK_PAPER && (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
-        let tome = schar((otyp == NHC.SPE_BOOK_OF_THE_DEAD && (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ? 1 : 0));
+        let blank = schar((otyp == NHC.SPE_BLANK_PAPER &&
+            (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
+                ? 1
+                : 0));
+        let tome = schar((otyp == NHC.SPE_BOOK_OF_THE_DEAD &&
+            (cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0
+                ? 1
+                : 0));
 
-        void cptr.sprintf(outbuf, __s_s_this_s, (novel || blank) ? __s_read : (tome ? __s_examine : __s_study), novel ? (yield* simpleonames(obj)) : (tome ? __s_tome : __s_spellbook));
+        void cptr.sprintf(
+            outbuf,
+            __s_s_this_s,
+            (novel || blank) ? __s_read : (tome ? __s_examine : __s_study),
+            novel ? (yield* simpleonames(obj)) : (tome ? __s_tome : __s_spellbook)
+        );
     } else {
         res = NHC.IA_NONE;
     }
     return res;
 }
 
-/** C ref: iactions.c:127 — @param {CInt} win @param {CInt} act @param {CInt} let @param {CPtr<char>} txt */
+/**
+ * C ref: iactions.c:127
+ * @param {CInt} win
+ * @param {CInt} act
+ * @param {CInt} let
+ * @param {CPtr<char>} txt
+ */
 function* ia_addmenu(win, act, let$, txt) {
     let any = cptr.alloc(8);
     let clr = NHM.NO_COLOR;
@@ -311,7 +381,14 @@ function* itemactions_pushkeys(otmp, act) {
         case NHC.IA_NONE:
         break;
         case NHC.IA_UNWIELD:
-        (yield* cmdq_add_ec(NHC.CQ_CANNED, (cptr.eq(otmp, uwep.v)) ? dowield : ((cptr.eq(otmp, uswapwep.v)) ? remarm_swapwep : ((cptr.eq(otmp, uquiver.v)) ? dowieldquiver : donull))));  /* can't happen */
+        (yield* cmdq_add_ec(
+            NHC.CQ_CANNED,
+            (cptr.eq(otmp, uwep.v))
+                ? dowield
+                : ((cptr.eq(otmp, uswapwep.v))
+                    ? remarm_swapwep
+                    : ((cptr.eq(otmp, uquiver.v)) ? dowieldquiver : donull))
+        ));  /* can't happen */
         (yield* cmdq_add_key(NHC.CQ_CANNED, 45));
         break;
         case NHC.IA_APPLY_OBJ:
@@ -457,12 +534,22 @@ export function* itemactions(otmp) {
         let verb = (cptr.eq(otmp, uquiver.v)) ? __s_quiver : __s_wield;
         let action = (cptr.eq(otmp, uquiver.v)) ? __s_un_ready : __s_un_wield;
         let which = is_plural(otmp) ? __s_these : __s_this;
-        let what = ((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp)) ? __s_weapon : __s_item);
+        let what = ((cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp))
+                ? __s_weapon
+                : __s_item);
         /*
          * TODO: if uwep is ammo, tell player that to shoot instead of toss,
          *       the corresponding launcher must be wielded;
          */
-        void cptr.sprintf(cptr.decay(buf), __s_s_c_to_s_s_s, verb, 45, action, which, is_plural(otmp) ? (yield* makeplural(what)) : what);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_c_to_s_s_s,
+            verb,
+            45,
+            action,
+            which,
+            is_plural(otmp) ? (yield* makeplural(what)) : what
+        );
         (yield* ia_addmenu(win, NHC.IA_UNWIELD, 45, cptr.decay(buf)));
     }
 
@@ -475,7 +562,13 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_lash_out_with_this_whip));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.GRAPPLING_HOOK)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_grapple_something_with_this_hook));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_TRICKS && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BAG_OF_TRICKS &&
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) & 1) | 0)
         /* bag of tricks skips this unless discovered */
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_reach_into_this_bag));
     else if (Is_container(otmp))
@@ -483,7 +576,9 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_open_this_container));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CAN_OF_GREASE)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_the_can_to_grease_an_item));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOCK_PICK || cptr.ldI16o(otmp, $obj_otyp) == NHC.CREDIT_CARD || cptr.ldI16o(otmp, $obj_otyp) == NHC.SKELETON_KEY)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LOCK_PICK ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.CREDIT_CARD ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.SKELETON_KEY)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_tool_to_pick_a_lock));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TINNING_KIT)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_kit_to_tin_a_corpse));
@@ -491,7 +586,8 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_tie_a_pet_to_this_leash));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.SADDLE)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_place_this_saddle_on_a_pet));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_WHISTLE || cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN_WHISTLE)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_WHISTLE ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN_WHISTLE)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_blow_this_whistle));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EUCALYPTUS_LEAF)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_leaf_as_a_whistle));
@@ -499,30 +595,51 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_listen_through_the_stethoscope));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MIRROR)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_show_something_its_reflection));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL || cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL_OF_OPENING)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.BELL_OF_OPENING)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_ring_the_bell));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CANDELABRUM_OF_INVOCATION) {
         void cptr.sprintf(cptr.decay(buf), __s_s_the_candelabrum, light);
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf)));
-    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAX_CANDLE || cptr.ldI16o(otmp, $obj_otyp) == NHC.TALLOW_CANDLE) {
+    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.WAX_CANDLE ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.TALLOW_CANDLE) {
         let multiple = schar(((cptr.ldI64o(otmp, $obj_quan) == 1n) ? 0 : 1));
         let s = multiple ? __s_these : __s_this;
         let o = carrying(NHC.CANDELABRUM_OF_INVOCATION);
 
         if (o && cptr.ld1so(o, $obj_spe) < 7)
-            void cptr.sprintf(cptr.decay(buf), __s_attach_s_to_your_candelabrum_or_s_s, s, !(cptr.ldI32o(otmp, $obj_lamplit) & 1) ? __s_light__2 : __s_extinguish__2, multiple ? __s_them : __s_it);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_attach_s_to_your_candelabrum_or_s_s,
+                s,
+                !(cptr.ldI32o(otmp, $obj_lamplit) & 1) ? __s_light__2 : __s_extinguish__2,
+                multiple ? __s_them : __s_it
+            );
         else
             void cptr.sprintf(cptr.decay(buf), __s_s_s_s, light, s, (yield* simpleonames(otmp)));
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf)));
-    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.BRASS_LANTERN) {
+    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.OIL_LAMP ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_LAMP ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.BRASS_LANTERN) {
         void cptr.sprintf(cptr.decay(buf), __s_s_this_light_source, light);
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf)));
-    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_OIL && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) {
+    } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.POT_OIL &&
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) & 1) | 0) {
         void cptr.sprintf(cptr.decay(buf), __s_s_this_oil, light);
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, cptr.decay(buf)));
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
         /* FIXME? this should probably be moved to 'D' rather than be 'a' */
-        void cptr.sprintf(cptr.decay(buf), __s_dip_something_into_s_potion_s, is_plural(otmp) ? __s_one_of_these : __s_this, (((cptr.ldI64o(otmp, $obj_quan)) == 1n) ? __s_empty : __s_s));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_dip_something_into_s_potion_s,
+            is_plural(otmp) ? __s_one_of_these : __s_this,
+            (((cptr.ldI64o(otmp, $obj_quan)) == 1n) ? __s_empty : __s_s)
+        );
         (yield* ia_addmenu(win, NHC.IA_DIP_OBJ, 97, cptr.decay(buf)));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.EXPENSIVE_CAMERA)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_take_a_photograph));
@@ -536,13 +653,22 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_make_this_figurine_transform));
     else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.UNICORN_HORN)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_use_this_unicorn_horn));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY &&
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_name_known
+            ) & 1) | 0)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_blow_into_the_horn_of_plenty));
-    else if (cptr.ldI16o(otmp, $obj_otyp) >= NHC.WOODEN_FLUTE && cptr.ldI16o(otmp, $obj_otyp) <= NHC.DRUM_OF_EARTHQUAKE)
+    else if (cptr.ldI16o(otmp, $obj_otyp) >= NHC.WOODEN_FLUTE &&
+            cptr.ldI16o(otmp, $obj_otyp) <= NHC.DRUM_OF_EARTHQUAKE)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_play_this_musical_instrument));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LAND_MINE || cptr.ldI16o(otmp, $obj_otyp) == NHC.BEARTRAP)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LAND_MINE ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.BEARTRAP)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_arm_this_trap));
-    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.PICK_AXE || cptr.ldI16o(otmp, $obj_otyp) == NHC.DWARVISH_MATTOCK)
+    else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.PICK_AXE ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.DWARVISH_MATTOCK)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_dig_with_this_digging_tool));
     else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS)
         (yield* ia_addmenu(win, NHC.IA_APPLY_OBJ, 97, __s_break_this_wand));
@@ -559,16 +685,33 @@ export function* itemactions(otmp) {
        always have a takeoff/remove choice so we don't have to worry
        about the menu maybe being empty when 'd' is suppressed */
     if (!already_worn) {
-        void cptr.sprintf(cptr.decay(buf), __s_drop_this_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_drop_this_s,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item
+        );
         (yield* ia_addmenu(win, NHC.IA_DROP_OBJ, 100, cptr.decay(buf)));
     }
 
     /* e: eat item */
     if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN) {
-        void cptr.sprintf(cptr.decay(buf), __s_open_s_s_and_eat_the_contents, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_tins : __s_this_tin, (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN && uwep.v && cptr.ldI16o(uwep.v, $obj_otyp) == NHC.TIN_OPENER) ? __s_with_your_tin_opener : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_open_s_s_and_eat_the_contents,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_tins : __s_this_tin,
+            (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN &&
+                uwep.v &&
+                cptr.ldI16o(uwep.v, $obj_otyp) == NHC.TIN_OPENER)
+                ? __s_with_your_tin_opener
+                : __s_empty
+        );
         (yield* ia_addmenu(win, NHC.IA_EAT_OBJ, 101, cptr.decay(buf)));
     } else if (is_edible(otmp)) {
-        void cptr.sprintf(cptr.decay(buf), __s_eat_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these : __s_this);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_eat_s,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these : __s_this
+        );
         (yield* ia_addmenu(win, NHC.IA_EAT_OBJ, 101, cptr.decay(buf)));
     }
 
@@ -577,8 +720,28 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, __s_wipe_the_floor_with_this_towel));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_MARKER) {
         (yield* ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, __s_scribble_graffiti_on_the_floor));
-    } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) {
-        void cptr.sprintf(cptr.decay(buf), __s_s_on_the_s_with_s, (is_blade(otmp) || cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS || ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) && (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_tough) & 1) | 0)) ? __s_engrave : __s_write, surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)), (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_items : __s_this_item);
+    } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS ||
+            cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS ||
+            cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS ||
+            cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) {
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_on_the_s_with_s,
+            (is_blade(otmp) ||
+                cptr.ld1so(otmp, $obj_oclass) == NHC.WAND_CLASS ||
+                ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS ||
+                    cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS) &&
+                    (cptr.ldI32o2(
+                        objects,
+                        cptr.ldI16o(otmp, $obj_otyp),
+                        $sizeof_objclass,
+                        $objclass_oc_tough
+                    ) & 1) | 0))
+                ? __s_engrave
+                : __s_write,
+            surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)),
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_items : __s_this_item
+        );
         (yield* ia_addmenu(win, NHC.IA_ENGRAVE_OBJ, 69, cptr.decay(buf)));
     }
 
@@ -587,9 +750,16 @@ export function* itemactions(otmp) {
         let shoot = schar(ammo_and_launcher(otmp, uwep.v));
 
         /* FIXME: see the multi-shot FIXME about "one of" for 't: throw' */
-        void cptr.sprintf(cptr.decay(buf), __s_s_s, shoot ? __s_shoot : __s_throw, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these : __s_this);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s,
+            shoot ? __s_shoot : __s_throw,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these : __s_this
+        );
         if (shoot) {
-            (__builtin_expect(BigInt((!(!cptr.eq(uwep.v, (null))))), 0n) ? __assert_rtn(__s_itemactions, __s_iactions_c, 456, __s_uwep_null) : void 0);
+            (__builtin_expect(BigInt((!(!cptr.eq(uwep.v, (null))))), 0n)
+                    ? __assert_rtn(__s_itemactions, __s_iactions_c, 456, __s_uwep_null)
+                    : void 0);
             void cptr.sprintf(eos(cptr.decay(buf)), __s_with_your_wielded_s, (yield* simpleonames(uwep.v)));
         }
         (yield* ia_addmenu(win, NHC.IA_FIRE_OBJ, 102, cptr.decay(buf)));
@@ -604,18 +774,38 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_ADJUST_STACK, 73, __s_adjust_inventory_by_splitting_this_stack));
 
     /* O: offer sacrifice */
-    if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR) && !(cptr.ldI32o(u, $you_uswallow) & 1)) {
+    if (((cptr.ld1so3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) ==
+        NHC.ALTAR) &&
+            !(cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* FIXME: this doesn't match #offer's likely candidates, which don't
            include corpses on Astral and don't include amulets off Astral */
         if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE)
             (yield* ia_addmenu(win, NHC.IA_SACRIFICE, 79, __s_offer_this_corpse_as_a_sacrifice_at));
-        else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR || cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR)
+        else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.AMULET_OF_YENDOR ||
+                cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR)
             (yield* ia_addmenu(win, NHC.IA_SACRIFICE, 79, __s_offer_this_amulet_as_a_sacrifice_at));
     }
 
     /* p: pay for unpaid utems */
-    if ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 && (mtmp = (yield* shop_keeper(cptr.ld1s((yield* in_rooms(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.SHOPBASE)))))) !== null && (yield* inhishop(mtmp))) {
-        void cptr.sprintf(cptr.decay(buf), __s_buy_this_unpaid_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item);
+    if ((cptr.ldI32o(otmp, $obj_unpaid) & 1) | 0 &&
+            (mtmp = (yield* shop_keeper(cptr.ld1s((yield* in_rooms(
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy),
+                NHC.SHOPBASE
+            )))))) !== null &&
+            (yield* inhishop(mtmp))) {
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_buy_this_unpaid_s,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item
+        );
         (yield* ia_addmenu(win, NHC.IA_BUY_OBJ, 112, cptr.decay(buf)));
     }
 
@@ -628,19 +818,35 @@ export function* itemactions(otmp) {
            item actions can be used to learn commands */
         cptr.st1(cptr.decay(buf), 0);
         if (cptr.ld1so(otmp, $obj_oclass) == NHC.AMULET_CLASS) {
-            void cptr.strcpy(cptr.decay(buf), !uamul.v ? __s_put_this_amulet_on : __s_already_wearing_an_amulet);
-        } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS || cptr.ldI16o(otmp, $obj_otyp) == NHC.MEAT_RING) {
+            void cptr.strcpy(
+                cptr.decay(buf),
+                !uamul.v ? __s_put_this_amulet_on : __s_already_wearing_an_amulet
+            );
+        } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.RING_CLASS ||
+                cptr.ldI16o(otmp, $obj_otyp) == NHC.MEAT_RING) {
             if (!uleft.v || !uright.v)
                 void cptr.strcpy(cptr.decay(buf), __s_put_this_ring_on);
             else
-                void cptr.sprintf(cptr.decay(buf), __s_both_ring_s_in_use, (yield* makeplural((yield* body_part(NHC.FINGER)))));
-        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BLINDFOLD || cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL || cptr.ldI16o(otmp, $obj_otyp) == NHC.LENSES) {
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_both_ring_s_in_use,
+                    (yield* makeplural((yield* body_part(NHC.FINGER))))
+                );
+        } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.BLINDFOLD ||
+                cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL ||
+                cptr.ldI16o(otmp, $obj_otyp) == NHC.LENSES) {
             if (ublindf.v)
                 void cptr.strcpy(cptr.decay(buf), __s_already_wearing_eyewear);
             else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.LENSES)
                 void cptr.strcpy(cptr.decay(buf), __s_put_these_lenses_on);
             else
-                void cptr.sprintf(cptr.decay(buf), __s_put_this_on_s, (cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL) ? __s_to_blindfold_yourself : __s_empty);
+                void cptr.sprintf(
+                    cptr.decay(buf),
+                    __s_put_this_on_s,
+                    (cptr.ldI16o(otmp, $obj_otyp) == NHC.TOWEL)
+                        ? __s_to_blindfold_yourself
+                        : __s_empty
+                );
         }
         if (cptr.ld1s(cptr.decay(buf)))
             (yield* ia_addmenu(win, NHC.IA_WEAR_OBJ, 80, cptr.decay(buf)));
@@ -648,13 +854,24 @@ export function* itemactions(otmp) {
 
     /* q: drink item */
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.POTION_CLASS) {
-        void cptr.sprintf(cptr.decay(buf), __s_quaff_drink_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_potions : __s_this_potion);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_quaff_drink_s,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_one_of_these_potions : __s_this_potion
+        );
         (yield* ia_addmenu(win, NHC.IA_QUAFF_OBJ, 113, cptr.decay(buf)));
     }
 
     /* Q: quiver throwable item */
-    if ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS || cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS) && !cptr.eq(otmp, uquiver.v)) {
-        void cptr.sprintf(cptr.decay(buf), __s_quiver_this_s_for_easy_s_with_f_ire, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item, ammo_and_launcher(otmp, uwep.v) ? __s_shooting : __s_throwing);
+    if ((cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS ||
+        cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS) &&
+            !cptr.eq(otmp, uquiver.v)) {
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_quiver_this_s_for_easy_s_with_f_ire,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item,
+            ammo_and_launcher(otmp, uwep.v) ? __s_shooting : __s_throwing
+        );
         (yield* ia_addmenu(win, NHC.IA_QUIVER_OBJ, 81, cptr.decay(buf)));
     }
 
@@ -664,10 +881,20 @@ export function* itemactions(otmp) {
 
     /* R: remove accessory or rub item */
     if (cptr.ldI64o(otmp, $obj_owornmask) & 983040n) {
-        void cptr.sprintf(cptr.decay(buf), __s_remove_this_s, (cptr.ldI64o(otmp, $obj_owornmask) & 65536n) ? __s_amulet : ((cptr.ldI64o(otmp, $obj_owornmask) & 393216n) ? __s_ring : ((cptr.ldI64o(otmp, $obj_owornmask) & 524288n) ? __s_eyewear : __s_accessory)));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_remove_this_s,
+            (cptr.ldI64o(otmp, $obj_owornmask) & 65536n)
+                ? __s_amulet
+                : ((cptr.ldI64o(otmp, $obj_owornmask) & 393216n)
+                    ? __s_ring
+                    : ((cptr.ldI64o(otmp, $obj_owornmask) & 524288n) ? __s_eyewear : __s_accessory))
+        );
         (yield* ia_addmenu(win, NHC.IA_TAKEOFF_OBJ, 82, cptr.decay(buf)));
     }
-    if (cptr.ldI16o(otmp, $obj_otyp) == NHC.OIL_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_LAMP || cptr.ldI16o(otmp, $obj_otyp) == NHC.BRASS_LANTERN) {
+    if (cptr.ldI16o(otmp, $obj_otyp) == NHC.OIL_LAMP ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.MAGIC_LAMP ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.BRASS_LANTERN) {
         void cptr.sprintf(cptr.decay(buf), __s_rub_this_s, (yield* simpleonames(otmp)));
         (yield* ia_addmenu(win, NHC.IA_RUB_OBJ, 82, cptr.decay(buf)));
     } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.GEM_CLASS && is_graystone(otmp))
@@ -685,26 +912,58 @@ export function* itemactions(otmp) {
          *  volley count and that could randomly yield 1 here and 2..N
          *  while throwing or vice versa.
          */
-        void cptr.sprintf(cptr.decay(buf), __s_s_s_s__2, shoot ? __s_shoot : __s_throw, (cptr.ldI64o(otmp, $obj_quan) == 1n) ? __s_this_item : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.GOLD_PIECE) ? __s_them : __s_one_of_these), (cptr.eq(otmp, uquiver.v) && (cptr.ldI16o(otmp, $obj_otyp) != NHC.GOLD_PIECE || cptr.ldI64o(otmp, $obj_quan) == 1n)) ? __s_same_as_f : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s_s__2,
+            shoot ? __s_shoot : __s_throw,
+            (cptr.ldI64o(otmp, $obj_quan) == 1n)
+                ? __s_this_item
+                : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.GOLD_PIECE) ? __s_them : __s_one_of_these),
+            (cptr.eq(otmp, uquiver.v) &&
+                (cptr.ldI16o(otmp, $obj_otyp) != NHC.GOLD_PIECE ||
+                    cptr.ldI64o(otmp, $obj_quan) == 1n))
+                ? __s_same_as_f
+                : __s_empty
+        );
         (yield* ia_addmenu(win, NHC.IA_THROW_OBJ, 116, cptr.decay(buf)));
     }
 
     /* T: take off armor, tip carried container */
     if (cptr.ldI64o(otmp, $obj_owornmask) & 127n)
         (yield* ia_addmenu(win, NHC.IA_TAKEOFF_OBJ, 84, __s_take_off_this_armor));
-    if ((Is_container(otmp) && ((cptr.ldPtro((otmp), $obj_cobj) !== null) || !(cptr.ldI32o(otmp, $obj_cknown) & 1))) || (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY && (cptr.ld1so(otmp, $obj_spe) > 0 || !(cptr.ldI32o(otmp, $obj_known) & 1))))
+    if ((Is_container(otmp) &&
+        ((cptr.ldPtro((otmp), $obj_cobj) !== null) || !(cptr.ldI32o(otmp, $obj_cknown) & 1))) ||
+            (cptr.ldI16o(otmp, $obj_otyp) == NHC.HORN_OF_PLENTY &&
+                (cptr.ld1so(otmp, $obj_spe) > 0 || !(cptr.ldI32o(otmp, $obj_known) & 1))))
         (yield* ia_addmenu(win, NHC.IA_TIP_CONTAINER, 84, __s_tip_all_the_contents_out_of_this));
 
     /* V: invoke */
-    if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR && !(cptr.ldI32o(otmp, $obj_known) & 1)) || cptr.ld1so(otmp, $obj_oartifact) || (cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_unique) & 1) | 0 || cptr.ldI16o(otmp, $obj_otyp) == NHC.CRYSTAL_BALL)
+    if ((cptr.ldI16o(otmp, $obj_otyp) == NHC.FAKE_AMULET_OF_YENDOR &&
+        !(cptr.ldI32o(otmp, $obj_known) & 1)) ||
+            cptr.ld1so(otmp, $obj_oartifact) ||
+            (cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_unique
+            ) & 1) | 0 ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.CRYSTAL_BALL)
         (yield* ia_addmenu(win, NHC.IA_INVOKE_OBJ, 86, __s_try_to_invoke_a_unique_power_of_this));
 
     /* w: wield, hold in hands, works on everything but with different
        advice text; not mentioned for things that are already wielded */
-    if (cptr.eq(otmp, uwep.v) || cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
+    if (cptr.eq(otmp, uwep.v) ||
+            cantwield(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) {
         ;  /* either already wielded or can't wield anything; skip 'w' */
-    } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS || is_weptool(otmp) || is_wet_towel(otmp) || cptr.ldI16o(otmp, $obj_otyp) == NHC.HEAVY_IRON_BALL) {
-        void cptr.sprintf(cptr.decay(buf), __s_wield_this_s_as_your_weapon, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item);
+    } else if (cptr.ld1so(otmp, $obj_oclass) == NHC.WEAPON_CLASS ||
+            is_weptool(otmp) ||
+            is_wet_towel(otmp) ||
+            cptr.ldI16o(otmp, $obj_otyp) == NHC.HEAVY_IRON_BALL) {
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_wield_this_s_as_your_weapon,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item
+        );
         (yield* ia_addmenu(win, NHC.IA_WIELD_OBJ, 119, cptr.decay(buf)));
     } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.TIN_OPENER) {
         (yield* ia_addmenu(win, NHC.IA_WIELD_OBJ, 119, __s_wield_the_tin_opener_to_easily_open_tins));
@@ -712,7 +971,12 @@ export function* itemactions(otmp) {
         /* originally this was using "hold this item in your hands" but
            there's no concept of "holding an item", plus it unwields
            whatever item you already have wielded so use "wield this item" */
-        void cptr.sprintf(cptr.decay(buf), __s_wield_this_s_in_your_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item, (yield* makeplural((yield* body_part(NHC.HAND)))));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_wield_this_s_in_your_s,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_stack : __s_item,
+            (yield* makeplural((yield* body_part(NHC.HAND))))
+        );
         (yield* ia_addmenu(win, NHC.IA_WIELD_OBJ, 119, cptr.decay(buf)));
     }
 
@@ -724,7 +988,12 @@ export function* itemactions(otmp) {
                isn't populated, or "W - [already wearing <simple-armor>]";
                for the latter, picking 'W' will fail but we don't want to
                omit 'W' in this situation */
-            let Wmask = armcat_to_wornmask(cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_subtyp));
+            let Wmask = armcat_to_wornmask(cptr.ld1so2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_subtyp
+            ));
             let o = wearmask_to_obj(Wmask);
 
             if (!o)
@@ -745,8 +1014,27 @@ export function* itemactions(otmp) {
         (yield* ia_addmenu(win, NHC.IA_SWAPWEAPON, 120, __s_swap_this_with_your_main_weapon));
 
     /* X: Toggle two-weapon mode on or off */
-    if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v)) && (cptr.ld1so(u, $you_twoweap) || (could_twoweap(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) && !uarms.v && uwep.v && (((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS) ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v)) : is_weptool(uwep.v)) && !bimanual(uwep.v)) && uswapwep.v && (((cptr.ld1so((uswapwep.v), $obj_oclass) == NHC.WEAPON_CLASS) ? !(is_launcher(uswapwep.v) || is_ammo(uswapwep.v) || is_missile(uswapwep.v)) : is_weptool(uswapwep.v)) && !bimanual(uswapwep.v))))) {
-        void cptr.sprintf(cptr.decay(buf), __s_toggle_two_weapon_combat_s, cptr.ld1so(u, $you_twoweap) ? __s_off : __s_on);
+    if ((cptr.eq(otmp, uwep.v) || cptr.eq(otmp, uswapwep.v)) &&
+            (cptr.ld1so(u, $you_twoweap) ||
+                (could_twoweap(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)) &&
+                    !uarms.v &&
+                    uwep.v &&
+                    (((cptr.ld1so((uwep.v), $obj_oclass) == NHC.WEAPON_CLASS)
+                        ? !(is_launcher(uwep.v) || is_ammo(uwep.v) || is_missile(uwep.v))
+                        : is_weptool(uwep.v)) &&
+                        !bimanual(uwep.v)) &&
+                    uswapwep.v &&
+                    (((cptr.ld1so((uswapwep.v), $obj_oclass) == NHC.WEAPON_CLASS)
+                        ? !(is_launcher(uswapwep.v) ||
+                            is_ammo(uswapwep.v) ||
+                            is_missile(uswapwep.v))
+                        : is_weptool(uswapwep.v)) &&
+                        !bimanual(uswapwep.v))))) {
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_toggle_two_weapon_combat_s,
+            cptr.ld1so(u, $you_twoweap) ? __s_off : __s_on
+        );
         (yield* ia_addmenu(win, NHC.IA_TWOWEAPON, 88, cptr.decay(buf)));
     }
 
@@ -756,7 +1044,11 @@ export function* itemactions(otmp) {
 
     /* ?: Look up an item in the game's database */
     if ((yield* ia_checkfile(otmp))) {
-        void cptr.sprintf(cptr.decay(buf), __s_look_up_information_about_s, (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_these : __s_this);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_look_up_information_about_s,
+            (cptr.ldI64o(otmp, $obj_quan) > 1n) ? __s_these : __s_this
+        );
         (yield* ia_addmenu(win, NHC.IA_WHATIS_OBJ, 47, cptr.decay(buf)));
     }
 
@@ -782,7 +1074,12 @@ export function* itemactions(otmp) {
 // 4 bindings: 0 rebound+refilled, 0 rebound, 4 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__static_item_naming_classification_Name), S(__static_item_naming_classification_Rename), S(__static_item_naming_classification_Call), S(__static_item_naming_classification_Recall)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__static_item_naming_classification_Name), S(__static_item_naming_classification_Rename),
+        S(__static_item_naming_classification_Call), S(__static_item_naming_classification_Recall)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("iactions.js: __resetState before __captureState");

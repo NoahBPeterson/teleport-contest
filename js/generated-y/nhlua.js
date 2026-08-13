@@ -14,14 +14,30 @@ import * as cjmp from '../cjmp.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu, wizard } from './nhprop.js';
-import { WIN_MESSAGE, cg, emptystr, flags, gg, gi, gl, gm, gs, gu, iflags, nhcb_counts, nhcb_name, svd, svl, svm, svn, svs, u } from './decl.js';
+import {
+    create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, start_menu, wizard
+} from './nhprop.js';
+import {
+    WIN_MESSAGE, cg, emptystr, flags, gg, gi, gl, gm, gs, gu, iflags, nhcb_counts, nhcb_name, svd,
+    svl, svm, svn, svs, u
+} from './decl.js';
 import { impossible, livelog_printf, pline, verbalize } from './pline.js';
-import { lua_atpanic, lua_callk, lua_createtable, lua_error, lua_gc, lua_getallocf, lua_getfield, lua_getglobal, lua_gettable, lua_gettop, lua_isstring, lua_next, lua_pcallk, lua_pushboolean, lua_pushcclosure, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawset, lua_rotate, lua_setfield, lua_setglobal, lua_setmetatable, lua_settable, lua_settop, lua_setwarnf, lua_toboolean, lua_tointegerx, lua_tolstring, lua_type } from './lapi.js';
+import {
+    lua_atpanic, lua_callk, lua_createtable, lua_error, lua_gc, lua_getallocf, lua_getfield,
+    lua_getglobal, lua_gettable, lua_gettop, lua_isstring, lua_next, lua_pcallk, lua_pushboolean,
+    lua_pushcclosure, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawset,
+    lua_rotate, lua_setfield, lua_setglobal, lua_setmetatable, lua_settable, lua_settop,
+    lua_setwarnf, lua_toboolean, lua_tointegerx, lua_tolstring, lua_type
+} from './lapi.js';
 import { lua_getinfo, lua_getstack, lua_sethook } from './ldebug.js';
 import { eos, ing_suffix, nh_snprintf, s_suffix, strncmpi } from './hacklib.js';
-import { luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_loadbufferx, luaL_loadstring, luaL_optlstring, luaL_requiref, luaL_setfuncs, luaL_traceback } from './lauxlib.js';
-import { cvt_to_abscoord, flip_level, get_coord, get_trapname_bytype, l_register_des, nhl_abs_coord } from './sp_lev.js';
+import {
+    luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checktype, luaL_loadbufferx,
+    luaL_loadstring, luaL_optlstring, luaL_requiref, luaL_setfuncs, luaL_traceback
+} from './lauxlib.js';
+import {
+    cvt_to_abscoord, flip_level, get_coord, get_trapname_bytype, l_register_des, nhl_abs_coord
+} from './sp_lev.js';
 import { cmd_from_ecname, cmdq_add_key, isok, levltyp_to_name } from './cmd.js';
 import { deltrap, t_at } from './trap.js';
 import { add_menu, add_menu_str, getlin, select_menu, windowprocs } from './windows.js';
@@ -64,72 +80,79 @@ import { luaopen_debug } from './ldblib.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $const_globals_zeroany = FLD.const_globals_zeroany, $d_level_dlevel = FLD.d_level_dlevel,
-    $dlevel_t_monlist = FLD.dlevel_t_monlist, $e_fnname = FLD.e_fnname, $flag_debug = FLD.flag_debug,
-    $instance_flags_debug_hunger = FLD.instance_flags_debug_hunger,
-    $instance_flags_debug_mongen = FLD.instance_flags_debug_mongen,
-    $instance_flags_debug_overwrite_stairs = FLD.instance_flags_debug_overwrite_stairs,
-    $instance_flags_debug_prevent_pline = FLD.instance_flags_debug_prevent_pline,
-    $instance_flags_in_lua = FLD.instance_flags_in_lua,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_globals_g_gmst_disco = FLD.instance_globals_g_gmst_disco,
-    $instance_globals_g_gmst_invent = FLD.instance_globals_g_gmst_invent,
-    $instance_globals_g_gmst_moves = FLD.instance_globals_g_gmst_moves,
-    $instance_globals_g_gmst_mvitals = FLD.instance_globals_g_gmst_mvitals,
-    $instance_globals_g_gmst_spl_book = FLD.instance_globals_g_gmst_spl_book,
-    $instance_globals_g_gmst_stored = FLD.instance_globals_g_gmst_stored,
-    $instance_globals_g_gmst_ubak = FLD.instance_globals_g_gmst_ubak,
-    $instance_globals_i_in_mklev = FLD.instance_globals_i_in_mklev,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_l_lastinvnr = FLD.instance_globals_l_lastinvnr,
-    $instance_globals_l_loglua = FLD.instance_globals_l_loglua,
-    $instance_globals_l_lua_copyright = FLD.instance_globals_l_lua_copyright,
-    $instance_globals_l_lua_sid = FLD.instance_globals_l_lua_sid,
-    $instance_globals_l_lua_ver = FLD.instance_globals_l_lua_ver,
-    $instance_globals_l_lua_warnbuf = FLD.instance_globals_l_lua_warnbuf,
-    $instance_globals_l_luacore = FLD.instance_globals_l_luacore,
-    $instance_globals_m_multi = FLD.instance_globals_m_multi,
-    $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
-    $instance_globals_saved_d_disco = FLD.instance_globals_saved_d_disco,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole, $luaL_Reg_func = FLD.luaL_Reg_func,
-    $lua_Debug_currentline = FLD.lua_Debug_currentline, $lua_Debug_name = FLD.lua_Debug_name,
-    $lua_Debug_short_src = FLD.lua_Debug_short_src, $monst_mhp = FLD.monst_mhp,
-    $mvitals_mvflags = FLD.mvitals_mvflags, $nhcoord_y = FLD.nhcoord_y,
-    $nhl_sandbox_info_memlimit = FLD.nhl_sandbox_info_memlimit,
-    $nhl_sandbox_info_perpcall = FLD.nhl_sandbox_info_perpcall,
-    $nhl_sandbox_info_steps = FLD.nhl_sandbox_info_steps, $nhl_user_data_flags = FLD.nhl_user_data_flags,
-    $nhl_user_data_jb = FLD.nhl_user_data_jb, $nhl_user_data_memlimit = FLD.nhl_user_data_memlimit,
-    $nhl_user_data_name = FLD.nhl_user_data_name, $nhl_user_data_osteps = FLD.nhl_user_data_osteps,
-    $nhl_user_data_perpcall = FLD.nhl_user_data_perpcall, $nhl_user_data_sid = FLD.nhl_user_data_sid,
-    $nhl_user_data_statctr = FLD.nhl_user_data_statctr, $nhl_user_data_steps = FLD.nhl_user_data_steps,
-    $obj_owornmask = FLD.obj_owornmask, $objclass_oc_class = FLD.objclass_oc_class,
-    $objclass_oc_uname = FLD.objclass_oc_uname, $rm_candig = FLD.rm_candig, $rm_edge = FLD.rm_edge,
-    $rm_flags = FLD.rm_flags, $rm_horizontal = FLD.rm_horizontal, $rm_lit = FLD.rm_lit,
-    $rm_roomno = FLD.rm_roomno, $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
-    $sizeof_any = FLD.sizeof_any, $sizeof_class_sym = FLD.sizeof_class_sym,
-    $sizeof_d_level = FLD.sizeof_d_level, $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_e = FLD.sizeof_e,
-    $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_objclass = FLD.sizeof_objclass,
-    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $stairway_isladder = FLD.stairway_isladder, $stairway_next = FLD.stairway_next,
-    $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev, $stairway_up = FLD.stairway_up,
-    $trap_launch = FLD.trap_launch, $trap_madeby_u = FLD.trap_madeby_u, $trap_once = FLD.trap_once,
-    $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
-    $trap_vl = FLD.trap_vl, $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
-    $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
-    $you_mtimedone = FLD.you_mtimedone, $you_nv_range = FLD.you_nv_range, $you_tx = FLD.you_tx,
-    $you_ty = FLD.you_ty, $you_uen = FLD.you_uen, $you_uenmax = FLD.you_uenmax, $you_uhave = FLD.you_uhave,
-    $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax, $you_uhunger = FLD.you_uhunger,
-    $you_ulevel = FLD.you_ulevel, $you_ulevelmax = FLD.you_ulevelmax, $you_uluck = FLD.you_uluck,
-    $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_uy = FLD.you_uy,
-    $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0, $you_xray_range = FLD.you_xray_range;
+      $dlevel_t_monlist = FLD.dlevel_t_monlist, $e_fnname = FLD.e_fnname,
+      $flag_debug = FLD.flag_debug, $instance_flags_debug_hunger = FLD.instance_flags_debug_hunger,
+      $instance_flags_debug_mongen = FLD.instance_flags_debug_mongen,
+      $instance_flags_debug_overwrite_stairs = FLD.instance_flags_debug_overwrite_stairs,
+      $instance_flags_debug_prevent_pline = FLD.instance_flags_debug_prevent_pline,
+      $instance_flags_in_lua = FLD.instance_flags_in_lua,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_globals_g_gmst_disco = FLD.instance_globals_g_gmst_disco,
+      $instance_globals_g_gmst_invent = FLD.instance_globals_g_gmst_invent,
+      $instance_globals_g_gmst_moves = FLD.instance_globals_g_gmst_moves,
+      $instance_globals_g_gmst_mvitals = FLD.instance_globals_g_gmst_mvitals,
+      $instance_globals_g_gmst_spl_book = FLD.instance_globals_g_gmst_spl_book,
+      $instance_globals_g_gmst_stored = FLD.instance_globals_g_gmst_stored,
+      $instance_globals_g_gmst_ubak = FLD.instance_globals_g_gmst_ubak,
+      $instance_globals_i_in_mklev = FLD.instance_globals_i_in_mklev,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_l_lastinvnr = FLD.instance_globals_l_lastinvnr,
+      $instance_globals_l_loglua = FLD.instance_globals_l_loglua,
+      $instance_globals_l_lua_copyright = FLD.instance_globals_l_lua_copyright,
+      $instance_globals_l_lua_sid = FLD.instance_globals_l_lua_sid,
+      $instance_globals_l_lua_ver = FLD.instance_globals_l_lua_ver,
+      $instance_globals_l_lua_warnbuf = FLD.instance_globals_l_lua_warnbuf,
+      $instance_globals_l_luacore = FLD.instance_globals_l_luacore,
+      $instance_globals_m_multi = FLD.instance_globals_m_multi,
+      $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
+      $instance_globals_saved_d_disco = FLD.instance_globals_saved_d_disco,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole, $luaL_Reg_func = FLD.luaL_Reg_func,
+      $lua_Debug_currentline = FLD.lua_Debug_currentline, $lua_Debug_name = FLD.lua_Debug_name,
+      $lua_Debug_short_src = FLD.lua_Debug_short_src, $monst_mhp = FLD.monst_mhp,
+      $mvitals_mvflags = FLD.mvitals_mvflags, $nhcoord_y = FLD.nhcoord_y,
+      $nhl_sandbox_info_memlimit = FLD.nhl_sandbox_info_memlimit,
+      $nhl_sandbox_info_perpcall = FLD.nhl_sandbox_info_perpcall,
+      $nhl_sandbox_info_steps = FLD.nhl_sandbox_info_steps,
+      $nhl_user_data_flags = FLD.nhl_user_data_flags, $nhl_user_data_jb = FLD.nhl_user_data_jb,
+      $nhl_user_data_memlimit = FLD.nhl_user_data_memlimit,
+      $nhl_user_data_name = FLD.nhl_user_data_name,
+      $nhl_user_data_osteps = FLD.nhl_user_data_osteps,
+      $nhl_user_data_perpcall = FLD.nhl_user_data_perpcall,
+      $nhl_user_data_sid = FLD.nhl_user_data_sid,
+      $nhl_user_data_statctr = FLD.nhl_user_data_statctr,
+      $nhl_user_data_steps = FLD.nhl_user_data_steps, $obj_owornmask = FLD.obj_owornmask,
+      $objclass_oc_class = FLD.objclass_oc_class, $objclass_oc_uname = FLD.objclass_oc_uname,
+      $rm_candig = FLD.rm_candig, $rm_edge = FLD.rm_edge, $rm_flags = FLD.rm_flags,
+      $rm_horizontal = FLD.rm_horizontal, $rm_lit = FLD.rm_lit, $rm_roomno = FLD.rm_roomno,
+      $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $rm_waslit = FLD.rm_waslit,
+      $sizeof_any = FLD.sizeof_any, $sizeof_class_sym = FLD.sizeof_class_sym,
+      $sizeof_d_level = FLD.sizeof_d_level, $sizeof_dungeon = FLD.sizeof_dungeon,
+      $sizeof_e = FLD.sizeof_e, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg,
+      $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_mvitals = FLD.sizeof_mvitals,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $stairway_isladder = FLD.stairway_isladder,
+      $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy,
+      $stairway_tolev = FLD.stairway_tolev, $stairway_up = FLD.stairway_up,
+      $trap_launch = FLD.trap_launch, $trap_madeby_u = FLD.trap_madeby_u,
+      $trap_once = FLD.trap_once, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
+      $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty, $trap_vl = FLD.trap_vl,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax,
+      $you_mtimedone = FLD.you_mtimedone, $you_nv_range = FLD.you_nv_range, $you_tx = FLD.you_tx,
+      $you_ty = FLD.you_ty, $you_uen = FLD.you_uen, $you_uenmax = FLD.you_uenmax,
+      $you_uhave = FLD.you_uhave, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
+      $you_uhunger = FLD.you_uhunger, $you_ulevel = FLD.you_ulevel,
+      $you_ulevelmax = FLD.you_ulevelmax, $you_uluck = FLD.you_uluck,
+      $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_uy = FLD.you_uy,
+      $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0, $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_start_new_game = cptr.lit("start_new_game");
@@ -471,7 +494,10 @@ const nhcore_call_available = new Uint8Array(7);
 /* internal structure that hangs off L->ud (but use lua_getallocf() )
  * Note that we use it for both memory use tracking and instruction counting.
  */
-/** C ref: nhlua.c:118 — struct nhl_user_data { L, flags, memlimit, steps, osteps, perpcall, statctr, sid, name, jb } (memory model v0.5) */
+/**
+ * C ref: nhlua.c:118 — struct nhl_user_data { L, flags, memlimit, steps, osteps, perpcall, statctr,
+ *     sid, name, jb } (memory model v0.5)
+ */
 
 /** C ref: nhlua.c:136 — typedef nhl_user_data (type alias only, no runtime output) */
 
@@ -480,7 +506,11 @@ let luapat = null;
 
 /** C ref: nhlua.c:142 */
 export function* l_nhcore_init() {
-    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
+    let sbi = cptr.alloc(16);
+    cptr.stI32(sbi, NHM.NHL_SB_SAFE);
+    cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576);
+    cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0);
+    cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
 
     if ((cptr.stPtro(gl, $instance_globals_l_luacore, (yield* nhl_init(sbi)))) !== null) {
         if (!(yield* nhl_loadlua(cptr.ldPtro(gl, $instance_globals_l_luacore), __s_nhcore_lua))) {
@@ -508,7 +538,10 @@ export function* l_nhcore_done() {
 export function* l_nhcore_call(callidx) {
     let ltyp;
 
-    if (callidx < 0 || callidx >= NHC.NUM_NHCORE_CALLS || !cptr.ldPtro(gl, $instance_globals_l_luacore) || !cptr.ld1so(cptr.decay(nhcore_call_available), callidx, 1))
+    if (callidx < 0 ||
+            callidx >= NHC.NUM_NHCORE_CALLS ||
+            !cptr.ldPtro(gl, $instance_globals_l_luacore) ||
+            !cptr.ld1so(cptr.decay(nhcore_call_available), callidx, 1))
         return;
 
     (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __s_nhcore));
@@ -519,10 +552,20 @@ export function* l_nhcore_call(callidx) {
         return;
     }
 
-    (yield* lua_getfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, cptr.ldPtro(nhcore_call_names, callidx, 8)));
+    (yield* lua_getfield(
+        cptr.ldPtro(gl, $instance_globals_l_luacore),
+        -1,
+        cptr.ldPtro(nhcore_call_names, callidx, 8)
+    ));
     ltyp = lua_type(cptr.ldPtro(gl, $instance_globals_l_luacore), -1);
     if (ltyp == 6) {
-        (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 0, 1, __s_l_nhcore_call, NHC.NHLpa_panic));
+        (yield* nhl_pcall_handle(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            0,
+            1,
+            __s_l_nhcore_call,
+            NHC.NHLpa_panic
+        ));
     } else {
         /*impossible("nhcore.%s is not a lua function",
           nhcore_call_names[callidx]);*/
@@ -538,7 +581,15 @@ export function* nhl_error(L, msg) {
     lua_getstack(L, 1, ar);
     (yield* lua_getinfo(L, __s_ls, ar));
     void cptr.sprintf(cptr.decay(buf), __s_s_line_d, msg, cptr.ldI32o(ar, $lua_Debug_currentline));
-    void cptr.sprintf(eos(cptr.decay(buf)), __s_pct_dot_star_s_rparen, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 512n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 2n)))))), cptr.add(ar, $lua_Debug_short_src));
+    void cptr.sprintf(
+        eos(cptr.decay(buf)),
+        __s_pct_dot_star_s_rparen,
+        Number(BigInt.asIntN(
+            32,
+            (BigInt.asUintN(64, 512n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 2n))))
+        )),
+        cptr.add(ar, $lua_Debug_short_src)
+    );
     (yield* lua_pushstring(L, cptr.decay(buf)));
     void (yield* lua_error(L));
     /*NOTREACHED*/
@@ -573,7 +624,13 @@ export function* get_table_mapchr(L, name) {
     return typ;
 }
 
-/** C ref: nhlua.c:258 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} defval @returns {CInt} */
+/**
+ * C ref: nhlua.c:258
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @param {CInt} defval
+ * @returns {CInt}
+ */
 export function* get_table_mapchr_opt(L, name, defval) {
     let ter;
     let typ;
@@ -611,7 +668,12 @@ export function* nhl_get_timertype(L, idx) {
     return ret;
 }
 
-/** C ref: nhlua.c:295 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CLongLong} value */
+/**
+ * C ref: nhlua.c:295
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @param {CLongLong} value
+ */
 export function* nhl_add_table_entry_int(L, name, value) {
     (yield* lua_pushstring(L, name));
     (yield* lua_pushinteger(L, value));
@@ -627,7 +689,12 @@ export function* nhl_add_table_entry_char(L, name, value) {
     (yield* lua_rawset(L, -3));
 }
 
-/** C ref: nhlua.c:313 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CPtr<char>} value */
+/**
+ * C ref: nhlua.c:313
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @param {CPtr<char>} value
+ */
 export function* nhl_add_table_entry_str(L, name, value) {
     (yield* lua_pushstring(L, name));
     (yield* lua_pushstring(L, value));
@@ -641,7 +708,15 @@ export function* nhl_add_table_entry_bool(L, name, value) {
     (yield* lua_rawset(L, -3));
 }
 
-/** C ref: nhlua.c:328 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 */
+/**
+ * C ref: nhlua.c:328
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @param {CInt} x1
+ * @param {CInt} y1
+ * @param {CInt} x2
+ * @param {CInt} y2
+ */
 export function* nhl_add_table_entry_region(L, name, x1, y1, x2, y2) {
     (yield* lua_pushstring(L, name));
     (yield* lua_createtable(L, 0, 0));
@@ -782,10 +857,22 @@ function* nhl_gettrap(L) {
 
             (yield* nhl_add_table_entry_int(L, __s_tx, BigInt(cptr.ldI16o(ttmp, $trap_tx))));
             (yield* nhl_add_table_entry_int(L, __s_ty, BigInt(cptr.ldI16o(ttmp, $trap_ty))));
-            (yield* nhl_add_table_entry_int(L, __s_ttyp, BigInt((cptr.ldI32o(ttmp, $trap_ttyp) & 31) >>> 0)));
-            (yield* nhl_add_table_entry_str(L, __s_ttyp_name, get_trapname_bytype((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0)));
+            (yield* nhl_add_table_entry_int(
+                L,
+                __s_ttyp,
+                BigInt((cptr.ldI32o(ttmp, $trap_ttyp) & 31) >>> 0)
+            ));
+            (yield* nhl_add_table_entry_str(
+                L,
+                __s_ttyp_name,
+                get_trapname_bytype((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0)
+            ));
             (yield* nhl_add_table_entry_bool(L, __s_tseen, schar((cptr.ldI32o(ttmp, $trap_tseen) & 1))));
-            (yield* nhl_add_table_entry_bool(L, __s_madeby_u, schar((cptr.ldI32o(ttmp, $trap_madeby_u) & 1))));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_madeby_u,
+                schar((cptr.ldI32o(ttmp, $trap_madeby_u) & 1))
+            ));
             (yield* nhl_add_table_entry_bool(L, __s_once, schar((cptr.ldI32o(ttmp, $trap_once) & 1))));
             switch ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) {
                 case NHC.SQKY_BOARD:
@@ -793,9 +880,17 @@ function* nhl_gettrap(L) {
                 break;
                 case NHC.ROLLING_BOULDER_TRAP:
                 (yield* nhl_add_table_entry_int(L, __s_launchx, BigInt(cptr.ldI16o(ttmp, $trap_launch))));
-                (yield* nhl_add_table_entry_int(L, __s_launchy, BigInt(cptr.ldI16o(ttmp, $trap_launch + $nhcoord_y))));
+                (yield* nhl_add_table_entry_int(
+                    L,
+                    __s_launchy,
+                    BigInt(cptr.ldI16o(ttmp, $trap_launch + $nhcoord_y))
+                ));
                 (yield* nhl_add_table_entry_int(L, __s_launch2x, BigInt(cptr.ldI16o(ttmp, $trap_vl))));
-                (yield* nhl_add_table_entry_int(L, __s_launch2y, BigInt(cptr.ldI16o(ttmp, $trap_vl + $nhcoord_y))));
+                (yield* nhl_add_table_entry_int(
+                    L,
+                    __s_launch2y,
+                    BigInt(cptr.ldI16o(ttmp, $trap_vl + $nhcoord_y))
+                ));
                 break;
                 case NHC.PIT:
                 case NHC.SPIKED_PIT:
@@ -847,7 +942,13 @@ function* nhl_deltrap(L) {
    they want to interpret the values as absolute or as map-relative, and
    adjust accordingly.
  */
-/** C ref: nhlua.c:508 — @param {CPtr<lua_State>} L @param {CPtr<lua_Integer>} x @param {CPtr<lua_Integer>} y @returns {CInt} */
+/**
+ * C ref: nhlua.c:508
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<lua_Integer>} x
+ * @param {CPtr<lua_Integer>} y
+ * @returns {CInt}
+ */
 export function* nhl_get_xy_params(L, x, y) {
     let argc = lua_gettop(L);
     let ret = 0;
@@ -889,18 +990,139 @@ function* nhl_getmap(L) {
         (yield* lua_createtable(L, 0, 0));
 
         /* FIXME: some should be boolean values */
-        (yield* nhl_add_table_entry_int(L, __s_glyph, BigInt(cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level))));
-        (yield* nhl_add_table_entry_int(L, __s_typ, BigInt(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ))));
-        (yield* nhl_add_table_entry_str(L, __s_typ_name, levltyp_to_name(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ))));
-        void cptr.sprintf(cptr.decay(buf), __s_pct_c, splev_typ2chr(cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_glyph,
+            BigInt(cptr.ldI32o3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level
+            ))
+        ));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_typ,
+            BigInt(cptr.ld1so3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ))
+        ));
+        (yield* nhl_add_table_entry_str(
+            L,
+            __s_typ_name,
+            levltyp_to_name(cptr.ld1so3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ))
+        ));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_pct_c,
+            splev_typ2chr(cptr.ld1so3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ))
+        );
         (yield* nhl_add_table_entry_str(L, __s_mapchr, cptr.decay(buf)));
-        (yield* nhl_add_table_entry_int(L, __s_seenv, BigInt(cptr.ld1uo3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv) >>> 0)));
-        (yield* nhl_add_table_entry_bool(L, __s_horizontal, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __s_lit, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __s_waslit, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_waslit) & 1))));
-        (yield* nhl_add_table_entry_int(L, __s_roomno, BigInt((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) >>> 0)));
-        (yield* nhl_add_table_entry_bool(L, __s_edge, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1))));
-        (yield* nhl_add_table_entry_bool(L, __s_candig, schar((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_candig) & 1))));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_seenv,
+            BigInt(cptr.ld1uo3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_seenv
+            ) >>> 0)
+        ));
+        (yield* nhl_add_table_entry_bool(
+            L,
+            __s_horizontal,
+            schar((cptr.ldI32o3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_horizontal
+            ) & 1))
+        ));
+        (yield* nhl_add_table_entry_bool(
+            L,
+            __s_lit,
+            schar((cptr.ldI32o3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_lit
+            ) & 1))
+        ));
+        (yield* nhl_add_table_entry_bool(
+            L,
+            __s_waslit,
+            schar((cptr.ldI32o3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_waslit
+            ) & 1))
+        ));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_roomno,
+            BigInt((cptr.ldI32o3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno
+            ) & 63) >>> 0)
+        ));
+        (yield* nhl_add_table_entry_bool(
+            L,
+            __s_edge,
+            schar((cptr.ldI32o3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_edge
+            ) & 1))
+        ));
+        (yield* nhl_add_table_entry_bool(
+            L,
+            __s_candig,
+            schar((cptr.ldI32o3(
+                svl,
+                x.v,
+                $sizeof_rm_x21,
+                y.v,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_candig
+            ) & 1))
+        ));
 
         (yield* nhl_add_table_entry_bool(L, __s_has_trap, schar((t_at(x.v, y.v) ? 1 : 0))));
 
@@ -909,28 +1131,256 @@ function* nhl_getmap(L) {
         (yield* lua_pushstring(L, __s_flags));
         (yield* lua_createtable(L, 0, 0));
 
-        if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
-            (yield* nhl_add_table_entry_bool(L, __s_nodoor, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR))));
-            (yield* nhl_add_table_entry_bool(L, __s_broken, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_BROKEN))));
-            (yield* nhl_add_table_entry_bool(L, __s_isopen, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_ISOPEN))));
-            (yield* nhl_add_table_entry_bool(L, __s_closed, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_CLOSED))));
-            (yield* nhl_add_table_entry_bool(L, __s_locked, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_LOCKED))));
-            (yield* nhl_add_table_entry_bool(L, __s_trapped, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED))));
-        } else if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.ALTAR)) {
+        if (((cptr.ld1so3(
+            svl,
+            x.v,
+            $sizeof_rm_x21,
+            y.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.DOOR)) {
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_nodoor,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) ==
+                    NHM.D_NODOOR))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_broken,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.D_BROKEN))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_isopen,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.D_ISOPEN))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_closed,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.D_CLOSED))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_locked,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.D_LOCKED))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_trapped,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.D_TRAPPED))
+            ));
+        } else if (((cptr.ld1so3(
+            svl,
+            x.v,
+            $sizeof_rm_x21,
+            y.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.ALTAR)) {
             /* TODO: bits 0, 1, 2 */
-            (yield* nhl_add_table_entry_bool(L, __s_shrine, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.AM_SHRINE))));
-        } else if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
-            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.T_LOOTED))));
-        } else if (cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.TREE) {
-            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.TREE_LOOTED))));
-            (yield* nhl_add_table_entry_bool(L, __s_swarm, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.TREE_SWARM))));
-        } else if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN)) {
-            (yield* nhl_add_table_entry_bool(L, __s_looted, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED))));
-            (yield* nhl_add_table_entry_bool(L, __s_warned, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED))));
-        } else if (((cptr.ld1so3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.SINK)) {
-            (yield* nhl_add_table_entry_bool(L, __s_pudding, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LPUDDING))));
-            (yield* nhl_add_table_entry_bool(L, __s_dishwasher, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LDWASHER))));
-            (yield* nhl_add_table_entry_bool(L, __s_ring, schar((((cptr.ldI32o3(svl, x.v, $sizeof_rm_x21, y.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING))));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_shrine,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.AM_SHRINE))
+            ));
+        } else if (((cptr.ld1so3(
+            svl,
+            x.v,
+            $sizeof_rm_x21,
+            y.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.THRONE)) {
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_looted,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.T_LOOTED))
+            ));
+        } else if (cptr.ld1so3(
+            svl,
+            x.v,
+            $sizeof_rm_x21,
+            y.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        ) ==
+                NHC.TREE) {
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_looted,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.TREE_LOOTED))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_swarm,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.TREE_SWARM))
+            ));
+        } else if (((cptr.ld1so3(
+            svl,
+            x.v,
+            $sizeof_rm_x21,
+            y.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.FOUNTAIN)) {
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_looted,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.F_LOOTED))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_warned,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.F_WARNED))
+            ));
+        } else if (((cptr.ld1so3(
+            svl,
+            x.v,
+            $sizeof_rm_x21,
+            y.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.SINK)) {
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_pudding,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.S_LPUDDING))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_dishwasher,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.S_LDWASHER))
+            ));
+            (yield* nhl_add_table_entry_bool(
+                L,
+                __s_ring,
+                schar((((cptr.ldI32o3(
+                    svl,
+                    x.v,
+                    $sizeof_rm_x21,
+                    y.v,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.S_LRING))
+            ));
         }
         /* TODO: drawbridges, walls, ladders, room=>ICED_xxx */
 
@@ -1099,7 +1549,19 @@ function* nhl_menu(L) {
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
         if (cptr.ld1s(key))
             cptr.st1(any, cptr.ld1so(key, 0));
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, str, (cptr.ld1s(defval) && cptr.ld1s(key) && cptr.ld1so(defval, 0) == cptr.ld1so(key, 0)) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            str,
+            (cptr.ld1s(defval) && cptr.ld1s(key) && cptr.ld1so(defval, 0) == cptr.ld1so(key, 0))
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
 
         (yield* lua_settop(L, -2));  /* removes 'value'; keeps 'key' for next iteration */
     }
@@ -1112,7 +1574,10 @@ function* nhl_menu(L) {
         let buf = new Uint8Array(2);
         cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 0, $sizeof_menu_item), 1);
 
-        if (pick == NHM.PICK_ONE && pick_cnt > 1 && cptr.ld1s(defval) && cptr.ld1so(defval, 0) == cptr.ld1so(picks.v, 0, $sizeof_menu_item))
+        if (pick == NHM.PICK_ONE &&
+                pick_cnt > 1 &&
+                cptr.ld1s(defval) &&
+                cptr.ld1so(defval, 0) == cptr.ld1so(picks.v, 0, $sizeof_menu_item))
             cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(picks.v, 1, $sizeof_menu_item), 1);
 
         cptr.st1o(cptr.decay(buf), 1, 0, 1);
@@ -1251,7 +1716,9 @@ function nhl_lua_rnglog_ctx_enabled() {
 
     env = getenv(__s_nethack_lua_rnglog_ctx);
     if (env) {
-        __static_nhl_lua_rnglog_ctx_enabled_enabled = (cptr.ld1s(env) && strcmp(env, __s_0)) ? 1 : 0;
+        __static_nhl_lua_rnglog_ctx_enabled_enabled = (cptr.ld1s(env) && strcmp(env, __s_0))
+                ? 1
+                : 0;
         return schar((__static_nhl_lua_rnglog_ctx_enabled_enabled ? 1 : 0));
     }
 
@@ -1285,9 +1752,30 @@ function* nhl_rnglog_set_lua_caller(L, fallback) {
     if (!nhl_lua_rnglog_ctx_enabled())
         return;
 
-    nh_snprintf(__s_nhl_rnglog_set_lua_caller, 972, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_srcbuf), 256n, __s_pct_s, __s_lua);
-    nh_snprintf(__s_nhl_rnglog_set_lua_caller, 973, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf), 256n, __s_pct_s, __s_lua);
-    nh_snprintf(__s_nhl_rnglog_set_lua_caller, 974, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf), 256n, __s_pct_s, __s_lua);
+    nh_snprintf(
+        __s_nhl_rnglog_set_lua_caller,
+        972,
+        cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_srcbuf),
+        256n,
+        __s_pct_s,
+        __s_lua
+    );
+    nh_snprintf(
+        __s_nhl_rnglog_set_lua_caller,
+        973,
+        cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf),
+        256n,
+        __s_pct_s,
+        __s_lua
+    );
+    nh_snprintf(
+        __s_nhl_rnglog_set_lua_caller,
+        974,
+        cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf),
+        256n,
+        __s_pct_s,
+        __s_lua
+    );
 
     if (lua_getstack(L, 1, ar) && (yield* lua_getinfo(L, __s_nsl, ar))) {
         if (cptr.add(ar, $lua_Debug_short_src) && cptr.ld1so(ar, $lua_Debug_short_src)) {
@@ -1296,7 +1784,10 @@ function* nhl_rnglog_set_lua_caller(L, fallback) {
 
             /* Lua string chunks render as [string "(name.lua)"].
                Normalize to plain "name.lua" for readable RNG logs. */
-            if (src_len >= 11n && !cptr.strncmp(src_start, __s_string, 9n) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 2n)) == 34 && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 93) {
+            if (src_len >= 11n &&
+                    !cptr.strncmp(src_start, __s_string, 9n) &&
+                    cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 2n)) == 34 &&
+                    cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 93) {
                 src_start = cptr.add(src_start, 9);
                 src_len -= 11n;
             }
@@ -1304,15 +1795,38 @@ function* nhl_rnglog_set_lua_caller(L, fallback) {
                 src_start = cptr.add(src_start, 1);
                 src_len--;
             }
-            if (src_len >= 2n && cptr.ld1so(src_start, 0) == 40 && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 41) {
+            if (src_len >= 2n &&
+                    cptr.ld1so(src_start, 0) == 40 &&
+                    cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 41) {
                 src_start = cptr.add(src_start, 1);
                 src_len -= 2n;
             }
-            nh_snprintf(__s_nhl_rnglog_set_lua_caller, 1001, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf), 256n, __s_pct_dot_star_s, Number(BigInt.asIntN(32, src_len)), src_start);
+            nh_snprintf(
+                __s_nhl_rnglog_set_lua_caller,
+                1001,
+                cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf),
+                256n,
+                __s_pct_dot_star_s,
+                Number(BigInt.asIntN(32, src_len)),
+                src_start
+            );
         }
         line1 = cptr.ldI32o(ar, $lua_Debug_currentline);
-        if (cptr.ldPtro(ar, $lua_Debug_name) && cptr.ld1s(cptr.ldPtro(ar, $lua_Debug_name)) && ((cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) >= 65 && cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) <= 90) || (cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) >= 97 && cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) <= 122) || cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) == 95)) {
-            nh_snprintf(__s_nhl_rnglog_set_lua_caller, 1008, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf), 256n, __s_pct_s, cptr.ldPtro(ar, $lua_Debug_name));
+        if (cptr.ldPtro(ar, $lua_Debug_name) &&
+                cptr.ld1s(cptr.ldPtro(ar, $lua_Debug_name)) &&
+                ((cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) >= 65 &&
+                    cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) <= 90) ||
+                    (cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) >= 97 &&
+                        cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) <= 122) ||
+                    cptr.ld1so(cptr.ldPtro(ar, $lua_Debug_name), 0) == 95)) {
+            nh_snprintf(
+                __s_nhl_rnglog_set_lua_caller,
+                1008,
+                cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf),
+                256n,
+                __s_pct_s,
+                cptr.ldPtro(ar, $lua_Debug_name)
+            );
             name1 = cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf);
         }
         have1 = 1;
@@ -1323,7 +1837,10 @@ function* nhl_rnglog_set_lua_caller(L, fallback) {
             let src_start = cptr.add(ar2, $lua_Debug_short_src);
             let src_len = cptr.strlen(cptr.add(ar2, $lua_Debug_short_src));
 
-            if (src_len >= 11n && !cptr.strncmp(src_start, __s_string, 9n) && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 2n)) == 34 && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 93) {
+            if (src_len >= 11n &&
+                    !cptr.strncmp(src_start, __s_string, 9n) &&
+                    cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 2n)) == 34 &&
+                    cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 93) {
                 src_start = cptr.add(src_start, 9);
                 src_len -= 11n;
             }
@@ -1331,15 +1848,38 @@ function* nhl_rnglog_set_lua_caller(L, fallback) {
                 src_start = cptr.add(src_start, 1);
                 src_len--;
             }
-            if (src_len >= 2n && cptr.ld1so(src_start, 0) == 40 && cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 41) {
+            if (src_len >= 2n &&
+                    cptr.ld1so(src_start, 0) == 40 &&
+                    cptr.ld1so(src_start, BigInt.asUintN(64, src_len - 1n)) == 41) {
                 src_start = cptr.add(src_start, 1);
                 src_len -= 2n;
             }
-            nh_snprintf(__s_nhl_rnglog_set_lua_caller, 1037, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf), 256n, __s_pct_dot_star_s, Number(BigInt.asIntN(32, src_len)), src_start);
+            nh_snprintf(
+                __s_nhl_rnglog_set_lua_caller,
+                1037,
+                cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf),
+                256n,
+                __s_pct_dot_star_s,
+                Number(BigInt.asIntN(32, src_len)),
+                src_start
+            );
         }
         line2 = cptr.ldI32o(ar2, $lua_Debug_currentline);
-        if (cptr.ldPtro(ar2, $lua_Debug_name) && cptr.ld1s(cptr.ldPtro(ar2, $lua_Debug_name)) && ((cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) >= 65 && cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) <= 90) || (cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) >= 97 && cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) <= 122) || cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) == 95)) {
-            nh_snprintf(__s_nhl_rnglog_set_lua_caller, 1044, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf), 256n, __s_pct_s, cptr.ldPtro(ar2, $lua_Debug_name));
+        if (cptr.ldPtro(ar2, $lua_Debug_name) &&
+                cptr.ld1s(cptr.ldPtro(ar2, $lua_Debug_name)) &&
+                ((cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) >= 65 &&
+                    cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) <= 90) ||
+                    (cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) >= 97 &&
+                        cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) <= 122) ||
+                    cptr.ld1so(cptr.ldPtro(ar2, $lua_Debug_name), 0) == 95)) {
+            nh_snprintf(
+                __s_nhl_rnglog_set_lua_caller,
+                1044,
+                cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf),
+                256n,
+                __s_pct_s,
+                cptr.ldPtro(ar2, $lua_Debug_name)
+            );
             name2 = cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf);
         }
         have2 = 1;
@@ -1349,7 +1889,17 @@ function* nhl_rnglog_set_lua_caller(L, fallback) {
         src = cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf);
         line = line2;
         if (have1) {
-            nh_snprintf(__s_nhl_rnglog_set_lua_caller, 1056, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_namebuf), 256n, __s_s_src_s_d_parent_s, name1, cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf), line1, name2);
+            nh_snprintf(
+                __s_nhl_rnglog_set_lua_caller,
+                1056,
+                cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_namebuf),
+                256n,
+                __s_s_src_s_d_parent_s,
+                name1,
+                cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf),
+                line1,
+                name2
+            );
             name = cptr.decay(__static_nhl_rnglog_set_lua_caller_rnglog_namebuf);
         } else {
             name = name2;
@@ -1420,7 +1970,19 @@ function* nhl_is_genocided(L) {
         let mgend = cptr.box(0);
         let i = (yield* name_to_mon(paramstr, mgend));
 
-        (yield* lua_pushboolean(L, (i != NHC.NON_PM) && (cptr.ld1uo2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & NHM.G_GENOD) ? 1 : 0));
+        (yield* lua_pushboolean(
+            L,
+            (i != NHC.NON_PM) &&
+                (cptr.ld1uo2(
+                    svm,
+                    i,
+                    $sizeof_mvitals,
+                    $instance_globals_saved_m_mvitals + $mvitals_mvflags
+                ) &
+                    NHM.G_GENOD)
+                ? 1
+                : 0
+        ));
     } else {
         (yield* nhl_error(L, __s_wrong_args));
     }
@@ -1463,7 +2025,13 @@ export function* get_table_int(L, name) {
 }
 
 /* get optional integer value from table */
-/** C ref: nhlua.c:1183 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} defval @returns {CInt} */
+/**
+ * C ref: nhlua.c:1183
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @param {CInt} defval
+ * @returns {CInt}
+ */
 export function* get_table_int_opt(L, name, defval) {
     let ret = defval;
 
@@ -1475,7 +2043,12 @@ export function* get_table_int_opt(L, name, defval) {
     return ret;
 }
 
-/** C ref: nhlua.c:1196 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @returns {CPtr<char>} */
+/**
+ * C ref: nhlua.c:1196
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @returns {CPtr<char>}
+ */
 export function* get_table_str(L, name) {
     let ret;
 
@@ -1487,7 +2060,13 @@ export function* get_table_str(L, name) {
 
 /* get optional string value from table.
    return value must be freed by caller. */
-/** C ref: nhlua.c:1209 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CPtr<char>} defval @returns {CPtr<char>} */
+/**
+ * C ref: nhlua.c:1209
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @param {CPtr<char>} defval
+ * @returns {CPtr<char>}
+ */
 export function* get_table_str_opt(L, name, defval) {
     let ret;
     let ltyp;
@@ -1541,7 +2120,13 @@ export function* get_table_boolean(L, name) {
     return ret;
 }
 
-/** C ref: nhlua.c:1261 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CInt} defval @returns {CInt} */
+/**
+ * C ref: nhlua.c:1261
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @param {CInt} defval
+ * @returns {CInt}
+ */
 export function* get_table_boolean_opt(L, name, defval) {
     let ret = defval;
 
@@ -1555,7 +2140,14 @@ export function* get_table_boolean_opt(L, name, defval) {
 }
 
 /* opts[] is a null-terminated list */
-/** C ref: nhlua.c:1276 — @param {CPtr<lua_State>} L @param {CPtr<char>} name @param {CPtr<char>} defval @param {CPtr<char *>} opts @returns {CInt} */
+/**
+ * C ref: nhlua.c:1276
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} name
+ * @param {CPtr<char>} defval
+ * @param {CPtr<char *>} opts
+ * @returns {CInt}
+ */
 export function* get_table_option(L, name, defval, opts) {
     let ret;
 
@@ -1611,9 +2203,31 @@ function* nhl_int_to_obj_name(L) {
         let buf = new Uint8Array(8);
         let i = (yield* luaL_checkinteger(L, 1));
 
-        if (i >= 0n && i < 481n && (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr))) {
-            (yield* lua_pushstring(L, (cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr))));
-            cptr.st1o(cptr.decay(buf), 0, cptr.ld1so(def_oc_syms, cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class), $sizeof_class_sym), 1);
+        if (i >= 0n &&
+                i < 481n &&
+                (cptr.ldPtro(
+                    obj_descr,
+                    cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))),
+                    $sizeof_objdescr
+                ))) {
+            (yield* lua_pushstring(
+                L,
+                (cptr.ldPtro(
+                    obj_descr,
+                    cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))),
+                    $sizeof_objdescr
+                ))
+            ));
+            cptr.st1o(
+                cptr.decay(buf),
+                0,
+                cptr.ld1so(
+                    def_oc_syms,
+                    cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class),
+                    $sizeof_class_sym
+                ),
+                1
+            );
             cptr.st1o(cptr.decay(buf), 1, 0, 1);
             (yield* lua_pushstring(L, cptr.decay(buf)));
         } else {
@@ -1654,18 +2268,36 @@ function* nhl_variable(L) {
         (yield* lua_getfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, key));
         typ = lua_type(cptr.ldPtro(gl, $instance_globals_l_luacore), -1);
         if (typ == 4)
-            (yield* lua_pushstring(L, (yield* lua_tolstring(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))));
+            (yield* lua_pushstring(
+                L,
+                (yield* lua_tolstring(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))
+            ));
         else if (typ == 0)
             (yield* lua_pushnil(L));
         else if (typ == 1)
             (yield* lua_pushboolean(L, lua_toboolean(cptr.ldPtro(gl, $instance_globals_l_luacore), -1)));
         else if (typ == 3)
-            (yield* lua_pushinteger(L, (yield* lua_tointegerx(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))));
+            (yield* lua_pushinteger(
+                L,
+                (yield* lua_tointegerx(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))
+            ));
         else if (typ == 5) {
-            (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __s_nh_get_variables_string));
+            (yield* lua_getglobal(
+                cptr.ldPtro(gl, $instance_globals_l_luacore),
+                __s_nh_get_variables_string
+            ));
             (yield* lua_pushvalue(cptr.ldPtro(gl, $instance_globals_l_luacore), -2));
-            (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 1, 1, __s_nhl_variable, NHC.NHLpa_panic));
-            (yield* luaL_loadstring(L, (yield* lua_tolstring(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))));
+            (yield* nhl_pcall_handle(
+                cptr.ldPtro(gl, $instance_globals_l_luacore),
+                1,
+                1,
+                __s_nhl_variable,
+                NHC.NHLpa_panic
+            ));
+            (yield* luaL_loadstring(
+                L,
+                (yield* lua_tolstring(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))
+            ));
             (yield* nhl_pcall_handle(L, 0, 1, __s_nhl_variable_1, NHC.NHLpa_panic));
         } else
             (yield* nhl_error(L, __s_cannot_get_variable_of_that_type));
@@ -1678,7 +2310,10 @@ function* nhl_variable(L) {
         typ = lua_type(L, -1);
 
         if (typ == 4) {
-            (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), (yield* lua_tolstring(L, -1, null))));
+            (yield* lua_pushstring(
+                cptr.ldPtro(gl, $instance_globals_l_luacore),
+                (yield* lua_tolstring(L, -1, null))
+            ));
             (yield* lua_setfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -2, key));
         } else if (typ == 0) {
             (yield* lua_pushnil(cptr.ldPtro(gl, $instance_globals_l_luacore)));
@@ -1687,15 +2322,27 @@ function* nhl_variable(L) {
             (yield* lua_pushboolean(cptr.ldPtro(gl, $instance_globals_l_luacore), lua_toboolean(L, -1)));
             (yield* lua_setfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -2, key));
         } else if (typ == 3) {
-            (yield* lua_pushinteger(cptr.ldPtro(gl, $instance_globals_l_luacore), (yield* lua_tointegerx(L, -1, null))));
+            (yield* lua_pushinteger(
+                cptr.ldPtro(gl, $instance_globals_l_luacore),
+                (yield* lua_tointegerx(L, -1, null))
+            ));
             (yield* lua_setfield(cptr.ldPtro(gl, $instance_globals_l_luacore), -2, key));
         } else if (typ == 5) {
             (yield* lua_getglobal(L, __s_nh_set_variables_string));
             (yield* lua_pushstring(L, key));
             (yield* lua_pushvalue(L, -3));  /* copy value to top */
             (yield* nhl_pcall_handle(L, 2, 1, __s_nhl_variable_2, NHC.NHLpa_panic));
-            (yield* luaL_loadstring(cptr.ldPtro(gl, $instance_globals_l_luacore), (yield* lua_tolstring(L, -1, null))));
-            (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 0, 0, __s_nhl_variable_3, NHC.NHLpa_panic));
+            (yield* luaL_loadstring(
+                cptr.ldPtro(gl, $instance_globals_l_luacore),
+                (yield* lua_tolstring(L, -1, null))
+            ));
+            (yield* nhl_pcall_handle(
+                cptr.ldPtro(gl, $instance_globals_l_luacore),
+                0,
+                0,
+                __s_nhl_variable_3,
+                NHC.NHLpa_panic
+            ));
         } else
             (yield* nhl_error(L, __s_cannot_set_variable_of_that_type));
         return 0;
@@ -1716,7 +2363,13 @@ export function* get_nh_lua_variables() {
     }
     (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __s_get_variables_string));
     if (lua_type(cptr.ldPtro(gl, $instance_globals_l_luacore), -1) == 6) {
-        if ((yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 0, 1, __s_get_nh_lua_variables, NHC.NHLpa_impossible))) {
+        if ((yield* nhl_pcall_handle(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            0,
+            1,
+            __s_get_nh_lua_variables,
+            NHC.NHLpa_impossible
+        ))) {
             return key;
         }
         key = (yield* dupstr((yield* lua_tolstring(cptr.ldPtro(gl, $instance_globals_l_luacore), -1, null))));
@@ -1753,7 +2406,13 @@ export function* restore_luadata(nhfp) {
         (yield* l_nhcore_init());
     (yield* luaL_loadstring(cptr.ldPtro(gl, $instance_globals_l_luacore), lua_data));
     cptr.free(lua_data);
-    (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 0, 0, __s_restore_luadata, NHC.NHLpa_panic));
+    (yield* nhl_pcall_handle(
+        cptr.ldPtro(gl, $instance_globals_l_luacore),
+        0,
+        0,
+        __s_restore_luadata,
+        NHC.NHLpa_panic
+    ));
 }
 
 /* local stairs = stairways(); */
@@ -1773,7 +2432,11 @@ function* nhl_stairways(L) {
         (yield* nhl_add_table_entry_int(L, __s_x, BigInt(cptr.ldI16(tmp))));
         (yield* nhl_add_table_entry_int(L, __s_y, BigInt(cptr.ldI16o(tmp, $stairway_sy))));
         (yield* nhl_add_table_entry_int(L, __s_dnum, BigInt(cptr.ldI16o(tmp, $stairway_tolev))));
-        (yield* nhl_add_table_entry_int(L, __s_dlevel, BigInt(cptr.ldI16o(tmp, $stairway_tolev + $d_level_dlevel))));
+        (yield* nhl_add_table_entry_int(
+            L,
+            __s_dlevel,
+            BigInt(cptr.ldI16o(tmp, $stairway_tolev + $d_level_dlevel))
+        ));
 
         (yield* lua_settable(L, -3));
 
@@ -1863,7 +2526,11 @@ function* nhl_debug_flags(L) {
             let mtmp;
             let mtmp2;
 
-            for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = mtmp2) {
+            for (
+                mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+                mtmp;
+                mtmp = mtmp2
+            ) {
                 mtmp2 = cptr.ldPtr(mtmp);
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                     continue;
@@ -2086,10 +2753,19 @@ function* nhl_callback(L) {
             (cptr.stI32o(nhcb_counts, i, cptr.ldI32o(nhcb_counts, i, 4) + 1, 4)) - (1);
         }
 
-        (yield* lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), rm ? __s_nh_callback_rm : __s_nh_callback_set));
+        (yield* lua_getglobal(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            rm ? __s_nh_callback_rm : __s_nh_callback_set
+        ));
         (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cb));
         (yield* lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), fn));
-        (yield* nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 2, 0, __s_nhl_callback, NHC.NHLpa_panic));
+        (yield* nhl_pcall_handle(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            2,
+            0,
+            __s_nhl_callback,
+            NHC.NHLpa_panic
+        ));
     }
     return 0;
 }
@@ -2118,7 +2794,13 @@ function* nhl_gamestate(L) {
         if ((yield* debugcore(__s_nhlua_c, 1))) {
 
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__s_gamestate_d_d_c_vs_c, cptr.ldI16o(u, $you_uz), cptr.ldI16o(u, $you_uz + $d_level_dlevel), reststate ? 84 : 70, cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? 116 : 102));
+            (yield* pline(
+                __s_gamestate_d_d_c_vs_c,
+                cptr.ldI16o(u, $you_uz),
+                cptr.ldI16o(u, $you_uz + $d_level_dlevel),
+                reststate ? 84 : 70,
+                cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? 116 : 102
+            ));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -2128,7 +2810,11 @@ function* nhl_gamestate(L) {
         let cur_uz0 = cptr.alloc(4); cptr.memcpy(cur_uz0, cptr.add(u, $you_uz0), $sizeof_d_level);
 
         /* restore game state */
-        cptr.stI64o(svm, $instance_globals_saved_m_moves, cptr.ldI64o(gg, $instance_globals_g_gmst_moves));
+        cptr.stI64o(
+            svm,
+            $instance_globals_saved_m_moves,
+            cptr.ldI64o(gg, $instance_globals_g_gmst_moves)
+        );
         (yield* pline(__s_resetting_time_to_move_ld, cptr.ldI64o(svm, $instance_globals_saved_m_moves)));
         cptr.stI64o(gg, $instance_globals_g_gmst_moves, 0n);
 
@@ -2143,12 +2829,35 @@ function* nhl_gamestate(L) {
             if (wornmask)
                 (yield* setworn(otmp, wornmask));
         }
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), (null))))), 0n) ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1906, __s_gg_gmst_ubak_null) : void 0);
+        (__builtin_expect(
+            BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), (null))))),
+            0n
+        )
+                ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1906, __s_gg_gmst_ubak_null)
+                : void 0);
         void cptr.memcpy(u, cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), 2864n);
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), (null))))), 0n) ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1908, __s_gg_gmst_disco_null) : void 0);
-        void cptr.memcpy(cptr.add(svd, $instance_globals_saved_d_disco), cptr.ldPtro(gg, $instance_globals_g_gmst_disco), 962n);
-        (__builtin_expect(BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), (null))))), 0n) ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1911, __s_gg_gmst_mvitals_null) : void 0);
-        void cptr.memcpy(cptr.add(svm, $instance_globals_saved_m_mvitals), cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), 4596n);
+        (__builtin_expect(
+            BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), (null))))),
+            0n
+        )
+                ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1908, __s_gg_gmst_disco_null)
+                : void 0);
+        void cptr.memcpy(
+            cptr.add(svd, $instance_globals_saved_d_disco),
+            cptr.ldPtro(gg, $instance_globals_g_gmst_disco),
+            962n
+        );
+        (__builtin_expect(
+            BigInt((!(!cptr.eq(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), (null))))),
+            0n
+        )
+                ? __assert_rtn(__s_nhl_gamestate, __s_nhlua_c, 1911, __s_gg_gmst_mvitals_null)
+                : void 0);
+        void cptr.memcpy(
+            cptr.add(svm, $instance_globals_saved_m_mvitals),
+            cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals),
+            4596n
+        );
         /* clear user-given object type names */
         for (otyp = 0; otyp < NHC.NUM_OBJECTS; otyp++)
             if (cptr.ldPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname)) {
@@ -2156,14 +2865,19 @@ function* nhl_gamestate(L) {
                 cptr.stPtro2(objects, otyp, $sizeof_objclass, $objclass_oc_uname, null);
             }
         /* some restored state would confuse the level change in progress */
-        cptr.memcpy(cptr.add(u, $you_uz), cur_uz, 4), cptr.memcpy(cptr.add(u, $you_uz0), cur_uz0, 4);
+        cptr.memcpy(cptr.add(u, $you_uz), cur_uz, 4),
+                cptr.memcpy(cptr.add(u, $you_uz0), cur_uz0, 4);
         (yield* init_uhunger());
         (yield* free_tutorial());  /* release gg.gmst_XYZ */
         cptr.st1o(gg, $instance_globals_g_gmst_stored, 0);
         void cptr.memcpy(svs, cptr.add(gg, $instance_globals_g_gmst_spl_book), 344n);
     } else if (!reststate && !cptr.ld1so(gg, $instance_globals_g_gmst_stored)) {
         /* store game state */
-        cptr.stI64o(gg, $instance_globals_g_gmst_moves, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
+        cptr.stI64o(
+            gg,
+            $instance_globals_g_gmst_moves,
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves)
+        );
         while (!cptr.eq((otmp = cptr.ldPtro(gi, $instance_globals_i_invent)), (null))) {
             wornmask = cptr.ldI64o(otmp, $obj_owornmask);
             (yield* setnotworn(otmp));
@@ -2176,14 +2890,26 @@ function* nhl_gamestate(L) {
         cptr.stPtro(gg, $instance_globals_g_gmst_ubak, (yield* alloc(2864)));
         void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak), u, 2864n);
         cptr.stPtro(gg, $instance_globals_g_gmst_disco, (yield* alloc(962)));
-        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_disco), cptr.add(svd, $instance_globals_saved_d_disco), 962n);
+        void cptr.memcpy(
+            cptr.ldPtro(gg, $instance_globals_g_gmst_disco),
+            cptr.add(svd, $instance_globals_saved_d_disco),
+            962n
+        );
         cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, (yield* alloc(4596)));
-        void cptr.memcpy(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals), cptr.add(svm, $instance_globals_saved_m_mvitals), 4596n);
+        void cptr.memcpy(
+            cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals),
+            cptr.add(svm, $instance_globals_saved_m_mvitals),
+            4596n
+        );
         void cptr.memcpy(cptr.add(gg, $instance_globals_g_gmst_spl_book), svs, 344n);
         void __builtin___memset_chk(svs, 0, 344n, __builtin_object_size(svs, 0));
         cptr.st1o(gg, $instance_globals_g_gmst_stored, 1);
     } else {
-        (yield* impossible(__s_nhl_gamestate_inconsistent_state_s_vs_s, reststate ? __s_restore : __s_save, cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? __s_already_stored : __s_not_stored));
+        (yield* impossible(
+            __s_nhl_gamestate_inconsistent_state_s_vs_s,
+            reststate ? __s_restore : __s_save,
+            cptr.ld1so(gg, $instance_globals_g_gmst_stored) ? __s_already_stored : __s_not_stored
+        ));
     }
     (yield* update_inventory());
     return 0;
@@ -2210,11 +2936,14 @@ export function* free_tutorial() {
     }
 
     if (cptr.ldPtro(gg, $instance_globals_g_gmst_ubak))
-        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak)), cptr.stPtro(gg, $instance_globals_g_gmst_ubak, null);
+        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_ubak)),
+                cptr.stPtro(gg, $instance_globals_g_gmst_ubak, null);
     if (cptr.ldPtro(gg, $instance_globals_g_gmst_disco))
-        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_disco)), cptr.stPtro(gg, $instance_globals_g_gmst_disco, null);
+        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_disco)),
+                cptr.stPtro(gg, $instance_globals_g_gmst_disco, null);
     if (cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals))
-        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals)), cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, null);
+        cptr.free(cptr.ldPtro(gg, $instance_globals_g_gmst_mvitals)),
+                cptr.stPtro(gg, $instance_globals_g_gmst_mvitals, null);
 }
 
 /* called from gotolevel(do.c) */
@@ -2223,7 +2952,12 @@ export function* tutorial(entering) {
     (yield* l_nhcore_call(entering ? NHC.NHCORE_ENTER_TUTORIAL : NHC.NHCORE_LEAVE_TUTORIAL));
 
     if (!entering) {
-        cptr.st1o(cptr.decay(nhcore_call_available), NHC.NHCORE_ENTER_TUTORIAL, cptr.st1o(cptr.decay(nhcore_call_available), NHC.NHCORE_LEAVE_TUTORIAL, 0, 1), 1);
+        cptr.st1o(
+            cptr.decay(nhcore_call_available),
+            NHC.NHCORE_ENTER_TUTORIAL,
+            cptr.st1o(cptr.decay(nhcore_call_available), NHC.NHCORE_LEAVE_TUTORIAL, 0, 1),
+            1
+        );
     }
 }
 
@@ -2351,7 +3085,13 @@ function* init_nhc_data(L) {
     (yield* lua_setglobal(L, __s_nhc));
 }
 
-/** C ref: nhlua.c:2094 — @param {CPtr<lua_State>} L @param {CInt} anytype @param {CPtr<void>} src @returns {CInt} */
+/**
+ * C ref: nhlua.c:2094
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} anytype
+ * @param {CPtr<void>} src
+ * @returns {CInt}
+ */
 function* nhl_push_anything(L, anytype, src) {
     let any = cptr.alloc(8); cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), $sizeof_any);
 
@@ -2454,7 +3194,11 @@ function* nhl_meta_u_index(L) {
     /* FIXME: doesn't really work, eg. negative values for u.dx */
     for (i = 0; i < 24; i++)
         if (!strcmp(tkey, cptr.ldPtro(__static_nhl_meta_u_index_ustruct, i, 24))) {
-            return (yield* nhl_push_anything(L, cptr.ldI32o2(__static_nhl_meta_u_index_ustruct, i, 24, 16), cptr.ldPtro2(__static_nhl_meta_u_index_ustruct, i, 24, 8)));
+            return (yield* nhl_push_anything(
+                L,
+                cptr.ldI32o2(__static_nhl_meta_u_index_ustruct, i, 24, 16),
+                cptr.ldPtro2(__static_nhl_meta_u_index_ustruct, i, 24, 8)
+            ));
         }
 
     if (!strcmp(tkey, __s_inventory)) {
@@ -2540,7 +3284,14 @@ function* nhl_getmeminuse(L) {
 /* lua_pcall with our traceback handler and memory and instruction step
  * limiting.
  *  On error, traceback will be on top of stack */
-/** C ref: nhlua.c:2263 — @param {CPtr<lua_State>} L @param {CInt} nargs @param {CInt} nresults @param {CPtr<char>} name @returns {CInt} */
+/**
+ * C ref: nhlua.c:2263
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} nargs
+ * @param {CInt} nresults
+ * @param {CPtr<char>} name
+ * @returns {CInt}
+ */
 export function* nhl_pcall(L, nargs, nresults, name) {
     let nud = cptr.box(0);
     let rv;
@@ -2552,7 +3303,9 @@ export function* nhl_pcall(L, nargs, nresults, name) {
         cptr.stPtro(nud.v, $nhl_user_data_name, name);
     }
     /* NB: We don't need to deal with nud->memlimit - Lua handles that. */
-    if (nud.v && (cptr.ldI32o(nud.v, $nhl_user_data_steps) || cptr.ldI32o(nud.v, $nhl_user_data_perpcall))) {
+    if (nud.v &&
+            (cptr.ldI32o(nud.v, $nhl_user_data_steps) ||
+                cptr.ldI32o(nud.v, $nhl_user_data_perpcall))) {
         if (cptr.ldI32o(nud.v, $nhl_user_data_perpcall)) {
             cptr.stI32o(nud.v, $nhl_user_data_steps, cptr.ldI32o(nud.v, $nhl_user_data_perpcall));
             cptr.stI32o(nud.v, $nhl_user_data_statctr, 0);
@@ -2564,13 +3317,25 @@ export function* nhl_pcall(L, nargs, nresults, name) {
                 if (__sv1) {
                     /* panic, because we don't know if the game state is corrupt */
                     /* XXX can we get a lua stack trace as well? */
-                    (yield* panic(__s_lua_time_exceeded_d_s, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __s_unknown));
+                    (yield* panic(
+                        __s_lua_time_exceeded_d_s,
+                        cptr.ldI32o(nud.v, $nhl_user_data_sid),
+                        cptr.ldPtro(nud.v, $nhl_user_data_name)
+                            ? cptr.ldPtro(nud.v, $nhl_user_data_name)
+                            : __s_unknown
+                    ));
                 }
             } catch (__e1) {
                 if (!cjmp.matches(__e1, __sj1)) throw __e1;
                 __sv1 = cjmp.jbval(__e1);
                 if (__sv1) {
-                    (yield* panic(__s_lua_time_exceeded_d_s, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __s_unknown));
+                    (yield* panic(
+                        __s_lua_time_exceeded_d_s,
+                        cptr.ldI32o(nud.v, $nhl_user_data_sid),
+                        cptr.ldPtro(nud.v, $nhl_user_data_name)
+                            ? cptr.ldPtro(nud.v, $nhl_user_data_name)
+                            : __s_unknown
+                    ));
                 }
             }
         }
@@ -2579,17 +3344,44 @@ export function* nhl_pcall(L, nargs, nresults, name) {
     rv = (yield* lua_pcallk(L, (nargs), (nresults), 1, 0n, null));
 
     (lua_rotate(L, 1, -1), (yield* lua_settop(L, -2)));  /* remove handler */
-    if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_perpcall) && cptr.ldI32o(gl, $instance_globals_l_loglua)) {
-        let ic = BigInt((Math.imul(cptr.ldI32o(nud.v, $nhl_user_data_statctr), NHM.NHL_SB_STEPSIZE) >>> 0) >>> 0);  // an approximation
-        (yield* livelog_printf(32768n, __s_luastats_pcal_d_s_ld, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), ic));
+    if (nud.v &&
+            cptr.ldI32o(nud.v, $nhl_user_data_perpcall) &&
+            cptr.ldI32o(gl, $instance_globals_l_loglua)) {
+        let ic = BigInt((Math.imul(
+            cptr.ldI32o(nud.v, $nhl_user_data_statctr),
+            NHM.NHL_SB_STEPSIZE
+        ) >>> 0) >>> 0);  // an approximation
+        (yield* livelog_printf(
+            32768n,
+            __s_luastats_pcal_d_s_ld,
+            cptr.ldI32o(nud.v, $nhl_user_data_sid),
+            cptr.ldPtro(nud.v, $nhl_user_data_name),
+            ic
+        ));
     }
-    if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_memlimit) && cptr.ldI32o(gl, $instance_globals_l_loglua)) {
-        (yield* livelog_printf(32768n, __s_luastats_pmem_d_s_lu, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), BigInt((yield* nhl_getmeminuse(L)) >>> 0)));
+    if (nud.v &&
+            cptr.ldI32o(nud.v, $nhl_user_data_memlimit) &&
+            cptr.ldI32o(gl, $instance_globals_l_loglua)) {
+        (yield* livelog_printf(
+            32768n,
+            __s_luastats_pmem_d_s_lu,
+            cptr.ldI32o(nud.v, $nhl_user_data_sid),
+            cptr.ldPtro(nud.v, $nhl_user_data_name),
+            BigInt((yield* nhl_getmeminuse(L)) >>> 0)
+        ));
     }
     return rv;
 }
 
-/** C ref: nhlua.c:2309 — @param {CPtr<lua_State>} L @param {CInt} nargs @param {CInt} nresults @param {CPtr<char>} name @param {*} npa @returns {CInt} */
+/**
+ * C ref: nhlua.c:2309
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} nargs
+ * @param {CInt} nresults
+ * @param {CPtr<char>} name
+ * @param {*} npa
+ * @returns {CInt}
+ */
 export function* nhl_pcall_handle(L, nargs, nresults, name, npa) {
     let rv = (yield* nhl_pcall(L, nargs, nresults, name));
     if (rv) {
@@ -2598,11 +3390,25 @@ export function* nhl_pcall_handle(L, nargs, nresults, name, npa) {
         /* XXX can we get a lua stack trace as well? */
         switch (npa) {
             case NHC.NHLpa_panic:
-            (yield* panic(__s_lua_error_d_s_s, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __s_unknown, (yield* lua_tolstring(L, -1, null))));
+            (yield* panic(
+                __s_lua_error_d_s_s,
+                cptr.ldI32o(nud.v, $nhl_user_data_sid),
+                cptr.ldPtro(nud.v, $nhl_user_data_name)
+                    ? cptr.ldPtro(nud.v, $nhl_user_data_name)
+                    : __s_unknown,
+                (yield* lua_tolstring(L, -1, null))
+            ));
             /*NOTREACHED*/
             break;
             case NHC.NHLpa_impossible:
-            (yield* impossible(__s_lua_error_d_s_s__2, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name) ? cptr.ldPtro(nud.v, $nhl_user_data_name) : __s_unknown, (yield* lua_tolstring(L, -1, null))));
+            (yield* impossible(
+                __s_lua_error_d_s_s__2,
+                cptr.ldI32o(nud.v, $nhl_user_data_sid),
+                cptr.ldPtro(nud.v, $nhl_user_data_name)
+                    ? cptr.ldPtro(nud.v, $nhl_user_data_name)
+                    : __s_unknown,
+                (yield* lua_tolstring(L, -1, null))
+            ));
             /* Drop the error.  If the caller cares, use nhl_pcall(). */
             (yield* lua_settop(L, -2));
         }
@@ -2646,7 +3452,11 @@ export function* nhl_loadlua(L, fname) {
         fseek(fh, 0n, 0);
 
         /* extra +1: room to add final '\n' if missing */
-        buf = (bufout = (yield* alloc((yield* FITSint_(BigInt.asIntN(64, BigInt.asIntN(64, buflen + 1n) + 1n), __s_nhl_loadlua, 2364)) >>> 0)));
+        buf = (bufout = (yield* alloc((yield* FITSint_(
+            BigInt.asIntN(64, BigInt.asIntN(64, buflen + 1n) + 1n),
+            __s_nhl_loadlua,
+            2364
+        )) >>> 0)));
         cptr.st1o(buf, 0, 0);
         bufin = (bufout = buf);
 
@@ -2663,7 +3473,20 @@ export function* nhl_loadlua(L, fname) {
              * in use, and fseek(SEEK_END) only yields an upper bound on
              * the actual amount of data in that situation.]
              */
-            if ((cnt = BigInt.asIntN(64, fread(bufin, 1n, BigInt.asUintN(64, (BigInt((Number(BigInt.asIntN(32, buflen)))) < 8192n ? BigInt((Number(BigInt.asIntN(32, buflen)))) : 8192n)), fh))) < 0n)
+            if ((cnt = BigInt.asIntN(
+                64,
+                fread(
+                    bufin,
+                    1n,
+                    BigInt.asUintN(
+                        64,
+                        (BigInt((Number(BigInt.asIntN(32, buflen)))) < 8192n
+                            ? BigInt((Number(BigInt.asIntN(32, buflen))))
+                            : 8192n)
+                    ),
+                    fh
+                )
+            )) < 0n)
                 break;
             buflen -= cnt;  /* set up for next iteration, if any */
             if (cnt == 0n) {
@@ -2680,7 +3503,10 @@ export function* nhl_loadlua(L, fname) {
                     /* normal case, newline is present */
                     ct = (BigInt.asIntN(64, cptr.diff(nl, bufin) + 1n));  /* +1: keep the newline */
                     for (p = bufin; cptr.cmp(p, nl) <= 0; p = cptr.add(p, 1))
-                        cptr.st1(cptr.postinc(() => bufout, (v) => { bufout = v; }), cptr.ld1s(cptr.postinc(() => bufin, (v) => { bufin = v; })));
+                        cptr.st1(
+                            cptr.postinc(() => bufout, (v) => { bufout = v; }),
+                            cptr.ld1s(cptr.postinc(() => bufin, (v) => { bufin = v; }))
+                        );
                     if (cptr.ld1s(bufin) == 13)
                         bufin = cptr.add(bufin, 1), ++ct;
                     /* update for next loop iteration */
@@ -2691,7 +3517,10 @@ export function* nhl_loadlua(L, fname) {
                        to front of input buffer (bufin portion of buf[]) */
                     ct = (cnt = (cptr.diff(eos(bufin), bufin)));
                     for (p = bufout; cnt > 0n; --cnt)
-                        cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => bufin, (v) => { bufin = v; })));
+                        cptr.st1(
+                            cptr.postinc(() => p, (v) => { p = v; }),
+                            cptr.ld1s(cptr.postinc(() => bufin, (v) => { bufin = v; }))
+                        );
                     cptr.st1(p, 0);
                     bufin = p;  /* next fread() populates buf[] starting here */
                     /* cnt==0 so inner loop will terminate */
@@ -2774,11 +3603,28 @@ export function* nhl_done(L) {
         void lua_getallocf(L, nud);
         if (cptr.ldI32o(gl, $instance_globals_l_loglua)) {
             if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_osteps)) {
-                let ic = BigInt((Math.imul(cptr.ldI32o(nud.v, $nhl_user_data_statctr), NHM.NHL_SB_STEPSIZE) >>> 0) >>> 0);  // an approximation
-                (yield* livelog_printf(32768n, __s_luastats_done_d_s_ld, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), ic));
+                let ic = BigInt((Math.imul(
+                    cptr.ldI32o(nud.v, $nhl_user_data_statctr),
+                    NHM.NHL_SB_STEPSIZE
+                ) >>> 0) >>> 0);  // an approximation
+                (yield* livelog_printf(
+                    32768n,
+                    __s_luastats_done_d_s_ld,
+                    cptr.ldI32o(nud.v, $nhl_user_data_sid),
+                    cptr.ldPtro(nud.v, $nhl_user_data_name),
+                    ic
+                ));
             }
-            if (nud.v && cptr.ldI32o(nud.v, $nhl_user_data_memlimit) && !cptr.ldI32o(nud.v, $nhl_user_data_perpcall)) {
-                (yield* livelog_printf(32768n, __s_luastats_dmem_d_s_lu, cptr.ldI32o(nud.v, $nhl_user_data_sid), cptr.ldPtro(nud.v, $nhl_user_data_name), BigInt((yield* nhl_getmeminuse(L)) >>> 0)));
+            if (nud.v &&
+                    cptr.ldI32o(nud.v, $nhl_user_data_memlimit) &&
+                    !cptr.ldI32o(nud.v, $nhl_user_data_perpcall)) {
+                (yield* livelog_printf(
+                    32768n,
+                    __s_luastats_dmem_d_s_lu,
+                    cptr.ldI32o(nud.v, $nhl_user_data_sid),
+                    cptr.ldPtro(nud.v, $nhl_user_data_name),
+                    BigInt((yield* nhl_getmeminuse(L)) >>> 0)
+                ));
             }
         }
         (yield* lua_close(L));
@@ -2788,7 +3634,12 @@ export function* nhl_done(L) {
     cptr.st1o(iflags, $instance_flags_in_lua, 0);
 }
 
-/** C ref: nhlua.c:2546 — @param {CPtr<char>} name @param {CPtr<nhl_sandbox_info>} sbi @returns {CInt} */
+/**
+ * C ref: nhlua.c:2546
+ * @param {CPtr<char>} name
+ * @param {CPtr<nhl_sandbox_info>} sbi
+ * @returns {CInt}
+ */
 export function* load_lua(name, sbi) {
     let ret = 1;
     let L = (yield* nhl_init(sbi));
@@ -2811,7 +3662,11 @@ export function* load_lua(name, sbi) {
 
 /** C ref: nhlua.c:2570 @returns {CPtr<char>} */
 export function* get_lua_version() {
-    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_VERSION); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
+    let sbi = cptr.alloc(16);
+    cptr.stI32(sbi, NHM.NHL_SB_VERSION);
+    cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576);
+    cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0);
+    cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
 
     if (cptr.ld1so2(gl, 0, 1, $instance_globals_l_lua_ver) == 0) {
         let L = (yield* nhl_init(sbi));
@@ -2847,7 +3702,10 @@ export function* get_lua_version() {
         }
         (yield* nhl_done(L));
         if (1)
-            void cptr.strcpy(cptr.add(gl, $instance_globals_l_lua_copyright), __s_lua_5_4_8_copyright_c_1994_2025_lua_org);
+            void cptr.strcpy(
+                cptr.add(gl, $instance_globals_l_lua_copyright),
+                __s_lua_5_4_8_copyright_c_1994_2025_lua_org
+            );
     }
     return cptr.add(gl, $instance_globals_l_lua_ver);
 }
@@ -3021,7 +3879,13 @@ cptr.stPtro(ct_os_files, 96 + $e_fnname, __s_tmpname);
 cptr.stI32o(ct_os_files, 112, NHC.EOT);
 cptr.stPtro(ct_os_files, 112 + $e_fnname, null);
 
-/** C ref: nhlua.c:2762 — @param {CPtr<lua_State>} L @param {CInt} flag @param {CInt} tndx @param {CPtr<struct e>} todo */
+/**
+ * C ref: nhlua.c:2762
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} flag
+ * @param {CInt} tndx
+ * @param {CPtr<struct e>} todo
+ */
 function* nhl_clearfromtable(L, flag, tndx, todo) {
     while (cptr.ldI32(todo) != NHC.EOT) {
         (yield* lua_pushnil(L));
@@ -3141,7 +4005,14 @@ function* nhlL_openlibs(L, lflags) {
     }
 }
 
-/** C ref: nhlua.c:3132 — @param {CPtr<void>} ud @param {CPtr<void>} ptr @param {CLongLong} osize @param {CLongLong} nsize @returns {CPtr<void>} */
+/**
+ * C ref: nhlua.c:3132
+ * @param {CPtr<void>} ud
+ * @param {CPtr<void>} ptr
+ * @param {CLongLong} osize
+ * @param {CLongLong} nsize
+ * @returns {CPtr<void>}
+ */
 function* nhl_alloc(ud, ptr, osize, nsize) {
     let nud = ud;
 
@@ -3174,7 +4045,12 @@ function* nhl_panic(L) {
 
 /* called when lua issues a warning message; the text of the message
    is passed to us in pieces across multiple function calls */
-/** C ref: nhlua.c:3171 — @param {CPtr<void>} userdata @param {CPtr<char>} msg_fragment @param {CInt} to_be_continued */
+/**
+ * C ref: nhlua.c:3171
+ * @param {CPtr<void>} userdata
+ * @param {CPtr<char>} msg_fragment
+ * @param {CInt} to_be_continued
+ */
 function* nhl_warn(userdata, msg_fragment, to_be_continued) {
     let fraglen;
     let buflen = cptr.strlen(cptr.add(gl, $instance_globals_l_lua_warnbuf));
@@ -3183,7 +4059,12 @@ function* nhl_warn(userdata, msg_fragment, to_be_continued) {
         fraglen = cptr.strlen(msg_fragment);
         if (BigInt.asUintN(64, buflen + fraglen) > 255n)
             fraglen = BigInt.asUintN(64, 255n - buflen);
-        void __builtin___strncat_chk(cptr.add(gl, $instance_globals_l_lua_warnbuf), msg_fragment, fraglen, __builtin_object_size(cptr.add(gl, $instance_globals_l_lua_warnbuf), 1));
+        void __builtin___strncat_chk(
+            cptr.add(gl, $instance_globals_l_lua_warnbuf),
+            msg_fragment,
+            fraglen,
+            __builtin_object_size(cptr.add(gl, $instance_globals_l_lua_warnbuf), 1)
+        );
     }
     if (!to_be_continued) {
         (yield* paniclog(__s_lua__3, cptr.add(gl, $instance_globals_l_lua_warnbuf)));
@@ -3200,15 +4081,27 @@ function nhl_hookfn(L, ar) {
     if (cptr.ldI32o(nud.v, $nhl_user_data_steps) <= NHM.NHL_SB_STEPSIZE)
         cjmp.longjmp(cptr.add(nud.v, $nhl_user_data_jb), 1);
 
-    cptr.stI32o(nud.v, $nhl_user_data_steps, (cptr.ldI32o(nud.v, $nhl_user_data_steps) - NHM.NHL_SB_STEPSIZE) | 0);
-    (cptr.stI32o(nud.v, $nhl_user_data_statctr, cptr.ldI32o(nud.v, $nhl_user_data_statctr) + 1)) - (1);
+    cptr.stI32o(
+        nud.v,
+        $nhl_user_data_steps,
+        (cptr.ldI32o(nud.v, $nhl_user_data_steps) - NHM.NHL_SB_STEPSIZE) | 0
+    );
+    (cptr.stI32o(nud.v, $nhl_user_data_statctr, cptr.ldI32o(nud.v, $nhl_user_data_statctr) + 1)) -
+            (1);
 }
 
-/** C ref: nhlua.c:3207 — @param {CPtr<nhl_sandbox_info>} sbi @param {CPtr<char>} name @returns {CPtr<lua_State>} */
+/**
+ * C ref: nhlua.c:3207
+ * @param {CPtr<nhl_sandbox_info>} sbi
+ * @param {CPtr<char>} name
+ * @returns {CPtr<lua_State>}
+ */
 function* nhlL_newstate(sbi, name) {
     let nud = null;
 
-    if (cptr.ldI32o(sbi, $nhl_sandbox_info_memlimit) || cptr.ldI32o(sbi, $nhl_sandbox_info_steps) || cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall)) {
+    if (cptr.ldI32o(sbi, $nhl_sandbox_info_memlimit) ||
+            cptr.ldI32o(sbi, $nhl_sandbox_info_steps) ||
+            cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall)) {
         nud = (yield* nhl_alloc((null), (null), 0n, 240n));
         if (!nud)
             return null;
@@ -3223,7 +4116,15 @@ function* nhlL_newstate(sbi, name) {
         if (name) {
             cptr.stPtro(nud, $nhl_user_data_name, name);
         }
-        cptr.stI32o(nud, $nhl_user_data_sid, cptr.stI32o(gl, $instance_globals_l_lua_sid, cptr.ldI32o(gl, $instance_globals_l_lua_sid) + 1));
+        cptr.stI32o(
+            nud,
+            $nhl_user_data_sid,
+            cptr.stI32o(
+                gl,
+                $instance_globals_l_lua_sid,
+                cptr.ldI32o(gl, $instance_globals_l_lua_sid) + 1
+            )
+        );
     }
 
     let L = (yield* lua_newstate(nhl_alloc, nud));
@@ -3234,8 +4135,11 @@ function* nhlL_newstate(sbi, name) {
         cptr.stPtr(nud, L);
     lua_atpanic(L, nhl_panic);
     lua_setwarnf(L, nhl_warn, L);
-    if (nud && (cptr.ldI32o(sbi, $nhl_sandbox_info_steps) || cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall))) {
-        if (cptr.ldI32o(sbi, $nhl_sandbox_info_steps) && cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall))
+    if (nud &&
+            (cptr.ldI32o(sbi, $nhl_sandbox_info_steps) ||
+                cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall))) {
+        if (cptr.ldI32o(sbi, $nhl_sandbox_info_steps) &&
+                cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall))
             (yield* impossible(__s_steps_and_perpcall_both_non_zero));
         if (cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall)) {
             cptr.stI32o(nud, $nhl_user_data_perpcall, cptr.ldI32o(sbi, $nhl_sandbox_info_perpcall));
@@ -3253,7 +4157,23 @@ function* nhlL_newstate(sbi, name) {
 // 27 bindings: 0 rebound+refilled, 2 rebound, 25 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(nhcore_call_names), S(nhcore_call_available), S(luapat), S(__static_nhl_get_timertype_timerstr), S(char2typ), S(__static_nhl_menu_pickX), S(__static_nhl_lua_rnglog_ctx_enabled_enabled), S(__static_nhl_rnglog_set_lua_caller_rnglog_srcbuf), S(__static_nhl_rnglog_set_lua_caller_rnglog_namebuf), S(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf), S(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf), S(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf), S(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf), S(__static_get_table_boolean_boolstr), S(nhl_functions), S(nhl_consts), S(__static_nhl_meta_u_index_ustruct), S(nhl_u_functions), S(ct_base_base), S(ct_base_error), S(ct_base_meta), S(ct_base_iffy), S(ct_base_unsafe), S(ct_debug_debug), S(ct_debug_safe), S(ct_os_time), S(ct_os_files)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(nhcore_call_names), S(nhcore_call_available), S(luapat),
+        S(__static_nhl_get_timertype_timerstr), S(char2typ), S(__static_nhl_menu_pickX),
+        S(__static_nhl_lua_rnglog_ctx_enabled_enabled),
+        S(__static_nhl_rnglog_set_lua_caller_rnglog_srcbuf),
+        S(__static_nhl_rnglog_set_lua_caller_rnglog_namebuf),
+        S(__static_nhl_rnglog_set_lua_caller_rnglog_name1buf),
+        S(__static_nhl_rnglog_set_lua_caller_rnglog_src1buf),
+        S(__static_nhl_rnglog_set_lua_caller_rnglog_src2buf),
+        S(__static_nhl_rnglog_set_lua_caller_rnglog_parentbuf),
+        S(__static_get_table_boolean_boolstr), S(nhl_functions), S(nhl_consts),
+        S(__static_nhl_meta_u_index_ustruct), S(nhl_u_functions), S(ct_base_base), S(ct_base_error),
+        S(ct_base_meta), S(ct_base_iffy), S(ct_base_unsafe), S(ct_debug_debug), S(ct_debug_safe),
+        S(ct_os_time), S(ct_os_files)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("nhlua.js: __resetState before __captureState");

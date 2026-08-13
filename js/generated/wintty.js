@@ -9,17 +9,38 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { CO, LI, ul_hack, wizard } from './nhprop.js';
-import { backsp, cl_end, cl_eos, cmov, graph_off, graph_on, home, nocmov, nomux_capture_write_input_boundary, nomux_putch, nomux_raw_emit, standoutbeg, standoutend, tc_lcl_data, term_attr_fixup, term_clear_screen, term_curs_set, term_end_attr, term_end_color, term_end_extracolor, term_end_raw_bold, term_shutdown, term_start_attr, term_start_bgcolor, term_start_color, term_start_extracolor, term_start_raw_bold, term_startup, tty_delay_output, tty_nhbell, tty_number_pad, xputs } from './termcap.js';
-import { addtopl, more, remember_topl, show_topl, tty_doprev_message, tty_getmsghistory, tty_putmsghistory, tty_yn_function, update_topl } from './topl.js';
+import {
+    backsp, cl_end, cl_eos, cmov, graph_off, graph_on, home, nocmov,
+    nomux_capture_write_input_boundary, nomux_putch, nomux_raw_emit, standoutbeg, standoutend,
+    tc_lcl_data, term_attr_fixup, term_clear_screen, term_curs_set, term_end_attr, term_end_color,
+    term_end_extracolor, term_end_raw_bold, term_shutdown, term_start_attr, term_start_bgcolor,
+    term_start_color, term_start_extracolor, term_start_raw_bold, term_startup, tty_delay_output,
+    tty_nhbell, tty_number_pad, xputs
+} from './termcap.js';
+import {
+    addtopl, more, remember_topl, show_topl, tty_doprev_message, tty_getmsghistory,
+    tty_putmsghistory, tty_yn_function, update_topl
+} from './topl.js';
 import { morc, tty_get_ext_cmd, tty_getlin, xwaitforspace } from './getline.js';
 import { genl_outrip } from './rip.js';
-import { decode_mixed, genl_can_suspend_yes, genl_preference_update, genl_status_enablefield, genl_status_finish, genl_status_init, menuitem_invert_test, status_activefields, status_fieldfmt, status_vals, windowprocs } from './windows.js';
+import {
+    decode_mixed, genl_can_suspend_yes, genl_preference_update, genl_status_enablefield,
+    genl_status_finish, genl_status_init, menuitem_invert_test, status_activefields,
+    status_fieldfmt, status_vals, windowprocs
+} from './windows.js';
 import { clearlocks, debugcore, paniclog } from './files.js';
 import { nh_terminate, panic } from './end.js';
-import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, cg, disp, flags, gc, gg, gm, gs, gt, iflags, program_state, quitchars, svp, svx, u } from './decl.js';
+import {
+    WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, cg, disp, flags, gc, gg, gm, gs, gt, iflags,
+    program_state, quitchars, svp, svx, u
+} from './decl.js';
 import { getwindowsz } from './ioctl.js';
-import { docrt, docrt_flags, flush_screen, nul_glyphinfo, redraw_map, row_refresh } from './display.js';
-import { bot, cond_idx, conditions, repad_with_dashes, stat_cap_indx, status_initialize } from './botl.js';
+import {
+    docrt, docrt_flags, flush_screen, nul_glyphinfo, redraw_map, row_refresh
+} from './display.js';
+import {
+    bot, cond_idx, conditions, repad_with_dashes, stat_cap_indx, status_initialize
+} from './botl.js';
 import { gettty, setftty, settty } from './unixtty.js';
 import { alloc, dupstr } from './alloc.js';
 import { copyright_banner_line } from './version.js';
@@ -37,137 +58,150 @@ import { critically_low_hp } from './pray.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $DisplayDesc_attrs = FLD.DisplayDesc_attrs, $DisplayDesc_color = FLD.DisplayDesc_color,
-    $DisplayDesc_colorflags = FLD.DisplayDesc_colorflags, $DisplayDesc_cols = FLD.DisplayDesc_cols,
-    $DisplayDesc_curx = FLD.DisplayDesc_curx, $DisplayDesc_cury = FLD.DisplayDesc_cury,
-    $DisplayDesc_dismiss_more = FLD.DisplayDesc_dismiss_more,
-    $DisplayDesc_framecolor = FLD.DisplayDesc_framecolor, $DisplayDesc_inmore = FLD.DisplayDesc_inmore,
-    $DisplayDesc_inread = FLD.DisplayDesc_inread, $DisplayDesc_intr = FLD.DisplayDesc_intr,
-    $DisplayDesc_lastwin = FLD.DisplayDesc_lastwin, $DisplayDesc_mixed = FLD.DisplayDesc_mixed,
-    $DisplayDesc_rawprint = FLD.DisplayDesc_rawprint, $DisplayDesc_topl_utf8 = FLD.DisplayDesc_topl_utf8,
-    $DisplayDesc_toplin = FLD.DisplayDesc_toplin, $WinDesc_active = FLD.WinDesc_active,
-    $WinDesc_cols = FLD.WinDesc_cols, $WinDesc_curx = FLD.WinDesc_curx, $WinDesc_cury = FLD.WinDesc_cury,
-    $WinDesc_data = FLD.WinDesc_data, $WinDesc_datlen = FLD.WinDesc_datlen, $WinDesc_how = FLD.WinDesc_how,
-    $WinDesc_maxcol = FLD.WinDesc_maxcol, $WinDesc_maxrow = FLD.WinDesc_maxrow,
-    $WinDesc_mbehavior = FLD.WinDesc_mbehavior, $WinDesc_mlist = FLD.WinDesc_mlist,
-    $WinDesc_morestr = FLD.WinDesc_morestr, $WinDesc_nitems = FLD.WinDesc_nitems,
-    $WinDesc_npages = FLD.WinDesc_npages, $WinDesc_offx = FLD.WinDesc_offx, $WinDesc_offy = FLD.WinDesc_offy,
-    $WinDesc_plist = FLD.WinDesc_plist, $WinDesc_plist_size = FLD.WinDesc_plist_size,
-    $WinDesc_rows = FLD.WinDesc_rows, $WinDesc_type = FLD.WinDesc_type,
-    $color_and_attr_attr = FLD.color_and_attr_attr, $conditions_t_mask = FLD.conditions_t_mask,
-    $conditions_t_text = FLD.conditions_t_text, $const_globals_zeroany = FLD.const_globals_zeroany,
-    $display_hints_botlx = FLD.display_hints_botlx, $flag_debug = FLD.flag_debug,
-    $flag_standout = FLD.flag_standout, $from_core_menu_promptstyle = FLD.from_core_menu_promptstyle,
-    $glyph_info_framecolor = FLD.glyph_info_framecolor, $glyph_info_gm = FLD.glyph_info_gm,
-    $glyph_info_ttychar = FLD.glyph_info_ttychar,
-    $glyph_map_entry_color256idx = FLD.glyph_map_entry_color256idx,
-    $glyph_map_entry_customcolor = FLD.glyph_map_entry_customcolor,
-    $glyph_map_entry_sym = FLD.glyph_map_entry_sym, $glyph_map_entry_u = FLD.glyph_map_entry_u,
-    $glyphinfo_gm = FLD.glyphinfo_gm, $glyphinfo_ttychar = FLD.glyphinfo_ttychar,
-    $instance_flags_cbreak = FLD.instance_flags_cbreak,
-    $instance_flags_colorcount = FLD.instance_flags_colorcount,
-    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
-    $instance_flags_hilite_delta = FLD.instance_flags_hilite_delta,
-    $instance_flags_hilite_pile = FLD.instance_flags_hilite_pile,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_menu_overlay = FLD.instance_flags_menu_overlay,
-    $instance_flags_menuobjsyms = FLD.instance_flags_menuobjsyms,
-    $instance_flags_msg_history = FLD.instance_flags_msg_history,
-    $instance_flags_raw_printed = FLD.instance_flags_raw_printed,
-    $instance_flags_renameallowed = FLD.instance_flags_renameallowed,
-    $instance_flags_renameinprogress = FLD.instance_flags_renameinprogress,
-    $instance_flags_term_gone = FLD.instance_flags_term_gone,
-    $instance_flags_use_menu_glyphs = FLD.instance_flags_use_menu_glyphs,
-    $instance_flags_wc2_hitpointbar = FLD.instance_flags_wc2_hitpointbar,
-    $instance_flags_wc2_petattr = FLD.instance_flags_wc2_petattr,
-    $instance_flags_wc2_selectsaved = FLD.instance_flags_wc2_selectsaved,
-    $instance_flags_wc2_statuslines = FLD.instance_flags_wc2_statuslines,
-    $instance_flags_wc_color = FLD.instance_flags_wc_color,
-    $instance_flags_wc_eight_bit_input = FLD.instance_flags_wc_eight_bit_input,
-    $instance_flags_wc_hilite_pet = FLD.instance_flags_wc_hilite_pet,
-    $instance_flags_wc_inverse = FLD.instance_flags_wc_inverse,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_flags_wizmgender = FLD.instance_flags_wizmgender,
-    $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
-    $instance_globals_g_getposx = FLD.instance_globals_g_getposx,
-    $instance_globals_g_getposy = FLD.instance_globals_g_getposy,
-    $instance_globals_m_mapped_menu_cmds = FLD.instance_globals_m_mapped_menu_cmds,
-    $instance_globals_s_symset = FLD.instance_globals_s_symset,
-    $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
-    $instance_globals_t_toplines = FLD.instance_globals_t_toplines, $menu_item_count = FLD.menu_item_count,
-    $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_getting_char = FLD.sinfo_getting_char,
-    $sinfo_in_role_selection = FLD.sinfo_in_role_selection, $sinfo_resize_pending = FLD.sinfo_resize_pending,
-    $sizeof_color_and_attr = FLD.sizeof_color_and_attr, $sizeof_conditions_t = FLD.sizeof_conditions_t,
-    $sizeof_symsetentry = FLD.sizeof_symsetentry, $sizeof_tty_status_fields = FLD.sizeof_tty_status_fields,
-    $sizeof_window_procs = FLD.sizeof_window_procs, $symsetentry_handling = FLD.symsetentry_handling,
-    $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO, $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI,
-    $tc_lcl_data_tc_CD = FLD.tc_lcl_data_tc_CD, $tc_lcl_data_tc_ND = FLD.tc_lcl_data_tc_ND,
-    $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack, $tty_menu_item_attr = FLD.tty_menu_item_attr,
-    $tty_menu_item_color = FLD.tty_menu_item_color, $tty_menu_item_count = FLD.tty_menu_item_count,
-    $tty_menu_item_glyphinfo = FLD.tty_menu_item_glyphinfo,
-    $tty_menu_item_gselector = FLD.tty_menu_item_gselector,
-    $tty_menu_item_identifier = FLD.tty_menu_item_identifier,
-    $tty_menu_item_itemflags = FLD.tty_menu_item_itemflags,
-    $tty_menu_item_selected = FLD.tty_menu_item_selected,
-    $tty_menu_item_selector = FLD.tty_menu_item_selector, $tty_menu_item_str = FLD.tty_menu_item_str,
-    $tty_status_fields_attr = FLD.tty_status_fields_attr,
-    $tty_status_fields_color = FLD.tty_status_fields_color,
-    $tty_status_fields_dirty = FLD.tty_status_fields_dirty,
-    $tty_status_fields_lth = FLD.tty_status_fields_lth,
-    $tty_status_fields_redraw = FLD.tty_status_fields_redraw,
-    $tty_status_fields_sanitycheck = FLD.tty_status_fields_sanitycheck,
-    $tty_status_fields_valid = FLD.tty_status_fields_valid, $tty_status_fields_x = FLD.tty_status_fields_x,
-    $tty_status_fields_y = FLD.tty_status_fields_y,
-    $unicode_representation_utf8str = FLD.unicode_representation_utf8str,
-    $win_request_info_fromcore = FLD.win_request_info_fromcore,
-    $window_procs_has_color = FLD.window_procs_has_color,
-    $window_procs_win_add_menu = FLD.window_procs_win_add_menu,
-    $window_procs_win_askname = FLD.window_procs_win_askname,
-    $window_procs_win_can_suspend = FLD.window_procs_win_can_suspend,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_ctrl_nhwindow = FLD.window_procs_win_ctrl_nhwindow,
-    $window_procs_win_curs = FLD.window_procs_win_curs,
-    $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_file = FLD.window_procs_win_display_file,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_doprev_message = FLD.window_procs_win_doprev_message,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
-    $window_procs_win_get_ext_cmd = FLD.window_procs_win_get_ext_cmd,
-    $window_procs_win_get_nh_event = FLD.window_procs_win_get_nh_event,
-    $window_procs_win_getlin = FLD.window_procs_win_getlin,
-    $window_procs_win_getmsghistory = FLD.window_procs_win_getmsghistory,
-    $window_procs_win_init_nhwindows = FLD.window_procs_win_init_nhwindows,
-    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
-    $window_procs_win_message_menu = FLD.window_procs_win_message_menu,
-    $window_procs_win_nh_poskey = FLD.window_procs_win_nh_poskey,
-    $window_procs_win_nhbell = FLD.window_procs_win_nhbell,
-    $window_procs_win_nhgetch = FLD.window_procs_win_nhgetch,
-    $window_procs_win_number_pad = FLD.window_procs_win_number_pad,
-    $window_procs_win_outrip = FLD.window_procs_win_outrip,
-    $window_procs_win_player_selection = FLD.window_procs_win_player_selection,
-    $window_procs_win_preference_update = FLD.window_procs_win_preference_update,
-    $window_procs_win_print_glyph = FLD.window_procs_win_print_glyph,
-    $window_procs_win_putmixed = FLD.window_procs_win_putmixed,
-    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
-    $window_procs_win_raw_print_bold = FLD.window_procs_win_raw_print_bold,
-    $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
-    $window_procs_win_select_menu = FLD.window_procs_win_select_menu,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
-    $window_procs_win_status_enablefield = FLD.window_procs_win_status_enablefield,
-    $window_procs_win_status_finish = FLD.window_procs_win_status_finish,
-    $window_procs_win_status_init = FLD.window_procs_win_status_init,
-    $window_procs_win_status_update = FLD.window_procs_win_status_update,
-    $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
-    $window_procs_win_update_inventory = FLD.window_procs_win_update_inventory,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
-    $window_procs_win_yn_function = FLD.window_procs_win_yn_function,
-    $window_procs_wincap = FLD.window_procs_wincap, $window_procs_wincap2 = FLD.window_procs_wincap2,
-    $window_procs_wp_id = FLD.window_procs_wp_id, $you_uy = FLD.you_uy;
+      $DisplayDesc_colorflags = FLD.DisplayDesc_colorflags,
+      $DisplayDesc_cols = FLD.DisplayDesc_cols, $DisplayDesc_curx = FLD.DisplayDesc_curx,
+      $DisplayDesc_cury = FLD.DisplayDesc_cury,
+      $DisplayDesc_dismiss_more = FLD.DisplayDesc_dismiss_more,
+      $DisplayDesc_framecolor = FLD.DisplayDesc_framecolor,
+      $DisplayDesc_inmore = FLD.DisplayDesc_inmore, $DisplayDesc_inread = FLD.DisplayDesc_inread,
+      $DisplayDesc_intr = FLD.DisplayDesc_intr, $DisplayDesc_lastwin = FLD.DisplayDesc_lastwin,
+      $DisplayDesc_mixed = FLD.DisplayDesc_mixed, $DisplayDesc_rawprint = FLD.DisplayDesc_rawprint,
+      $DisplayDesc_topl_utf8 = FLD.DisplayDesc_topl_utf8,
+      $DisplayDesc_toplin = FLD.DisplayDesc_toplin, $WinDesc_active = FLD.WinDesc_active,
+      $WinDesc_cols = FLD.WinDesc_cols, $WinDesc_curx = FLD.WinDesc_curx,
+      $WinDesc_cury = FLD.WinDesc_cury, $WinDesc_data = FLD.WinDesc_data,
+      $WinDesc_datlen = FLD.WinDesc_datlen, $WinDesc_how = FLD.WinDesc_how,
+      $WinDesc_maxcol = FLD.WinDesc_maxcol, $WinDesc_maxrow = FLD.WinDesc_maxrow,
+      $WinDesc_mbehavior = FLD.WinDesc_mbehavior, $WinDesc_mlist = FLD.WinDesc_mlist,
+      $WinDesc_morestr = FLD.WinDesc_morestr, $WinDesc_nitems = FLD.WinDesc_nitems,
+      $WinDesc_npages = FLD.WinDesc_npages, $WinDesc_offx = FLD.WinDesc_offx,
+      $WinDesc_offy = FLD.WinDesc_offy, $WinDesc_plist = FLD.WinDesc_plist,
+      $WinDesc_plist_size = FLD.WinDesc_plist_size, $WinDesc_rows = FLD.WinDesc_rows,
+      $WinDesc_type = FLD.WinDesc_type, $color_and_attr_attr = FLD.color_and_attr_attr,
+      $conditions_t_mask = FLD.conditions_t_mask, $conditions_t_text = FLD.conditions_t_text,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $display_hints_botlx = FLD.display_hints_botlx, $flag_debug = FLD.flag_debug,
+      $flag_standout = FLD.flag_standout,
+      $from_core_menu_promptstyle = FLD.from_core_menu_promptstyle,
+      $glyph_info_framecolor = FLD.glyph_info_framecolor, $glyph_info_gm = FLD.glyph_info_gm,
+      $glyph_info_ttychar = FLD.glyph_info_ttychar,
+      $glyph_map_entry_color256idx = FLD.glyph_map_entry_color256idx,
+      $glyph_map_entry_customcolor = FLD.glyph_map_entry_customcolor,
+      $glyph_map_entry_sym = FLD.glyph_map_entry_sym, $glyph_map_entry_u = FLD.glyph_map_entry_u,
+      $glyphinfo_gm = FLD.glyphinfo_gm, $glyphinfo_ttychar = FLD.glyphinfo_ttychar,
+      $instance_flags_cbreak = FLD.instance_flags_cbreak,
+      $instance_flags_colorcount = FLD.instance_flags_colorcount,
+      $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+      $instance_flags_hilite_delta = FLD.instance_flags_hilite_delta,
+      $instance_flags_hilite_pile = FLD.instance_flags_hilite_pile,
+      $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_menu_overlay = FLD.instance_flags_menu_overlay,
+      $instance_flags_menuobjsyms = FLD.instance_flags_menuobjsyms,
+      $instance_flags_msg_history = FLD.instance_flags_msg_history,
+      $instance_flags_raw_printed = FLD.instance_flags_raw_printed,
+      $instance_flags_renameallowed = FLD.instance_flags_renameallowed,
+      $instance_flags_renameinprogress = FLD.instance_flags_renameinprogress,
+      $instance_flags_term_gone = FLD.instance_flags_term_gone,
+      $instance_flags_use_menu_glyphs = FLD.instance_flags_use_menu_glyphs,
+      $instance_flags_wc2_hitpointbar = FLD.instance_flags_wc2_hitpointbar,
+      $instance_flags_wc2_petattr = FLD.instance_flags_wc2_petattr,
+      $instance_flags_wc2_selectsaved = FLD.instance_flags_wc2_selectsaved,
+      $instance_flags_wc2_statuslines = FLD.instance_flags_wc2_statuslines,
+      $instance_flags_wc_color = FLD.instance_flags_wc_color,
+      $instance_flags_wc_eight_bit_input = FLD.instance_flags_wc_eight_bit_input,
+      $instance_flags_wc_hilite_pet = FLD.instance_flags_wc_hilite_pet,
+      $instance_flags_wc_inverse = FLD.instance_flags_wc_inverse,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_flags_wizmgender = FLD.instance_flags_wizmgender,
+      $instance_globals_c_currentgraphics = FLD.instance_globals_c_currentgraphics,
+      $instance_globals_g_getposx = FLD.instance_globals_g_getposx,
+      $instance_globals_g_getposy = FLD.instance_globals_g_getposy,
+      $instance_globals_m_mapped_menu_cmds = FLD.instance_globals_m_mapped_menu_cmds,
+      $instance_globals_s_symset = FLD.instance_globals_s_symset,
+      $instance_globals_t_tc_gbl_data = FLD.instance_globals_t_tc_gbl_data,
+      $instance_globals_t_toplines = FLD.instance_globals_t_toplines,
+      $menu_item_count = FLD.menu_item_count, $sinfo_done_hup = FLD.sinfo_done_hup,
+      $sinfo_getting_char = FLD.sinfo_getting_char,
+      $sinfo_in_role_selection = FLD.sinfo_in_role_selection,
+      $sinfo_resize_pending = FLD.sinfo_resize_pending,
+      $sizeof_color_and_attr = FLD.sizeof_color_and_attr,
+      $sizeof_conditions_t = FLD.sizeof_conditions_t, $sizeof_symsetentry = FLD.sizeof_symsetentry,
+      $sizeof_tty_status_fields = FLD.sizeof_tty_status_fields,
+      $sizeof_window_procs = FLD.sizeof_window_procs,
+      $symsetentry_handling = FLD.symsetentry_handling, $tc_gbl_data_tc_CO = FLD.tc_gbl_data_tc_CO,
+      $tc_gbl_data_tc_LI = FLD.tc_gbl_data_tc_LI, $tc_lcl_data_tc_CD = FLD.tc_lcl_data_tc_CD,
+      $tc_lcl_data_tc_ND = FLD.tc_lcl_data_tc_ND,
+      $tc_lcl_data_tc_ul_hack = FLD.tc_lcl_data_tc_ul_hack,
+      $tty_menu_item_attr = FLD.tty_menu_item_attr, $tty_menu_item_color = FLD.tty_menu_item_color,
+      $tty_menu_item_count = FLD.tty_menu_item_count,
+      $tty_menu_item_glyphinfo = FLD.tty_menu_item_glyphinfo,
+      $tty_menu_item_gselector = FLD.tty_menu_item_gselector,
+      $tty_menu_item_identifier = FLD.tty_menu_item_identifier,
+      $tty_menu_item_itemflags = FLD.tty_menu_item_itemflags,
+      $tty_menu_item_selected = FLD.tty_menu_item_selected,
+      $tty_menu_item_selector = FLD.tty_menu_item_selector,
+      $tty_menu_item_str = FLD.tty_menu_item_str,
+      $tty_status_fields_attr = FLD.tty_status_fields_attr,
+      $tty_status_fields_color = FLD.tty_status_fields_color,
+      $tty_status_fields_dirty = FLD.tty_status_fields_dirty,
+      $tty_status_fields_lth = FLD.tty_status_fields_lth,
+      $tty_status_fields_redraw = FLD.tty_status_fields_redraw,
+      $tty_status_fields_sanitycheck = FLD.tty_status_fields_sanitycheck,
+      $tty_status_fields_valid = FLD.tty_status_fields_valid,
+      $tty_status_fields_x = FLD.tty_status_fields_x,
+      $tty_status_fields_y = FLD.tty_status_fields_y,
+      $unicode_representation_utf8str = FLD.unicode_representation_utf8str,
+      $win_request_info_fromcore = FLD.win_request_info_fromcore,
+      $window_procs_has_color = FLD.window_procs_has_color,
+      $window_procs_win_add_menu = FLD.window_procs_win_add_menu,
+      $window_procs_win_askname = FLD.window_procs_win_askname,
+      $window_procs_win_can_suspend = FLD.window_procs_win_can_suspend,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_ctrl_nhwindow = FLD.window_procs_win_ctrl_nhwindow,
+      $window_procs_win_curs = FLD.window_procs_win_curs,
+      $window_procs_win_delay_output = FLD.window_procs_win_delay_output,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_file = FLD.window_procs_win_display_file,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_doprev_message = FLD.window_procs_win_doprev_message,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+      $window_procs_win_get_ext_cmd = FLD.window_procs_win_get_ext_cmd,
+      $window_procs_win_get_nh_event = FLD.window_procs_win_get_nh_event,
+      $window_procs_win_getlin = FLD.window_procs_win_getlin,
+      $window_procs_win_getmsghistory = FLD.window_procs_win_getmsghistory,
+      $window_procs_win_init_nhwindows = FLD.window_procs_win_init_nhwindows,
+      $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+      $window_procs_win_message_menu = FLD.window_procs_win_message_menu,
+      $window_procs_win_nh_poskey = FLD.window_procs_win_nh_poskey,
+      $window_procs_win_nhbell = FLD.window_procs_win_nhbell,
+      $window_procs_win_nhgetch = FLD.window_procs_win_nhgetch,
+      $window_procs_win_number_pad = FLD.window_procs_win_number_pad,
+      $window_procs_win_outrip = FLD.window_procs_win_outrip,
+      $window_procs_win_player_selection = FLD.window_procs_win_player_selection,
+      $window_procs_win_preference_update = FLD.window_procs_win_preference_update,
+      $window_procs_win_print_glyph = FLD.window_procs_win_print_glyph,
+      $window_procs_win_putmixed = FLD.window_procs_win_putmixed,
+      $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+      $window_procs_win_raw_print_bold = FLD.window_procs_win_raw_print_bold,
+      $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
+      $window_procs_win_select_menu = FLD.window_procs_win_select_menu,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+      $window_procs_win_status_enablefield = FLD.window_procs_win_status_enablefield,
+      $window_procs_win_status_finish = FLD.window_procs_win_status_finish,
+      $window_procs_win_status_init = FLD.window_procs_win_status_init,
+      $window_procs_win_status_update = FLD.window_procs_win_status_update,
+      $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
+      $window_procs_win_update_inventory = FLD.window_procs_win_update_inventory,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
+      $window_procs_win_yn_function = FLD.window_procs_win_yn_function,
+      $window_procs_wincap = FLD.window_procs_wincap,
+      $window_procs_wincap2 = FLD.window_procs_wincap2,
+      $window_procs_wp_id = FLD.window_procs_wp_id, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_tty = cptr.lit("tty");
@@ -388,7 +422,12 @@ let resize_mesg = 0;
 /** C ref: wintty.c:361 — @param {CInt} sig_unused */
 function winch_handler(sig_unused) {
 
-    (cptr.stI32o(program_state, $sinfo_resize_pending, cptr.ldI32o(program_state, $sinfo_resize_pending) + 1)) - (1);  /* resize_tty() will reset it */
+    (cptr.stI32o(
+        program_state,
+        $sinfo_resize_pending,
+        cptr.ldI32o(program_state, $sinfo_resize_pending) + 1
+    )) -
+            (1);  /* resize_tty() will reset it */
     /* if nethack is waiting for input, which is the most likely scenario,
        we will go ahead and respond to the resize immediately; otherwise,
        tty_nhgetch() will do so the next time it's called */
@@ -419,8 +458,15 @@ function resize_tty() {
     if (!ttyDisplay || (LI() == oldLI && CO() == oldCO))
         return;
 
-    cptr.stI16(ttyDisplay, i16(cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI)));
-    cptr.stI16o(ttyDisplay, $DisplayDesc_cols, i16(cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO)));
+    cptr.stI16(
+        ttyDisplay,
+        i16(cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_LI))
+    );
+    cptr.stI16o(
+        ttyDisplay,
+        $DisplayDesc_cols,
+        i16(cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO))
+    );
 
     cw = cptr.ldPtro(wins, BASE_WINDOW, 8);
     cptr.stI64o(cw, $WinDesc_rows, BigInt(cptr.ldI16(ttyDisplay)));
@@ -437,7 +483,8 @@ function resize_tty() {
     else if (cptr.ldI16o(gg, $instance_globals_g_getposx) < 1)
         mapx = cptr.ldI16(u), mapy = cptr.ldI16o(u, $you_uy);
     else
-        mapx = cptr.ldI16o(gg, $instance_globals_g_getposx), mapy = cptr.ldI16o(gg, $instance_globals_g_getposy);
+        mapx = cptr.ldI16o(gg, $instance_globals_g_getposx),
+                mapy = cptr.ldI16o(gg, $instance_globals_g_getposy);
 
     oldtoplin = cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin);
     cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_EMPTY);  /* (before term_clear_screen()) */
@@ -478,7 +525,8 @@ function resize_tty() {
 
 /** C ref: wintty.c:471 — @param {CInt} x @param {CInt} y */
 function newclipping(x, y) {
-    if (CO() < NHM.COLNO || LI() < ((22 + cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) {
+    if (CO() < NHM.COLNO ||
+            LI() < ((22 + cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) {
         setclipped();  /* sets clipping=TRUE */
         if (x)
             tty_cliparound(x, y);
@@ -516,7 +564,11 @@ export function tty_init_nhwindows(argcp, argv) {
 
     /* options aren't processed yet so wc2_statuslines might be 0;
        make sure that it has a reasonable value during tty setup */
-    cptr.stI32o(iflags, $instance_flags_wc2_statuslines, ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3));  /* 2 or 3; 0 => 2 */
+    cptr.stI32o(
+        iflags,
+        $instance_flags_wc2_statuslines,
+        ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3)
+    );  /* 2 or 3; 0 => 2 */
     setbuf(__stdoutp, cptr.decay(obuf));
     gettty();
 
@@ -532,7 +584,11 @@ export function tty_init_nhwindows(argcp, argv) {
     cptr.stI16(ttyDisplay, i16(hgt.v));
     cptr.stI16o(ttyDisplay, $DisplayDesc_cols, i16(wid.v));
     cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.stI16o(ttyDisplay, $DisplayDesc_cury, 0));
-    cptr.stI32o(ttyDisplay, $DisplayDesc_inmore, cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.stI32o(ttyDisplay, $DisplayDesc_intr, 0)));
+    cptr.stI32o(
+        ttyDisplay,
+        $DisplayDesc_inmore,
+        cptr.stI32o(ttyDisplay, $DisplayDesc_inread, cptr.stI32o(ttyDisplay, $DisplayDesc_intr, 0))
+    );
     cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 0);
     cptr.stI32o(ttyDisplay, $DisplayDesc_color, NHM.NO_COLOR);
     cptr.stI32o(ttyDisplay, $DisplayDesc_attrs, 0);
@@ -579,7 +635,10 @@ export function tty_init_nhwindows(argcp, argv) {
 
 /** C ref: wintty.c:596 — @param {CPtr<char>} pref */
 export function tty_preference_update(pref) {
-    let newstatuslines = schar((!strcmp(pref, __s_statuslines) && cptr.ld1so(iflags, $instance_flags_window_inited) ? 1 : 0));
+    let newstatuslines = schar((!strcmp(pref, __s_statuslines) &&
+        cptr.ld1so(iflags, $instance_flags_window_inited)
+            ? 1
+            : 0));
 
     if (newstatuslines) {
         new_status_window();
@@ -612,7 +671,8 @@ export function tty_askname() {
     let c;
     let ct;
     let tryct = 0;
-    if (cptr.ld1so(iflags, $instance_flags_wc2_selectsaved) && !cptr.ld1so(iflags, $instance_flags_renameinprogress))
+    if (cptr.ld1so(iflags, $instance_flags_wc2_selectsaved) &&
+            !cptr.ld1so(iflags, $instance_flags_renameinprogress))
         switch (restore_menu(BASE_WINDOW)) {
             case -1:
             bail(__s_until_next_time_then);  /* quit */
@@ -629,13 +689,41 @@ export function tty_askname() {
         if (++tryct > 1) {
             if (tryct > 10)
                 bail(__s_giving_up_after_10_tries);
-            tty_curs(BASE_WINDOW, 1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) - 1n))));
+            tty_curs(
+                BASE_WINDOW,
+                1,
+                Number(BigInt.asIntN(
+                    32,
+                    BigInt.asIntN(
+                        64,
+                        cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) - 1n
+                    )
+                ))
+            );
             tty_putstr(BASE_WINDOW, 0, __s_enter_a_name_for_your_character);
             /* erase previous prompt (in case of ESC after partial response) */
-            tty_curs(BASE_WINDOW, 1, Number(BigInt.asIntN(32, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury)))), cl_end();
+            tty_curs(
+                BASE_WINDOW,
+                1,
+                Number(BigInt.asIntN(
+                    32,
+                    cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury)
+                ))
+            ),
+                    cl_end();
         }
         tty_putstr(BASE_WINDOW, 0, cptr.decay(__static_tty_askname_who_are_you));
-        tty_curs(BASE_WINDOW, 14, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) - 1n))));
+        tty_curs(
+            BASE_WINDOW,
+            14,
+            Number(BigInt.asIntN(
+                32,
+                BigInt.asIntN(
+                    64,
+                    cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) - 1n
+                )
+            ))
+        );
         ct = 0;
         while ((c = tty_nhgetch()) != 10) {
             if (c == -1)
@@ -654,18 +742,30 @@ export function tty_askname() {
                     void putchar(32);
                     void putchar(8);
                     if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) > 0)
-                        (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
+                        (cptr.stI16o(
+                            ttyDisplay,
+                            $DisplayDesc_curx,
+                            cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
+                        )) -
+                                (-1);
                     nomux_putch(32);
                 }
                 continue;
             }
             if (c != 45 && c != 64)
-                if (!(c >= 97 && c <= 122) && !(c >= 65 && c <= 90) && !(c >= 48 && c <= 57 && ct > 0))
+                if (!(c >= 97 && c <= 122) &&
+                        !(c >= 65 && c <= 90) &&
+                        !(c >= 48 && c <= 57 && ct > 0))
                     c = 95;
             if (ct < 31) {
                 void putchar(c);
                 nomux_putch(c);
-                (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
+                (cptr.stI16o(
+                    ttyDisplay,
+                    $DisplayDesc_curx,
+                    cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+                )) -
+                        (1);
                 cptr.st1o(svp, ct++, schar(c), 1);
             }
         }
@@ -673,7 +773,14 @@ export function tty_askname() {
     } while (ct == 0);
 
     /* move to next line to simulate echo of user's <return> */
-    tty_curs(BASE_WINDOW, 1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) + 1n))));
+    tty_curs(
+        BASE_WINDOW,
+        1,
+        Number(BigInt.asIntN(
+            32,
+            BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, BASE_WINDOW, 8), $WinDesc_cury) + 1n)
+        ))
+    );
 
     /* since we let user pick an arbitrary name now, he/she can pick
        another one during role selection */
@@ -780,7 +887,15 @@ export function tty_create_nhwindow(type) {
     cptr.stPtro(newwin, $WinDesc_morestr, null);
     cptr.stPtro(newwin, $WinDesc_mlist, null);
     cptr.stPtro(newwin, $WinDesc_plist, null);
-    cptr.stI64o(newwin, $WinDesc_npages, cptr.stI64o(newwin, $WinDesc_plist_size, cptr.stI64o(newwin, $WinDesc_nitems, BigInt(cptr.stI16o(newwin, $WinDesc_how, 0)))));
+    cptr.stI64o(
+        newwin,
+        $WinDesc_npages,
+        cptr.stI64o(
+            newwin,
+            $WinDesc_plist_size,
+            cptr.stI64o(newwin, $WinDesc_nitems, BigInt(cptr.stI16o(newwin, $WinDesc_how, 0)))
+        )
+    );
     cptr.stU64o(newwin, $WinDesc_mbehavior, 0n);
     switch (type) {
         case 7:
@@ -798,18 +913,41 @@ export function tty_create_nhwindow(type) {
             cptr.stI32o(iflags, $instance_flags_msg_history, 20);
         else if (cptr.ldI32o(iflags, $instance_flags_msg_history) > NHM.MAX_MSG_HISTORY)
             cptr.stI32o(iflags, $instance_flags_msg_history, NHM.MAX_MSG_HISTORY);
-        cptr.stI64o(newwin, $WinDesc_maxrow, cptr.stI64o(newwin, $WinDesc_rows, BigInt(cptr.ldI32o(iflags, $instance_flags_msg_history) >>> 0)));
+        cptr.stI64o(
+            newwin,
+            $WinDesc_maxrow,
+            cptr.stI64o(
+                newwin,
+                $WinDesc_rows,
+                BigInt(cptr.ldI32o(iflags, $instance_flags_msg_history) >>> 0)
+            )
+        );
         cptr.stI64o(newwin, $WinDesc_maxcol, cptr.stI64o(newwin, $WinDesc_cols, 0n));
         break;
         case NHM.NHW_STATUS:
         /* status window, 2 or 3 lines long, full width, bottom of screen */
-        if (cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) < 2 || cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) > 3)
+        if (cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) < 2 ||
+                cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) > 3)
             cptr.stI32o(iflags, $instance_flags_wc2_statuslines, 2);
         cptr.stI16o(newwin, $WinDesc_offx, 0);
-        rowoffset = (cptr.ldI16(ttyDisplay) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0;
+        rowoffset = (cptr.ldI16(ttyDisplay) -
+            cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) |
+                0;
         cptr.stI16o(newwin, $WinDesc_offy, i16(((rowoffset) < 22 ? (rowoffset) : 22)));
-        cptr.stI64o(newwin, $WinDesc_rows, cptr.stI64o(newwin, $WinDesc_maxrow, BigInt(cptr.ldI32o(iflags, $instance_flags_wc2_statuslines))));
-        cptr.stI64o(newwin, $WinDesc_cols, cptr.stI64o(newwin, $WinDesc_maxcol, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols))));
+        cptr.stI64o(
+            newwin,
+            $WinDesc_rows,
+            cptr.stI64o(
+                newwin,
+                $WinDesc_maxrow,
+                BigInt(cptr.ldI32o(iflags, $instance_flags_wc2_statuslines))
+            )
+        );
+        cptr.stI64o(
+            newwin,
+            $WinDesc_cols,
+            cptr.stI64o(newwin, $WinDesc_maxcol, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)))
+        );
         break;
         case NHM.NHW_MAP:
         /* map window, ROWNO lines long, full width, below message window */
@@ -836,12 +974,36 @@ export function tty_create_nhwindow(type) {
     }
 
     if (cptr.ldI64o(newwin, $WinDesc_maxrow)) {
-        cptr.stPtro(newwin, $WinDesc_data, alloc(Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(newwin, $WinDesc_maxrow)) * 8n))))));
-        cptr.stPtro(newwin, $WinDesc_datlen, alloc(Number(BigInt.asUintN(32, (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(newwin, $WinDesc_maxrow)) * 2n))))));
+        cptr.stPtro(
+            newwin,
+            $WinDesc_data,
+            alloc(Number(BigInt.asUintN(
+                32,
+                (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(newwin, $WinDesc_maxrow)) * 8n))
+            )))
+        );
+        cptr.stPtro(
+            newwin,
+            $WinDesc_datlen,
+            alloc(Number(BigInt.asUintN(
+                32,
+                (BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(newwin, $WinDesc_maxrow)) * 2n))
+            )))
+        );
         for (i = 0; BigInt(i) < cptr.ldI64o(newwin, $WinDesc_maxrow); i++) {
             if (cptr.ldI64o(newwin, $WinDesc_maxcol)) {
-                cptr.stPtro(cptr.ldPtro(newwin, $WinDesc_data), i, alloc(Number(BigInt.asUintN(32, cptr.ldI64o(newwin, $WinDesc_maxcol)))), 8);
-                cptr.stI16o(cptr.ldPtro(newwin, $WinDesc_datlen), i, Number(BigInt.asIntN(16, cptr.ldI64o(newwin, $WinDesc_maxcol))), 2);
+                cptr.stPtro(
+                    cptr.ldPtro(newwin, $WinDesc_data),
+                    i,
+                    alloc(Number(BigInt.asUintN(32, cptr.ldI64o(newwin, $WinDesc_maxcol)))),
+                    8
+                );
+                cptr.stI16o(
+                    cptr.ldPtro(newwin, $WinDesc_datlen),
+                    i,
+                    Number(BigInt.asIntN(16, cptr.ldI64o(newwin, $WinDesc_maxcol))),
+                    2
+                );
             } else {
                 cptr.stPtro(cptr.ldPtro(newwin, $WinDesc_data), i, null, 8);
                 cptr.stI16o(cptr.ldPtro(newwin, $WinDesc_datlen), i, 0, 2);
@@ -857,7 +1019,12 @@ export function tty_create_nhwindow(type) {
     return newid;
 }
 
-/** C ref: wintty.c:990 — @param {CInt} window @param {CPtr<struct WinDesc>} cw @param {CInt} clear */
+/**
+ * C ref: wintty.c:990
+ * @param {CInt} window
+ * @param {CPtr<struct WinDesc>} cw
+ * @param {CInt} clear
+ */
 function erase_menu_or_text(window, cw, clear) {
     if (cptr.ldI16o(cw, $WinDesc_offx) == 0) {
         if (cptr.ldI16o(cw, $WinDesc_offy)) {
@@ -870,7 +1037,11 @@ function erase_menu_or_text(window, cw, clear) {
             flush_screen(1);
         }
     } else {
-        docorner(cptr.ldI16o(cw, $WinDesc_offx), Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) + 1n))), 0);
+        docorner(
+            cptr.ldI16o(cw, $WinDesc_offx),
+            Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) + 1n))),
+            0
+        );
     }
 }
 
@@ -879,7 +1050,9 @@ function free_window_info(cw, free_data) {
     let i;
 
     if (cptr.ldPtro(cw, $WinDesc_data)) {
-        if (WIN_MESSAGE.v != -1 && cptr.eq(cw, cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) && cptr.ldI64o(cw, $WinDesc_rows) > cptr.ldI64o(cw, $WinDesc_maxrow))
+        if (WIN_MESSAGE.v != -1 &&
+                cptr.eq(cw, cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) &&
+                cptr.ldI64o(cw, $WinDesc_rows) > cptr.ldI64o(cw, $WinDesc_maxrow))
             cptr.stI64o(cw, $WinDesc_maxrow, cptr.ldI64o(cw, $WinDesc_rows));  /* topl data */
         for (i = 0; BigInt(i) < cptr.ldI64o(cw, $WinDesc_maxrow); i++)
             if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8)) {
@@ -912,7 +1085,15 @@ function free_window_info(cw, free_data) {
         cptr.free(cptr.ldPtro(cw, $WinDesc_plist));
         cptr.stPtro(cw, $WinDesc_plist, null);
     }
-    cptr.stI64o(cw, $WinDesc_plist_size, cptr.stI64o(cw, $WinDesc_npages, cptr.stI64o(cw, $WinDesc_nitems, BigInt(cptr.stI16o(cw, $WinDesc_how, 0)))));
+    cptr.stI64o(
+        cw,
+        $WinDesc_plist_size,
+        cptr.stI64o(
+            cw,
+            $WinDesc_npages,
+            cptr.stI64o(cw, $WinDesc_nitems, BigInt(cptr.stI16o(cw, $WinDesc_how, 0)))
+        )
+    );
     if (cptr.ldPtro(cw, $WinDesc_morestr)) {
         cptr.free(cptr.ldPtro(cw, $WinDesc_morestr));
         cptr.stPtro(cw, $WinDesc_morestr, null);
@@ -945,7 +1126,14 @@ export function tty_clear_nhwindow(window) {
                 home();
                 cl_end();
                 if (cptr.ldI64o(cw, $WinDesc_cury))
-                    docorner(1, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cury) + 1n))), 0);
+                    docorner(
+                        1,
+                        Number(BigInt.asIntN(
+                            32,
+                            BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cury) + 1n)
+                        )),
+                        0
+                    );
             }
             cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
             cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_EMPTY);
@@ -995,7 +1183,16 @@ export function tty_clear_nhwindow(window) {
 }
 
 /* toggle a specific entry */
-/** C ref: wintty.c:1138 — @param {CInt} window @param {CPtr<tty_menu_item>} curr @param {CInt} lineno @param {CInt} in_view @param {CInt} counting @param {CLongLong} count @returns {CInt} */
+/**
+ * C ref: wintty.c:1138
+ * @param {CInt} window
+ * @param {CPtr<tty_menu_item>} curr
+ * @param {CInt} lineno
+ * @param {CInt} in_view
+ * @param {CInt} counting
+ * @param {CLongLong} count
+ * @returns {CInt}
+ */
 function toggle_menu_curr(window, curr, lineno, in_view, counting, count) {
     if (cptr.ld1so(curr, $tty_menu_item_selected)) {
         if (counting && count > 0n) {
@@ -1029,7 +1226,9 @@ function toggle_menu_curr(window, curr, lineno, in_view, counting, count) {
 
 /** C ref: wintty.c:1178 — @param {CPtr<struct WinDesc>} cw @param {CPtr<char>} s */
 function dmore(cw, s) {
-    let prompt = cptr.ldPtro(cw, $WinDesc_morestr) ? cptr.ldPtro(cw, $WinDesc_morestr) : cptr.decay(defmorestr);
+    let prompt = cptr.ldPtro(cw, $WinDesc_morestr)
+            ? cptr.ldPtro(cw, $WinDesc_morestr)
+            : cptr.decay(defmorestr);
     let offset = (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT) ? 1 : 2;
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
@@ -1038,7 +1237,11 @@ function dmore(cw, s) {
             return;
         }
     }
-    tty_curs(BASE_WINDOW, (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + offset) | 0, cptr.ldI16o(ttyDisplay, $DisplayDesc_cury));
+    tty_curs(
+        BASE_WINDOW,
+        (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + offset) | 0,
+        cptr.ldI16o(ttyDisplay, $DisplayDesc_cury)
+    );
     if (cptr.ld1so(flags, $flag_standout))
         standoutbeg();
     xputs(prompt);
@@ -1047,11 +1250,24 @@ function dmore(cw, s) {
         let np;
         for (np = prompt; cptr.ld1s(np); np = cptr.add(np, 1)) {
             nomux_putch(cptr.ld1s(np));
-            (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
+            (cptr.stI16o(
+                ttyDisplay,
+                $DisplayDesc_curx,
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+            )) -
+                    (1);
         }
         cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(save_cx));
     }
-    cptr.stI16o(ttyDisplay, $DisplayDesc_curx, Number(BigInt.asIntN(16, BigInt.asUintN(64, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx))) + cptr.strlen(prompt))));
+    cptr.stI16o(
+        ttyDisplay,
+        $DisplayDesc_curx,
+        Number(BigInt.asIntN(
+            16,
+            BigInt.asUintN(64, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_curx))) +
+                cptr.strlen(prompt)
+        ))
+    );
     if (cptr.ld1so(flags, $flag_standout))
         standoutend();
 
@@ -1060,9 +1276,16 @@ function dmore(cw, s) {
 
 /* change screen display for selection state of an item;
    not used or wanted for items that aren't shown by the current page */
-/** C ref: wintty.c:1204 — @param {CInt} window @param {CInt} lineno @param {CPtr<tty_menu_item>} item */
+/**
+ * C ref: wintty.c:1204
+ * @param {CInt} window
+ * @param {CInt} lineno
+ * @param {CPtr<tty_menu_item>} item
+ */
 function set_item_state(window, lineno, item) {
-    let ch = schar((cptr.ld1so(item, $tty_menu_item_selected) ? (cptr.ldI64o(item, $tty_menu_item_count) == -1n ? 43 : 35) : 45));
+    let ch = schar((cptr.ld1so(item, $tty_menu_item_selected)
+            ? (cptr.ldI64o(item, $tty_menu_item_count) == -1n ? 43 : 35)
+            : 45));
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup)) {
 
@@ -1076,20 +1299,28 @@ function set_item_state(window, lineno, item) {
         term_start_color(cptr.ldI32o(item, $tty_menu_item_color));
     void putchar(ch);
     nomux_putch(ch);
-    (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
+    (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) -
+            (1);
     if (cptr.ldI32o(item, $tty_menu_item_color) != NHM.NO_COLOR)
         term_end_color();
     term_end_attr(cptr.ldI32o(item, $tty_menu_item_attr));
 }
 
 /* select all [ignores pending count, if any] */
-/** C ref: wintty.c:1228 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end */
+/**
+ * C ref: wintty.c:1228
+ * @param {CInt} window
+ * @param {CPtr<tty_menu_item>} page_start
+ * @param {CPtr<tty_menu_item>} page_end
+ */
 function set_all_on_page(window, page_start, page_end) {
     let curr;
     let n;
 
     for (n = 0, curr = page_start; !cptr.eq(curr, page_end); n++, curr = cptr.ldPtr(curr)) {
-        if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || cptr.ld1so(curr, $tty_menu_item_selected) || !menuitem_invert_test(1, cptr.ldI32o(curr, $tty_menu_item_itemflags), 0))
+        if (!cptr.ldPtro(curr, $tty_menu_item_identifier) ||
+                cptr.ld1so(curr, $tty_menu_item_selected) ||
+                !menuitem_invert_test(1, cptr.ldI32o(curr, $tty_menu_item_itemflags), 0))
             continue;
         cptr.st1o(curr, $tty_menu_item_selected, 1);
         set_item_state(window, n, curr);
@@ -1097,13 +1328,20 @@ function set_all_on_page(window, page_start, page_end) {
 }
 
 /* unselect all */
-/** C ref: wintty.c:1248 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end */
+/**
+ * C ref: wintty.c:1248
+ * @param {CInt} window
+ * @param {CPtr<tty_menu_item>} page_start
+ * @param {CPtr<tty_menu_item>} page_end
+ */
 function unset_all_on_page(window, page_start, page_end) {
     let curr;
     let n;
 
     for (n = 0, curr = page_start; !cptr.eq(curr, page_end); n++, curr = cptr.ldPtr(curr)) {
-        if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || !cptr.ld1so(curr, $tty_menu_item_selected) || !menuitem_invert_test(2, cptr.ldI32o(curr, $tty_menu_item_itemflags), 1))
+        if (!cptr.ldPtro(curr, $tty_menu_item_identifier) ||
+                !cptr.ld1so(curr, $tty_menu_item_selected) ||
+                !menuitem_invert_test(2, cptr.ldI32o(curr, $tty_menu_item_itemflags), 1))
             continue;
         cptr.st1o(curr, $tty_menu_item_selected, 0);
         cptr.stI64o(curr, $tty_menu_item_count, -1n);
@@ -1112,13 +1350,27 @@ function unset_all_on_page(window, page_start, page_end) {
 }
 
 /* invert current page */
-/** C ref: wintty.c:1269 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end @param {CInt} acc @param {CLongLong} count */
+/**
+ * C ref: wintty.c:1269
+ * @param {CInt} window
+ * @param {CPtr<tty_menu_item>} page_start
+ * @param {CPtr<tty_menu_item>} page_end
+ * @param {CInt} acc
+ * @param {CLongLong} count
+ */
 function invert_all_on_page(window, page_start, page_end, acc, count) {
     let curr;
     let n;
 
     for (n = 0, curr = page_start; !cptr.eq(curr, page_end); n++, curr = cptr.ldPtr(curr)) {
-        if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || (acc ? cptr.ld1so(curr, $tty_menu_item_gselector) != acc : !menuitem_invert_test(0, cptr.ldI32o(curr, $tty_menu_item_itemflags), cptr.ld1so(curr, $tty_menu_item_selected))))
+        if (!cptr.ldPtro(curr, $tty_menu_item_identifier) ||
+                (acc
+                    ? cptr.ld1so(curr, $tty_menu_item_gselector) != acc
+                    : !menuitem_invert_test(
+                        0,
+                        cptr.ldI32o(curr, $tty_menu_item_itemflags),
+                        cptr.ld1so(curr, $tty_menu_item_selected)
+                    )))
             continue;
 
         if (cptr.ld1so(curr, $tty_menu_item_selected)) {
@@ -1134,7 +1386,14 @@ function invert_all_on_page(window, page_start, page_end, acc, count) {
 }
 
 /* invert all entries that match given group accelerator (or all if zero) */
-/** C ref: wintty.c:1300 — @param {CInt} window @param {CPtr<tty_menu_item>} page_start @param {CPtr<tty_menu_item>} page_end @param {CInt} acc @param {CLongLong} count */
+/**
+ * C ref: wintty.c:1300
+ * @param {CInt} window
+ * @param {CPtr<tty_menu_item>} page_start
+ * @param {CPtr<tty_menu_item>} page_end
+ * @param {CInt} acc
+ * @param {CLongLong} count
+ */
 function invert_all(window, page_start, page_end, acc, count) {
     let curr;
     let on_curr_page;
@@ -1156,7 +1415,15 @@ function invert_all(window, page_start, page_end, acc, count) {
            group toggling is not taking place and this item is off
            limits to bulk toggling (assumes that an item won't be
            both in a group and also subject to bulk restrictions) */
-        if (on_curr_page || !cptr.ldPtro(curr, $tty_menu_item_identifier) || (acc ? cptr.ld1so(curr, $tty_menu_item_gselector) != acc : !menuitem_invert_test(0, cptr.ldI32o(curr, $tty_menu_item_itemflags), cptr.ld1so(curr, $tty_menu_item_selected))))
+        if (on_curr_page ||
+                !cptr.ldPtro(curr, $tty_menu_item_identifier) ||
+                (acc
+                    ? cptr.ld1so(curr, $tty_menu_item_gselector) != acc
+                    : !menuitem_invert_test(
+                        0,
+                        cptr.ldI32o(curr, $tty_menu_item_itemflags),
+                        cptr.ld1so(curr, $tty_menu_item_selected)
+                    )))
             continue;
 
         if (cptr.ld1so(curr, $tty_menu_item_selected)) {
@@ -1230,15 +1497,43 @@ function process_menu_window(window, cw) {
         for (i = 0; i < 128; i++)
             cptr.stI32o(gcnt, i, 0, 4);
         for (n = 0, curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr))
-            if (cptr.ld1so(curr, $tty_menu_item_gselector) && cptr.ld1so(curr, $tty_menu_item_gselector) != cptr.ld1so(curr, $tty_menu_item_selector)) {
+            if (cptr.ld1so(curr, $tty_menu_item_gselector) &&
+                    cptr.ld1so(curr, $tty_menu_item_gselector) !=
+                        cptr.ld1so(curr, $tty_menu_item_selector)) {
                 ++n;
-                cptr.stI32o(gcnt, ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127), cptr.ldI32o(gcnt, ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127), 4) + 1, 4);
+                cptr.stI32o(
+                    gcnt,
+                    ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127),
+                    cptr.ldI32o(gcnt, ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127), 4) + 1,
+                    4
+                );
             }
 
         if (n > 0)
-            for (rp = cptr.decay(gacc), curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr))
-                if (cptr.ld1so(curr, $tty_menu_item_gselector) && (cptr.ld1so(curr, $tty_menu_item_gselector) != cptr.ld1so(curr, $tty_menu_item_selector) || cptr.ld1so(curr, $tty_menu_item_gselector) == NHC.GOLD_SYM) && !cptr.strchr(cptr.decay(gacc), cptr.ld1so(curr, $tty_menu_item_gselector)) && (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ANY || cptr.ldI32o(gcnt, ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127), 4) == 1)) {
-                    cptr.st1(cptr.postinc(() => rp, (v) => { rp = v; }), cptr.ld1so(curr, $tty_menu_item_gselector));
+            for (
+                rp = cptr.decay(gacc),
+                curr = cptr.ldPtro(cw, $WinDesc_mlist);
+                curr;
+                curr = cptr.ldPtr(curr)
+            )
+                if (cptr.ld1so(curr, $tty_menu_item_gselector) &&
+                        (cptr.ld1so(curr, $tty_menu_item_gselector) !=
+                            cptr.ld1so(curr, $tty_menu_item_selector) ||
+                            cptr.ld1so(curr, $tty_menu_item_gselector) == NHC.GOLD_SYM) &&
+                        !cptr.strchr(
+                            cptr.decay(gacc),
+                            cptr.ld1so(curr, $tty_menu_item_gselector)
+                        ) &&
+                        (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ANY ||
+                            cptr.ldI32o(
+                                gcnt,
+                                ((cptr.ld1so(curr, $tty_menu_item_gselector)) & 127),
+                                4
+                            ) == 1)) {
+                    cptr.st1(
+                        cptr.postinc(() => rp, (v) => { rp = v; }),
+                        cptr.ld1so(curr, $tty_menu_item_gselector)
+                    );
                     cptr.st1(rp, 0);  /* re-terminate for strchr() */
                 }
     }  /* lint suppression */
@@ -1269,7 +1564,9 @@ function process_menu_window(window, cw) {
 
         if (!page_start) {
             /* new page to be displayed */
-            if (curr_page < 0 || (cptr.ldI64o(cw, $WinDesc_npages) > 0n && BigInt(curr_page) >= cptr.ldI64o(cw, $WinDesc_npages)))
+            if (curr_page < 0 ||
+                    (cptr.ldI64o(cw, $WinDesc_npages) > 0n &&
+                        BigInt(curr_page) >= cptr.ldI64o(cw, $WinDesc_npages)))
                 panic(__s_bad_menu_screen_page_d, curr_page);
 
             /* clear screen */
@@ -1286,19 +1583,32 @@ function process_menu_window(window, cw) {
                 /* collect accelerators */
                 page_start = cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_plist), curr_page, 8);
                 page_end = cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_plist), (curr_page + 1) | 0, 8);
-                for (page_lines = 0, curr = page_start; !cptr.eq(curr, page_end); page_lines++, curr = cptr.ldPtr(curr)) {
+                for (
+                    page_lines = 0,
+                    curr = page_start;
+                    !cptr.eq(curr, page_end);
+                    page_lines++,
+                    curr = cptr.ldPtr(curr)
+                ) {
                     let attr;
                     let color = NHM.NO_COLOR;
 
                     if (cptr.ld1so(curr, $tty_menu_item_selector))
-                        cptr.st1(cptr.postinc(() => rp, (v) => { rp = v; }), cptr.ld1so(curr, $tty_menu_item_selector));
+                        cptr.st1(
+                            cptr.postinc(() => rp, (v) => { rp = v; }),
+                            cptr.ld1so(curr, $tty_menu_item_selector)
+                        );
 
                     tty_curs(window, 1, page_lines);
                     if (cptr.ldI16o(cw, $WinDesc_offx))
                         cl_end();
 
                     void putchar(32);
-                    cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1);
+                    cptr.stI16o(
+                        ttyDisplay,
+                        $DisplayDesc_curx,
+                        cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+                    );
 
                     attr = cptr.ldI32o(curr, $tty_menu_item_attr);
                     color = cptr.ldI32o(curr, $tty_menu_item_color);
@@ -1309,7 +1619,14 @@ function process_menu_window(window, cw) {
                        lines (including fake ones that simulate grayed-out
                        entries, so we don't rely on curr->identifier here) */
                     attr_n = 0;  /* whole line */
-                    if (cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 0) && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 1) == 32 && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2) && cptr.strchr(__s_dash_plus_hash, cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2)) && cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 3) == 32)
+                    if (cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 0) &&
+                            cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 1) == 32 &&
+                            cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2) &&
+                            cptr.strchr(
+                                __s_dash_plus_hash,
+                                cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 2)
+                            ) &&
+                            cptr.ld1so(cptr.ldPtro(curr, $tty_menu_item_str), 3) == 32)
                         /* [0]=letter, [1]=space, [2]=[-+#], [3]=space */
                         attr_n = 4;  /* [4:N]=entry description */
 
@@ -1320,31 +1637,69 @@ function process_menu_window(window, cw) {
                      * actually output the character.  We're faster doing
                      * this.
                      */
-                    for (n = 0, cp = cptr.ldPtro(curr, $tty_menu_item_str); cptr.ld1s(cp) && cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) < cptr.ldI16o(ttyDisplay, $DisplayDesc_cols); cp = cptr.add(cp, 1), n++) {
+                    for (
+                        n = 0,
+                        cp = cptr.ldPtro(curr, $tty_menu_item_str);
+                        cptr.ld1s(cp) &&
+                            cptr.stI16o(
+                                ttyDisplay,
+                                $DisplayDesc_curx,
+                                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+                            ) <
+                                cptr.ldI16o(ttyDisplay, $DisplayDesc_cols);
+                        cp = cptr.add(cp, 1),
+                        n++
+                    ) {
                         if (n == attr_n && (color != NHM.NO_COLOR || attr != NHM.ATR_NONE))
                             toggle_menu_attr(1, color, attr);
-                        if (n == 2 && cptr.ldPtro(curr, $tty_menu_item_identifier) !== null && cptr.ld1so(curr, $tty_menu_item_selected)) {
-                            let c = schar(((cptr.ldI64o(curr, $tty_menu_item_count) == -1n) ? 42 : 35));
+                        if (n == 2 &&
+                                cptr.ldPtro(curr, $tty_menu_item_identifier) !== null &&
+                                cptr.ld1so(curr, $tty_menu_item_selected)) {
+                            let c = schar(((cptr.ldI64o(curr, $tty_menu_item_count) == -1n)
+                                    ? 42
+                                    : 35));
                             {
                                 let svx = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
-                                (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
+                                (cptr.stI16o(
+                                    ttyDisplay,
+                                    $DisplayDesc_curx,
+                                    cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
+                                )) -
+                                        (-1);
                                 nomux_putch(c);
                                 cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
                             }
 
                             /* all selected: '*' vs count selected: '#' */
                             void putchar(c);
-                        } else if (n == 2 && cptr.ldPtro(curr, $tty_menu_item_identifier) !== null && show_obj_syms && cptr.ldI32o(curr, $tty_menu_item_glyphinfo) != NHC.MAX_GLYPH) {
-                            let gcolor = cptr.ldI32o(curr, $tty_menu_item_glyphinfo + $glyphinfo_gm + $glyph_map_entry_sym);
+                        } else if (n == 2 &&
+                                cptr.ldPtro(curr, $tty_menu_item_identifier) !== null &&
+                                show_obj_syms &&
+                                cptr.ldI32o(curr, $tty_menu_item_glyphinfo) != NHC.MAX_GLYPH) {
+                            let gcolor = cptr.ldI32o(
+                                curr,
+                                $tty_menu_item_glyphinfo + $glyphinfo_gm + $glyph_map_entry_sym
+                            );
 
                             /* tty_print_glyph could be used, but is overkill
                                and requires referencing the cursor location */
                             toggle_menu_attr(1, gcolor, NHM.ATR_NONE);
-                            void putchar(cptr.ldI32o(curr, $tty_menu_item_glyphinfo + $glyphinfo_ttychar));
+                            void putchar(cptr.ldI32o(
+                                curr,
+                                $tty_menu_item_glyphinfo + $glyphinfo_ttychar
+                            ));
                             {
                                 let svx = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
-                                (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
-                                nomux_putch(cptr.ldI32o(curr, $tty_menu_item_glyphinfo + $glyphinfo_ttychar));
+                                (cptr.stI16o(
+                                    ttyDisplay,
+                                    $DisplayDesc_curx,
+                                    cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
+                                )) -
+                                        (-1);
+                                nomux_putch(cptr.ldI32o(
+                                    curr,
+                                    $tty_menu_item_glyphinfo + $glyphinfo_ttychar
+                                ));
                                 cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
                             }
                             toggle_menu_attr(0, gcolor, NHM.ATR_NONE);
@@ -1352,7 +1707,12 @@ function process_menu_window(window, cw) {
                             void putchar(cptr.ld1s(cp));
                             {
                                 let svx = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
-                                (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
+                                (cptr.stI16o(
+                                    ttyDisplay,
+                                    $DisplayDesc_curx,
+                                    cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
+                                )) -
+                                        (-1);
                                 nomux_putch(cptr.ld1s(cp));
                                 cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
                             }
@@ -1390,9 +1750,20 @@ function process_menu_window(window, cw) {
                      */
                     let row_startoffset = (page_lines + 3) | 0;
 
-                    if (BigInt(row_startoffset) > BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n))
-                        row_startoffset = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n)));
-                    docorner(cptr.ldI16o(cw, $WinDesc_offx), Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) + 1n))), row_startoffset);
+                    if (BigInt(row_startoffset) >
+                            BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n))
+                        row_startoffset = Number(BigInt.asIntN(
+                            32,
+                            BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) - 1n)
+                        ));
+                    docorner(
+                        cptr.ldI16o(cw, $WinDesc_offx),
+                        Number(BigInt.asIntN(
+                            32,
+                            BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_maxrow) + 1n)
+                        )),
+                        row_startoffset
+                    );
                 }
             }
             /* set extra chars.. */
@@ -1407,7 +1778,12 @@ function process_menu_window(window, cw) {
             void cptr.strcat(cptr.decay(resp), cptr.decay(default_menu_cmds));
 
             if (cptr.ldI64o(cw, $WinDesc_npages) > 1n)
-                void cptr.sprintf(cptr.ldPtro(cw, $WinDesc_morestr), __s_d_of_d, (curr_page + 1) | 0, Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_npages))));
+                void cptr.sprintf(
+                    cptr.ldPtro(cw, $WinDesc_morestr),
+                    __s_d_of_d,
+                    (curr_page + 1) | 0,
+                    Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_npages)))
+                );
             else if (msave)
                 void cptr.strcpy(cptr.ldPtro(cw, $WinDesc_morestr), msave);
             else
@@ -1418,12 +1794,17 @@ function process_menu_window(window, cw) {
             dmore(cw, cptr.decay(resp));
         } else {
             /* just put the cursor back... */
-            tty_curs(window, (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(cw, $WinDesc_morestr)))) + 2) | 0, page_lines);
+            tty_curs(
+                window,
+                (Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(cw, $WinDesc_morestr)))) + 2) | 0,
+                page_lines
+            );
             xwaitforspace(cptr.decay(resp));
         }
 
         really_morc = morc.v;  /* (only used with MENU_EXPLICIT_CHOICE) */
-        if ((rp = cptr.strchr(cptr.decay(resp), morc.v)) !== null && cptr.cmp(rp, cptr.add(cptr.decay(resp), resp_len)) < 0)
+        if ((rp = cptr.strchr(cptr.decay(resp), morc.v)) !== null &&
+                cptr.cmp(rp, cptr.add(cptr.decay(resp), resp_len)) < 0)
             /* explicit menu selection; don't override it if it also
                happens to match a mapped menu command (such as ':' to
                look inside a container vs ':' to search) */
@@ -1458,7 +1839,10 @@ function process_menu_window(window, cw) {
                 let dgt = BigInt(((morc.v - 48) | 0));
 
                 /* count = (10 * count) + (morc - '0'); */
-                count = (((count) < 922337203685477580n || ((count) == 922337203685477580n && (dgt) <= 7n)) ? BigInt.asIntN(64, BigInt.asIntN(64, (count) * 10n) + (dgt)) : -1n);
+                count = (((count) < 922337203685477580n ||
+                    ((count) == 922337203685477580n && (dgt) <= 7n))
+                        ? BigInt.asIntN(64, BigInt.asIntN(64, (count) * 10n) + (dgt))
+                        : -1n);
                 if (count < 0n)
                     continue;  /* reset_count is True */
             }
@@ -1497,7 +1881,8 @@ function process_menu_window(window, cw) {
             break;
             case 32:
             case 62:
-            if (cptr.ldI64o(cw, $WinDesc_npages) > 0n && BigInt(curr_page) != BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) - 1n)) {
+            if (cptr.ldI64o(cw, $WinDesc_npages) > 0n &&
+                    BigInt(curr_page) != BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) - 1n)) {
                 previous_page_lines = page_lines;
                 curr_page++;
                 page_start = null;
@@ -1519,9 +1904,13 @@ function process_menu_window(window, cw) {
             }
             break;
             case 124:
-            if (cptr.ldI64o(cw, $WinDesc_npages) > 0n && BigInt(curr_page) != BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) - 1n)) {
+            if (cptr.ldI64o(cw, $WinDesc_npages) > 0n &&
+                    BigInt(curr_page) != BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) - 1n)) {
                 page_start = null;
-                curr_page = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) - 1n)));
+                curr_page = Number(BigInt.asIntN(
+                    32,
+                    BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) - 1n)
+                ));
             }
             break;
             case 44:
@@ -1544,7 +1933,13 @@ function process_menu_window(window, cw) {
                    (some won't be if they failed menuitem_invert_test()
                    in set_all_on_page() but those will fail it again here) */
                 for (curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr)) {
-                    if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || cptr.ld1so(curr, $tty_menu_item_selected) || !menuitem_invert_test(1, cptr.ldI32o(curr, $tty_menu_item_itemflags), 0))
+                    if (!cptr.ldPtro(curr, $tty_menu_item_identifier) ||
+                            cptr.ld1so(curr, $tty_menu_item_selected) ||
+                            !menuitem_invert_test(
+                                1,
+                                cptr.ldI32o(curr, $tty_menu_item_itemflags),
+                                0
+                            ))
                         continue;
                     cptr.st1o(curr, $tty_menu_item_selected, 1);
                 }  /* if PICK_ANY */
@@ -1558,7 +1953,9 @@ function process_menu_window(window, cw) {
                (unless they failed the menuitem_invert_test() in
                unset_all_on_page() but those will fail it again here) */
             for (curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr)) {
-                if (!cptr.ldPtro(curr, $tty_menu_item_identifier) || !cptr.ld1so(curr, $tty_menu_item_selected) || !menuitem_invert_test(2, cptr.ldI32o(curr, $tty_menu_item_itemflags), 1))
+                if (!cptr.ldPtro(curr, $tty_menu_item_identifier) ||
+                        !cptr.ld1so(curr, $tty_menu_item_selected) ||
+                        !menuitem_invert_test(2, cptr.ldI32o(curr, $tty_menu_item_itemflags), 1))
                     continue;
                 cptr.st1o(curr, $tty_menu_item_selected, 0);
                 cptr.stI64o(curr, $tty_menu_item_count, -1n);
@@ -1579,7 +1976,8 @@ function process_menu_window(window, cw) {
                 let lineno = 0;
 
                 tty_getlin(__s_search_for, cptr.decay(tmpbuf));
-                if (!cptr.ld1so(cptr.decay(tmpbuf), 0, 1) || cptr.ld1so(cptr.decay(tmpbuf), 0, 1) == 27)
+                if (!cptr.ld1so(cptr.decay(tmpbuf), 0, 1) ||
+                        cptr.ld1so(cptr.decay(tmpbuf), 0, 1) == 27)
                     break;
                 void cptr.sprintf(cptr.decay(searchbuf), __s_star_pct_s_star, cptr.decay(tmpbuf));
 
@@ -1590,7 +1988,8 @@ function process_menu_window(window, cw) {
                         on_curr_page = 1;
                     else if (cptr.eq(curr, page_end))
                         on_curr_page = 0;
-                    if (cptr.ldPtro(curr, $tty_menu_item_identifier) && pmatchi(cptr.decay(searchbuf), cptr.ldPtro(curr, $tty_menu_item_str))) {
+                    if (cptr.ldPtro(curr, $tty_menu_item_identifier) &&
+                            pmatchi(cptr.decay(searchbuf), cptr.ldPtro(curr, $tty_menu_item_str))) {
                         toggle_menu_curr(window, curr, lineno, on_curr_page, counting, count);
                         if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_ONE) {
                             finished = 1;
@@ -1605,7 +2004,8 @@ function process_menu_window(window, cw) {
             // @FallThrough
             ;
             default:
-            if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_NONE || !cptr.strchr(cptr.decay(resp), morc.v)) {
+            if (cptr.ldI16o(cw, $WinDesc_how) == NHM.PICK_NONE ||
+                    !cptr.strchr(cptr.decay(resp), morc.v)) {
                 /* unacceptable input received */
                 tty_nhbell();
                 break;
@@ -1646,7 +2046,9 @@ function process_text_window(window, cw) {
                 return;
             }
         }
-        if (!cptr.ldI16o(cw, $WinDesc_offx) && (((n + cptr.ldI16o(cw, $WinDesc_offy)) | 0) == ((cptr.ldI16(ttyDisplay) - 1) | 0))) {
+        if (!cptr.ldI16o(cw, $WinDesc_offx) &&
+                (((n + cptr.ldI16o(cw, $WinDesc_offy)) | 0) ==
+                    ((cptr.ldI16(ttyDisplay) - 1) | 0))) {
             tty_curs(window, 1, n);
             cl_end();
             dmore(cw, cptr.decay(quitchars));
@@ -1668,14 +2070,35 @@ function process_text_window(window, cw) {
             if (cptr.ldI16o(cw, $WinDesc_offx)) {
                 void putchar(32);
                 nomux_putch(32);
-                cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1);
+                cptr.stI16o(
+                    ttyDisplay,
+                    $DisplayDesc_curx,
+                    cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+                );
             }
             term_start_attr(attr);
-            for (cp = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), 1), linestart = 1; cptr.ld1s(cp) && cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1) < cptr.ldI16o(ttyDisplay, $DisplayDesc_cols); cp = cptr.add(cp, 1)) {
+            for (
+                cp = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), 1),
+                linestart = 1;
+                cptr.ld1s(cp) &&
+                    cptr.stI16o(
+                        ttyDisplay,
+                        $DisplayDesc_curx,
+                        cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+                    ) <
+                        cptr.ldI16o(ttyDisplay, $DisplayDesc_cols);
+                cp = cptr.add(cp, 1)
+            ) {
                 /* message recall for msg_window:full/combination/reverse
                    might have output from '/' in it (see redotoplin()) */
                 if (linestart) {
-                    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8)) {
+                    if ((cptr.ldI32o2(
+                        gs,
+                        cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+                        $sizeof_symsetentry,
+                        $instance_globals_s_symset + $symsetentry_handling
+                    ) ==
+                            NHC.H_UTF8)) {
                         /* FIXME: what is actually in that line? is it the \GNNNNNNNN or UTF-8? */
                         g_putch(cptr.ld1s(cp));
                     } else if ((cptr.ld1s(cp) & 128) != 0) {
@@ -1685,7 +2108,12 @@ function process_text_window(window, cw) {
                         void putchar(cptr.ld1s(cp));
                         {
                             let svx = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
-                            (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
+                            (cptr.stI16o(
+                                ttyDisplay,
+                                $DisplayDesc_curx,
+                                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
+                            )) -
+                                    (-1);
                             nomux_putch(cptr.ld1s(cp));
                             cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
                         }
@@ -1695,7 +2123,12 @@ function process_text_window(window, cw) {
                     void putchar(cptr.ld1s(cp));
                     {
                         let svx = cptr.ldI16o(ttyDisplay, $DisplayDesc_curx);
-                        (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1)) - (-1);
+                        (cptr.stI16o(
+                            ttyDisplay,
+                            $DisplayDesc_curx,
+                            cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + -1
+                        )) -
+                                (-1);
                         nomux_putch(cptr.ld1s(cp));
                         cptr.stI16o(ttyDisplay, $DisplayDesc_curx, i16(svx));
                     }
@@ -1709,7 +2142,11 @@ function process_text_window(window, cw) {
             tty_curs(BASE_WINDOW, 1, (cptr.ldI16o(ttyDisplay, $DisplayDesc_cury) + 1) | 0);
             cl_eos();
         }
-        tty_curs(BASE_WINDOW, (cptr.ldI16o(cw, $WinDesc_offx) + 1) | 0, (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT) ? (cptr.ldI16(ttyDisplay) - 1) | 0 : n);
+        tty_curs(
+            BASE_WINDOW,
+            (cptr.ldI16o(cw, $WinDesc_offx) + 1) | 0,
+            (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT) ? (cptr.ldI16(ttyDisplay) - 1) | 0 : n
+        );
         cl_end();
         dmore(cw, cptr.decay(quitchars));
         if (morc.v == 27)
@@ -1743,7 +2180,17 @@ export function tty_display_nhwindow(window, blocking) {
             more();
             cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);  /* more resets this */
             tty_clear_nhwindow(window);
-            void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 1926), 0) ? 1 : 0);
+            void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) ||
+                (
+                    nhassert_failed(
+                        __s_ttydisplay_toplin_topline_empty,
+                        __s_win_tty_wintty_c,
+                        1926
+                    ),
+                    0
+                )
+                    ? 1
+                    : 0);
         } else
             cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_EMPTY);
         cptr.stI64o(cw, $WinDesc_curx, cptr.stI64o(cw, $WinDesc_cury, 0n));
@@ -1772,16 +2219,31 @@ export function tty_display_nhwindow(window, blocking) {
         /* cw->maxcol is a long, but its value is constrained to
            be <= ttyDisplay->cols, so is sure to fit within a short */
         s_maxcol = Number(BigInt.asIntN(16, cptr.ldI64o(cw, $WinDesc_maxcol)));
-        cptr.stI16o(cw, $WinDesc_offx, i16(((cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT) ? 0 : (((82 < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0) ? 82 : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0))) < ((((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol) | 0) - 1) | 0) ? ((82 < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0) ? 82 : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0))) : ((((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol) | 0) - 1) | 0)))));
+        cptr.stI16o(
+            cw,
+            $WinDesc_offx,
+            i16(((cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT)
+                ? 0
+                : (((82 < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0)
+                    ? 82
+                    : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0))) <
+                    ((((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol) | 0) - 1) | 0)
+                    ? ((82 < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0)
+                        ? 82
+                        : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0)))
+                    : ((((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol) | 0) - 1) | 0))))
+        );
         if (cptr.ldI16o(cw, $WinDesc_offx) < 0)
             cptr.stI16o(cw, $WinDesc_offx, 0);
         if (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_MENU)
             cptr.stI16o(cw, $WinDesc_offy, 0);
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE)
             tty_display_nhwindow(WIN_MESSAGE.v, 1);
-        if (cptr.ldI64o(cw, $WinDesc_maxrow) >= BigInt(cptr.ldI16(ttyDisplay)) || !cptr.ld1so(iflags, $instance_flags_menu_overlay)) {
+        if (cptr.ldI64o(cw, $WinDesc_maxrow) >= BigInt(cptr.ldI16(ttyDisplay)) ||
+                !cptr.ld1so(iflags, $instance_flags_menu_overlay)) {
             cptr.stI16o(cw, $WinDesc_offx, 0);
-            if (cptr.ldI16o(cw, $WinDesc_offy) || cptr.ld1so(iflags, $instance_flags_menu_overlay)) {
+            if (cptr.ldI16o(cw, $WinDesc_offy) ||
+                    cptr.ld1so(iflags, $instance_flags_menu_overlay)) {
                 tty_curs(window, 1, 0);
                 cl_eos();
             } else
@@ -1819,7 +2281,10 @@ export function tty_dismiss_nhwindow(window) {
         case NHM.NHW_MESSAGE:
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) != NHM.TOPLINE_EMPTY)
             tty_display_nhwindow(WIN_MESSAGE.v, 1);
-        void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 2015), 0) ? 1 : 0);
+        void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) ||
+            (nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 2015), 0)
+                ? 1
+                : 0);
         // @FallThrough
         ;
         case NHM.NHW_STATUS:
@@ -1921,7 +2386,10 @@ export function tty_curs(window, x, y) {
         panic(cptr.decay(winpanicstr), window, __s_tty_curs);
     cptr.stI32o(ttyDisplay, $DisplayDesc_lastwin, window);
     ;
-    if (x < 1 || y < 0 || BigInt(y) >= cptr.ldI64o(cw, $WinDesc_rows) || BigInt(x) > cptr.ldI64o(cw, $WinDesc_cols)) {
+    if (x < 1 ||
+            y < 0 ||
+            BigInt(y) >= cptr.ldI64o(cw, $WinDesc_rows) ||
+            BigInt(x) > cptr.ldI64o(cw, $WinDesc_cols)) {
         let s = __s_unknown_type;
 
         switch (cptr.ldI16o(cw, $WinDesc_type)) {
@@ -2011,7 +2479,8 @@ function compress_str(str) {
         let outend = cptr.add(cptr.decay(__static_compress_str_cbuf), 255n, 1);
         let was_space = 1;
 
-        while ((c = cptr.ld1s(cptr.postinc(() => in_str, (v) => { in_str = v; }))) != 0 && cptr.cmp(outstr, outend) < 0) {
+        while ((c = cptr.ld1s(cptr.postinc(() => in_str, (v) => { in_str = v; }))) != 0 &&
+                cptr.cmp(outstr, outend) < 0) {
             if (c == 10)
                 c = 32;
             if (was_space && c == 32)
@@ -2019,7 +2488,8 @@ function compress_str(str) {
             cptr.st1(cptr.postinc(() => outstr, (v) => { outstr = v; }), c);
             was_space = schar((c == 32));
         }
-        if ((was_space && cptr.cmp(outstr, cptr.decay(__static_compress_str_cbuf)) > 0) || cptr.eq(outstr, outend))
+        if ((was_space && cptr.cmp(outstr, cptr.decay(__static_compress_str_cbuf)) > 0) ||
+                cptr.eq(outstr, outend))
             outstr = cptr.add(outstr, -1);  /* remove trailing space or make room for terminator */
         cptr.st1(outstr, 0);
         str = cptr.decay(__static_compress_str_cbuf);
@@ -2048,7 +2518,9 @@ export function tty_putstr(window, attr, str) {
         return;
     }
 
-    if (str === null || ((cptr.ldI32(cw) & NHM.WIN_CANCELLED) && (cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MESSAGE)))
+    if (str === null ||
+            ((cptr.ldI32(cw) & NHM.WIN_CANCELLED) &&
+                (cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MESSAGE)))
         return;
     if (cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MESSAGE)
         str = compress_str(str);
@@ -2099,31 +2571,59 @@ export function tty_putstr(window, attr, str) {
             break;
         }
         case NHM.NHW_MAP:
-        tty_curs(window, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury))));
+        tty_curs(
+            window,
+            Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n))),
+            Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury)))
+        );
         term_start_attr(attr);
-        while (cptr.ld1s(str) && cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - 1) | 0)) {
+        while (cptr.ld1s(str) &&
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) <
+                    ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - 1) | 0)) {
             void putchar(cptr.ld1s(str));
             nomux_putch(cptr.ld1s(str));
             str = cptr.add(str, 1);
-            (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
+            (cptr.stI16o(
+                ttyDisplay,
+                $DisplayDesc_curx,
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+            )) -
+                    (1);
         }
         cptr.stI64o(cw, $WinDesc_curx, 0n);
         (cptr.stI64o(cw, $WinDesc_cury, cptr.ldI64o(cw, $WinDesc_cury) + 1n)) - (1n);
         term_end_attr(attr);
         break;
         case 7:
-        tty_curs(window, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury))));
+        tty_curs(
+            window,
+            Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n))),
+            Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury)))
+        );
         term_start_attr(attr);
         while (cptr.ld1s(str)) {
-            if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) >= ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - 1) | 0)) {
+            if (cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) >=
+                    ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - 1) | 0)) {
                 cptr.stI64o(cw, $WinDesc_curx, 0n);
                 (cptr.stI64o(cw, $WinDesc_cury, cptr.ldI64o(cw, $WinDesc_cury) + 1n)) - (1n);
-                tty_curs(window, Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n))), Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury))));
+                tty_curs(
+                    window,
+                    Number(BigInt.asIntN(
+                        32,
+                        BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_curx) + 1n)
+                    )),
+                    Number(BigInt.asIntN(32, cptr.ldI64o(cw, $WinDesc_cury)))
+                );
             }
             void putchar(cptr.ld1s(str));
             nomux_putch(cptr.ld1s(str));
             str = cptr.add(str, 1);
-            (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
+            (cptr.stI16o(
+                ttyDisplay,
+                $DisplayDesc_curx,
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+            )) -
+                    (1);
         }
         cptr.stI64o(cw, $WinDesc_curx, 0n);
         (cptr.stI64o(cw, $WinDesc_cury, cptr.ldI64o(cw, $WinDesc_cury) + 1n)) - (1n);
@@ -2131,7 +2631,12 @@ export function tty_putstr(window, attr, str) {
         break;
         case NHM.NHW_MENU:
         case NHM.NHW_TEXT:
-        if (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT && (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cury) + BigInt(cptr.ldI16o(cw, $WinDesc_offy)))) == BigInt(((cptr.ldI16(ttyDisplay) - 1) | 0))) {
+        if (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_TEXT &&
+                (BigInt.asIntN(
+                    64,
+                    cptr.ldI64o(cw, $WinDesc_cury) + BigInt(cptr.ldI16o(cw, $WinDesc_offy))
+                )) ==
+                    BigInt(((cptr.ldI16(ttyDisplay) - 1) | 0))) {
             /* not a menu, so save memory and output 1 page at a time */
             cptr.stI64o(cw, $WinDesc_maxcol, BigInt(cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)));  /* force full-screen mode */
             tty_display_nhwindow(window, 1);
@@ -2147,7 +2652,13 @@ export function tty_putstr(window, attr, str) {
             let tmp;
 
             cptr.stI64o(cw, $WinDesc_rows, cptr.ldI64o(cw, $WinDesc_rows) + 12n);
-            tmp = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, 8n * BigInt(Number(BigInt.asUintN(32, cptr.ldI64o(cw, $WinDesc_rows))) >>> 0)))));
+            tmp = alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(
+                    64,
+                    8n * BigInt(Number(BigInt.asUintN(32, cptr.ldI64o(cw, $WinDesc_rows))) >>> 0)
+                )
+            )));
             for (i = 0n; i < cptr.ldI64o(cw, $WinDesc_maxrow); i++)
                 cptr.stPtro(tmp, i, cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), i, 8), 8);
             if (cptr.ldPtro(cw, $WinDesc_data))
@@ -2158,22 +2669,43 @@ export function tty_putstr(window, attr, str) {
                 cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), i, null, 8);
         }
         if (cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_cury), 8))
-            cptr.free(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_cury), 8));
+            cptr.free(cptr.ldPtro(
+                cptr.ldPtro(cw, $WinDesc_data),
+                cptr.ldI64o(cw, $WinDesc_cury),
+                8
+            ));
         n0 = BigInt.asIntN(64, BigInt.asIntN(64, cptr.strlen(str)) + 1n);
-        ob = cptr.stPtro(cptr.ldPtro(cw, $WinDesc_data), cptr.ldI64o(cw, $WinDesc_cury), alloc((Number(BigInt.asUintN(32, n0)) + 1) >>> 0), 8);
+        ob = cptr.stPtro(
+            cptr.ldPtro(cw, $WinDesc_data),
+            cptr.ldI64o(cw, $WinDesc_cury),
+            alloc((Number(BigInt.asUintN(32, n0)) + 1) >>> 0),
+            8
+        );
         cptr.st1(cptr.postinc(() => ob, (v) => { ob = v; }), schar(((attr + 1) | 0)));  /* avoid nuls, for convenience */
         void cptr.strcpy(ob, str);
 
         if (n0 > cptr.ldI64o(cw, $WinDesc_maxcol))
             cptr.stI64o(cw, $WinDesc_maxcol, n0);
-        if (cptr.stI64o(cw, $WinDesc_cury, cptr.ldI64o(cw, $WinDesc_cury) + 1n) > cptr.ldI64o(cw, $WinDesc_maxrow))
+        if (cptr.stI64o(cw, $WinDesc_cury, cptr.ldI64o(cw, $WinDesc_cury) + 1n) >
+                cptr.ldI64o(cw, $WinDesc_maxrow))
             cptr.stI64o(cw, $WinDesc_maxrow, cptr.ldI64o(cw, $WinDesc_cury));
         if (n0 > BigInt(cptr.ldI32o(gt, $instance_globals_t_tc_gbl_data + $tc_gbl_data_tc_CO))) {
             /* attempt to break the line */
-            for (i = BigInt(((CO() - 1) | 0)); i && cptr.ld1so(str, i) != 32 && cptr.ld1so(str, i) != 10; )
+            for (
+                i = BigInt(((CO() - 1) | 0));
+                i && cptr.ld1so(str, i) != 32 && cptr.ld1so(str, i) != 10;
+            )
                 i--;
             if (i) {
-                cptr.st1o(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cury) - 1n), 8), ++i, 0);
+                cptr.st1o(
+                    cptr.ldPtro(
+                        cptr.ldPtro(cw, $WinDesc_data),
+                        BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cury) - 1n),
+                        8
+                    ),
+                    ++i,
+                    0
+                );
                 tty_putstr(window, attr, cptr.add(str, i));
             }
         }
@@ -2208,8 +2740,14 @@ export function tty_display_file(fname, complain) {
 
             if (complain && cptr.ldPtro(tc_lcl_data, $tc_lcl_data_tc_CD)) {
                 /* attempt to scroll text below map window if there's room */
-                cptr.stI16o(cptr.ldPtro(wins, datawin, 8), $WinDesc_offy, i16(((cptr.ldI16o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_offy) + ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3)) | 0)));
-                if (((cptr.ldI16o(cptr.ldPtro(wins, datawin, 8), $WinDesc_offy) + 12) | 0) > cptr.ldI16(ttyDisplay))
+                cptr.stI16o(
+                    cptr.ldPtro(wins, datawin, 8),
+                    $WinDesc_offy,
+                    i16(((cptr.ldI16o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_offy) +
+                        ((cptr.ldI32o(iflags, $instance_flags_wc2_statuslines) <= 2) ? 2 : 3)) | 0))
+                );
+                if (((cptr.ldI16o(cptr.ldPtro(wins, datawin, 8), $WinDesc_offy) + 12) | 0) >
+                        cptr.ldI16(ttyDisplay))
                     cptr.stI16o(cptr.ldPtro(wins, datawin, 8), $WinDesc_offy, 0);
             }
             while (fgets(cptr.decay(buf), NHM.BUFSZ, f)) {
@@ -2248,7 +2786,18 @@ export function tty_start_menu(window, mbehavior) {
  * Add a menu item to the beginning of the menu list.  This list is reversed
  * later.
  */
-/** C ref: wintty.c:2616 — @param {CInt} window @param {CPtr<glyph_info>} glyphinfo @param {CPtr<anything>} identifier @param {CInt} ch @param {CInt} gch @param {CInt} attr @param {CInt} clr @param {CPtr<char>} str @param {CUInt} itemflags */
+/**
+ * C ref: wintty.c:2616
+ * @param {CInt} window
+ * @param {CPtr<glyph_info>} glyphinfo
+ * @param {CPtr<anything>} identifier
+ * @param {CInt} ch
+ * @param {CInt} gch
+ * @param {CInt} attr
+ * @param {CInt} clr
+ * @param {CPtr<char>} str
+ * @param {CUInt} itemflags
+ */
 export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, str, itemflags) {
     let preselected = schar((((itemflags & NHM.MENU_ITEMFLAGS_SELECTED) >>> 0) != 0));
     let cw = null;
@@ -2265,7 +2814,9 @@ export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, 
     if (str === null)
         return;
 
-    if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU)
+    if (window == -1 ||
+            (cw = cptr.ldPtro(wins, window, 8)) === null ||
+            cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU)
         panic(cptr.decay(winpanicstr), window, __s_tty_add_menu);
 
     (cptr.stI64o(cw, $WinDesc_nitems, cptr.ldI64o(cw, $WinDesc_nitems) + 1n)) - (1n);
@@ -2278,7 +2829,12 @@ export function tty_add_menu(window, glyphinfo, identifier, ch, gch, attr, clr, 
             len = 255;
         }
         void cptr.sprintf(cptr.decay(buf), __s_pct_c_sp_dash_sp, ch ? ch : 63);
-        void __builtin___strncpy_chk(cptr.add(cptr.decay(buf), 4), str, BigInt.asUintN(64, BigInt(len)), __builtin_object_size(cptr.add(cptr.decay(buf), 4), 1));
+        void __builtin___strncpy_chk(
+            cptr.add(cptr.decay(buf), 4),
+            str,
+            BigInt.asUintN(64, BigInt(len)),
+            __builtin_object_size(cptr.add(cptr.decay(buf), 4), 1)
+        );
         cptr.st1o(cptr.decay(buf), (4 + len) | 0, 0, 1);
         newstr = cptr.decay(buf);
     } else
@@ -2336,7 +2892,9 @@ export function tty_end_menu(window, prompt) {
     let menu_ch;
     let clr = NHM.NO_COLOR;
 
-    if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU) {
+    if (window == -1 ||
+            (cw = cptr.ldPtro(wins, window, 8)) === null ||
+            cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU) {
         /* this can happen if start_menu failed due to size requirements
            for the tty perm inventory window. It isn't a situation that
            requires a panic, just an early return. */
@@ -2353,13 +2911,38 @@ export function tty_end_menu(window, prompt) {
         let any = cptr.alloc(8);
 
         cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);  /* not selectable */
-        tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, __s_empty, NHM.MENU_ITEMFLAGS_NONE);
-        tty_add_menu(window, nul_glyphinfo.v, any, 0, 0, cptr.ldI32o(tty_menu_promptstyle, $color_and_attr_attr), cptr.ldI32(tty_menu_promptstyle), prompt, NHM.MENU_ITEMFLAGS_NONE);
+        tty_add_menu(
+            window,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            __s_empty,
+            NHM.MENU_ITEMFLAGS_NONE
+        );
+        tty_add_menu(
+            window,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            cptr.ldI32o(tty_menu_promptstyle, $color_and_attr_attr),
+            cptr.ldI32(tty_menu_promptstyle),
+            prompt,
+            NHM.MENU_ITEMFLAGS_NONE
+        );
     }
 
     /* 52: 'a'..'z' and 'A'..'Z'; avoids selector duplication within a page */
     lmax = (52 < ((cptr.ldI16(ttyDisplay) - 1) | 0) ? 52 : ((cptr.ldI16(ttyDisplay) - 1) | 0));  /* # lines per page */
-    cptr.stI64o(cw, $WinDesc_npages, (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_nitems) + BigInt(((lmax - 1) | 0)))) / BigInt(lmax));  /* # of pages */
+    cptr.stI64o(
+        cw,
+        $WinDesc_npages,
+        (BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_nitems) + BigInt(((lmax - 1) | 0)))) /
+            BigInt(lmax)
+    );  /* # of pages */
     /*
      * TODO?
      *  For really tall page, allow 53 if '$' or '#' is present and
@@ -2371,11 +2954,23 @@ export function tty_end_menu(window, prompt) {
      */
 
     /* make sure page list is large enough */
-    if (cptr.ldI64o(cw, $WinDesc_plist_size) < BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) + 1n)) {
+    if (cptr.ldI64o(cw, $WinDesc_plist_size) <
+            BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) + 1n)) {
         if (cptr.ldPtro(cw, $WinDesc_plist))
             cptr.free(cptr.ldPtro(cw, $WinDesc_plist));
-        cptr.stI64o(cw, $WinDesc_plist_size, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) + 1n));
-        cptr.stPtro(cw, $WinDesc_plist, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(cw, $WinDesc_plist_size)) * 8n)))));
+        cptr.stI64o(
+            cw,
+            $WinDesc_plist_size,
+            BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_npages) + 1n)
+        );
+        cptr.stPtro(
+            cw,
+            $WinDesc_plist,
+            alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(64, BigInt.asUintN(64, cptr.ldI64o(cw, $WinDesc_plist_size)) * 8n)
+            )))
+        );
     }
 
     cptr.stI64o(cw, $WinDesc_cols, 0n);  /* cols is set when the win is initialized... (why?) */
@@ -2386,16 +2981,28 @@ export function tty_end_menu(window, prompt) {
             menu_ch = 97;
             cptr.stPtro(cptr.ldPtro(cw, $WinDesc_plist), (n / lmax) | 0, curr, 8);
         }
-        if (cptr.ldPtro(curr, $tty_menu_item_identifier) && !cptr.ld1so(curr, $tty_menu_item_selector)) {
-            cptr.st1o(cptr.ldPtro(curr, $tty_menu_item_str), 0, cptr.st1o(curr, $tty_menu_item_selector, menu_ch));
+        if (cptr.ldPtro(curr, $tty_menu_item_identifier) &&
+                !cptr.ld1so(curr, $tty_menu_item_selector)) {
+            cptr.st1o(
+                cptr.ldPtro(curr, $tty_menu_item_str),
+                0,
+                cptr.st1o(curr, $tty_menu_item_selector, menu_ch)
+            );
             if (menu_ch++ == 122)
                 menu_ch = 65;
         }
 
         /* cut off any lines that are too long */
-        len = Number(BigInt.asIntN(16, BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(curr, $tty_menu_item_str)) + 2n)));  /* extra space at beg & end */
+        len = Number(BigInt.asIntN(
+            16,
+            BigInt.asUintN(64, cptr.strlen(cptr.ldPtro(curr, $tty_menu_item_str)) + 2n)
+        ));  /* extra space at beg & end */
         if (len > cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)) {
-            cptr.st1o(cptr.ldPtro(curr, $tty_menu_item_str), (cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - 2) | 0, 0);
+            cptr.st1o(
+                cptr.ldPtro(curr, $tty_menu_item_str),
+                (cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - 2) | 0,
+                0
+            );
             len = cptr.ldI16o(ttyDisplay, $DisplayDesc_cols);
         }
         if (BigInt(len) > cptr.ldI64o(cw, $WinDesc_cols))
@@ -2409,7 +3016,12 @@ export function tty_end_menu(window, prompt) {
     if (cptr.ldI64o(cw, $WinDesc_npages) > 1n) {
         let buf = new Uint8Array(128);
         /* produce the largest demo string */
-        void cptr.sprintf(cptr.decay(buf), __s_ld_of_ld, cptr.ldI64o(cw, $WinDesc_npages), cptr.ldI64o(cw, $WinDesc_npages));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_ld_of_ld,
+            cptr.ldI64o(cw, $WinDesc_npages),
+            cptr.ldI64o(cw, $WinDesc_npages)
+        );
         len = Number(BigInt.asIntN(16, cptr.strlen(cptr.decay(buf))));
         cptr.stPtro(cw, $WinDesc_morestr, dupstr(__s_empty));
     } else {
@@ -2420,7 +3032,11 @@ export function tty_end_menu(window, prompt) {
     if (len > cptr.ldI16o(ttyDisplay, $DisplayDesc_cols)) {
         /* truncate the prompt if it's too long for the screen */
         if (cptr.ldI64o(cw, $WinDesc_npages) <= 1n)
-            cptr.st1o(cptr.ldPtro(cw, $WinDesc_morestr), cptr.ldI16o(ttyDisplay, $DisplayDesc_cols), 0);
+            cptr.st1o(
+                cptr.ldPtro(cw, $WinDesc_morestr),
+                cptr.ldI16o(ttyDisplay, $DisplayDesc_cols),
+                0
+            );
         len = cptr.ldI16o(ttyDisplay, $DisplayDesc_cols);
     }
     if (BigInt(len) > cptr.ldI64o(cw, $WinDesc_cols))
@@ -2435,10 +3051,20 @@ export function tty_end_menu(window, prompt) {
     if (cptr.ldI64o(cw, $WinDesc_npages) > 1n)
         cptr.stI64o(cw, $WinDesc_maxrow, cptr.stI64o(cw, $WinDesc_rows, BigInt(((lmax + 1) | 0))));
     else
-        cptr.stI64o(cw, $WinDesc_maxrow, cptr.stI64o(cw, $WinDesc_rows, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_nitems) + 1n)));
+        cptr.stI64o(
+            cw,
+            $WinDesc_maxrow,
+            cptr.stI64o(cw, $WinDesc_rows, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_nitems) + 1n))
+        );
 }
 
-/** C ref: wintty.c:2832 — @param {CInt} window @param {CInt} how @param {CPtr<menu_item *>} menu_list @returns {CInt} */
+/**
+ * C ref: wintty.c:2832
+ * @param {CInt} window
+ * @param {CInt} how
+ * @param {CPtr<menu_item *>} menu_list
+ * @returns {CInt}
+ */
 export function tty_select_menu(window, how, menu_list) {
     let cw = null;
     let curr;
@@ -2446,7 +3072,9 @@ export function tty_select_menu(window, how, menu_list) {
     let n;
     let cancelled;
 
-    if (window == -1 || (cw = cptr.ldPtro(wins, window, 8)) === null || cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU)
+    if (window == -1 ||
+            (cw = cptr.ldPtro(wins, window, 8)) === null ||
+            cptr.ldI16o(cw, $WinDesc_type) != NHM.NHW_MENU)
         panic(cptr.decay(winpanicstr), window, __s_tty_select_menu);
 
     if (cptr.ldU64o(cw, $WinDesc_mbehavior) == 1n) {
@@ -2468,8 +3096,19 @@ export function tty_select_menu(window, how, menu_list) {
     }
 
     if (n > 0) {
-        cptr.stPtr(menu_list, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(n)) * 24n)))));
-        for (mi = cptr.ldPtr(menu_list), curr = cptr.ldPtro(cw, $WinDesc_mlist); curr; curr = cptr.ldPtr(curr))
+        cptr.stPtr(
+            menu_list,
+            alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt(n)) * 24n)
+            )))
+        );
+        for (
+            mi = cptr.ldPtr(menu_list),
+            curr = cptr.ldPtro(cw, $WinDesc_mlist);
+            curr;
+            curr = cptr.ldPtr(curr)
+        )
             if (cptr.ld1so(curr, $tty_menu_item_selected)) {
                 cptr.memcpy(mi, cptr.add(curr, $tty_menu_item_identifier), 8);
                 cptr.stI64o(mi, $menu_item_count, cptr.ldI64o(curr, $tty_menu_item_count));
@@ -2481,7 +3120,13 @@ export function tty_select_menu(window, how, menu_list) {
 }
 
 /* special hack for treating top line --More-- as a one item menu */
-/** C ref: wintty.c:2876 — @param {CInt} let @param {CInt} how @param {CPtr<char>} mesg @returns {CInt} */
+/**
+ * C ref: wintty.c:2876
+ * @param {CInt} let
+ * @param {CInt} how
+ * @param {CPtr<char>} mesg
+ * @returns {CInt}
+ */
 export function tty_message_menu(let$, how, mesg) {
     {
         if (cptr.ldI32o(program_state, $sinfo_done_hup))
@@ -2503,18 +3148,30 @@ export function tty_message_menu(let$, how, mesg) {
         more();
         cptr.stI32o(ttyDisplay, $DisplayDesc_toplin, NHM.TOPLINE_NEED_MORE);  /* more resets this */
         tty_clear_nhwindow(WIN_MESSAGE.v);
-        void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) || (nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 2895), 0) ? 1 : 0);
+        void ((!!(cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_EMPTY)) ||
+            (nhassert_failed(__s_ttydisplay_toplin_topline_empty, __s_win_tty_wintty_c, 2895), 0)
+                ? 1
+                : 0);
     }
     /* normally <ESC> means skip further messages, but in this case
        it means cancel the current prompt; any other messages should
        continue to be output normally */
-    cptr.stI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8), cptr.ldI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) & -2);
+    cptr.stI32(
+        cptr.ldPtro(wins, WIN_MESSAGE.v, 8),
+        cptr.ldI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) & -2
+    );
     cptr.st1o(ttyDisplay, $DisplayDesc_dismiss_more, 0);
 
     return schar((((how == NHM.PICK_ONE && morc.v == let$) || morc.v == 27) ? morc.v : 0));
 }
 
-/** C ref: wintty.c:2907 — @param {CInt} window @param {CInt} request @param {CPtr<win_request_info>} wri @returns {CPtr<win_request_info>} */
+/**
+ * C ref: wintty.c:2907
+ * @param {CInt} window
+ * @param {CInt} request
+ * @param {CPtr<win_request_info>} wri
+ * @returns {CPtr<win_request_info>}
+ */
 export function tty_ctrl_nhwindow(window, request, wri) {
 
     if (!wri)
@@ -2525,7 +3182,11 @@ export function tty_ctrl_nhwindow(window, request, wri) {
         case NHC.request_settings:
         break;
         case NHC.set_menu_promptstyle:
-        cptr.memcpy(tty_menu_promptstyle, cptr.add(wri, $win_request_info_fromcore + $from_core_menu_promptstyle), 8);
+        cptr.memcpy(
+            tty_menu_promptstyle,
+            cptr.add(wri, $win_request_info_fromcore + $from_core_menu_promptstyle),
+            8
+        );
         break;
         default:
         break;
@@ -2574,13 +3235,23 @@ export function tty_wait_synch() {
             /* do this twice; 1st time gets the Quit? message again */
             void tty_doprev_message();
             void tty_doprev_message();
-            (cptr.stI32o(ttyDisplay, $DisplayDesc_intr, cptr.ldI32o(ttyDisplay, $DisplayDesc_intr) + 1)) - (1);
+            (cptr.stI32o(
+                ttyDisplay,
+                $DisplayDesc_intr,
+                cptr.ldI32o(ttyDisplay, $DisplayDesc_intr) + 1
+            )) -
+                    (1);
             void fflush(__stdoutp);
         }
     }
 }
 
-/** C ref: wintty.c:3707 — @param {CInt} xmin @param {CInt} ymax @param {CInt} ystart_between_menu_pages */
+/**
+ * C ref: wintty.c:3707
+ * @param {CInt} xmin
+ * @param {CInt} ymax
+ * @param {CInt} ystart_between_menu_pages
+ */
 export function docorner(xmin, ymax, ystart_between_menu_pages) {
     let y;
     let cw = cptr.ldPtro(wins, WIN_MAP.v, 8);
@@ -2603,11 +3274,16 @@ export function docorner(xmin, ymax, ystart_between_menu_pages) {
             cl_end();  /* clear to end of line */
         if (y < cptr.ldI16o(cw, $WinDesc_offy) || ((y + clipy) | 0) > NHM.ROWNO)
             continue;  /* only refresh board */
-        row_refresh(i16(((((xmin + clipx) | 0) - cptr.ldI16o(cw, $WinDesc_offx)) | 0)), 79, i16(((((y + clipy) | 0) - cptr.ldI16o(cw, $WinDesc_offy)) | 0)));
+        row_refresh(
+            i16(((((xmin + clipx) | 0) - cptr.ldI16o(cw, $WinDesc_offx)) | 0)),
+            79,
+            i16(((((y + clipy) | 0) - cptr.ldI16o(cw, $WinDesc_offy)) | 0))
+        );
     }
 
     end_glyphout();
-    if (ymax >= cptr.ldI16o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_offy) && !ystart_between_menu_pages) {
+    if (ymax >= cptr.ldI16o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_offy) &&
+            !ystart_between_menu_pages) {
         /* we have wrecked the bottom line */
         cptr.st1o(disp, $display_hints_botlx, 1);
         bot();
@@ -2641,9 +3317,30 @@ export function g_putch(in_ch) {
             return;
         }
     }
-    if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8)) {
+    if ((cptr.ldI32o2(
+        gs,
+        cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_handling
+    ) ==
+            NHC.H_UTF8)) {
         void putchar(ch);
-    } else if ((cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_IBM) || (cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) && (!(cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_DEC) || (in_ch & 127) < 96))) {
+    } else if ((cptr.ldI32o2(
+        gs,
+        cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_handling
+    ) ==
+        NHC.H_IBM) ||
+            (cptr.ld1so(iflags, $instance_flags_wc_eight_bit_input) &&
+                (!(cptr.ldI32o2(
+                    gs,
+                    cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_handling
+                ) ==
+                    NHC.H_DEC) ||
+                    (in_ch & 127) < 96))) {
         /* IBM-compatible displays don't need other stuff */
         void putchar(ch);
     } else if (ch & 128) {
@@ -2708,11 +3405,19 @@ export function tty_cliparound(x, y) {
         clipx = (clipxmax - CO()) | 0;
     }
     if (y < ((clipy + 2) | 0)) {
-        clipy = (0 > ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0) ? 0 : ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
-        clipymax = (clipy + ((((LI() - 1) | 0) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) | 0;
+        clipy = (0 > ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0)
+                ? 0
+                : ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
+        clipymax = (clipy +
+            ((((LI() - 1) | 0) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) |
+                0;
     } else if (y > ((clipymax - 2) | 0)) {
-        clipymax = (NHM.ROWNO < ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0) ? NHM.ROWNO : ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
-        clipy = (clipymax - ((((LI() - 1) | 0) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) | 0;
+        clipymax = (NHM.ROWNO < ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0)
+                ? NHM.ROWNO
+                : ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
+        clipy = (clipymax -
+            ((((LI() - 1) | 0) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) |
+                0;
     }
     if (clipx != oldx || clipy != oldy) {
         redraw_map(1);  /* ask the core to resend the map window's data */
@@ -2728,7 +3433,14 @@ export function tty_cliparound(x, y) {
  *  position and glyph are always correct (checked there)!
  */
 
-/** C ref: wintty.c:3916 — @param {CInt} window @param {CInt} x @param {CInt} y @param {CPtr<glyph_info>} glyphinfo @param {CPtr<glyph_info>} bkglyphinfo */
+/**
+ * C ref: wintty.c:3916
+ * @param {CInt} window
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<glyph_info>} glyphinfo
+ * @param {CPtr<glyph_info>} bkglyphinfo
+ */
 export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
     let inverse_on = 0;
     let colordone = 0;
@@ -2768,13 +3480,21 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
                 term_end_color();
         }
         /* we don't link with termcap.o if NO_TERMS is defined */
-        if ((cptr.ldU64o(tty_procs, $window_procs_wincap2) & 262144n) && cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor) != 0 && cptr.ldI32o(iflags, $instance_flags_colorcount) >= 256 && !calling_from_update_inventory) {
-            if (((cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor) & NHM.NH_BASIC_COLOR) >>> 0) == 0) {
-                term_start_extracolor(cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor), cptr.ldU16o(glyphinfo, $glyph_info_gm + $glyph_map_entry_color256idx));
+        if ((cptr.ldU64o(tty_procs, $window_procs_wincap2) & 262144n) &&
+                cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor) != 0 &&
+                cptr.ldI32o(iflags, $instance_flags_colorcount) >= 256 &&
+                !calling_from_update_inventory) {
+            if (((cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor) &
+                    NHM.NH_BASIC_COLOR) >>> 0) == 0) {
+                term_start_extracolor(
+                    cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor),
+                    cptr.ldU16o(glyphinfo, $glyph_info_gm + $glyph_map_entry_color256idx)
+                );
                 cptr.stI32o(ttyDisplay, $DisplayDesc_colorflags, 0);
                 colordone = 1;
             } else {
-                color = (((cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor)) & 16777215) >>> 0);
+                color = (((cptr.ldI32o(glyphinfo, $glyph_info_gm + $glyph_map_entry_customcolor)) &
+                        16777215) >>> 0);
             }
         }
         if (!colordone) {
@@ -2788,19 +3508,48 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
        BW_LAVA, BW_ICE, BW_SINK, BW_ENGR won't ever be set when color is on;
        (tried bold for ice but it didn't look very good; inverse is easier
        to see although the Valkyrie quest ends up being hard on the eyes) */
-    if (cptr.ld1so(iflags, $instance_flags_wc_color) && bkglyphinfo && cptr.ldI32o(bkglyphinfo, $glyph_info_framecolor) != NHM.NO_COLOR) {
-        cptr.stI32o(ttyDisplay, $DisplayDesc_framecolor, cptr.ldI32o(bkglyphinfo, $glyph_info_framecolor));
+    if (cptr.ld1so(iflags, $instance_flags_wc_color) &&
+            bkglyphinfo &&
+            cptr.ldI32o(bkglyphinfo, $glyph_info_framecolor) != NHM.NO_COLOR) {
+        cptr.stI32o(
+            ttyDisplay,
+            $DisplayDesc_framecolor,
+            cptr.ldI32o(bkglyphinfo, $glyph_info_framecolor)
+        );
         term_start_bgcolor(cptr.ldI32o(bkglyphinfo, $glyph_info_framecolor) | 0);
-    } else if (((special & NHM.MG_PET) >>> 0) != 0 && cptr.ld1so(iflags, $instance_flags_wc_hilite_pet)) {
+    } else if (((special & NHM.MG_PET) >>> 0) != 0 &&
+            cptr.ld1so(iflags, $instance_flags_wc_hilite_pet)) {
         term_start_attr(cptr.ldI32o(iflags, $instance_flags_wc2_petattr));
         petattr = 1;
-    } else if (((((special & NHM.MG_OBJPILE) >>> 0) != 0 && cptr.ld1so(iflags, $instance_flags_hilite_pile)) || (((special & NHM.MG_FEMALE) >>> 0) != 0 && wizard() && cptr.ld1so(iflags, $instance_flags_wizmgender)) || (((special & 776) >>> 0) != 0)) && cptr.ld1so(iflags, $instance_flags_wc_inverse)) {
+    } else if (((((special & NHM.MG_OBJPILE) >>> 0) != 0 &&
+        cptr.ld1so(iflags, $instance_flags_hilite_pile)) ||
+        (((special & NHM.MG_FEMALE) >>> 0) != 0 &&
+            wizard() &&
+            cptr.ld1so(iflags, $instance_flags_wizmgender)) ||
+        (((special & 776) >>> 0) != 0)) &&
+            cptr.ld1so(iflags, $instance_flags_wc_inverse)) {
         term_start_attr(NHM.ATR_INVERSE);
         inverse_on = 1;
     }
-    if (!glyphdone && (cptr.ldU64o(tty_procs, $window_procs_wincap2) & 131072n) && (cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8) && cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u) && cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u), $unicode_representation_utf8str)) {
+    if (!glyphdone &&
+            (cptr.ldU64o(tty_procs, $window_procs_wincap2) & 131072n) &&
+            (cptr.ldI32o2(
+                gs,
+                cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_handling
+            ) ==
+                NHC.H_UTF8) &&
+            cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u) &&
+            cptr.ldPtro(
+                cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u),
+                $unicode_representation_utf8str
+            )) {
         /* we have a sequence to do */
-        g_pututf8(cptr.ldPtro(cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u), $unicode_representation_utf8str));
+        g_pututf8(cptr.ldPtro(
+            cptr.ldPtro(glyphinfo, $glyph_info_gm + $glyph_map_entry_u),
+            $unicode_representation_utf8str
+        ));
         glyphdone = 1;
     }
     if (!glyphdone)
@@ -2814,17 +3563,28 @@ export function tty_print_glyph(window, x, y, glyphinfo, bkglyphinfo) {
         /* turn off color as well, turning off ATR_INVERSE may have done
           this already and if so, we won't know the current state unless
           we do it explicitly */
-        if (cptr.ldI32o(ttyDisplay, $DisplayDesc_color) != NHM.NO_COLOR || cptr.ldI32o(ttyDisplay, $DisplayDesc_framecolor) != NHM.NO_COLOR) {
+        if (cptr.ldI32o(ttyDisplay, $DisplayDesc_color) != NHM.NO_COLOR ||
+                cptr.ldI32o(ttyDisplay, $DisplayDesc_framecolor) != NHM.NO_COLOR) {
             term_end_color();
-            cptr.stI32o(ttyDisplay, $DisplayDesc_color, cptr.stI32o(ttyDisplay, $DisplayDesc_framecolor, NHM.NO_COLOR));
+            cptr.stI32o(
+                ttyDisplay,
+                $DisplayDesc_color,
+                cptr.stI32o(ttyDisplay, $DisplayDesc_framecolor, NHM.NO_COLOR)
+            );
         }
         if (cptr.ldI32o(ttyDisplay, $DisplayDesc_colorflags) != NHM.NH_BASIC_COLOR)
             term_end_extracolor();
     }
     ;
 
-    (cptr.stI64o(cptr.ldPtro(wins, window, 8), $WinDesc_curx, cptr.ldI64o(cptr.ldPtro(wins, window, 8), $WinDesc_curx) + 1n)) - (1n);  /* one character over */
-    (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);  /* the real cursor moved too */
+    (cptr.stI64o(
+        cptr.ldPtro(wins, window, 8),
+        $WinDesc_curx,
+        cptr.ldI64o(cptr.ldPtro(wins, window, 8), $WinDesc_curx) + 1n
+    )) -
+            (1n);  /* one character over */
+    (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) -
+            (1);  /* the real cursor moved too */
 }
 
 /** C ref: wintty.c:4065 — @param {CPtr<char>} str */
@@ -2836,9 +3596,19 @@ export function tty_raw_print(str) {
         }
     }
     if (ttyDisplay)
-        (cptr.stI32o(ttyDisplay, $DisplayDesc_rawprint, cptr.ldI32o(ttyDisplay, $DisplayDesc_rawprint) + 1)) - (1);
+        (cptr.stI32o(
+            ttyDisplay,
+            $DisplayDesc_rawprint,
+            cptr.ldI32o(ttyDisplay, $DisplayDesc_rawprint) + 1
+        )) -
+                (1);
     else if (cptr.ld1s(str))
-        (cptr.stI32o(iflags, $instance_flags_raw_printed, cptr.ldI32o(iflags, $instance_flags_raw_printed) + 1)) - (1);
+        (cptr.stI32o(
+            iflags,
+            $instance_flags_raw_printed,
+            cptr.ldI32o(iflags, $instance_flags_raw_printed) + 1
+        )) -
+                (1);
     ;
     puts(str);
     void fflush(__stdoutp);
@@ -2854,9 +3624,19 @@ export function tty_raw_print_bold(str) {
         }
     }
     if (ttyDisplay)
-        (cptr.stI32o(ttyDisplay, $DisplayDesc_rawprint, cptr.ldI32o(ttyDisplay, $DisplayDesc_rawprint) + 1)) - (1);
+        (cptr.stI32o(
+            ttyDisplay,
+            $DisplayDesc_rawprint,
+            cptr.ldI32o(ttyDisplay, $DisplayDesc_rawprint) + 1
+        )) -
+                (1);
     else if (cptr.ld1s(str))
-        (cptr.stI32o(iflags, $instance_flags_raw_printed, cptr.ldI32o(iflags, $instance_flags_raw_printed) + 1)) - (1);
+        (cptr.stI32o(
+            iflags,
+            $instance_flags_raw_printed,
+            cptr.ldI32o(iflags, $instance_flags_raw_printed) + 1
+        )) -
+                (1);
     ;
     term_start_raw_bold();
     void fputs(str, __stdoutp);
@@ -2889,15 +3669,30 @@ export function tty_nhgetch() {
      * here, but validate those pointers just in case...
      */
     if (WIN_MESSAGE.v != -1 && cptr.ldPtro(wins, WIN_MESSAGE.v, 8))
-        cptr.stI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8), cptr.ldI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) & -2);
+        cptr.stI32(
+            cptr.ldPtro(wins, WIN_MESSAGE.v, 8),
+            cptr.ldI32(cptr.ldPtro(wins, WIN_MESSAGE.v, 8)) & -2
+        );
     if (cptr.ld1so(iflags, $instance_flags_debug_fuzzer)) {
         i = randomkey();
     } else {
         if (cptr.ldI32o(program_state, $sinfo_resize_pending))
             resize_tty();
-        (cptr.stI32o(program_state, $sinfo_getting_char, cptr.ldI32o(program_state, $sinfo_getting_char) + 1)) - (1);
-        i = (cptr.ldI32o(program_state, $sinfo_getting_char) == 1) ? getchar() : ((cptr.read(fileno(__stdinp), nestbuf, 1n) == 1n) ? nestbuf.v : -1);
-        (cptr.stI32o(program_state, $sinfo_getting_char, cptr.ldI32o(program_state, $sinfo_getting_char) + -1)) - (-1);
+        (cptr.stI32o(
+            program_state,
+            $sinfo_getting_char,
+            cptr.ldI32o(program_state, $sinfo_getting_char) + 1
+        )) -
+                (1);
+        i = (cptr.ldI32o(program_state, $sinfo_getting_char) == 1)
+                ? getchar()
+                : ((cptr.read(fileno(__stdinp), nestbuf, 1n) == 1n) ? nestbuf.v : -1);
+        (cptr.stI32o(
+            program_state,
+            $sinfo_getting_char,
+            cptr.ldI32o(program_state, $sinfo_getting_char) + -1
+        )) -
+                (-1);
         if (resize_mesg) {
             resize_mesg = 0;
             tty_clear_nhwindow(WIN_MESSAGE.v);
@@ -2923,7 +3718,13 @@ export function tty_nhgetch() {
  * Since normal tty's don't have mice, just return a key.
  */
 /*ARGSUSED*/
-/** C ref: wintty.c:4194 — @param {CPtr<coordxy>} x @param {CPtr<coordxy>} y @param {CPtr<int>} mod @returns {CInt} */
+/**
+ * C ref: wintty.c:4194
+ * @param {CPtr<coordxy>} x
+ * @param {CPtr<coordxy>} y
+ * @param {CPtr<int>} mod
+ * @returns {CInt}
+ */
 export function tty_nh_poskey(x, y, mod) {
     let i;
     {
@@ -2953,7 +3754,14 @@ export function tty_putmixed(window, attr, str) {
         return;
     }
     cptr.stI32o(ttyDisplay, $DisplayDesc_mixed, 1);
-    if ((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 131072n) && (cptr.ldI32o2(gs, cptr.ldI32o(gc, $instance_globals_c_currentgraphics), $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_handling) == NHC.H_UTF8)) {
+    if ((cptr.ldU64o(windowprocs, $window_procs_wincap2) & 131072n) &&
+            (cptr.ldI32o2(
+                gs,
+                cptr.ldI32o(gc, $instance_globals_c_currentgraphics),
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_handling
+            ) ==
+                NHC.H_UTF8)) {
         mixed_to_utf8(cptr.decay(buf), 256n, str, utf8flag);
         if (cptr.ldI16o(cw, $WinDesc_type) == NHM.NHW_MESSAGE)
             cptr.stI32o(ttyDisplay, $DisplayDesc_topl_utf8, utf8flag.v);
@@ -2972,7 +3780,13 @@ let tty_colormasks = null;
 let tty_condition_bits = 0n;
 
 /** C ref: wintty.c:4338 — struct tty_status_fields[2][27] */
-const tty_status = (function () { const flat = new Uint8Array(2 * 27 * 40); const a = []; for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 27 * 40, (r + 1) * 27 * 40)); a.buf = flat; return a; })();
+const tty_status = (function () {
+    const flat = new Uint8Array(2 * 27 * 40);
+    const a = [];
+    for (let r = 0; r < 2; r++) a.push(flat.subarray(r * 27 * 40, (r + 1) * 27 * 40));
+    a.buf = flat;
+    return a;
+})();
 
 /** C ref: wintty.c:4339 — int */
 let hpbar_percent = 0;
@@ -2981,7 +3795,13 @@ let hpbar_percent = 0;
 let hpbar_crit_hp = 0;
 
 /** C ref: wintty.c:4342 — char *[3][6] */
-const encvals = (function () { const flat = new Uint8Array(3 * 6 * 8); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 6 * 8, (r + 1) * 6 * 8)); a.buf = flat; return a; })();
+const encvals = (function () {
+    const flat = new Uint8Array(3 * 6 * 8);
+    const a = [];
+    for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 6 * 8, (r + 1) * 6 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(encvals[0]), 0, __s_empty);
 cptr.stPtro(cptr.decay(encvals[0]), 8, __s_burdened);
 cptr.stPtro(cptr.decay(encvals[0]), 16, __s_stressed);
@@ -3003,7 +3823,13 @@ cptr.stPtro(cptr.decay(encvals[2]), 40, __s_ovld);
 
 /* 2 or 3 status lines */
 /** C ref: wintty.c:4351 — enum statusfields[3][19] */
-const twolineorder = (function () { const flat = new Uint8Array(3 * 19 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4)); a.buf = flat; return a; })();
+const twolineorder = (function () {
+    const flat = new Uint8Array(3 * 19 * 4);
+    const a = [];
+    for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4));
+    a.buf = flat;
+    return a;
+})();
 cptr.stI32o(cptr.decay(twolineorder[0]), 0, NHC.BL_TITLE);
 cptr.stI32o(cptr.decay(twolineorder[0]), 4, NHC.BL_STR);
 cptr.stI32o(cptr.decay(twolineorder[0]), 8, NHC.BL_DX);
@@ -3060,7 +3886,13 @@ cptr.stI32o(cptr.decay(twolineorder[2]), 56, NHC.BL_FLUSH);
 cptr.stI32o(cptr.decay(twolineorder[2]), 60, NHC.BL_FLUSH);
 
 /** C ref: wintty.c:4363 — enum statusfields[3][19] */
-const threelineorder = (function () { const flat = new Uint8Array(3 * 19 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4)); a.buf = flat; return a; })();
+const threelineorder = (function () {
+    const flat = new Uint8Array(3 * 19 * 4);
+    const a = [];
+    for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 19 * 4, (r + 1) * 19 * 4));
+    a.buf = flat;
+    return a;
+})();
 cptr.stI32o(cptr.decay(threelineorder[0]), 0, NHC.BL_TITLE);
 cptr.stI32o(cptr.decay(threelineorder[0]), 4, NHC.BL_STR);
 cptr.stI32o(cptr.decay(threelineorder[0]), 8, NHC.BL_DX);
@@ -3123,7 +3955,13 @@ cptr.stI32o(cptr.decay(threelineorder[2]), 72, NHC.BL_FLUSH);
 let fieldorder = null;
 
 /** C ref: wintty.c:4377 — int[3][2] */
-const finalx = (function () { const flat = new Uint8Array(3 * 2 * 4); const a = []; for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 2 * 4, (r + 1) * 2 * 4)); a.buf = flat; return a; })();
+const finalx = (function () {
+    const flat = new Uint8Array(3 * 2 * 4);
+    const a = [];
+    for (let r = 0; r < 3; r++) a.push(flat.subarray(r * 2 * 4, (r + 1) * 2 * 4));
+    a.buf = flat;
+    return a;
+})();
 
 /** C ref: wintty.c:4378 — signed char */
 let windowdata_init = 0;
@@ -3169,14 +4007,66 @@ export function tty_status_init() {
 
     for (i = 0; i < NHC.MAXBLSTATS; ++i) {
         cptr.stI32o(cptr.decay(tty_status[NHM.NOW]), i, NHC.BL_FLUSH, $sizeof_tty_status_fields);
-        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_color, NHM.NO_COLOR);  /* no color */
-        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_attr, NHM.ATR_NONE);
-        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_x, cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_y, 0));
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_valid, 0);
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_dirty, 0);
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_redraw, 0);
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields, $tty_status_fields_sanitycheck, 0);
-        cptr.memcpy(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), i, $sizeof_tty_status_fields), cptr.add(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields), 40);
+        cptr.stI32o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            i,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_color,
+            NHM.NO_COLOR
+        );  /* no color */
+        cptr.stI32o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            i,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_attr,
+            NHM.ATR_NONE
+        );
+        cptr.stI32o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            i,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_x,
+            cptr.stI32o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                i,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_y,
+                0
+            )
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            i,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_valid,
+            0
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            i,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_dirty,
+            0
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            i,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_redraw,
+            0
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            i,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_sanitycheck,
+            0
+        );
+        cptr.memcpy(
+            cptr.add(cptr.decay(tty_status[NHM.BEFORE]), i, $sizeof_tty_status_fields),
+            cptr.add(cptr.decay(tty_status[NHM.NOW]), i, $sizeof_tty_status_fields),
+            40
+        );
     }
     tty_condition_bits = 0n;
     hpbar_percent = (hpbar_crit_hp = 0);
@@ -3185,12 +4075,26 @@ export function tty_status_init() {
     genl_status_init();
 }
 
-/** C ref: wintty.c:4437 — @param {CInt} fieldidx @param {CPtr<char>} nm @param {CPtr<char>} fmt @param {CInt} enable */
+/**
+ * C ref: wintty.c:4437
+ * @param {CInt} fieldidx
+ * @param {CPtr<char>} nm
+ * @param {CPtr<char>} fmt
+ * @param {CInt} enable
+ */
 export function tty_status_enablefield(fieldidx, nm, fmt, enable) {
     genl_status_enablefield(fieldidx, nm, fmt, enable);
 }
 
-/** C ref: wintty.c:4527 — @param {CInt} fldidx @param {CPtr} ptr @param {CInt} chg @param {CInt} percent @param {CInt} color @param {CPtr<unsigned long>} colormasks */
+/**
+ * C ref: wintty.c:4527
+ * @param {CInt} fldidx
+ * @param {CPtr} ptr
+ * @param {CInt} chg
+ * @param {CInt} percent
+ * @param {CInt} color
+ * @param {CPtr<unsigned long>} colormasks
+ */
 export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) {
     let attrmask;
     let condptr = ptr;
@@ -3204,7 +4108,8 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
     if ((fldidx < NHC.BL_RESET) || (fldidx >= NHC.MAXBLSTATS))
         return;
 
-    if ((fldidx >= 0 && fldidx < NHC.MAXBLSTATS) && !cptr.ld1so(cptr.decay(status_activefields), fldidx, 1))
+    if ((fldidx >= 0 && fldidx < NHC.MAXBLSTATS) &&
+            !cptr.ld1so(cptr.decay(status_activefields), fldidx, 1))
         return;
 
     switch (fldidx) {
@@ -3221,9 +4126,27 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         cptr.stI32o(cptr.decay(tty_status[NHM.NOW]), fldidx, fldidx, $sizeof_tty_status_fields);
         tty_condition_bits = cptr.ldI64(condptr);
         tty_colormasks = colormasks;
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_valid, 1);
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_dirty, 1);
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_sanitycheck, 1);
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_valid,
+            1
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_dirty,
+            1
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_sanitycheck,
+            1
+        );
         truncation_expected = 0;
         break;
         case NHC.BL_GOLD:
@@ -3238,24 +4161,77 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         /* should be checking for first enabled field here rather than
            just first field, but 'fieldorder' doesn't start any rows
            with fields which can be disabled so [any_row][0] suffices */
-        if (cptr.ld1s(fmt) == 32 && (fldidx == cptr.ldI32o3(fieldorder, 0, 76, 0, 4, 0) || fldidx == cptr.ldI32o3(fieldorder, 1, 76, 0, 4, 0) || fldidx == cptr.ldI32o3(fieldorder, 2, 76, 0, 4, 0)))
+        if (cptr.ld1s(fmt) == 32 &&
+                (fldidx == cptr.ldI32o3(fieldorder, 0, 76, 0, 4, 0) ||
+                    fldidx == cptr.ldI32o3(fieldorder, 1, 76, 0, 4, 0) ||
+                    fldidx == cptr.ldI32o3(fieldorder, 2, 76, 0, 4, 0)))
             fmt = cptr.add(fmt, 1);  /* skip leading space for first field on line */
         void cptr.sprintf(cptr.ldPtro(status_vals, fldidx, 8), fmt, text);
         cptr.stI32o(cptr.decay(tty_status[NHM.NOW]), fldidx, fldidx, $sizeof_tty_status_fields);
-        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_color, (color & 255));
-        cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_attr, term_attr_fixup(attrmask));
-        cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, cptr.strlen(cptr.ldPtro(status_vals, fldidx, 8)));
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_valid, 1);
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_dirty, 1);
-        cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_sanitycheck, 1);
+        cptr.stI32o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_color,
+            (color & 255)
+        );
+        cptr.stI32o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_attr,
+            term_attr_fixup(attrmask)
+        );
+        cptr.stU64o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_lth,
+            cptr.strlen(cptr.ldPtro(status_vals, fldidx, 8))
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_valid,
+            1
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_dirty,
+            1
+        );
+        cptr.st1o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_sanitycheck,
+            1
+        );
         break;
     }
 
     /* The core botl engine sends a single blank to the window port
        for carrying-capacity when it's unused. Let's suppress that */
-    if (fldidx >= 0 && fldidx < NHC.MAXBLSTATS && cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth) == 1n && cptr.ld1so(cptr.ldPtro(status_vals, fldidx, 8), 0) == 32) {
+    if (fldidx >= 0 &&
+            fldidx < NHC.MAXBLSTATS &&
+            cptr.ldU64o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                fldidx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_lth
+            ) == 1n &&
+            cptr.ld1so(cptr.ldPtro(status_vals, fldidx, 8), 0) == 32) {
         cptr.st1o(cptr.ldPtro(status_vals, fldidx, 8), 0, 0);
-        cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, 0n);
+        cptr.stU64o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_lth,
+            0n
+        );
     }
 
     /* default processing above was required before these */
@@ -3265,10 +4241,28 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
             /* Special additional processing for hitpointbar */
             hpbar_percent = percent;
             hpbar_crit_hp = critically_low_hp(1) ? 1 : 0;
-            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, $sizeof_tty_status_fields, $tty_status_fields_color, (color & 255));
+            cptr.stI32o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                NHC.BL_TITLE,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_color,
+                (color & 255)
+            );
             attrmask = NHC.HL_INVERSE | (hpbar_crit_hp ? NHC.HL_BLINK : 0);
-            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, $sizeof_tty_status_fields, $tty_status_fields_attr, term_attr_fixup(attrmask));
-            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, $sizeof_tty_status_fields, $tty_status_fields_dirty, 1);
+            cptr.stI32o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                NHC.BL_TITLE,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_attr,
+                term_attr_fixup(attrmask)
+            );
+            cptr.st1o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                NHC.BL_TITLE,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_dirty,
+                1
+            );
         }
         break;
         case NHC.BL_LEVELDESC:
@@ -3278,11 +4272,33 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         case NHC.BL_HUNGER:
         /* The core sends trailing blanks for some fields.
            Let's suppress the trailing blanks */
-        if (cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth) > 0n) {
+        if (cptr.ldU64o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            fldidx,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_lth
+        ) > 0n) {
             p = cptr.ldPtro(status_vals, fldidx, 8);
-            for (lastchar = eos(p); cptr.cmp(lastchar, p) > 0 && cptr.ld1s(cptr.predec(() => lastchar, (v) => { lastchar = v; })) == 32; ) {
+            for (
+                lastchar = eos(p);
+                cptr.cmp(lastchar, p) > 0 &&
+                    cptr.ld1s(cptr.predec(() => lastchar, (v) => { lastchar = v; })) == 32;
+            ) {
                 cptr.st1(lastchar, 0);
-                (cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth) + -1n)) - (-1n);
+                (cptr.stU64o2(
+                    cptr.decay(tty_status[NHM.NOW]),
+                    fldidx,
+                    $sizeof_tty_status_fields,
+                    $tty_status_fields_lth,
+                    cptr.ldU64o2(
+                        cptr.decay(tty_status[NHM.NOW]),
+                        fldidx,
+                        $sizeof_tty_status_fields,
+                        $tty_status_fields_lth
+                    ) +
+                        -1n
+                )) -
+                        (-1n);
             }
         }
         break;
@@ -3290,12 +4306,30 @@ export function tty_status_update(fldidx, ptr, chg, percent, color, colormasks) 
         /* when hitpointbar is enabled, rendering will enforce a length
            of 30 on title, padding with spaces or truncating if necessary */
         if (cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar))
-            cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, 32n);  /* '[' and ']' */
+            cptr.stU64o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                fldidx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_lth,
+                32n
+            );  /* '[' and ']' */
         break;
         case NHC.BL_GOLD:
         /* \GXXXXNNNN counts as 1 [moot since we use decode_mixed() above] */
-        if ((p = cptr.strchr(cptr.ldPtro(status_vals, fldidx, 8), 92)) !== null && cptr.ld1so(p, 1) == 71)
-            cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), fldidx, $sizeof_tty_status_fields, $tty_status_fields_lth) - 9n);
+        if ((p = cptr.strchr(cptr.ldPtro(status_vals, fldidx, 8), 92)) !== null &&
+                cptr.ld1so(p, 1) == 71)
+            cptr.stU64o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                fldidx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_lth,
+                cptr.ldU64o2(
+                    cptr.decay(tty_status[NHM.NOW]),
+                    fldidx,
+                    $sizeof_tty_status_fields,
+                    $tty_status_fields_lth
+                ) - 9n
+            );
         break;
         case NHC.BL_CAP:
         enc_shrinklvl = 0;  /* caller is passing full length string */
@@ -3334,7 +4368,11 @@ function make_things_fit(force_update) {
         }
 
         requirement = (cptr.ldI32o(rowsz, condrow, 4) - 1) | 0;
-        if (BigInt(requirement) <= BigInt.asIntN(64, cptr.ldI64o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_cols) - 1n)) {
+        if (BigInt(requirement) <=
+                BigInt.asIntN(
+                    64,
+                    cptr.ldI64o(cptr.ldPtro(wins, WIN_STATUS.v, 8), $WinDesc_cols) - 1n
+                )) {
             fitting = requirement;
             break;  /* we're good */
         }
@@ -3396,34 +4434,159 @@ function check_fields(forcefields, sz) {
         for (i = 0; (idx = cptr.ldI32o3(fieldorder, row, 76, i, 4, 0)) != NHC.BL_FLUSH; ++i) {
             if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
                 continue;
-            if (!cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_valid))
+            if (!cptr.ld1so2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_valid
+            ))
                 valid = 0;
             /* might be called more than once for shrink tests, so need
                to reset these (redraw and x at any rate) each time */
-            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw, 0);
-            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_y, row);
-            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_x, col);
+            cptr.st1o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_redraw,
+                0
+            );
+            cptr.stI32o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_y,
+                row
+            );
+            cptr.stI32o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_x,
+                col
+            );
 
             /* On a change to the field location, everything further
                to the right must be updated as well.  (Not necessarily
                everything; it's possible for complementary changes across
                multiple fields to put stuff further right back in sync.) */
-            if (BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_x))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)) != BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_x))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)))
+            if (BigInt.asUintN(
+                64,
+                BigInt.asUintN(
+                    64,
+                    BigInt(cptr.ldI32o2(
+                        cptr.decay(tty_status[NHM.NOW]),
+                        idx,
+                        $sizeof_tty_status_fields,
+                        $tty_status_fields_x
+                    ))
+                ) +
+                    cptr.ldU64o2(
+                        cptr.decay(tty_status[NHM.NOW]),
+                        idx,
+                        $sizeof_tty_status_fields,
+                        $tty_status_fields_lth
+                    )
+            ) !=
+                    BigInt.asUintN(
+                        64,
+                        BigInt.asUintN(
+                            64,
+                            BigInt(cptr.ldI32o2(
+                                cptr.decay(tty_status[NHM.BEFORE]),
+                                idx,
+                                $sizeof_tty_status_fields,
+                                $tty_status_fields_x
+                            ))
+                        ) +
+                            cptr.ldU64o2(
+                                cptr.decay(tty_status[NHM.BEFORE]),
+                                idx,
+                                $sizeof_tty_status_fields,
+                                $tty_status_fields_lth
+                            )
+                    ))
                 update_right = 1;
-            else if (cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth) != cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth) || cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_x) != cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_x))
-                cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw, 1);
+            else if (cptr.ldU64o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_lth
+            ) !=
+                cptr.ldU64o2(
+                    cptr.decay(tty_status[NHM.BEFORE]),
+                    idx,
+                    $sizeof_tty_status_fields,
+                    $tty_status_fields_lth
+                ) ||
+                    cptr.ldI32o2(
+                        cptr.decay(tty_status[NHM.NOW]),
+                        idx,
+                        $sizeof_tty_status_fields,
+                        $tty_status_fields_x
+                    ) !=
+                        cptr.ldI32o2(
+                            cptr.decay(tty_status[NHM.BEFORE]),
+                            idx,
+                            $sizeof_tty_status_fields,
+                            $tty_status_fields_x
+                        ))
+                cptr.st1o2(
+                    cptr.decay(tty_status[NHM.NOW]),
+                    idx,
+                    $sizeof_tty_status_fields,
+                    $tty_status_fields_redraw,
+                    1
+                );
             else
                 update_right = 0;
 
             matchprev = 0;  /* assume failure */
-            if (valid && !update_right && !forcefields && !cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw)) {
+            if (valid &&
+                    !update_right &&
+                    !forcefields &&
+                    !cptr.ld1so2(
+                        cptr.decay(tty_status[NHM.NOW]),
+                        idx,
+                        $sizeof_tty_status_fields,
+                        $tty_status_fields_redraw
+                    )) {
                 /*
                  * Check values against those already on the display.
                  *  - Is the additional processing time for this worth it?
                  */
-                if (do_field_opt && idx != NHC.BL_CONDITION && (cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_color) == cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_color)) && (cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_attr) == cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields, $tty_status_fields_attr))) {
+                if (do_field_opt &&
+                        idx != NHC.BL_CONDITION &&
+                        (cptr.ldI32o2(
+                            cptr.decay(tty_status[NHM.NOW]),
+                            idx,
+                            $sizeof_tty_status_fields,
+                            $tty_status_fields_color
+                        ) ==
+                            cptr.ldI32o2(
+                                cptr.decay(tty_status[NHM.BEFORE]),
+                                idx,
+                                $sizeof_tty_status_fields,
+                                $tty_status_fields_color
+                            )) &&
+                        (cptr.ldI32o2(
+                            cptr.decay(tty_status[NHM.NOW]),
+                            idx,
+                            $sizeof_tty_status_fields,
+                            $tty_status_fields_attr
+                        ) ==
+                            cptr.ldI32o2(
+                                cptr.decay(tty_status[NHM.BEFORE]),
+                                idx,
+                                $sizeof_tty_status_fields,
+                                $tty_status_fields_attr
+                            ))) {
                     matchprev = 1;  /* assume success */
-                    if (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_dirty)) {
+                    if (cptr.ld1so2(
+                        cptr.decay(tty_status[NHM.NOW]),
+                        idx,
+                        $sizeof_tty_status_fields,
+                        $tty_status_fields_dirty
+                    )) {
                         /* compare values */
                         let ob;
                         let nb;  /* old byte, new byte */
@@ -3450,10 +4613,33 @@ function check_fields(forcefields, sz) {
                 }
             }
 
-            if (forcefields || update_right || (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_dirty) && !matchprev))
-                cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw, 1);
+            if (forcefields ||
+                    update_right ||
+                    (cptr.ld1so2(
+                        cptr.decay(tty_status[NHM.NOW]),
+                        idx,
+                        $sizeof_tty_status_fields,
+                        $tty_status_fields_dirty
+                    ) &&
+                        !matchprev))
+                cptr.st1o2(
+                    cptr.decay(tty_status[NHM.NOW]),
+                    idx,
+                    $sizeof_tty_status_fields,
+                    $tty_status_fields_redraw,
+                    1
+                );
 
-            col = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt(col)) + cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)));
+            col = Number(BigInt.asIntN(
+                32,
+                BigInt.asUintN(64, BigInt(col)) +
+                    cptr.ldU64o2(
+                        cptr.decay(tty_status[NHM.NOW]),
+                        idx,
+                        $sizeof_tty_status_fields,
+                        $tty_status_fields_lth
+                    )
+            ));
         }
         cptr.stI32o(sz, row, col, 4);
     }
@@ -3481,16 +4667,26 @@ function tty_putstatusfield(text, x, y) {
     ;
 
     if (x < ncols && y < nrows) {
-        if (BigInt(x) != cptr.ldI64o(cw, $WinDesc_curx) || BigInt(y) != cptr.ldI64o(cw, $WinDesc_cury))
+        if (BigInt(x) != cptr.ldI64o(cw, $WinDesc_curx) ||
+                BigInt(y) != cptr.ldI64o(cw, $WinDesc_cury))
             tty_curs(NHM.NHW_STATUS, x, y);
         for (i = 0; i < lth; ++i) {
             n = (i + x) | 0;
             if (n < ncols && cptr.ld1s(text)) {
                 void putchar(cptr.ld1s(text));
                 nomux_putch(cptr.ld1s(text));
-                (cptr.stI16o(ttyDisplay, $DisplayDesc_curx, cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1)) - (1);
+                (cptr.stI16o(
+                    ttyDisplay,
+                    $DisplayDesc_curx,
+                    cptr.ldI16o(ttyDisplay, $DisplayDesc_curx) + 1
+                )) -
+                        (1);
                 (cptr.stI64o(cw, $WinDesc_curx, cptr.ldI64o(cw, $WinDesc_curx) + 1n)) - (1n);
-                cptr.st1o(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), y, 8), (n - 1) | 0, cptr.ld1s(text));
+                cptr.st1o(
+                    cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), y, 8),
+                    (n - 1) | 0,
+                    cptr.ld1s(text)
+                );
                 text = cptr.add(text, 1);
             }
         }
@@ -3508,10 +4704,29 @@ function set_condition_length() {
         for (c = 0; c < 30; ++c) {
             mask = cptr.ldI64o2(conditions, c, $sizeof_conditions_t, $conditions_t_mask);
             if ((tty_condition_bits & mask) == mask)
-                lth = (lth + ((1 + Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro3(conditions, c, $sizeof_conditions_t, cond_shrinklvl, 8, $conditions_t_text))))) | 0)) | 0;
+                lth = (lth +
+                    ((1 +
+                        Number(BigInt.asIntN(
+                            32,
+                            cptr.strlen(cptr.ldPtro3(
+                                conditions,
+                                c,
+                                $sizeof_conditions_t,
+                                cond_shrinklvl,
+                                8,
+                                $conditions_t_text
+                            ))
+                        ))) | 0)) |
+                        0;
         }
     }
-    cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, $sizeof_tty_status_fields, $tty_status_fields_lth, BigInt.asUintN(64, BigInt(lth)));
+    cptr.stU64o2(
+        cptr.decay(tty_status[NHM.NOW]),
+        NHC.BL_CONDITION,
+        $sizeof_tty_status_fields,
+        $tty_status_fields_lth,
+        BigInt.asUintN(64, BigInt(lth))
+    );
 }
 
 /** C ref: wintty.c:4936 — @param {CInt} lvl */
@@ -3519,9 +4734,19 @@ function shrink_enc(lvl) {
     /* shrink or restore the encumbrance word */
     if (lvl <= 2) {
         enc_shrinklvl = lvl;
-        void cptr.sprintf(cptr.ldPtro(status_vals, NHC.BL_CAP, 8), __s_sp_pct_s, cptr.ldPtro(cptr.decay(encvals[lvl]), enclev, 8));
+        void cptr.sprintf(
+            cptr.ldPtro(status_vals, NHC.BL_CAP, 8),
+            __s_sp_pct_s,
+            cptr.ldPtro(cptr.decay(encvals[lvl]), enclev, 8)
+        );
     }
-    cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CAP, $sizeof_tty_status_fields, $tty_status_fields_lth, cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_CAP, 8)));
+    cptr.stU64o2(
+        cptr.decay(tty_status[NHM.NOW]),
+        NHC.BL_CAP,
+        $sizeof_tty_status_fields,
+        $tty_status_fields_lth,
+        cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_CAP, 8))
+    );
 }
 
 /** C ref: wintty.c:4947 — @param {CInt} lvl */
@@ -3535,7 +4760,13 @@ function shrink_dlvl(lvl) {
         void cptr.strcpy(cptr.decay(buf), (lvl == 0) ? __s_dlvl : __s_dl);
         void cptr.strcat(cptr.decay(buf), levval);
         void cptr.strcpy(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8), cptr.decay(buf));
-        cptr.stU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_LEVELDESC, $sizeof_tty_status_fields, $tty_status_fields_lth, cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8)));
+        cptr.stU64o2(
+            cptr.decay(tty_status[NHM.NOW]),
+            NHC.BL_LEVELDESC,
+            $sizeof_tty_status_fields,
+            $tty_status_fields_lth,
+            cptr.strlen(cptr.ldPtro(status_vals, NHC.BL_LEVELDESC, 8))
+        );
     }
 }
 
@@ -3559,7 +4790,12 @@ function check_windowdata() {
  * Return what color this condition should
  * be displayed in based on user settings.
  */
-/** C ref: wintty.c:4984 — @param {CLongLong} bm @param {CPtr<unsigned long>} bmarray @returns {CInt} */
+/**
+ * C ref: wintty.c:4984
+ * @param {CLongLong} bm
+ * @param {CPtr<unsigned long>} bmarray
+ * @returns {CInt}
+ */
 function condcolor(bm, bmarray) {
     let i;
 
@@ -3571,7 +4807,12 @@ function condcolor(bm, bmarray) {
     return NHM.NO_COLOR;
 }
 
-/** C ref: wintty.c:4997 — @param {CLongLong} bm @param {CPtr<unsigned long>} bmarray @returns {CInt} */
+/**
+ * C ref: wintty.c:4997
+ * @param {CLongLong} bm
+ * @param {CPtr<unsigned long>} bmarray
+ * @returns {CInt}
+ */
 function condattr(bm, bmarray) {
     let attr = 0;
     let i;
@@ -3643,12 +4884,34 @@ function render_status() {
         for (i = 0; (idx = cptr.ldI32o3(fieldorder, row, 76, i, 4, 0)) != NHC.BL_FLUSH; ++i) {
             if (!cptr.ld1so(cptr.decay(status_activefields), idx, 1))
                 continue;
-            x = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_x);
+            x = cptr.ldI32o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_x
+            );
             text = cptr.ldPtro(status_vals, idx, 8);  /* always "" for BL_CONDITION */
-            tlth = Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)));  /* valid for BL_CONDITION */
+            tlth = Number(BigInt.asIntN(
+                32,
+                cptr.ldU64o2(
+                    cptr.decay(tty_status[NHM.NOW]),
+                    idx,
+                    $sizeof_tty_status_fields,
+                    $tty_status_fields_lth
+                )
+            ));  /* valid for BL_CONDITION */
 
-            if (cptr.ld1so2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw) || !do_field_opt) {
-                let hitpointbar = schar((idx == NHC.BL_TITLE && cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar) ? 1 : 0));
+            if (cptr.ld1so2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_redraw
+            ) ||
+                    !do_field_opt) {
+                let hitpointbar = schar((idx == NHC.BL_TITLE &&
+                    cptr.ld1so(iflags, $instance_flags_wc2_hitpointbar)
+                        ? 1
+                        : 0));
 
                 if (idx == NHC.BL_CONDITION) {
                     /*
@@ -3673,17 +4936,53 @@ function render_status() {
                         /* 'version' might follow conditions; if so, adjust
                            expectations for where conditions should end;
                            only matters when conditions are being indented */
-                        if (cptr.ld1so(cptr.decay(status_activefields), NHC.BL_VERS, 1) && cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_VERS)
-                            last_col = (last_col - Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, $sizeof_tty_status_fields, $tty_status_fields_lth)))) | 0;
+                        if (cptr.ld1so(cptr.decay(status_activefields), NHC.BL_VERS, 1) &&
+                                cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_VERS)
+                            last_col = (last_col -
+                                Number(BigInt.asIntN(
+                                    32,
+                                    cptr.ldU64o2(
+                                        cptr.decay(tty_status[NHM.NOW]),
+                                        NHC.BL_VERS,
+                                        $sizeof_tty_status_fields,
+                                        $tty_status_fields_lth
+                                    )
+                                ))) |
+                                    0;
                         /* line up with hunger (or where it would have
                            been when currently omitted); if there isn't
                            enough room for that, right justify; or place
                            as-is if not even enough room for /that/; we
                            expect hunger to be on preceding row, in which
                            case its current data has been moved to [BEFORE] */
-                        if (cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, $sizeof_tty_status_fields, $tty_status_fields_y) < row && x < cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, $sizeof_tty_status_fields, $tty_status_fields_x) && (((cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, $sizeof_tty_status_fields, $tty_status_fields_x) + tlth) | 0) < ((last_col - 1) | 0)))
-                            cstart = cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_HUNGER, $sizeof_tty_status_fields, $tty_status_fields_x);
-                        else if (BigInt(((x + tlth) | 0)) < BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cols) - 1n))
+                        if (cptr.ldI32o2(
+                            cptr.decay(tty_status[NHM.BEFORE]),
+                            NHC.BL_HUNGER,
+                            $sizeof_tty_status_fields,
+                            $tty_status_fields_y
+                        ) < row &&
+                                x <
+                                    cptr.ldI32o2(
+                                        cptr.decay(tty_status[NHM.BEFORE]),
+                                        NHC.BL_HUNGER,
+                                        $sizeof_tty_status_fields,
+                                        $tty_status_fields_x
+                                    ) &&
+                                (((cptr.ldI32o2(
+                                    cptr.decay(tty_status[NHM.BEFORE]),
+                                    NHC.BL_HUNGER,
+                                    $sizeof_tty_status_fields,
+                                    $tty_status_fields_x
+                                ) + tlth) | 0) <
+                                    ((last_col - 1) | 0)))
+                            cstart = cptr.ldI32o2(
+                                cptr.decay(tty_status[NHM.BEFORE]),
+                                NHC.BL_HUNGER,
+                                $sizeof_tty_status_fields,
+                                $tty_status_fields_x
+                            );
+                        else if (BigInt(((x + tlth) | 0)) <
+                                BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cols) - 1n))
                             cstart = (last_col - tlth) | 0;
                         else
                             cstart = x;
@@ -3693,14 +4992,25 @@ function render_status() {
                                 if (cptr.ld1so(dat, (x - 1) | 0) != 32)
                                     tty_putstatusfield(__s_sp, x, y);
                             } while (++x < cstart);
-                            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_CONDITION, $sizeof_tty_status_fields, $tty_status_fields_x, x);
+                            cptr.stI32o2(
+                                cptr.decay(tty_status[NHM.NOW]),
+                                NHC.BL_CONDITION,
+                                $sizeof_tty_status_fields,
+                                $tty_status_fields_x,
+                                x
+                            );
                             tty_curs(WIN_STATUS.v, x, y);
                         }
                     }
                     /* actually draw condition words */
                     for (c = 0; c < 30 && bits != 0n; ++c) {
                         ci = cptr.ldI32o(cond_idx, c, 4);
-                        mask = cptr.ldI64o2(conditions, ci, $sizeof_conditions_t, $conditions_t_mask);
+                        mask = cptr.ldI64o2(
+                            conditions,
+                            ci,
+                            $sizeof_conditions_t,
+                            $conditions_t_mask
+                        );
                         if (bits & mask) {
                             let condtext;
 
@@ -3727,8 +5037,16 @@ function render_status() {
                                 if (coloridx != NHM.NO_COLOR)
                                     term_start_color(coloridx);
                             }
-                            condtext = cptr.ldPtro3(conditions, ci, $sizeof_conditions_t, cond_shrinklvl, 8, $conditions_t_text);
-                            if (BigInt(x) >= cptr.ldI64o(cw, $WinDesc_cols) && !truncation_expected) {
+                            condtext = cptr.ldPtro3(
+                                conditions,
+                                ci,
+                                $sizeof_conditions_t,
+                                cond_shrinklvl,
+                                8,
+                                $conditions_t_text
+                            );
+                            if (BigInt(x) >= cptr.ldI64o(cw, $WinDesc_cols) &&
+                                    !truncation_expected) {
                                 impossible(__s_unexpected_condition_placement_overflow, condtext);
                                 condtext = __s_empty;
                                 bits = 0n;  /* skip any remaining conditions */
@@ -3786,7 +5104,10 @@ function render_status() {
                        if shorter or truncated if longer */
                     if (cptr.strlen(text) != 30n) {
                         void cptr.sprintf(cptr.decay(bar), __s_30_30s, text);
-                        void cptr.strcpy(cptr.ldPtro(status_vals, NHC.BL_TITLE, 8), cptr.decay(bar));
+                        void cptr.strcpy(
+                            cptr.ldPtro(status_vals, NHC.BL_TITLE, 8),
+                            cptr.decay(bar)
+                        );
                     } else {
                         void cptr.strcpy(cptr.decay(bar), text);
                     }
@@ -3811,8 +5132,18 @@ function render_status() {
                     }
                     tty_putstatusfield(__s_lbrack, x++, y);
                     if (cptr.ld1s(cptr.decay(bar))) {
-                        coloridx = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, $sizeof_tty_status_fields, $tty_status_fields_color);
-                        attrmask = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_TITLE, $sizeof_tty_status_fields, $tty_status_fields_attr);
+                        coloridx = cptr.ldI32o2(
+                            cptr.decay(tty_status[NHM.NOW]),
+                            NHC.BL_TITLE,
+                            $sizeof_tty_status_fields,
+                            $tty_status_fields_color
+                        );
+                        attrmask = cptr.ldI32o2(
+                            cptr.decay(tty_status[NHM.NOW]),
+                            NHC.BL_TITLE,
+                            $sizeof_tty_status_fields,
+                            $tty_status_fields_attr
+                        );
                         {
                             if (attrmask) {
                                 if ((attrmask) & NHC.HL_BOLD)
@@ -3829,11 +5160,13 @@ function render_status() {
                                     term_start_attr(NHM.ATR_INVERSE);
                             }
                         }
-                        if (cptr.ldI64o(iflags, $instance_flags_hilite_delta) && coloridx != NHM.NO_COLOR)
+                        if (cptr.ldI64o(iflags, $instance_flags_hilite_delta) &&
+                                coloridx != NHM.NO_COLOR)
                             term_start_color(coloridx);
                         tty_putstatusfield(cptr.decay(bar), x, y);
                         x = (x + Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(bar))))) | 0;
-                        if (cptr.ldI64o(iflags, $instance_flags_hilite_delta) && coloridx != NHM.NO_COLOR)
+                        if (cptr.ldI64o(iflags, $instance_flags_hilite_delta) &&
+                                coloridx != NHM.NO_COLOR)
                             term_end_color();
                         {
                             if (attrmask) {
@@ -3869,27 +5202,72 @@ function render_status() {
                      * |   in a special case above   |
                      * +-----------------------------+
                      */
-                    if (idx == NHC.BL_VERS && cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_FLUSH) {
+                    if (idx == NHC.BL_VERS &&
+                            cptr.ldI32o3(fieldorder, row, 76, (i + 1) | 0, 4, 0) == NHC.BL_FLUSH) {
                         let vstart;
                         let dat = cptr.add(cptr.ldPtro(cptr.ldPtro(cw, $WinDesc_data), y, 8), 0);
                         /* FIXME:  there's something fishy going on here;
                            'x' ends up out of synch when conditions have
                            3rd row indentation and the indenting of version
                            overwrites them with spaces; this hides that */
-                        let vx = Number(BigInt.asIntN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, $sizeof_tty_status_fields, $tty_status_fields_x))) + cptr.ldU64o2(cptr.decay(tty_status[NHM.BEFORE]), NHC.BL_CONDITION, $sizeof_tty_status_fields, $tty_status_fields_lth))));
+                        let vx = Number(BigInt.asIntN(
+                            32,
+                            BigInt.asUintN(
+                                64,
+                                BigInt.asUintN(
+                                    64,
+                                    BigInt(cptr.ldI32o2(
+                                        cptr.decay(tty_status[NHM.BEFORE]),
+                                        NHC.BL_CONDITION,
+                                        $sizeof_tty_status_fields,
+                                        $tty_status_fields_x
+                                    ))
+                                ) +
+                                    cptr.ldU64o2(
+                                        cptr.decay(tty_status[NHM.BEFORE]),
+                                        NHC.BL_CONDITION,
+                                        $sizeof_tty_status_fields,
+                                        $tty_status_fields_lth
+                                    )
+                            )
+                        ));
 
-                        if (i > 0 && cptr.ldI32o3(fieldorder, row, 76, (i - 1) | 0, 4, 0) == NHC.BL_CONDITION && x != vx) {
+                        if (i > 0 &&
+                                cptr.ldI32o3(fieldorder, row, 76, (i - 1) | 0, 4, 0) ==
+                                    NHC.BL_CONDITION &&
+                                x != vx) {
                             x = vx;
                             tty_curs(WIN_STATUS.v, x, y);
                         }
                         /* indent version to right justify it */
-                        vstart = Number(BigInt.asIntN(32, BigInt.asIntN(64, cptr.ldI64o(cw, $WinDesc_cols) - BigInt(Number(BigInt.asIntN(32, cptr.ldU64o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_lth)))))));
+                        vstart = Number(BigInt.asIntN(
+                            32,
+                            BigInt.asIntN(
+                                64,
+                                cptr.ldI64o(cw, $WinDesc_cols) -
+                                    BigInt(Number(BigInt.asIntN(
+                                        32,
+                                        cptr.ldU64o2(
+                                            cptr.decay(tty_status[NHM.NOW]),
+                                            idx,
+                                            $sizeof_tty_status_fields,
+                                            $tty_status_fields_lth
+                                        )
+                                    )))
+                            )
+                        ));
                         if (x < vstart) {
                             do {
                                 if (cptr.ld1so(dat, (x - 1) | 0) != 32)
                                     tty_putstatusfield(__s_sp, x, y);
                             } while (++x < vstart);
-                            cptr.stI32o2(cptr.decay(tty_status[NHM.NOW]), NHC.BL_VERS, $sizeof_tty_status_fields, $tty_status_fields_x, x);
+                            cptr.stI32o2(
+                                cptr.decay(tty_status[NHM.NOW]),
+                                NHC.BL_VERS,
+                                $sizeof_tty_status_fields,
+                                $tty_status_fields_x,
+                                x
+                            );
                         }
                     }
                     if (cptr.ldI64o(iflags, $instance_flags_hilite_delta)) {
@@ -3901,7 +5279,12 @@ function render_status() {
                             tty_putstatusfield(__s_slash, x++, y);
                             text = cptr.add(text, 1);
                         }
-                        attrmask = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_attr);
+                        attrmask = cptr.ldI32o2(
+                            cptr.decay(tty_status[NHM.NOW]),
+                            idx,
+                            $sizeof_tty_status_fields,
+                            $tty_status_fields_attr
+                        );
                         {
                             if (attrmask) {
                                 if ((attrmask) & NHC.HL_BOLD)
@@ -3918,7 +5301,12 @@ function render_status() {
                                     term_start_attr(NHM.ATR_INVERSE);
                             }
                         }
-                        coloridx = cptr.ldI32o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_color);
+                        coloridx = cptr.ldI32o2(
+                            cptr.decay(tty_status[NHM.NOW]),
+                            idx,
+                            $sizeof_tty_status_fields,
+                            $tty_status_fields_color
+                        );
                         if (coloridx != NHM.NO_COLOR)
                             term_start_color(coloridx);
                     }
@@ -3951,17 +5339,41 @@ function render_status() {
             }
             cptr.stI32o(cptr.decay(finalx[row]), NHM.NOW, (x - 1) | 0, 4);
             /* reset .redraw and .dirty now that field has been rendered */
-            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_dirty, 0);
-            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_redraw, 0);
-            cptr.st1o2(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields, $tty_status_fields_sanitycheck, 0);
+            cptr.st1o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_dirty,
+                0
+            );
+            cptr.st1o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_redraw,
+                0
+            );
+            cptr.st1o2(
+                cptr.decay(tty_status[NHM.NOW]),
+                idx,
+                $sizeof_tty_status_fields,
+                $tty_status_fields_sanitycheck,
+                0
+            );
             /*
              * For comparison of current and previous:
              * - Copy the entire tty_status struct.
              */
-            cptr.memcpy(cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields), cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields), 40);
+            cptr.memcpy(
+                cptr.add(cptr.decay(tty_status[NHM.BEFORE]), idx, $sizeof_tty_status_fields),
+                cptr.add(cptr.decay(tty_status[NHM.NOW]), idx, $sizeof_tty_status_fields),
+                40
+            );
         }  /* for i=..., idx=fieldorder[][i] */
         x = cptr.ldI32o(cptr.decay(finalx[row]), NHM.NOW, 4);
-        if ((x < cptr.ldI32o(cptr.decay(finalx[row]), NHM.BEFORE, 4) || !cptr.ldI32o(cptr.decay(finalx[row]), NHM.BEFORE, 4)) && BigInt(((x + 1) | 0)) < cptr.ldI64o(cw, $WinDesc_cols)) {
+        if ((x < cptr.ldI32o(cptr.decay(finalx[row]), NHM.BEFORE, 4) ||
+            !cptr.ldI32o(cptr.decay(finalx[row]), NHM.BEFORE, 4)) &&
+                BigInt(((x + 1) | 0)) < cptr.ldI64o(cw, $WinDesc_cols)) {
             tty_curs(WIN_STATUS.v, (x + 1) | 0, y);
             cl_end();
         }
@@ -3969,7 +5381,12 @@ function render_status() {
          * For comparison of current and previous:
          * - Copy the last written column number on the row.
          */
-        cptr.stI32o(cptr.decay(finalx[row]), NHM.BEFORE, cptr.ldI32o(cptr.decay(finalx[row]), NHM.NOW, 4), 4);
+        cptr.stI32o(
+            cptr.decay(finalx[row]),
+            NHM.BEFORE,
+            cptr.ldI32o(cptr.decay(finalx[row]), NHM.NOW, 4),
+            4
+        );
     }  /* for row=... */
     return;
 }
@@ -3978,7 +5395,19 @@ function render_status() {
 // 39 bindings: 3 rebound+refilled, 24 rebound, 12 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(tty_procs), S(BASE_WINDOW), S(wins), S(ttyDisplay), S(erasing_tty_screen), S(obuf), S(winpanicstr), S(defmorestr), S(clipping), S(clipx), S(clipxmax), S(clipy), S(clipymax), S(GFlag), S(HE_resets_AS), S(calling_from_update_inventory), S(default_menu_cmds), S(resize_mesg), S(__static_tty_askname_who_are_you), S(__static_compress_str_cbuf), S(tty_menu_promptstyle), S(tty_colormasks), S(tty_condition_bits), S(tty_status), S(hpbar_percent), S(hpbar_crit_hp), S(encvals), S(twolineorder), S(threelineorder), S(fieldorder), S(finalx), S(windowdata_init), S(cond_shrinklvl), S(enclev), S(enc_shrinklvl), S(dlvl_shrinklvl), S(truncation_expected), S(do_field_opt), S(__static_render_status_once_only)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(tty_procs), S(BASE_WINDOW), S(wins), S(ttyDisplay), S(erasing_tty_screen), S(obuf),
+        S(winpanicstr), S(defmorestr), S(clipping), S(clipx), S(clipxmax), S(clipy), S(clipymax),
+        S(GFlag), S(HE_resets_AS), S(calling_from_update_inventory), S(default_menu_cmds),
+        S(resize_mesg), S(__static_tty_askname_who_are_you), S(__static_compress_str_cbuf),
+        S(tty_menu_promptstyle), S(tty_colormasks), S(tty_condition_bits), S(tty_status),
+        S(hpbar_percent), S(hpbar_crit_hp), S(encvals), S(twolineorder), S(threelineorder),
+        S(fieldorder), S(finalx), S(windowdata_init), S(cond_shrinklvl), S(enclev),
+        S(enc_shrinklvl), S(dlvl_shrinklvl), S(truncation_expected), S(do_field_opt),
+        S(__static_render_status_once_only)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("wintty.js: __resetState before __captureState");

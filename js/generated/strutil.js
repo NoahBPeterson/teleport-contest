@@ -29,7 +29,13 @@ export function strbuf_init(strbuf) {
 export function strbuf_append(strbuf, str) {
     let len = (Number(BigInt.asIntN(32, cptr.strlen(str))) + 1) | 0;
 
-    strbuf_reserve(strbuf, (len + (cptr.ldPtro(strbuf, $strbuf_t_str) ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, $strbuf_t_str)))) : 0)) | 0);
+    strbuf_reserve(
+        strbuf,
+        (len +
+            (cptr.ldPtro(strbuf, $strbuf_t_str)
+                ? Number(BigInt.asIntN(32, cptr.strlen(cptr.ldPtro(strbuf, $strbuf_t_str))))
+                : 0)) | 0
+    );
     void cptr.strcat(cptr.ldPtro(strbuf, $strbuf_t_str), str);
 }
 
@@ -56,7 +62,8 @@ export function strbuf_reserve(strbuf, len) {
 /* strbuf_empty() frees allocated memory and set strbuf to initial state */
 /** C ref: strutil.c:49 — @param {CPtr<strbuf_t>} strbuf */
 export function strbuf_empty(strbuf) {
-    if (!cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null)) && !cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), cptr.add(strbuf, $strbuf_t_buf)))
+    if (!cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), (null)) &&
+            !cptr.eq(cptr.ldPtro(strbuf, $strbuf_t_str), cptr.add(strbuf, $strbuf_t_buf)))
         cptr.free(cptr.ldPtro(strbuf, $strbuf_t_str));
     strbuf_init(strbuf);
 }
@@ -74,7 +81,11 @@ export function strbuf_nl_to_crlf(strbuf) {
                 count++;
         if (count) {
             strbuf_reserve(strbuf, (((len + count) | 0) + 1) | 0);
-            for (cp = cptr.add(cptr.add(cptr.ldPtro(strbuf, $strbuf_t_str), len), count); count; cp = cptr.add(cp, -1))
+            for (
+                cp = cptr.add(cptr.add(cptr.ldPtro(strbuf, $strbuf_t_str), len), count);
+                count;
+                cp = cptr.add(cp, -1)
+            )
                 if ((cptr.st1(cp, cptr.ld1so(cp, -count))) == 10) {
                     cptr.st1(cptr.predec(() => cp, (v) => { cp = v; }), 13);
                     --count;
@@ -85,7 +96,13 @@ export function strbuf_nl_to_crlf(strbuf) {
 
 /* strlen() but returns unsigned and panics if string is unreasonably long;
    used by dlb as well as by nethack */
-/** C ref: strutil.c:82 — @param {CPtr<char>} str @param {CPtr<char>} file @param {CInt} line @returns {CUInt} */
+/**
+ * C ref: strutil.c:82
+ * @param {CPtr<char>} str
+ * @param {CPtr<char>} file
+ * @param {CInt} line
+ * @returns {CUInt}
+ */
 export function Strlen_(str, file, line) {
     let p;
     let len;
@@ -102,7 +119,14 @@ export function Strlen_(str, file, line) {
 
 /* guts of pmatch(), pmatchi(), and pmatchz();
    match a string against a pattern */
-/** C ref: strutil.c:105 — @param {CPtr<char>} patrn @param {CPtr<char>} strng @param {CInt} ci @param {CPtr<char>} sk @returns {CInt} */
+/**
+ * C ref: strutil.c:105
+ * @param {CPtr<char>} patrn
+ * @param {CPtr<char>} strng
+ * @param {CInt} ci
+ * @param {CPtr<char>} sk
+ * @returns {CInt}
+ */
 function pmatch_internal(patrn, strng, ci, sk) {
     let s;
     let p;
@@ -122,7 +146,10 @@ function pmatch_internal(patrn, strng, ci, sk) {
         if (!p)
             return schar((s == 0));  /* matches iff end of string too */
         else if (p == 42)
-            return schar(((!cptr.ld1s(patrn) || pmatch_internal(patrn, cptr.add(strng, -(1)), ci, sk)) ? 1 : (s ? pmatch_internal(cptr.add(patrn, -(1)), strng, ci, sk) : 0)));
+            return schar(((!cptr.ld1s(patrn) ||
+                pmatch_internal(patrn, cptr.add(strng, -(1)), ci, sk))
+                    ? 1
+                    : (s ? pmatch_internal(cptr.add(patrn, -(1)), strng, ci, sk) : 0)));
         else if ((ci ? lowc(p) != lowc(s) : p != s) && (p != 63 || !s))
             return 0;  /* doesn't match */
         else

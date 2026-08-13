@@ -7,7 +7,9 @@ import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { exit_nhwindows, raw_print, resume_nhwindows, suspend_nhwindows, wait_synch, wizard } from './nhprop.js';
+import {
+    exit_nhwindows, raw_print, resume_nhwindows, suspend_nhwindows, wait_synch, wizard
+} from './nhprop.js';
 import { flags, gl, iflags, program_state, svh, svp, ynchars } from './decl.js';
 import { delete_levelfile, fqname, lock_file, set_levelfile_name, unlock_file } from './files.js';
 import { windowprocs } from './windows.js';
@@ -21,16 +23,17 @@ import { check_user_string } from './unixmain.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $flag_debug = FLD.flag_debug, $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_globals_l_lock = FLD.instance_globals_l_lock,
-    $instance_globals_l_locknum = FLD.instance_globals_l_locknum,
-    $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $sizeof_stat = FLD.sizeof_stat,
-    $stat_st_mtimespec = FLD.stat_st_mtimespec, $sysopt_s_shellers = FLD.sysopt_s_shellers,
-    $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
-    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
-    $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
-    $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
+const $flag_debug = FLD.flag_debug,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_globals_l_lock = FLD.instance_globals_l_lock,
+      $instance_globals_l_locknum = FLD.instance_globals_l_locknum,
+      $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $sizeof_stat = FLD.sizeof_stat,
+      $stat_st_mtimespec = FLD.stat_st_mtimespec, $sysopt_s_shellers = FLD.sysopt_s_shellers,
+      $window_procs_win_exit_nhwindows = FLD.window_procs_win_exit_nhwindows,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+      $window_procs_win_resume_nhwindows = FLD.window_procs_win_resume_nhwindows,
+      $window_procs_win_suspend_nhwindows = FLD.window_procs_win_suspend_nhwindows,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_tty = cptr.lit("tty");
@@ -184,7 +187,12 @@ export function getlock() {
             unlock_file(__s_perm);
             if (cptr.ld1so(iflags, $instance_flags_window_inited)) {
                 /* this is a candidate for paranoid_confirmation */
-                c = yn_function(cptr.decay(__static_getlock_destroy_old_game_prompt), cptr.decay(ynchars), 110, 1);
+                c = yn_function(
+                    cptr.decay(__static_getlock_destroy_old_game_prompt),
+                    cptr.decay(ynchars),
+                    110,
+                    1
+                );
             } else {
                 void raw_printf(__s_s_yn, cptr.decay(__static_getlock_destroy_old_game_prompt));
                 void fflush(__stdoutp);
@@ -264,14 +272,18 @@ export function ask_about_panic_save() {
 export function regularize(s) {
     let lp;
 
-    while ((lp = cptr.strchr(s, 46)) !== null || (lp = cptr.strchr(s, 47)) !== null || (lp = cptr.strchr(s, 32)) !== null)
+    while ((lp = cptr.strchr(s, 46)) !== null ||
+            (lp = cptr.strchr(s, 47)) !== null ||
+            (lp = cptr.strchr(s, 32)) !== null)
         cptr.st1(lp, 95);
 }
 
 /** C ref: unixunix.c:344 @returns {CInt} */
 export function dosh() {
     let str;
-    if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) || !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) || !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
+    if (!cptr.ldPtro(sysopt, $sysopt_s_shellers) ||
+            !cptr.ld1so(cptr.ldPtro(sysopt, $sysopt_s_shellers), 0) ||
+            !check_user_string(cptr.ldPtro(sysopt, $sysopt_s_shellers))) {
         /* FIXME: should no longer assume a particular command keystroke */
         Norep(__s_unavailable_command);
         return 0;
@@ -334,7 +346,12 @@ export function file_exists(path) {
 // 3 bindings: 1 rebound+refilled, 0 rebound, 2 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(buf), S(__static_getlock_destroy_old_game_prompt), S(__static_ask_about_panic_save_Instead_prompt)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(buf), S(__static_getlock_destroy_old_game_prompt),
+        S(__static_ask_about_panic_save_Instead_prompt)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("unixunix.js: __resetState before __captureState");

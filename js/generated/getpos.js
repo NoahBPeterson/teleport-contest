@@ -8,13 +8,29 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { glyph_is_cmap, glyph_is_monster, glyph_is_object, is_cmap_corr, is_cmap_door, is_cmap_drawbridge, is_cmap_engraving, is_cmap_furniture, is_cmap_lava, is_cmap_room, is_cmap_trap, is_cmap_wall, is_cmap_water } from './nhmacrofn.js';
-import { clear_nhwindow, cliparound, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu, putstr, start_menu } from './nhprop.js';
-import { WIN_MAP, WIN_MESSAGE, cg, flags, gc, gg, gi, gs, gv, gw, iflags, quitchars, svl, u } from './decl.js';
-import { selection_floodfill, selection_force_newsyms, selection_free, selection_getpoint, selection_new, selection_setpoint, set_selection_floodfillchk } from './selvar.js';
+import {
+    glyph_is_cmap, glyph_is_monster, glyph_is_object, is_cmap_corr, is_cmap_door,
+    is_cmap_drawbridge, is_cmap_engraving, is_cmap_furniture, is_cmap_lava, is_cmap_room,
+    is_cmap_trap, is_cmap_wall, is_cmap_water
+} from './nhmacrofn.js';
+import {
+    clear_nhwindow, cliparound, create_nhwindow, curs, destroy_nhwindow, display_nhwindow, end_menu,
+    putstr, start_menu
+} from './nhprop.js';
+import {
+    WIN_MAP, WIN_MESSAGE, cg, flags, gc, gg, gi, gs, gv, gw, iflags, quitchars, svl, u
+} from './decl.js';
+import {
+    selection_floodfill, selection_force_newsyms, selection_free, selection_getpoint, selection_new,
+    selection_setpoint, set_selection_floodfillchk
+} from './selvar.js';
 import { eos, nh_deterministic_qsort, nh_snprintf, sgn, strsubst, visctrl } from './hacklib.js';
 import { add_menu, select_menu, windowprocs } from './windows.js';
-import { cmd_from_func, cmdq_add_key, cmdq_clear, cmdq_pop, directionname, do_move_east, do_move_north, do_move_south, do_move_west, do_run, do_run_east, do_run_north, do_run_south, do_run_west, do_rush, isok, lock_mouse_buttons, movecmd, readchar_poskey, redraw_cmd, xytodir } from './cmd.js';
+import {
+    cmd_from_func, cmdq_add_key, cmdq_clear, cmdq_pop, directionname, do_move_east, do_move_north,
+    do_move_south, do_move_west, do_run, do_run_east, do_run_north, do_run_south, do_run_west,
+    do_rush, isok, lock_mouse_buttons, movecmd, readchar_poskey, redraw_cmd, xytodir
+} from './cmd.js';
 import { do_screen_description, what_is_a_location } from './pager.js';
 import { glyph_to_cmap } from './glyphs.js';
 import { back_to_glyph, docrt_flags, flush_screen, glyph_at, nul_glyphinfo } from './display.js';
@@ -28,43 +44,45 @@ import { defsyms } from './drawing.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $_cmd_queue_dirx = FLD._cmd_queue_dirx, $_cmd_queue_diry = FLD._cmd_queue_diry,
-    $_cmd_queue_dirz = FLD._cmd_queue_dirz, $_cmd_queue_key = FLD._cmd_queue_key,
-    $cmd_spkeys = FLD.cmd_spkeys, $const_globals_zeroany = FLD.const_globals_zeroany, $coord_y = FLD.coord_y,
-    $dlevel_t_flags = FLD.dlevel_t_flags, $flag_help = FLD.flag_help, $flag_verbose = FLD.flag_verbose,
-    $instance_flags_autodescribe = FLD.instance_flags_autodescribe,
-    $instance_flags_bgcolors = FLD.instance_flags_bgcolors,
-    $instance_flags_cmdassist = FLD.instance_flags_cmdassist,
-    $instance_flags_getloc_filter = FLD.instance_flags_getloc_filter,
-    $instance_flags_getloc_moveskip = FLD.instance_flags_getloc_moveskip,
-    $instance_flags_getloc_travelmode = FLD.instance_flags_getloc_travelmode,
-    $instance_flags_getloc_usemenu = FLD.instance_flags_getloc_usemenu,
-    $instance_flags_getpos_coords = FLD.instance_flags_getpos_coords,
-    $instance_flags_remember_getpos = FLD.instance_flags_remember_getpos,
-    $instance_flags_terrainmode = FLD.instance_flags_terrainmode,
-    $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
-    $instance_globals_g_getposx = FLD.instance_globals_g_getposx,
-    $instance_globals_g_getposy = FLD.instance_globals_g_getposy,
-    $instance_globals_g_gloc_filter_floodfill_match_glyph = FLD.instance_globals_g_gloc_filter_floodfill_match_glyph,
-    $instance_globals_g_gloc_filter_map = FLD.instance_globals_g_gloc_filter_map,
-    $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_w_wsettings = FLD.instance_globals_w_wsettings,
-    $levelflags_hero_memory = FLD.levelflags_hero_memory, $nhcoord_y = FLD.nhcoord_y,
-    $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $selectionvar_hei = FLD.selectionvar_hei,
-    $sizeof_coord = FLD.sizeof_coord, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $sizeof_symdef = FLD.sizeof_symdef, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
-    $win_settings_map_frame_color = FLD.win_settings_map_frame_color,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_curs = FLD.window_procs_win_curs,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
-    $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_uy = FLD.you_uy;
+      $_cmd_queue_dirz = FLD._cmd_queue_dirz, $_cmd_queue_key = FLD._cmd_queue_key,
+      $cmd_spkeys = FLD.cmd_spkeys, $const_globals_zeroany = FLD.const_globals_zeroany,
+      $coord_y = FLD.coord_y, $dlevel_t_flags = FLD.dlevel_t_flags, $flag_help = FLD.flag_help,
+      $flag_verbose = FLD.flag_verbose,
+      $instance_flags_autodescribe = FLD.instance_flags_autodescribe,
+      $instance_flags_bgcolors = FLD.instance_flags_bgcolors,
+      $instance_flags_cmdassist = FLD.instance_flags_cmdassist,
+      $instance_flags_getloc_filter = FLD.instance_flags_getloc_filter,
+      $instance_flags_getloc_moveskip = FLD.instance_flags_getloc_moveskip,
+      $instance_flags_getloc_travelmode = FLD.instance_flags_getloc_travelmode,
+      $instance_flags_getloc_usemenu = FLD.instance_flags_getloc_usemenu,
+      $instance_flags_getpos_coords = FLD.instance_flags_getpos_coords,
+      $instance_flags_remember_getpos = FLD.instance_flags_remember_getpos,
+      $instance_flags_terrainmode = FLD.instance_flags_terrainmode,
+      $instance_globals_c_Cmd = FLD.instance_globals_c_Cmd,
+      $instance_globals_g_getposx = FLD.instance_globals_g_getposx,
+      $instance_globals_g_getposy = FLD.instance_globals_g_getposy,
+      $instance_globals_g_gloc_filter_floodfill_match_glyph = FLD.instance_globals_g_gloc_filter_floodfill_match_glyph,
+      $instance_globals_g_gloc_filter_map = FLD.instance_globals_g_gloc_filter_map,
+      $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_w_wsettings = FLD.instance_globals_w_wsettings,
+      $levelflags_hero_memory = FLD.levelflags_hero_memory, $nhcoord_y = FLD.nhcoord_y,
+      $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $selectionvar_hei = FLD.selectionvar_hei,
+      $sizeof_coord = FLD.sizeof_coord, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_symdef = FLD.sizeof_symdef,
+      $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
+      $win_settings_map_frame_color = FLD.win_settings_map_frame_color,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_curs = FLD.window_procs_win_curs,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_any_monsters = cptr.lit("any monsters");
@@ -200,10 +218,15 @@ let defaultHiliteState = NHC.HiliteNormalMap;
 /** C ref: getpos.c:41 — @param {CPtr} gp_hilitef @param {CPtr} gp_getvalidf */
 export function getpos_sethilite(gp_hilitef, gp_getvalidf) {
     let old_getvalid = getpos_getvalid;
-    let old_map_frame_color = cptr.ldI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color);
+    let old_map_frame_color = cptr.ldI32o(
+        gw,
+        $instance_globals_w_wsettings + $win_settings_map_frame_color
+    );
     let sel = selection_new();
 
-    defaultHiliteState = cptr.ld1so(iflags, $instance_flags_bgcolors) ? NHC.HiliteBackground : NHC.HiliteNormalMap;
+    defaultHiliteState = cptr.ld1so(iflags, $instance_flags_bgcolors)
+            ? NHC.HiliteBackground
+            : NHC.HiliteNormalMap;
     if (gp_getvalidf !== old_getvalid)
         getpos_hilite_state = defaultHiliteState;
 
@@ -211,9 +234,15 @@ export function getpos_sethilite(gp_hilitef, gp_getvalidf) {
     getpos_hilitefunc = gp_hilitef;
     getpos_getvalid = gp_getvalidf;
     getpos_getvalids_selection(sel, getpos_getvalid);
-    cptr.stI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color, ((getpos_hilite_state == NHC.HiliteBackground) ? NHM.CLR_BRIGHT_BLUE : NHM.NO_COLOR) >>> 0);
+    cptr.stI32o(
+        gw,
+        $instance_globals_w_wsettings + $win_settings_map_frame_color,
+        ((getpos_hilite_state == NHC.HiliteBackground) ? NHM.CLR_BRIGHT_BLUE : NHM.NO_COLOR) >>> 0
+    );
 
-    if (getpos_getvalid !== old_getvalid || cptr.ldI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color) != old_map_frame_color)
+    if (getpos_getvalid !== old_getvalid ||
+            cptr.ldI32o(gw, $instance_globals_w_wsettings + $win_settings_map_frame_color) !=
+                old_map_frame_color)
         selection_force_newsyms(sel);
     selection_free(sel, 1);
 }
@@ -231,7 +260,10 @@ function getpos_toggle_hilite_state() {
         (getpos_hilitefunc)(0);  /* tmp_at(DISP_END) */
     }
 
-    getpos_hilite_state = u32mod(((getpos_hilite_state + 1) >>> 0), (cptr.ld1so(iflags, $instance_flags_bgcolors) ? 3 : 2) >>> 0);
+    getpos_hilite_state = u32mod(
+        ((getpos_hilite_state + 1) >>> 0),
+        (cptr.ld1so(iflags, $instance_flags_bgcolors) ? 3 : 2) >>> 0
+    );
     /* resetting the callback functions to their current values will draw
        valid-spots with background color if that is the new state and turn
        off that color if it was the previous state */
@@ -265,7 +297,13 @@ function getpos_getvalids_selection(sel, validf) {
 }
 
 /** C ref: getpos.c:117 — char *[6][4] */
-const gloc_descr = (function () { const flat = new Uint8Array(6 * 4 * 8); const a = []; for (let r = 0; r < 6; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8)); a.buf = flat; return a; })();
+const gloc_descr = (function () {
+    const flat = new Uint8Array(6 * 4 * 8);
+    const a = [];
+    for (let r = 0; r < 6; r++) a.push(flat.subarray(r * 4 * 8, (r + 1) * 4 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(gloc_descr[0]), 0, __s_any_monsters);
 cptr.stPtro(cptr.decay(gloc_descr[0]), 8, __s_monster);
 cptr.stPtro(cptr.decay(gloc_descr[0]), 16, __s_next_previous_monster);
@@ -297,12 +335,22 @@ cptr.stPtro(gloc_filtertxt, 0, __s_empty);
 cptr.stPtro(gloc_filtertxt, 8, __s_in_view);
 cptr.stPtro(gloc_filtertxt, 16, __s_in_this_area);
 
-/** C ref: getpos.c:137 — @param {CInt} tmpwin @param {CPtr<char>} k1 @param {CPtr<char>} k2 @param {CInt} gloc */
+/**
+ * C ref: getpos.c:137
+ * @param {CInt} tmpwin
+ * @param {CPtr<char>} k1
+ * @param {CPtr<char>} k2
+ * @param {CInt} gloc
+ */
 function getpos_help_keyxhelp(tmpwin, k1, k2, gloc) {
     let sbuf = new Uint8Array(256);
     let fbuf = new Uint8Array(128);
     let move_cursor_to = __s_move_the_cursor_to;
-    let filtertxt = cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8);
+    let filtertxt = cptr.ldPtro(
+        gloc_filtertxt,
+        cptr.ldI32o(iflags, $instance_flags_getloc_filter),
+        8
+    );
 
     if (gloc == NHC.GLOC_EXPLORE) {
         /* default of "move to unexplored location" is inaccurate
@@ -313,7 +361,19 @@ function getpos_help_keyxhelp(tmpwin, k1, k2, gloc) {
                to avoid wrapping */
             filtertxt = strsubst(cptr.strcpy(cptr.decay(fbuf), filtertxt), __s_this_area, __s_area);
     }
-    void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_to_s_s_s, k1, k2, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_get_a_menu_of : move_cursor_to, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), (2 + cptr.ld1so(iflags, $instance_flags_getloc_usemenu)) | 0, 8), filtertxt);
+    void cptr.sprintf(
+        cptr.decay(sbuf),
+        __s_use_s_s_to_s_s_s,
+        k1,
+        k2,
+        cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_get_a_menu_of : move_cursor_to,
+        cptr.ldPtro(
+            cptr.decay(gloc_descr[gloc]),
+            (2 + cptr.ld1so(iflags, $instance_flags_getloc_usemenu)) | 0,
+            8
+        ),
+        filtertxt
+    );
     putstr()(tmpwin, 0, cptr.decay(sbuf));
 }
 
@@ -332,17 +392,62 @@ function getpos_help(force, goal) {
         sbuf = new Uint8Array(256);
         tmpwin = create_nhwindow()(NHM.NHW_MENU);
 
-        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_s_s_to_move_the_cursor_to_s, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), goal);
+        void cptr.sprintf(
+            cptr.decay(sbuf),
+            __s_use_s_s_s_s_to_move_the_cursor_to_s,
+            visctrl(cmd_from_func(do_move_west)),
+            visctrl(cmd_from_func(do_move_south)),
+            visctrl(cmd_from_func(do_move_north)),
+            visctrl(cmd_from_func(do_move_east)),
+            goal
+        );
         putstr()(tmpwin, 0, cptr.decay(sbuf));
-        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_s_s_s_to_fast_move_the_cursor_s, visctrl(cmd_from_func(do_run_west)), visctrl(cmd_from_func(do_run_south)), visctrl(cmd_from_func(do_run_north)), visctrl(cmd_from_func(do_run_east)), cptr.ldPtro(__static_getpos_help_fastmovemode, cptr.ld1so(iflags, $instance_flags_getloc_moveskip), 8));
+        void cptr.sprintf(
+            cptr.decay(sbuf),
+            __s_use_s_s_s_s_to_fast_move_the_cursor_s,
+            visctrl(cmd_from_func(do_run_west)),
+            visctrl(cmd_from_func(do_run_south)),
+            visctrl(cmd_from_func(do_run_north)),
+            visctrl(cmd_from_func(do_run_east)),
+            cptr.ldPtro(
+                __static_getpos_help_fastmovemode,
+                cptr.ld1so(iflags, $instance_flags_getloc_moveskip),
+                8
+            )
+        );
         putstr()(tmpwin, 0, cptr.decay(sbuf));
-        void cptr.sprintf(cptr.decay(sbuf), __s_or_prefix_normal_move_with_s_or_s_to, visctrl(cmd_from_func(do_run)), visctrl(cmd_from_func(do_rush)));
+        void cptr.sprintf(
+            cptr.decay(sbuf),
+            __s_or_prefix_normal_move_with_s_or_s_to,
+            visctrl(cmd_from_func(do_run)),
+            visctrl(cmd_from_func(do_rush))
+        );
         putstr()(tmpwin, 0, cptr.decay(sbuf));
         putstr()(tmpwin, 0, __s_or_enter_a_background_symbol_ex);
-        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_move_the_cursor_on_yourself, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        void cptr.sprintf(
+            cptr.decay(sbuf),
+            __s_use_s_to_move_the_cursor_on_yourself,
+            visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys))
+        );
         putstr()(tmpwin, 0, cptr.decay(sbuf));
-        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0) {
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MON_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MON_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_MONS);
+        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0) {
+            getpos_help_keyxhelp(
+                tmpwin,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_MON_NEXT,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_MON_PREV,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                NHC.GLOC_MONS
+            );
         }
         if (goal && !strcmp(goal, __s_a_monster)) { __pc = 3; continue; }
         __pc = 2; continue;
@@ -351,22 +456,117 @@ function getpos_help(force, goal) {
         { __pc = 1; continue; }
         }
         case 2: {
-        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_OBJ) >>> 0) != 0) {
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_OBJ_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_OBJ_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_OBJS);
+        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_OBJ) >>> 0) != 0) {
+            getpos_help_keyxhelp(
+                tmpwin,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_OBJ_NEXT,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_OBJ_PREV,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                NHC.GLOC_OBJS
+            );
         }
-        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MAP) >>> 0) != 0) {
+        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MAP) >>> 0) != 0) {
             /* these are primarily useful when choosing a travel
                destination for the '_' command */
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_DOOR_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_DOOR_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_DOOR);
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_UNEX_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_UNEX_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_EXPLORE);
-            getpos_help_keyxhelp(tmpwin, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_INTERESTING_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_INTERESTING_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)), NHC.GLOC_INTERESTING);
+            getpos_help_keyxhelp(
+                tmpwin,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_DOOR_NEXT,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_DOOR_PREV,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                NHC.GLOC_DOOR
+            );
+            getpos_help_keyxhelp(
+                tmpwin,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_UNEX_NEXT,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_UNEX_PREV,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                NHC.GLOC_EXPLORE
+            );
+            getpos_help_keyxhelp(
+                tmpwin,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_INTERESTING_NEXT,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_INTERESTING_PREV,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                NHC.GLOC_INTERESTING
+            );
         }
-        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_change_fast_move_mode_to_s, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MOVESKIP, 1, $instance_globals_c_Cmd + $cmd_spkeys)), cptr.ldPtro(__static_getpos_help_fastmovemode, !cptr.ld1so(iflags, $instance_flags_getloc_moveskip), 8));
+        void cptr.sprintf(
+            cptr.decay(sbuf),
+            __s_use_s_to_change_fast_move_mode_to_s,
+            visctrl(cptr.ld1so2(
+                gc,
+                NHC.NHKF_GETPOS_MOVESKIP,
+                1,
+                $instance_globals_c_Cmd + $cmd_spkeys
+            )),
+            cptr.ldPtro(
+                __static_getpos_help_fastmovemode,
+                !cptr.ld1so(iflags, $instance_flags_getloc_moveskip),
+                8
+            )
+        );
         putstr()(tmpwin, 0, cptr.decay(sbuf));
-        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_DETECT) >>> 0) == 0) {
-            void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_toggle_menu_listing_for, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_MENU, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_DETECT) >>> 0) == 0) {
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                __s_use_s_to_toggle_menu_listing_for,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_MENU,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
             putstr()(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_change_the_mode_of_limiting, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_LIMITVIEW, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                __s_use_s_to_change_the_mode_of_limiting,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_LIMITVIEW,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
             putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         if (!cptr.ldI32o(iflags, $instance_flags_terrainmode)) { __pc = 5; continue; }
@@ -376,17 +576,61 @@ function getpos_help(force, goal) {
         kbuf = new Uint8Array(256);
 
         if (getpos_getvalid) {
-            void cptr.sprintf(cptr.decay(sbuf), __s_use_s_or_s_to_move_to_valid_locations, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_NEXT, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_VALID_PREV, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                __s_use_s_or_s_to_move_to_valid_locations,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_VALID_NEXT,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_VALID_PREV,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
             putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         if (getpos_hilitefunc) {
-            void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_toggle_marking_of_valid, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_SHOWVALID, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                __s_use_s_to_toggle_marking_of_valid,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_SHOWVALID,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
             putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
-        void cptr.sprintf(cptr.decay(sbuf), __s_use_s_to_toggle_automatic_description, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+        void cptr.sprintf(
+            cptr.decay(sbuf),
+            __s_use_s_to_toggle_automatic_description,
+            visctrl(cptr.ld1so2(
+                gc,
+                NHC.NHKF_GETPOS_AUTODESC,
+                1,
+                $instance_globals_c_Cmd + $cmd_spkeys
+            ))
+        );
         putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (cptr.ld1so(iflags, $instance_flags_cmdassist)) {
-            void cptr.sprintf(cptr.decay(sbuf), (cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 110) ? __s_set_whatis_coord_option_to_include : __s_reset_whatis_coord_option_to_omit, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                (cptr.ldI32o(iflags, $instance_flags_getpos_coords) == 110)
+                    ? __s_set_whatis_coord_option_to_include
+                    : __s_reset_whatis_coord_option_to_omit,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_AUTODESC,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
         }
         __pc = 1;
         continue;
@@ -397,20 +641,100 @@ function getpos_help(force, goal) {
            also for dotherecmdmenu's simulated mouse) */
         doing_what_is = schar((cptr.eq(goal, cptr.decay(what_is_a_location))));
         if (doing_what_is) {
-            void cptr.sprintf(cptr.decay(kbuf), __s_s_or_s_or_s_or_s, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_O, 1, $instance_globals_c_Cmd + $cmd_spkeys)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_V, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(kbuf),
+                __s_s_or_s_or_s_or_s,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK_Q,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK_O,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK_V,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
         } else {
-            void cptr.sprintf(cptr.decay(kbuf), __s_apos_pct_s_apos, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(kbuf),
+                __s_apos_pct_s_apos,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
         }
-        nh_snprintf(__s_getpos_help, 280, cptr.decay(sbuf), 256n, __s_type_a_s_when_you_are_at_the_right_place, cptr.decay(kbuf));
+        nh_snprintf(
+            __s_getpos_help,
+            280,
+            cptr.decay(sbuf),
+            256n,
+            __s_type_a_s_when_you_are_at_the_right_place,
+            cptr.decay(kbuf)
+        );
         putstr()(tmpwin, 0, cptr.decay(sbuf));
         if (doing_what_is) {
-            void cptr.sprintf(cptr.decay(sbuf), __s_s_describe_current_spot_show_more_info, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_V, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                __s_s_describe_current_spot_show_more_info,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK_V,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
             putstr()(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __s_s_describe_current_spot_s_move_to, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)), cptr.ld1so(flags, $flag_help) && !force ? __s_prompt_if_more_info : __s_empty);
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                __s_s_describe_current_spot_s_move_to,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )),
+                cptr.ld1so(flags, $flag_help) && !force ? __s_prompt_if_more_info : __s_empty
+            );
             putstr()(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __s_s_describe_current_spot_move_to_another, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_Q, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                __s_s_describe_current_spot_move_to_another,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK_Q,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
             putstr()(tmpwin, 0, cptr.decay(sbuf));
-            void cptr.sprintf(cptr.decay(sbuf), __s_s_describe_current_spot_stop_looking_at, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK_O, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(sbuf),
+                __s_s_describe_current_spot_stop_looking_at,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK_O,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
             putstr()(tmpwin, 0, cptr.decay(sbuf));
         }
         __pc = 4;
@@ -447,7 +771,9 @@ function cmp_coord_distu(a, b) {
     dist_2 = ((Math.abs(dx)) > (Math.abs(dy)) ? (Math.abs(dx)) : (Math.abs(dy)));
 
     if (dist_1 == dist_2)
-        return (cptr.ldI16o(c1, $coord_y) != cptr.ldI16o(c2, $coord_y)) ? ((cptr.ldI16o(c1, $coord_y) - cptr.ldI16o(c2, $coord_y)) | 0) : ((cptr.ldI16(c1) - cptr.ldI16(c2)) | 0);
+        return (cptr.ldI16o(c1, $coord_y) != cptr.ldI16o(c2, $coord_y))
+                ? ((cptr.ldI16o(c1, $coord_y) - cptr.ldI16o(c2, $coord_y)) | 0)
+                : ((cptr.ldI16(c1) - cptr.ldI16(c2)) | 0);
 
     return (dist_1 - dist_2) | 0;
 }
@@ -478,13 +804,24 @@ function gloc_filter_classify_glyph(glyph) {
 function gloc_filter_floodfill_matcharea(x, y) {
     let glyph = back_to_glyph(x, y);
 
-    if (!cptr.ld1uo3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv))
+    if (!cptr.ld1uo3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_seenv
+    ))
         return 0;
 
     if (glyph == cptr.ldI32o(gg, $instance_globals_g_gloc_filter_floodfill_match_glyph))
         return 1;
 
-    if (gloc_filter_classify_glyph(glyph) == gloc_filter_classify_glyph(cptr.ldI32o(gg, $instance_globals_g_gloc_filter_floodfill_match_glyph)))
+    if (gloc_filter_classify_glyph(glyph) ==
+            gloc_filter_classify_glyph(cptr.ldI32o(
+                gg,
+                $instance_globals_g_gloc_filter_floodfill_match_glyph
+            )))
         return 1;
 
     return 0;
@@ -506,9 +843,24 @@ function gloc_filter_init() {
         }
         /* special case: if we're in a doorway, try to figure out which
            direction we're moving, and use that side of the doorway */
-        if (((cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR)) {
-            if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) && isok(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)))) {
-                gloc_filter_floodfill(i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0)));
+        if (((cptr.ld1so3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) ==
+                NHC.DOOR)) {
+            if ((cptr.ldI32o(u, $you_dx) || cptr.ldI32o(u, $you_dy)) &&
+                    isok(
+                        i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)),
+                        i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))
+                    )) {
+                gloc_filter_floodfill(
+                    i16(((cptr.ldI16(u) + cptr.ldI32o(u, $you_dx)) | 0)),
+                    i16(((cptr.ldI16o(u, $you_uy) + cptr.ldI32o(u, $you_dy)) | 0))
+                );
             } else {
                 /* TODO: maybe add both sides of the doorway? */
             }
@@ -535,7 +887,11 @@ function known_vibrating_square_at(x, y) {
     if (invocation_pos(x, y)) {
         let ttmp = t_at(x, y);
 
-        return schar((ttmp && ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE && (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0 ? 1 : 0));
+        return schar((ttmp &&
+            ((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE &&
+            (cptr.ldI32o(ttmp, $trap_tseen) & 1) | 0
+                ? 1
+                : 0));
     }
     return 0;
 }
@@ -545,9 +901,41 @@ export function gather_locs_interesting(x, y, gloc) {
     let glyph;
     let sym;
 
-    if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW && !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0))
+    if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW &&
+            !((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
+                NHM.IN_SIGHT) != 0))
         return 0;
-    if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA && !(isok((x), (y)) && (selection_getpoint((x), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok(i16(((x - 1) | 0)), (y)) && (selection_getpoint(i16(((x - 1) | 0)), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok((x), i16(((y - 1) | 0))) && (selection_getpoint((x), i16(((y - 1) | 0)), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok(i16(((x + 1) | 0)), (y)) && (selection_getpoint(i16(((x + 1) | 0)), (y), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))) && !(isok((x), i16(((y + 1) | 0))) && (selection_getpoint((x), i16(((y + 1) | 0)), cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)))))
+    if (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_AREA &&
+            !(isok((x), (y)) &&
+                (selection_getpoint(
+                    (x),
+                    (y),
+                    cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)
+                ))) &&
+            !(isok(i16(((x - 1) | 0)), (y)) &&
+                (selection_getpoint(
+                    i16(((x - 1) | 0)),
+                    (y),
+                    cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)
+                ))) &&
+            !(isok((x), i16(((y - 1) | 0))) &&
+                (selection_getpoint(
+                    (x),
+                    i16(((y - 1) | 0)),
+                    cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)
+                ))) &&
+            !(isok(i16(((x + 1) | 0)), (y)) &&
+                (selection_getpoint(
+                    i16(((x + 1) | 0)),
+                    (y),
+                    cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)
+                ))) &&
+            !(isok((x), i16(((y + 1) | 0))) &&
+                (selection_getpoint(
+                    (x),
+                    i16(((y + 1) | 0)),
+                    cptr.ldPtro(gg, $instance_globals_g_gloc_filter_map)
+                ))))
         return 0;
 
     glyph = glyph_at(x, y);
@@ -557,27 +945,140 @@ export function gather_locs_interesting(x, y, gloc) {
         case NHC.GLOC_MONS:
         /* unlike '/M', this skips monsters revealed by
            warning glyphs and remembered unseen ones */
-        return schar((glyph_is_monster(glyph) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_MALE_OFF)) | 0) && glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_FEM_OFF)) | 0) ? 1 : 0));
+        return schar((glyph_is_monster(glyph) &&
+            glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_MALE_OFF)) | 0) &&
+            glyph != (((NHC.PM_LONG_WORM_TAIL) + (NHC.GLYPH_MON_FEM_OFF)) | 0)
+                ? 1
+                : 0));
         case NHC.GLOC_OBJS:
-        return schar((glyph_is_object(glyph) && glyph != (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0) && glyph != (((NHC.ROCK) + NHC.GLYPH_OBJ_OFF) | 0) ? 1 : 0));
+        return schar((glyph_is_object(glyph) &&
+            glyph != (((NHC.BOULDER) + NHC.GLYPH_OBJ_OFF) | 0) &&
+            glyph != (((NHC.ROCK) + NHC.GLYPH_OBJ_OFF) | 0)
+                ? 1
+                : 0));
         case NHC.GLOC_DOOR:
-        return schar((glyph_is_cmap(glyph) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor) ? 1 : 0));
+        return schar((glyph_is_cmap(glyph) &&
+            (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor)
+                ? 1
+                : 0));
         case NHC.GLOC_EXPLORE:
-        return schar((glyph_is_cmap(glyph) && !((glyph_to_cmap(glyph)) == NHC.GLYPH_NOTHING_OFF) && (is_cmap_door(sym) || is_cmap_drawbridge(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym)) && ((isok(i16(((x + 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x + 1) | 0), $sizeof_rm_x21, (y), $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x + 1) | 0), $sizeof_rm_x21, (y), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) || (isok(i16(((x - 1) | 0)), (y)) && ((cptr.ldI32o3(svl, ((x - 1) | 0), $sizeof_rm_x21, (y), $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, ((x - 1) | 0), $sizeof_rm_x21, (y), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y + 1) | 0))) && ((cptr.ldI32o3(svl, (x), $sizeof_rm_x21, ((y + 1) | 0), $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), $sizeof_rm_x21, ((y + 1) | 0), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) || (isok((x), i16(((y - 1) | 0))) && ((cptr.ldI32o3(svl, (x), $sizeof_rm_x21, ((y - 1) | 0), $sizeof_rm, $instance_globals_saved_l_level)) == NHC.GLYPH_UNEXPLORED_OFF) && !cptr.ld1uo3(svl, (x), $sizeof_rm_x21, ((y - 1) | 0), $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv))) ? 1 : 0));
+        return schar((glyph_is_cmap(glyph) &&
+            !((glyph_to_cmap(glyph)) == NHC.GLYPH_NOTHING_OFF) &&
+            (is_cmap_door(sym) ||
+                is_cmap_drawbridge(sym) ||
+                sym == NHC.S_ndoor ||
+                is_cmap_room(sym) ||
+                is_cmap_corr(sym)) &&
+            ((isok(i16(((x + 1) | 0)), (y)) &&
+                ((cptr.ldI32o3(
+                    svl,
+                    ((x + 1) | 0),
+                    $sizeof_rm_x21,
+                    (y),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level
+                )) ==
+                    NHC.GLYPH_UNEXPLORED_OFF) &&
+                !cptr.ld1uo3(
+                    svl,
+                    ((x + 1) | 0),
+                    $sizeof_rm_x21,
+                    (y),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_seenv
+                )) ||
+                (isok(i16(((x - 1) | 0)), (y)) &&
+                    ((cptr.ldI32o3(
+                        svl,
+                        ((x - 1) | 0),
+                        $sizeof_rm_x21,
+                        (y),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level
+                    )) ==
+                        NHC.GLYPH_UNEXPLORED_OFF) &&
+                    !cptr.ld1uo3(
+                        svl,
+                        ((x - 1) | 0),
+                        $sizeof_rm_x21,
+                        (y),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_seenv
+                    )) ||
+                (isok((x), i16(((y + 1) | 0))) &&
+                    ((cptr.ldI32o3(
+                        svl,
+                        (x),
+                        $sizeof_rm_x21,
+                        ((y + 1) | 0),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level
+                    )) ==
+                        NHC.GLYPH_UNEXPLORED_OFF) &&
+                    !cptr.ld1uo3(
+                        svl,
+                        (x),
+                        $sizeof_rm_x21,
+                        ((y + 1) | 0),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_seenv
+                    )) ||
+                (isok((x), i16(((y - 1) | 0))) &&
+                    ((cptr.ldI32o3(
+                        svl,
+                        (x),
+                        $sizeof_rm_x21,
+                        ((y - 1) | 0),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level
+                    )) ==
+                        NHC.GLYPH_UNEXPLORED_OFF) &&
+                    !cptr.ld1uo3(
+                        svl,
+                        (x),
+                        $sizeof_rm_x21,
+                        ((y - 1) | 0),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_seenv
+                    )))
+                ? 1
+                : 0));
         case NHC.GLOC_VALID:
         if (getpos_getvalid)
             return (getpos_getvalid)(x, y);
         // @FallThrough
         ;
         case NHC.GLOC_INTERESTING:
-        return schar((gather_locs_interesting(x, y, NHC.GLOC_DOOR) || !((glyph_is_cmap(glyph) && (is_cmap_wall(sym) || sym == NHC.S_tree || sym == NHC.S_bars || sym == NHC.S_ice || sym == NHC.S_air || sym == NHC.S_cloud || is_cmap_lava(sym) || is_cmap_water(sym) || sym == NHC.S_ndoor || is_cmap_room(sym) || is_cmap_corr(sym))) || ((glyph) == NHC.GLYPH_NOTHING_OFF) || ((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) || known_vibrating_square_at(x, y) ? 1 : 0));
+        return schar((gather_locs_interesting(x, y, NHC.GLOC_DOOR) ||
+            !((glyph_is_cmap(glyph) &&
+                (is_cmap_wall(sym) ||
+                    sym == NHC.S_tree ||
+                    sym == NHC.S_bars ||
+                    sym == NHC.S_ice ||
+                    sym == NHC.S_air ||
+                    sym == NHC.S_cloud ||
+                    is_cmap_lava(sym) ||
+                    is_cmap_water(sym) ||
+                    sym == NHC.S_ndoor ||
+                    is_cmap_room(sym) ||
+                    is_cmap_corr(sym))) ||
+                ((glyph) == NHC.GLYPH_NOTHING_OFF) ||
+                ((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) ||
+            known_vibrating_square_at(x, y)
+                ? 1
+                : 0));
     }
     /*NOTREACHED*/
     return 0;
 }
 
 /* gather locations for monsters or objects shown on the map */
-/** C ref: getpos.c:513 — @param {CPtr<coord *>} arr_p @param {CPtr<int>} cnt_p @param {CInt} gloc */
+/**
+ * C ref: getpos.c:513
+ * @param {CPtr<coord *>} arr_p
+ * @param {CPtr<int>} cnt_p
+ * @param {CInt} gloc
+ */
 function gather_locs(arr_p, cnt_p, gloc) {
     let pass;
     let idx;
@@ -602,7 +1103,8 @@ function gather_locs(arr_p, cnt_p, gloc) {
     for (pass = 0; pass < 2; pass++) {
         for (x = 1; x < NHM.COLNO; x++)
             for (y = 0; y < NHM.ROWNO; y++) {
-                if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || gather_locs_interesting(x, y, gloc)) {
+                if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ||
+                        gather_locs_interesting(x, y, gloc)) {
                     if (!pass) {
                         cptr.stI32(cnt_p, cptr.ldI32(cnt_p) + 1);
                     } else {
@@ -614,16 +1116,33 @@ function gather_locs(arr_p, cnt_p, gloc) {
             }
 
         if (!pass)
-            cptr.stPtr(arr_p, alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cnt_p))) * 4n)))));
+            cptr.stPtr(
+                arr_p,
+                alloc(Number(BigInt.asUintN(
+                    32,
+                    BigInt.asUintN(64, BigInt.asUintN(64, BigInt(cptr.ldI32(cnt_p))) * 4n)
+                )))
+            );
         else
-            nh_deterministic_qsort((cptr.ldPtr(arr_p)), BigInt.asUintN(64, BigInt((cptr.ldI32(cnt_p)))), 4n, (cmp_coord_distu));
+            nh_deterministic_qsort(
+                (cptr.ldPtr(arr_p)),
+                BigInt.asUintN(64, BigInt((cptr.ldI32(cnt_p)))),
+                4n,
+                (cmp_coord_distu)
+            );
     }  /* pass */
 
     gloc_filter_done();
 }
 
 const __static_dxdy_to_dist_descr_buf = new Uint8Array(30); /** C ref: getpos.c:559 — char[30] (function-static) */
-const __static_dxdy_to_dist_descr_dirnames = (function () { const flat = new Uint8Array(4 * 2 * 8); const a = []; for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8)); a.buf = flat; return a; })();
+const __static_dxdy_to_dist_descr_dirnames = (function () {
+    const flat = new Uint8Array(4 * 2 * 8);
+    const a = [];
+    for (let r = 0; r < 4; r++) a.push(flat.subarray(r * 2 * 8, (r + 1) * 2 * 8));
+    a.buf = flat;
+    return a;
+})();
 cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[0]), 0, __s_n);
 cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[0]), 8, __s_north);
 cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[1]), 0, __s_s);
@@ -633,7 +1152,13 @@ cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[2]), 8, __s_west);
 cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 0, __s_e);
 cptr.stPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[3]), 8, __s_east); /** C ref: getpos.c:568 — char *[4][2] (function-static) */
 
-/** C ref: getpos.c:557 — @param {CInt} dx @param {CInt} dy @param {CInt} fulldir @returns {CPtr<char>} */
+/**
+ * C ref: getpos.c:557
+ * @param {CInt} dx
+ * @param {CInt} dy
+ * @param {CInt} fulldir
+ * @returns {CPtr<char>}
+ */
 export function dxdy_to_dist_descr(dx, dy, fulldir) {
     let dst;
 
@@ -641,19 +1166,42 @@ export function dxdy_to_dist_descr(dx, dy, fulldir) {
         void cptr.sprintf(cptr.decay(__static_dxdy_to_dist_descr_buf), __s_here);
     } else if ((dst = xytodir(dx, dy)) != -1) {
         /* explicit direction; 'one step' is implicit */
-        void cptr.sprintf(cptr.decay(__static_dxdy_to_dist_descr_buf), __s_pct_s, directionname(dst));
+        void cptr.sprintf(
+            cptr.decay(__static_dxdy_to_dist_descr_buf),
+            __s_pct_s,
+            directionname(dst)
+        );
     } else {
         cptr.st1o(cptr.decay(__static_dxdy_to_dist_descr_buf), 0, 0, 1);
         /* 9999: protect buf[] against overflow caused by invalid values */
         if (dy) {
             if (Math.abs(dy) > 9999)
                 dy = i16(Math.imul(sgn(dy), 9999));
-            void cptr.sprintf(eos(cptr.decay(__static_dxdy_to_dist_descr_buf)), __s_d_s_s, Math.abs(dy), cptr.ldPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[(dy > 0) ? 1 : 0]), fulldir, 8), dx ? __s_comma : __s_empty);
+            void cptr.sprintf(
+                eos(cptr.decay(__static_dxdy_to_dist_descr_buf)),
+                __s_d_s_s,
+                Math.abs(dy),
+                cptr.ldPtro(
+                    cptr.decay(__static_dxdy_to_dist_descr_dirnames[(dy > 0) ? 1 : 0]),
+                    fulldir,
+                    8
+                ),
+                dx ? __s_comma : __s_empty
+            );
         }
         if (dx) {
             if (Math.abs(dx) > 9999)
                 dx = i16(Math.imul(sgn(dx), 9999));
-            void cptr.sprintf(eos(cptr.decay(__static_dxdy_to_dist_descr_buf)), __s_d_s, Math.abs(dx), cptr.ldPtro(cptr.decay(__static_dxdy_to_dist_descr_dirnames[(2 + (dx > 0)) | 0]), fulldir, 8));
+            void cptr.sprintf(
+                eos(cptr.decay(__static_dxdy_to_dist_descr_buf)),
+                __s_d_s,
+                Math.abs(dx),
+                cptr.ldPtro(
+                    cptr.decay(__static_dxdy_to_dist_descr_dirnames[(2 + (dx > 0)) | 0]),
+                    fulldir,
+                    8
+                )
+            );
         }
     }
     return cptr.decay(__static_dxdy_to_dist_descr_buf);
@@ -662,7 +1210,14 @@ export function dxdy_to_dist_descr(dx, dy, fulldir) {
 /* coordinate formatting for 'whatis_coord' option */
 const __static_coord_desc_screen_fmt = new Uint8Array(16); /** C ref: getpos.c:597 — char[16] (function-static) */
 
-/** C ref: getpos.c:595 — @param {CInt} x @param {CInt} y @param {CPtr<char>} outbuf @param {CInt} cmode @returns {CPtr<char>} */
+/**
+ * C ref: getpos.c:595
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<char>} outbuf
+ * @param {CInt} cmode
+ * @returns {CPtr<char>}
+ */
 export function coord_desc(x, y, outbuf, cmode) {
     let dx;
     let dy;
@@ -676,7 +1231,11 @@ export function coord_desc(x, y, outbuf, cmode) {
         /* "east", "3s", "2n,4w" */
         dx = (x - cptr.ldI16(u)) | 0;
         dy = (y - cptr.ldI16o(u, $you_uy)) | 0;
-        void cptr.sprintf(outbuf, __s_lparen_pct_s_rparen, dxdy_to_dist_descr(i16(dx), i16(dy), schar((cmode == 102))));
+        void cptr.sprintf(
+            outbuf,
+            __s_lparen_pct_s_rparen,
+            dxdy_to_dist_descr(i16(dx), i16(dy), schar((cmode == 102)))
+        );
         break;
         case 109:
         /* upper left corner of map is <1,0>;
@@ -692,7 +1251,12 @@ export function coord_desc(x, y, outbuf, cmode) {
            The (100) is placed in brackets below to mark the [: "03"] as
            explicit compile-time dead code for clang */
         if (!cptr.ld1s(cptr.decay(__static_coord_desc_screen_fmt)))
-            void cptr.sprintf(cptr.decay(__static_coord_desc_screen_fmt), __s_sd_sd, __s_02, __s_02);
+            void cptr.sprintf(
+                cptr.decay(__static_coord_desc_screen_fmt),
+                __s_sd_sd,
+                __s_02,
+                __s_02
+            );
         /* map line 0 is screen row 2;
            map column 0 isn't used, map column 1 is screen column 1 */
         void cptr.sprintf(outbuf, cptr.decay(__static_coord_desc_screen_fmt), (y + 2) | 0, x);
@@ -711,8 +1275,27 @@ export function auto_describe(cx, cy) {
     cptr.stI16(cc, cx);
     cptr.stI16o(cc, $nhcoord_y, cy);
     if (do_screen_description(cc, 1, sym, cptr.decay(tmpbuf), firstmatch, null)) {
-        void coord_desc(cx, cy, cptr.decay(tmpbuf), schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords)));
-        custompline(70, __s_s_s_s_s_s, firstmatch.v, cptr.ld1s(cptr.decay(tmpbuf)) ? __s_sp : __s_empty, cptr.decay(tmpbuf), (cptr.ld1so(iflags, $instance_flags_autodescribe) && getpos_getvalid && !(getpos_getvalid)(cx, cy)) ? __s_invalid_target : __s_empty, (cptr.ld1so(iflags, $instance_flags_getloc_travelmode) && !is_valid_travelpt(cx, cy)) ? __s_no_travel_path : __s_empty);
+        void coord_desc(
+            cx,
+            cy,
+            cptr.decay(tmpbuf),
+            schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords))
+        );
+        custompline(
+            70,
+            __s_s_s_s_s_s,
+            firstmatch.v,
+            cptr.ld1s(cptr.decay(tmpbuf)) ? __s_sp : __s_empty,
+            cptr.decay(tmpbuf),
+            (cptr.ld1so(iflags, $instance_flags_autodescribe) &&
+                getpos_getvalid &&
+                !(getpos_getvalid)(cx, cy))
+                ? __s_invalid_target
+                : __s_empty,
+            (cptr.ld1so(iflags, $instance_flags_getloc_travelmode) && !is_valid_travelpt(cx, cy))
+                ? __s_no_travel_path
+                : __s_empty
+        );
         curs()(WIN_MAP.v, cx, cy);
         flush_screen(0);
     }
@@ -734,7 +1317,13 @@ export function getpos_menu(ccp, gloc) {
 
     if (gcount.v < 2) {
         cptr.free(garr.v);
-        You(__s_cannot_s_s, (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW) ? __s_see : __s_detect, cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 0, 8));
+        You(
+            __s_cannot_s_s,
+            (cptr.ldI32o(iflags, $instance_flags_getloc_filter) == NHC.GFILTER_VIEW)
+                ? __s_see
+                : __s_detect,
+            cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 0, 8)
+        );
         return 0;
     }
 
@@ -753,19 +1342,55 @@ export function getpos_menu(ccp, gloc) {
         cptr.stI16(tmpcc, cptr.ldI16o(garr.v, i, $sizeof_coord));
         cptr.stI16o(tmpcc, $nhcoord_y, cptr.ldI16o2(garr.v, i, $sizeof_coord, $nhcoord_y));
         if (do_screen_description(tmpcc, 1, sym, cptr.decay(tmpbuf), firstmatch, null)) {
-            void coord_desc(cptr.ldI16o(garr.v, i, $sizeof_coord), cptr.ldI16o2(garr.v, i, $sizeof_coord, $nhcoord_y), cptr.decay(tmpbuf), schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords)));
-            nh_snprintf(__s_getpos_menu, 705, cptr.decay(fullbuf), 256n, __s_s_s_s, firstmatch.v, (cptr.ld1s(cptr.decay(tmpbuf)) ? __s_sp : __s_empty), cptr.decay(tmpbuf));
-            add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(fullbuf), NHM.MENU_ITEMFLAGS_NONE);
+            void coord_desc(
+                cptr.ldI16o(garr.v, i, $sizeof_coord),
+                cptr.ldI16o2(garr.v, i, $sizeof_coord, $nhcoord_y),
+                cptr.decay(tmpbuf),
+                schar(cptr.ldI32o(iflags, $instance_flags_getpos_coords))
+            );
+            nh_snprintf(
+                __s_getpos_menu,
+                705,
+                cptr.decay(fullbuf),
+                256n,
+                __s_s_s_s,
+                firstmatch.v,
+                (cptr.ld1s(cptr.decay(tmpbuf)) ? __s_sp : __s_empty),
+                cptr.decay(tmpbuf)
+            );
+            add_menu(
+                tmpwin,
+                nul_glyphinfo.v,
+                any,
+                0,
+                0,
+                NHM.ATR_NONE,
+                clr,
+                cptr.decay(fullbuf),
+                NHM.MENU_ITEMFLAGS_NONE
+            );
         }
     }
 
-    void cptr.sprintf(cptr.decay(tmpbuf), __s_pick_s_s_s, an(cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 1, 8)), cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8), cptr.ld1so(iflags, $instance_flags_getloc_travelmode) ? __s_for_travel_destination : __s_empty);
+    void cptr.sprintf(
+        cptr.decay(tmpbuf),
+        __s_pick_s_s_s,
+        an(cptr.ldPtro(cptr.decay(gloc_descr[gloc]), 1, 8)),
+        cptr.ldPtro(gloc_filtertxt, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8),
+        cptr.ld1so(iflags, $instance_flags_getloc_travelmode)
+            ? __s_for_travel_destination
+            : __s_empty
+    );
     end_menu()(tmpwin, cptr.decay(tmpbuf));
     pick_cnt = select_menu(tmpwin, NHM.PICK_ONE, picks);
     destroy_nhwindow()(tmpwin);
     if (pick_cnt > 0) {
         cptr.stI16(ccp, cptr.ldI16o(garr.v, (cptr.ldI32(picks.v) - 1) | 0, $sizeof_coord));
-        cptr.stI16o(ccp, $coord_y, cptr.ldI16o2(garr.v, (cptr.ldI32(picks.v) - 1) | 0, $sizeof_coord, $nhcoord_y));
+        cptr.stI16o(
+            ccp,
+            $coord_y,
+            cptr.ldI16o2(garr.v, (cptr.ldI32(picks.v) - 1) | 0, $sizeof_coord, $nhcoord_y)
+        );
         cptr.free(picks.v);
     }
     cptr.free(garr.v);
@@ -773,7 +1398,13 @@ export function getpos_menu(ccp, gloc) {
 }
 
 /* add dx,dy to cx,cy, truncating at map edges */
-/** C ref: getpos.c:729 — @param {CPtr<coordxy>} cx @param {CPtr<coordxy>} cy @param {CInt} dx @param {CInt} dy */
+/**
+ * C ref: getpos.c:729
+ * @param {CPtr<coordxy>} cx
+ * @param {CPtr<coordxy>} cy
+ * @param {CInt} dx
+ * @param {CInt} dy
+ */
 function truncate_to_map(cx, cy, dx, dy) {
     /* diagonal moves complicate this... */
     if (((cptr.ldI16(cx) + dx) | 0) < 1) {
@@ -840,9 +1471,50 @@ cptr.stPtro(__static_getpos_view_filters, 0, __s_not_limiting_targets);
 cptr.stPtro(__static_getpos_view_filters, 8, __s_limiting_targets_to_those_in_sight);
 cptr.stPtro(__static_getpos_view_filters, 16, __s_limiting_targets_to_those_in_same_area); /** C ref: getpos.c:972 — char *[3] (function-static) */
 
-/** C ref: getpos.c:771 — @param {CPtr<coord>} ccp @param {CInt} force @param {CPtr<char>} goal @returns {CInt} */
+/**
+ * C ref: getpos.c:771
+ * @param {CPtr<coord>} ccp
+ * @param {CInt} force
+ * @param {CPtr<char>} goal
+ * @returns {CInt}
+ */
 export function getpos(ccp, force, goal) {
-    let cq, cmdq, cp, pick_chars, mMoOdDxX, result, i, c, sidx = cptr.box(0), cx = cptr.box(0), cy = cptr.box(0), tx = cptr.box(0), ty = cptr.box(0), msg_given, show_goal_msg, garr, gcount, gidx, udx, udy, udz, dx, dy, rushrun, glyph, gtmp, gloc, tmpcrd, matching, pass, k, lo_x, lo_y, hi_x, hi_y, note;
+    let cq,
+            cmdq,
+            cp,
+            pick_chars,
+            mMoOdDxX,
+            result,
+            i,
+            c,
+            sidx = cptr.box(0),
+            cx = cptr.box(0),
+            cy = cptr.box(0),
+            tx = cptr.box(0),
+            ty = cptr.box(0),
+            msg_given,
+            show_goal_msg,
+            garr,
+            gcount,
+            gidx,
+            udx,
+            udy,
+            udz,
+            dx,
+            dy,
+            rushrun,
+            glyph,
+            gtmp,
+            gloc,
+            tmpcrd,
+            matching,
+            pass,
+            k,
+            lo_x,
+            lo_y,
+            hi_x,
+            hi_y,
+            note;
     let __pc = 0;
     __dispatch: while (true) {
         switch (__pc) {
@@ -871,7 +1543,11 @@ export function getpos(ccp, force, goal) {
                 cptr.free(cmdq);
                 if (cptr.ldI32(cq) == NHC.CMDQ_DIR && !cptr.ld1so(cq, $_cmd_queue_dirz)) {
                     cptr.stI16(ccp, i16(((cptr.ldI16(u) + cptr.ld1so(cq, $_cmd_queue_dirx)) | 0)));
-                    cptr.stI16o(ccp, $coord_y, i16(((cptr.ldI16o(u, $you_uy) + cptr.ld1so(cq, $_cmd_queue_diry)) | 0)));
+                    cptr.stI16o(
+                        ccp,
+                        $coord_y,
+                        i16(((cptr.ldI16o(u, $you_uy) + cptr.ld1so(cq, $_cmd_queue_diry)) | 0))
+                    );
                 } else {
                     cmdq_clear(NHC.CQ_CANNED);
                     result = -1;
@@ -881,11 +1557,31 @@ export function getpos(ccp, force, goal) {
         }
 
         for (i = 0; i < 4; i++)
-            cptr.st1o(cptr.decay(pick_chars), i, cptr.ld1so2(gc, cptr.ldI32o(__static_getpos_pick_chars_def, i, 8), 1, $instance_globals_c_Cmd + $cmd_spkeys), 1);
+            cptr.st1o(
+                cptr.decay(pick_chars),
+                i,
+                cptr.ld1so2(
+                    gc,
+                    cptr.ldI32o(__static_getpos_pick_chars_def, i, 8),
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ),
+                1
+            );
         cptr.st1o(cptr.decay(pick_chars), 4, 0, 1);
 
         for (i = 0; i < 12; i++)
-            cptr.st1o(cptr.decay(mMoOdDxX), i, cptr.ld1so2(gc, cptr.ldI32o(__static_getpos_mMoOdDxX_def, i, 4), 1, $instance_globals_c_Cmd + $cmd_spkeys), 1);
+            cptr.st1o(
+                cptr.decay(mMoOdDxX),
+                i,
+                cptr.ld1so2(
+                    gc,
+                    cptr.ldI32o(__static_getpos_mMoOdDxX_def, i, 4),
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ),
+                1
+            );
         cptr.st1o(cptr.decay(mMoOdDxX), 12, 0, 1);
 
         if (handle_tip(NHC.TIP_GETPOS))
@@ -894,7 +1590,15 @@ export function getpos(ccp, force, goal) {
         if (!goal)
             goal = __s_desired_location;
         if (cptr.ld1so(flags, $flag_verbose)) {
-            pline(__s_for_instructions_type_a_s, visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            pline(
+                __s_for_instructions_type_a_s,
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_HELP,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
             msg_given = 1;
         }
         cx.v = cptr.stI16o(gg, $instance_globals_g_getposx, cptr.ldI16(ccp));
@@ -955,7 +1659,13 @@ export function getpos(ccp, force, goal) {
 
         if (cptr.ld1so(iflags, $instance_flags_autodescribe))
             msg_given = 0;
-        if (c == cptr.ld1so2(gc, NHC.NHKF_ESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 16; continue; }
+        if (c ==
+                cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_ESC,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )) { __pc = 16; continue; }
         __pc = 15; continue;
         }
         case 16: {
@@ -991,7 +1701,12 @@ export function getpos(ccp, force, goal) {
         }
         case 22: {
         /* '.' => 0, ',' => 1, ';' => 2, ':' => 3 */
-        result = cptr.ldI32o2(__static_getpos_pick_chars_def, Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(pick_chars))))), 8, 4);
+        result = cptr.ldI32o2(
+            __static_getpos_pick_chars_def,
+            Number(BigInt.asIntN(32, (cptr.diff(cp, cptr.decay(pick_chars))))),
+            8,
+            4
+        );
         { __pc = 5; continue; }
         }
         case 23: {
@@ -1012,7 +1727,8 @@ export function getpos(ccp, force, goal) {
         { __pc = 3; continue; }
         }
         case 26: {
-        if (movecmd(schar(c), NHC.MV_RUSH) || movecmd(schar(c), NHC.MV_RUN)) { __pc = 30; continue; }
+        if (movecmd(schar(c), NHC.MV_RUSH) ||
+                movecmd(schar(c), NHC.MV_RUN)) { __pc = 30; continue; }
         __pc = 29; continue;
         }
         case 30: {
@@ -1026,7 +1742,17 @@ export function getpos(ccp, force, goal) {
 
             dx = cptr.ldI32o(u, $you_dx);
             dy = cptr.ldI32o(u, $you_dy);
-            while (isok(i16(((cx.v + dx) | 0)), i16(((cy.v + dy) | 0))) && glyph == glyph_at(i16(((cx.v + dx) | 0)), i16(((cy.v + dy) | 0))) && isok(i16(((((cx.v + dx) | 0) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((((cy.v + dy) | 0) + cptr.ldI32o(u, $you_dy)) | 0))) && glyph == glyph_at(i16(((((cx.v + dx) | 0) + cptr.ldI32o(u, $you_dx)) | 0)), i16(((((cy.v + dy) | 0) + cptr.ldI32o(u, $you_dy)) | 0)))) {
+            while (isok(i16(((cx.v + dx) | 0)), i16(((cy.v + dy) | 0))) &&
+                    glyph == glyph_at(i16(((cx.v + dx) | 0)), i16(((cy.v + dy) | 0))) &&
+                    isok(
+                        i16(((((cx.v + dx) | 0) + cptr.ldI32o(u, $you_dx)) | 0)),
+                        i16(((((cy.v + dy) | 0) + cptr.ldI32o(u, $you_dy)) | 0))
+                    ) &&
+                    glyph ==
+                        glyph_at(
+                            i16(((((cx.v + dx) | 0) + cptr.ldI32o(u, $you_dx)) | 0)),
+                            i16(((((cy.v + dy) | 0) + cptr.ldI32o(u, $you_dy)) | 0))
+                        )) {
                 dx = (dx + cptr.ldI32o(u, $you_dx)) | 0;
                 dy = (dy + cptr.ldI32o(u, $you_dy)) | 0;
 
@@ -1047,7 +1773,8 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 21: {
-        if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys) || redraw_cmd(schar(c))) { __pc = 32; continue; }
+        if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_HELP, 1, $instance_globals_c_Cmd + $cmd_spkeys) ||
+                redraw_cmd(schar(c))) { __pc = 32; continue; }
         __pc = 33; continue;
         }
         case 32: {
@@ -1064,7 +1791,13 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 33: {
-        if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_SHOWVALID, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 35; continue; }
+        if (c ==
+                cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_SHOWVALID,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )) { __pc = 35; continue; }
         __pc = 36; continue;
         }
         case 35: {
@@ -1076,24 +1809,48 @@ export function getpos(ccp, force, goal) {
         { __pc = 3; continue; }
         }
         case 36: {
-        if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_AUTODESC, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 38; continue; }
+        if (c ==
+                cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_AUTODESC,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )) { __pc = 38; continue; }
         __pc = 39; continue;
         }
         case 38: {
-        cptr.st1o(iflags, $instance_flags_autodescribe, schar((!cptr.ld1so(iflags, $instance_flags_autodescribe))));
-        pline(__s_automatic_description_sis_s, cptr.ld1so(flags, $flag_verbose) ? __s_of_features_under_cursor : __s_empty, cptr.ld1so(iflags, $instance_flags_autodescribe) ? __s_on : __s_off);
+        cptr.st1o(
+            iflags,
+            $instance_flags_autodescribe,
+            schar((!cptr.ld1so(iflags, $instance_flags_autodescribe)))
+        );
+        pline(
+            __s_automatic_description_sis_s,
+            cptr.ld1so(flags, $flag_verbose) ? __s_of_features_under_cursor : __s_empty,
+            cptr.ld1so(iflags, $instance_flags_autodescribe) ? __s_on : __s_off
+        );
         if (!cptr.ld1so(iflags, $instance_flags_autodescribe))
             show_goal_msg = 1;
         msg_given = 1;
         { __pc = 3; continue; }
         }
         case 39: {
-        if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_LIMITVIEW, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 41; continue; }
+        if (c ==
+                cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_LIMITVIEW,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )) { __pc = 41; continue; }
         __pc = 42; continue;
         }
         case 41: {
 
-        cptr.stI32o(iflags, $instance_flags_getloc_filter, ((cptr.ldI32o(iflags, $instance_flags_getloc_filter) + 1) | 0) % NHC.NUM_GFILTER);
+        cptr.stI32o(
+            iflags,
+            $instance_flags_getloc_filter,
+            ((cptr.ldI32o(iflags, $instance_flags_getloc_filter) + 1) | 0) % NHC.NUM_GFILTER
+        );
         for (i = 0; i < NHC.NUM_GLOCS; i++) {
             if (cptr.ldPtro(garr, i, 8)) {
                 cptr.free(cptr.ldPtro(garr, i, 8));
@@ -1101,22 +1858,51 @@ export function getpos(ccp, force, goal) {
             }
             cptr.stI32o(gidx, i, cptr.stI32o(gcount, i, 0, 4), 4);
         }
-        pline(__s_pct_s_dot, cptr.ldPtro(__static_getpos_view_filters, cptr.ldI32o(iflags, $instance_flags_getloc_filter), 8));
+        pline(
+            __s_pct_s_dot,
+            cptr.ldPtro(
+                __static_getpos_view_filters,
+                cptr.ldI32o(iflags, $instance_flags_getloc_filter),
+                8
+            )
+        );
         msg_given = 1;
         { __pc = 3; continue; }
         }
         case 42: {
-        if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_MENU, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 44; continue; }
+        if (c ==
+                cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_MENU,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )) { __pc = 44; continue; }
         __pc = 45; continue;
         }
         case 44: {
-        cptr.st1o(iflags, $instance_flags_getloc_usemenu, schar((!cptr.ld1so(iflags, $instance_flags_getloc_usemenu))));
-        pline(__s_s_a_menu_to_show_possible_targets_s, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_using : __s_not_using, cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_for_m_m_o_o_d_d_and_x_x : __s_empty);
+        cptr.st1o(
+            iflags,
+            $instance_flags_getloc_usemenu,
+            schar((!cptr.ld1so(iflags, $instance_flags_getloc_usemenu)))
+        );
+        pline(
+            __s_s_a_menu_to_show_possible_targets_s,
+            cptr.ld1so(iflags, $instance_flags_getloc_usemenu) ? __s_using : __s_not_using,
+            cptr.ld1so(iflags, $instance_flags_getloc_usemenu)
+                ? __s_for_m_m_o_o_d_d_and_x_x
+                : __s_empty
+        );
         msg_given = 1;
         { __pc = 3; continue; }
         }
         case 45: {
-        if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_SELF, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 47; continue; }
+        if (c ==
+                cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_SELF,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )) { __pc = 47; continue; }
         __pc = 48; continue;
         }
         case 47: {
@@ -1129,12 +1915,25 @@ export function getpos(ccp, force, goal) {
         { __pc = 3; continue; }
         }
         case 48: {
-        if (c == cptr.ld1so2(gc, NHC.NHKF_GETPOS_MOVESKIP, 1, $instance_globals_c_Cmd + $cmd_spkeys)) { __pc = 50; continue; }
+        if (c ==
+                cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_MOVESKIP,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                )) { __pc = 50; continue; }
         __pc = 51; continue;
         }
         case 50: {
-        cptr.st1o(iflags, $instance_flags_getloc_moveskip, schar((!cptr.ld1so(iflags, $instance_flags_getloc_moveskip))));
-        pline(__s_skipping_over_similar_terrain_when, cptr.ld1so(iflags, $instance_flags_getloc_moveskip) ? __s_s__2 : __s_not_s);
+        cptr.st1o(
+            iflags,
+            $instance_flags_getloc_moveskip,
+            schar((!cptr.ld1so(iflags, $instance_flags_getloc_moveskip)))
+        );
+        pline(
+            __s_skipping_over_similar_terrain_when,
+            cptr.ld1so(iflags, $instance_flags_getloc_moveskip) ? __s_s__2 : __s_not_s
+        );
         msg_given = 1;
         { __pc = 3; continue; }
         }
@@ -1165,13 +1964,23 @@ export function getpos(ccp, force, goal) {
             cptr.stI32o(gidx, gloc, 0, 4);  /* garr[][0] is hero's spot */
         }
         if (!(gtmp & 1)) {
-            cptr.stI32o(gidx, gloc, ((cptr.ldI32o(gidx, gloc, 4) + 1) | 0) % cptr.ldI32o(gcount, gloc, 4), 4);
+            cptr.stI32o(
+                gidx,
+                gloc,
+                ((cptr.ldI32o(gidx, gloc, 4) + 1) | 0) % cptr.ldI32o(gcount, gloc, 4),
+                4
+            );
         } else {
             if (cptr.stI32o(gidx, gloc, cptr.ldI32o(gidx, gloc, 4) + -1, 4) < 0)
                 cptr.stI32o(gidx, gloc, (cptr.ldI32o(gcount, gloc, 4) - 1) | 0, 4);
         }
         cx.v = cptr.ldI16o(cptr.ldPtro(garr, gloc, 8), cptr.ldI32o(gidx, gloc, 4), $sizeof_coord);
-        cy.v = cptr.ldI16o2(cptr.ldPtro(garr, gloc, 8), cptr.ldI32o(gidx, gloc, 4), $sizeof_coord, $nhcoord_y);
+        cy.v = cptr.ldI16o2(
+            cptr.ldPtro(garr, gloc, 8),
+            cptr.ldI32o(gidx, gloc, 4),
+            $sizeof_coord,
+            $nhcoord_y
+        );
         { __pc = 3; continue; }
         }
         case 54: {
@@ -1182,12 +1991,25 @@ export function getpos(ccp, force, goal) {
         matching = new Uint8Array(105);
         k = 0;
 
-        void __builtin___memset_chk(cptr.decay(matching), 0, 105n, __builtin_object_size(cptr.decay(matching), 0));
+        void __builtin___memset_chk(
+            cptr.decay(matching),
+            0,
+            105n,
+            __builtin_object_size(cptr.decay(matching), 0)
+        );
         for (sidx.v = 0; sidx.v < NHC.MAXPCHARS; sidx.v++) {
             /* don't even try to match some terrain: walls, room... */
-            if (is_cmap_wall(sidx.v) || is_cmap_room(sidx.v) || is_cmap_corr(sidx.v) || is_cmap_door(sidx.v) || sidx.v == NHC.S_ndoor)
+            if (is_cmap_wall(sidx.v) ||
+                    is_cmap_room(sidx.v) ||
+                    is_cmap_corr(sidx.v) ||
+                    is_cmap_door(sidx.v) ||
+                    sidx.v == NHC.S_ndoor)
                 continue;
-            if (c == cptr.ld1uo(defsyms, sidx.v, $sizeof_symdef) || c == cptr.ld1uo2(gs, sidx.v, 1, $instance_globals_s_showsyms) || (c == 94 && is_cmap_trap(sidx.v)) || (c == cptr.ld1uo2(gs, NHC.S_engroom, 1, $instance_globals_s_showsyms) && is_cmap_engraving(sidx.v)))
+            if (c == cptr.ld1uo(defsyms, sidx.v, $sizeof_symdef) ||
+                    c == cptr.ld1uo2(gs, sidx.v, 1, $instance_globals_s_showsyms) ||
+                    (c == 94 && is_cmap_trap(sidx.v)) ||
+                    (c == cptr.ld1uo2(gs, NHC.S_engroom, 1, $instance_globals_s_showsyms) &&
+                        is_cmap_engraving(sidx.v)))
                 cptr.st1o(cptr.decay(matching), sidx.v, schar((++k)), 1);
         }
         if (k) { __pc = 60; continue; }
@@ -1227,19 +2049,32 @@ export function getpos(ccp, force, goal) {
         /* first, look at what is currently visible
            (might be monster) */
         k = glyph_at(tx.v, ty.v);
-        if (glyph_is_cmap(k) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 75; continue; }
+        if (glyph_is_cmap(k) &&
+                cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 75; continue; }
         __pc = 74; continue;
         }
         case 75: {
         { __pc = 2; continue; }
         }
         case 74: {
-        if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) | 0 && !cptr.ldI32o(iflags, $instance_flags_terrainmode)) { __pc = 77; continue; }
+        if ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+        ) & 1) | 0 &&
+                !cptr.ldI32o(iflags, $instance_flags_terrainmode)) { __pc = 77; continue; }
         __pc = 76; continue;
         }
         case 77: {
-        k = cptr.ldI32o3(svl, tx.v, $sizeof_rm_x21, ty.v, $sizeof_rm, $instance_globals_saved_l_level);
-        if (glyph_is_cmap(k) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 79; continue; }
+        k = cptr.ldI32o3(
+            svl,
+            tx.v,
+            $sizeof_rm_x21,
+            ty.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level
+        );
+        if (glyph_is_cmap(k) &&
+                cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 79; continue; }
         __pc = 78; continue;
         }
         case 79: {
@@ -1257,12 +2092,20 @@ export function getpos(ccp, force, goal) {
         { __pc = 2; continue; }
         }
         case 80: {
-        if (cptr.ld1uo3(svl, tx.v, $sizeof_rm_x21, ty.v, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) { __pc = 83; continue; }
+        if (cptr.ld1uo3(
+            svl,
+            tx.v,
+            $sizeof_rm_x21,
+            ty.v,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_seenv
+        )) { __pc = 83; continue; }
         __pc = 82; continue;
         }
         case 83: {
         k = back_to_glyph(tx.v, ty.v);
-        if (glyph_is_cmap(k) && cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 85; continue; }
+        if (glyph_is_cmap(k) &&
+                cptr.ld1so(cptr.decay(matching), glyph_to_cmap(k), 1)) { __pc = 85; continue; }
         __pc = 84; continue;
         }
         case 85: {
@@ -1317,7 +2160,20 @@ export function getpos(ccp, force, goal) {
         if (!force)
             void cptr.strcpy(cptr.decay(note), __s_aborted);
         else
-            void cptr.sprintf(cptr.decay(note), __s_use_s_s_s_s_or_s, visctrl(cmd_from_func(do_move_west)), visctrl(cmd_from_func(do_move_south)), visctrl(cmd_from_func(do_move_north)), visctrl(cmd_from_func(do_move_east)), visctrl(cptr.ld1so2(gc, NHC.NHKF_GETPOS_PICK, 1, $instance_globals_c_Cmd + $cmd_spkeys)));
+            void cptr.sprintf(
+                cptr.decay(note),
+                __s_use_s_s_s_s_or_s,
+                visctrl(cmd_from_func(do_move_west)),
+                visctrl(cmd_from_func(do_move_south)),
+                visctrl(cmd_from_func(do_move_north)),
+                visctrl(cmd_from_func(do_move_east)),
+                visctrl(cptr.ld1so2(
+                    gc,
+                    NHC.NHKF_GETPOS_PICK,
+                    1,
+                    $instance_globals_c_Cmd + $cmd_spkeys
+                ))
+            );
         pline(__s_unknown_direction_s_s, visctrl(schar(c)), cptr.decay(note));
         msg_given = 1;
         __pc = 59;
@@ -1375,7 +2231,8 @@ export function getpos(ccp, force, goal) {
         continue;
         }
         case 3 /* nxtc: */: {
-        cptr.stI16o(gg, $instance_globals_g_getposx, cx.v), cptr.stI16o(gg, $instance_globals_g_getposy, cy.v);
+        cptr.stI16o(gg, $instance_globals_g_getposx, cx.v),
+                cptr.stI16o(gg, $instance_globals_g_getposy, cy.v);
         cliparound()(cx.v, cy.v);
         curs()(WIN_MAP.v, cx.v, cy.v);
         flush_screen(0);
@@ -1396,7 +2253,11 @@ export function getpos(ccp, force, goal) {
             clear_nhwindow()(WIN_MESSAGE.v);
         cptr.stI16(ccp, cx.v);
         cptr.stI16o(ccp, $coord_y, cy.v);
-        cptr.stI16o(gg, $instance_globals_g_getposx, cptr.stI16o(gg, $instance_globals_g_getposy, 0));
+        cptr.stI16o(
+            gg,
+            $instance_globals_g_getposx,
+            cptr.stI16o(gg, $instance_globals_g_getposy, 0)
+        );
         for (i = 0; i < NHC.NUM_GLOCS; i++)
             if (cptr.ldPtro(garr, i, 8))
                 cptr.free(cptr.ldPtro(garr, i, 8));
@@ -1413,7 +2274,15 @@ export function getpos(ccp, force, goal) {
 // 13 bindings: 0 rebound+refilled, 4 rebound, 9 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(getpos_hilitefunc), S(getpos_getvalid), S(getpos_hilite_state), S(defaultHiliteState), S(gloc_descr), S(gloc_filtertxt), S(__static_getpos_help_fastmovemode), S(__static_dxdy_to_dist_descr_buf), S(__static_dxdy_to_dist_descr_dirnames), S(__static_coord_desc_screen_fmt), S(__static_getpos_pick_chars_def), S(__static_getpos_mMoOdDxX_def), S(__static_getpos_view_filters)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(getpos_hilitefunc), S(getpos_getvalid), S(getpos_hilite_state), S(defaultHiliteState),
+        S(gloc_descr), S(gloc_filtertxt), S(__static_getpos_help_fastmovemode),
+        S(__static_dxdy_to_dist_descr_buf), S(__static_dxdy_to_dist_descr_dirnames),
+        S(__static_coord_desc_screen_fmt), S(__static_getpos_pick_chars_def),
+        S(__static_getpos_mMoOdDxX_def), S(__static_getpos_view_filters)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("getpos.js: __resetState before __captureState");

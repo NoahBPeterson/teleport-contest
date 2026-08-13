@@ -32,31 +32,36 @@ import { angry_guards, monnear, setmangry } from './mon.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $align_record = FLD.align_record, $branch_end1 = FLD.branch_end1, $branch_end2 = FLD.branch_end2,
-    $context_info_mon_moving = FLD.context_info_mon_moving, $d_level_dlevel = FLD.d_level_dlevel,
-    $dgn_topology_d_nemesis_level = FLD.dgn_topology_d_nemesis_level,
-    $dgn_topology_d_qlocate_level = FLD.dgn_topology_d_qlocate_level,
-    $dgn_topology_d_qstart_level = FLD.dgn_topology_d_qstart_level,
-    $dgn_topology_d_quest_dnum = FLD.dgn_topology_d_quest_dnum, $flag_debug = FLD.flag_debug,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $monst_data = FLD.monst_data, $monst_m_id = FLD.monst_m_id, $monst_mcanmove = FLD.monst_mcanmove,
-    $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
-    $monst_mstrategy = FLD.monst_mstrategy, $obj_otyp = FLD.obj_otyp, $permonst_msound = FLD.permonst_msound,
-    $prop_intrinsic = FLD.prop_intrinsic, $q_score_cheater = FLD.q_score_cheater,
-    $q_score_first_locate = FLD.q_score_first_locate, $q_score_got_quest = FLD.q_score_got_quest,
-    $q_score_got_thanks = FLD.q_score_got_thanks, $q_score_in_battle = FLD.q_score_in_battle,
-    $q_score_killed_leader = FLD.q_score_killed_leader, $q_score_killed_nemesis = FLD.q_score_killed_nemesis,
-    $q_score_leader_m_id = FLD.q_score_leader_m_id, $q_score_made_goal = FLD.q_score_made_goal,
-    $q_score_met_leader = FLD.q_score_met_leader, $q_score_met_nemesis = FLD.q_score_met_nemesis,
-    $q_score_not_ready = FLD.q_score_not_ready, $q_score_pissed_off = FLD.q_score_pissed_off,
-    $q_score_touched_artifact = FLD.q_score_touched_artifact, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_prop = FLD.sizeof_prop, $trap_ttyp = FLD.trap_ttyp, $u_event_qcompleted = FLD.u_event_qcompleted,
-    $u_event_qexpelled = FLD.u_event_qexpelled, $u_have_questart = FLD.u_have_questart,
-    $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_ualign = FLD.you_ualign,
-    $you_ualignbase = FLD.you_ualignbase, $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave,
-    $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
+const $align_record = FLD.align_record, $branch_end1 = FLD.branch_end1,
+      $branch_end2 = FLD.branch_end2, $context_info_mon_moving = FLD.context_info_mon_moving,
+      $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_nemesis_level = FLD.dgn_topology_d_nemesis_level,
+      $dgn_topology_d_qlocate_level = FLD.dgn_topology_d_qlocate_level,
+      $dgn_topology_d_qstart_level = FLD.dgn_topology_d_qstart_level,
+      $dgn_topology_d_quest_dnum = FLD.dgn_topology_d_quest_dnum, $flag_debug = FLD.flag_debug,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $monst_data = FLD.monst_data, $monst_m_id = FLD.monst_m_id,
+      $monst_mcanmove = FLD.monst_mcanmove, $monst_mpeaceful = FLD.monst_mpeaceful,
+      $monst_msleeping = FLD.monst_msleeping, $monst_mstrategy = FLD.monst_mstrategy,
+      $obj_otyp = FLD.obj_otyp, $permonst_msound = FLD.permonst_msound,
+      $prop_intrinsic = FLD.prop_intrinsic, $q_score_cheater = FLD.q_score_cheater,
+      $q_score_first_locate = FLD.q_score_first_locate, $q_score_got_quest = FLD.q_score_got_quest,
+      $q_score_got_thanks = FLD.q_score_got_thanks, $q_score_in_battle = FLD.q_score_in_battle,
+      $q_score_killed_leader = FLD.q_score_killed_leader,
+      $q_score_killed_nemesis = FLD.q_score_killed_nemesis,
+      $q_score_leader_m_id = FLD.q_score_leader_m_id, $q_score_made_goal = FLD.q_score_made_goal,
+      $q_score_met_leader = FLD.q_score_met_leader, $q_score_met_nemesis = FLD.q_score_met_nemesis,
+      $q_score_not_ready = FLD.q_score_not_ready, $q_score_pissed_off = FLD.q_score_pissed_off,
+      $q_score_touched_artifact = FLD.q_score_touched_artifact,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $trap_ttyp = FLD.trap_ttyp, $u_event_qcompleted = FLD.u_event_qcompleted,
+      $u_event_qexpelled = FLD.u_event_qexpelled, $u_have_questart = FLD.u_have_questart,
+      $u_roleplay_deaf = FLD.u_roleplay_deaf, $you_ualign = FLD.you_ualign,
+      $you_ualignbase = FLD.you_ualignbase, $you_uevent = FLD.you_uevent,
+      $you_uhave = FLD.you_uhave, $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops,
+      $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz,
+      $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_firsttime = cptr.lit("firsttime");
@@ -108,7 +113,9 @@ function on_start() {
     if (!((cptr.ldI32(svq) & 1))) {
         qt_pager(__s_firsttime);
         cptr.stI32(svq, 1);
-    } else if ((cptr.ldI16o(u, $you_uz0) != cptr.ldI16o(u, $you_uz)) || (cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) < cptr.ldI16o(u, $you_uz + $d_level_dlevel))) {
+    } else if ((cptr.ldI16o(u, $you_uz0) != cptr.ldI16o(u, $you_uz)) ||
+            (cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) <
+                cptr.ldI16o(u, $you_uz + $d_level_dlevel))) {
         if ((((cptr.ldI32o(svq, $q_score_not_ready) & 7)) | 0) <= 2)
             qt_pager(__s_nexttime);
         else
@@ -120,7 +127,8 @@ function on_start() {
 function on_locate() {
     /* the locate messages are phrased in a manner such that they only
        make sense when arriving on the level from above */
-    let from_above = schar((cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) < cptr.ldI16o(u, $you_uz + $d_level_dlevel)));
+    let from_above = schar((cptr.ldI16o(u, $you_uz0 + $d_level_dlevel) <
+            cptr.ldI16o(u, $you_uz + $d_level_dlevel)));
 
     if (((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1))) {
         return;
@@ -164,16 +172,59 @@ function on_goal() {
 
 /** C ref: quest.c:90 */
 export function onquest() {
-    if ((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 || (on_level(cptr.add(u, $you_uz0), cptr.add(u, $you_uz))))
+    if ((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 ||
+            (on_level(cptr.add(u, $you_uz0), cptr.add(u, $you_uz))))
         return;
     if (!Is_special(cptr.add(u, $you_uz)))
         return;
 
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))))
+    if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
+                )
+            ))))
         on_start();
-    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)))))
+    else if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level
+                )
+            ))))
         on_locate();
-    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)))))
+    else if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level
+                )
+            ))))
         on_goal();
     return;
 }
@@ -210,7 +261,12 @@ export function artitouch(obj) {
 /* external hook for do.c (level change check) */
 /** C ref: quest.c:140 @returns {CInt} */
 export function ok_to_quest() {
-    return schar((((((cptr.ldI32o(svq, $q_score_got_quest) & 1)) | 0 || ((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) | 0) && is_pure(0) > 0) || ((cptr.ldI32o(svq, $q_score_killed_leader) & 1)) | 0 ? 1 : 0));
+    return schar((((((cptr.ldI32o(svq, $q_score_got_quest) & 1)) | 0 ||
+        ((cptr.ldI32o(svq, $q_score_got_thanks) & 1)) | 0) &&
+        is_pure(0) > 0) ||
+        ((cptr.ldI32o(svq, $q_score_killed_leader) & 1)) | 0
+            ? 1
+            : 0));
 }
 
 /** C ref: quest.c:147 @returns {CInt} */
@@ -225,16 +281,28 @@ function is_pure(talk) {
 
     if (wizard() && talk) {
         if (cptr.ld1so(u, $you_ualign) != original_alignment) {
-            You(__s_are_currently_s_instead_of_s, align_str(cptr.ld1so(u, $you_ualign)), align_str(original_alignment));
+            You(
+                __s_are_currently_s_instead_of_s,
+                align_str(cptr.ld1so(u, $you_ualign)),
+                align_str(original_alignment)
+            );
         } else if (cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) != original_alignment) {
             You(__s_have_converted);
         } else if (cptr.ldI32o(u, $you_ualign + $align_record) < NHM.MIN_QUEST_ALIGN) {
-            You(__s_are_currently_d_and_require_d, cptr.ldI32o(u, $you_ualign + $align_record), NHM.MIN_QUEST_ALIGN);
+            You(
+                __s_are_currently_d_and_require_d,
+                cptr.ldI32o(u, $you_ualign + $align_record),
+                NHM.MIN_QUEST_ALIGN
+            );
             if (yn_function(__s_adjust, null, 121, 1) == 121)
                 cptr.stI32o(u, $you_ualign + $align_record, NHM.MIN_QUEST_ALIGN);
         }
     }
-    purity = (cptr.ldI32o(u, $you_ualign + $align_record) >= NHM.MIN_QUEST_ALIGN && cptr.ld1so(u, $you_ualign) == original_alignment && cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) == original_alignment) ? 1 : ((cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) != original_alignment) ? -1 : 0);
+    purity = (cptr.ldI32o(u, $you_ualign + $align_record) >= NHM.MIN_QUEST_ALIGN &&
+        cptr.ld1so(u, $you_ualign) == original_alignment &&
+        cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) == original_alignment)
+            ? 1
+            : ((cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) != original_alignment) ? -1 : 0);
     return purity;
 }
 
@@ -249,10 +317,14 @@ function expulsion(seal) {
     let br;
     let dest;
     let t;
-    let portal_flag = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ? NHC.UTOTYPE_NONE : NHC.UTOTYPE_PORTAL;
+    let portal_flag = (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0
+            ? NHC.UTOTYPE_NONE
+            : NHC.UTOTYPE_PORTAL;
 
     br = dungeon_branch(__s_the_quest);
-    dest = (cptr.ldI16o(br, $branch_end1) == cptr.ldI16o(u, $you_uz)) ? cptr.add(br, $branch_end2) : cptr.add(br, $branch_end1);
+    dest = (cptr.ldI16o(br, $branch_end1) == cptr.ldI16o(u, $you_uz))
+            ? cptr.add(br, $branch_end2)
+            : cptr.add(br, $branch_end1);
     if (seal)
         portal_flag |= NHC.UTOTYPE_RMPORTAL;
     nomul(0);  /* stop running */
@@ -338,11 +410,13 @@ export function finish_quest(obj) {
 
 /** C ref: quest.c:282 — @param {CPtr<struct monst>} mtmp */
 function chat_with_leader(mtmp) {
-    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) || ((cptr.ldI32o(svq, $q_score_pissed_off) & 1)) | 0)
+    if (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) ||
+            ((cptr.ldI32o(svq, $q_score_pissed_off) & 1)) | 0)
         return;
 
     /*  Rule 0: Cheater checks. */
-    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 && !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
+    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 &&
+            !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
         cptr.stI32o(svq, $q_score_cheater, 1);
 
     /*  It is possible for you to get the amulet without completing
@@ -382,7 +456,10 @@ function chat_with_leader(mtmp) {
 
         /* the quest leader might have passed through the portal into
            the regular dungeon; none of the remaining make sense there */
-        if (!on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))
+        if (!on_level(
+            cptr.add(u, $you_uz),
+            cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)
+        ))
             return;
 
         if (not_capable()) {
@@ -429,11 +506,18 @@ export function leader_speaks(mtmp) {
             qt_pager(__s_leader_last);
         }
         cptr.stI32o(svq, $q_score_pissed_off, 1);
-        cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);  /* end the inaction */
+        cptr.stU64o(
+            mtmp,
+            $monst_mstrategy,
+            cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n
+        );  /* end the inaction */
     }
     /* the quest leader might have passed through the portal into the
        regular dungeon; if so, mustn't perform "backwards expulsion" */
-    if (!on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))
+    if (!on_level(
+        cptr.add(u, $you_uz),
+        cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)
+    ))
         return;
 
     if (!((cptr.ldI32o(svq, $q_score_pissed_off) & 1)))
@@ -445,7 +529,8 @@ function chat_with_nemesis() {
     /*  The nemesis will do most of the talking, but... */
     qt_pager(__s_discourage);
     if (!((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
-        ((cptr.stI32o(svq, $q_score_met_nemesis, cptr.ldI32o(svq, $q_score_met_nemesis) + 1)) - (1));
+        ((cptr.stI32o(svq, $q_score_met_nemesis, cptr.ldI32o(svq, $q_score_met_nemesis) + 1)) -
+                (1));
 }
 
 /** C ref: quest.c:403 */
@@ -453,7 +538,8 @@ export function nemesis_speaks() {
     if (!((cptr.ldI32o(svq, $q_score_in_battle) & 1))) {
         if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1))
             qt_pager(__s_nemesis_wantsit);
-        else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) == 1 || !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
+        else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) == 1 ||
+                !((cptr.ldI32o(svq, $q_score_met_nemesis) & 1)))
             qt_pager(__s_nemesis_first);
         else if ((((cptr.ldI32o(svq, $q_score_made_goal) & 7)) | 0) < 4)
             qt_pager(__s_nemesis_next);
@@ -486,7 +572,8 @@ export function nemesis_stinks(mx, my) {
 /** C ref: quest.c:441 */
 function chat_with_guardian() {
     /*  These guys/gals really don't have much to say... */
-    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 && ((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1)) | 0)
+    if ((cptr.ldI32o(u, $you_uhave + $u_have_questart) & 1) | 0 &&
+            ((cptr.ldI32o(svq, $q_score_killed_nemesis) & 1)) | 0)
         qt_pager(__s_guardtalk_after);
     else
         qt_pager(__s_guardtalk_before);
@@ -494,13 +581,21 @@ function chat_with_guardian() {
 
 /** C ref: quest.c:451 — @param {CPtr<struct monst>} mtmp */
 function prisoner_speaks(mtmp) {
-    if (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_PRISONER, $sizeof_permonst)) && (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
+    if (cptr.eq(
+        cptr.ldPtro(mtmp, $monst_data),
+        cptr.add(mons, NHC.PM_PRISONER, $sizeof_permonst)
+    ) &&
+            (cptr.ldU64o(mtmp, $monst_mstrategy) & 805306368n)) {
         /* Awaken the prisoner */
         if (canseemon(mtmp))
             pline(__s_s_speaks, Monnam(mtmp));
         ;
         verbalize(__s_i_m_finally_free);
-        cptr.stU64o(mtmp, $monst_mstrategy, cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n);
+        cptr.stU64o(
+            mtmp,
+            $monst_mstrategy,
+            cptr.ldU64o(mtmp, $monst_mstrategy) & 18446744072904245247n
+        );
         cptr.stI32o(mtmp, $monst_mpeaceful, 1);
 
         /* Your god is happy... */
@@ -554,5 +649,9 @@ export function quest_talk(mtmp) {
 /** C ref: quest.c:514 — @param {CPtr<struct monst>} mtmp */
 export function quest_stat_check(mtmp) {
     if (cptr.ld1uo(cptr.ldPtro(mtmp, $monst_data), $permonst_msound) == NHC.MS_NEMESIS)
-        cptr.stI32o(svq, $q_score_in_battle, (!helpless(mtmp) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0) >>> 0);
+        cptr.stI32o(
+            svq,
+            $q_score_in_battle,
+            (!helpless(mtmp) && monnear(mtmp, cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) ? 1 : 0) >>> 0
+        );
 }

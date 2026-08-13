@@ -33,19 +33,22 @@ import { set_mon_data } from './mondata.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Role_mnum = FLD.Role_mnum, $const_globals_zeromonst = FLD.const_globals_zeromonst,
-    $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level, $dlevel_t_monlist = FLD.dlevel_t_monlist,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole, $monst_data = FLD.monst_data,
-    $monst_female = FLD.monst_female, $monst_m_lev = FLD.monst_m_lev, $monst_mextra = FLD.monst_mextra,
-    $monst_mhp = FLD.monst_mhp, $monst_mhpmax = FLD.monst_mhpmax, $monst_mpeaceful = FLD.monst_mpeaceful,
-    $obj_greased = FLD.obj_greased, $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass,
-    $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2, $obj_oerodeproof = FLD.obj_oerodeproof,
-    $obj_otyp = FLD.obj_otyp, $obj_owt = FLD.obj_owt, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
-    $objclass_oc_merge = FLD.objclass_oc_merge, $objclass_oc_subtyp = FLD.objclass_oc_subtyp,
-    $permonst_mflags2 = FLD.permonst_mflags2, $permonst_pmidx = FLD.permonst_pmidx,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_permonst = FLD.sizeof_permonst, $you_uz = FLD.you_uz;
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_monsters = FLD.dlevel_t_monsters,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole, $monst_data = FLD.monst_data,
+      $monst_female = FLD.monst_female, $monst_m_lev = FLD.monst_m_lev,
+      $monst_mextra = FLD.monst_mextra, $monst_mhp = FLD.monst_mhp,
+      $monst_mhpmax = FLD.monst_mhpmax, $monst_mpeaceful = FLD.monst_mpeaceful,
+      $obj_greased = FLD.obj_greased, $obj_oartifact = FLD.obj_oartifact,
+      $obj_oclass = FLD.obj_oclass, $obj_oeroded = FLD.obj_oeroded,
+      $obj_oeroded2 = FLD.obj_oeroded2, $obj_oerodeproof = FLD.obj_oerodeproof,
+      $obj_otyp = FLD.obj_otyp, $obj_owt = FLD.obj_owt, $obj_quan = FLD.obj_quan,
+      $obj_spe = FLD.obj_spe, $objclass_oc_merge = FLD.objclass_oc_merge,
+      $objclass_oc_subtyp = FLD.objclass_oc_subtyp, $permonst_mflags2 = FLD.permonst_mflags2,
+      $permonst_pmidx = FLD.permonst_pmidx, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_permonst = FLD.sizeof_permonst, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_alex = cptr.lit("Alex");
@@ -180,10 +183,20 @@ function dev_name() {
     do {
         match = 0;
         i = rn2(n);
-        for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+        for (
+            mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+            mtmp;
+            mtmp = cptr.ldPtr(mtmp)
+        ) {
             if (!is_mplayer(cptr.ldPtro(mtmp, $monst_data)))
                 continue;
-            if (!cptr.strncmp(cptr.ldPtro(developers, i, 8), (has_mgivenname(mtmp)) ? (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))) : __s_empty, cptr.strlen(cptr.ldPtro(developers, i, 8)))) {
+            if (!cptr.strncmp(
+                cptr.ldPtro(developers, i, 8),
+                (has_mgivenname(mtmp))
+                    ? (cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra)))
+                    : __s_empty,
+                cptr.strlen(cptr.ldPtro(developers, i, 8))
+            )) {
                 match = 1;
                 break;
             }
@@ -198,7 +211,8 @@ function dev_name() {
 
 /** C ref: mplayer.c:72 — @param {CPtr<struct monst>} mtmp @param {CPtr<char>} nam */
 function get_mplname(mtmp, nam) {
-    let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 131072n) != 0n));
+    let fmlkind = schar(((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) &
+            131072n) != 0n));
     let devnam;
 
     devnam = dev_name();
@@ -214,7 +228,14 @@ function get_mplname(mtmp, nam) {
     else
         cptr.stI32o(mtmp, $monst_female, 0);
     void cptr.strcat(nam, __s_the);
-    void cptr.strcat(nam, rank_of(cptr.ld1uo(mtmp, $monst_m_lev), (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)), schar((cptr.ldI32o(mtmp, $monst_female) & 1))));
+    void cptr.strcat(
+        nam,
+        rank_of(
+            cptr.ld1uo(mtmp, $monst_m_lev),
+            (cptr.ldI32o((cptr.ldPtro(mtmp, $monst_data)), $permonst_pmidx)),
+            schar((cptr.ldI32o(mtmp, $monst_female) & 1))
+        )
+    );
 }
 
 /** C ref: mplayer.c:95 — @param {CPtr<struct monst>} mon @param {CInt} typ */
@@ -239,7 +260,14 @@ function* mk_mplayer_armor(mon, typ) {
     void (yield* mpickobj(mon, obj));
 }
 
-/** C ref: mplayer.c:118 — @param {CPtr<struct permonst>} ptr @param {CInt} x @param {CInt} y @param {CInt} special @returns {CPtr<struct monst>} */
+/**
+ * C ref: mplayer.c:118
+ * @param {CPtr<struct permonst>} ptr
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} special
+ * @returns {CPtr<struct monst>}
+ */
 export function* mk_mplayer(ptr, x, y, special) {
     let mtmp;
     let nam = new Uint8Array(32);
@@ -247,13 +275,32 @@ export function* mk_mplayer(ptr, x, y, special) {
     if (!is_mplayer(ptr))
         return (null);
 
-    if ((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
-        void (yield* rloc((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), 5));  /* insurance */
+    if ((cptr.ldPtro3(
+        svl,
+        x,
+        168,
+        y,
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_monsters
+    ) !== null))
+        void (yield* rloc(
+            (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)),
+            5
+        ));  /* insurance */
 
-    if (!(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
+    if (!(cptr.ldI16((cptr.add(u, $you_uz))) ==
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )))))
         special = 0;
 
-    if ((mtmp = (yield* makemon(ptr, x, y, Number(BigInt.asUintN(32, (special ? 131072n : 0n)))))) !== null) {
+    if ((mtmp = (yield* makemon(
+        ptr,
+        x,
+        y,
+        Number(BigInt.asUintN(32, (special ? 131072n : 0n)))
+    ))) !== null) {
         let weapon;
         let armor;
         let cloak;
@@ -263,7 +310,16 @@ export function* mk_mplayer(ptr, x, y, special) {
         let otmp;
 
         cptr.st1o(mtmp, $monst_m_lev, uchar((special ? ((rn2(16) + 15) | 0) : rnd(16))));
-        cptr.stI32o(mtmp, $monst_mhp, cptr.stI32o(mtmp, $monst_mhpmax, (d((cptr.ld1uo(mtmp, $monst_m_lev)), 10) + (special ? ((30 + rnd(30)) | 0) : 30)) | 0));
+        cptr.stI32o(
+            mtmp,
+            $monst_mhp,
+            cptr.stI32o(
+                mtmp,
+                $monst_mhpmax,
+                (d((cptr.ld1uo(mtmp, $monst_m_lev)), 10) +
+                    (special ? ((30 + rnd(30)) | 0) : 30)) | 0
+            )
+        );
         if (special) {
             get_mplname(mtmp, cptr.decay(nam));
             mtmp = (yield* christen_monst(mtmp, cptr.decay(nam)));
@@ -276,9 +332,15 @@ export function* mk_mplayer(ptr, x, y, special) {
         /* default equipment; much of it will be overridden below */
         weapon = i16((!rn2(2) ? NHC.LONG_SWORD : rnd_class(NHC.SPEAR, NHC.BULLWHIP)));
         armor = i16(rnd_class(NHC.GRAY_DRAGON_SCALE_MAIL, NHC.YELLOW_DRAGON_SCALE_MAIL));
-        cloak = i16((!rn2(8) ? NHC.STRANGE_OBJECT : rnd_class(NHC.OILSKIN_CLOAK, NHC.CLOAK_OF_DISPLACEMENT)));
-        helm = i16((!rn2(8) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_LEATHER_HELM, NHC.HELM_OF_TELEPATHY)));
-        shield = i16((!rn2(8) ? NHC.STRANGE_OBJECT : rnd_class(NHC.ELVEN_SHIELD, NHC.SHIELD_OF_REFLECTION)));
+        cloak = i16((!rn2(8)
+                ? NHC.STRANGE_OBJECT
+                : rnd_class(NHC.OILSKIN_CLOAK, NHC.CLOAK_OF_DISPLACEMENT)));
+        helm = i16((!rn2(8)
+                ? NHC.STRANGE_OBJECT
+                : rnd_class(NHC.ELVEN_LEATHER_HELM, NHC.HELM_OF_TELEPATHY)));
+        shield = i16((!rn2(8)
+                ? NHC.STRANGE_OBJECT
+                : rnd_class(NHC.ELVEN_SHIELD, NHC.SHIELD_OF_REFLECTION)));
 
         switch ((cptr.ldI32o((ptr), $permonst_pmidx))) {
             case NHC.PM_ARCHEOLOGIST:
@@ -388,8 +450,19 @@ export function* mk_mplayer(ptr, x, y, special) {
             if (special && rn2(2))
                 otmp = (yield* mk_artifact(otmp, -128, 99, 0));
             /* usually increase stack size if stackable weapon */
-            if ((cptr.ldI32o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_merge) & 1) | 0 && !cptr.ld1so(otmp, $obj_oartifact) && monmightthrowwep(otmp))
-                cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + BigInt(rn2(is_spear(otmp) ? 4 : 8)));
+            if ((cptr.ldI32o2(
+                objects,
+                cptr.ldI16o(otmp, $obj_otyp),
+                $sizeof_objclass,
+                $objclass_oc_merge
+            ) & 1) | 0 &&
+                    !cptr.ld1so(otmp, $obj_oartifact) &&
+                    monmightthrowwep(otmp))
+                cptr.stI64o(
+                    otmp,
+                    $obj_quan,
+                    cptr.ldI64o(otmp, $obj_quan) + BigInt(rn2(is_spear(otmp) ? 4 : 8))
+                );
             cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
             /* mplayers knew better than to overenchant Magicbane */
             if (is_art(otmp, NHC.ART_MAGICBANE))
@@ -407,7 +480,10 @@ export function* mk_mplayer(ptr, x, y, special) {
             if (weapon == NHC.WAR_HAMMER)
                 (yield* mk_mplayer_armor(mtmp, NHC.GAUNTLETS_OF_POWER));
             else if (rn2(8))
-                (yield* mk_mplayer_armor(mtmp, i16(rnd_class(NHC.LEATHER_GLOVES, NHC.GAUNTLETS_OF_DEXTERITY))));
+                (yield* mk_mplayer_armor(
+                    mtmp,
+                    i16(rnd_class(NHC.LEATHER_GLOVES, NHC.GAUNTLETS_OF_DEXTERITY))
+                ));
             if (rn2(8))
                 (yield* mk_mplayer_armor(mtmp, i16(rnd_class(NHC.LOW_BOOTS, NHC.LEVITATION_BOOTS))));
             (yield* m_dowear(mtmp, 1));
@@ -455,7 +531,8 @@ export function* create_mplayers(num, special) {
         let tryct = 0;
 
         /* roll for character class */
-        pm = ((rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
+        pm = ((rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) +
+                NHC.PM_ARCHEOLOGIST) | 0);
         set_mon_data(fakemon, cptr.add(mons, pm, $sizeof_permonst));
 
         /* roll for an available location */
@@ -489,14 +566,31 @@ export function* mplayer_talk(mtmp) {
         return;  /* will drop to humanoid talk */
 
     ;
-    (yield* verbalize(__s_talk_s, cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum), $sizeof_permonst)) ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, rn2(3), 8) : cptr.ldPtro(__static_mplayer_talk_other_class_msg, rn2(3), 8)));
+    (yield* verbalize(
+        __s_talk_s,
+        cptr.eq(
+            cptr.ldPtro(mtmp, $monst_data),
+            cptr.add(
+                mons,
+                cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum),
+                $sizeof_permonst
+            )
+        )
+            ? cptr.ldPtro(__static_mplayer_talk_same_class_msg, rn2(3), 8)
+            : cptr.ldPtro(__static_mplayer_talk_other_class_msg, rn2(3), 8)
+    ));
 }
 
 // --- BEGIN c2js reset block (tools/c2js/resetify.mjs) — do not edit ---
 // 3 bindings: 0 rebound+refilled, 0 rebound, 3 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(developers), S(__static_mplayer_talk_same_class_msg), S(__static_mplayer_talk_other_class_msg)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(developers), S(__static_mplayer_talk_same_class_msg),
+        S(__static_mplayer_talk_other_class_msg)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("mplayer.js: __resetState before __captureState");

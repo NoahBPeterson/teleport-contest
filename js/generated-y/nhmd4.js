@@ -15,15 +15,21 @@ import { d } from './rnd.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $nhmd4_context_a = FLD.nhmd4_context_a, $nhmd4_context_b = FLD.nhmd4_context_b,
-    $nhmd4_context_block = FLD.nhmd4_context_block, $nhmd4_context_buffer = FLD.nhmd4_context_buffer,
-    $nhmd4_context_c = FLD.nhmd4_context_c, $nhmd4_context_d = FLD.nhmd4_context_d,
-    $nhmd4_context_hi = FLD.nhmd4_context_hi;
+      $nhmd4_context_block = FLD.nhmd4_context_block,
+      $nhmd4_context_buffer = FLD.nhmd4_context_buffer, $nhmd4_context_c = FLD.nhmd4_context_c,
+      $nhmd4_context_d = FLD.nhmd4_context_d, $nhmd4_context_hi = FLD.nhmd4_context_hi;
 
 /*
  * This processes one or more 64-byte data blocks, but does NOT update
  * the bit counters.  There're no alignment requirements.
  */
-/** C ref: nhmd4.c:83 — @param {CPtr<struct nhmd4_context>} ctx @param {CPtr<unsigned char>} data @param {CLongLong} size @returns {CPtr<unsigned char>} */
+/**
+ * C ref: nhmd4.c:83
+ * @param {CPtr<struct nhmd4_context>} ctx
+ * @param {CPtr<unsigned char>} data
+ * @param {CLongLong} size
+ * @returns {CPtr<unsigned char>}
+ */
 function nhmd4_body(ctx, data, size) {
     let ptr;
     let a;
@@ -49,65 +55,481 @@ function nhmd4_body(ctx, data, size) {
         saved_d = d;
 
         /* Round 1 */
-        ((a = (a + ((((((d)) ^ ((((b)) & ((((c)) ^ ((d))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 0, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 0) | ((cptr.ld1uo(ptr, 1) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 2) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 3) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + ((((((c)) ^ ((((a)) & ((((b)) ^ ((c))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 1, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 4) | ((cptr.ld1uo(ptr, 5) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 6) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 7) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (d = ((((d) << 7) >>> 0) | ((d) >>> 25)) >>> 0));
-        ((c = (c + ((((((b)) ^ ((((d)) & ((((a)) ^ ((b))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 2, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 8) | ((cptr.ld1uo(ptr, 9) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 10) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 11) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0));
-        ((b = (b + ((((((a)) ^ ((((c)) & ((((d)) ^ ((a))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 3, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 12) | ((cptr.ld1uo(ptr, 13) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 14) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 15) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (b = ((((b) << 19) >>> 0) | ((b) >>> 13)) >>> 0));
+        (
+            (a = (a +
+                ((((((d)) ^ ((((b)) & ((((c)) ^ ((d))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        0,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 0) | ((cptr.ld1uo(ptr, 1) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 2) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 3) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                ((((((c)) ^ ((((a)) & ((((b)) ^ ((c))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        1,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 4) | ((cptr.ld1uo(ptr, 5) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 6) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 7) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (d = ((((d) << 7) >>> 0) | ((d) >>> 25)) >>> 0)
+        );
+        (
+            (c = (c +
+                ((((((b)) ^ ((((d)) & ((((a)) ^ ((b))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        2,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 8) | ((cptr.ld1uo(ptr, 9) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 10) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 11) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0)
+        );
+        (
+            (b = (b +
+                ((((((a)) ^ ((((c)) & ((((d)) ^ ((a))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        3,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 12) | ((cptr.ld1uo(ptr, 13) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 14) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 15) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (b = ((((b) << 19) >>> 0) | ((b) >>> 13)) >>> 0)
+        );
 
-        ((a = (a + ((((((d)) ^ ((((b)) & ((((c)) ^ ((d))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 4, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 16) | ((cptr.ld1uo(ptr, 17) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 18) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 19) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + ((((((c)) ^ ((((a)) & ((((b)) ^ ((c))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 5, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 20) | ((cptr.ld1uo(ptr, 21) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 22) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 23) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (d = ((((d) << 7) >>> 0) | ((d) >>> 25)) >>> 0));
-        ((c = (c + ((((((b)) ^ ((((d)) & ((((a)) ^ ((b))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 6, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 24) | ((cptr.ld1uo(ptr, 25) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 26) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 27) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0));
-        ((b = (b + ((((((a)) ^ ((((c)) & ((((d)) ^ ((a))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 7, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 28) | ((cptr.ld1uo(ptr, 29) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 30) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 31) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (b = ((((b) << 19) >>> 0) | ((b) >>> 13)) >>> 0));
+        (
+            (a = (a +
+                ((((((d)) ^ ((((b)) & ((((c)) ^ ((d))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        4,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 16) | ((cptr.ld1uo(ptr, 17) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 18) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 19) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                ((((((c)) ^ ((((a)) & ((((b)) ^ ((c))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        5,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 20) | ((cptr.ld1uo(ptr, 21) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 22) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 23) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (d = ((((d) << 7) >>> 0) | ((d) >>> 25)) >>> 0)
+        );
+        (
+            (c = (c +
+                ((((((b)) ^ ((((d)) & ((((a)) ^ ((b))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        6,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 24) | ((cptr.ld1uo(ptr, 25) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 26) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 27) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0)
+        );
+        (
+            (b = (b +
+                ((((((a)) ^ ((((c)) & ((((d)) ^ ((a))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        7,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 28) | ((cptr.ld1uo(ptr, 29) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 30) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 31) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (b = ((((b) << 19) >>> 0) | ((b) >>> 13)) >>> 0)
+        );
 
-        ((a = (a + ((((((d)) ^ ((((b)) & ((((c)) ^ ((d))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 8, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 32) | ((cptr.ld1uo(ptr, 33) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 34) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 35) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + ((((((c)) ^ ((((a)) & ((((b)) ^ ((c))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 9, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 36) | ((cptr.ld1uo(ptr, 37) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 38) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 39) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (d = ((((d) << 7) >>> 0) | ((d) >>> 25)) >>> 0));
-        ((c = (c + ((((((b)) ^ ((((d)) & ((((a)) ^ ((b))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 10, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 40) | ((cptr.ld1uo(ptr, 41) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 42) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 43) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0));
-        ((b = (b + ((((((a)) ^ ((((c)) & ((((d)) ^ ((a))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 11, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 44) | ((cptr.ld1uo(ptr, 45) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 46) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 47) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (b = ((((b) << 19) >>> 0) | ((b) >>> 13)) >>> 0));
+        (
+            (a = (a +
+                ((((((d)) ^ ((((b)) & ((((c)) ^ ((d))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        8,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 32) | ((cptr.ld1uo(ptr, 33) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 34) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 35) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                ((((((c)) ^ ((((a)) & ((((b)) ^ ((c))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        9,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 36) | ((cptr.ld1uo(ptr, 37) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 38) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 39) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (d = ((((d) << 7) >>> 0) | ((d) >>> 25)) >>> 0)
+        );
+        (
+            (c = (c +
+                ((((((b)) ^ ((((d)) & ((((a)) ^ ((b))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        10,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 40) | ((cptr.ld1uo(ptr, 41) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 42) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 43) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0)
+        );
+        (
+            (b = (b +
+                ((((((a)) ^ ((((c)) & ((((d)) ^ ((a))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        11,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 44) | ((cptr.ld1uo(ptr, 45) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 46) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 47) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (b = ((((b) << 19) >>> 0) | ((b) >>> 13)) >>> 0)
+        );
 
-        ((a = (a + ((((((d)) ^ ((((b)) & ((((c)) ^ ((d))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 12, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 48) | ((cptr.ld1uo(ptr, 49) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 50) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 51) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + ((((((c)) ^ ((((a)) & ((((b)) ^ ((c))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 13, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 52) | ((cptr.ld1uo(ptr, 53) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 54) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 55) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (d = ((((d) << 7) >>> 0) | ((d) >>> 25)) >>> 0));
-        ((c = (c + ((((((b)) ^ ((((d)) & ((((a)) ^ ((b))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 14, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 56) | ((cptr.ld1uo(ptr, 57) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 58) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 59) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0));
-        ((b = (b + ((((((a)) ^ ((((c)) & ((((d)) ^ ((a))) >>> 0)) >>> 0)) >>> 0) + ((cptr.stI32o2(ctx, 15, 4, $nhmd4_context_block, ((((cptr.ld1uo(ptr, 60) | ((cptr.ld1uo(ptr, 61) << 8) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 62) << 16) >>> 0)) >>> 0 | ((cptr.ld1uo(ptr, 63) << 24) >>> 0)) >>> 0))))) >>> 0)) | 0), (b = ((((b) << 19) >>> 0) | ((b) >>> 13)) >>> 0));
+        (
+            (a = (a +
+                ((((((d)) ^ ((((b)) & ((((c)) ^ ((d))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        12,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 48) | ((cptr.ld1uo(ptr, 49) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 50) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 51) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                ((((((c)) ^ ((((a)) & ((((b)) ^ ((c))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        13,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 52) | ((cptr.ld1uo(ptr, 53) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 54) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 55) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (d = ((((d) << 7) >>> 0) | ((d) >>> 25)) >>> 0)
+        );
+        (
+            (c = (c +
+                ((((((b)) ^ ((((d)) & ((((a)) ^ ((b))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        14,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 56) | ((cptr.ld1uo(ptr, 57) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 58) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 59) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0)
+        );
+        (
+            (b = (b +
+                ((((((a)) ^ ((((c)) & ((((d)) ^ ((a))) >>> 0)) >>> 0)) >>> 0) +
+                    ((cptr.stI32o2(
+                        ctx,
+                        15,
+                        4,
+                        $nhmd4_context_block,
+                        ((((cptr.ld1uo(ptr, 60) | ((cptr.ld1uo(ptr, 61) << 8) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 62) << 16) >>> 0)) >>> 0 |
+                            ((cptr.ld1uo(ptr, 63) << 24) >>> 0)) >>> 0)
+                    )))) >>> 0)) | 0),
+            (b = ((((b) << 19) >>> 0) | ((b) >>> 13)) >>> 0)
+        );
         /* Round 2 */
-        ((a = (a + (((((((((b)) & ((c))) >>> 0) | ((((b)) & ((d))) >>> 0)) >>> 0 | ((((c)) & ((d))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 0, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + (((((((((a)) & ((b))) >>> 0) | ((((a)) & ((c))) >>> 0)) >>> 0 | ((((b)) & ((c))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 4, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (d = ((((d) << 5) >>> 0) | ((d) >>> 27)) >>> 0));
-        ((c = (c + (((((((((d)) & ((a))) >>> 0) | ((((d)) & ((b))) >>> 0)) >>> 0 | ((((a)) & ((b))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 8, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (c = ((((c) << 9) >>> 0) | ((c) >>> 23)) >>> 0));
-        ((b = (b + (((((((((c)) & ((d))) >>> 0) | ((((c)) & ((a))) >>> 0)) >>> 0 | ((((d)) & ((a))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 12, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (b = ((((b) << 13) >>> 0) | ((b) >>> 19)) >>> 0));
+        (
+            (a = (a +
+                (((((((((b)) & ((c))) >>> 0) | ((((b)) & ((d))) >>> 0)) >>> 0 |
+                    ((((c)) & ((d))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 0, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                (((((((((a)) & ((b))) >>> 0) | ((((a)) & ((c))) >>> 0)) >>> 0 |
+                    ((((b)) & ((c))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 4, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (d = ((((d) << 5) >>> 0) | ((d) >>> 27)) >>> 0)
+        );
+        (
+            (c = (c +
+                (((((((((d)) & ((a))) >>> 0) | ((((d)) & ((b))) >>> 0)) >>> 0 |
+                    ((((a)) & ((b))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 8, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (c = ((((c) << 9) >>> 0) | ((c) >>> 23)) >>> 0)
+        );
+        (
+            (b = (b +
+                (((((((((c)) & ((d))) >>> 0) | ((((c)) & ((a))) >>> 0)) >>> 0 |
+                    ((((d)) & ((a))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 12, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (b = ((((b) << 13) >>> 0) | ((b) >>> 19)) >>> 0)
+        );
 
-        ((a = (a + (((((((((b)) & ((c))) >>> 0) | ((((b)) & ((d))) >>> 0)) >>> 0 | ((((c)) & ((d))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 1, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + (((((((((a)) & ((b))) >>> 0) | ((((a)) & ((c))) >>> 0)) >>> 0 | ((((b)) & ((c))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 5, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (d = ((((d) << 5) >>> 0) | ((d) >>> 27)) >>> 0));
-        ((c = (c + (((((((((d)) & ((a))) >>> 0) | ((((d)) & ((b))) >>> 0)) >>> 0 | ((((a)) & ((b))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 9, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (c = ((((c) << 9) >>> 0) | ((c) >>> 23)) >>> 0));
-        ((b = (b + (((((((((c)) & ((d))) >>> 0) | ((((c)) & ((a))) >>> 0)) >>> 0 | ((((d)) & ((a))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 13, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (b = ((((b) << 13) >>> 0) | ((b) >>> 19)) >>> 0));
+        (
+            (a = (a +
+                (((((((((b)) & ((c))) >>> 0) | ((((b)) & ((d))) >>> 0)) >>> 0 |
+                    ((((c)) & ((d))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 1, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                (((((((((a)) & ((b))) >>> 0) | ((((a)) & ((c))) >>> 0)) >>> 0 |
+                    ((((b)) & ((c))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 5, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (d = ((((d) << 5) >>> 0) | ((d) >>> 27)) >>> 0)
+        );
+        (
+            (c = (c +
+                (((((((((d)) & ((a))) >>> 0) | ((((d)) & ((b))) >>> 0)) >>> 0 |
+                    ((((a)) & ((b))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 9, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (c = ((((c) << 9) >>> 0) | ((c) >>> 23)) >>> 0)
+        );
+        (
+            (b = (b +
+                (((((((((c)) & ((d))) >>> 0) | ((((c)) & ((a))) >>> 0)) >>> 0 |
+                    ((((d)) & ((a))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 13, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (b = ((((b) << 13) >>> 0) | ((b) >>> 19)) >>> 0)
+        );
 
-        ((a = (a + (((((((((b)) & ((c))) >>> 0) | ((((b)) & ((d))) >>> 0)) >>> 0 | ((((c)) & ((d))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 2, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + (((((((((a)) & ((b))) >>> 0) | ((((a)) & ((c))) >>> 0)) >>> 0 | ((((b)) & ((c))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 6, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (d = ((((d) << 5) >>> 0) | ((d) >>> 27)) >>> 0));
-        ((c = (c + (((((((((d)) & ((a))) >>> 0) | ((((d)) & ((b))) >>> 0)) >>> 0 | ((((a)) & ((b))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 10, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (c = ((((c) << 9) >>> 0) | ((c) >>> 23)) >>> 0));
-        ((b = (b + (((((((((c)) & ((d))) >>> 0) | ((((c)) & ((a))) >>> 0)) >>> 0 | ((((d)) & ((a))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 14, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (b = ((((b) << 13) >>> 0) | ((b) >>> 19)) >>> 0));
+        (
+            (a = (a +
+                (((((((((b)) & ((c))) >>> 0) | ((((b)) & ((d))) >>> 0)) >>> 0 |
+                    ((((c)) & ((d))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 2, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                (((((((((a)) & ((b))) >>> 0) | ((((a)) & ((c))) >>> 0)) >>> 0 |
+                    ((((b)) & ((c))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 6, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (d = ((((d) << 5) >>> 0) | ((d) >>> 27)) >>> 0)
+        );
+        (
+            (c = (c +
+                (((((((((d)) & ((a))) >>> 0) | ((((d)) & ((b))) >>> 0)) >>> 0 |
+                    ((((a)) & ((b))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 10, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (c = ((((c) << 9) >>> 0) | ((c) >>> 23)) >>> 0)
+        );
+        (
+            (b = (b +
+                (((((((((c)) & ((d))) >>> 0) | ((((c)) & ((a))) >>> 0)) >>> 0 |
+                    ((((d)) & ((a))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 14, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (b = ((((b) << 13) >>> 0) | ((b) >>> 19)) >>> 0)
+        );
 
-        ((a = (a + (((((((((b)) & ((c))) >>> 0) | ((((b)) & ((d))) >>> 0)) >>> 0 | ((((c)) & ((d))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 3, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + (((((((((a)) & ((b))) >>> 0) | ((((a)) & ((c))) >>> 0)) >>> 0 | ((((b)) & ((c))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 7, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (d = ((((d) << 5) >>> 0) | ((d) >>> 27)) >>> 0));
-        ((c = (c + (((((((((d)) & ((a))) >>> 0) | ((((d)) & ((b))) >>> 0)) >>> 0 | ((((a)) & ((b))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 11, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (c = ((((c) << 9) >>> 0) | ((c) >>> 23)) >>> 0));
-        ((b = (b + (((((((((c)) & ((d))) >>> 0) | ((((c)) & ((a))) >>> 0)) >>> 0 | ((((d)) & ((a))) >>> 0)) >>> 0) + (((cptr.ldI32o2(ctx, 15, 4, $nhmd4_context_block)) + 1518500249) >>> 0)) >>> 0)) | 0), (b = ((((b) << 13) >>> 0) | ((b) >>> 19)) >>> 0));
+        (
+            (a = (a +
+                (((((((((b)) & ((c))) >>> 0) | ((((b)) & ((d))) >>> 0)) >>> 0 |
+                    ((((c)) & ((d))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 3, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                (((((((((a)) & ((b))) >>> 0) | ((((a)) & ((c))) >>> 0)) >>> 0 |
+                    ((((b)) & ((c))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 7, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (d = ((((d) << 5) >>> 0) | ((d) >>> 27)) >>> 0)
+        );
+        (
+            (c = (c +
+                (((((((((d)) & ((a))) >>> 0) | ((((d)) & ((b))) >>> 0)) >>> 0 |
+                    ((((a)) & ((b))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 11, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (c = ((((c) << 9) >>> 0) | ((c) >>> 23)) >>> 0)
+        );
+        (
+            (b = (b +
+                (((((((((c)) & ((d))) >>> 0) | ((((c)) & ((a))) >>> 0)) >>> 0 |
+                    ((((d)) & ((a))) >>> 0)) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 15, 4, $nhmd4_context_block)) +
+                        1518500249) >>> 0)) >>> 0)) | 0),
+            (b = ((((b) << 13) >>> 0) | ((b) >>> 19)) >>> 0)
+        );
         /* Round 3 */
-        ((a = (a + (((((((b)) ^ ((c))) >>> 0 ^ ((d))) >>> 0) + (((cptr.ldI32o2(ctx, 0, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + (((((((a)) ^ ((b))) >>> 0 ^ ((c))) >>> 0) + (((cptr.ldI32o2(ctx, 8, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (d = ((((d) << 9) >>> 0) | ((d) >>> 23)) >>> 0));
-        ((c = (c + (((((((d)) ^ ((a))) >>> 0 ^ ((b))) >>> 0) + (((cptr.ldI32o2(ctx, 4, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0));
-        ((b = (b + (((((((c)) ^ ((d))) >>> 0 ^ ((a))) >>> 0) + (((cptr.ldI32o2(ctx, 12, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (b = ((((b) << 15) >>> 0) | ((b) >>> 17)) >>> 0));
+        (
+            (a = (a +
+                (((((((b)) ^ ((c))) >>> 0 ^ ((d))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 0, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                (((((((a)) ^ ((b))) >>> 0 ^ ((c))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 8, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (d = ((((d) << 9) >>> 0) | ((d) >>> 23)) >>> 0)
+        );
+        (
+            (c = (c +
+                (((((((d)) ^ ((a))) >>> 0 ^ ((b))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 4, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0)
+        );
+        (
+            (b = (b +
+                (((((((c)) ^ ((d))) >>> 0 ^ ((a))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 12, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (b = ((((b) << 15) >>> 0) | ((b) >>> 17)) >>> 0)
+        );
 
-        ((a = (a + (((((((b)) ^ ((c))) >>> 0 ^ ((d))) >>> 0) + (((cptr.ldI32o2(ctx, 2, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + (((((((a)) ^ ((b))) >>> 0 ^ ((c))) >>> 0) + (((cptr.ldI32o2(ctx, 10, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (d = ((((d) << 9) >>> 0) | ((d) >>> 23)) >>> 0));
-        ((c = (c + (((((((d)) ^ ((a))) >>> 0 ^ ((b))) >>> 0) + (((cptr.ldI32o2(ctx, 6, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0));
-        ((b = (b + (((((((c)) ^ ((d))) >>> 0 ^ ((a))) >>> 0) + (((cptr.ldI32o2(ctx, 14, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (b = ((((b) << 15) >>> 0) | ((b) >>> 17)) >>> 0));
+        (
+            (a = (a +
+                (((((((b)) ^ ((c))) >>> 0 ^ ((d))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 2, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                (((((((a)) ^ ((b))) >>> 0 ^ ((c))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 10, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (d = ((((d) << 9) >>> 0) | ((d) >>> 23)) >>> 0)
+        );
+        (
+            (c = (c +
+                (((((((d)) ^ ((a))) >>> 0 ^ ((b))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 6, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0)
+        );
+        (
+            (b = (b +
+                (((((((c)) ^ ((d))) >>> 0 ^ ((a))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 14, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (b = ((((b) << 15) >>> 0) | ((b) >>> 17)) >>> 0)
+        );
 
-        ((a = (a + (((((((b)) ^ ((c))) >>> 0 ^ ((d))) >>> 0) + (((cptr.ldI32o2(ctx, 1, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + (((((((a)) ^ ((b))) >>> 0 ^ ((c))) >>> 0) + (((cptr.ldI32o2(ctx, 9, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (d = ((((d) << 9) >>> 0) | ((d) >>> 23)) >>> 0));
-        ((c = (c + (((((((d)) ^ ((a))) >>> 0 ^ ((b))) >>> 0) + (((cptr.ldI32o2(ctx, 5, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0));
-        ((b = (b + (((((((c)) ^ ((d))) >>> 0 ^ ((a))) >>> 0) + (((cptr.ldI32o2(ctx, 13, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (b = ((((b) << 15) >>> 0) | ((b) >>> 17)) >>> 0));
+        (
+            (a = (a +
+                (((((((b)) ^ ((c))) >>> 0 ^ ((d))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 1, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                (((((((a)) ^ ((b))) >>> 0 ^ ((c))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 9, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (d = ((((d) << 9) >>> 0) | ((d) >>> 23)) >>> 0)
+        );
+        (
+            (c = (c +
+                (((((((d)) ^ ((a))) >>> 0 ^ ((b))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 5, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0)
+        );
+        (
+            (b = (b +
+                (((((((c)) ^ ((d))) >>> 0 ^ ((a))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 13, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (b = ((((b) << 15) >>> 0) | ((b) >>> 17)) >>> 0)
+        );
 
-        ((a = (a + (((((((b)) ^ ((c))) >>> 0 ^ ((d))) >>> 0) + (((cptr.ldI32o2(ctx, 3, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0));
-        ((d = (d + (((((((a)) ^ ((b))) >>> 0 ^ ((c))) >>> 0) + (((cptr.ldI32o2(ctx, 11, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (d = ((((d) << 9) >>> 0) | ((d) >>> 23)) >>> 0));
-        ((c = (c + (((((((d)) ^ ((a))) >>> 0 ^ ((b))) >>> 0) + (((cptr.ldI32o2(ctx, 7, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0));
-        ((b = (b + (((((((c)) ^ ((d))) >>> 0 ^ ((a))) >>> 0) + (((cptr.ldI32o2(ctx, 15, 4, $nhmd4_context_block)) + 1859775393) >>> 0)) >>> 0)) | 0), (b = ((((b) << 15) >>> 0) | ((b) >>> 17)) >>> 0));
+        (
+            (a = (a +
+                (((((((b)) ^ ((c))) >>> 0 ^ ((d))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 3, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (a = ((((a) << 3) >>> 0) | ((a) >>> 29)) >>> 0)
+        );
+        (
+            (d = (d +
+                (((((((a)) ^ ((b))) >>> 0 ^ ((c))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 11, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (d = ((((d) << 9) >>> 0) | ((d) >>> 23)) >>> 0)
+        );
+        (
+            (c = (c +
+                (((((((d)) ^ ((a))) >>> 0 ^ ((b))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 7, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (c = ((((c) << 11) >>> 0) | ((c) >>> 21)) >>> 0)
+        );
+        (
+            (b = (b +
+                (((((((c)) ^ ((d))) >>> 0 ^ ((a))) >>> 0) +
+                    (((cptr.ldI32o2(ctx, 15, 4, $nhmd4_context_block)) +
+                        1859775393) >>> 0)) >>> 0)) | 0),
+            (b = ((((b) << 15) >>> 0) | ((b) >>> 17)) >>> 0)
+        );
 
         a = (a + saved_a) | 0;
         b = (b + saved_b) | 0;
@@ -136,7 +558,12 @@ export function nhmd4_init(ctx) {
     cptr.stI32o(ctx, $nhmd4_context_hi, 0);
 }
 
-/** C ref: nhmd4.c:196 — @param {CPtr<struct nhmd4_context>} ctx @param {CPtr<unsigned char>} data @param {CLongLong} size */
+/**
+ * C ref: nhmd4.c:196
+ * @param {CPtr<struct nhmd4_context>} ctx
+ * @param {CPtr<unsigned char>} data
+ * @param {CLongLong} size
+ */
 export function nhmd4_update(ctx, data, size) {
     /* @UNSAFE */
     let saved_lo;
@@ -144,9 +571,20 @@ export function nhmd4_update(ctx, data, size) {
     let free;
 
     saved_lo = cptr.ldI32(ctx);
-    if ((cptr.stI32(ctx, Number(BigInt.asUintN(32, ((BigInt.asUintN(64, BigInt(saved_lo >>> 0) + size)) & 536870911n))))) < saved_lo)
+    if ((cptr.stI32(
+        ctx,
+        Number(BigInt.asUintN(
+            32,
+            ((BigInt.asUintN(64, BigInt(saved_lo >>> 0) + size)) & 536870911n)
+        ))
+    )) <
+            saved_lo)
         (cptr.stI32o(ctx, $nhmd4_context_hi, cptr.ldI32o(ctx, $nhmd4_context_hi) + 1)) - (1);
-    cptr.stI32o(ctx, $nhmd4_context_hi, (cptr.ldI32o(ctx, $nhmd4_context_hi) + Number(BigInt.asUintN(32, (size >> 29n)))) | 0);
+    cptr.stI32o(
+        ctx,
+        $nhmd4_context_hi,
+        (cptr.ldI32o(ctx, $nhmd4_context_hi) + Number(BigInt.asUintN(32, (size >> 29n)))) | 0
+    );
 
     used = BigInt(((saved_lo & 63) >>> 0) >>> 0);
 
@@ -172,7 +610,11 @@ export function nhmd4_update(ctx, data, size) {
     cptr.memcpy(cptr.add(ctx, $nhmd4_context_buffer), data, size);
 }
 
-/** C ref: nhmd4.c:235 — @param {CPtr<struct nhmd4_context>} ctx @param {CPtr<unsigned char>} result */
+/**
+ * C ref: nhmd4.c:235
+ * @param {CPtr<struct nhmd4_context>} ctx
+ * @param {CPtr<unsigned char>} result
+ */
 export function nhmd4_final(ctx, result) {
     /* @UNSAFE */
     let used;
@@ -185,13 +627,23 @@ export function nhmd4_final(ctx, result) {
     free = BigInt.asUintN(64, 64n - used);
 
     if (free < 8n) {
-        __builtin___memset_chk(cptr.add(cptr.add(ctx, $nhmd4_context_buffer), used, 1), 0, free, __builtin_object_size(cptr.add(cptr.add(ctx, $nhmd4_context_buffer), used, 1), 0));
+        __builtin___memset_chk(
+            cptr.add(cptr.add(ctx, $nhmd4_context_buffer), used, 1),
+            0,
+            free,
+            __builtin_object_size(cptr.add(cptr.add(ctx, $nhmd4_context_buffer), used, 1), 0)
+        );
         nhmd4_body(ctx, cptr.add(ctx, $nhmd4_context_buffer), 64n);
         used = 0n;
         free = 64n;
     }
 
-    __builtin___memset_chk(cptr.add(cptr.add(ctx, $nhmd4_context_buffer), used, 1), 0, BigInt.asUintN(64, free - 8n), __builtin_object_size(cptr.add(cptr.add(ctx, $nhmd4_context_buffer), used, 1), 0));
+    __builtin___memset_chk(
+        cptr.add(cptr.add(ctx, $nhmd4_context_buffer), used, 1),
+        0,
+        BigInt.asUintN(64, free - 8n),
+        __builtin_object_size(cptr.add(cptr.add(ctx, $nhmd4_context_buffer), used, 1), 0)
+    );
 
     cptr.stI32(ctx, cptr.ldI32(ctx) << 3);
     cptr.st1o2(ctx, 56, 1, $nhmd4_context_buffer, uchar(cptr.ldI32(ctx)));
@@ -199,9 +651,27 @@ export function nhmd4_final(ctx, result) {
     cptr.st1o2(ctx, 58, 1, $nhmd4_context_buffer, uchar((cptr.ldI32(ctx) >>> 16)));
     cptr.st1o2(ctx, 59, 1, $nhmd4_context_buffer, uchar((cptr.ldI32(ctx) >>> 24)));
     cptr.st1o2(ctx, 60, 1, $nhmd4_context_buffer, uchar(cptr.ldI32o(ctx, $nhmd4_context_hi)));
-    cptr.st1o2(ctx, 61, 1, $nhmd4_context_buffer, uchar((cptr.ldI32o(ctx, $nhmd4_context_hi) >>> 8)));
-    cptr.st1o2(ctx, 62, 1, $nhmd4_context_buffer, uchar((cptr.ldI32o(ctx, $nhmd4_context_hi) >>> 16)));
-    cptr.st1o2(ctx, 63, 1, $nhmd4_context_buffer, uchar((cptr.ldI32o(ctx, $nhmd4_context_hi) >>> 24)));
+    cptr.st1o2(
+        ctx,
+        61,
+        1,
+        $nhmd4_context_buffer,
+        uchar((cptr.ldI32o(ctx, $nhmd4_context_hi) >>> 8))
+    );
+    cptr.st1o2(
+        ctx,
+        62,
+        1,
+        $nhmd4_context_buffer,
+        uchar((cptr.ldI32o(ctx, $nhmd4_context_hi) >>> 16))
+    );
+    cptr.st1o2(
+        ctx,
+        63,
+        1,
+        $nhmd4_context_buffer,
+        uchar((cptr.ldI32o(ctx, $nhmd4_context_hi) >>> 24))
+    );
 
     nhmd4_body(ctx, cptr.add(ctx, $nhmd4_context_buffer), 64n);
 

@@ -15,23 +15,24 @@ import * as FLD from './nhfield.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $AbsLineInfo_line = FLD.AbsLineInfo_line, $DumpState_data = FLD.DumpState_data,
-    $DumpState_status = FLD.DumpState_status, $DumpState_strip = FLD.DumpState_strip,
-    $DumpState_writer = FLD.DumpState_writer, $LocVar_endpc = FLD.LocVar_endpc,
-    $LocVar_startpc = FLD.LocVar_startpc, $Proto_abslineinfo = FLD.Proto_abslineinfo,
-    $Proto_code = FLD.Proto_code, $Proto_is_vararg = FLD.Proto_is_vararg, $Proto_k = FLD.Proto_k,
-    $Proto_lastlinedefined = FLD.Proto_lastlinedefined, $Proto_linedefined = FLD.Proto_linedefined,
-    $Proto_lineinfo = FLD.Proto_lineinfo, $Proto_locvars = FLD.Proto_locvars,
-    $Proto_maxstacksize = FLD.Proto_maxstacksize, $Proto_numparams = FLD.Proto_numparams,
-    $Proto_p = FLD.Proto_p, $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo,
-    $Proto_sizecode = FLD.Proto_sizecode, $Proto_sizek = FLD.Proto_sizek,
-    $Proto_sizelineinfo = FLD.Proto_sizelineinfo, $Proto_sizelocvars = FLD.Proto_sizelocvars,
-    $Proto_sizep = FLD.Proto_sizep, $Proto_sizeupvalues = FLD.Proto_sizeupvalues,
-    $Proto_source = FLD.Proto_source, $Proto_upvalues = FLD.Proto_upvalues,
-    $TString_contents = FLD.TString_contents, $TString_shrlen = FLD.TString_shrlen,
-    $TString_u = FLD.TString_u, $TValue_tt_ = FLD.TValue_tt_, $Upvaldesc_idx = FLD.Upvaldesc_idx,
-    $Upvaldesc_instack = FLD.Upvaldesc_instack, $Upvaldesc_kind = FLD.Upvaldesc_kind,
-    $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_LocVar = FLD.sizeof_LocVar,
-    $sizeof_TValue = FLD.sizeof_TValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
+      $DumpState_status = FLD.DumpState_status, $DumpState_strip = FLD.DumpState_strip,
+      $DumpState_writer = FLD.DumpState_writer, $LocVar_endpc = FLD.LocVar_endpc,
+      $LocVar_startpc = FLD.LocVar_startpc, $Proto_abslineinfo = FLD.Proto_abslineinfo,
+      $Proto_code = FLD.Proto_code, $Proto_is_vararg = FLD.Proto_is_vararg, $Proto_k = FLD.Proto_k,
+      $Proto_lastlinedefined = FLD.Proto_lastlinedefined,
+      $Proto_linedefined = FLD.Proto_linedefined, $Proto_lineinfo = FLD.Proto_lineinfo,
+      $Proto_locvars = FLD.Proto_locvars, $Proto_maxstacksize = FLD.Proto_maxstacksize,
+      $Proto_numparams = FLD.Proto_numparams, $Proto_p = FLD.Proto_p,
+      $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo, $Proto_sizecode = FLD.Proto_sizecode,
+      $Proto_sizek = FLD.Proto_sizek, $Proto_sizelineinfo = FLD.Proto_sizelineinfo,
+      $Proto_sizelocvars = FLD.Proto_sizelocvars, $Proto_sizep = FLD.Proto_sizep,
+      $Proto_sizeupvalues = FLD.Proto_sizeupvalues, $Proto_source = FLD.Proto_source,
+      $Proto_upvalues = FLD.Proto_upvalues, $TString_contents = FLD.TString_contents,
+      $TString_shrlen = FLD.TString_shrlen, $TString_u = FLD.TString_u,
+      $TValue_tt_ = FLD.TValue_tt_, $Upvaldesc_idx = FLD.Upvaldesc_idx,
+      $Upvaldesc_instack = FLD.Upvaldesc_instack, $Upvaldesc_kind = FLD.Upvaldesc_kind,
+      $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_LocVar = FLD.sizeof_LocVar,
+      $sizeof_TValue = FLD.sizeof_TValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_lua = cptr.lit("\x1bLua");
@@ -45,7 +46,16 @@ const __s_x19_x93_cr_nl_x1a_nl = cptr.lit("\x19\x93\r\n\x1a\n");
 function* dumpBlock(D, b, size) {
     if (cptr.ldI32o(D, $DumpState_status) == 0 && size > 0n) {
         (void 0);
-        cptr.stI32o(D, $DumpState_status, (yield* Y.icall((cptr.ldPtro(D, $DumpState_writer))(cptr.ldPtr(D), b, size, cptr.ldPtro(D, $DumpState_data)))));
+        cptr.stI32o(
+            D,
+            $DumpState_status,
+            (yield* Y.icall((cptr.ldPtro(D, $DumpState_writer))(
+                cptr.ldPtr(D),
+                b,
+                size,
+                cptr.ldPtro(D, $DumpState_data)
+            )))
+        );
         (void 0);
     }
 }
@@ -61,11 +71,20 @@ function* dumpSize(D, x) {
     let buff = new Uint8Array(10);
     let n = 0;
     do {
-        cptr.st1o(cptr.decay(buff), BigInt.asUintN(64, 10n - BigInt.asUintN(64, BigInt((++n)))), Number(BigInt.asUintN(8, (x & 127n))), 1);  /* fill buffer in reverse order */
+        cptr.st1o(
+            cptr.decay(buff),
+            BigInt.asUintN(64, 10n - BigInt.asUintN(64, BigInt((++n)))),
+            Number(BigInt.asUintN(8, (x & 127n))),
+            1
+        );  /* fill buffer in reverse order */
         x >>= 7n;
     } while (x != 0n);
     cptr.st1o(cptr.decay(buff), 9n, cptr.ld1uo(cptr.decay(buff), 9n, 1) | 128, 1);  /* mark last byte */
-    (yield* dumpBlock(D, cptr.add(cptr.add(cptr.decay(buff), 10n), -(n)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n)));
+    (yield* dumpBlock(
+        D,
+        cptr.add(cptr.add(cptr.decay(buff), 10n), -(n)),
+        BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n)
+    ));
 }
 
 /** C ref: ldump.c:77 — @param {CPtr<DumpState>} D @param {CInt} x */
@@ -90,7 +109,9 @@ function* dumpString(D, s) {
     if (cptr.eq(s, (null)))
         (yield* dumpSize(D, 0n));
     else {
-        let size = (cptr.ld1uo((s), $TString_shrlen) != 255 ? BigInt(cptr.ld1uo((s), $TString_shrlen) >>> 0) : cptr.ldU64o((s), $TString_u));
+        let size = (cptr.ld1uo((s), $TString_shrlen) != 255
+                ? BigInt(cptr.ld1uo((s), $TString_shrlen) >>> 0)
+                : cptr.ldU64o((s), $TString_u));
         let str = (cptr.add((s), $TString_contents));
         (yield* dumpSize(D, BigInt.asUintN(64, size + 1n)));
         (yield* dumpBlock(D, str, BigInt.asUintN(64, (size) * 1n)));
@@ -100,7 +121,11 @@ function* dumpString(D, s) {
 /** C ref: ldump.c:104 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f */
 function* dumpCode(D, f) {
     (yield* dumpInt(D, cptr.ldI32o(f, $Proto_sizecode)));
-    (yield* dumpBlock(D, cptr.ldPtro(f, $Proto_code), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(f, $Proto_sizecode)))) * 4n)));
+    (yield* dumpBlock(
+        D,
+        cptr.ldPtro(f, $Proto_code),
+        BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(f, $Proto_sizecode)))) * 4n)
+    ));
 }
 
 /** C ref: ldump.c:112 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f */
@@ -144,9 +169,18 @@ function* dumpUpvalues(D, f) {
     let n = cptr.ldI32o(f, $Proto_sizeupvalues);
     (yield* dumpInt(D, n));
     for (i = 0; i < n; i++) {
-        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_instack)));
-        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_idx)));
-        (yield* dumpByte(D, cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_kind)));
+        (yield* dumpByte(
+            D,
+            cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_instack)
+        ));
+        (yield* dumpByte(
+            D,
+            cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_idx)
+        ));
+        (yield* dumpByte(
+            D,
+            cptr.ld1uo2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_kind)
+        ));
     }
 }
 
@@ -156,18 +190,33 @@ function* dumpDebug(D, f) {
     let n;
     n = (cptr.ldI32o(D, $DumpState_strip)) ? 0 : cptr.ldI32o(f, $Proto_sizelineinfo);
     (yield* dumpInt(D, n));
-    (yield* dumpBlock(D, cptr.ldPtro(f, $Proto_lineinfo), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n)));
+    (yield* dumpBlock(
+        D,
+        cptr.ldPtro(f, $Proto_lineinfo),
+        BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n)
+    ));
     n = (cptr.ldI32o(D, $DumpState_strip)) ? 0 : cptr.ldI32o(f, $Proto_sizeabslineinfo);
     (yield* dumpInt(D, n));
     for (i = 0; i < n; i++) {
         (yield* dumpInt(D, cptr.ldI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo)));
-        (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo, $AbsLineInfo_line)));
+        (yield* dumpInt(
+            D,
+            cptr.ldI32o2(
+                cptr.ldPtro(f, $Proto_abslineinfo),
+                i,
+                $sizeof_AbsLineInfo,
+                $AbsLineInfo_line
+            )
+        ));
     }
     n = (cptr.ldI32o(D, $DumpState_strip)) ? 0 : cptr.ldI32o(f, $Proto_sizelocvars);
     (yield* dumpInt(D, n));
     for (i = 0; i < n; i++) {
         (yield* dumpString(D, cptr.ldPtro(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar)));
-        (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_startpc)));
+        (yield* dumpInt(
+            D,
+            cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_startpc)
+        ));
         (yield* dumpInt(D, cptr.ldI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_endpc)));
     }
     n = (cptr.ldI32o(D, $DumpState_strip)) ? 0 : cptr.ldI32o(f, $Proto_sizeupvalues);
@@ -176,7 +225,12 @@ function* dumpDebug(D, f) {
         (yield* dumpString(D, cptr.ldPtro(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc)));
 }
 
-/** C ref: ldump.c:183 — @param {CPtr<DumpState>} D @param {CPtr<Proto>} f @param {CPtr<TString>} psource */
+/**
+ * C ref: ldump.c:183
+ * @param {CPtr<DumpState>} D
+ * @param {CPtr<Proto>} f
+ * @param {CPtr<TString>} psource
+ */
 function* dumpFunction(D, f, psource) {
     if (cptr.ldI32o(D, $DumpState_strip) || cptr.eq(cptr.ldPtro(f, $Proto_source), psource))
         (yield* dumpString(D, null));  /* no debug info or same source as its parent */
@@ -210,7 +264,15 @@ function* dumpHeader(D) {
 /*
 ** dump Lua function as precompiled chunk
 */
-/** C ref: ldump.c:217 — @param {CPtr<lua_State>} L @param {CPtr<Proto>} f @param {CPtr} w @param {CPtr<void>} data @param {CInt} strip @returns {CInt} */
+/**
+ * C ref: ldump.c:217
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<Proto>} f
+ * @param {CPtr} w
+ * @param {CPtr<void>} data
+ * @param {CInt} strip
+ * @returns {CInt}
+ */
 export function* luaU_dump(L, f, w, data, strip) {
     let D = cptr.alloc(32);
     cptr.stPtr(D, L);

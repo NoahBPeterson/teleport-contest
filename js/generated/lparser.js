@@ -7,11 +7,20 @@ import { i16, u16, uchar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as FLD from './nhfield.js';
-import { luaX_lookahead, luaX_newstring, luaX_next, luaX_setinput, luaX_syntaxerror, luaX_token2str } from './llex.js';
+import {
+    luaX_lookahead, luaX_newstring, luaX_next, luaX_setinput, luaX_syntaxerror, luaX_token2str
+} from './llex.js';
 import { luaO_pushfstring } from './lobject.js';
 import { luaM_growaux_, luaM_shrinkvector_ } from './lmem.js';
 import { luaC_barrier_, luaC_step } from './lgc.js';
-import { luaK_checkstack, luaK_code, luaK_codeABCk, luaK_codeABx, luaK_concat, luaK_dischargevars, luaK_exp2anyreg, luaK_exp2anyregup, luaK_exp2const, luaK_exp2nextreg, luaK_exp2val, luaK_finish, luaK_fixline, luaK_getlabel, luaK_goiffalse, luaK_goiftrue, luaK_indexed, luaK_infix, luaK_int, luaK_jump, luaK_nil, luaK_patchlist, luaK_patchtohere, luaK_posfix, luaK_prefix, luaK_reserveregs, luaK_ret, luaK_self, luaK_semerror, luaK_setlist, luaK_setoneret, luaK_setreturns, luaK_settablesize, luaK_storevar } from './lcode.js';
+import {
+    luaK_checkstack, luaK_code, luaK_codeABCk, luaK_codeABx, luaK_concat, luaK_dischargevars,
+    luaK_exp2anyreg, luaK_exp2anyregup, luaK_exp2const, luaK_exp2nextreg, luaK_exp2val, luaK_finish,
+    luaK_fixline, luaK_getlabel, luaK_goiffalse, luaK_goiftrue, luaK_indexed, luaK_infix, luaK_int,
+    luaK_jump, luaK_nil, luaK_patchlist, luaK_patchtohere, luaK_posfix, luaK_prefix,
+    luaK_reserveregs, luaK_ret, luaK_self, luaK_semerror, luaK_setlist, luaK_setoneret,
+    luaK_setreturns, luaK_settablesize, luaK_storevar
+} from './lcode.js';
 import { gl, gt } from './decl.js';
 import { luaS_new, luaS_newlstr } from './lstring.js';
 import { luaF_newLclosure, luaF_newproto } from './lfunc.js';
@@ -22,45 +31,49 @@ import { luaH_new } from './ltable.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $BlockCnt_firstgoto = FLD.BlockCnt_firstgoto, $BlockCnt_firstlabel = FLD.BlockCnt_firstlabel,
-    $BlockCnt_insidetbc = FLD.BlockCnt_insidetbc, $BlockCnt_isloop = FLD.BlockCnt_isloop,
-    $BlockCnt_nactvar = FLD.BlockCnt_nactvar, $BlockCnt_upval = FLD.BlockCnt_upval,
-    $ConsControl_na = FLD.ConsControl_na, $ConsControl_nh = FLD.ConsControl_nh,
-    $ConsControl_t = FLD.ConsControl_t, $ConsControl_tostore = FLD.ConsControl_tostore,
-    $Dyndata_gt = FLD.Dyndata_gt, $Dyndata_label = FLD.Dyndata_label, $FuncState_bl = FLD.FuncState_bl,
-    $FuncState_firstlabel = FLD.FuncState_firstlabel, $FuncState_firstlocal = FLD.FuncState_firstlocal,
-    $FuncState_freereg = FLD.FuncState_freereg, $FuncState_iwthabs = FLD.FuncState_iwthabs,
-    $FuncState_lasttarget = FLD.FuncState_lasttarget, $FuncState_ls = FLD.FuncState_ls,
-    $FuncState_nabslineinfo = FLD.FuncState_nabslineinfo, $FuncState_nactvar = FLD.FuncState_nactvar,
-    $FuncState_ndebugvars = FLD.FuncState_ndebugvars, $FuncState_needclose = FLD.FuncState_needclose,
-    $FuncState_nk = FLD.FuncState_nk, $FuncState_np = FLD.FuncState_np, $FuncState_nups = FLD.FuncState_nups,
-    $FuncState_pc = FLD.FuncState_pc, $FuncState_prev = FLD.FuncState_prev,
-    $FuncState_previousline = FLD.FuncState_previousline, $LClosure_marked = FLD.LClosure_marked,
-    $LClosure_p = FLD.LClosure_p, $LHS_assign_v = FLD.LHS_assign_v, $Labeldesc_close = FLD.Labeldesc_close,
-    $Labeldesc_line = FLD.Labeldesc_line, $Labeldesc_nactvar = FLD.Labeldesc_nactvar,
-    $Labeldesc_pc = FLD.Labeldesc_pc, $Labellist_n = FLD.Labellist_n, $Labellist_size = FLD.Labellist_size,
-    $LexState_L = FLD.LexState_L, $LexState_buff = FLD.LexState_buff, $LexState_dyd = FLD.LexState_dyd,
-    $LexState_envn = FLD.LexState_envn, $LexState_fs = FLD.LexState_fs, $LexState_h = FLD.LexState_h,
-    $LexState_linenumber = FLD.LexState_linenumber, $LexState_source = FLD.LexState_source,
-    $LexState_t = FLD.LexState_t, $LocVar_endpc = FLD.LocVar_endpc, $LocVar_startpc = FLD.LocVar_startpc,
-    $Proto_abslineinfo = FLD.Proto_abslineinfo, $Proto_code = FLD.Proto_code,
-    $Proto_is_vararg = FLD.Proto_is_vararg, $Proto_k = FLD.Proto_k,
-    $Proto_lastlinedefined = FLD.Proto_lastlinedefined, $Proto_linedefined = FLD.Proto_linedefined,
-    $Proto_lineinfo = FLD.Proto_lineinfo, $Proto_locvars = FLD.Proto_locvars,
-    $Proto_marked = FLD.Proto_marked, $Proto_maxstacksize = FLD.Proto_maxstacksize,
-    $Proto_numparams = FLD.Proto_numparams, $Proto_p = FLD.Proto_p,
-    $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo, $Proto_sizecode = FLD.Proto_sizecode,
-    $Proto_sizek = FLD.Proto_sizek, $Proto_sizelineinfo = FLD.Proto_sizelineinfo,
-    $Proto_sizelocvars = FLD.Proto_sizelocvars, $Proto_sizep = FLD.Proto_sizep,
-    $Proto_sizeupvalues = FLD.Proto_sizeupvalues, $Proto_source = FLD.Proto_source,
-    $Proto_upvalues = FLD.Proto_upvalues, $TString_contents = FLD.TString_contents,
-    $TString_marked = FLD.TString_marked, $TValue_tt_ = FLD.TValue_tt_, $Token_seminfo = FLD.Token_seminfo,
-    $Upvaldesc_idx = FLD.Upvaldesc_idx, $Upvaldesc_instack = FLD.Upvaldesc_instack,
-    $Upvaldesc_kind = FLD.Upvaldesc_kind, $expdesc_f = FLD.expdesc_f, $expdesc_t = FLD.expdesc_t,
-    $expdesc_u = FLD.expdesc_u, $global_State_GCdebt = FLD.global_State_GCdebt,
-    $lua_State_l_G = FLD.lua_State_l_G, $lua_State_nCcalls = FLD.lua_State_nCcalls,
-    $lua_State_top = FLD.lua_State_top, $sizeof_Labeldesc = FLD.sizeof_Labeldesc,
-    $sizeof_LocVar = FLD.sizeof_LocVar, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc,
-    $sizeof_Vardesc = FLD.sizeof_Vardesc;
+      $BlockCnt_insidetbc = FLD.BlockCnt_insidetbc, $BlockCnt_isloop = FLD.BlockCnt_isloop,
+      $BlockCnt_nactvar = FLD.BlockCnt_nactvar, $BlockCnt_upval = FLD.BlockCnt_upval,
+      $ConsControl_na = FLD.ConsControl_na, $ConsControl_nh = FLD.ConsControl_nh,
+      $ConsControl_t = FLD.ConsControl_t, $ConsControl_tostore = FLD.ConsControl_tostore,
+      $Dyndata_gt = FLD.Dyndata_gt, $Dyndata_label = FLD.Dyndata_label,
+      $FuncState_bl = FLD.FuncState_bl, $FuncState_firstlabel = FLD.FuncState_firstlabel,
+      $FuncState_firstlocal = FLD.FuncState_firstlocal, $FuncState_freereg = FLD.FuncState_freereg,
+      $FuncState_iwthabs = FLD.FuncState_iwthabs, $FuncState_lasttarget = FLD.FuncState_lasttarget,
+      $FuncState_ls = FLD.FuncState_ls, $FuncState_nabslineinfo = FLD.FuncState_nabslineinfo,
+      $FuncState_nactvar = FLD.FuncState_nactvar, $FuncState_ndebugvars = FLD.FuncState_ndebugvars,
+      $FuncState_needclose = FLD.FuncState_needclose, $FuncState_nk = FLD.FuncState_nk,
+      $FuncState_np = FLD.FuncState_np, $FuncState_nups = FLD.FuncState_nups,
+      $FuncState_pc = FLD.FuncState_pc, $FuncState_prev = FLD.FuncState_prev,
+      $FuncState_previousline = FLD.FuncState_previousline, $LClosure_marked = FLD.LClosure_marked,
+      $LClosure_p = FLD.LClosure_p, $LHS_assign_v = FLD.LHS_assign_v,
+      $Labeldesc_close = FLD.Labeldesc_close, $Labeldesc_line = FLD.Labeldesc_line,
+      $Labeldesc_nactvar = FLD.Labeldesc_nactvar, $Labeldesc_pc = FLD.Labeldesc_pc,
+      $Labellist_n = FLD.Labellist_n, $Labellist_size = FLD.Labellist_size,
+      $LexState_L = FLD.LexState_L, $LexState_buff = FLD.LexState_buff,
+      $LexState_dyd = FLD.LexState_dyd, $LexState_envn = FLD.LexState_envn,
+      $LexState_fs = FLD.LexState_fs, $LexState_h = FLD.LexState_h,
+      $LexState_linenumber = FLD.LexState_linenumber, $LexState_source = FLD.LexState_source,
+      $LexState_t = FLD.LexState_t, $LocVar_endpc = FLD.LocVar_endpc,
+      $LocVar_startpc = FLD.LocVar_startpc, $Proto_abslineinfo = FLD.Proto_abslineinfo,
+      $Proto_code = FLD.Proto_code, $Proto_is_vararg = FLD.Proto_is_vararg, $Proto_k = FLD.Proto_k,
+      $Proto_lastlinedefined = FLD.Proto_lastlinedefined,
+      $Proto_linedefined = FLD.Proto_linedefined, $Proto_lineinfo = FLD.Proto_lineinfo,
+      $Proto_locvars = FLD.Proto_locvars, $Proto_marked = FLD.Proto_marked,
+      $Proto_maxstacksize = FLD.Proto_maxstacksize, $Proto_numparams = FLD.Proto_numparams,
+      $Proto_p = FLD.Proto_p, $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo,
+      $Proto_sizecode = FLD.Proto_sizecode, $Proto_sizek = FLD.Proto_sizek,
+      $Proto_sizelineinfo = FLD.Proto_sizelineinfo, $Proto_sizelocvars = FLD.Proto_sizelocvars,
+      $Proto_sizep = FLD.Proto_sizep, $Proto_sizeupvalues = FLD.Proto_sizeupvalues,
+      $Proto_source = FLD.Proto_source, $Proto_upvalues = FLD.Proto_upvalues,
+      $TString_contents = FLD.TString_contents, $TString_marked = FLD.TString_marked,
+      $TValue_tt_ = FLD.TValue_tt_, $Token_seminfo = FLD.Token_seminfo,
+      $Upvaldesc_idx = FLD.Upvaldesc_idx, $Upvaldesc_instack = FLD.Upvaldesc_instack,
+      $Upvaldesc_kind = FLD.Upvaldesc_kind, $expdesc_f = FLD.expdesc_f, $expdesc_t = FLD.expdesc_t,
+      $expdesc_u = FLD.expdesc_u, $global_State_GCdebt = FLD.global_State_GCdebt,
+      $lua_State_l_G = FLD.lua_State_l_G, $lua_State_nCcalls = FLD.lua_State_nCcalls,
+      $lua_State_top = FLD.lua_State_top, $sizeof_Labeldesc = FLD.sizeof_Labeldesc,
+      $sizeof_LocVar = FLD.sizeof_LocVar, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc,
+      $sizeof_Vardesc = FLD.sizeof_Vardesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_s_expected = cptr.lit("%s expected");
@@ -96,16 +109,27 @@ const __s_multiple_to_be_closed_variables_in = cptr.lit("multiple to-be-closed v
 /*
 ** nodes for block list (list of active blocks)
 */
-/** C ref: lparser.c:49 — struct BlockCnt { previous, firstlabel, firstgoto, nactvar, upval, isloop, insidetbc } (memory model v0.5) */
+/**
+ * C ref: lparser.c:49 — struct BlockCnt { previous, firstlabel, firstgoto, nactvar, upval, isloop,
+ *     insidetbc } (memory model v0.5)
+ */
 
 /** C ref: lparser.c:57 — typedef BlockCnt (type alias only, no runtime output) */
 
 /** C ref: lparser.c:68 — @param {CPtr<LexState>} ls @param {CInt} token */
 function error_expected(ls, token) {
-    luaX_syntaxerror(ls, luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_s_expected, luaX_token2str(ls, token)));
+    luaX_syntaxerror(
+        ls,
+        luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_s_expected, luaX_token2str(ls, token))
+    );
 }
 
-/** C ref: lparser.c:74 — @param {CPtr<FuncState>} fs @param {CInt} limit @param {CPtr<char>} what */
+/**
+ * C ref: lparser.c:74
+ * @param {CPtr<FuncState>} fs
+ * @param {CInt} limit
+ * @param {CPtr<char>} what
+ */
 function errorlimit(fs, limit, what) {
     let L = cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L);
     let msg;
@@ -115,7 +139,13 @@ function errorlimit(fs, limit, what) {
     luaX_syntaxerror(cptr.ldPtro(fs, $FuncState_ls), msg);
 }
 
-/** C ref: lparser.c:87 — @param {CPtr<FuncState>} fs @param {CInt} v @param {CInt} l @param {CPtr<char>} what */
+/**
+ * C ref: lparser.c:87
+ * @param {CPtr<FuncState>} fs
+ * @param {CInt} v
+ * @param {CInt} l
+ * @param {CPtr<char>} what
+ */
 function checklimit(fs, v, l, what) {
     if (v > l)
         errorlimit(fs, l, what);
@@ -156,13 +186,28 @@ function checknext(ls, c) {
 ** raise an error that the expected 'what' should match a 'who'
 ** in line 'where' (if that is not the current line).
 */
-/** C ref: lparser.c:130 — @param {CPtr<LexState>} ls @param {CInt} what @param {CInt} who @param {CInt} where */
+/**
+ * C ref: lparser.c:130
+ * @param {CPtr<LexState>} ls
+ * @param {CInt} what
+ * @param {CInt} who
+ * @param {CInt} where
+ */
 function check_match(ls, what, who, where) {
     if ((__builtin_expect(BigInt(((!testnext(ls, what)) != 0)), 0n))) {
         if (where == cptr.ldI32o(ls, $LexState_linenumber))
             error_expected(ls, what);  /* do not need a complex message */
         else {
-            luaX_syntaxerror(ls, luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_s_expected_to_close_s_at_line_d, luaX_token2str(ls, what), luaX_token2str(ls, who), where));
+            luaX_syntaxerror(
+                ls,
+                luaO_pushfstring(
+                    cptr.ldPtro(ls, $LexState_L),
+                    __s_s_expected_to_close_s_at_line_d,
+                    luaX_token2str(ls, what),
+                    luaX_token2str(ls, who),
+                    where
+                )
+            );
         }
     }
 }
@@ -199,17 +244,49 @@ function codename(ls, e) {
 ** Register a new local variable in the active 'Proto' (for debug
 ** information).
 */
-/** C ref: lparser.c:175 — @param {CPtr<LexState>} ls @param {CPtr<FuncState>} fs @param {CPtr<TString>} varname @returns {CInt} */
+/**
+ * C ref: lparser.c:175
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<FuncState>} fs
+ * @param {CPtr<TString>} varname
+ * @returns {CInt}
+ */
 function registerlocalvar(ls, fs, varname) {
     let f = cptr.ldPtr(fs);
     let oldsize = cptr.ldI32o(f, $Proto_sizelocvars);
-    (cptr.stPtro(f, $Proto_locvars, ((luaM_growaux_(cptr.ldPtro(ls, $LexState_L), cptr.ldPtro(f, $Proto_locvars), cptr.ldI16o(fs, $FuncState_ndebugvars), cptr.add(f, $Proto_sizelocvars), 16, 32767, __s_local_variables)))));
+    (cptr.stPtro(
+        f,
+        $Proto_locvars,
+        ((luaM_growaux_(
+            cptr.ldPtro(ls, $LexState_L),
+            cptr.ldPtro(f, $Proto_locvars),
+            cptr.ldI16o(fs, $FuncState_ndebugvars),
+            cptr.add(f, $Proto_sizelocvars),
+            16,
+            32767,
+            __s_local_variables
+        )))
+    ));
     while (oldsize < cptr.ldI32o(f, $Proto_sizelocvars))
         cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), oldsize++, null, $sizeof_LocVar);
-    cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), cptr.ldI16o(fs, $FuncState_ndebugvars), varname, $sizeof_LocVar);
-    cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), cptr.ldI16o(fs, $FuncState_ndebugvars), $sizeof_LocVar, $LocVar_startpc, cptr.ldI32o(fs, $FuncState_pc));
-    ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((varname), $TString_marked)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, $LexState_L), ((((f)))), ((((varname))))) : (void 0));
-    return (cptr.stI16o(fs, $FuncState_ndebugvars, cptr.ldI16o(fs, $FuncState_ndebugvars) + 1)) - (1);
+    cptr.stPtro(
+        cptr.ldPtro(f, $Proto_locvars),
+        cptr.ldI16o(fs, $FuncState_ndebugvars),
+        varname,
+        $sizeof_LocVar
+    );
+    cptr.stI32o2(
+        cptr.ldPtro(f, $Proto_locvars),
+        cptr.ldI16o(fs, $FuncState_ndebugvars),
+        $sizeof_LocVar,
+        $LocVar_startpc,
+        cptr.ldI32o(fs, $FuncState_pc)
+    );
+    ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((varname), $TString_marked)) & 24))
+            ? luaC_barrier_(cptr.ldPtro(ls, $LexState_L), ((((f)))), ((((varname)))))
+            : (void 0));
+    return (cptr.stI16o(fs, $FuncState_ndebugvars, cptr.ldI16o(fs, $FuncState_ndebugvars) + 1)) -
+            (1);
 }
 
 /*
@@ -222,9 +299,29 @@ function new_localvar(ls, name) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let dyd = cptr.ldPtro(ls, $LexState_dyd);
     let var$;
-    checklimit(fs, (((cptr.ldI32o(dyd, 8) + 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0, 200, __s_local_variables);
-    (cptr.stPtr(dyd, ((luaM_growaux_(L, cptr.ldPtr(dyd), (cptr.ldI32o(dyd, 8) + 1) | 0, cptr.add(dyd, 12), 24, 32767, __s_local_variables)))));
-    var$ = cptr.add(cptr.ldPtr(dyd), (cptr.stI32o(dyd, 8, cptr.ldI32o(dyd, 8) + 1)) - (1), $sizeof_Vardesc);
+    checklimit(
+        fs,
+        (((cptr.ldI32o(dyd, 8) + 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0,
+        200,
+        __s_local_variables
+    );
+    (cptr.stPtr(
+        dyd,
+        ((luaM_growaux_(
+            L,
+            cptr.ldPtr(dyd),
+            (cptr.ldI32o(dyd, 8) + 1) | 0,
+            cptr.add(dyd, 12),
+            24,
+            32767,
+            __s_local_variables
+        )))
+    ));
+    var$ = cptr.add(
+        cptr.ldPtr(dyd),
+        (cptr.stI32o(dyd, 8, cptr.ldI32o(dyd, 8) + 1)) - (1),
+        $sizeof_Vardesc
+    );
     cptr.st1o(var$, 9, 0);  /* default */
     cptr.stPtro(var$, 16, name);
     return (((cptr.ldI32o(dyd, 8) - 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0;
@@ -235,9 +332,18 @@ function new_localvar(ls, name) {
 ** (Unless noted otherwise, all variables are referred to by their
 ** compiler indices.)
 */
-/** C ref: lparser.c:219 — @param {CPtr<FuncState>} fs @param {CInt} vidx @returns {CPtr<Vardesc>} */
+/**
+ * C ref: lparser.c:219
+ * @param {CPtr<FuncState>} fs
+ * @param {CInt} vidx
+ * @returns {CPtr<Vardesc>}
+ */
 function getlocalvardesc(fs, vidx) {
-    return cptr.add(cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)), (cptr.ldI32o(fs, $FuncState_firstlocal) + vidx) | 0, $sizeof_Vardesc);
+    return cptr.add(
+        cptr.ldPtr(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd)),
+        (cptr.ldI32o(fs, $FuncState_firstlocal) + vidx) | 0,
+        $sizeof_Vardesc
+    );
 }
 
 /*
@@ -282,7 +388,12 @@ function localdebuginfo(fs, vidx) {
 /*
 ** Create an expression representing variable 'vidx'
 */
-/** C ref: lparser.c:266 — @param {CPtr<FuncState>} fs @param {CPtr<expdesc>} e @param {CInt} vidx */
+/**
+ * C ref: lparser.c:266
+ * @param {CPtr<FuncState>} fs
+ * @param {CPtr<expdesc>} e
+ * @param {CInt} vidx
+ */
 function init_var(fs, e, vidx) {
     cptr.stI32o(e, $expdesc_f, cptr.stI32o(e, $expdesc_t, -1));
     cptr.stI32(e, NHC.VLOCAL);
@@ -300,7 +411,12 @@ function check_readonly(ls, e) {
     switch (cptr.ldI32(e)) {
         case NHC.VCONST:
         {
-            varname = cptr.ldPtro2(cptr.ldPtr(cptr.ldPtro(ls, $LexState_dyd)), cptr.ldI32o(e, $expdesc_u), $sizeof_Vardesc, 16);
+            varname = cptr.ldPtro2(
+                cptr.ldPtr(cptr.ldPtro(ls, $LexState_dyd)),
+                cptr.ldI32o(e, $expdesc_u),
+                $sizeof_Vardesc,
+                16
+            );
             break;
         }
         case NHC.VLOCAL:
@@ -312,7 +428,11 @@ function check_readonly(ls, e) {
         }
         case NHC.VUPVAL:
         {
-            let up = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues), cptr.ldI32o(e, $expdesc_u), $sizeof_Upvaldesc);
+            let up = cptr.add(
+                cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues),
+                cptr.ldI32o(e, $expdesc_u),
+                $sizeof_Upvaldesc
+            );
             if (cptr.ld1uo(up, $Upvaldesc_kind) != 0)
                 varname = cptr.ldPtr(up);
             break;
@@ -321,7 +441,11 @@ function check_readonly(ls, e) {
         return;  /* other cases cannot be read-only */
     }
     if (varname) {
-        let msg = luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_attempt_to_assign_to_const_variable_s, (cptr.add((varname), $TString_contents)));
+        let msg = luaO_pushfstring(
+            cptr.ldPtro(ls, $LexState_L),
+            __s_attempt_to_assign_to_const_variable_s,
+            (cptr.add((varname), $TString_contents))
+        );
         luaK_semerror(ls, msg);  /* error */
     }
 }
@@ -348,9 +472,17 @@ function adjustlocalvars(ls, nvars) {
 */
 /** C ref: lparser.c:328 — @param {CPtr<FuncState>} fs @param {CInt} tolevel */
 function removevars(fs, tolevel) {
-    cptr.stI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), 8, (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), 8) - ((cptr.ld1uo(fs, $FuncState_nactvar) - tolevel) | 0)) | 0);
+    cptr.stI32o(
+        cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd),
+        8,
+        (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), 8) -
+            ((cptr.ld1uo(fs, $FuncState_nactvar) - tolevel) | 0)) | 0
+    );
     while (cptr.ld1uo(fs, $FuncState_nactvar) > tolevel) {
-        let var$ = localdebuginfo(fs, cptr.st1o(fs, $FuncState_nactvar, cptr.ld1uo(fs, $FuncState_nactvar) + -1));
+        let var$ = localdebuginfo(
+            fs,
+            cptr.st1o(fs, $FuncState_nactvar, cptr.ld1uo(fs, $FuncState_nactvar) + -1)
+        );
         if (var$)
             cptr.stI32o(var$, $LocVar_endpc, cptr.ldI32o(fs, $FuncState_pc));
     }
@@ -360,7 +492,12 @@ function removevars(fs, tolevel) {
 ** Search the upvalues of the function 'fs' for one
 ** with the given 'name'.
 */
-/** C ref: lparser.c:342 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} name @returns {CInt} */
+/**
+ * C ref: lparser.c:342
+ * @param {CPtr<FuncState>} fs
+ * @param {CPtr<TString>} name
+ * @returns {CInt}
+ */
 function searchupvalue(fs, name) {
     let i;
     let up = cptr.ldPtro(cptr.ldPtr(fs), $Proto_upvalues);
@@ -376,29 +513,71 @@ function allocupvalue(fs) {
     let f = cptr.ldPtr(fs);
     let oldsize = cptr.ldI32o(f, $Proto_sizeupvalues);
     checklimit(fs, (cptr.ld1uo(fs, $FuncState_nups) + 1) | 0, 255, __s_upvalues);
-    (cptr.stPtro(f, $Proto_upvalues, ((luaM_growaux_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), cptr.ldPtro(f, $Proto_upvalues), cptr.ld1uo(fs, $FuncState_nups), cptr.add(f, $Proto_sizeupvalues), 16, 255, __s_upvalues)))));
+    (cptr.stPtro(
+        f,
+        $Proto_upvalues,
+        ((luaM_growaux_(
+            cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L),
+            cptr.ldPtro(f, $Proto_upvalues),
+            cptr.ld1uo(fs, $FuncState_nups),
+            cptr.add(f, $Proto_sizeupvalues),
+            16,
+            255,
+            __s_upvalues
+        )))
+    ));
     while (oldsize < cptr.ldI32o(f, $Proto_sizeupvalues))
         cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), oldsize++, null, $sizeof_Upvaldesc);
-    return cptr.add(cptr.ldPtro(f, $Proto_upvalues), cptr.postinc1(cptr.add(fs, $FuncState_nups)), $sizeof_Upvaldesc);
+    return cptr.add(
+        cptr.ldPtro(f, $Proto_upvalues),
+        cptr.postinc1(cptr.add(fs, $FuncState_nups)),
+        $sizeof_Upvaldesc
+    );
 }
 
-/** C ref: lparser.c:364 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} name @param {CPtr<expdesc>} v @returns {CInt} */
+/**
+ * C ref: lparser.c:364
+ * @param {CPtr<FuncState>} fs
+ * @param {CPtr<TString>} name
+ * @param {CPtr<expdesc>} v
+ * @returns {CInt}
+ */
 function newupvalue(fs, name, v) {
     let up = allocupvalue(fs);
     let prev = cptr.ldPtro(fs, $FuncState_prev);
     if (cptr.ldI32(v) == NHC.VLOCAL) {
         cptr.st1o(up, $Upvaldesc_instack, 1);
         cptr.st1o(up, $Upvaldesc_idx, cptr.ld1uo(v, $expdesc_u));
-        cptr.st1o(up, $Upvaldesc_kind, cptr.ld1uo(getlocalvardesc(prev, cptr.ldU16o(v, $expdesc_u + 2)), 9));
+        cptr.st1o(
+            up,
+            $Upvaldesc_kind,
+            cptr.ld1uo(getlocalvardesc(prev, cptr.ldU16o(v, $expdesc_u + 2)), 9)
+        );
         (void 0);
     } else {
         cptr.st1o(up, $Upvaldesc_instack, 0);
         cptr.st1o(up, $Upvaldesc_idx, (uchar(((cptr.ldI32o(v, $expdesc_u))))));
-        cptr.st1o(up, $Upvaldesc_kind, cptr.ld1uo2(cptr.ldPtro(cptr.ldPtr(prev), $Proto_upvalues), cptr.ldI32o(v, $expdesc_u), $sizeof_Upvaldesc, $Upvaldesc_kind));
+        cptr.st1o(
+            up,
+            $Upvaldesc_kind,
+            cptr.ld1uo2(
+                cptr.ldPtro(cptr.ldPtr(prev), $Proto_upvalues),
+                cptr.ldI32o(v, $expdesc_u),
+                $sizeof_Upvaldesc,
+                $Upvaldesc_kind
+            )
+        );
         (void 0);
     }
     cptr.stPtr(up, name);
-    ((((cptr.ld1uo((cptr.ldPtr(fs)), $Proto_marked)) & 32) && ((cptr.ld1uo((name), $TString_marked)) & 24)) ? luaC_barrier_(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L), ((((cptr.ldPtr(fs))))), ((((name))))) : (void 0));
+    ((((cptr.ld1uo((cptr.ldPtr(fs)), $Proto_marked)) & 32) &&
+        ((cptr.ld1uo((name), $TString_marked)) & 24))
+            ? luaC_barrier_(
+                cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_L),
+                ((((cptr.ldPtr(fs))))),
+                ((((name))))
+            )
+            : (void 0));
     return (cptr.ld1uo(fs, $FuncState_nups) - 1) | 0;
 }
 
@@ -407,7 +586,13 @@ function newupvalue(fs, name, v) {
 ** function 'fs'. If found, initialize 'var' with it and return
 ** its expression kind; otherwise return -1.
 */
-/** C ref: lparser.c:390 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} n @param {CPtr<expdesc>} var @returns {CInt} */
+/**
+ * C ref: lparser.c:390
+ * @param {CPtr<FuncState>} fs
+ * @param {CPtr<TString>} n
+ * @param {CPtr<expdesc>} var
+ * @returns {CInt}
+ */
 function searchvar(fs, n, var$) {
     let i;
     for (i = ((((cptr.ld1uo(fs, $FuncState_nactvar)))) - 1) | 0; i >= 0; i--) {
@@ -452,7 +637,13 @@ function marktobeclosed(fs) {
 ** this upvalue into all intermediate functions. If it is a global, set
 ** 'var' as 'void' as a flag.
 */
-/** C ref: lparser.c:435 — @param {CPtr<FuncState>} fs @param {CPtr<TString>} n @param {CPtr<expdesc>} var @param {CInt} base */
+/**
+ * C ref: lparser.c:435
+ * @param {CPtr<FuncState>} fs
+ * @param {CPtr<TString>} n
+ * @param {CPtr<expdesc>} var
+ * @param {CInt} base
+ */
 function singlevaraux(fs, n, var$, base) {
     if (cptr.eq(fs, (null)))
         init_exp(var$, NHC.VVOID, 0);  /* default is global */
@@ -498,7 +689,13 @@ function singlevar(ls, var$) {
 ** Adjust the number of results from an expression list 'e' with 'nexps'
 ** expressions to 'nvars' values.
 */
-/** C ref: lparser.c:482 — @param {CPtr<LexState>} ls @param {CInt} nvars @param {CInt} nexps @param {CPtr<expdesc>} e */
+/**
+ * C ref: lparser.c:482
+ * @param {CPtr<LexState>} ls
+ * @param {CInt} nvars
+ * @param {CInt} nexps
+ * @param {CPtr<expdesc>} e
+ */
 function adjust_assign(ls, nvars, nexps, e) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let needed = (nvars - nexps) | 0;  /* extra values needed */
@@ -525,9 +722,21 @@ function adjust_assign(ls, nvars, nexps, e) {
 */
 /** C ref: lparser.c:514 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} gt */
 function jumpscopeerror(ls, gt) {
-    let varname = (cptr.add((cptr.ldPtro(getlocalvardesc(cptr.ldPtro(ls, $LexState_fs), cptr.ld1uo(gt, $Labeldesc_nactvar)), 16)), $TString_contents));
+    let varname = (cptr.add(
+        (cptr.ldPtro(
+            getlocalvardesc(cptr.ldPtro(ls, $LexState_fs), cptr.ld1uo(gt, $Labeldesc_nactvar)),
+            16
+        )),
+        $TString_contents
+    ));
     let msg = __s_goto_s_at_line_d_jumps_into_the_scope;
-    msg = luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), msg, (cptr.add((cptr.ldPtr(gt)), $TString_contents)), cptr.ldI32o(gt, $Labeldesc_line), varname);
+    msg = luaO_pushfstring(
+        cptr.ldPtro(ls, $LexState_L),
+        msg,
+        (cptr.add((cptr.ldPtr(gt)), $TString_contents)),
+        cptr.ldI32o(gt, $Labeldesc_line),
+        varname
+    );
     luaK_semerror(ls, msg);  /* raise the error */
 }
 
@@ -536,29 +745,54 @@ function jumpscopeerror(ls, gt) {
 ** from the list of pending gotos.
 ** If it jumps into the scope of some variable, raises an error.
 */
-/** C ref: lparser.c:527 — @param {CPtr<LexState>} ls @param {CInt} g @param {CPtr<Labeldesc>} label */
+/**
+ * C ref: lparser.c:527
+ * @param {CPtr<LexState>} ls
+ * @param {CInt} g
+ * @param {CPtr<Labeldesc>} label
+ */
 function solvegoto(ls, g, label) {
     let i;
     let gl = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt);  /* list of gotos */
     let gt = cptr.add(cptr.ldPtr(gl), g, $sizeof_Labeldesc);  /* goto to be resolved */
     (void 0);
-    if ((__builtin_expect(BigInt(((cptr.ld1uo(gt, $Labeldesc_nactvar) < cptr.ld1uo(label, $Labeldesc_nactvar)) != 0)), 0n)))
+    if ((__builtin_expect(
+        BigInt(((cptr.ld1uo(gt, $Labeldesc_nactvar) < cptr.ld1uo(label, $Labeldesc_nactvar)) != 0)),
+        0n
+    )))
         jumpscopeerror(ls, gt);
-    luaK_patchlist(cptr.ldPtro(ls, $LexState_fs), cptr.ldI32o(gt, $Labeldesc_pc), cptr.ldI32o(label, $Labeldesc_pc));
+    luaK_patchlist(
+        cptr.ldPtro(ls, $LexState_fs),
+        cptr.ldI32o(gt, $Labeldesc_pc),
+        cptr.ldI32o(label, $Labeldesc_pc)
+    );
     for (i = g; i < ((cptr.ldI32o(gl, $Labellist_n) - 1) | 0); i++)
-        cptr.memcpy(cptr.add(cptr.ldPtr(gl), i, $sizeof_Labeldesc), cptr.add(cptr.ldPtr(gl), (i + 1) | 0, $sizeof_Labeldesc), 24);
+        cptr.memcpy(
+            cptr.add(cptr.ldPtr(gl), i, $sizeof_Labeldesc),
+            cptr.add(cptr.ldPtr(gl), (i + 1) | 0, $sizeof_Labeldesc),
+            24
+        );
     (cptr.stI32o(gl, $Labellist_n, cptr.ldI32o(gl, $Labellist_n) + -1)) - (-1);
 }
 
 /*
 ** Search for an active label with the given name.
 */
-/** C ref: lparser.c:544 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @returns {CPtr<Labeldesc>} */
+/**
+ * C ref: lparser.c:544
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<TString>} name
+ * @returns {CPtr<Labeldesc>}
+ */
 function findlabel(ls, name) {
     let i;
     let dyd = cptr.ldPtro(ls, $LexState_dyd);
     /* check labels in current function for a match */
-    for (i = cptr.ldI32o(cptr.ldPtro(ls, $LexState_fs), $FuncState_firstlabel); i < cptr.ldI32o(dyd, $Dyndata_label + $Labellist_n); i++) {
+    for (
+        i = cptr.ldI32o(cptr.ldPtro(ls, $LexState_fs), $FuncState_firstlabel);
+        i < cptr.ldI32o(dyd, $Dyndata_label + $Labellist_n);
+        i++
+    ) {
         let lb = cptr.add(cptr.ldPtro(dyd, $Dyndata_label), i, $sizeof_Labeldesc);
         if ((cptr.eq((cptr.ldPtr(lb)), (name))))
             return lb;
@@ -569,20 +803,52 @@ function findlabel(ls, name) {
 /*
 ** Adds a new label/goto in the corresponding list.
 */
-/** C ref: lparser.c:560 — @param {CPtr<LexState>} ls @param {CPtr<Labellist>} l @param {CPtr<TString>} name @param {CInt} line @param {CInt} pc @returns {CInt} */
+/**
+ * C ref: lparser.c:560
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<Labellist>} l
+ * @param {CPtr<TString>} name
+ * @param {CInt} line
+ * @param {CInt} pc
+ * @returns {CInt}
+ */
 function newlabelentry(ls, l, name, line, pc) {
     let n = cptr.ldI32o(l, $Labellist_n);
-    (cptr.stPtr(l, ((luaM_growaux_(cptr.ldPtro(ls, $LexState_L), cptr.ldPtr(l), n, cptr.add(l, $Labellist_size), 24, 32767, __s_labels_gotos)))));
+    (cptr.stPtr(
+        l,
+        ((luaM_growaux_(
+            cptr.ldPtro(ls, $LexState_L),
+            cptr.ldPtr(l),
+            n,
+            cptr.add(l, $Labellist_size),
+            24,
+            32767,
+            __s_labels_gotos
+        )))
+    ));
     cptr.stPtro(cptr.ldPtr(l), n, name, $sizeof_Labeldesc);
     cptr.stI32o2(cptr.ldPtr(l), n, $sizeof_Labeldesc, $Labeldesc_line, line);
-    cptr.st1o2(cptr.ldPtr(l), n, $sizeof_Labeldesc, $Labeldesc_nactvar, cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_nactvar));
+    cptr.st1o2(
+        cptr.ldPtr(l),
+        n,
+        $sizeof_Labeldesc,
+        $Labeldesc_nactvar,
+        cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_nactvar)
+    );
     cptr.st1o2(cptr.ldPtr(l), n, $sizeof_Labeldesc, $Labeldesc_close, 0);
     cptr.stI32o2(cptr.ldPtr(l), n, $sizeof_Labeldesc, $Labeldesc_pc, pc);
     cptr.stI32o(l, $Labellist_n, (n + 1) | 0);
     return n;
 }
 
-/** C ref: lparser.c:575 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @param {CInt} line @param {CInt} pc @returns {CInt} */
+/**
+ * C ref: lparser.c:575
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<TString>} name
+ * @param {CInt} line
+ * @param {CInt} pc
+ * @returns {CInt}
+ */
 function newgotoentry(ls, name, line, pc) {
     return newlabelentry(ls, cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt), name, line, pc);
 }
@@ -595,7 +861,10 @@ function newgotoentry(ls, name, line, pc) {
 /** C ref: lparser.c:585 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} lb @returns {CInt} */
 function solvegotos(ls, lb) {
     let gl = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt);
-    let i = cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(ls, $LexState_fs), $FuncState_bl), $BlockCnt_firstgoto);
+    let i = cptr.ldI32o(
+        cptr.ldPtro(cptr.ldPtro(ls, $LexState_fs), $FuncState_bl),
+        $BlockCnt_firstgoto
+    );
     let needsclose = 0;
     while (i < cptr.ldI32o(gl, $Labellist_n)) {
         if ((cptr.eq((cptr.ldPtro(cptr.ldPtr(gl), i, $sizeof_Labeldesc)), (cptr.ldPtr(lb))))) {
@@ -614,14 +883,27 @@ function solvegotos(ls, lb) {
 ** a close instruction if necessary.
 ** Returns true iff it added a close instruction.
 */
-/** C ref: lparser.c:608 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @param {CInt} line @param {CInt} last @returns {CInt} */
+/**
+ * C ref: lparser.c:608
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<TString>} name
+ * @param {CInt} line
+ * @param {CInt} last
+ * @returns {CInt}
+ */
 function createlabel(ls, name, line, last) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let ll = cptr.add(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label);
     let l = newlabelentry(ls, ll, name, line, luaK_getlabel(fs));
     if (last) {
         /* assume that locals are already out of scope */
-        cptr.st1o2(cptr.ldPtr(ll), l, $sizeof_Labeldesc, $Labeldesc_nactvar, cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_nactvar));
+        cptr.st1o2(
+            cptr.ldPtr(ll),
+            l,
+            $sizeof_Labeldesc,
+            $Labeldesc_nactvar,
+            cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_nactvar)
+        );
     }
     if (solvegotos(ls, cptr.add(cptr.ldPtr(ll), l, $sizeof_Labeldesc))) {
         luaK_codeABCk(fs, NHC.OP_CLOSE, luaY_nvarstack(fs), 0, 0, 0);
@@ -641,20 +923,51 @@ function movegotosout(fs, bl) {
     for (i = cptr.ldI32o(bl, $BlockCnt_firstgoto); i < cptr.ldI32o(gl, $Labellist_n); i++) {
         let gt = cptr.add(cptr.ldPtr(gl), i, $sizeof_Labeldesc);
         /* leaving a variable scope? */
-        if (reglevel(fs, cptr.ld1uo(gt, $Labeldesc_nactvar)) > reglevel(fs, cptr.ld1uo(bl, $BlockCnt_nactvar)))
-            cptr.st1o(gt, $Labeldesc_close, cptr.ld1uo(gt, $Labeldesc_close) | cptr.ld1uo(bl, $BlockCnt_upval));  /* jump may need a close */
+        if (reglevel(fs, cptr.ld1uo(gt, $Labeldesc_nactvar)) >
+                reglevel(fs, cptr.ld1uo(bl, $BlockCnt_nactvar)))
+            cptr.st1o(
+                gt,
+                $Labeldesc_close,
+                cptr.ld1uo(gt, $Labeldesc_close) | cptr.ld1uo(bl, $BlockCnt_upval)
+            );  /* jump may need a close */
         cptr.st1o(gt, $Labeldesc_nactvar, cptr.ld1uo(bl, $BlockCnt_nactvar));  /* update goto level */
     }
 }
 
-/** C ref: lparser.c:642 — @param {CPtr<FuncState>} fs @param {CPtr<BlockCnt>} bl @param {CUInt} isloop */
+/**
+ * C ref: lparser.c:642
+ * @param {CPtr<FuncState>} fs
+ * @param {CPtr<BlockCnt>} bl
+ * @param {CUInt} isloop
+ */
 function enterblock(fs, bl, isloop) {
     cptr.st1o(bl, $BlockCnt_isloop, isloop);
     cptr.st1o(bl, $BlockCnt_nactvar, cptr.ld1uo(fs, $FuncState_nactvar));
-    cptr.stI32o(bl, $BlockCnt_firstlabel, cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), $Dyndata_label + $Labellist_n));
-    cptr.stI32o(bl, $BlockCnt_firstgoto, cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), $Dyndata_gt + $Labellist_n));
+    cptr.stI32o(
+        bl,
+        $BlockCnt_firstlabel,
+        cptr.ldI32o(
+            cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd),
+            $Dyndata_label + $Labellist_n
+        )
+    );
+    cptr.stI32o(
+        bl,
+        $BlockCnt_firstgoto,
+        cptr.ldI32o(
+            cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd),
+            $Dyndata_gt + $Labellist_n
+        )
+    );
     cptr.st1o(bl, $BlockCnt_upval, 0);
-    cptr.st1o(bl, $BlockCnt_insidetbc, uchar((!cptr.eq(cptr.ldPtro(fs, $FuncState_bl), (null)) && cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_insidetbc) ? 1 : 0)));
+    cptr.st1o(
+        bl,
+        $BlockCnt_insidetbc,
+        uchar((!cptr.eq(cptr.ldPtro(fs, $FuncState_bl), (null)) &&
+            cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_insidetbc)
+            ? 1
+            : 0))
+    );
     cptr.stPtr(bl, cptr.ldPtro(fs, $FuncState_bl));
     cptr.stPtro(fs, $FuncState_bl, bl);
     (void 0);
@@ -666,12 +979,24 @@ function enterblock(fs, bl, isloop) {
 /** C ref: lparser.c:658 — @param {CPtr<LexState>} ls @param {CPtr<Labeldesc>} gt */
 function undefgoto(ls, gt) {
     let msg;
-    if ((cptr.eq((cptr.ldPtr(gt)), ((luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __s_break, BigInt.asUintN(64, (6n / 1n) - 1n))))))) {
+    if ((cptr.eq(
+        (cptr.ldPtr(gt)),
+        ((luaS_newlstr(
+            cptr.ldPtro(ls, $LexState_L),
+            __s_break,
+            BigInt.asUintN(64, (6n / 1n) - 1n)
+        )))
+    ))) {
         msg = __s_break_outside_loop_at_line_d;
         msg = luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), msg, cptr.ldI32o(gt, $Labeldesc_line));
     } else {
         msg = __s_no_visible_label_s_for_goto_at_line_d;
-        msg = luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), msg, (cptr.add((cptr.ldPtr(gt)), $TString_contents)), cptr.ldI32o(gt, $Labeldesc_line));
+        msg = luaO_pushfstring(
+            cptr.ldPtro(ls, $LexState_L),
+            msg,
+            (cptr.add((cptr.ldPtr(gt)), $TString_contents)),
+            cptr.ldI32o(gt, $Labeldesc_line)
+        );
     }
     luaK_semerror(ls, msg);
 }
@@ -685,17 +1010,38 @@ function leaveblock(fs) {
     removevars(fs, cptr.ld1uo(bl, $BlockCnt_nactvar));  /* remove block locals */
     (void 0);  /* back to level on entry */
     if (cptr.ld1uo(bl, $BlockCnt_isloop))
-        hasclose = createlabel(ls, (luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __s_break, BigInt.asUintN(64, (6n / 1n) - 1n))), 0, 0);
+        hasclose = createlabel(
+            ls,
+            (luaS_newlstr(
+                cptr.ldPtro(ls, $LexState_L),
+                __s_break,
+                BigInt.asUintN(64, (6n / 1n) - 1n)
+            )),
+            0,
+            0
+        );
     if (!hasclose && cptr.ldPtr(bl) && cptr.ld1uo(bl, $BlockCnt_upval))
         luaK_codeABCk(fs, NHC.OP_CLOSE, stklevel, 0, 0, 0);
     cptr.st1o(fs, $FuncState_freereg, uchar(stklevel));  /* free registers */
-    cptr.stI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label + $Labellist_n, cptr.ldI32o(bl, $BlockCnt_firstlabel));  /* remove local labels */
+    cptr.stI32o(
+        cptr.ldPtro(ls, $LexState_dyd),
+        $Dyndata_label + $Labellist_n,
+        cptr.ldI32o(bl, $BlockCnt_firstlabel)
+    );  /* remove local labels */
     cptr.stPtro(fs, $FuncState_bl, cptr.ldPtr(bl));  /* current block now is previous one */
     if (cptr.ldPtr(bl))
         movegotosout(fs, bl);  /* update pending gotos to enclosing block */
     else {
-        if (cptr.ldI32o(bl, $BlockCnt_firstgoto) < cptr.ldI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt + $Labellist_n))
-            undefgoto(ls, cptr.add(cptr.ldPtro(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt), cptr.ldI32o(bl, $BlockCnt_firstgoto), $sizeof_Labeldesc));  /* error */
+        if (cptr.ldI32o(bl, $BlockCnt_firstgoto) <
+                cptr.ldI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt + $Labellist_n))
+            undefgoto(
+                ls,
+                cptr.add(
+                    cptr.ldPtro(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_gt),
+                    cptr.ldI32o(bl, $BlockCnt_firstgoto),
+                    $sizeof_Labeldesc
+                )
+            );  /* error */
     }
 }
 
@@ -710,12 +1056,31 @@ function addprototype(ls) {
     let f = cptr.ldPtr(fs);  /* prototype of current function */
     if (cptr.ldI32o(fs, $FuncState_np) >= cptr.ldI32o(f, $Proto_sizep)) {
         let oldsize = cptr.ldI32o(f, $Proto_sizep);
-        (cptr.stPtro(f, $Proto_p, ((luaM_growaux_(L, cptr.ldPtro(f, $Proto_p), cptr.ldI32o(fs, $FuncState_np), cptr.add(f, $Proto_sizep), 8, 131071, __s_functions)))));
+        (cptr.stPtro(
+            f,
+            $Proto_p,
+            ((luaM_growaux_(
+                L,
+                cptr.ldPtro(f, $Proto_p),
+                cptr.ldI32o(fs, $FuncState_np),
+                cptr.add(f, $Proto_sizep),
+                8,
+                131071,
+                __s_functions
+            )))
+        ));
         while (oldsize < cptr.ldI32o(f, $Proto_sizep))
             cptr.stPtro(cptr.ldPtro(f, $Proto_p), oldsize++, null, 8);
     }
-    cptr.stPtro(cptr.ldPtro(f, $Proto_p), (cptr.stI32o(fs, $FuncState_np, cptr.ldI32o(fs, $FuncState_np) + 1)) - (1), clp = luaF_newproto(L), 8);
-    ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((clp), $Proto_marked)) & 24)) ? luaC_barrier_(L, ((((f)))), ((((clp))))) : (void 0));
+    cptr.stPtro(
+        cptr.ldPtro(f, $Proto_p),
+        (cptr.stI32o(fs, $FuncState_np, cptr.ldI32o(fs, $FuncState_np) + 1)) - (1),
+        clp = luaF_newproto(L),
+        8
+    );
+    ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((clp), $Proto_marked)) & 24))
+            ? luaC_barrier_(L, ((((f)))), ((((clp)))))
+            : (void 0));
     return clp;
 }
 
@@ -729,11 +1094,20 @@ function addprototype(ls) {
 /** C ref: lparser.c:722 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v */
 function codeclosure(ls, v) {
     let fs = cptr.ldPtro(cptr.ldPtro(ls, $LexState_fs), $FuncState_prev);
-    init_exp(v, NHC.VRELOC, luaK_codeABx(fs, NHC.OP_CLOSURE, 0, ((cptr.ldI32o(fs, $FuncState_np) - 1) | 0) >>> 0));
+    init_exp(
+        v,
+        NHC.VRELOC,
+        luaK_codeABx(fs, NHC.OP_CLOSURE, 0, ((cptr.ldI32o(fs, $FuncState_np) - 1) | 0) >>> 0)
+    );
     luaK_exp2nextreg(fs, v);  /* fix it at the last register */
 }
 
-/** C ref: lparser.c:729 — @param {CPtr<LexState>} ls @param {CPtr<FuncState>} fs @param {CPtr<BlockCnt>} bl */
+/**
+ * C ref: lparser.c:729
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<FuncState>} fs
+ * @param {CPtr<BlockCnt>} bl
+ */
 function open_func(ls, fs, bl) {
     let f = cptr.ldPtr(fs);
     cptr.stPtro(fs, $FuncState_prev, cptr.ldPtro(ls, $LexState_fs));  /* linked list of funcstates */
@@ -752,10 +1126,21 @@ function open_func(ls, fs, bl) {
     cptr.st1o(fs, $FuncState_nactvar, 0);
     cptr.st1o(fs, $FuncState_needclose, 0);
     cptr.stI32o(fs, $FuncState_firstlocal, cptr.ldI32o(cptr.ldPtro(ls, $LexState_dyd), 8));
-    cptr.stI32o(fs, $FuncState_firstlabel, cptr.ldI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label + $Labellist_n));
+    cptr.stI32o(
+        fs,
+        $FuncState_firstlabel,
+        cptr.ldI32o(cptr.ldPtro(ls, $LexState_dyd), $Dyndata_label + $Labellist_n)
+    );
     cptr.stPtro(fs, $FuncState_bl, null);
     cptr.stPtro(f, $Proto_source, cptr.ldPtro(ls, $LexState_source));
-    ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro(f, $Proto_source)), $TString_marked)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, $LexState_L), ((((f)))), ((((cptr.ldPtro(f, $Proto_source)))))) : (void 0));
+    ((((cptr.ld1uo((f), $Proto_marked)) & 32) &&
+        ((cptr.ld1uo((cptr.ldPtro(f, $Proto_source)), $TString_marked)) & 24))
+            ? luaC_barrier_(
+                cptr.ldPtro(ls, $LexState_L),
+                ((((f)))),
+                ((((cptr.ldPtro(f, $Proto_source)))))
+            )
+            : (void 0));
     cptr.st1o(f, $Proto_maxstacksize, 2);  /* registers 0/1 are always valid */
     enterblock(fs, bl, 0);
 }
@@ -769,13 +1154,83 @@ function close_func(ls) {
     leaveblock(fs);
     (void 0);
     luaK_finish(fs);
-    (cptr.stPtro(f, $Proto_code, ((luaM_shrinkvector_(L, cptr.ldPtro(f, $Proto_code), cptr.add(f, $Proto_sizecode), cptr.ldI32o(fs, $FuncState_pc), 4)))));
-    (cptr.stPtro(f, $Proto_lineinfo, ((luaM_shrinkvector_(L, cptr.ldPtro(f, $Proto_lineinfo), cptr.add(f, $Proto_sizelineinfo), cptr.ldI32o(fs, $FuncState_pc), 1)))));
-    (cptr.stPtro(f, $Proto_abslineinfo, ((luaM_shrinkvector_(L, cptr.ldPtro(f, $Proto_abslineinfo), cptr.add(f, $Proto_sizeabslineinfo), cptr.ldI32o(fs, $FuncState_nabslineinfo), 8)))));
-    (cptr.stPtro(f, $Proto_k, ((luaM_shrinkvector_(L, cptr.ldPtro(f, $Proto_k), cptr.add(f, $Proto_sizek), cptr.ldI32o(fs, $FuncState_nk), 16)))));
-    (cptr.stPtro(f, $Proto_p, ((luaM_shrinkvector_(L, cptr.ldPtro(f, $Proto_p), cptr.add(f, $Proto_sizep), cptr.ldI32o(fs, $FuncState_np), 8)))));
-    (cptr.stPtro(f, $Proto_locvars, ((luaM_shrinkvector_(L, cptr.ldPtro(f, $Proto_locvars), cptr.add(f, $Proto_sizelocvars), cptr.ldI16o(fs, $FuncState_ndebugvars), 16)))));
-    (cptr.stPtro(f, $Proto_upvalues, ((luaM_shrinkvector_(L, cptr.ldPtro(f, $Proto_upvalues), cptr.add(f, $Proto_sizeupvalues), cptr.ld1uo(fs, $FuncState_nups), 16)))));
+    (cptr.stPtro(
+        f,
+        $Proto_code,
+        ((luaM_shrinkvector_(
+            L,
+            cptr.ldPtro(f, $Proto_code),
+            cptr.add(f, $Proto_sizecode),
+            cptr.ldI32o(fs, $FuncState_pc),
+            4
+        )))
+    ));
+    (cptr.stPtro(
+        f,
+        $Proto_lineinfo,
+        ((luaM_shrinkvector_(
+            L,
+            cptr.ldPtro(f, $Proto_lineinfo),
+            cptr.add(f, $Proto_sizelineinfo),
+            cptr.ldI32o(fs, $FuncState_pc),
+            1
+        )))
+    ));
+    (cptr.stPtro(
+        f,
+        $Proto_abslineinfo,
+        ((luaM_shrinkvector_(
+            L,
+            cptr.ldPtro(f, $Proto_abslineinfo),
+            cptr.add(f, $Proto_sizeabslineinfo),
+            cptr.ldI32o(fs, $FuncState_nabslineinfo),
+            8
+        )))
+    ));
+    (cptr.stPtro(
+        f,
+        $Proto_k,
+        ((luaM_shrinkvector_(
+            L,
+            cptr.ldPtro(f, $Proto_k),
+            cptr.add(f, $Proto_sizek),
+            cptr.ldI32o(fs, $FuncState_nk),
+            16
+        )))
+    ));
+    (cptr.stPtro(
+        f,
+        $Proto_p,
+        ((luaM_shrinkvector_(
+            L,
+            cptr.ldPtro(f, $Proto_p),
+            cptr.add(f, $Proto_sizep),
+            cptr.ldI32o(fs, $FuncState_np),
+            8
+        )))
+    ));
+    (cptr.stPtro(
+        f,
+        $Proto_locvars,
+        ((luaM_shrinkvector_(
+            L,
+            cptr.ldPtro(f, $Proto_locvars),
+            cptr.add(f, $Proto_sizelocvars),
+            cptr.ldI16o(fs, $FuncState_ndebugvars),
+            16
+        )))
+    ));
+    (cptr.stPtro(
+        f,
+        $Proto_upvalues,
+        ((luaM_shrinkvector_(
+            L,
+            cptr.ldPtro(f, $Proto_upvalues),
+            cptr.add(f, $Proto_sizeupvalues),
+            cptr.ld1uo(fs, $FuncState_nups),
+            16
+        )))
+    ));
     cptr.stPtro(ls, $LexState_fs, cptr.ldPtro(fs, $FuncState_prev));
     {
         if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
@@ -884,8 +1339,17 @@ function closelistfield(fs, cc) {
     luaK_exp2nextreg(fs, cc);
     cptr.stI32(cc, NHC.VVOID);
     if (cptr.ldI32o(cc, $ConsControl_tostore) == 50) {
-        luaK_setlist(fs, cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), cptr.ldI32o(cc, $ConsControl_tostore));  /* flush */
-        cptr.stI32o(cc, $ConsControl_na, (cptr.ldI32o(cc, $ConsControl_na) + cptr.ldI32o(cc, $ConsControl_tostore)) | 0);
+        luaK_setlist(
+            fs,
+            cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u),
+            cptr.ldI32o(cc, $ConsControl_na),
+            cptr.ldI32o(cc, $ConsControl_tostore)
+        );  /* flush */
+        cptr.stI32o(
+            cc,
+            $ConsControl_na,
+            (cptr.ldI32o(cc, $ConsControl_na) + cptr.ldI32o(cc, $ConsControl_tostore)) | 0
+        );
         cptr.stI32o(cc, $ConsControl_tostore, 0);  /* no more items pending */
     }
 }
@@ -896,14 +1360,28 @@ function lastlistfield(fs, cc) {
         return;
     if (((cptr.ldI32(cc)) == NHC.VCALL || (cptr.ldI32(cc)) == NHC.VVARARG)) {
         luaK_setreturns(fs, cc, -1);
-        luaK_setlist(fs, cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), -1);
+        luaK_setlist(
+            fs,
+            cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u),
+            cptr.ldI32o(cc, $ConsControl_na),
+            -1
+        );
         (cptr.stI32o(cc, $ConsControl_na, cptr.ldI32o(cc, $ConsControl_na) + -1)) - (-1);  /* do not count last expression (unknown number of elements) */
     } else {
         if (cptr.ldI32(cc) != NHC.VVOID)
             luaK_exp2nextreg(fs, cc);
-        luaK_setlist(fs, cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), cptr.ldI32o(cc, $ConsControl_tostore));
+        luaK_setlist(
+            fs,
+            cptr.ldI32o(cptr.ldPtro(cc, $ConsControl_t), $expdesc_u),
+            cptr.ldI32o(cc, $ConsControl_na),
+            cptr.ldI32o(cc, $ConsControl_tostore)
+        );
     }
-    cptr.stI32o(cc, $ConsControl_na, (cptr.ldI32o(cc, $ConsControl_na) + cptr.ldI32o(cc, $ConsControl_tostore)) | 0);
+    cptr.stI32o(
+        cc,
+        $ConsControl_na,
+        (cptr.ldI32o(cc, $ConsControl_na) + cptr.ldI32o(cc, $ConsControl_tostore)) | 0
+    );
 }
 
 /** C ref: lparser.c:895 — @param {CPtr<LexState>} ls @param {CPtr<ConsControl>} cc */
@@ -947,7 +1425,11 @@ function constructor(ls, t) {
     let pc = luaK_codeABCk(fs, NHC.OP_NEWTABLE, 0, 0, 0, 0);
     let cc = cptr.alloc(48);
     luaK_code(fs, 0);  /* space for extra arg. */
-    cptr.stI32o(cc, $ConsControl_na, cptr.stI32o(cc, $ConsControl_nh, cptr.stI32o(cc, $ConsControl_tostore, 0)));
+    cptr.stI32o(
+        cc,
+        $ConsControl_na,
+        cptr.stI32o(cc, $ConsControl_nh, cptr.stI32o(cc, $ConsControl_tostore, 0))
+    );
     cptr.stPtro(cc, $ConsControl_t, t);
     init_exp(t, NHC.VNONRELOC, cptr.ld1uo(fs, $FuncState_freereg));  /* table will be at stack top */
     luaK_reserveregs(fs, 1);
@@ -962,7 +1444,13 @@ function constructor(ls, t) {
     } while (testnext(ls, 44) || testnext(ls, 59));
     check_match(ls, 125, 123, line);
     lastlistfield(fs, cc);
-    luaK_settablesize(fs, pc, cptr.ldI32o(t, $expdesc_u), cptr.ldI32o(cc, $ConsControl_na), cptr.ldI32o(cc, $ConsControl_nh));
+    luaK_settablesize(
+        fs,
+        pc,
+        cptr.ldI32o(t, $expdesc_u),
+        cptr.ldI32o(cc, $ConsControl_na),
+        cptr.ldI32o(cc, $ConsControl_nh)
+    );
 }
 
 /* }====================================================================== */
@@ -1007,7 +1495,13 @@ function parlist(ls) {
     luaK_reserveregs(fs, cptr.ld1uo(fs, $FuncState_nactvar));  /* reserve registers for parameters */
 }
 
-/** C ref: lparser.c:989 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} e @param {CInt} ismethod @param {CInt} line */
+/**
+ * C ref: lparser.c:989
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<expdesc>} e
+ * @param {CInt} ismethod
+ * @param {CInt} line
+ */
 function body(ls, e, ismethod, line) {
     /* body ->  '(' parlist ')' block END */
     let new_fs = cptr.alloc(72);
@@ -1357,7 +1851,13 @@ cptr.st1o(priority, 41, 1);
 ** subexpr -> (simpleexp | unop subexpr) { binop subexpr }
 ** where 'binop' is any binary operator with a priority higher than 'limit'
 */
-/** C ref: lparser.c:1259 — @param {CPtr<LexState>} ls @param {CPtr<expdesc>} v @param {CInt} limit @returns {*} */
+/**
+ * C ref: lparser.c:1259
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<expdesc>} v
+ * @param {CInt} limit
+ * @returns {*}
+ */
 function subexpr(ls, v, limit) {
     let op;
     let uop;
@@ -1383,7 +1883,12 @@ function subexpr(ls, v, limit) {
         luaK_posfix(cptr.ldPtro(ls, $LexState_fs), op, v, v2, line);
         op = nextop;
     }
-    ((cptr.stI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls, cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1)) - (-1));
+    ((cptr.stI32o(
+        cptr.ldPtro((ls), $LexState_L),
+        $lua_State_nCcalls,
+        cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1
+    )) -
+            (-1));
     return op;  /* return first untreated operator */
 }
 
@@ -1422,26 +1927,38 @@ function block(ls) {
 ** table. If so, save original upvalue/local value in a safe place and
 ** use this safe copy in the previous assignment.
 */
-/** C ref: lparser.c:1330 — @param {CPtr<LexState>} ls @param {CPtr<struct LHS_assign>} lh @param {CPtr<expdesc>} v */
+/**
+ * C ref: lparser.c:1330
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<struct LHS_assign>} lh
+ * @param {CPtr<expdesc>} v
+ */
 function check_conflict(ls, lh, v) {
     let fs = cptr.ldPtro(ls, $LexState_fs);
     let extra = cptr.ld1uo(fs, $FuncState_freereg);  /* eventual position to save local variable */
     let conflict = 0;
     for (; lh; lh = cptr.ldPtr(lh)) {
-        if ((NHC.VINDEXED <= (cptr.ldI32o(lh, $LHS_assign_v)) && (cptr.ldI32o(lh, $LHS_assign_v)) <= NHC.VINDEXSTR)) {
+        if ((NHC.VINDEXED <= (cptr.ldI32o(lh, $LHS_assign_v)) &&
+                (cptr.ldI32o(lh, $LHS_assign_v)) <= NHC.VINDEXSTR)) {
             if (cptr.ldI32o(lh, $LHS_assign_v) == NHC.VINDEXUP) {
-                if (cptr.ldI32(v) == NHC.VUPVAL && cptr.ld1uo(lh, $LHS_assign_v + $expdesc_u + 2) == cptr.ldI32o(v, $expdesc_u)) {
+                if (cptr.ldI32(v) == NHC.VUPVAL &&
+                        cptr.ld1uo(lh, $LHS_assign_v + $expdesc_u + 2) ==
+                            cptr.ldI32o(v, $expdesc_u)) {
                     conflict = 1;  /* table is the upvalue being assigned now */
                     cptr.stI32o(lh, $LHS_assign_v, NHC.VINDEXSTR);
                     cptr.st1o(lh, $LHS_assign_v + $expdesc_u + 2, uchar(extra));  /* assignment will use safe copy */
                 }
             } else {
-                if (cptr.ldI32(v) == NHC.VLOCAL && cptr.ld1uo(lh, $LHS_assign_v + $expdesc_u + 2) == cptr.ld1uo(v, $expdesc_u)) {
+                if (cptr.ldI32(v) == NHC.VLOCAL &&
+                        cptr.ld1uo(lh, $LHS_assign_v + $expdesc_u + 2) ==
+                            cptr.ld1uo(v, $expdesc_u)) {
                     conflict = 1;  /* table is the local being assigned now */
                     cptr.st1o(lh, $LHS_assign_v + $expdesc_u + 2, uchar(extra));  /* assignment will use safe copy */
                 }
                 /* is index the local being assigned? */
-                if (cptr.ldI32o(lh, $LHS_assign_v) == NHC.VINDEXED && cptr.ldI32(v) == NHC.VLOCAL && cptr.ldI16o(lh, $LHS_assign_v + $expdesc_u) == cptr.ld1uo(v, $expdesc_u)) {
+                if (cptr.ldI32o(lh, $LHS_assign_v) == NHC.VINDEXED &&
+                        cptr.ldI32(v) == NHC.VLOCAL &&
+                        cptr.ldI16o(lh, $LHS_assign_v + $expdesc_u) == cptr.ld1uo(v, $expdesc_u)) {
                     conflict = 1;
                     cptr.stI16o(lh, $LHS_assign_v + $expdesc_u, i16(extra));  /* previous assignment will use safe copy */
                 }
@@ -1465,11 +1982,17 @@ function check_conflict(ls, lh, v) {
 ** assignment -> suffixedexp restassign
 ** restassign -> ',' suffixedexp restassign | '=' explist
 */
-/** C ref: lparser.c:1374 — @param {CPtr<LexState>} ls @param {CPtr<struct LHS_assign>} lh @param {CInt} nvars */
+/**
+ * C ref: lparser.c:1374
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<struct LHS_assign>} lh
+ * @param {CInt} nvars
+ */
 function restassign(ls, lh, nvars) {
     let e = cptr.alloc(24);
     {
-        if (!((NHC.VLOCAL <= (cptr.ldI32o(lh, $LHS_assign_v)) && (cptr.ldI32o(lh, $LHS_assign_v)) <= NHC.VINDEXSTR)))
+        if (!((NHC.VLOCAL <= (cptr.ldI32o(lh, $LHS_assign_v)) &&
+                (cptr.ldI32o(lh, $LHS_assign_v)) <= NHC.VINDEXSTR)))
             luaX_syntaxerror(ls, __s_syntax_error);
     }
     ;
@@ -1478,11 +2001,17 @@ function restassign(ls, lh, nvars) {
         let nv = cptr.alloc(32);
         cptr.stPtr(nv, lh);
         suffixedexp(ls, cptr.add(nv, $LHS_assign_v));
-        if (!(NHC.VINDEXED <= (cptr.ldI32o(nv, $LHS_assign_v)) && (cptr.ldI32o(nv, $LHS_assign_v)) <= NHC.VINDEXSTR))
+        if (!(NHC.VINDEXED <= (cptr.ldI32o(nv, $LHS_assign_v)) &&
+                (cptr.ldI32o(nv, $LHS_assign_v)) <= NHC.VINDEXSTR))
             check_conflict(ls, lh, cptr.add(nv, $LHS_assign_v));
         luaE_incCstack(cptr.ldPtro(ls, $LexState_L));  /* control recursion depth */
         restassign(ls, nv, (nvars + 1) | 0);
-        ((cptr.stI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls, cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1)) - (-1));
+        ((cptr.stI32o(
+            cptr.ldPtro((ls), $LexState_L),
+            $lua_State_nCcalls,
+            cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1
+        )) -
+                (-1));
     } else {
         let nexps;
         checknext(ls, 61);
@@ -1495,7 +2024,11 @@ function restassign(ls, lh, nvars) {
             return;  /* avoid default */
         }
     }
-    init_exp(e, NHC.VNONRELOC, (cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg) - 1) | 0);  /* default assignment */
+    init_exp(
+        e,
+        NHC.VNONRELOC,
+        (cptr.ld1uo(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg) - 1) | 0
+    );  /* default assignment */
     luaK_storevar(cptr.ldPtro(ls, $LexState_fs), cptr.add(lh, $LHS_assign_v), e);
 }
 
@@ -1536,7 +2069,12 @@ function gotostat(ls) {
 function breakstat(ls) {
     let line = cptr.ldI32o(ls, $LexState_linenumber);
     luaX_next(ls);  /* skip break */
-    newgotoentry(ls, (luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __s_break, BigInt.asUintN(64, (6n / 1n) - 1n))), line, luaK_jump(cptr.ldPtro(ls, $LexState_fs)));
+    newgotoentry(
+        ls,
+        (luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __s_break, BigInt.asUintN(64, (6n / 1n) - 1n))),
+        line,
+        luaK_jump(cptr.ldPtro(ls, $LexState_fs))
+    );
 }
 
 /*
@@ -1547,12 +2085,22 @@ function checkrepeated(ls, name) {
     let lb = findlabel(ls, name);
     if ((__builtin_expect(BigInt(((!cptr.eq(lb, (null))) != 0)), 0n))) {
         let msg = __s_label_s_already_defined_on_line_d;
-        msg = luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), msg, (cptr.add((name), $TString_contents)), cptr.ldI32o(lb, $Labeldesc_line));
+        msg = luaO_pushfstring(
+            cptr.ldPtro(ls, $LexState_L),
+            msg,
+            (cptr.add((name), $TString_contents)),
+            cptr.ldI32o(lb, $Labeldesc_line)
+        );
         luaK_semerror(ls, msg);  /* error */
     }
 }
 
-/** C ref: lparser.c:1457 — @param {CPtr<LexState>} ls @param {CPtr<TString>} name @param {CInt} line */
+/**
+ * C ref: lparser.c:1457
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<TString>} name
+ * @param {CInt} line
+ */
 function labelstat(ls, name, line) {
     /* label -> '::' NAME '::' */
     checknext(ls, NHC.TK_DBCOLON);  /* skip double colon */
@@ -1625,7 +2173,13 @@ function exp1(ls) {
 ** (Jump addresses are relative in Lua). 'back' true means
 ** a back jump.
 */
-/** C ref: lparser.c:1529 — @param {CPtr<FuncState>} fs @param {CInt} pc @param {CInt} dest @param {CInt} back */
+/**
+ * C ref: lparser.c:1529
+ * @param {CPtr<FuncState>} fs
+ * @param {CInt} pc
+ * @param {CInt} dest
+ * @param {CInt} back
+ */
 function fixforjump(fs, pc, dest, back) {
     let jmp = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
     let offset = (dest - ((pc + 1) | 0)) | 0;
@@ -1633,7 +2187,12 @@ function fixforjump(fs, pc, dest, back) {
         offset = -offset;
     if ((__builtin_expect(BigInt(((offset > 131071) != 0)), 0n)))
         luaX_syntaxerror(cptr.ldPtro(fs, $FuncState_ls), __s_control_structure_too_long);
-    (cptr.stI32(jmp, (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 17) >>> 0)) << 15) >>> 0))) >>> 0) | ((((((offset) >>> 0) << 15) >>> 0) & (((~(((~0) << 17) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)));
+    (cptr.stI32(
+        jmp,
+        (((((cptr.ldI32(jmp)) & (~(((~(((~0) << 17) >>> 0)) << 15) >>> 0))) >>> 0) |
+            ((((((offset) >>> 0) << 15) >>> 0) &
+                (((~(((~0) << 17) >>> 0)) << 15) >>> 0)) >>> 0)) >>> 0)
+    ));
 }
 
 /*
@@ -1646,7 +2205,14 @@ const __static_forbody_forloop = cptr.alloc(2 * 4);
 cptr.stI32o(__static_forbody_forloop, 0, NHC.OP_FORLOOP);
 cptr.stI32o(__static_forbody_forloop, 4, NHC.OP_TFORLOOP); /** C ref: lparser.c:1546 — OpCode[2] (function-static) */
 
-/** C ref: lparser.c:1543 — @param {CPtr<LexState>} ls @param {CInt} base @param {CInt} line @param {CInt} nvars @param {CInt} isgen */
+/**
+ * C ref: lparser.c:1543
+ * @param {CPtr<LexState>} ls
+ * @param {CInt} base
+ * @param {CInt} line
+ * @param {CInt} nvars
+ * @param {CInt} isgen
+ */
 function forbody(ls, base, line, nvars, isgen) {
     let bl = cptr.alloc(24);
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -1669,7 +2235,12 @@ function forbody(ls, base, line, nvars, isgen) {
     luaK_fixline(fs, line);
 }
 
-/** C ref: lparser.c:1568 — @param {CPtr<LexState>} ls @param {CPtr<TString>} varname @param {CInt} line */
+/**
+ * C ref: lparser.c:1568
+ * @param {CPtr<LexState>} ls
+ * @param {CPtr<TString>} varname
+ * @param {CInt} line
+ */
 function fornum(ls, varname, line) {
     /* fornum -> NAME = exp,exp[,exp] forbody */
     let fs = cptr.ldPtro(ls, $LexState_fs);
@@ -1766,7 +2337,16 @@ function test_then_block(ls, escapelist) {
         luaK_goiffalse(cptr.ldPtro(ls, $LexState_fs), v);  /* will jump if condition is true */
         luaX_next(ls);  /* skip 'break' */
         enterblock(fs, bl, 0);  /* must enter block before 'goto' */
-        newgotoentry(ls, (luaS_newlstr(cptr.ldPtro(ls, $LexState_L), __s_break, BigInt.asUintN(64, (6n / 1n) - 1n))), line, cptr.ldI32o(v, $expdesc_t));
+        newgotoentry(
+            ls,
+            (luaS_newlstr(
+                cptr.ldPtro(ls, $LexState_L),
+                __s_break,
+                BigInt.asUintN(64, (6n / 1n) - 1n)
+            )),
+            line,
+            cptr.ldI32o(v, $expdesc_t)
+        );
         while (testnext(ls, 59)) {
         }  /* skip semicolons */
         if (block_follow(ls, 0)) {
@@ -1781,7 +2361,8 @@ function test_then_block(ls, escapelist) {
     }
     statlist(ls);  /* 'then' part */
     leaveblock(fs);
-    if (cptr.ldI32o(ls, $LexState_t) == NHC.TK_ELSE || cptr.ldI32o(ls, $LexState_t) == NHC.TK_ELSEIF)
+    if (cptr.ldI32o(ls, $LexState_t) == NHC.TK_ELSE ||
+            cptr.ldI32o(ls, $LexState_t) == NHC.TK_ELSEIF)
         luaK_concat(fs, escapelist, luaK_jump(fs));  /* must jump over it */
     luaK_patchtohere(fs, jf);
 }
@@ -1823,7 +2404,10 @@ function getlocalattribute(ls) {
         else if (strcmp(attr, __s_close) == 0)
             return 2;  /* to-be-closed variable */
         else
-            luaK_semerror(ls, luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_unknown_attribute_s, attr));
+            luaK_semerror(
+                ls,
+                luaO_pushfstring(cptr.ldPtro(ls, $LexState_L), __s_unknown_attribute_s, attr)
+            );
     }
     return 0;  /* regular variable */
 }
@@ -1920,8 +2504,16 @@ function exprstat(ls) {
                 luaX_syntaxerror(ls, __s_syntax_error);
         }
         ;
-        inst = cptr.add(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((cptr.add(v, $LHS_assign_v)), $expdesc_u), 4);
-        (cptr.stI32(inst, (((((cptr.ldI32(inst)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) | ((16777216 & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)));  /* call statement uses no results */
+        inst = cptr.add(
+            cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code),
+            cptr.ldI32o((cptr.add(v, $LHS_assign_v)), $expdesc_u),
+            4
+        );
+        (cptr.stI32(
+            inst,
+            (((((cptr.ldI32(inst)) & (~(((~(((~0) << 8) >>> 0)) << 24) >>> 0))) >>> 0) |
+                ((16777216 & (((~(((~0) << 8) >>> 0)) << 24) >>> 0)) >>> 0)) >>> 0)
+        ));  /* call statement uses no results */
     }
 }
 
@@ -1938,8 +2530,22 @@ function retstat(ls) {
         nret = explist(ls, e);  /* optional return values */
         if (((cptr.ldI32(e)) == NHC.VCALL || (cptr.ldI32(e)) == NHC.VVARARG)) {
             luaK_setreturns(fs, e, -1);
-            if (cptr.ldI32(e) == NHC.VCALL && nret == 1 && !cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_insidetbc)) {
-                (cptr.stI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), ((((((cptr.ldI32o(cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code), cptr.ldI32o((e), $expdesc_u), 4))) & (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) | (((((69) << 0) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0), 4));
+            if (cptr.ldI32(e) == NHC.VCALL &&
+                    nret == 1 &&
+                    !cptr.ld1uo(cptr.ldPtro(fs, $FuncState_bl), $BlockCnt_insidetbc)) {
+                (cptr.stI32o(
+                    cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code),
+                    cptr.ldI32o((e), $expdesc_u),
+                    ((((((cptr.ldI32o(
+                        cptr.ldPtro(cptr.ldPtr((fs)), $Proto_code),
+                        cptr.ldI32o((e), $expdesc_u),
+                        4
+                    ))) &
+                        (~(((~(((~0) << 7) >>> 0)) << 0) >>> 0))) >>> 0) |
+                        (((((69) << 0) >>> 0) &
+                            (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0)) >>> 0),
+                    4
+                ));
                 (void 0);
             }
             nret = -1;  /* return all values */
@@ -2037,8 +2643,17 @@ function statement(ls) {
         }
     }
     (void 0);
-    cptr.st1o(cptr.ldPtro(ls, $LexState_fs), $FuncState_freereg, uchar(luaY_nvarstack(cptr.ldPtro(ls, $LexState_fs))));  /* free registers */
-    ((cptr.stI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls, cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1)) - (-1));
+    cptr.st1o(
+        cptr.ldPtro(ls, $LexState_fs),
+        $FuncState_freereg,
+        uchar(luaY_nvarstack(cptr.ldPtro(ls, $LexState_fs)))
+    );  /* free registers */
+    ((cptr.stI32o(
+        cptr.ldPtro((ls), $LexState_L),
+        $lua_State_nCcalls,
+        cptr.ldI32o(cptr.ldPtro((ls), $LexState_L), $lua_State_nCcalls) + -1
+    )) -
+            (-1));
 }
 
 /* }====================================================================== */
@@ -2058,14 +2673,30 @@ function mainfunc(ls, fs) {
     cptr.st1o(env, $Upvaldesc_idx, 0);
     cptr.st1o(env, $Upvaldesc_kind, 0);
     cptr.stPtr(env, cptr.ldPtro(ls, $LexState_envn));
-    ((((cptr.ld1uo((cptr.ldPtr(fs)), $Proto_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtr(env)), $TString_marked)) & 24)) ? luaC_barrier_(cptr.ldPtro(ls, $LexState_L), ((((cptr.ldPtr(fs))))), ((((cptr.ldPtr(env)))))) : (void 0));
+    ((((cptr.ld1uo((cptr.ldPtr(fs)), $Proto_marked)) & 32) &&
+        ((cptr.ld1uo((cptr.ldPtr(env)), $TString_marked)) & 24))
+            ? luaC_barrier_(
+                cptr.ldPtro(ls, $LexState_L),
+                ((((cptr.ldPtr(fs))))),
+                ((((cptr.ldPtr(env)))))
+            )
+            : (void 0));
     luaX_next(ls);  /* read first token */
     statlist(ls);  /* parse main body */
     check(ls, NHC.TK_EOS);
     close_func(ls);
 }
 
-/** C ref: lparser.c:1941 — @param {CPtr<lua_State>} L @param {CPtr<ZIO>} z @param {CPtr<Mbuffer>} buff @param {CPtr<Dyndata>} dyd @param {CPtr<char>} name @param {CInt} firstchar @returns {CPtr<LClosure>} */
+/**
+ * C ref: lparser.c:1941
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<ZIO>} z
+ * @param {CPtr<Mbuffer>} buff
+ * @param {CPtr<Dyndata>} dyd
+ * @param {CPtr<char>} name
+ * @param {CInt} firstchar
+ * @returns {CPtr<LClosure>}
+ */
 export function luaY_parser(L, z, buff, dyd, name, firstchar) {
     let lexstate = cptr.alloc(112);
     let funcstate = cptr.alloc(72);
@@ -2090,18 +2721,40 @@ export function luaY_parser(L, z, buff, dyd, name, firstchar) {
     ;
     luaD_inctop(L);
     cptr.stPtr(funcstate, cptr.stPtro(cl, $LClosure_p, luaF_newproto(L)));
-    ((((cptr.ld1uo((cl), $LClosure_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cl, $LClosure_p)), $Proto_marked)) & 24)) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, $LClosure_p)))))) : (void 0));
+    ((((cptr.ld1uo((cl), $LClosure_marked)) & 32) &&
+        ((cptr.ld1uo((cptr.ldPtro(cl, $LClosure_p)), $Proto_marked)) & 24))
+            ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, $LClosure_p))))))
+            : (void 0));
     cptr.stPtro(cptr.ldPtr(funcstate), $Proto_source, luaS_new(L, name));  /* create and anchor TString */
-    ((((cptr.ld1uo((cptr.ldPtr(funcstate)), $Proto_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtr(funcstate), $Proto_source)), $TString_marked)) & 24)) ? luaC_barrier_(L, ((((cptr.ldPtr(funcstate))))), ((((cptr.ldPtro(cptr.ldPtr(funcstate), $Proto_source)))))) : (void 0));
+    ((((cptr.ld1uo((cptr.ldPtr(funcstate)), $Proto_marked)) & 32) &&
+        ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtr(funcstate), $Proto_source)), $TString_marked)) & 24))
+            ? luaC_barrier_(
+                L,
+                ((((cptr.ldPtr(funcstate))))),
+                ((((cptr.ldPtro(cptr.ldPtr(funcstate), $Proto_source)))))
+            )
+            : (void 0));
     cptr.stPtro(lexstate, $LexState_buff, buff);
     cptr.stPtro(lexstate, $LexState_dyd, dyd);
-    cptr.stI32o(dyd, 8, cptr.stI32o(dyd, $Dyndata_gt + $Labellist_n, cptr.stI32o(dyd, $Dyndata_label + $Labellist_n, 0)));
+    cptr.stI32o(
+        dyd,
+        8,
+        cptr.stI32o(
+            dyd,
+            $Dyndata_gt + $Labellist_n,
+            cptr.stI32o(dyd, $Dyndata_label + $Labellist_n, 0)
+        )
+    );
     luaX_setinput(L, lexstate, z, cptr.ldPtro(cptr.ldPtr(funcstate), $Proto_source), firstchar);
     mainfunc(lexstate, funcstate);
     (void 0);
     /* all scopes should be correctly finished */
     (void 0);
-    cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* remove scanner's table */
+    cptr.postdec(
+        () => cptr.ldPtro(L, $lua_State_top),
+        (v) => { cptr.stPtro(L, $lua_State_top, v); },
+        16
+    );  /* remove scanner's table */
     return cl;  /* closure is on the stack, too */
 }
 
@@ -2109,7 +2762,11 @@ export function luaY_parser(L, z, buff, dyd, name, firstchar) {
 // 3 bindings: 0 rebound+refilled, 0 rebound, 3 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(priority), S(__static_forbody_forprep), S(__static_forbody_forloop)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(priority), S(__static_forbody_forprep), S(__static_forbody_forloop)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("lparser.js: __resetState before __captureState");

@@ -10,8 +10,16 @@
 import { u32div, u32mod } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
-import { lua_callk, lua_checkstack, lua_compare, lua_createtable, lua_geti, lua_getmetatable, lua_gettop, lua_isstring, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawget, lua_rotate, lua_setfield, lua_seti, lua_settop, lua_toboolean, lua_type, lua_typename } from './lapi.js';
-import { luaL_addlstring, luaL_addvalue, luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checktype, luaL_checkversion_, luaL_error, luaL_len, luaL_optinteger, luaL_optlstring, luaL_pushresult, luaL_setfuncs } from './lauxlib.js';
+import {
+    lua_callk, lua_checkstack, lua_compare, lua_createtable, lua_geti, lua_getmetatable, lua_gettop,
+    lua_isstring, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawget,
+    lua_rotate, lua_setfield, lua_seti, lua_settop, lua_toboolean, lua_type, lua_typename
+} from './lapi.js';
+import {
+    luaL_addlstring, luaL_addvalue, luaL_argerror, luaL_buffinit, luaL_checkinteger, luaL_checktype,
+    luaL_checkversion_, luaL_error, luaL_len, luaL_optinteger, luaL_optlstring, luaL_pushresult,
+    luaL_setfuncs
+} from './lauxlib.js';
 import { rnd } from './rnd.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
@@ -40,7 +48,13 @@ const __s_remove = cptr.lit("remove");
 const __s_move = cptr.lit("move");
 const __s_sort = cptr.lit("sort");
 
-/** C ref: ltablib.c:36 — @param {CPtr<lua_State>} L @param {CPtr<char>} key @param {CInt} n @returns {CInt} */
+/**
+ * C ref: ltablib.c:36
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} key
+ * @param {CInt} n
+ * @returns {CInt}
+ */
 function* checkfield(L, key, n) {
     (yield* lua_pushstring(L, key));
     return ((yield* lua_rawget(L, -n)) != 0);
@@ -54,7 +68,10 @@ function* checkfield(L, key, n) {
 function* checktab(L, arg, what) {
     if (lua_type(L, arg) != 5) {
         let n = 1;  /* number of elements to pop */
-        if ((yield* lua_getmetatable(L, arg)) && (!(what & 1) || (yield* checkfield(L, __s_index, ++n))) && (!(what & 2) || (yield* checkfield(L, __s_newindex, ++n))) && (!(what & 4) || (yield* checkfield(L, __s_len, ++n)))) {
+        if ((yield* lua_getmetatable(L, arg)) &&
+                (!(what & 1) || (yield* checkfield(L, __s_index, ++n))) &&
+                (!(what & 2) || (yield* checkfield(L, __s_newindex, ++n))) &&
+                (!(what & 4) || (yield* checkfield(L, __s_len, ++n)))) {
             (yield* lua_settop(L, (-(n) - 1) | 0));  /* pop metatable and tested metamethods */
         } else
             (yield* luaL_checktype(L, arg, 5));  /* force an error */
@@ -77,7 +94,14 @@ function* tinsert(L) {
             let i;
             pos = (yield* luaL_checkinteger(L, 2));  /* 2nd argument is the position */
             /* check whether 'pos' is in [1, e] */
-            (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) < BigInt.asUintN(64, e)) != 0)), 1n)) || (yield* luaL_argerror(L, 2, (__s_position_out_of_bounds))) ? 1 : 0));
+            (void ((__builtin_expect(
+                BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <
+                    BigInt.asUintN(64, e)) != 0)),
+                1n
+            )) ||
+                (yield* luaL_argerror(L, 2, (__s_position_out_of_bounds)))
+                    ? 1
+                    : 0));
             for (i = e; i > pos; i--) {
                 (yield* lua_geti(L, 1, BigInt.asIntN(64, i - 1n)));
                 (yield* lua_seti(L, 1, i));  /* t[i] = t[i - 1] */
@@ -99,7 +123,14 @@ function* tremove(L) {
     let pos = (yield* luaL_optinteger(L, 2, size));
     if (pos != size)
         /* check whether 'pos' is in [1, size + 1] */
-        (void ((__builtin_expect(BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <= BigInt.asUintN(64, size)) != 0)), 1n)) || (yield* luaL_argerror(L, 2, (__s_position_out_of_bounds))) ? 1 : 0));
+        (void ((__builtin_expect(
+            BigInt(((BigInt.asUintN(64, BigInt.asUintN(64, pos) - 1n) <=
+                BigInt.asUintN(64, size)) != 0)),
+            1n
+        )) ||
+            (yield* luaL_argerror(L, 2, (__s_position_out_of_bounds)))
+                ? 1
+                : 0));
     (yield* lua_geti(L, 1, pos));  /* result = t[pos] */
     for (; pos < size; pos++) {
         (yield* lua_geti(L, 1, BigInt.asIntN(64, pos + 1n)));
@@ -127,9 +158,22 @@ function* tmove(L) {
     if (e >= f) {
         let n;
         let i;
-        (void ((__builtin_expect(BigInt(((f > 0n || e < BigInt.asIntN(64, 9223372036854775807n + f) ? 1 : 0) != 0)), 1n)) || (yield* luaL_argerror(L, 3, (__s_too_many_elements_to_move))) ? 1 : 0));
+        (void ((__builtin_expect(
+            BigInt(((f > 0n || e < BigInt.asIntN(64, 9223372036854775807n + f) ? 1 : 0) != 0)),
+            1n
+        )) ||
+            (yield* luaL_argerror(L, 3, (__s_too_many_elements_to_move)))
+                ? 1
+                : 0));
         n = BigInt.asIntN(64, BigInt.asIntN(64, e - f) + 1n);  /* number of elements to move */
-        (void ((__builtin_expect(BigInt(((t <= BigInt.asIntN(64, BigInt.asIntN(64, 9223372036854775807n - n) + 1n)) != 0)), 1n)) || (yield* luaL_argerror(L, 4, (__s_destination_wrap_around))) ? 1 : 0));
+        (void ((__builtin_expect(
+            BigInt(((t <=
+                BigInt.asIntN(64, BigInt.asIntN(64, 9223372036854775807n - n) + 1n)) != 0)),
+            1n
+        )) ||
+            (yield* luaL_argerror(L, 4, (__s_destination_wrap_around)))
+                ? 1
+                : 0));
         if (t > e || t <= f || (tt != 1 && !(yield* lua_compare(L, 1, tt, 0)))) {
             for (i = 0n; i < n; i++) {
                 (yield* lua_geti(L, 1, BigInt.asIntN(64, f + i)));
@@ -146,11 +190,21 @@ function* tmove(L) {
     return 1;
 }
 
-/** C ref: ltablib.c:147 — @param {CPtr<lua_State>} L @param {CPtr<luaL_Buffer>} b @param {CLongLong} i */
+/**
+ * C ref: ltablib.c:147
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<luaL_Buffer>} b
+ * @param {CLongLong} i
+ */
 function* addfield(L, b, i) {
     (yield* lua_geti(L, 1, i));
     if ((__builtin_expect(BigInt(((!lua_isstring(L, -1)) != 0)), 0n)))
-        (yield* luaL_error(L, __s_invalid_value_s_at_index_i_in_table_for, lua_typename(L, lua_type(L, -1)), i));
+        (yield* luaL_error(
+            L,
+            __s_invalid_value_s_at_index_i_in_table_for,
+            lua_typename(L, lua_type(L, -1)),
+            i
+        ));
     (yield* luaL_addvalue(b));
 }
 
@@ -200,7 +254,12 @@ function* tunpack(L) {
     if (i > e)
         return 0;  /* empty range */
     n = BigInt.asUintN(64, BigInt.asUintN(64, e) - BigInt.asUintN(64, i));  /* number of elements minus 1 (avoid overflows) */
-    if ((__builtin_expect(BigInt(((n >= 2147483647n || !(yield* lua_checkstack(L, Number(BigInt.asIntN(32, (++n))))) ? 1 : 0) != 0)), 0n)))
+    if ((__builtin_expect(
+        BigInt(((n >= 2147483647n || !(yield* lua_checkstack(L, Number(BigInt.asIntN(32, (++n)))))
+            ? 1
+            : 0) != 0)),
+        0n
+    )))
         return (yield* luaL_error(L, __s_too_many_results_to_unpack));
     for (; i < e; i++) {
         (yield* lua_geti(L, 1, i));
@@ -252,7 +311,13 @@ function* set2(L, i, j) {
 ** Return true iff value at stack index 'a' is less than the value at
 ** index 'b' (according to the order of the sort).
 */
-/** C ref: ltablib.c:275 — @param {CPtr<lua_State>} L @param {CInt} a @param {CInt} b @returns {CInt} */
+/**
+ * C ref: ltablib.c:275
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} a
+ * @param {CInt} b
+ * @returns {CInt}
+ */
 function* sort_comp(L, a, b) {
     if ((lua_type(L, 2) == 0))
         return (yield* lua_compare(L, a, b, 1));  /* a < b */
@@ -275,7 +340,13 @@ function* sort_comp(L, a, b) {
 ** Pos-condition: a[lo .. i - 1] <= a[i] == P <= a[i + 1 .. up]
 ** returns 'i'.
 */
-/** C ref: ltablib.c:298 — @param {CPtr<lua_State>} L @param {CUInt} lo @param {CUInt} up @returns {*} */
+/**
+ * C ref: ltablib.c:298
+ * @param {CPtr<lua_State>} L
+ * @param {CUInt} lo
+ * @param {CUInt} up
+ * @returns {*}
+ */
 function* partition(L, lo, up) {
     let i = lo;  /* will be incremented before first use */
     let j = (up - 1) >>> 0;  /* will be decremented before first use */
@@ -322,7 +393,13 @@ function choosePivot(lo, up, rnd) {
 /*
 ** Quicksort algorithm (recursive function)
 */
-/** C ref: ltablib.c:345 — @param {CPtr<lua_State>} L @param {CUInt} lo @param {CUInt} up @param {CUInt} rnd */
+/**
+ * C ref: ltablib.c:345
+ * @param {CPtr<lua_State>} L
+ * @param {CUInt} lo
+ * @param {CUInt} up
+ * @param {CUInt} rnd
+ */
 function* auxsort(L, lo, up, rnd) {
     while (lo < up) {
         let p;  /* Pivot index */
@@ -378,7 +455,10 @@ function* auxsort(L, lo, up, rnd) {
 function* sort(L) {
     let n = ((yield* checktab(L, 1, 7)), (yield* luaL_len(L, 1)));
     if (n > 1n) {
-        (void ((__builtin_expect(BigInt(((n < 2147483647n) != 0)), 1n)) || (yield* luaL_argerror(L, 1, (__s_array_too_big))) ? 1 : 0));
+        (void ((__builtin_expect(BigInt(((n < 2147483647n) != 0)), 1n)) ||
+            (yield* luaL_argerror(L, 1, (__s_array_too_big)))
+                ? 1
+                : 0));
         if (!(lua_type(L, 2) <= 0))
             (yield* luaL_checktype(L, 2, 6));  /* must be a function */
         (yield* lua_settop(L, 2));  /* make sure there are two arguments */
@@ -410,7 +490,11 @@ cptr.stPtro(tab_funcs, 112 + $luaL_Reg_func, null);
 
 /** C ref: ltablib.c:426 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function* luaopen_table(L) {
-    ((yield* luaL_checkversion_(L, 504, 136n)), (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 128n / 16n - 1n))))), (yield* luaL_setfuncs(L, tab_funcs, 0)));
+    (
+        (yield* luaL_checkversion_(L, 504, 136n)),
+        (yield* lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 128n / 16n - 1n))))),
+        (yield* luaL_setfuncs(L, tab_funcs, 0))
+    );
     return 1;
 }
 

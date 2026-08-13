@@ -21,24 +21,25 @@ import { luaF_newLclosure, luaF_newproto } from './lfunc.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $AbsLineInfo_line = FLD.AbsLineInfo_line, $LClosure_marked = FLD.LClosure_marked,
-    $LClosure_p = FLD.LClosure_p, $LoadState_Z = FLD.LoadState_Z, $LoadState_name = FLD.LoadState_name,
-    $LocVar_endpc = FLD.LocVar_endpc, $LocVar_startpc = FLD.LocVar_startpc,
-    $Proto_abslineinfo = FLD.Proto_abslineinfo, $Proto_code = FLD.Proto_code,
-    $Proto_is_vararg = FLD.Proto_is_vararg, $Proto_k = FLD.Proto_k,
-    $Proto_lastlinedefined = FLD.Proto_lastlinedefined, $Proto_linedefined = FLD.Proto_linedefined,
-    $Proto_lineinfo = FLD.Proto_lineinfo, $Proto_locvars = FLD.Proto_locvars,
-    $Proto_marked = FLD.Proto_marked, $Proto_maxstacksize = FLD.Proto_maxstacksize,
-    $Proto_numparams = FLD.Proto_numparams, $Proto_p = FLD.Proto_p,
-    $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo, $Proto_sizecode = FLD.Proto_sizecode,
-    $Proto_sizek = FLD.Proto_sizek, $Proto_sizelineinfo = FLD.Proto_sizelineinfo,
-    $Proto_sizelocvars = FLD.Proto_sizelocvars, $Proto_sizep = FLD.Proto_sizep,
-    $Proto_sizeupvalues = FLD.Proto_sizeupvalues, $Proto_source = FLD.Proto_source,
-    $Proto_upvalues = FLD.Proto_upvalues, $TString_contents = FLD.TString_contents,
-    $TString_marked = FLD.TString_marked, $TString_tt = FLD.TString_tt, $TValue_tt_ = FLD.TValue_tt_,
-    $Upvaldesc_idx = FLD.Upvaldesc_idx, $Upvaldesc_instack = FLD.Upvaldesc_instack,
-    $Upvaldesc_kind = FLD.Upvaldesc_kind, $ZIO_p = FLD.ZIO_p, $lua_State_top = FLD.lua_State_top,
-    $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_LocVar = FLD.sizeof_LocVar,
-    $sizeof_TValue = FLD.sizeof_TValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
+      $LClosure_p = FLD.LClosure_p, $LoadState_Z = FLD.LoadState_Z,
+      $LoadState_name = FLD.LoadState_name, $LocVar_endpc = FLD.LocVar_endpc,
+      $LocVar_startpc = FLD.LocVar_startpc, $Proto_abslineinfo = FLD.Proto_abslineinfo,
+      $Proto_code = FLD.Proto_code, $Proto_is_vararg = FLD.Proto_is_vararg, $Proto_k = FLD.Proto_k,
+      $Proto_lastlinedefined = FLD.Proto_lastlinedefined,
+      $Proto_linedefined = FLD.Proto_linedefined, $Proto_lineinfo = FLD.Proto_lineinfo,
+      $Proto_locvars = FLD.Proto_locvars, $Proto_marked = FLD.Proto_marked,
+      $Proto_maxstacksize = FLD.Proto_maxstacksize, $Proto_numparams = FLD.Proto_numparams,
+      $Proto_p = FLD.Proto_p, $Proto_sizeabslineinfo = FLD.Proto_sizeabslineinfo,
+      $Proto_sizecode = FLD.Proto_sizecode, $Proto_sizek = FLD.Proto_sizek,
+      $Proto_sizelineinfo = FLD.Proto_sizelineinfo, $Proto_sizelocvars = FLD.Proto_sizelocvars,
+      $Proto_sizep = FLD.Proto_sizep, $Proto_sizeupvalues = FLD.Proto_sizeupvalues,
+      $Proto_source = FLD.Proto_source, $Proto_upvalues = FLD.Proto_upvalues,
+      $TString_contents = FLD.TString_contents, $TString_marked = FLD.TString_marked,
+      $TString_tt = FLD.TString_tt, $TValue_tt_ = FLD.TValue_tt_,
+      $Upvaldesc_idx = FLD.Upvaldesc_idx, $Upvaldesc_instack = FLD.Upvaldesc_instack,
+      $Upvaldesc_kind = FLD.Upvaldesc_kind, $ZIO_p = FLD.ZIO_p, $lua_State_top = FLD.lua_State_top,
+      $sizeof_AbsLineInfo = FLD.sizeof_AbsLineInfo, $sizeof_LocVar = FLD.sizeof_LocVar,
+      $sizeof_TValue = FLD.sizeof_TValue, $sizeof_Upvaldesc = FLD.sizeof_Upvaldesc;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_s_bad_binary_format_s = cptr.lit("%s: bad binary format (%s)");
@@ -65,11 +66,21 @@ const __s_binary_string = cptr.lit("binary string");
 
 /** C ref: lundump.c:40 — @param {CPtr<LoadState>} S @param {CPtr<char>} why */
 function* error(S, why) {
-    (yield* luaO_pushfstring(cptr.ldPtr(S), __s_s_bad_binary_format_s, cptr.ldPtro(S, $LoadState_name), why));
+    (yield* luaO_pushfstring(
+        cptr.ldPtr(S),
+        __s_s_bad_binary_format_s,
+        cptr.ldPtro(S, $LoadState_name),
+        why
+    ));
     (yield* luaD_throw(cptr.ldPtr(S), 3));
 }
 
-/** C ref: lundump.c:52 — @param {CPtr<LoadState>} S @param {CPtr<void>} b @param {CLongLong} size */
+/**
+ * C ref: lundump.c:52
+ * @param {CPtr<LoadState>} S
+ * @param {CPtr<void>} b
+ * @param {CLongLong} size
+ */
 function* loadBlock(S, b, size) {
     if ((yield* luaZ_read(cptr.ldPtro(S, $LoadState_Z), b, size)) != 0n)
         (yield* error(S, __s_truncated_chunk));
@@ -77,7 +88,16 @@ function* loadBlock(S, b, size) {
 
 /** C ref: lundump.c:61 — @param {CPtr<LoadState>} S @returns {*} */
 function* loadByte(S) {
-    let b = (((cptr.stU64((cptr.ldPtro(S, $LoadState_Z)), cptr.ldU64((cptr.ldPtro(S, $LoadState_Z))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtro(S, $LoadState_Z)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtro(S, $LoadState_Z)), $ZIO_p, v); })))))) : (yield* luaZ_fill(cptr.ldPtro(S, $LoadState_Z))));
+    let b = (((cptr.stU64(
+        (cptr.ldPtro(S, $LoadState_Z)),
+        cptr.ldU64((cptr.ldPtro(S, $LoadState_Z))) + -1n
+    )) -
+        (-1n)) > 0n
+            ? (uchar(((cptr.ld1s(cptr.postinc(
+                () => cptr.ldPtro((cptr.ldPtro(S, $LoadState_Z)), $ZIO_p),
+                (v) => { cptr.stPtro((cptr.ldPtro(S, $LoadState_Z)), $ZIO_p, v); }
+            ))))))
+            : (yield* luaZ_fill(cptr.ldPtro(S, $LoadState_Z))));
     if (b == -1)
         (yield* error(S, __s_truncated_chunk));
     return (uchar(((b))));
@@ -124,7 +144,12 @@ function* loadInteger(S) {
 /*
 ** Load a nullable string into prototype 'p'.
 */
-/** C ref: lundump.c:110 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} p @returns {CPtr<TString>} */
+/**
+ * C ref: lundump.c:110
+ * @param {CPtr<LoadState>} S
+ * @param {CPtr<Proto>} p
+ * @returns {CPtr<TString>}
+ */
 function* loadStringN(S, p) {
     let L = cptr.ldPtr(S);
     let ts;
@@ -147,16 +172,27 @@ function* loadStringN(S, p) {
         ;
         (yield* luaD_inctop(L));
         (yield* loadBlock(S, (cptr.add((ts), $TString_contents)), BigInt.asUintN(64, (size) * 1n)));  /* load directly in final place */
-        cptr.postdec(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* pop string */
+        cptr.postdec(
+            () => cptr.ldPtro(L, $lua_State_top),
+            (v) => { cptr.stPtro(L, $lua_State_top, v); },
+            16
+        );  /* pop string */
     }
-    ((((cptr.ld1uo((p), $Proto_marked)) & 32) && ((cptr.ld1uo((ts), $TString_marked)) & 24)) ? luaC_barrier_(L, ((((p)))), ((((ts))))) : (void 0));
+    ((((cptr.ld1uo((p), $Proto_marked)) & 32) && ((cptr.ld1uo((ts), $TString_marked)) & 24))
+            ? luaC_barrier_(L, ((((p)))), ((((ts)))))
+            : (void 0));
     return ts;
 }
 
 /*
 ** Load a non-nullable string into prototype 'p'.
 */
-/** C ref: lundump.c:136 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} p @returns {CPtr<TString>} */
+/**
+ * C ref: lundump.c:136
+ * @param {CPtr<LoadState>} S
+ * @param {CPtr<Proto>} p
+ * @returns {CPtr<TString>}
+ */
 function* loadString(S, p) {
     let st = (yield* loadStringN(S, p));
     if (cptr.eq(st, (null)))
@@ -167,16 +203,42 @@ function* loadString(S, p) {
 /** C ref: lundump.c:144 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadCode(S, f) {
     let n = (yield* loadInt(S));
-    cptr.stPtro(f, $Proto_code, (((void 0)), (((yield* luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n), 0))))));
+    cptr.stPtro(
+        f,
+        $Proto_code,
+        (
+            ((void 0)),
+            (((yield* luaM_malloc_(
+                cptr.ldPtr(S),
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n),
+                0
+            ))))
+        )
+    );
     cptr.stI32o(f, $Proto_sizecode, n);
-    (yield* loadBlock(S, cptr.ldPtro(f, $Proto_code), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n)));
+    (yield* loadBlock(
+        S,
+        cptr.ldPtro(f, $Proto_code),
+        BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 4n)
+    ));
 }
 
 /** C ref: lundump.c:155 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f */
 function* loadConstants(S, f) {
     let i;
     let n = (yield* loadInt(S));
-    cptr.stPtro(f, $Proto_k, (((void 0)), (((yield* luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0))))));
+    cptr.stPtro(
+        f,
+        $Proto_k,
+        (
+            ((void 0)),
+            (((yield* luaM_malloc_(
+                cptr.ldPtr(S),
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n),
+                0
+            ))))
+        )
+    );
     cptr.stI32o(f, $Proto_sizek, n);
     for (i = 0; i < n; i++)
         (cptr.st1o((cptr.add(cptr.ldPtro(f, $Proto_k), i, $sizeof_TValue)), $TValue_tt_, 0));
@@ -230,13 +292,31 @@ function* loadConstants(S, f) {
 function* loadProtos(S, f) {
     let i;
     let n = (yield* loadInt(S));
-    cptr.stPtro(f, $Proto_p, (((void 0)), (((yield* luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0))))));
+    cptr.stPtro(
+        f,
+        $Proto_p,
+        (
+            ((void 0)),
+            (((yield* luaM_malloc_(
+                cptr.ldPtr(S),
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n),
+                0
+            ))))
+        )
+    );
     cptr.stI32o(f, $Proto_sizep, n);
     for (i = 0; i < n; i++)
         cptr.stPtro(cptr.ldPtro(f, $Proto_p), i, null, 8);
     for (i = 0; i < n; i++) {
         cptr.stPtro(cptr.ldPtro(f, $Proto_p), i, (yield* luaF_newproto(cptr.ldPtr(S))), 8);
-        ((((cptr.ld1uo((f), $Proto_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8)), $Proto_marked)) & 24)) ? luaC_barrier_(cptr.ldPtr(S), ((((f)))), ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8)))))) : (void 0));
+        ((((cptr.ld1uo((f), $Proto_marked)) & 32) &&
+            ((cptr.ld1uo((cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8)), $Proto_marked)) & 24))
+                ? luaC_barrier_(
+                    cptr.ldPtr(S),
+                    ((((f)))),
+                    ((((cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8)))))
+                )
+                : (void 0));
         (yield* loadFunction(S, cptr.ldPtro(cptr.ldPtro(f, $Proto_p), i, 8), cptr.ldPtro(f, $Proto_source)));
     }
 }
@@ -252,14 +332,43 @@ function* loadUpvalues(S, f) {
     let i;
     let n;
     n = (yield* loadInt(S));
-    cptr.stPtro(f, $Proto_upvalues, (((void 0)), (((yield* luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0))))));
+    cptr.stPtro(
+        f,
+        $Proto_upvalues,
+        (
+            ((void 0)),
+            (((yield* luaM_malloc_(
+                cptr.ldPtr(S),
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n),
+                0
+            ))))
+        )
+    );
     cptr.stI32o(f, $Proto_sizeupvalues, n);
     for (i = 0; i < n; i++)
         cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, null, $sizeof_Upvaldesc);
     for (i = 0; i < n; i++) {
-        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_instack, (yield* loadByte(S)));
-        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_idx, (yield* loadByte(S)));
-        cptr.st1o2(cptr.ldPtro(f, $Proto_upvalues), i, $sizeof_Upvaldesc, $Upvaldesc_kind, (yield* loadByte(S)));
+        cptr.st1o2(
+            cptr.ldPtro(f, $Proto_upvalues),
+            i,
+            $sizeof_Upvaldesc,
+            $Upvaldesc_instack,
+            (yield* loadByte(S))
+        );
+        cptr.st1o2(
+            cptr.ldPtro(f, $Proto_upvalues),
+            i,
+            $sizeof_Upvaldesc,
+            $Upvaldesc_idx,
+            (yield* loadByte(S))
+        );
+        cptr.st1o2(
+            cptr.ldPtro(f, $Proto_upvalues),
+            i,
+            $sizeof_Upvaldesc,
+            $Upvaldesc_kind,
+            (yield* loadByte(S))
+        );
     }
 }
 
@@ -268,24 +377,73 @@ function* loadDebug(S, f) {
     let i;
     let n;
     n = (yield* loadInt(S));
-    cptr.stPtro(f, $Proto_lineinfo, (((void 0)), (((yield* luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n), 0))))));
+    cptr.stPtro(
+        f,
+        $Proto_lineinfo,
+        (
+            ((void 0)),
+            (((yield* luaM_malloc_(
+                cptr.ldPtr(S),
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n),
+                0
+            ))))
+        )
+    );
     cptr.stI32o(f, $Proto_sizelineinfo, n);
-    (yield* loadBlock(S, cptr.ldPtro(f, $Proto_lineinfo), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n)));
+    (yield* loadBlock(
+        S,
+        cptr.ldPtro(f, $Proto_lineinfo),
+        BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 1n)
+    ));
     n = (yield* loadInt(S));
-    cptr.stPtro(f, $Proto_abslineinfo, (((void 0)), (((yield* luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n), 0))))));
+    cptr.stPtro(
+        f,
+        $Proto_abslineinfo,
+        (
+            ((void 0)),
+            (((yield* luaM_malloc_(
+                cptr.ldPtr(S),
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 8n),
+                0
+            ))))
+        )
+    );
     cptr.stI32o(f, $Proto_sizeabslineinfo, n);
     for (i = 0; i < n; i++) {
         cptr.stI32o(cptr.ldPtro(f, $Proto_abslineinfo), i, (yield* loadInt(S)), $sizeof_AbsLineInfo);
-        cptr.stI32o2(cptr.ldPtro(f, $Proto_abslineinfo), i, $sizeof_AbsLineInfo, $AbsLineInfo_line, (yield* loadInt(S)));
+        cptr.stI32o2(
+            cptr.ldPtro(f, $Proto_abslineinfo),
+            i,
+            $sizeof_AbsLineInfo,
+            $AbsLineInfo_line,
+            (yield* loadInt(S))
+        );
     }
     n = (yield* loadInt(S));
-    cptr.stPtro(f, $Proto_locvars, (((void 0)), (((yield* luaM_malloc_(cptr.ldPtr(S), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n), 0))))));
+    cptr.stPtro(
+        f,
+        $Proto_locvars,
+        (
+            ((void 0)),
+            (((yield* luaM_malloc_(
+                cptr.ldPtr(S),
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt((n))) * 16n),
+                0
+            ))))
+        )
+    );
     cptr.stI32o(f, $Proto_sizelocvars, n);
     for (i = 0; i < n; i++)
         cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, null, $sizeof_LocVar);
     for (i = 0; i < n; i++) {
         cptr.stPtro(cptr.ldPtro(f, $Proto_locvars), i, (yield* loadStringN(S, f)), $sizeof_LocVar);
-        cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_startpc, (yield* loadInt(S)));
+        cptr.stI32o2(
+            cptr.ldPtro(f, $Proto_locvars),
+            i,
+            $sizeof_LocVar,
+            $LocVar_startpc,
+            (yield* loadInt(S))
+        );
         cptr.stI32o2(cptr.ldPtro(f, $Proto_locvars), i, $sizeof_LocVar, $LocVar_endpc, (yield* loadInt(S)));
     }
     n = (yield* loadInt(S));
@@ -295,7 +453,12 @@ function* loadDebug(S, f) {
         cptr.stPtro(cptr.ldPtro(f, $Proto_upvalues), i, (yield* loadStringN(S, f)), $sizeof_Upvaldesc);
 }
 
-/** C ref: lundump.c:258 — @param {CPtr<LoadState>} S @param {CPtr<Proto>} f @param {CPtr<TString>} psource */
+/**
+ * C ref: lundump.c:258
+ * @param {CPtr<LoadState>} S
+ * @param {CPtr<Proto>} f
+ * @param {CPtr<TString>} psource
+ */
 function* loadFunction(S, f, psource) {
     cptr.stPtro(f, $Proto_source, (yield* loadStringN(S, f)));
     if (cptr.eq(cptr.ldPtro(f, $Proto_source), (null)))
@@ -312,7 +475,12 @@ function* loadFunction(S, f, psource) {
     (yield* loadDebug(S, f));
 }
 
-/** C ref: lundump.c:275 — @param {CPtr<LoadState>} S @param {CPtr<char>} s @param {CPtr<char>} msg */
+/**
+ * C ref: lundump.c:275
+ * @param {CPtr<LoadState>} S
+ * @param {CPtr<char>} s
+ * @param {CPtr<char>} msg
+ */
 function* checkliteral(S, s, msg) {
     let buff = new Uint8Array(12);  /* larger than both */
     let len = cptr.strlen(s);
@@ -321,7 +489,12 @@ function* checkliteral(S, s, msg) {
         (yield* error(S, msg));
 }
 
-/** C ref: lundump.c:284 — @param {CPtr<LoadState>} S @param {CLongLong} size @param {CPtr<char>} tname */
+/**
+ * C ref: lundump.c:284
+ * @param {CPtr<LoadState>} S
+ * @param {CLongLong} size
+ * @param {CPtr<char>} tname
+ */
 function* fchecksize(S, size, tname) {
     if (BigInt((yield* loadByte(S)) >>> 0) != size)
         (yield* error(S, (yield* luaO_pushfstring(cptr.ldPtr(S), __s_s_size_mismatch, tname))));
@@ -348,7 +521,13 @@ function* checkHeader(S) {
 /*
 ** Load precompiled chunk.
 */
-/** C ref: lundump.c:313 — @param {CPtr<lua_State>} L @param {CPtr<ZIO>} Z @param {CPtr<char>} name @returns {CPtr<LClosure>} */
+/**
+ * C ref: lundump.c:313
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<ZIO>} Z
+ * @param {CPtr<char>} name
+ * @returns {CPtr<LClosure>}
+ */
 export function* luaU_undump(L, Z, name) {
     let S = cptr.alloc(24);
     let cl;
@@ -372,7 +551,10 @@ export function* luaU_undump(L, Z, name) {
     ;
     (yield* luaD_inctop(L));
     cptr.stPtro(cl, $LClosure_p, (yield* luaF_newproto(L)));
-    ((((cptr.ld1uo((cl), $LClosure_marked)) & 32) && ((cptr.ld1uo((cptr.ldPtro(cl, $LClosure_p)), $Proto_marked)) & 24)) ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, $LClosure_p)))))) : (void 0));
+    ((((cptr.ld1uo((cl), $LClosure_marked)) & 32) &&
+        ((cptr.ld1uo((cptr.ldPtro(cl, $LClosure_p)), $Proto_marked)) & 24))
+            ? luaC_barrier_(L, ((((cl)))), ((((cptr.ldPtro(cl, $LClosure_p))))))
+            : (void 0));
     (yield* loadFunction(S, cptr.ldPtro(cl, $LClosure_p), null));
     (void 0);
     ;

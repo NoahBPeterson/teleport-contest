@@ -9,8 +9,18 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { ismnum } from './nhmacrofn.js';
-import { BClairvoyant, Blind, Breathless, Clairvoyant, EMagical_breathing, Energy_regeneration, Fast, Glib, Half_physical_damage, Hallucination, Luck, Polymorph, Regeneration, Searching, Sleepy, Teleportation, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast, Warn_of_mon, Warning, cliparound, create_nhwindow, display_file, display_nhwindow, end_menu, get_nh_event, start_menu, wizard } from './nhprop.js';
-import { WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, a11y, decl_globals_init, disp, flags, gc, gd, gh, gi, gl, gm, go, gu, gv, gw, gy, iflags, nhcb_counts, nhcb_name, program_state, program_state_init, svc, svd, svl, svm, svp, u, urealtime } from './decl.js';
+import {
+    BClairvoyant, Blind, Breathless, Clairvoyant, EMagical_breathing, Energy_regeneration, Fast,
+    Glib, Half_physical_damage, Hallucination, Luck, Polymorph, Regeneration, Searching, Sleepy,
+    Teleportation, Unblind_telepat, Unchanging, Underwater, Upolyd, Very_fast, Warn_of_mon, Warning,
+    cliparound, create_nhwindow, display_file, display_nhwindow, end_menu, get_nh_event, start_menu,
+    wizard
+} from './nhprop.js';
+import {
+    WIN_INVEN, WIN_MAP, WIN_MESSAGE, WIN_STATUS, a11y, decl_globals_init, disp, flags, gc, gd, gh,
+    gi, gl, gm, go, gu, gv, gw, gy, iflags, nhcb_counts, nhcb_name, program_state,
+    program_state_init, svc, svd, svl, svm, svp, u, urealtime
+} from './decl.js';
 import { crashreport_init } from './report.js';
 import { objects_globals_init } from './objects.js';
 import { mons, monst_globals_init } from './monst.js';
@@ -18,7 +28,9 @@ import { sys_early_init } from './sys.js';
 import { runtime_info_init } from './mdlib.js';
 import { cmdq_clear, dolookaround, end_of_input, enter_explore_mode, rhack } from './cmd.js';
 import { friday_13th, getnow, night, phase_of_the_moon } from './calendar.js';
-import { Norep, You, impossible, livelog_printf, nhassert_failed, pline, urgent_pline } from './pline.js';
+import {
+    Norep, You, impossible, livelog_printf, nhassert_failed, pline, urgent_pline
+} from './pline.js';
 import { acurr, change_luck, exerchk } from './attrib.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { find_ac, glibr, set_wear } from './do_wear.js';
@@ -26,10 +38,15 @@ import { encumber_msg, pickup, reset_justpicked } from './pickup.js';
 import { initrack, settrack } from './track.js';
 import { read_engr_at, u_wipe_engr } from './engrave.js';
 import { fix_shop_damage } from './shk.js';
-import { clear_glyph_buffer, curs_on_u, docrt, flush_screen, reset_glyphmap, see_monsters, see_objects, see_traps, swallowed, under_ground, under_water } from './display.js';
+import {
+    clear_glyph_buffer, curs_on_u, docrt, flush_screen, reset_glyphmap, see_monsters, see_objects,
+    see_traps, swallowed, under_ground, under_water
+} from './display.js';
 import { reroll_menu, update_inventory } from './invent.js';
 import { mcalcdistress, mcalcmove, mnexto, movemon, see_nearby_monsters } from './mon.js';
-import { assign_level, depth, find_level, init_dungeons, on_level, print_level_annotation } from './dungeon.js';
+import {
+    assign_level, depth, find_level, init_dungeons, on_level, print_level_annotation
+} from './dungeon.js';
 import { makemon } from './makemon.js';
 import { adjust_menu_promptstyle, windowprocs } from './windows.js';
 import { maybe_shuffle_customizations } from './glyphs.js';
@@ -37,7 +54,10 @@ import { clear_splitobjs, dobjsfree } from './mkobj.js';
 import { clear_bypasses } from './worn.js';
 import { sanity_check } from './wizcmds.js';
 import { makewish } from './zap.js';
-import { check_special_room, domove, end_running, lookaround, money_cnt, monster_nearby, near_capacity, nomul, notice_all_mons, overexert_hp, pooleffects, runmode_delay_output, unmul } from './hack.js';
+import {
+    check_special_room, domove, end_running, lookaround, money_cnt, monster_nearby, near_capacity,
+    nomul, notice_all_mons, overexert_hp, pooleffects, runmode_delay_output, unmul
+} from './hack.js';
 import { done, done1 } from './end.js';
 import { l_nhcore_call, l_nhcore_init, nhl_pcall_handle } from './nhlua.js';
 import { do_storms, nh_timeout } from './timeout.js';
@@ -79,100 +99,114 @@ import { align_str } from './insight.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Race_adj = FLD.Race_adj, $RoleName_f = FLD.RoleName_f, $Role_allow = FLD.Role_allow,
-    $Role_mnum = FLD.Role_mnum, $accessibility_data_glyph_updates = FLD.accessibility_data_glyph_updates,
-    $accessibility_data_mon_notices_blocked = FLD.accessibility_data_mon_notices_blocked,
-    $context_info_bypasses = FLD.context_info_bypasses,
-    $context_info_mon_moving = FLD.context_info_mon_moving, $context_info_move = FLD.context_info_move,
-    $context_info_mv = FLD.context_info_mv,
-    $context_info_next_attrib_check = FLD.context_info_next_attrib_check,
-    $context_info_resume_wish = FLD.context_info_resume_wish,
-    $context_info_rndencode = FLD.context_info_rndencode, $context_info_run = FLD.context_info_run,
-    $context_info_seer_turn = FLD.context_info_seer_turn, $context_info_travel = FLD.context_info_travel,
-    $context_info_tribute = FLD.context_info_tribute, $context_info_warnlevel = FLD.context_info_warnlevel,
-    $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
-    $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_stronghold_level = FLD.dgn_topology_d_stronghold_level,
-    $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
-    $display_hints_botlx = FLD.display_hints_botlx, $display_hints_time_botl = FLD.display_hints_time_botl,
-    $dlevel_t_flags = FLD.dlevel_t_flags, $dlevel_t_monlist = FLD.dlevel_t_monlist,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters, $flag_debug = FLD.flag_debug, $flag_female = FLD.flag_female,
-    $flag_friday13 = FLD.flag_friday13, $flag_initgend = FLD.flag_initgend, $flag_legacy = FLD.flag_legacy,
-    $flag_moonphase = FLD.flag_moonphase, $flag_pantheon = FLD.flag_pantheon,
-    $flag_randomall = FLD.flag_randomall, $flag_runmode = FLD.flag_runmode, $flag_time = FLD.flag_time,
-    $flag_verbose = FLD.flag_verbose, $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
-    $instance_flags_deferred_X = FLD.instance_flags_deferred_X,
-    $instance_flags_fuzzerpending = FLD.instance_flags_fuzzerpending,
-    $instance_flags_hilite_delta = FLD.instance_flags_hilite_delta,
-    $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
-    $instance_flags_news = FLD.instance_flags_news,
-    $instance_flags_nofollowers = FLD.instance_flags_nofollowers,
-    $instance_flags_pending_customizations = FLD.instance_flags_pending_customizations,
-    $instance_flags_perm_invent = FLD.instance_flags_perm_invent,
-    $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
-    $instance_flags_wc_splash_screen = FLD.instance_flags_wc_splash_screen,
-    $instance_globals_c_cmd_key = FLD.instance_globals_c_cmd_key,
-    $instance_globals_c_command_count = FLD.instance_globals_c_command_count,
-    $instance_globals_d_defer_see_monsters = FLD.instance_globals_d_defer_see_monsters,
-    $instance_globals_h_hero_seq = FLD.instance_globals_h_hero_seq,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_l_luacore = FLD.instance_globals_l_luacore,
-    $instance_globals_m_multi = FLD.instance_globals_m_multi,
-    $instance_globals_o_occtxt = FLD.instance_globals_o_occtxt,
-    $instance_globals_o_occupation = FLD.instance_globals_o_occupation,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
-    $instance_globals_w_were_changes = FLD.instance_globals_w_were_changes,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
-    $levelflags_fumaroles = FLD.levelflags_fumaroles, $levelflags_noautosearch = FLD.levelflags_noautosearch,
-    $monst_data = FLD.monst_data, $monst_m_id = FLD.monst_m_id, $monst_m_lev = FLD.monst_m_lev,
-    $monst_mcanmove = FLD.monst_mcanmove, $monst_mconf = FLD.monst_mconf, $monst_mflee = FLD.monst_mflee,
-    $monst_mfleetim = FLD.monst_mfleetim, $monst_mhp = FLD.monst_mhp, $monst_mhpmax = FLD.monst_mhpmax,
-    $monst_mnum = FLD.monst_mnum, $monst_movement = FLD.monst_movement,
-    $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
-    $monst_mspeed = FLD.monst_mspeed, $monst_mstrategy = FLD.monst_mstrategy, $monst_mstun = FLD.monst_mstun,
-    $monst_mtame = FLD.monst_mtame, $monst_mux = FLD.monst_mux, $monst_muy = FLD.monst_muy,
-    $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $mvitals_mvflags = FLD.mvitals_mvflags,
-    $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed, $obj_cursed = FLD.obj_cursed,
-    $obj_dknown = FLD.obj_dknown, $obj_invlet = FLD.obj_invlet, $obj_known = FLD.obj_known,
-    $obj_o_id = FLD.obj_o_id, $obj_oclass = FLD.obj_oclass, $obj_oeroded = FLD.obj_oeroded,
-    $obj_oeroded2 = FLD.obj_oeroded2, $obj_otyp = FLD.obj_otyp, $obj_owornmask = FLD.obj_owornmask,
-    $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe, $permonst_geno = FLD.permonst_geno,
-    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mlet = FLD.permonst_mlet,
-    $permonst_mmove = FLD.permonst_mmove, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $s_level_dlevel = FLD.s_level_dlevel,
-    $sinfo_beyond_savefile_load = FLD.sinfo_beyond_savefile_load, $sinfo_done_hup = FLD.sinfo_done_hup,
-    $sinfo_in_moveloop = FLD.sinfo_in_moveloop,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_Gender = FLD.sizeof_Gender,
-    $sizeof_mvitals = FLD.sizeof_mvitals, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_prop = FLD.sizeof_prop, $tribute_info_enabled = FLD.tribute_info_enabled,
-    $u_event_amulet_wish = FLD.u_event_amulet_wish, $u_event_udemigod = FLD.u_event_udemigod,
-    $u_realtime_start_timing = FLD.u_realtime_start_timing, $u_roleplay_pauper = FLD.u_roleplay_pauper,
-    $u_roleplay_reroll = FLD.u_roleplay_reroll,
-    $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_display_file = FLD.window_procs_win_display_file,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_get_nh_event = FLD.window_procs_win_get_nh_event,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
-    $window_procs_wincap2 = FLD.window_procs_wincap2, $you_mfemale = FLD.you_mfemale, $you_mh = FLD.you_mh,
-    $you_mhmax = FLD.you_mhmax, $you_moreluck = FLD.you_moreluck, $you_ualign = FLD.you_ualign,
-    $you_ualignbase = FLD.you_ualignbase, $you_ublesscnt = FLD.you_ublesscnt, $you_uburied = FLD.you_uburied,
-    $you_ucamefrom = FLD.you_ucamefrom, $you_udg_cnt = FLD.you_udg_cnt, $you_uen = FLD.you_uen,
-    $you_uenmax = FLD.you_uenmax, $you_uevent = FLD.you_uevent, $you_uexp = FLD.you_uexp,
-    $you_uhave = FLD.you_uhave, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax, $you_uhs = FLD.you_uhs,
-    $you_uinvulnerable = FLD.you_uinvulnerable, $you_uinwater = FLD.you_uinwater,
-    $you_ulevel = FLD.you_ulevel, $you_uluck = FLD.you_uluck, $you_ulycn = FLD.you_ulycn,
-    $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster, $you_umoved = FLD.you_umoved,
-    $you_umovement = FLD.you_umovement, $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
-    $you_usleep = FLD.you_usleep, $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow,
-    $you_utotype = FLD.you_utotype, $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
+      $Role_mnum = FLD.Role_mnum,
+      $accessibility_data_glyph_updates = FLD.accessibility_data_glyph_updates,
+      $accessibility_data_mon_notices_blocked = FLD.accessibility_data_mon_notices_blocked,
+      $context_info_bypasses = FLD.context_info_bypasses,
+      $context_info_mon_moving = FLD.context_info_mon_moving,
+      $context_info_move = FLD.context_info_move, $context_info_mv = FLD.context_info_mv,
+      $context_info_next_attrib_check = FLD.context_info_next_attrib_check,
+      $context_info_resume_wish = FLD.context_info_resume_wish,
+      $context_info_rndencode = FLD.context_info_rndencode,
+      $context_info_run = FLD.context_info_run,
+      $context_info_seer_turn = FLD.context_info_seer_turn,
+      $context_info_travel = FLD.context_info_travel,
+      $context_info_tribute = FLD.context_info_tribute,
+      $context_info_warnlevel = FLD.context_info_warnlevel, $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dgn_topology_d_stronghold_level = FLD.dgn_topology_d_stronghold_level,
+      $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
+      $display_hints_botlx = FLD.display_hints_botlx,
+      $display_hints_time_botl = FLD.display_hints_time_botl, $dlevel_t_flags = FLD.dlevel_t_flags,
+      $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_monsters = FLD.dlevel_t_monsters,
+      $flag_debug = FLD.flag_debug, $flag_female = FLD.flag_female,
+      $flag_friday13 = FLD.flag_friday13, $flag_initgend = FLD.flag_initgend,
+      $flag_legacy = FLD.flag_legacy, $flag_moonphase = FLD.flag_moonphase,
+      $flag_pantheon = FLD.flag_pantheon, $flag_randomall = FLD.flag_randomall,
+      $flag_runmode = FLD.flag_runmode, $flag_time = FLD.flag_time,
+      $flag_verbose = FLD.flag_verbose,
+      $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+      $instance_flags_deferred_X = FLD.instance_flags_deferred_X,
+      $instance_flags_fuzzerpending = FLD.instance_flags_fuzzerpending,
+      $instance_flags_hilite_delta = FLD.instance_flags_hilite_delta,
+      $instance_flags_menu_headings = FLD.instance_flags_menu_headings,
+      $instance_flags_news = FLD.instance_flags_news,
+      $instance_flags_nofollowers = FLD.instance_flags_nofollowers,
+      $instance_flags_pending_customizations = FLD.instance_flags_pending_customizations,
+      $instance_flags_perm_invent = FLD.instance_flags_perm_invent,
+      $instance_flags_sanity_check = FLD.instance_flags_sanity_check,
+      $instance_flags_wc_splash_screen = FLD.instance_flags_wc_splash_screen,
+      $instance_globals_c_cmd_key = FLD.instance_globals_c_cmd_key,
+      $instance_globals_c_command_count = FLD.instance_globals_c_command_count,
+      $instance_globals_d_defer_see_monsters = FLD.instance_globals_d_defer_see_monsters,
+      $instance_globals_h_hero_seq = FLD.instance_globals_h_hero_seq,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_l_luacore = FLD.instance_globals_l_luacore,
+      $instance_globals_m_multi = FLD.instance_globals_m_multi,
+      $instance_globals_o_occtxt = FLD.instance_globals_o_occtxt,
+      $instance_globals_o_occupation = FLD.instance_globals_o_occupation,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_v_vision_full_recalc = FLD.instance_globals_v_vision_full_recalc,
+      $instance_globals_w_were_changes = FLD.instance_globals_w_were_changes,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+      $levelflags_fumaroles = FLD.levelflags_fumaroles,
+      $levelflags_noautosearch = FLD.levelflags_noautosearch, $monst_data = FLD.monst_data,
+      $monst_m_id = FLD.monst_m_id, $monst_m_lev = FLD.monst_m_lev,
+      $monst_mcanmove = FLD.monst_mcanmove, $monst_mconf = FLD.monst_mconf,
+      $monst_mflee = FLD.monst_mflee, $monst_mfleetim = FLD.monst_mfleetim,
+      $monst_mhp = FLD.monst_mhp, $monst_mhpmax = FLD.monst_mhpmax, $monst_mnum = FLD.monst_mnum,
+      $monst_movement = FLD.monst_movement, $monst_mpeaceful = FLD.monst_mpeaceful,
+      $monst_msleeping = FLD.monst_msleeping, $monst_mspeed = FLD.monst_mspeed,
+      $monst_mstrategy = FLD.monst_mstrategy, $monst_mstun = FLD.monst_mstun,
+      $monst_mtame = FLD.monst_mtame, $monst_mux = FLD.monst_mux, $monst_muy = FLD.monst_muy,
+      $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $mvitals_mvflags = FLD.mvitals_mvflags,
+      $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed, $obj_cursed = FLD.obj_cursed,
+      $obj_dknown = FLD.obj_dknown, $obj_invlet = FLD.obj_invlet, $obj_known = FLD.obj_known,
+      $obj_o_id = FLD.obj_o_id, $obj_oclass = FLD.obj_oclass, $obj_oeroded = FLD.obj_oeroded,
+      $obj_oeroded2 = FLD.obj_oeroded2, $obj_otyp = FLD.obj_otyp,
+      $obj_owornmask = FLD.obj_owornmask, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
+      $permonst_geno = FLD.permonst_geno, $permonst_mflags1 = FLD.permonst_mflags1,
+      $permonst_mlet = FLD.permonst_mlet, $permonst_mmove = FLD.permonst_mmove,
+      $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+      $s_level_dlevel = FLD.s_level_dlevel,
+      $sinfo_beyond_savefile_load = FLD.sinfo_beyond_savefile_load,
+      $sinfo_done_hup = FLD.sinfo_done_hup, $sinfo_in_moveloop = FLD.sinfo_in_moveloop,
+      $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+      $sizeof_Gender = FLD.sizeof_Gender, $sizeof_mvitals = FLD.sizeof_mvitals,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $tribute_info_enabled = FLD.tribute_info_enabled,
+      $u_event_amulet_wish = FLD.u_event_amulet_wish, $u_event_udemigod = FLD.u_event_udemigod,
+      $u_realtime_start_timing = FLD.u_realtime_start_timing,
+      $u_roleplay_pauper = FLD.u_roleplay_pauper, $u_roleplay_reroll = FLD.u_roleplay_reroll,
+      $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_display_file = FLD.window_procs_win_display_file,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_get_nh_event = FLD.window_procs_win_get_nh_event,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu,
+      $window_procs_wincap2 = FLD.window_procs_wincap2, $you_mfemale = FLD.you_mfemale,
+      $you_mh = FLD.you_mh, $you_mhmax = FLD.you_mhmax, $you_moreluck = FLD.you_moreluck,
+      $you_ualign = FLD.you_ualign, $you_ualignbase = FLD.you_ualignbase,
+      $you_ublesscnt = FLD.you_ublesscnt, $you_uburied = FLD.you_uburied,
+      $you_ucamefrom = FLD.you_ucamefrom, $you_udg_cnt = FLD.you_udg_cnt, $you_uen = FLD.you_uen,
+      $you_uenmax = FLD.you_uenmax, $you_uevent = FLD.you_uevent, $you_uexp = FLD.you_uexp,
+      $you_uhave = FLD.you_uhave, $you_uhp = FLD.you_uhp, $you_uhpmax = FLD.you_uhpmax,
+      $you_uhs = FLD.you_uhs, $you_uinvulnerable = FLD.you_uinvulnerable,
+      $you_uinwater = FLD.you_uinwater, $you_ulevel = FLD.you_ulevel, $you_uluck = FLD.you_uluck,
+      $you_ulycn = FLD.you_ulycn, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
+      $you_umoved = FLD.you_umoved, $you_umovement = FLD.you_umovement,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay,
+      $you_usleep = FLD.you_usleep, $you_usteed = FLD.you_usteed, $you_uswallow = FLD.you_uswallow,
+      $you_utotype = FLD.you_utotype, $you_utrap = FLD.you_utrap,
+      $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz,
+      $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_are_lucky_full_moon_tonight = cptr.lit("are lucky!  Full moon tonight.");
@@ -315,7 +349,10 @@ function u_calc_moveamt(wtcap) {
         /* your speed doesn't augment steed's speed */
         moveamt = mcalcmove(cptr.ldPtro(u, $you_usteed), 1);
     } else {
-        moveamt = cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mmove);
+        moveamt = cptr.ld1so(
+            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+            $permonst_mmove
+        );
 
         if (Very_fast()) {
             /* gain a free action on 2/3 of turns */
@@ -355,7 +392,15 @@ function u_calc_moveamt(wtcap) {
 /* small chance of generating a new random monster */
 /** C ref: allmain.c:162 */
 function maybe_generate_rnd_mon() {
-    if (!rn2((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 ? 25 : ((depth(cptr.add(u, $you_uz)) > depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level))) ? 50 : 70)))
+    if (!rn2((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0
+            ? 25
+            : ((depth(cptr.add(u, $you_uz)) >
+                depth(cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+                )))
+                ? 50
+                : 70)))
         void makemon(null, 0, 0, NHM.NO_MM_FLAGS);
 }
 
@@ -379,7 +424,8 @@ export function moveloop_core() {
     if (cptr.ld1so(svc, $context_info_bypasses))
         clear_bypasses();
 
-    if (cptr.ld1so(iflags, $instance_flags_sanity_check) || cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
+    if (cptr.ld1so(iflags, $instance_flags_sanity_check) ||
+            cptr.ld1so(iflags, $instance_flags_debug_fuzzer))
         sanity_check();
 
     if (cptr.ld1so(svc, $context_info_resume_wish))
@@ -415,8 +461,16 @@ export function moveloop_core() {
                 /* reallocate movement rations to monsters; don't need
                    to skip dead monsters here because they will have
                    been purged at end of their previous round of moving */
-                for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp))
-                    cptr.stI16o(mtmp, $monst_movement, cptr.ldI16o(mtmp, $monst_movement) + mcalcmove(mtmp, 1));
+                for (
+                    mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+                    mtmp;
+                    mtmp = cptr.ldPtr(mtmp)
+                )
+                    cptr.stI16o(
+                        mtmp,
+                        $monst_movement,
+                        cptr.ldI16o(mtmp, $monst_movement) + mcalcmove(mtmp, 1)
+                    );
 
                 /* occasionally add another monster; since this takes
                    place after movement has been allotted, the new
@@ -426,7 +480,12 @@ export function moveloop_core() {
                 u_calc_moveamt(mvl_wtcap);
                 settrack();
 
-                (cptr.stI64o(svm, $instance_globals_saved_m_moves, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1n)) - (1n);
+                (cptr.stI64o(
+                    svm,
+                    $instance_globals_saved_m_moves,
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1n
+                )) -
+                        (1n);
                 /*
                  * Never allow 'moves' to grow big enough to wrap.
                  * We don't care what the maximum possible 'long int'
@@ -442,7 +501,11 @@ export function moveloop_core() {
                 }
                 /* 'moves' is misnamed; it represents turns; hero_seq is
                    a value that is distinct every time the hero moves */
-                cptr.stI64o(gh, $instance_globals_h_hero_seq, cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n);
+                cptr.stI64o(
+                    gh,
+                    $instance_globals_h_hero_seq,
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) << 3n
+                );
 
                 if (cptr.ld1so(flags, $flag_time) && !cptr.ldI32o(svc, $context_info_run))
                     cptr.st1o(disp, $display_hints_time_botl, 1);  /* 'moves' just changed */
@@ -472,14 +535,25 @@ export function moveloop_core() {
                 if ((cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
                     /* for the moment at least, you're in tiptop shape */
                     mvl_wtcap = NHC.UNENCUMBERED;
-                } else if (!Upolyd() ? (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax)) : (cptr.ldI32o(u, $you_mh) < cptr.ldI32o(u, $you_mhmax) || cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL ? 1 : 0)) {
+                } else if (!Upolyd()
+                        ? (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax))
+                        : (cptr.ldI32o(u, $you_mh) < cptr.ldI32o(u, $you_mhmax) ||
+                            cptr.ld1so(
+                                cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+                                $permonst_mlet
+                            ) ==
+                                NHC.S_EEL
+                            ? 1
+                            : 0)) {
                     /* maybe heal */
                     regen_hp(mvl_wtcap);
                 }
 
                 /* moving around while encumbered is hard work */
                 if (mvl_wtcap > NHC.MOD_ENCUMBER && cptr.ld1so(u, $you_umoved)) {
-                    if (!(mvl_wtcap < NHC.EXT_ENCUMBER ? cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 30n : cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 10n)) {
+                    if (!(mvl_wtcap < NHC.EXT_ENCUMBER
+                            ? cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 30n
+                            : cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 10n)) {
                         overexert_hp();
                     }
                 }
@@ -502,11 +576,19 @@ export function moveloop_core() {
                         }
                     }
                     /* delayed change may not be valid anymore */
-                    if ((mvl_change == 1 && !Polymorph()) || (mvl_change == 2 && cptr.ldI32o(u, $you_ulycn) == NHC.NON_PM))
+                    if ((mvl_change == 1 && !Polymorph()) ||
+                            (mvl_change == 2 && cptr.ldI32o(u, $you_ulycn) == NHC.NON_PM))
                         mvl_change = 0;
                     if (Polymorph() && !rn2(100))
                         mvl_change = 1;
-                    else if (ismnum(cptr.ldI32o(u, $you_ulycn)) && !Upolyd() && !(rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 328, __s_moveloop_core), rn2((80 - (Math.imul(20, night()))) | 0)) : rn2((80 - (Math.imul(20, night()))) | 0)))
+                    else if (ismnum(cptr.ldI32o(u, $you_ulycn)) &&
+                            !Upolyd() &&
+                            !(rng_log_enabled()
+                                ? (
+                                    rng_log_set_caller(__s_allmain_c, 328, __s_moveloop_core),
+                                    rn2((80 - (Math.imul(20, night()))) | 0)
+                                )
+                                : rn2((80 - (Math.imul(20, night()))) | 0)))
                         mvl_change = 2;
                     if (mvl_change && !Unchanging()) {
                         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
@@ -520,7 +602,14 @@ export function moveloop_core() {
                     }
                 }
 
-                if (Searching() && !(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_noautosearch) & 1) && cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
+                if (Searching() &&
+                        !(cptr.ldI32o(
+                            svl,
+                            $instance_globals_saved_l_level +
+                                $dlevel_t_flags +
+                                $levelflags_noautosearch
+                        ) & 1) &&
+                        cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n)
                     void dosearch0(1);
                 if (Warning())
                     warnreveal();
@@ -537,9 +626,15 @@ export function moveloop_core() {
                 invault();
                 if ((cptr.ldI32o(u, $you_uhave) & 1))
                     amulet();
-                if (!(rng_log_enabled() ? (rng_log_set_caller(__s_allmain_c, 360, __s_moveloop_core), rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)) : rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)))
+                if (!(rng_log_enabled()
+                        ? (
+                            rng_log_set_caller(__s_allmain_c, 360, __s_moveloop_core),
+                            rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)
+                        )
+                        : rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)))
                     u_wipe_engr(rnd(3));
-                if ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 && !(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
+                if ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 &&
+                        !(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
                     if (cptr.ldI32o(u, $you_udg_cnt))
                         (cptr.stI32o(u, $you_udg_cnt, cptr.ldI32o(u, $you_udg_cnt) + -1)) - (-1);
                     if (!cptr.ldI32o(u, $you_udg_cnt)) {
@@ -551,15 +646,60 @@ export function moveloop_core() {
                  * things that are active and need to be handled that is dynamically
                  * maintained and not a list of special cases. */
                 /* vision will be updated as bubbles move */
-                if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))))
+                if ((((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )
+                    ))) ||
+                        (((cptr.ldI16o(
+                            (cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_air_level
+                            )),
+                            $d_level_dlevel
+                        ) ||
+                            cptr.ldI16((cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_air_level
+                            )))) &&
+                            on_level(
+                                cptr.add(u, $you_uz),
+                                cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_air_level
+                                )
+                            ))))
                     movebubbles();
-                else if ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles) & 1))
+                else if ((cptr.ldI32o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_fumaroles
+                ) & 1))
                     fumaroles();
 
                 /* when immobile, count is in turns */
                 if (cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
                     runmode_delay_output();
-                    if (cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + 1n) == 0n) {
+                    if (cptr.stI64o(
+                        gm,
+                        $instance_globals_m_multi,
+                        cptr.ldI64o(gm, $instance_globals_m_multi) + 1n
+                    ) == 0n) {
                         unmul(null);
                         /* if unmul caused a level change, take it now */
                         if (cptr.ld1uo(u, $you_utotype))
@@ -573,7 +713,12 @@ export function moveloop_core() {
         /* once-per-hero-took-time things go here */
         /******************************************/
 
-        (cptr.stI64o(gh, $instance_globals_h_hero_seq, cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 1n)) - (1n);  /* moves*8 + n for n == 1..7 */
+        (cptr.stI64o(
+            gh,
+            $instance_globals_h_hero_seq,
+            cptr.ldI64o(gh, $instance_globals_h_hero_seq) + 1n
+        )) -
+                (1n);  /* moves*8 + n for n == 1..7 */
 
         /* although we checked for encumbrance above, we need to
            check again for message purposes, as the weight of
@@ -583,12 +728,27 @@ export function moveloop_core() {
         encumber_msg();
         if (cptr.ldI64o(iflags, $instance_flags_hilite_delta))
             status_eval_next_unhilite();
-        if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >= cptr.ldI64o(svc, $context_info_seer_turn)) {
-            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) && !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !BClairvoyant())
+        if (cptr.ldI64o(svm, $instance_globals_saved_m_moves) >=
+                cptr.ldI64o(svc, $context_info_seer_turn)) {
+            if (((cptr.ldI32o(u, $you_uhave) & 1) | 0 || Clairvoyant()) &&
+                    !(cptr.ldI16((cptr.add(u, $you_uz))) ==
+                        cptr.ldI16((cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_astral_level
+                        )))) &&
+                    !BClairvoyant())
                 do_vicinity_map(null);
             /* we maintain this counter even when clairvoyance isn't
                taking place; on average, go again 30 turns from now */
-            cptr.stI64o(svc, $context_info_seer_turn, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(((rn2(31) + 15) | 0))));  /*15..45*/
+            cptr.stI64o(
+                svc,
+                $context_info_seer_turn,
+                BigInt.asIntN(
+                    64,
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(((rn2(31) + 15) | 0))
+                )
+            );  /*15..45*/
             /* [it used to be that on every 15th turn, there was a 50%
                chance of farsight, so it could happen as often as every
                15 turns or theoretically never happen at all; but when
@@ -618,7 +778,8 @@ export function moveloop_core() {
     clear_splitobjs();
 
     /* the Amulet of Yendor gives a wish when initially picked up */
-    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 && !(cptr.ldI32o(u, $you_uevent + $u_event_amulet_wish) & 1)) {
+    if ((cptr.ldI32o(u, $you_uhave) & 1) | 0 &&
+            !(cptr.ldI32o(u, $you_uevent + $u_event_amulet_wish) & 1)) {
         cptr.stI32o(u, $you_uevent + $u_event_amulet_wish, 1);
         display_nhwindow()(WIN_MESSAGE.v, 1);
         urgent_pline(__s_the_amulet_is_bestowing_a_wish_upon_you);
@@ -652,7 +813,8 @@ export function moveloop_core() {
 
     cptr.st1o(svc, $context_info_move, 1);
 
-    if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n && cptr.ldPtro(go, $instance_globals_o_occupation)) {
+    if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n &&
+            cptr.ldPtro(go, $instance_globals_o_occupation)) {
         if ((cptr.ldPtro(go, $instance_globals_o_occupation))() == 0)
             cptr.stPtro(go, $instance_globals_o_occupation, null);
         if (monster_nearby()) {
@@ -674,12 +836,24 @@ export function moveloop_core() {
             return;
         }
         if (cptr.ld1so(svc, $context_info_mv)) {
-            if (cptr.ldI64o(gm, $instance_globals_m_multi) < 80n && !cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + -1n))
+            if (cptr.ldI64o(gm, $instance_globals_m_multi) < 80n &&
+                    !cptr.stI64o(
+                        gm,
+                        $instance_globals_m_multi,
+                        cptr.ldI64o(gm, $instance_globals_m_multi) + -1n
+                    ))
                 end_running(1);
             domove();
         } else {
-            cptr.stI64o(gm, $instance_globals_m_multi, cptr.ldI64o(gm, $instance_globals_m_multi) + -1n);
-            void ((!!(cptr.ldI64o(gc, $instance_globals_c_command_count) != 0n)) || (nhassert_failed(__s_gc_command_count_0, __s_allmain_c, 529), 0) ? 1 : 0);
+            cptr.stI64o(
+                gm,
+                $instance_globals_m_multi,
+                cptr.ldI64o(gm, $instance_globals_m_multi) + -1n
+            );
+            void ((!!(cptr.ldI64o(gc, $instance_globals_c_command_count) != 0n)) ||
+                (nhassert_failed(__s_gc_command_count_0, __s_allmain_c, 529), 0)
+                    ? 1
+                    : 0);
             rhack(cptr.ldI32o(gc, $instance_globals_c_cmd_key));
         }
     } else if (cptr.ldI64o(gm, $instance_globals_m_multi) == 0n) {
@@ -695,17 +869,32 @@ export function moveloop_core() {
        once with correct vision data, not twice (overshoot+correct) */
     cliparound()(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     /* when running in non-tport mode, this gets done through domove() */
-    if ((!cptr.ldI32o(svc, $context_info_run) || cptr.ldI32o(flags, $flag_runmode) == NHC.RUN_TPORT) && (cptr.ldI64o(gm, $instance_globals_m_multi) && (!cptr.ld1so(svc, $context_info_travel) ? !(cptr.ldI64o(gm, $instance_globals_m_multi) % 7n) : !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 7n)))) {
+    if ((!cptr.ldI32o(svc, $context_info_run) ||
+        cptr.ldI32o(flags, $flag_runmode) == NHC.RUN_TPORT) &&
+            (cptr.ldI64o(gm, $instance_globals_m_multi) &&
+                (!cptr.ld1so(svc, $context_info_travel)
+                    ? !(cptr.ldI64o(gm, $instance_globals_m_multi) % 7n)
+                    : !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 7n)))) {
         if (cptr.ld1so(flags, $flag_time) && cptr.ldI32o(svc, $context_info_run))
             cptr.st1(disp, 1);
         /* [should this be flush_screen() instead?] */
         display_nhwindow()(WIN_MAP.v, 0);
     }
 
-    if (cptr.ldPtro(gl, $instance_globals_l_luacore) && cptr.ldI32o(nhcb_counts, NHC.NHCB_END_TURN, 4)) {
+    if (cptr.ldPtro(gl, $instance_globals_l_luacore) &&
+            cptr.ldI32o(nhcb_counts, NHC.NHCB_END_TURN, 4)) {
         lua_getglobal(cptr.ldPtro(gl, $instance_globals_l_luacore), __s_nh_callback_run);
-        lua_pushstring(cptr.ldPtro(gl, $instance_globals_l_luacore), cptr.ldPtro(nhcb_name, NHC.NHCB_END_TURN, 8));
-        nhl_pcall_handle(cptr.ldPtro(gl, $instance_globals_l_luacore), 1, 0, __s_moveloop_core, NHC.NHLpa_panic);
+        lua_pushstring(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            cptr.ldPtro(nhcb_name, NHC.NHCB_END_TURN, 8)
+        );
+        nhl_pcall_handle(
+            cptr.ldPtro(gl, $instance_globals_l_luacore),
+            1,
+            0,
+            __s_moveloop_core,
+            NHC.NHLpa_panic
+        );
         lua_settop(cptr.ldPtro(gl, $instance_globals_l_luacore), 0);
     }
 }
@@ -720,7 +909,12 @@ function maybe_do_tutorial() {
     if (ask_do_tutorial()) {
         assign_level(cptr.add(u, $you_ucamefrom), cptr.add(u, $you_uz));
         cptr.st1o(iflags, $instance_flags_nofollowers, 1);
-        schedule_goto(cptr.add(sp, $s_level_dlevel), NHC.UTOTYPE_NONE, __s_entering_the_tutorial, null);
+        schedule_goto(
+            cptr.add(sp, $s_level_dlevel),
+            NHC.UTOTYPE_NONE,
+            __s_entering_the_tutorial,
+            null
+        );
         deferred_goto();
         vision_recalc(0);
         docrt();
@@ -742,7 +936,16 @@ export function moveloop(resuming) {
 
 /** C ref: allmain.c:600 — @param {CInt} wtcap */
 function regen_pw(wtcap) {
-    if (cptr.ldI32o(u, $you_uen) < cptr.ldI32o(u, $you_uenmax) && ((wtcap < NHC.MOD_ENCUMBER && (!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % BigInt(((Math.imul(((38 - cptr.ldI32o(u, $you_ulevel)) | 0), ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) ? 3 : 4)) / 6) | 0))))) || Energy_regeneration())) {
+    if (cptr.ldI32o(u, $you_uen) < cptr.ldI32o(u, $you_uenmax) &&
+            ((wtcap < NHC.MOD_ENCUMBER &&
+                (!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) %
+                    BigInt(((Math.imul(
+                        ((38 - cptr.ldI32o(u, $you_ulevel)) | 0),
+                        ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)
+                            ? 3
+                            : 4)
+                    ) / 6) | 0))))) ||
+                Energy_regeneration())) {
         let upper = ((((((acurr(NHC.A_WIS)) + (acurr(NHC.A_INT))) | 0) / 15) | 0) + 1) | 0;
 
         if (EMagical_breathing())
@@ -767,13 +970,42 @@ function regen_hp(wtcap) {
     if (Upolyd()) {
         if (cptr.ldI32o(u, $you_mh) < 1) {
             rehumanize();
-        } else if (cptr.ld1so(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data), $permonst_mlet) == NHC.S_EEL && !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !Breathless()) {
+        } else if (cptr.ld1so(
+            cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
+            $permonst_mlet
+        ) ==
+            NHC.S_EEL &&
+                !is_pool(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) &&
+                !(((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )
+                    ))) &&
+                !Breathless()) {
             /* eel out of water loses hp, similar to monster eels;
                as hp gets lower, rate of further loss slows down */
-            if (cptr.ldI32o(u, $you_mh) > 1 && !Regeneration() && rn2(cptr.ldI32o(u, $you_mh)) > rn2(8) && (!Half_physical_damage() || !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 2n)))
+            if (cptr.ldI32o(u, $you_mh) > 1 &&
+                    !Regeneration() &&
+                    rn2(cptr.ldI32o(u, $you_mh)) > rn2(8) &&
+                    (!Half_physical_damage() ||
+                        !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 2n)))
                 heal = -1;
         } else if (cptr.ldI32o(u, $you_mh) < cptr.ldI32o(u, $you_mhmax)) {
-            if ((Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))) || (encumbrance_ok && !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 20n)))
+            if ((Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))) ||
+                    (encumbrance_ok && !(cptr.ldI64o(svm, $instance_globals_saved_m_moves) % 20n)))
                 heal = 1;
         }
         if (heal) {
@@ -788,7 +1020,8 @@ function regen_hp(wtcap) {
            no !Upolyd check here, so poly'd hero recovered lost u.uhp
            once u.mh reached u.mhmax; that may have been convenient
            for the player, but it didn't make sense for gameplay...] */
-        if (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax) && (encumbrance_ok || (Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))))) {
+        if (cptr.ldI32o(u, $you_uhp) < cptr.ldI32o(u, $you_uhpmax) &&
+                (encumbrance_ok || (Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))))) {
             heal = ((cptr.ldI32o(u, $you_ulevel) + (acurr(NHC.A_CON))) | 0) > rn2(100);
 
             if ((Regeneration() || (Sleepy() && cptr.ldI64o(u, $you_usleep))))
@@ -831,7 +1064,8 @@ export function init_sound_disp_gamewindows() {
 
     activate_chosen_soundlib();
 
-    if (cptr.ld1so(iflags, $instance_flags_wc_splash_screen) && !cptr.ldI32o(flags, $flag_randomall)) {
+    if (cptr.ld1so(iflags, $instance_flags_wc_splash_screen) &&
+            !cptr.ldI32o(flags, $flag_randomall)) {
         ;
         /* ToDo: new splash screen invocation will go here */
     } else {
@@ -850,7 +1084,8 @@ export function init_sound_disp_gamewindows() {
         adjust_menu_promptstyle(WIN_INVEN.v, cptr.add(iflags, $instance_flags_menu_headings));
     /* in case of early quit where WIN_INVEN could be destroyed before
        ever having been used, use it here to pacify the Qt interface */
-    start_menu()(WIN_INVEN.v, BigInt.asUintN(64, BigInt(menu_behavior))), end_menu()(WIN_INVEN.v, null);
+    start_menu()(WIN_INVEN.v, BigInt.asUintN(64, BigInt(menu_behavior))),
+            end_menu()(WIN_INVEN.v, null);
     display_nhwindow()(WIN_MESSAGE.v, 0);
     clear_glyph_buffer();
     display_nhwindow()(WIN_MAP.v, 0);
@@ -862,7 +1097,12 @@ export function newgame() {
     {
 
         /* make sure welcome messages are given before noticing monsters */
-        (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1)) - (1);
+        (cptr.stI32o(
+            a11y,
+            $accessibility_data_mon_notices_blocked,
+            cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + 1
+        )) -
+                (1);
     }
     cptr.st1o(disp, $display_hints_botlx, 1);
     cptr.stI32(svc, 2);  /* id 1 is reserved for gy.youmonst */
@@ -873,7 +1113,13 @@ export function newgame() {
     get_nhuuid();
 
     for (i = NHC.LOW_PM; i < NHC.NUMMONS; i++)
-        cptr.st1o2(svm, i, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags, uchar((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_NOCORPSE)));
+        cptr.st1o2(
+            svm,
+            i,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_mvflags,
+            uchar((cptr.ldU16o2(mons, i, $sizeof_permonst, $permonst_geno) & NHM.G_NOCORPSE))
+        );
 
     init_objects();  /* must be before u_init() */
 
@@ -896,8 +1142,25 @@ export function newgame() {
     vision_reset();  /* set up internals for level (after mklev) */
     check_special_room(0);
 
-    if ((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
-        mnexto((cptr.ldPtro3(svl, cptr.ldI16(u), 168, cptr.ldI16o(u, $you_uy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG);
+    if ((cptr.ldPtro3(
+        svl,
+        cptr.ldI16(u),
+        168,
+        cptr.ldI16o(u, $you_uy),
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_monsters
+    ) !== null))
+        mnexto(
+            (cptr.ldPtro3(
+                svl,
+                cptr.ldI16(u),
+                168,
+                cptr.ldI16o(u, $you_uy),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters
+            )),
+            NHM.RLOC_NOMSG
+        );
     void makedog();
 
     u_init_inventory_attrs();
@@ -916,18 +1179,29 @@ export function newgame() {
     }
 
     if (cptr.ld1so(flags, $flag_legacy)) {
-        com_pager(cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper) ? __s_pauper_legacy : __s_legacy);
+        com_pager(cptr.ld1so(u, $you_uroleplay + $u_roleplay_pauper)
+                ? __s_pauper_legacy
+                : __s_legacy);
     }
 
     cptr.stI64(urealtime, 0n);
     cptr.stI64o(urealtime, $u_realtime_start_timing, getnow());
     save_currentstate();
-    (cptr.stI32o(program_state, $sinfo_something_worth_saving, cptr.ldI32o(program_state, $sinfo_something_worth_saving) + 1)) - (1);  /* useful data now exists */
+    (cptr.stI32o(
+        program_state,
+        $sinfo_something_worth_saving,
+        cptr.ldI32o(program_state, $sinfo_something_worth_saving) + 1
+    )) -
+            (1);  /* useful data now exists */
 
     /* Success! */
     welcome(1);
     {
-        if (cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1) < 0) {
+        if (cptr.stI32o(
+            a11y,
+            $accessibility_data_mon_notices_blocked,
+            cptr.ldI32o(a11y, $accessibility_data_mon_notices_blocked) + -1
+        ) < 0) {
             impossible(__s_mon_notices_blocked_0);  /* now we can notice monsters */
             cptr.stI32o(a11y, $accessibility_data_mon_notices_blocked, 0);
         }
@@ -943,8 +1217,11 @@ export function newgame() {
 /** C ref: allmain.c:854 — @param {CInt} new_game */
 export function welcome(new_game) {
     let buf = new Uint8Array(256);
-    let currentgend = schar((Upolyd() ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0 : cptr.ld1so(flags, $flag_female)));
-    let adrift = schar((cptr.ld1so(u, $you_ualign) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));
+    let currentgend = schar((Upolyd()
+            ? (cptr.ldI32o(u, $you_mfemale) & 1) | 0
+            : cptr.ld1so(flags, $flag_female)));
+    let adrift = schar((cptr.ld1so(u, $you_ualign) !=
+            cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));
 
     l_nhcore_call(new_game ? NHC.NHCORE_START_NEW_GAME : NHC.NHCORE_RESTORE_OLD_GAME);
 
@@ -981,13 +1258,43 @@ export function welcome(new_game) {
      *  if base alignment has been changed, so revisiting this welcome back
      *  message."
      */
-    if (new_game || cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase) != cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) || adrift)
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, adrift ? __s_adrift : __s_empty, adrift ? align_str(cptr.ld1so(u, $you_ualign)) : align_str(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase)));
-    if (!cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) && (new_game ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) & NHM.ROLE_GENDMASK) == 12288 : currentgend != cptr.ldI32o(flags, $flag_initgend)))
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_pct_s, cptr.ldPtro(genders, currentgend, $sizeof_Gender));
-    void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s__2, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj), (currentgend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)) ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) : cptr.ldPtro(gu, $instance_globals_u_urole));
+    if (new_game ||
+            cptr.ld1so2(u, NHM.A_ORIGINAL, 1, $you_ualignbase) !=
+                cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase) ||
+            adrift)
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_s_s,
+            adrift ? __s_adrift : __s_empty,
+            adrift
+                ? align_str(cptr.ld1so(u, $you_ualign))
+                : align_str(cptr.ld1so2(u, NHM.A_CURRENT, 1, $you_ualignbase))
+        );
+    if (!cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f) &&
+            (new_game
+                ? (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_allow) & NHM.ROLE_GENDMASK) ==
+                    12288
+                : currentgend != cptr.ldI32o(flags, $flag_initgend)))
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_sp_pct_s,
+            cptr.ldPtro(genders, currentgend, $sizeof_Gender)
+        );
+    void cptr.sprintf(
+        eos(cptr.decay(buf)),
+        __s_s_s__2,
+        cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj),
+        (currentgend && cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f))
+            ? cptr.ldPtro(gu, $instance_globals_u_urole + $RoleName_f)
+            : cptr.ldPtro(gu, $instance_globals_u_urole)
+    );
 
-    pline(new_game ? __s_s_s_welcome_to_nethack_you_are_a_s : __s_s_s_the_s_welcome_back_to_nethack, Hello(null), svp, cptr.decay(buf));
+    pline(
+        new_game ? __s_s_s_welcome_to_nethack_you_are_a_s : __s_s_s_the_s_welcome_back_to_nethack,
+        Hello(null),
+        svp,
+        cptr.decay(buf)
+    );
 
     if (new_game) {
         /* guarantee that 'major' event category is never empty */
@@ -1003,7 +1310,9 @@ export function welcome(new_game) {
 
 /** C ref: allmain.c:976 — @param {CPtr<char>} msg */
 function interrupt_multi(msg) {
-    if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n && !cptr.ld1so(svc, $context_info_travel) && !cptr.ldI32o(svc, $context_info_run)) {
+    if (cptr.ldI64o(gm, $instance_globals_m_multi) > 0n &&
+            !cptr.ld1so(svc, $context_info_travel) &&
+            !cptr.ldI32o(svc, $context_info_run)) {
         nomul(0);
         if (cptr.ld1so(flags, $flag_verbose) && msg)
             Norep(__s_pct_s, msg);
@@ -1049,27 +1358,89 @@ export function teleport_state_dump() {
         return;
 
     fprintf(tp_sdfp, __s_moves_ld, cptr.ldI64o(svm, $instance_globals_saved_m_moves));
-    fprintf(tp_sdfp, __s_dnum_d_dlevel_d, cptr.ldI16o(u, $you_uz), cptr.ldI16o(u, $you_uz + $d_level_dlevel));
-    fprintf(tp_sdfp, __s_hero_x_d_y_d_hp_d_hpmax_d, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.ldI32o(u, $you_uhp), cptr.ldI32o(u, $you_uhpmax));
+    fprintf(
+        tp_sdfp,
+        __s_dnum_d_dlevel_d,
+        cptr.ldI16o(u, $you_uz),
+        cptr.ldI16o(u, $you_uz + $d_level_dlevel)
+    );
+    fprintf(
+        tp_sdfp,
+        __s_hero_x_d_y_d_hp_d_hpmax_d,
+        cptr.ldI16(u),
+        cptr.ldI16o(u, $you_uy),
+        cptr.ldI32o(u, $you_uhp),
+        cptr.ldI32o(u, $you_uhpmax)
+    );
     fprintf(tp_sdfp, __s_pw_d_pwmax_d, cptr.ldI32o(u, $you_uen), cptr.ldI32o(u, $you_uenmax));
-    fprintf(tp_sdfp, __s_hunger_u_lvl_d_exp_ld, cptr.ldI32o(u, $you_uhs), cptr.ldI32o(u, $you_ulevel), cptr.ldI64o(u, $you_uexp));
+    fprintf(
+        tp_sdfp,
+        __s_hunger_u_lvl_d_exp_ld,
+        cptr.ldI32o(u, $you_uhs),
+        cptr.ldI32o(u, $you_ulevel),
+        cptr.ldI64o(u, $you_uexp)
+    );
     fprintf(tp_sdfp, __s_gold_ld, money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)));
     fprintf(tp_sdfp, __s_luck_d, Luck());
-    fprintf(tp_sdfp, __s_str_d_dex_d_con_d_int_d_wis_d_cha_d, (acurr(NHC.A_STR)), (acurr(NHC.A_DEX)), (acurr(NHC.A_CON)), (acurr(NHC.A_INT)), (acurr(NHC.A_WIS)), (acurr(NHC.A_CHA)));
+    fprintf(
+        tp_sdfp,
+        __s_str_d_dex_d_con_d_int_d_wis_d_cha_d,
+        (acurr(NHC.A_STR)),
+        (acurr(NHC.A_DEX)),
+        (acurr(NHC.A_CON)),
+        (acurr(NHC.A_INT)),
+        (acurr(NHC.A_WIS)),
+        (acurr(NHC.A_CHA))
+    );
     fprintf(tp_sdfp, __s_rbrace);
 
     /* fmon in chain order -- order itself is gameplay semantics
      * (monster scheduling walks this list). */
     fprintf(tp_sdfp, __s_mons);
     first = 1;
-    for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+    for (
+        mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+        mtmp;
+        mtmp = cptr.ldPtr(mtmp)
+    ) {
         if (!first)
             fputc(44, tp_sdfp);
         first = 0;
-        fprintf(tp_sdfp, __s_id_u_pm_d_x_d_y_d_hp_d_hpmax_d, cptr.ldI32o(mtmp, $monst_m_id), cptr.ldI16o(mtmp, $monst_mnum), cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my), cptr.ldI32o(mtmp, $monst_mhp), cptr.ldI32o(mtmp, $monst_mhpmax));
-        fprintf(tp_sdfp, __s_mlvl_d_tame_d_peace_d_flee_d_fleetim_d, cptr.ld1uo(mtmp, $monst_m_lev), cptr.ld1so(mtmp, $monst_mtame), (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0, (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0, (cptr.ldI32o(mtmp, $monst_mfleetim) & 127) | 0);
-        fprintf(tp_sdfp, __s_sleep_d_canmove_d_conf_d_stun_d, (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0, (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0, (cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0, (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0);
-        fprintf(tp_sdfp, __s_speed_d_mux_d_muy_d_strat_lu, (cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0, cptr.ldI16o(mtmp, $monst_mux), cptr.ldI16o(mtmp, $monst_muy), cptr.ldU64o(mtmp, $monst_mstrategy));
+        fprintf(
+            tp_sdfp,
+            __s_id_u_pm_d_x_d_y_d_hp_d_hpmax_d,
+            cptr.ldI32o(mtmp, $monst_m_id),
+            cptr.ldI16o(mtmp, $monst_mnum),
+            cptr.ldI16o(mtmp, $monst_mx),
+            cptr.ldI16o(mtmp, $monst_my),
+            cptr.ldI32o(mtmp, $monst_mhp),
+            cptr.ldI32o(mtmp, $monst_mhpmax)
+        );
+        fprintf(
+            tp_sdfp,
+            __s_mlvl_d_tame_d_peace_d_flee_d_fleetim_d,
+            cptr.ld1uo(mtmp, $monst_m_lev),
+            cptr.ld1so(mtmp, $monst_mtame),
+            (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0,
+            (cptr.ldI32o(mtmp, $monst_mflee) & 1) | 0,
+            (cptr.ldI32o(mtmp, $monst_mfleetim) & 127) | 0
+        );
+        fprintf(
+            tp_sdfp,
+            __s_sleep_d_canmove_d_conf_d_stun_d,
+            (cptr.ldI32o(mtmp, $monst_msleeping) & 1) | 0,
+            (cptr.ldI32o(mtmp, $monst_mcanmove) & 1) | 0,
+            (cptr.ldI32o(mtmp, $monst_mconf) & 1) | 0,
+            (cptr.ldI32o(mtmp, $monst_mstun) & 1) | 0
+        );
+        fprintf(
+            tp_sdfp,
+            __s_speed_d_mux_d_muy_d_strat_lu,
+            (cptr.ldI32o(mtmp, $monst_mspeed) & 3) | 0,
+            cptr.ldI16o(mtmp, $monst_mux),
+            cptr.ldI16o(mtmp, $monst_muy),
+            cptr.ldU64o(mtmp, $monst_mstrategy)
+        );
     }
     fprintf(tp_sdfp, __s_rbrack);
 
@@ -1079,10 +1450,37 @@ export function teleport_state_dump() {
         if (!first)
             fputc(44, tp_sdfp);
         first = 0;
-        fprintf(tp_sdfp, __s_id_u_otyp_d_quan_ld_oc_d_let_d, cptr.ldI32o(otmp, $obj_o_id), cptr.ldI16o(otmp, $obj_otyp), cptr.ldI64o(otmp, $obj_quan), cptr.ld1so(otmp, $obj_oclass), cptr.ld1so(otmp, $obj_invlet));
-        fprintf(tp_sdfp, __s_spe_d_worn_ld, cptr.ld1so(otmp, $obj_spe), cptr.ldI64o(otmp, $obj_owornmask));
-        fprintf(tp_sdfp, __s_buc_d_known_d_dknown_d_bknown_d, (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0 ? 2 : ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? 1 : 0), (cptr.ldI32o(otmp, $obj_known) & 1) | 0, (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0, (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0);
-        fprintf(tp_sdfp, __s_eroded_d_eroded2_d, (cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0, (cptr.ldI32o(otmp, $obj_oeroded2) & 3) | 0);
+        fprintf(
+            tp_sdfp,
+            __s_id_u_otyp_d_quan_ld_oc_d_let_d,
+            cptr.ldI32o(otmp, $obj_o_id),
+            cptr.ldI16o(otmp, $obj_otyp),
+            cptr.ldI64o(otmp, $obj_quan),
+            cptr.ld1so(otmp, $obj_oclass),
+            cptr.ld1so(otmp, $obj_invlet)
+        );
+        fprintf(
+            tp_sdfp,
+            __s_spe_d_worn_ld,
+            cptr.ld1so(otmp, $obj_spe),
+            cptr.ldI64o(otmp, $obj_owornmask)
+        );
+        fprintf(
+            tp_sdfp,
+            __s_buc_d_known_d_dknown_d_bknown_d,
+            (cptr.ldI32o(otmp, $obj_blessed) & 1) | 0
+                ? 2
+                : ((cptr.ldI32o(otmp, $obj_cursed) & 1) | 0 ? 1 : 0),
+            (cptr.ldI32o(otmp, $obj_known) & 1) | 0,
+            (cptr.ldI32o(otmp, $obj_dknown) & 1) | 0,
+            (cptr.ldI32o(otmp, $obj_bknown) & 1) | 0
+        );
+        fprintf(
+            tp_sdfp,
+            __s_eroded_d_eroded2_d,
+            (cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0,
+            (cptr.ldI32o(otmp, $obj_oeroded2) & 3) | 0
+        );
     }
     fprintf(tp_sdfp, __s_rbrack_rbrace_nl);
     fflush(tp_sdfp);

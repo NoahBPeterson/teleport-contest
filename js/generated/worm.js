@@ -28,17 +28,18 @@ import { rnd_nextto_goodpos } from './trap.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NHFILE_mode = FLD.NHFILE_mode, $context_info_mon_moving = FLD.context_info_mon_moving,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $monst_data = FLD.monst_data, $monst_female = FLD.monst_female,
-    $monst_m_lev = FLD.monst_m_lev, $monst_mcloned = FLD.monst_mcloned, $monst_mextra = FLD.monst_mextra,
-    $monst_mhp = FLD.monst_mhp, $monst_mhpmax = FLD.monst_mhpmax, $monst_mtame = FLD.monst_mtame,
-    $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $monst_wormno = FLD.monst_wormno,
-    $prop_intrinsic = FLD.prop_intrinsic, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_prop = FLD.sizeof_prop, $wseg_wx = FLD.wseg_wx, $wseg_wy = FLD.wseg_wy,
-    $you_uprops = FLD.you_uprops, $you_uy = FLD.you_uy;
+      $dlevel_t_monsters = FLD.dlevel_t_monsters,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $monst_data = FLD.monst_data,
+      $monst_female = FLD.monst_female, $monst_m_lev = FLD.monst_m_lev,
+      $monst_mcloned = FLD.monst_mcloned, $monst_mextra = FLD.monst_mextra,
+      $monst_mhp = FLD.monst_mhp, $monst_mhpmax = FLD.monst_mhpmax, $monst_mtame = FLD.monst_mtame,
+      $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $monst_wormno = FLD.monst_wormno,
+      $prop_intrinsic = FLD.prop_intrinsic, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_prop = FLD.sizeof_prop, $wseg_wx = FLD.wseg_wx, $wseg_wy = FLD.wseg_wy,
+      $you_uprops = FLD.you_uprops, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_wormgone_wormno_is_0 = cptr.lit("wormgone: wormno is 0");
@@ -199,7 +200,15 @@ function toss_wsegs(curr, display_update) {
         /* remove from level.monsters[][];
            need to check curr->wx for genocided while migrating_mon */
         if (cptr.ldI16o(curr, $wseg_wx)) {
-            cptr.stPtro3(svl, cptr.ldI16o(curr, $wseg_wx), 168, cptr.ldI16o(curr, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+            cptr.stPtro3(
+                svl,
+                cptr.ldI16o(curr, $wseg_wx),
+                168,
+                cptr.ldI16o(curr, $wseg_wy),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters,
+                null
+            );
 
             /* update screen before deallocation */
             if (display_update)
@@ -247,7 +256,15 @@ export function worm_move(worm) {
      *  Place a segment at the old worm head.  The head has already moved.
      */
     seg = cptr.ldPtro(wheads, wnum, 8);
-    cptr.stPtro3(svl, cptr.ldI16o(seg, $wseg_wx), 168, cptr.ldI16o(seg, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, worm);
+    cptr.stPtro3(
+        svl,
+        cptr.ldI16o(seg, $wseg_wx),
+        168,
+        cptr.ldI16o(seg, $wseg_wy),
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_monsters,
+        worm
+    );
     newsym(cptr.ldI16o(seg, $wseg_wx), cptr.ldI16o(seg, $wseg_wy));  /* display the new segment */
 
     /*
@@ -269,20 +286,35 @@ export function worm_move(worm) {
         /* first set up for the next time to grow */
         if (!cptr.ldI64o(wgrowtime, wnum, 8)) {
             /* new worm; usually grow a tail segment on its next turn */
-            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnd(5))), 8);
+            cptr.stI64o(
+                wgrowtime,
+                wnum,
+                BigInt.asIntN(
+                    64,
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(rnd(5))
+                ),
+                8
+            );
         } else {
             let mmove = mcalcmove(worm, 0);
             let incr = ((rn2(10) + 2) | 0);
 
             incr = ((Math.imul(incr, NHM.NORMAL_SPEED)) / ((mmove) > 1 ? (mmove) : 1)) | 0;
-            cptr.stI64o(wgrowtime, wnum, BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(incr)), 8);
+            cptr.stI64o(
+                wgrowtime,
+                wnum,
+                BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) + BigInt(incr)),
+                8
+            );
         }
 
         /* increase HP based on number of segments; if it has shrunk, it
            won't gain new HP until regaining previous peak segment count;
            when wounded (whether from damage or from shrinking), the HP
            which might have been 'new' will heal */
-        whplimit = !cptr.ld1uo(worm, $monst_m_lev) ? 4 : (Math.imul(8, cptr.ld1uo(worm, $monst_m_lev)));
+        whplimit = !cptr.ld1uo(worm, $monst_m_lev)
+                ? 4
+                : (Math.imul(8, cptr.ld1uo(worm, $monst_m_lev)));
         /* note: wsegs includes the hidden segment co-located with the head */
         if (wsegs > 33)
             whplimit = (whplimit + Math.imul(2, ((wsegs - 33) | 0))) | 0, wsegs = 33;
@@ -366,7 +398,11 @@ export function wormgone(worm) {
        when a long worm gets created by a polymorph zap, it gets flagged
        with MCORPSENM()==PM_LONG_WORM so that the same zap won't trigger
        another polymorph if it hits the new tail */
-    if (cptr.eq(cptr.ldPtro(worm, $monst_data), cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)) && has_mcorpsenm(worm))
+    if (cptr.eq(
+        cptr.ldPtro(worm, $monst_data),
+        cptr.add(mons, NHC.PM_LONG_WORM, $sizeof_permonst)
+    ) &&
+            has_mcorpsenm(worm))
         cptr.stI32o(cptr.ldPtro((worm), $monst_mextra), $mextra_mcorpsenm, NHC.NON_PM);  /* no longer polymorph-proof */
 }
 
@@ -392,8 +428,17 @@ export function wormhitu(worm) {
      *  Head has already had a chance to attack, so the dummy tail segment
      *  sharing its location should be skipped.
      */
-    for (seg = cptr.ldPtro(wtails, wnum, 8); !cptr.eq(seg, cptr.ldPtro(wheads, wnum, 8)); seg = cptr.ldPtr(seg))
-        if (dist2((cptr.ldI16o(seg, $wseg_wx)), (cptr.ldI16o(seg, $wseg_wy)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) < 3)
+    for (
+        seg = cptr.ldPtro(wtails, wnum, 8);
+        !cptr.eq(seg, cptr.ldPtro(wheads, wnum, 8));
+        seg = cptr.ldPtr(seg)
+    )
+        if (dist2(
+            (cptr.ldI16o(seg, $wseg_wx)),
+            (cptr.ldI16o(seg, $wseg_wy)),
+            cptr.ldI16(u),
+            cptr.ldI16o(u, $you_uy)
+        ) < 3)
             if (mattacku(worm))
                 return 1;  /* your passive ability killed the worm */
     return 0;
@@ -407,7 +452,13 @@ export function wormhitu(worm) {
  *  there is a chance that the worm will be cut in half, and a chance
  *  that both halves will survive.
  */
-/** C ref: worm.c:373 — @param {CPtr<struct monst>} worm @param {CInt} x @param {CInt} y @param {CInt} cuttier */
+/**
+ * C ref: worm.c:373
+ * @param {CPtr<struct monst>} worm
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} cuttier
+ */
 export function cutworm(worm, x, y, cuttier) {
     let curr;
     let new_tail;
@@ -490,12 +541,22 @@ export function cutworm(worm, x, y, cuttier) {
 
     /* Devalue the monster level of both halves of the worm.
        Note: m_lev is always at least 3 in order to get this far. */
-    cptr.st1o(worm, $monst_m_lev, uchar((((cptr.ld1uo(worm, $monst_m_lev) - 2) >>> 0) > 3 ? ((cptr.ld1uo(worm, $monst_m_lev) - 2) >>> 0) : 3)));
+    cptr.st1o(
+        worm,
+        $monst_m_lev,
+        uchar((((cptr.ld1uo(worm, $monst_m_lev) - 2) >>> 0) > 3
+            ? ((cptr.ld1uo(worm, $monst_m_lev) - 2) >>> 0)
+            : 3))
+    );
     cptr.st1o(new_worm, $monst_m_lev, cptr.ld1uo(worm, $monst_m_lev));
 
     /* Calculate the lower-level mhp; use <N>d8 for long worms.
        Can't use newmonhp() here because it would reset m_lev. */
-    cptr.stI32o(new_worm, $monst_mhpmax, cptr.stI32o(new_worm, $monst_mhp, d((cptr.ld1uo(new_worm, $monst_m_lev)), 8)));
+    cptr.stI32o(
+        new_worm,
+        $monst_mhpmax,
+        cptr.stI32o(new_worm, $monst_mhp, d((cptr.ld1uo(new_worm, $monst_m_lev)), 8))
+    );
     cptr.stI32o(worm, $monst_mhpmax, d((cptr.ld1uo(worm, $monst_m_lev)), 8));  /* new maxHP for old worm */
     if (cptr.ldI32o(worm, $monst_mhpmax) < cptr.ldI32o(worm, $monst_mhp))
         cptr.stI32o(worm, $monst_mhp, cptr.ldI32o(worm, $monst_mhpmax));
@@ -542,7 +603,23 @@ export function detect_wsegs(worm, use_detection_glyph) {
     let what_tail = (Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : NHC.PM_LONG_WORM_TAIL);
 
     while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
-        num = use_detection_glyph ? (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_DETECT_MALE_OFF : NHC.GLYPH_DETECT_FEM_OFF)) | 0) : (cptr.ld1so(worm, $monst_mtame) ? (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_PET_MALE_OFF : NHC.GLYPH_PET_FEM_OFF)) | 0) : (((what_tail) + ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) == NHC.MALE) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0));
+        num = use_detection_glyph
+                ? (((what_tail) +
+                    ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) ==
+                        NHC.MALE)
+                        ? NHC.GLYPH_DETECT_MALE_OFF
+                        : NHC.GLYPH_DETECT_FEM_OFF)) | 0)
+                : (cptr.ld1so(worm, $monst_mtame)
+                    ? (((what_tail) +
+                        ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) ==
+                            NHC.MALE)
+                            ? NHC.GLYPH_PET_MALE_OFF
+                            : NHC.GLYPH_PET_FEM_OFF)) | 0)
+                    : (((what_tail) +
+                        ((((cptr.ldI32o(worm, $monst_female) & 1) | 0 ? NHC.FEMALE : NHC.MALE) ==
+                            NHC.MALE)
+                            ? NHC.GLYPH_MON_MALE_OFF
+                            : NHC.GLYPH_MON_FEM_OFF)) | 0));
         show_glyph(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy), num);
         curr = cptr.ldPtr(curr);
     }
@@ -650,10 +727,25 @@ export function place_wsegs(worm, oldworm) {
     while (!cptr.eq(curr, cptr.ldPtro(wheads, (cptr.ldI32o(worm, $monst_wormno) & 31), 8))) {
         let x = cptr.ldI16o(curr, $wseg_wx);
         let y = cptr.ldI16o(curr, $wseg_wy);
-        let mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
+        let mtmp = (cptr.ldPtro3(
+            svl,
+            x,
+            168,
+            y,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters
+        ));
 
         if (oldworm && cptr.eq(mtmp, oldworm))
-            cptr.stPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+            cptr.stPtro3(
+                svl,
+                x,
+                168,
+                y,
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters,
+                null
+            );
         else if (mtmp)
             impossible(__s_placing_worm_seg_d_d_over_another_mon, x, y);
         else if (oldworm)
@@ -663,7 +755,8 @@ export function place_wsegs(worm, oldworm) {
         curr = cptr.ldPtr(curr);
     }
     /* head segment is co-located with worm itself so not placed on the map */
-    cptr.stI16o(curr, $wseg_wx, cptr.ldI16o(worm, $monst_mx)), cptr.stI16o(curr, $wseg_wy, cptr.ldI16o(worm, $monst_my));
+    cptr.stI16o(curr, $wseg_wx, cptr.ldI16o(worm, $monst_mx)),
+            cptr.stI16o(curr, $wseg_wy, cptr.ldI16o(worm, $monst_my));
 }
 
 /* called from mon_sanity_check(mon.c) */
@@ -701,8 +794,22 @@ export function sanity_check_worm(worm) {
         x = cptr.ldI16o(curr, $wseg_wx), y = cptr.ldI16o(curr, $wseg_wy);
         if (!isok(i16(x), i16(y)))
             impossible(__s_worm_seg_not_isok_d_d, x, y);
-        else if (!cptr.eq(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters), worm))
-            impossible(__s_mon_s_at_seg_location_is_not_worm_s, fmt_ptr(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), fmt_ptr(worm));
+        else if (!cptr.eq(
+            cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters),
+            worm
+        ))
+            impossible(
+                __s_mon_s_at_seg_location_is_not_worm_s,
+                fmt_ptr(cptr.ldPtro3(
+                    svl,
+                    x,
+                    168,
+                    y,
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters
+                )),
+                fmt_ptr(worm)
+            );
 
         curr = cptr.ldPtr(curr);
     }
@@ -727,7 +834,15 @@ export function remove_worm(worm) {
 
     while (curr) {
         if (cptr.ldI16o(curr, $wseg_wx)) {
-            cptr.stPtro3(svl, cptr.ldI16o(curr, $wseg_wx), 168, cptr.ldI16o(curr, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+            cptr.stPtro3(
+                svl,
+                cptr.ldI16o(curr, $wseg_wx),
+                168,
+                cptr.ldI16o(curr, $wseg_wy),
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters,
+                null
+            );
             newsym(cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy));
             cptr.stI16o(curr, $wseg_wx, 0);
         }
@@ -760,18 +875,49 @@ export function place_worm_tail_randomly(worm, x, y) {
         /* single segment, co-located with worm;
            should either have same coordinates or have seg->wx==0
            to indicate that it is not currently on the map */
-        if (cptr.ldI16o(curr, $wseg_wx) && (cptr.ldI16o(curr, $wseg_wx) != cptr.ldI16o(worm, $monst_mx) || cptr.ldI16o(curr, $wseg_wy) != cptr.ldI16o(worm, $monst_my))) {
-            impossible(__s_place_worm_tail_randomly_tail_segment, cptr.ldI16o(curr, $wseg_wx), cptr.ldI16o(curr, $wseg_wy), cptr.ldI16o(worm, $monst_mx), cptr.ldI16o(worm, $monst_my));
-            if (cptr.eq((cptr.ldPtro3(svl, cptr.ldI16o(curr, $wseg_wx), 168, cptr.ldI16o(curr, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), worm))
-                cptr.stPtro3(svl, cptr.ldI16o(curr, $wseg_wx), 168, cptr.ldI16o(curr, $wseg_wy), 8, $instance_globals_saved_l_level + $dlevel_t_monsters, null);
+        if (cptr.ldI16o(curr, $wseg_wx) &&
+                (cptr.ldI16o(curr, $wseg_wx) != cptr.ldI16o(worm, $monst_mx) ||
+                    cptr.ldI16o(curr, $wseg_wy) != cptr.ldI16o(worm, $monst_my))) {
+            impossible(
+                __s_place_worm_tail_randomly_tail_segment,
+                cptr.ldI16o(curr, $wseg_wx),
+                cptr.ldI16o(curr, $wseg_wy),
+                cptr.ldI16o(worm, $monst_mx),
+                cptr.ldI16o(worm, $monst_my)
+            );
+            if (cptr.eq(
+                (cptr.ldPtro3(
+                    svl,
+                    cptr.ldI16o(curr, $wseg_wx),
+                    168,
+                    cptr.ldI16o(curr, $wseg_wy),
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters
+                )),
+                worm
+            ))
+                cptr.stPtro3(
+                    svl,
+                    cptr.ldI16o(curr, $wseg_wx),
+                    168,
+                    cptr.ldI16o(curr, $wseg_wy),
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters,
+                    null
+                );
         }
-        cptr.stI16o(curr, $wseg_wx, cptr.ldI16o(worm, $monst_mx)), cptr.stI16o(curr, $wseg_wy, cptr.ldI16o(worm, $monst_my));
+        cptr.stI16o(curr, $wseg_wx, cptr.ldI16o(worm, $monst_mx)),
+                cptr.stI16o(curr, $wseg_wy, cptr.ldI16o(worm, $monst_my));
         return;
     }
     /* remove head segment from map in case we end up calling toss_wsegs();
        if it doesn't get tossed, it will become the final tail segment and
        get new coordinates */
-    cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), $wseg_wx, cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), $wseg_wy, 0));
+    cptr.stI16o(
+        cptr.ldPtro(wheads, wnum, 8),
+        $wseg_wx,
+        cptr.stI16o(cptr.ldPtro(wheads, wnum, 8), $wseg_wy, 0)
+    );
 
     cptr.stPtro(wheads, wnum, new_tail = curr, 8);
     curr = cptr.ldPtr(curr);
@@ -784,7 +930,15 @@ export function place_worm_tail_randomly(worm, x, y) {
         let ny = cptr.box(i16(oy));
 
         if (rnd_nextto_goodpos(nx, ny, worm)) {
-            cptr.stPtro3(svl, nx.v, 168, ny.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters, worm);
+            cptr.stPtro3(
+                svl,
+                nx.v,
+                168,
+                ny.v,
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters,
+                worm
+            );
             cptr.stI16o(curr, $wseg_wx, i16((ox = nx.v)));
             cptr.stI16o(curr, $wseg_wy, i16((oy = ny.v)));
             cptr.stPtro(wtails, wnum, curr, 8);
@@ -803,7 +957,10 @@ export function place_worm_tail_randomly(worm, x, y) {
 /* for size_monst(cmd.c) to support #stats */
 /** C ref: worm.c:827 — @param {CPtr<struct monst>} worm @returns {CInt} */
 export function size_wseg(worm) {
-    return Number(BigInt.asIntN(32, (BigInt.asUintN(64, BigInt.asUintN(64, BigInt(count_wsegs(worm))) * 16n))));
+    return Number(BigInt.asIntN(
+        32,
+        (BigInt.asUintN(64, BigInt.asUintN(64, BigInt(count_wsegs(worm))) * 16n))
+    ));
 }
 
 /*  count_wsegs()
@@ -815,7 +972,11 @@ export function count_wsegs(mtmp) {
     let curr;
 
     if ((cptr.ldI32o(mtmp, $monst_wormno) & 31)) {
-        for (curr = cptr.ldPtr(cptr.ldPtro(wtails, (cptr.ldI32o(mtmp, $monst_wormno) & 31), 8)); curr; curr = cptr.ldPtr(curr))
+        for (
+            curr = cptr.ldPtr(cptr.ldPtro(wtails, (cptr.ldI32o(mtmp, $monst_wormno) & 31), 8));
+            curr;
+            curr = cptr.ldPtr(curr)
+        )
             i++;
     }
     return i;
@@ -860,7 +1021,15 @@ export function worm_known(worm) {
     let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
     while (curr) {
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(curr, $wseg_wy), 8), cptr.ldI16o(curr, $wseg_wx)) & NHM.IN_SIGHT) != 0))
+        if (((cptr.ld1uo(
+            cptr.ldPtro(
+                cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                cptr.ldI16o(curr, $wseg_wy),
+                8
+            ),
+            cptr.ldI16o(curr, $wseg_wx)
+        ) &
+                NHM.IN_SIGHT) != 0))
             return 1;
         curr = cptr.ldPtr(curr);
     }
@@ -869,7 +1038,14 @@ export function worm_known(worm) {
 
 /* would moving from <x1,y1> to <x2,y2> involve passing between two
    consecutive segments of the same worm? */
-/** C ref: worm.c:898 — @param {CInt} x1 @param {CInt} y1 @param {CInt} x2 @param {CInt} y2 @returns {CInt} */
+/**
+ * C ref: worm.c:898
+ * @param {CInt} x1
+ * @param {CInt} y1
+ * @param {CInt} x2
+ * @param {CInt} y2
+ * @returns {CInt}
+ */
 export function worm_cross(x1, y1, x2, y2) {
     let worm;
     let curr;
@@ -894,13 +1070,35 @@ export function worm_cross(x1, y1, x2, y2) {
         return 0;
 
     /* is the same monster at <x1,y2> and at <x2,y1>? */
-    worm = (cptr.ldPtro3(svl, x1, 168, y2, 8, $instance_globals_saved_l_level + $dlevel_t_monsters));
-    if (!worm || !cptr.eq((cptr.ldPtro3(svl, x2, 168, y1, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), worm))
+    worm = (cptr.ldPtro3(
+        svl,
+        x1,
+        168,
+        y2,
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_monsters
+    ));
+    if (!worm ||
+            !cptr.eq(
+                (cptr.ldPtro3(
+                    svl,
+                    x2,
+                    168,
+                    y1,
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters
+                )),
+                worm
+            ))
         return 0;
 
     /* same monster is at both adjacent spots, so must be a worm; we need
        to figure out if the two spots are occupied by consecutive segments */
-    for (curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8); curr; curr = wnxt) {
+    for (
+        curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
+        curr;
+        curr = wnxt
+    ) {
         wnxt = cptr.ldPtr(curr);
         if (!wnxt)
             break;  /* no next segment; can't continue */
@@ -908,27 +1106,54 @@ export function worm_cross(x1, y1, x2, y2) {
         /* we don't know which of <x1,y2> or <x2,y1> we'll hit first, but
            whichever it is, they're consecutive iff next seg is the other */
         if (cptr.ldI16o(curr, $wseg_wx) == x1 && cptr.ldI16o(curr, $wseg_wy) == y2)
-            return schar((cptr.ldI16o(wnxt, $wseg_wx) == x2 && cptr.ldI16o(wnxt, $wseg_wy) == y1 ? 1 : 0));
+            return schar((cptr.ldI16o(wnxt, $wseg_wx) == x2 && cptr.ldI16o(wnxt, $wseg_wy) == y1
+                    ? 1
+                    : 0));
         if (cptr.ldI16o(curr, $wseg_wx) == x2 && cptr.ldI16o(curr, $wseg_wy) == y1)
-            return schar((cptr.ldI16o(wnxt, $wseg_wx) == x1 && cptr.ldI16o(wnxt, $wseg_wy) == y2 ? 1 : 0));
+            return schar((cptr.ldI16o(wnxt, $wseg_wx) == x1 && cptr.ldI16o(wnxt, $wseg_wy) == y2
+                    ? 1
+                    : 0));
     }
     /* should never reach here... */
     return 0;
 }
 
 /* construct an index number for a worm tail segment */
-/** C ref: worm.c:946 — @param {CPtr<struct monst>} worm @param {CInt} x @param {CInt} y @returns {CInt} */
+/**
+ * C ref: worm.c:946
+ * @param {CPtr<struct monst>} worm
+ * @param {CInt} x
+ * @param {CInt} y
+ * @returns {CInt}
+ */
 export function wseg_at(worm, x, y) {
     let res = 0;
 
-    if (worm && (cptr.ldI32o(worm, $monst_wormno) & 31) | 0 && cptr.eq((cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), worm)) {
+    if (worm &&
+            (cptr.ldI32o(worm, $monst_wormno) & 31) | 0 &&
+            cptr.eq(
+                (cptr.ldPtro3(
+                    svl,
+                    x,
+                    168,
+                    y,
+                    8,
+                    $instance_globals_saved_l_level + $dlevel_t_monsters
+                )),
+                worm
+            )) {
         let curr;
         let i;
         let n;
         let wx = i16(x);
         let wy = i16(y);
 
-        for (i = 0, curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8); curr; curr = cptr.ldPtr(curr)) {
+        for (
+            i = 0,
+            curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
+            curr;
+            curr = cptr.ldPtr(curr)
+        ) {
             if (cptr.ldI16o(curr, $wseg_wx) == wx && cptr.ldI16o(curr, $wseg_wy) == wy)
                 break;
             ++i;

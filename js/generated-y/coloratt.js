@@ -25,25 +25,27 @@ import { alloc, dupstr } from './alloc.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $attr_names_attr = FLD.attr_names_attr, $color_attr_attr = FLD.color_attr_attr,
-    $color_names_color = FLD.color_names_color, $const_globals_zeroany = FLD.const_globals_zeroany,
-    $glyph_map_color256idx = FLD.glyph_map_color256idx, $glyph_map_customcolor = FLD.glyph_map_customcolor,
-    $instance_flags_use_menu_color = FLD.instance_flags_use_menu_color,
-    $instance_globals_c_color_colorings = FLD.instance_globals_c_color_colorings,
-    $instance_globals_m_menu_colorings = FLD.instance_globals_m_menu_colorings,
-    $instance_globals_s_save_colorings = FLD.instance_globals_s_save_colorings,
-    $instance_globals_s_save_menucolors = FLD.instance_globals_s_save_menucolors,
-    $menucoloring_attr = FLD.menucoloring_attr, $menucoloring_color = FLD.menucoloring_color,
-    $menucoloring_next = FLD.menucoloring_next, $menucoloring_origstr = FLD.menucoloring_origstr,
-    $nethack_color_b = FLD.nethack_color_b, $nethack_color_g = FLD.nethack_color_g,
-    $nethack_color_name = FLD.nethack_color_name, $nethack_color_r = FLD.nethack_color_r,
-    $nethack_color_rgbindex = FLD.nethack_color_rgbindex,
-    $nethack_color_tableindex = FLD.nethack_color_tableindex, $sizeof_attr_names = FLD.sizeof_attr_names,
-    $sizeof_color_names = FLD.sizeof_color_names, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_nethack_color = FLD.sizeof_nethack_color,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu;
+      $color_names_color = FLD.color_names_color,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $glyph_map_color256idx = FLD.glyph_map_color256idx,
+      $glyph_map_customcolor = FLD.glyph_map_customcolor,
+      $instance_flags_use_menu_color = FLD.instance_flags_use_menu_color,
+      $instance_globals_c_color_colorings = FLD.instance_globals_c_color_colorings,
+      $instance_globals_m_menu_colorings = FLD.instance_globals_m_menu_colorings,
+      $instance_globals_s_save_colorings = FLD.instance_globals_s_save_colorings,
+      $instance_globals_s_save_menucolors = FLD.instance_globals_s_save_menucolors,
+      $menucoloring_attr = FLD.menucoloring_attr, $menucoloring_color = FLD.menucoloring_color,
+      $menucoloring_next = FLD.menucoloring_next, $menucoloring_origstr = FLD.menucoloring_origstr,
+      $nethack_color_b = FLD.nethack_color_b, $nethack_color_g = FLD.nethack_color_g,
+      $nethack_color_name = FLD.nethack_color_name, $nethack_color_r = FLD.nethack_color_r,
+      $nethack_color_rgbindex = FLD.nethack_color_rgbindex,
+      $nethack_color_tableindex = FLD.nethack_color_tableindex,
+      $sizeof_attr_names = FLD.sizeof_attr_names, $sizeof_color_names = FLD.sizeof_color_names,
+      $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_nethack_color = FLD.sizeof_nethack_color,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_black = cptr.lit("black");
@@ -1413,7 +1415,12 @@ export function colortable_to_int32(cte) {
     let clr = 16777224;
 
     if (cptr.ldI32(cte) == NHC.rgb_color)
-        clr = Number(BigInt.asIntN(32, ((cptr.ldI64o(cte, $nethack_color_r) << 16n) | (cptr.ldI64o(cte, $nethack_color_g) << 8n) | cptr.ldI64o(cte, $nethack_color_b))));
+        clr = Number(BigInt.asIntN(
+            32,
+            ((cptr.ldI64o(cte, $nethack_color_r) << 16n) |
+                (cptr.ldI64o(cte, $nethack_color_g) << 8n) |
+                cptr.ldI64o(cte, $nethack_color_b))
+        ));
     else if (cptr.ldI32(cte) == NHC.nh_color)
         clr = cptr.ldI32o(cte, $nethack_color_tableindex) | NHM.NH_BASIC_COLOR;
     return clr;
@@ -1424,7 +1431,12 @@ const __static_color_attr_to_str_buf = new Uint8Array(256); /** C ref: coloratt.
 /** C ref: coloratt.c:249 — @param {CPtr<color_attr>} ca @returns {CPtr<char>} */
 export function color_attr_to_str(ca) {
 
-    void cptr.sprintf(cptr.decay(__static_color_attr_to_str_buf), __s_s_s, clr2colorname(cptr.ldI32(ca)), attr2attrname(cptr.ldI32o(ca, $color_attr_attr)));
+    void cptr.sprintf(
+        cptr.decay(__static_color_attr_to_str_buf),
+        __s_s_s,
+        clr2colorname(cptr.ldI32(ca)),
+        attr2attrname(cptr.ldI32o(ca, $color_attr_attr))
+    );
     return cptr.decay(__static_color_attr_to_str_buf);
 }
 
@@ -1437,7 +1449,12 @@ export function* color_attr_parse_str(ca, str) {
     let c = NHM.NO_COLOR;
     let a = NHM.ATR_NONE;
 
-    void __builtin___strncpy_chk(cptr.decay(buf), str, 255n, __builtin_object_size(cptr.decay(buf), 1));
+    void __builtin___strncpy_chk(
+        cptr.decay(buf),
+        str,
+        255n,
+        __builtin_object_size(cptr.decay(buf), 1)
+    );
     cptr.st1o(cptr.decay(buf), 255n, 0, 1);
 
     if ((amp = cptr.strchr(cptr.decay(buf), 38)) !== null)
@@ -1473,7 +1490,12 @@ export function* color_attr_parse_str(ca, str) {
     return 1;
 }
 
-/** C ref: coloratt.c:304 — @param {CPtr<color_attr>} ca @param {CPtr<char>} prompt @returns {CInt} */
+/**
+ * C ref: coloratt.c:304
+ * @param {CPtr<color_attr>} ca
+ * @param {CPtr<char>} prompt
+ * @returns {CInt}
+ */
 export function* query_color_attr(ca, prompt) {
     let c;
     let a;
@@ -1511,7 +1533,8 @@ export function clr2colorname(clr) {
     let i;
 
     for (i = 0; i < 27; i++)
-        if (cptr.ldPtro(colornames, i, $sizeof_color_names) && cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color) == clr)
+        if (cptr.ldPtro(colornames, i, $sizeof_color_names) &&
+                cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color) == clr)
             return cptr.ldPtro(colornames, i, $sizeof_color_names);
     return null;
 }
@@ -1525,7 +1548,13 @@ export function* match_str2clr(str, suppress_msg) {
        (also junk like "_l i-gh_t---b l u e" but we won't worry about that);
        also copes with trailing space; caller has removed any leading space */
     for (i = 0; i < 27; i++)
-        if (cptr.ldPtro(colornames, i, $sizeof_color_names) && (yield* fuzzymatch(str, cptr.ldPtro(colornames, i, $sizeof_color_names), __s_sp_dash_us, 1))) {
+        if (cptr.ldPtro(colornames, i, $sizeof_color_names) &&
+                (yield* fuzzymatch(
+                    str,
+                    cptr.ldPtro(colornames, i, $sizeof_color_names),
+                    __s_sp_dash_us,
+                    1
+                ))) {
             c = cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color);
             break;
         }
@@ -1546,7 +1575,8 @@ export function* match_str2attr(str, complain) {
     let a = -1;
 
     for (i = 0; i < 11; i++)
-        if (cptr.ldPtro(attrnames, i, $sizeof_attr_names) && (yield* fuzzymatch(str, cptr.ldPtro(attrnames, i, $sizeof_attr_names), __s_sp_dash_us, 1))) {
+        if (cptr.ldPtro(attrnames, i, $sizeof_attr_names) &&
+                (yield* fuzzymatch(str, cptr.ldPtro(attrnames, i, $sizeof_attr_names), __s_sp_dash_us, 1))) {
             a = cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr);
             break;
         }
@@ -1578,7 +1608,19 @@ export function* query_attr(prompt, dflt_attr) {
         if (!cptr.ldPtro(attrnames, i, $sizeof_attr_names))
             break;
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr), clr, cptr.ldPtro(attrnames, i, $sizeof_attr_names), (cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr) == dflt_attr) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr),
+            clr,
+            cptr.ldPtro(attrnames, i, $sizeof_attr_names),
+            (cptr.ldI32o2(attrnames, i, $sizeof_attr_names, $attr_names_attr) == dflt_attr)
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __s_pick_an_attribute)));
     pick_cnt = (yield* select_menu(tmpwin, allow_many ? NHM.PICK_ANY : NHM.PICK_ONE, picks));
@@ -1592,7 +1634,9 @@ export function* query_attr(prompt, dflt_attr) {
                should be excluded if any other choices were picked */
             for (i = 0; i < pick_cnt; ++i) {
                 j = (cptr.ldI32o(picks.v, i, $sizeof_menu_item) - 1) | 0;
-                if (cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr) != NHM.ATR_NONE || pick_cnt == 1) {
+                if (cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr) !=
+                    NHM.ATR_NONE ||
+                        pick_cnt == 1) {
                     switch (cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr)) {
                         case NHM.ATR_NONE:
                         k = NHC.HL_NONE;
@@ -1623,7 +1667,8 @@ export function* query_attr(prompt, dflt_attr) {
             j = (cptr.ldI32o(picks.v, 0, $sizeof_menu_item) - 1) | 0;
             /* pick_cnt==2: explicitly picked something other than the
                preselected entry */
-            if (pick_cnt == 2 && cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr) == dflt_attr)
+            if (pick_cnt == 2 &&
+                    cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr) == dflt_attr)
                 j = (cptr.ldI32o(picks.v, 1, $sizeof_menu_item) - 1) | 0;
             k = cptr.ldI32o2(attrnames, j, $sizeof_attr_names, $attr_names_attr);
         }
@@ -1656,7 +1701,19 @@ export function* query_color(prompt, dflt_color) {
         if (!cptr.ldPtro(colornames, i, $sizeof_color_names))
             break;
         cptr.stI32(any, (i + 1) | 0);
-        (yield* add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.ldPtro(colornames, i, $sizeof_color_names), (cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color) == dflt_color) ? NHM.MENU_ITEMFLAGS_SELECTED : NHM.MENU_ITEMFLAGS_NONE));
+        (yield* add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            NHM.NO_COLOR,
+            cptr.ldPtro(colornames, i, $sizeof_color_names),
+            (cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color) == dflt_color)
+                ? NHM.MENU_ITEMFLAGS_SELECTED
+                : NHM.MENU_ITEMFLAGS_NONE
+        ));
     }
     (yield* Y.icall(end_menu()(tmpwin, (prompt && cptr.ld1s(prompt)) ? prompt : __s_pick_a_color)));
     pick_cnt = (yield* select_menu(tmpwin, NHM.PICK_ONE, picks));
@@ -1667,11 +1724,21 @@ export function* query_color(prompt, dflt_color) {
     (yield* basic_menu_colors(0));
 
     if (pick_cnt > 0) {
-        i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 0, $sizeof_menu_item) - 1) | 0, $sizeof_color_names, $color_names_color);
+        i = cptr.ldI32o2(
+            colornames,
+            (cptr.ldI32o(picks.v, 0, $sizeof_menu_item) - 1) | 0,
+            $sizeof_color_names,
+            $color_names_color
+        );
         /* pick_cnt==2: explicitly picked something other than the
            preselected entry */
         if (pick_cnt == 2 && i == NHM.NO_COLOR)
-            i = cptr.ldI32o2(colornames, (cptr.ldI32o(picks.v, 1, $sizeof_menu_item) - 1) | 0, $sizeof_color_names, $color_names_color);
+            i = cptr.ldI32o2(
+                colornames,
+                (cptr.ldI32o(picks.v, 1, $sizeof_menu_item) - 1) | 0,
+                $sizeof_color_names,
+                $color_names_color
+            );
         cptr.free(picks.v);
         return i;
     } else if (pick_cnt == 0) {
@@ -1690,13 +1757,25 @@ export function* query_color(prompt, dflt_color) {
 export function* basic_menu_colors(load_colors) {
     if (load_colors) {
         /* replace normal menu colors with a set specifically for colors */
-        cptr.st1o(gs, $instance_globals_s_save_menucolors, cptr.ld1so(iflags, $instance_flags_use_menu_color));
-        cptr.stPtro(gs, $instance_globals_s_save_colorings, cptr.ldPtro(gm, $instance_globals_m_menu_colorings));
+        cptr.st1o(
+            gs,
+            $instance_globals_s_save_menucolors,
+            cptr.ld1so(iflags, $instance_flags_use_menu_color)
+        );
+        cptr.stPtro(
+            gs,
+            $instance_globals_s_save_colorings,
+            cptr.ldPtro(gm, $instance_globals_m_menu_colorings)
+        );
 
         cptr.st1o(iflags, $instance_flags_use_menu_color, 1);
         if (cptr.ldPtro(gc, $instance_globals_c_color_colorings)) {
             /* use the alternate colorings which were set up previously */
-            cptr.stPtro(gm, $instance_globals_m_menu_colorings, cptr.ldPtro(gc, $instance_globals_c_color_colorings));
+            cptr.stPtro(
+                gm,
+                $instance_globals_m_menu_colorings,
+                cptr.ldPtro(gc, $instance_globals_c_color_colorings)
+            );
         } else {
             /* create the alternate colorings once */
             let cnm = new Uint8Array(128);
@@ -1720,25 +1799,47 @@ export function* basic_menu_colors(load_colors) {
                 c = cptr.ldI32o2(colornames, i, $sizeof_color_names, $color_names_color);
                 if (c == NHM.CLR_BLACK || c == NHM.CLR_WHITE || c == NHM.NO_COLOR)
                     continue;  /* skip these */
-                void cptr.sprintf(cptr.decay(cnm), patternfmt, cptr.ldPtro(colornames, i, $sizeof_color_names));
+                void cptr.sprintf(
+                    cptr.decay(cnm),
+                    patternfmt,
+                    cptr.ldPtro(colornames, i, $sizeof_color_names)
+                );
                 (yield* add_menu_coloring_parsed(cptr.decay(cnm), c, NHM.ATR_NONE));
             }
 
             /* right now, menu_colorings contains the alternate color list;
                remember that list for future pick-a-color instances and
                also keep it as is for this instance */
-            cptr.stPtro(gc, $instance_globals_c_color_colorings, cptr.ldPtro(gm, $instance_globals_m_menu_colorings));
+            cptr.stPtro(
+                gc,
+                $instance_globals_c_color_colorings,
+                cptr.ldPtro(gm, $instance_globals_m_menu_colorings)
+            );
         }
     } else {
         /* restore normal user-specified menu colors */
-        cptr.st1o(iflags, $instance_flags_use_menu_color, cptr.ld1so(gs, $instance_globals_s_save_menucolors));
-        cptr.stPtro(gm, $instance_globals_m_menu_colorings, cptr.ldPtro(gs, $instance_globals_s_save_colorings));
+        cptr.st1o(
+            iflags,
+            $instance_flags_use_menu_color,
+            cptr.ld1so(gs, $instance_globals_s_save_menucolors)
+        );
+        cptr.stPtro(
+            gm,
+            $instance_globals_m_menu_colorings,
+            cptr.ldPtro(gs, $instance_globals_s_save_colorings)
+        );
     }
 }
 
 const __static_add_menu_coloring_parsed_re_error = cptr.bytes("Menucolor regex error"); /** C ref: coloratt.c:587 — char[22] (function-static) */
 
-/** C ref: coloratt.c:585 — @param {CPtr<char>} str @param {CInt} c @param {CInt} a @returns {CInt} */
+/**
+ * C ref: coloratt.c:585
+ * @param {CPtr<char>} str
+ * @param {CInt} c
+ * @param {CInt} a
+ * @returns {CInt}
+ */
 export function* add_menu_coloring_parsed(str, c, a) {
     let tmp;
 
@@ -1755,7 +1856,11 @@ export function* add_menu_coloring_parsed(str, c, a) {
         /* free first in case reason for regcomp failure was out-of-memory */
         regex_free(cptr.ldPtr(tmp));
         cptr.free(tmp);
-        (yield* config_error_add(__s_s_s__2, cptr.decay(__static_add_menu_coloring_parsed_re_error), re_error_desc));
+        (yield* config_error_add(
+            __s_s_s__2,
+            cptr.decay(__static_add_menu_coloring_parsed_re_error),
+            re_error_desc
+        ));
         return 0;
     }
     cptr.stPtro(tmp, $menucoloring_next, cptr.ldPtro(gm, $instance_globals_m_menu_colorings));
@@ -1777,7 +1882,12 @@ export function* add_menu_coloring(tmpstr) {
     let amp;
     let str = new Uint8Array(256);
 
-    void __builtin___strncpy_chk(cptr.decay(str), tmpstr, 255n, __builtin_object_size(cptr.decay(str), 1));
+    void __builtin___strncpy_chk(
+        cptr.decay(str),
+        tmpstr,
+        255n,
+        __builtin_object_size(cptr.decay(str), 1)
+    );
     cptr.st1o(cptr.decay(str), 255n, 0, 1);
 
     if ((cs = cptr.strchr(cptr.decay(str), 61)) === null) {
@@ -1831,7 +1941,11 @@ export function free_menu_coloring() {
             cptr.free(cptr.ldPtro(tmp, $menucoloring_origstr));
             cptr.free(tmp);
         }
-        cptr.stPtro(gm, $instance_globals_m_menu_colorings, cptr.ldPtro(gc, $instance_globals_c_color_colorings));
+        cptr.stPtro(
+            gm,
+            $instance_globals_m_menu_colorings,
+            cptr.ldPtro(gc, $instance_globals_c_color_colorings)
+        );
         cptr.stPtro(gc, $instance_globals_c_color_colorings, null);
     } while (cptr.ldPtro(gm, $instance_globals_m_menu_colorings));
 }
@@ -1866,7 +1980,11 @@ export function count_menucolors() {
     let tmp;
     let count = 0;
 
-    for (tmp = cptr.ldPtro(gm, $instance_globals_m_menu_colorings); tmp; tmp = cptr.ldPtro(tmp, $menucoloring_next))
+    for (
+        tmp = cptr.ldPtro(gm, $instance_globals_m_menu_colorings);
+        tmp;
+        tmp = cptr.ldPtro(tmp, $menucoloring_next)
+    )
         count++;
     return count;
 }
@@ -1886,7 +2004,9 @@ export function* check_enhanced_colors(buf) {
     if ((color = (yield* match_str2clr(buf, 1))) != NHM.CLR_MAX) {
         retcolor = color | NHM.NH_BASIC_COLOR;
     } else if (sscanf(buf, __s_02x_02x_02x_c, r, g, b, xtra) >= 3) {
-        retcolor = !xtra.v ? (((((r.v << 16) >>> 0) | ((g.v << 8) >>> 0)) >>> 0 | b.v) >>> 0) | 0 : -1;
+        retcolor = !xtra.v
+                ? (((((r.v << 16) >>> 0) | ((g.v << 8) >>> 0)) >>> 0 | b.v) >>> 0) | 0
+                : -1;
     } else {
         /* altbuf: allow user's "grey" to match colortable[]'s "gray";
          * fuzzymatch(): ignore spaces, hyphens, and underscores so that
@@ -1904,7 +2024,24 @@ export function* check_enhanced_colors(buf) {
             void cptr.memcpy(cptr.add(altbuf, greyoffset), __s_gray, 4n);
         }
         for (color = 0; color < 155; ++color) {
-            if ((yield* fuzzymatch(buf, cptr.ldPtro2(colortable, color, $sizeof_nethack_color, $nethack_color_name), __s_sp_dash_us, 1)) || (altbuf && (yield* fuzzymatch(altbuf, cptr.ldPtro2(colortable, color, $sizeof_nethack_color, $nethack_color_name), __s_sp_dash_us, 1)))) {
+            if ((yield* fuzzymatch(
+                buf,
+                cptr.ldPtro2(colortable, color, $sizeof_nethack_color, $nethack_color_name),
+                __s_sp_dash_us,
+                1
+            )) ||
+                    (altbuf &&
+                        (yield* fuzzymatch(
+                            altbuf,
+                            cptr.ldPtro2(
+                                colortable,
+                                color,
+                                $sizeof_nethack_color,
+                                $nethack_color_name
+                            ),
+                            __s_sp_dash_us,
+                            1
+                        )))) {
                 retcolor = colortable_to_int32(cptr.add(colortable, color, $sizeof_nethack_color));
                 break;
             }
@@ -1928,20 +2065,53 @@ export function wc_color_name(colorindx) {
         /* if colorindx has NH_BASIC_COLOR bit set, basicindx won't,
            so differing implies a basic color */
         if (basicindx != colorindx) {
-            (__builtin_expect(BigInt((!(basicindx < 16))), 0n) ? __assert_rtn(__s_wc_color_name, __s_coloratt_c, 775, __s_basicindx_16) : void 0);
-            result = cptr.ldPtro2(colortable, basicindx, $sizeof_nethack_color, $nethack_color_name);
+            (__builtin_expect(BigInt((!(basicindx < 16))), 0n)
+                    ? __assert_rtn(__s_wc_color_name, __s_coloratt_c, 775, __s_basicindx_16)
+                    : void 0);
+            result = cptr.ldPtro2(
+                colortable,
+                basicindx,
+                $sizeof_nethack_color,
+                $nethack_color_name
+            );
         } else {
             let indx;
             let r = BigInt(((colorindx >> 16) & 255));
             let g = BigInt(((colorindx >> 8) & 255));
             let b = BigInt((colorindx & 255));  /* mask  XXXXbb to bb */
 
-            nh_snprintf(__s_wc_color_name, 784, cptr.decay(__static_wc_color_name_hexcolor), 8n, __s_02x_02x_02x, Number(BigInt.asUintN(8, r)), Number(BigInt.asUintN(8, g)), Number(BigInt.asUintN(8, b)));
+            nh_snprintf(
+                __s_wc_color_name,
+                784,
+                cptr.decay(__static_wc_color_name_hexcolor),
+                8n,
+                __s_02x_02x_02x,
+                Number(BigInt.asUintN(8, r)),
+                Number(BigInt.asUintN(8, g)),
+                Number(BigInt.asUintN(8, b))
+            );
             result = cptr.decay(__static_wc_color_name_hexcolor);
             /* override hex value if this is a named color */
             for (indx = 16; indx < 155; ++indx)
-                if (cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_r) == r && cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_g) == g && cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_b) == b) {
-                    result = cptr.ldPtro2(colortable, indx, $sizeof_nethack_color, $nethack_color_name);
+                if (cptr.ldI64o2(colortable, indx, $sizeof_nethack_color, $nethack_color_r) == r &&
+                        cptr.ldI64o2(
+                            colortable,
+                            indx,
+                            $sizeof_nethack_color,
+                            $nethack_color_g
+                        ) == g &&
+                        cptr.ldI64o2(
+                            colortable,
+                            indx,
+                            $sizeof_nethack_color,
+                            $nethack_color_b
+                        ) == b) {
+                    result = cptr.ldPtro2(
+                        colortable,
+                        indx,
+                        $sizeof_nethack_color,
+                        $nethack_color_name
+                    );
                     break;
                 }
         }
@@ -1975,7 +2145,14 @@ export function* rgbstr_to_int32(rgbstr) {
     let buf = new Uint8Array(256);
     let dash = 0;
 
-    nh_snprintf(__s_rgbstr_to_int32, 823, cptr.decay(buf), 256n, __s_pct_s, rgbstr ? rgbstr : __s_empty);
+    nh_snprintf(
+        __s_rgbstr_to_int32,
+        823,
+        cptr.decay(buf),
+        256n,
+        __s_pct_s,
+        rgbstr ? rgbstr : __s_empty
+    );
 
     if (cptr.ld1s(cptr.decay(buf)) && onlyhexdigits(cptr.decay(buf))) {
         c_g = (c_b = null);
@@ -2000,7 +2177,10 @@ export function* rgbstr_to_int32(rgbstr) {
             }
         }
         /* sanity checks */
-        if (c_r && c_g && c_b && (cptr.strlen(c_r) > 0n && cptr.strlen(c_r) < 4n) && (cptr.strlen(c_g) > 0n && cptr.strlen(c_g) < 4n) && (cptr.strlen(c_b) > 0n && cptr.strlen(c_b) < 4n)) {
+        if (c_r && c_g && c_b &&
+                (cptr.strlen(c_r) > 0n && cptr.strlen(c_r) < 4n) &&
+                (cptr.strlen(c_g) > 0n && cptr.strlen(c_g) < 4n) &&
+                (cptr.strlen(c_b) > 0n && cptr.strlen(c_b) < 4n)) {
             r = atoi(c_r);
             g = atoi(c_g);
             b = atoi(c_b);
@@ -2537,10 +2717,18 @@ export function color_distance(rgb1, rgb2) {
     let r = (r1 - r2) | 0;
     let g = (g1 - g2) | 0;
     let b = (b1 - b2) | 0;
-    return ((((((Math.imul(Math.imul(((512 + rmean) | 0), r), r)) >> 8) + Math.imul(Math.imul(4, g), g)) | 0) + ((Math.imul(Math.imul(((767 - rmean) | 0), b), b)) >> 8)) | 0);
+    return ((((((Math.imul(Math.imul(((512 + rmean) | 0), r), r)) >> 8) +
+        Math.imul(Math.imul(4, g), g)) | 0) +
+            ((Math.imul(Math.imul(((767 - rmean) | 0), b), b)) >> 8)) | 0);
 }
 
-/** C ref: coloratt.c:997 — @param {CUInt} lcolor @param {CPtr<uint32>} closecolor @param {CPtr<uint16>} clridx @returns {CInt} */
+/**
+ * C ref: coloratt.c:997
+ * @param {CUInt} lcolor
+ * @param {CPtr<uint32>} closecolor
+ * @param {CPtr<uint16>} clridx
+ * @returns {CInt}
+ */
 export function closest_color(lcolor, closecolor, clridx) {
     let i;
     let color_index = -1;
@@ -2582,7 +2770,13 @@ export function get_nhcolor_from_256_index(idx) {
 // 7 bindings: 0 rebound+refilled, 0 rebound, 7 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(colornames), S(attrnames), S(colortable), S(__static_color_attr_to_str_buf), S(__static_add_menu_coloring_parsed_re_error), S(__static_wc_color_name_hexcolor), S(color_256_definitions)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(colornames), S(attrnames), S(colortable), S(__static_color_attr_to_str_buf),
+        S(__static_add_menu_coloring_parsed_re_error), S(__static_wc_color_name_hexcolor),
+        S(color_256_definitions)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("coloratt.js: __resetState before __captureState");

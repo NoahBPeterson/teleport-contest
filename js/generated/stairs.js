@@ -8,23 +8,26 @@ import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
 import { quest_dnum } from './nhprop.js';
 import { alloc } from './alloc.js';
-import { assign_level, depth, dunlev, on_level, single_level_branch, u_on_newpos, u_on_rndspot } from './dungeon.js';
+import {
+    assign_level, depth, dunlev, on_level, single_level_branch, u_on_newpos, u_on_rndspot
+} from './dungeon.js';
 import { gs, svd, u } from './decl.js';
 import { eos, strsubst } from './hacklib.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
-    $dgn_topology_d_earth_level = FLD.dgn_topology_d_earth_level,
-    $dgn_topology_d_fire_level = FLD.dgn_topology_d_fire_level,
-    $dgn_topology_d_quest_dnum = FLD.dgn_topology_d_quest_dnum,
-    $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
-    $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $sizeof_dungeon = FLD.sizeof_dungeon, $stairway_isladder = FLD.stairway_isladder,
-    $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy, $stairway_tolev = FLD.stairway_tolev,
-    $stairway_u_traversed = FLD.stairway_u_traversed, $stairway_up = FLD.stairway_up,
-    $you_uhave = FLD.you_uhave, $you_uz = FLD.you_uz;
+const $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
+      $dgn_topology_d_earth_level = FLD.dgn_topology_d_earth_level,
+      $dgn_topology_d_fire_level = FLD.dgn_topology_d_fire_level,
+      $dgn_topology_d_quest_dnum = FLD.dgn_topology_d_quest_dnum,
+      $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
+      $instance_globals_s_stairs = FLD.instance_globals_s_stairs,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $sizeof_dungeon = FLD.sizeof_dungeon, $stairway_isladder = FLD.stairway_isladder,
+      $stairway_next = FLD.stairway_next, $stairway_sy = FLD.stairway_sy,
+      $stairway_tolev = FLD.stairway_tolev, $stairway_u_traversed = FLD.stairway_u_traversed,
+      $stairway_up = FLD.stairway_up, $you_uhave = FLD.you_uhave, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_ladder = cptr.lit("ladder");
@@ -44,7 +47,14 @@ const __s_branch_s_s_to_s = cptr.lit("branch %s %s to %s");
 const __s_the = cptr.lit("The ");
 const __s_the__2 = cptr.lit("the ");
 
-/** C ref: stairs.c:8 — @param {CInt} x @param {CInt} y @param {CInt} up @param {CInt} isladder @param {CPtr<d_level>} dest */
+/**
+ * C ref: stairs.c:8
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} up
+ * @param {CInt} isladder
+ * @param {CPtr<d_level>} dest
+ */
 export function stairway_add(x, y, up, isladder, dest) {
     let tmp = alloc(24);
 
@@ -85,19 +95,29 @@ export function stairway_find(fromdlev) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
 
     while (tmp) {
-        if (cptr.ldI16o(tmp, $stairway_tolev) == cptr.ldI16(fromdlev) && cptr.ldI16o(tmp, $stairway_tolev + $d_level_dlevel) == cptr.ldI16o(fromdlev, $d_level_dlevel))
+        if (cptr.ldI16o(tmp, $stairway_tolev) == cptr.ldI16(fromdlev) &&
+                cptr.ldI16o(tmp, $stairway_tolev + $d_level_dlevel) ==
+                    cptr.ldI16o(fromdlev, $d_level_dlevel))
             break;  /* return */
         tmp = cptr.ldPtro(tmp, $stairway_next);
     }
     return tmp;
 }
 
-/** C ref: stairs.c:64 — @param {CPtr<d_level>} fromdlev @param {CInt} isladder @returns {CPtr<stairway>} */
+/**
+ * C ref: stairs.c:64
+ * @param {CPtr<d_level>} fromdlev
+ * @param {CInt} isladder
+ * @returns {CPtr<stairway>}
+ */
 export function stairway_find_from(fromdlev, isladder) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
 
     while (tmp) {
-        if (cptr.ldI16o(tmp, $stairway_tolev) == cptr.ldI16(fromdlev) && cptr.ldI16o(tmp, $stairway_tolev + $d_level_dlevel) == cptr.ldI16o(fromdlev, $d_level_dlevel) && cptr.ld1so(tmp, $stairway_isladder) == isladder)
+        if (cptr.ldI16o(tmp, $stairway_tolev) == cptr.ldI16(fromdlev) &&
+                cptr.ldI16o(tmp, $stairway_tolev + $d_level_dlevel) ==
+                    cptr.ldI16o(fromdlev, $d_level_dlevel) &&
+                cptr.ld1so(tmp, $stairway_isladder) == isladder)
             break;  /* return */
         tmp = cptr.ldPtro(tmp, $stairway_next);
     }
@@ -117,7 +137,9 @@ export function stairway_find_dir(up) {
 export function stairway_find_type_dir(isladder, up) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
 
-    while (tmp && !(cptr.ld1so(tmp, $stairway_isladder) == isladder && cptr.ld1so(tmp, $stairway_up) == up))
+    while (tmp &&
+            !(cptr.ld1so(tmp, $stairway_isladder) == isladder &&
+                cptr.ld1so(tmp, $stairway_up) == up))
         tmp = cptr.ldPtro(tmp, $stairway_next);
     return tmp;
 }
@@ -127,7 +149,8 @@ export function stairway_find_special_dir(up) {
     let tmp = cptr.ldPtro(gs, $instance_globals_s_stairs);
 
     while (tmp) {
-        if (cptr.ldI16o(tmp, $stairway_tolev) != cptr.ldI16o(u, $you_uz) && cptr.ld1so(tmp, $stairway_up) != up)
+        if (cptr.ldI16o(tmp, $stairway_tolev) != cptr.ldI16o(u, $you_uz) &&
+                cptr.ld1so(tmp, $stairway_up) != up)
             return tmp;
         tmp = cptr.ldPtro(tmp, $stairway_next);
     }
@@ -197,38 +220,99 @@ export function On_stairs_dn(x, y) {
    to visit the branch */
 /** C ref: stairs.c:180 — @param {CPtr<stairway>} sway @returns {CInt} */
 export function known_branch_stairs(sway) {
-    return schar((sway && cptr.ldI16o(sway, $stairway_tolev) != cptr.ldI16o(u, $you_uz) && cptr.ld1so(sway, $stairway_u_traversed) ? 1 : 0));
+    return schar((sway &&
+        cptr.ldI16o(sway, $stairway_tolev) != cptr.ldI16o(u, $you_uz) &&
+        cptr.ld1so(sway, $stairway_u_traversed)
+            ? 1
+            : 0));
 }
 
 /* describe staircase 'sway' based on whether hero knows the destination */
-/** C ref: stairs.c:187 — @param {CPtr<stairway>} sway @param {CPtr<char>} outbuf @param {CInt} stcase @returns {CPtr<char>} */
+/**
+ * C ref: stairs.c:187
+ * @param {CPtr<stairway>} sway
+ * @param {CPtr<char>} outbuf
+ * @param {CInt} stcase
+ * @returns {CPtr<char>}
+ */
 export function stairs_description(sway, outbuf, stcase) {
     let tolev = cptr.alloc(4);
     let stairs;
     let updown;
 
     cptr.memcpy(tolev, cptr.add(sway, $stairway_tolev), 4);
-    stairs = cptr.ld1so(sway, $stairway_isladder) ? __s_ladder : (stcase ? __s_staircase : __s_stairs);
+    stairs = cptr.ld1so(sway, $stairway_isladder)
+            ? __s_ladder
+            : (stcase ? __s_staircase : __s_stairs);
     updown = cptr.ld1so(sway, $stairway_up) ? __s_up : __s_down;
 
     if (!known_branch_stairs(sway)) {
         /* ordinary stairs or branch stairs to not-yet-visited branch */
         void cptr.sprintf(outbuf, __s_s_s, stairs, updown);
         if (cptr.ld1so(sway, $stairway_u_traversed)) {
-            let specialdepth = schar((cptr.ldI16(tolev) == quest_dnum() || single_level_branch(tolev) ? 1 : 0));  /* knox */
+            let specialdepth = schar((cptr.ldI16(tolev) == quest_dnum() ||
+                single_level_branch(tolev)
+                    ? 1
+                    : 0));  /* knox */
             let to_dlev = specialdepth ? dunlev(tolev) : depth(tolev);
 
             void cptr.sprintf(eos(outbuf), __s_to_level_d, to_dlev);
         }
-    } else if (cptr.ldI16o(u, $you_uz) == 0 && cptr.ldI16o(u, $you_uz + $d_level_dlevel) == 1 && cptr.ld1so(sway, $stairway_up)) {
+    } else if (cptr.ldI16o(u, $you_uz) == 0 &&
+            cptr.ldI16o(u, $you_uz + $d_level_dlevel) == 1 &&
+            cptr.ld1so(sway, $stairway_up)) {
         /* stairs up from level one are a special case; they are marked
            as having been traversed because the hero obviously started
            the game by coming down them, but the remote side varies
            depending on whether the Amulet is being carried */
-        void cptr.sprintf(outbuf, __s_s_s_s_s, !(cptr.ldI32o(u, $you_uhave) & 1) ? __s_empty : __s_branch, stairs, updown, !(cptr.ldI32o(u, $you_uhave) & 1) ? __s_out_of_the_dungeon : ((on_level(tolev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)) || on_level(tolev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)) || on_level(tolev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)) || on_level(tolev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))) ? __s_to_the_elemental_planes : __s_to_the_end_game));
+        void cptr.sprintf(
+            outbuf,
+            __s_s_s_s_s,
+            !(cptr.ldI32o(u, $you_uhave) & 1) ? __s_empty : __s_branch,
+            stairs,
+            updown,
+            !(cptr.ldI32o(u, $you_uhave) & 1)
+                ? __s_out_of_the_dungeon
+                : ((on_level(
+                    tolev,
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                    )
+                ) ||
+                    on_level(
+                        tolev,
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                        )
+                    ) ||
+                    on_level(
+                        tolev,
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+                        )
+                    ) ||
+                    on_level(
+                        tolev,
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )
+                    ))
+                    ? __s_to_the_elemental_planes
+                    : __s_to_the_end_game)
+        );
     } else {
         /* known branch stairs; tacking on destination level is too verbose */
-        void cptr.sprintf(outbuf, __s_branch_s_s_to_s, stairs, updown, cptr.add(svd, cptr.ldI16(tolev), $sizeof_dungeon));
+        void cptr.sprintf(
+            outbuf,
+            __s_branch_s_s_to_s,
+            stairs,
+            updown,
+            cptr.add(svd, cptr.ldI16(tolev), $sizeof_dungeon)
+        );
         /* dungeons[].dname is capitalized; undo that for "The <Branch>" */
         void strsubst(outbuf, __s_the, __s_the__2);
     }

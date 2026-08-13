@@ -14,7 +14,9 @@ import * as FLD from './nhfield.js';
 import { luaS_hash, luaS_init } from './lstring.js';
 import { luaM_free_, luaM_malloc_ } from './lmem.js';
 import { luaG_runerror } from './ldebug.js';
-import { luaD_closeprotected, luaD_errerr, luaD_rawrunprotected, luaD_reallocstack, luaD_seterrorobj } from './ldo.js';
+import {
+    luaD_closeprotected, luaD_errerr, luaD_rawrunprotected, luaD_reallocstack, luaD_seterrorobj
+} from './ldo.js';
 import { luaH_new, luaH_resize } from './ltable.js';
 import { luaT_init } from './ltm.js';
 import { luaX_init } from './llex.js';
@@ -24,48 +26,59 @@ import { luaF_closeupval } from './lfunc.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $CallInfo_callstatus = FLD.CallInfo_callstatus, $CallInfo_next = FLD.CallInfo_next,
-    $CallInfo_nresults = FLD.CallInfo_nresults, $CallInfo_previous = FLD.CallInfo_previous,
-    $CallInfo_top = FLD.CallInfo_top, $CallInfo_u = FLD.CallInfo_u, $LG_g = FLD.LG_g, $LX_l = FLD.LX_l,
-    $TString_contents = FLD.TString_contents, $TValue_tt_ = FLD.TValue_tt_, $Table_array = FLD.Table_array,
-    $global_State_GCdebt = FLD.global_State_GCdebt, $global_State_allgc = FLD.global_State_allgc,
-    $global_State_allweak = FLD.global_State_allweak,
-    $global_State_currentwhite = FLD.global_State_currentwhite,
-    $global_State_ephemeron = FLD.global_State_ephemeron, $global_State_finobj = FLD.global_State_finobj,
-    $global_State_finobjold1 = FLD.global_State_finobjold1,
-    $global_State_finobjrold = FLD.global_State_finobjrold,
-    $global_State_finobjsur = FLD.global_State_finobjsur,
-    $global_State_firstold1 = FLD.global_State_firstold1, $global_State_fixedgc = FLD.global_State_fixedgc,
-    $global_State_gcemergency = FLD.global_State_gcemergency, $global_State_gckind = FLD.global_State_gckind,
-    $global_State_gcpause = FLD.global_State_gcpause, $global_State_gcstate = FLD.global_State_gcstate,
-    $global_State_gcstepmul = FLD.global_State_gcstepmul,
-    $global_State_gcstepsize = FLD.global_State_gcstepsize,
-    $global_State_gcstopem = FLD.global_State_gcstopem, $global_State_gcstp = FLD.global_State_gcstp,
-    $global_State_genmajormul = FLD.global_State_genmajormul,
-    $global_State_genminormul = FLD.global_State_genminormul, $global_State_gray = FLD.global_State_gray,
-    $global_State_grayagain = FLD.global_State_grayagain,
-    $global_State_l_registry = FLD.global_State_l_registry,
-    $global_State_lastatomic = FLD.global_State_lastatomic,
-    $global_State_mainthread = FLD.global_State_mainthread, $global_State_mt = FLD.global_State_mt,
-    $global_State_nilvalue = FLD.global_State_nilvalue, $global_State_old1 = FLD.global_State_old1,
-    $global_State_panic = FLD.global_State_panic, $global_State_reallyold = FLD.global_State_reallyold,
-    $global_State_seed = FLD.global_State_seed, $global_State_strt = FLD.global_State_strt,
-    $global_State_survival = FLD.global_State_survival, $global_State_sweepgc = FLD.global_State_sweepgc,
-    $global_State_tobefnz = FLD.global_State_tobefnz, $global_State_totalbytes = FLD.global_State_totalbytes,
-    $global_State_twups = FLD.global_State_twups, $global_State_ud = FLD.global_State_ud,
-    $global_State_ud_warn = FLD.global_State_ud_warn, $global_State_warnf = FLD.global_State_warnf,
-    $global_State_weak = FLD.global_State_weak, $lua_State_allowhook = FLD.lua_State_allowhook,
-    $lua_State_base_ci = FLD.lua_State_base_ci, $lua_State_basehookcount = FLD.lua_State_basehookcount,
-    $lua_State_ci = FLD.lua_State_ci, $lua_State_errfunc = FLD.lua_State_errfunc,
-    $lua_State_errorJmp = FLD.lua_State_errorJmp, $lua_State_hook = FLD.lua_State_hook,
-    $lua_State_hookcount = FLD.lua_State_hookcount, $lua_State_hookmask = FLD.lua_State_hookmask,
-    $lua_State_l_G = FLD.lua_State_l_G, $lua_State_marked = FLD.lua_State_marked,
-    $lua_State_nCcalls = FLD.lua_State_nCcalls, $lua_State_nci = FLD.lua_State_nci,
-    $lua_State_oldpc = FLD.lua_State_oldpc, $lua_State_openupval = FLD.lua_State_openupval,
-    $lua_State_stack = FLD.lua_State_stack, $lua_State_stack_last = FLD.lua_State_stack_last,
-    $lua_State_status = FLD.lua_State_status, $lua_State_tbclist = FLD.lua_State_tbclist,
-    $lua_State_top = FLD.lua_State_top, $lua_State_tt = FLD.lua_State_tt,
-    $lua_State_twups = FLD.lua_State_twups, $sizeof_TValue = FLD.sizeof_TValue,
-    $stringtable_nuse = FLD.stringtable_nuse, $stringtable_size = FLD.stringtable_size;
+      $CallInfo_nresults = FLD.CallInfo_nresults, $CallInfo_previous = FLD.CallInfo_previous,
+      $CallInfo_top = FLD.CallInfo_top, $CallInfo_u = FLD.CallInfo_u, $LG_g = FLD.LG_g,
+      $LX_l = FLD.LX_l, $TString_contents = FLD.TString_contents, $TValue_tt_ = FLD.TValue_tt_,
+      $Table_array = FLD.Table_array, $global_State_GCdebt = FLD.global_State_GCdebt,
+      $global_State_allgc = FLD.global_State_allgc,
+      $global_State_allweak = FLD.global_State_allweak,
+      $global_State_currentwhite = FLD.global_State_currentwhite,
+      $global_State_ephemeron = FLD.global_State_ephemeron,
+      $global_State_finobj = FLD.global_State_finobj,
+      $global_State_finobjold1 = FLD.global_State_finobjold1,
+      $global_State_finobjrold = FLD.global_State_finobjrold,
+      $global_State_finobjsur = FLD.global_State_finobjsur,
+      $global_State_firstold1 = FLD.global_State_firstold1,
+      $global_State_fixedgc = FLD.global_State_fixedgc,
+      $global_State_gcemergency = FLD.global_State_gcemergency,
+      $global_State_gckind = FLD.global_State_gckind,
+      $global_State_gcpause = FLD.global_State_gcpause,
+      $global_State_gcstate = FLD.global_State_gcstate,
+      $global_State_gcstepmul = FLD.global_State_gcstepmul,
+      $global_State_gcstepsize = FLD.global_State_gcstepsize,
+      $global_State_gcstopem = FLD.global_State_gcstopem,
+      $global_State_gcstp = FLD.global_State_gcstp,
+      $global_State_genmajormul = FLD.global_State_genmajormul,
+      $global_State_genminormul = FLD.global_State_genminormul,
+      $global_State_gray = FLD.global_State_gray,
+      $global_State_grayagain = FLD.global_State_grayagain,
+      $global_State_l_registry = FLD.global_State_l_registry,
+      $global_State_lastatomic = FLD.global_State_lastatomic,
+      $global_State_mainthread = FLD.global_State_mainthread,
+      $global_State_mt = FLD.global_State_mt, $global_State_nilvalue = FLD.global_State_nilvalue,
+      $global_State_old1 = FLD.global_State_old1, $global_State_panic = FLD.global_State_panic,
+      $global_State_reallyold = FLD.global_State_reallyold,
+      $global_State_seed = FLD.global_State_seed, $global_State_strt = FLD.global_State_strt,
+      $global_State_survival = FLD.global_State_survival,
+      $global_State_sweepgc = FLD.global_State_sweepgc,
+      $global_State_tobefnz = FLD.global_State_tobefnz,
+      $global_State_totalbytes = FLD.global_State_totalbytes,
+      $global_State_twups = FLD.global_State_twups, $global_State_ud = FLD.global_State_ud,
+      $global_State_ud_warn = FLD.global_State_ud_warn,
+      $global_State_warnf = FLD.global_State_warnf, $global_State_weak = FLD.global_State_weak,
+      $lua_State_allowhook = FLD.lua_State_allowhook, $lua_State_base_ci = FLD.lua_State_base_ci,
+      $lua_State_basehookcount = FLD.lua_State_basehookcount, $lua_State_ci = FLD.lua_State_ci,
+      $lua_State_errfunc = FLD.lua_State_errfunc, $lua_State_errorJmp = FLD.lua_State_errorJmp,
+      $lua_State_hook = FLD.lua_State_hook, $lua_State_hookcount = FLD.lua_State_hookcount,
+      $lua_State_hookmask = FLD.lua_State_hookmask, $lua_State_l_G = FLD.lua_State_l_G,
+      $lua_State_marked = FLD.lua_State_marked, $lua_State_nCcalls = FLD.lua_State_nCcalls,
+      $lua_State_nci = FLD.lua_State_nci, $lua_State_oldpc = FLD.lua_State_oldpc,
+      $lua_State_openupval = FLD.lua_State_openupval, $lua_State_stack = FLD.lua_State_stack,
+      $lua_State_stack_last = FLD.lua_State_stack_last, $lua_State_status = FLD.lua_State_status,
+      $lua_State_tbclist = FLD.lua_State_tbclist, $lua_State_top = FLD.lua_State_top,
+      $lua_State_tt = FLD.lua_State_tt, $lua_State_twups = FLD.lua_State_twups,
+      $sizeof_TValue = FLD.sizeof_TValue, $stringtable_nuse = FLD.stringtable_nuse,
+      $stringtable_size = FLD.stringtable_size;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_c_stack_overflow = cptr.lit("C stack overflow");
@@ -121,7 +134,16 @@ function luai_makeseed(L) {
 */
 /** C ref: lstate.c:89 — @param {CPtr<global_State>} g @param {CLongLong} debt */
 export function luaE_setdebt(g, debt) {
-    let tb = BigInt.asIntN(64, (BigInt.asUintN(64, (BigInt.asIntN(64, cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt))))));
+    let tb = BigInt.asIntN(
+        64,
+        (BigInt.asUintN(
+            64,
+            (BigInt.asIntN(
+                64,
+                cptr.ldI64o((g), $global_State_totalbytes) + cptr.ldI64o((g), $global_State_GCdebt)
+            ))
+        ))
+    );
     (void 0);
     if (debt < BigInt.asIntN(64, tb - 9223372036854775807n))
         debt = BigInt.asIntN(64, tb - 9223372036854775807n);  /* will make 'totalbytes == MAX_LMEM' */
@@ -207,7 +229,10 @@ export function* luaE_checkcstack(L) {
 /** C ref: lstate.c:173 — @param {CPtr<lua_State>} L */
 export function* luaE_incCstack(L) {
     (cptr.stI32o(L, $lua_State_nCcalls, cptr.ldI32o(L, $lua_State_nCcalls) + 1)) - (1);
-    if ((__builtin_expect(BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)), 0n)))
+    if ((__builtin_expect(
+        BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)),
+        0n
+    )))
         (yield* luaE_checkcstack(L));
 }
 
@@ -230,7 +255,11 @@ function* stack_init(L1, L) {
     cptr.stPtro(ci, $CallInfo_u, null);
     cptr.stI16o(ci, $CallInfo_nresults, 0);
     (cptr.st1o((((cptr.ldPtro(L1, $lua_State_top)))), $TValue_tt_, 0));  /* 'function' entry for this 'ci' */
-    cptr.postinc(() => cptr.ldPtro(L1, $lua_State_top), (v) => { cptr.stPtro(L1, $lua_State_top, v); }, 16);
+    cptr.postinc(
+        () => cptr.ldPtro(L1, $lua_State_top),
+        (v) => { cptr.stPtro(L1, $lua_State_top, v); },
+        16
+    );
     cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.ldPtro(L1, $lua_State_top), 20, 16));
     cptr.stPtro(L1, $lua_State_ci, ci);
 }
@@ -242,7 +271,23 @@ function* freestack(L) {
     cptr.stPtro(L, $lua_State_ci, cptr.add(L, $lua_State_base_ci));  /* free the entire 'ci' list */
     (yield* freeCI(L));
     (void 0);
-    (yield* luaM_free_(L, (cptr.ldPtro(L, $lua_State_stack)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), $lua_State_stack_last), cptr.ldPtro((L), $lua_State_stack)) / 16n))))) + 5) | 0))) * 16n)));  /* free stack */
+    (yield* luaM_free_(
+        L,
+        (cptr.ldPtro(L, $lua_State_stack)),
+        BigInt.asUintN(
+            64,
+            BigInt.asUintN(
+                64,
+                BigInt((((Number(BigInt.asIntN(
+                    32,
+                    ((cptr.diff(
+                        cptr.ldPtro((L), $lua_State_stack_last),
+                        cptr.ldPtro((L), $lua_State_stack)
+                    ) / 16n))
+                ))) + 5) | 0))
+            ) * 16n
+        )
+    ));  /* free stack */
 }
 
 /*
@@ -335,7 +380,20 @@ function* close_state(L) {
         (yield* luaC_freeallobjects(L));  /* collect all objects */
         (void L);
     }
-    (yield* luaM_free_(L, (cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt + $stringtable_size)))) * 8n)));
+    (yield* luaM_free_(
+        L,
+        (cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_strt)),
+        BigInt.asUintN(
+            64,
+            BigInt.asUintN(
+                64,
+                BigInt((cptr.ldI32o(
+                    (cptr.ldPtro(L, $lua_State_l_G)),
+                    $global_State_strt + $stringtable_size
+                )))
+            ) * 8n
+        )
+    ));
     (yield* freestack(L));
     (void 0);
     (yield* Y.icall((cptr.ldPtr(g))(cptr.ldPtro(g, $global_State_ud), (((cptr.add((((L))), -(8n))))), 1624n, 0n)));  /* free main block */
@@ -370,7 +428,11 @@ export function* lua_newthread(L) {
     }
     ;
     {
-        cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+        cptr.postinc(
+            () => cptr.ldPtro(L, $lua_State_top),
+            (v) => { cptr.stPtro(L, $lua_State_top, v); },
+            16
+        );
         (void L, (void 0));
     }
     ;
@@ -380,7 +442,11 @@ export function* lua_newthread(L) {
     cptr.stPtro(L1, $lua_State_hook, cptr.ldPtro(L, $lua_State_hook));
     (cptr.stI32o(L1, $lua_State_hookcount, cptr.ldI32o(L1, $lua_State_basehookcount)));
     /* initialize L1 extra space */
-    cptr.memcpy(((cptr.add((L1), -(8n)))), ((cptr.add((cptr.ldPtro(g, $global_State_mainthread)), -(8n)))), 8n);
+    cptr.memcpy(
+        ((cptr.add((L1), -(8n)))),
+        ((cptr.add((cptr.ldPtro(g, $global_State_mainthread)), -(8n)))),
+        8n
+    );
     (void L);
     (yield* stack_init(L1, L));  /* init stack */
     (void 0);
@@ -413,15 +479,31 @@ export function* luaE_resetthread(L, status) {
     else
         cptr.stPtro(L, $lua_State_top, cptr.add(cptr.ldPtro(L, $lua_State_stack), 1, 16));
     cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.ldPtro(L, $lua_State_top), 20, 16));
-    (yield* luaD_reallocstack(L, (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(ci, $CallInfo_top), cptr.ldPtro(L, $lua_State_stack)) / 16n))))), 0));
+    (yield* luaD_reallocstack(
+        L,
+        (Number(BigInt.asIntN(
+            32,
+            ((cptr.diff(cptr.ldPtro(ci, $CallInfo_top), cptr.ldPtro(L, $lua_State_stack)) / 16n))
+        ))),
+        0
+    ));
     return status;
 }
 
-/** C ref: lstate.c:345 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} from @returns {CInt} */
+/**
+ * C ref: lstate.c:345
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<lua_State>} from
+ * @returns {CInt}
+ */
 export function* lua_closethread(L, from) {
     let status;
     (void 0);
-    cptr.stI32o(L, $lua_State_nCcalls, (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) & 65535) >>> 0) : 0);
+    cptr.stI32o(
+        L,
+        $lua_State_nCcalls,
+        (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) & 65535) >>> 0) : 0
+    );
     status = (yield* luaE_resetthread(L, cptr.ld1uo(L, $lua_State_status)));
     (void 0);
     return status;
@@ -459,7 +541,11 @@ export function* lua_newstate(f, ud) {
     cptr.stPtro(g, $global_State_mainthread, L);
     cptr.stI32o(g, $global_State_seed, luai_makeseed(L));
     cptr.st1o(g, $global_State_gcstp, 2);  /* no GC while building state */
-    cptr.stI32o(g, $global_State_strt + $stringtable_size, cptr.stI32o(g, $global_State_strt + $stringtable_nuse, 0));
+    cptr.stI32o(
+        g,
+        $global_State_strt + $stringtable_size,
+        cptr.stI32o(g, $global_State_strt + $stringtable_nuse, 0)
+    );
     cptr.stPtro(g, $global_State_strt, null);
     (cptr.st1o((cptr.add(g, $global_State_l_registry)), $TValue_tt_, 0));
     cptr.stPtro(g, $global_State_panic, null);
@@ -467,12 +553,32 @@ export function* lua_newstate(f, ud) {
     cptr.st1o(g, $global_State_gckind, 0);
     cptr.st1o(g, $global_State_gcstopem, 0);
     cptr.st1o(g, $global_State_gcemergency, 0);
-    cptr.stPtro(g, $global_State_finobj, cptr.stPtro(g, $global_State_tobefnz, cptr.stPtro(g, $global_State_fixedgc, null)));
-    cptr.stPtro(g, $global_State_firstold1, cptr.stPtro(g, $global_State_survival, cptr.stPtro(g, $global_State_old1, cptr.stPtro(g, $global_State_reallyold, null))));
-    cptr.stPtro(g, $global_State_finobjsur, cptr.stPtro(g, $global_State_finobjold1, cptr.stPtro(g, $global_State_finobjrold, null)));
+    cptr.stPtro(
+        g,
+        $global_State_finobj,
+        cptr.stPtro(g, $global_State_tobefnz, cptr.stPtro(g, $global_State_fixedgc, null))
+    );
+    cptr.stPtro(
+        g,
+        $global_State_firstold1,
+        cptr.stPtro(
+            g,
+            $global_State_survival,
+            cptr.stPtro(g, $global_State_old1, cptr.stPtro(g, $global_State_reallyold, null))
+        )
+    );
+    cptr.stPtro(
+        g,
+        $global_State_finobjsur,
+        cptr.stPtro(g, $global_State_finobjold1, cptr.stPtro(g, $global_State_finobjrold, null))
+    );
     cptr.stPtro(g, $global_State_sweepgc, null);
     cptr.stPtro(g, $global_State_gray, cptr.stPtro(g, $global_State_grayagain, null));
-    cptr.stPtro(g, $global_State_weak, cptr.stPtro(g, $global_State_ephemeron, cptr.stPtro(g, $global_State_allweak, null)));
+    cptr.stPtro(
+        g,
+        $global_State_weak,
+        cptr.stPtro(g, $global_State_ephemeron, cptr.stPtro(g, $global_State_allweak, null))
+    );
     cptr.stPtro(g, $global_State_twups, null);
     cptr.stI64o(g, $global_State_totalbytes, 1624n);
     cptr.stI64o(g, $global_State_GCdebt, 0n);
@@ -518,7 +624,9 @@ export function* luaE_warning(L, msg, tocont) {
 /** C ref: lstate.c:436 — @param {CPtr<lua_State>} L @param {CPtr<char>} where */
 export function* luaE_warnerror(L, where) {
     let errobj = ((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16)));  /* error object */
-    let msg = ((((((cptr.ld1uo(((errobj)), $TValue_tt_))) & 15)) == 4)) ? (cptr.add((((((((cptr.ldPtr(((errobj)))))))))), $TString_contents)) : __s_error_object_is_not_a_string;
+    let msg = ((((((cptr.ld1uo(((errobj)), $TValue_tt_))) & 15)) == 4))
+            ? (cptr.add((((((((cptr.ldPtr(((errobj)))))))))), $TString_contents))
+            : __s_error_object_is_not_a_string;
     /* produce warning "error in %s (%s)" (where, msg) */
     (yield* luaE_warning(L, __s_error_in, 1));
     (yield* luaE_warning(L, where, 1));

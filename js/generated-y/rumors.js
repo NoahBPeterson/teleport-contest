@@ -13,9 +13,13 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { Blind, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, wizard } from './nhprop.js';
+import {
+    Blind, create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, wizard
+} from './nhprop.js';
 import { eos, lowc, xcrypt } from './hacklib.js';
-import { WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars } from './decl.js';
+import {
+    WIN_MESSAGE, disp, flags, gf, gi, gm, go, gt, iflags, program_state, svo, u, ynchars, ynqchars
+} from './decl.js';
 import { rn2, rnd } from './rnd.js';
 import { There, You, impossible, nhassert_failed, pline, verbalize } from './pline.js';
 import { exercise } from './attrib.js';
@@ -37,27 +41,28 @@ import { debugcore } from './files.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NHFILE_mode = FLD.NHFILE_mode, $flag_debug = FLD.flag_debug,
-    $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
-    $instance_globals_f_false_rumor_end = FLD.instance_globals_f_false_rumor_end,
-    $instance_globals_f_false_rumor_size = FLD.instance_globals_f_false_rumor_size,
-    $instance_globals_f_false_rumor_start = FLD.instance_globals_f_false_rumor_start,
-    $instance_globals_i_in_mklev = FLD.instance_globals_i_in_mklev,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_m_multi = FLD.instance_globals_m_multi,
-    $instance_globals_o_oracle_flg = FLD.instance_globals_o_oracle_flg,
-    $instance_globals_saved_o_oracle_loc = FLD.instance_globals_saved_o_oracle_loc,
-    $instance_globals_t_true_rumor_end = FLD.instance_globals_t_true_rumor_end,
-    $instance_globals_t_true_rumor_size = FLD.instance_globals_t_true_rumor_size,
-    $instance_globals_t_true_rumor_start = FLD.instance_globals_t_true_rumor_start,
-    $monst_mpeaceful = FLD.monst_mpeaceful, $permonst_geno = FLD.permonst_geno,
-    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
-    $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_prop = FLD.sizeof_prop, $u_event_major_oracle = FLD.u_event_major_oracle,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr, $you_uevent = FLD.you_uevent,
-    $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
+      $instance_flags_debug_fuzzer = FLD.instance_flags_debug_fuzzer,
+      $instance_globals_f_false_rumor_end = FLD.instance_globals_f_false_rumor_end,
+      $instance_globals_f_false_rumor_size = FLD.instance_globals_f_false_rumor_size,
+      $instance_globals_f_false_rumor_start = FLD.instance_globals_f_false_rumor_start,
+      $instance_globals_i_in_mklev = FLD.instance_globals_i_in_mklev,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_m_multi = FLD.instance_globals_m_multi,
+      $instance_globals_o_oracle_flg = FLD.instance_globals_o_oracle_flg,
+      $instance_globals_saved_o_oracle_loc = FLD.instance_globals_saved_o_oracle_loc,
+      $instance_globals_t_true_rumor_end = FLD.instance_globals_t_true_rumor_end,
+      $instance_globals_t_true_rumor_size = FLD.instance_globals_t_true_rumor_size,
+      $instance_globals_t_true_rumor_start = FLD.instance_globals_t_true_rumor_start,
+      $monst_mpeaceful = FLD.monst_mpeaceful, $permonst_geno = FLD.permonst_geno,
+      $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+      $sinfo_something_worth_saving = FLD.sinfo_something_worth_saving,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $u_event_major_oracle = FLD.u_event_major_oracle,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr, $you_uevent = FLD.you_uevent,
+      $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_rumors = cptr.lit("rumors");
@@ -164,10 +169,38 @@ function init_rumors(fp) {
 
     void fgets(cptr.decay(line), 256, fp);  /* skip "don't edit" comment */
     void fgets(cptr.decay(line), 256, fp);
-    if (sscanf(cptr.decay(line), cptr.decay(__static_init_rumors_rumors_header), true_count, cptr.add(gt, $instance_globals_t_true_rumor_size), cptr.add(gt, $instance_globals_t_true_rumor_start), false_count, cptr.add(gf, $instance_globals_f_false_rumor_size), cptr.add(gf, $instance_globals_f_false_rumor_start), eof_offset) == 7 && cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) > 0n && cptr.ldI64o(gf, $instance_globals_f_false_rumor_size) > 0n) {
-        cptr.stI64o(gt, $instance_globals_t_true_rumor_end, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)) + cptr.ldI64o(gt, $instance_globals_t_true_rumor_size)));
+    if (sscanf(
+        cptr.decay(line),
+        cptr.decay(__static_init_rumors_rumors_header),
+        true_count,
+        cptr.add(gt, $instance_globals_t_true_rumor_size),
+        cptr.add(gt, $instance_globals_t_true_rumor_start),
+        false_count,
+        cptr.add(gf, $instance_globals_f_false_rumor_size),
+        cptr.add(gf, $instance_globals_f_false_rumor_start),
+        eof_offset
+    ) == 7 &&
+            cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) > 0n &&
+            cptr.ldI64o(gf, $instance_globals_f_false_rumor_size) > 0n) {
+        cptr.stI64o(
+            gt,
+            $instance_globals_t_true_rumor_end,
+            BigInt.asIntN(
+                64,
+                BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)) +
+                    cptr.ldI64o(gt, $instance_globals_t_true_rumor_size)
+            )
+        );
         /* assert( gt.true_rumor_end == false_rumor_start ); */
-        cptr.stI64o(gf, $instance_globals_f_false_rumor_end, BigInt.asIntN(64, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)) + cptr.ldI64o(gf, $instance_globals_f_false_rumor_size)));
+        cptr.stI64o(
+            gf,
+            $instance_globals_f_false_rumor_end,
+            BigInt.asIntN(
+                64,
+                BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)) +
+                    cptr.ldI64o(gf, $instance_globals_f_false_rumor_size)
+            )
+        );
         /* assert( gf.false_rumor_end == eof_offset ); */
     } else {
         cptr.stI64o(gt, $instance_globals_t_true_rumor_size, -1n);  /* init failed */
@@ -182,7 +215,13 @@ function init_rumors(fp) {
  */
 let __static_getrumor_cookie_marker = __s_cookie; /** C ref: rumors.c:125 — char * (function-static) */
 
-/** C ref: rumors.c:117 — @param {CInt} truth @param {CPtr<char>} rumor_buf @param {CInt} exclude_cookie @returns {CPtr<char>} */
+/**
+ * C ref: rumors.c:117
+ * @param {CInt} truth
+ * @param {CPtr<char>} rumor_buf
+ * @param {CInt} exclude_cookie
+ * @returns {CPtr<char>}
+ */
 export function* getrumor(truth, rumor_buf, exclude_cookie) {
     let rumors;
     let beginning;
@@ -216,20 +255,43 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
             switch (adjtruth = (truth + rn2(2)) | 0) {
                 case 2:
                 case 1:
-                beginning = BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start));
+                beginning = BigInt.asIntN(
+                    64,
+                    cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)
+                );
                 ending = cptr.ldI64o(gt, $instance_globals_t_true_rumor_end);
                 break;
                 case 0:
                 case -1:
-                beginning = BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start));
+                beginning = BigInt.asIntN(
+                    64,
+                    cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)
+                );
                 ending = cptr.ldI64o(gf, $instance_globals_f_false_rumor_end);
                 break;
                 default:
                 (yield* impossible(__s_strange_truth_value_for_rumor));
                 return cptr.strcpy(rumor_buf, __s_oops);
             }
-            void cptr.strcpy(rumor_buf, (yield* get_rnd_line(rumors, cptr.decay(line), 256, rn2, beginning, ending, NHM.MD_PAD_RUMORS)));
-        } while (count++ < 50 && exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen))));
+            void cptr.strcpy(
+                rumor_buf,
+                (yield* get_rnd_line(
+                    rumors,
+                    cptr.decay(line),
+                    256,
+                    rn2,
+                    beginning,
+                    ending,
+                    NHM.MD_PAD_RUMORS
+                ))
+            );
+        } while (count++ < 50 &&
+                exclude_cookie &&
+                !cptr.strncmp(
+                    rumor_buf,
+                    __static_getrumor_cookie_marker,
+                    BigInt.asUintN(64, BigInt(marklen))
+                ));
         void fclose(rumors);
         if (count >= 50)
             (yield* impossible(__s_can_t_find_non_cookie_rumor));
@@ -239,7 +301,12 @@ export function* getrumor(truth, rumor_buf, exclude_cookie) {
         (yield* couldnt_open_file(__s_rumors));
         cptr.stI64o(gt, $instance_globals_t_true_rumor_size, -1n);  /* don't try to open it again */
     }
-    if (!exclude_cookie && !cptr.strncmp(rumor_buf, __static_getrumor_cookie_marker, BigInt.asUintN(64, BigInt(marklen)))) {
+    if (!exclude_cookie &&
+            !cptr.strncmp(
+                rumor_buf,
+                __static_getrumor_cookie_marker,
+                BigInt.asUintN(64, BigInt(marklen))
+            )) {
         /* remove cookie_marker from the string */
         let src = cptr.add(rumor_buf, marklen);
         let dst = rumor_buf;
@@ -265,7 +332,9 @@ export function* rumor_check() {
         let xbuf = new Uint8Array(256);
         let rumor_buf = new Uint8Array(256);
 
-        rumors = (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) >= 0n) ? fopen(__s_rumors, __s_r) : null;
+        rumors = (cptr.ldI64o(gt, $instance_globals_t_true_rumor_size) >= 0n)
+                ? fopen(__s_rumors, __s_r)
+                : null;
         if (rumors) {
             let ftell_rumor_start = 0n;
 
@@ -282,9 +351,27 @@ export function* rumor_check() {
             /*
              * reveal the values.
              */
-            void cptr.sprintf(cptr.decay(rumor_buf), __s_t_start_06ld_06lx_end_06ld_06lx_size, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)), cptr.ldU64o(gt, $instance_globals_t_true_rumor_start), cptr.ldI64o(gt, $instance_globals_t_true_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_end)), cptr.ldI64o(gt, $instance_globals_t_true_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_size)));
+            void cptr.sprintf(
+                cptr.decay(rumor_buf),
+                __s_t_start_06ld_06lx_end_06ld_06lx_size,
+                BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)),
+                cptr.ldU64o(gt, $instance_globals_t_true_rumor_start),
+                cptr.ldI64o(gt, $instance_globals_t_true_rumor_end),
+                BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_end)),
+                cptr.ldI64o(gt, $instance_globals_t_true_rumor_size),
+                BigInt.asUintN(64, cptr.ldI64o(gt, $instance_globals_t_true_rumor_size))
+            );
             (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
-            void cptr.sprintf(cptr.decay(rumor_buf), __s_f_start_06ld_06lx_end_06ld_06lx_size, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)), cptr.ldU64o(gf, $instance_globals_f_false_rumor_start), cptr.ldI64o(gf, $instance_globals_f_false_rumor_end), BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_end)), cptr.ldI64o(gf, $instance_globals_f_false_rumor_size), BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_size)));
+            void cptr.sprintf(
+                cptr.decay(rumor_buf),
+                __s_f_start_06ld_06lx_end_06ld_06lx_size,
+                BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)),
+                cptr.ldU64o(gf, $instance_globals_f_false_rumor_start),
+                cptr.ldI64o(gf, $instance_globals_f_false_rumor_end),
+                BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_end)),
+                cptr.ldI64o(gf, $instance_globals_f_false_rumor_size),
+                BigInt.asUintN(64, cptr.ldI64o(gf, $instance_globals_f_false_rumor_size))
+            );
             (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
 
             /*
@@ -295,35 +382,65 @@ export function* rumor_check() {
              * the value read in rumors, and display it.
              */
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
-            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)), 0);
+            void fseek(
+                rumors,
+                BigInt.asIntN(64, cptr.ldU64o(gt, $instance_globals_t_true_rumor_start)),
+                0
+            );
             ftell_rumor_start = ftell(rumors);
             void fgets(cptr.decay(line), 256, rumors);
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            void cptr.sprintf(cptr.decay(rumor_buf), __s_t_06ld_s, ftell_rumor_start, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
+            void cptr.sprintf(
+                cptr.decay(rumor_buf),
+                __s_t_06ld_s,
+                ftell_rumor_start,
+                (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf)))
+            );
             (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
             /* find last true rumor */
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gt, $instance_globals_t_true_rumor_end))
+            while (fgets(cptr.decay(line), 256, rumors) &&
+                    ftell(rumors) < cptr.ldI64o(gt, $instance_globals_t_true_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            void cptr.sprintf(cptr.decay(rumor_buf), __s_6s_s, __s_empty, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
+            void cptr.sprintf(
+                cptr.decay(rumor_buf),
+                __s_6s_s,
+                __s_empty,
+                (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf)))
+            );
             (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
 
             cptr.st1o(cptr.decay(rumor_buf), 0, 0, 1);
-            void fseek(rumors, BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)), 0);
+            void fseek(
+                rumors,
+                BigInt.asIntN(64, cptr.ldU64o(gf, $instance_globals_f_false_rumor_start)),
+                0
+            );
             ftell_rumor_start = ftell(rumors);
             void fgets(cptr.decay(line), 256, rumors);
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            void cptr.sprintf(cptr.decay(rumor_buf), __s_f_06ld_s, ftell_rumor_start, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
+            void cptr.sprintf(
+                cptr.decay(rumor_buf),
+                __s_f_06ld_s,
+                ftell_rumor_start,
+                (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf)))
+            );
             (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
             /* find last false rumor */
-            while (fgets(cptr.decay(line), 256, rumors) && ftell(rumors) < cptr.ldI64o(gf, $instance_globals_f_false_rumor_end))
+            while (fgets(cptr.decay(line), 256, rumors) &&
+                    ftell(rumors) < cptr.ldI64o(gf, $instance_globals_f_false_rumor_end))
                 continue;
             if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                 cptr.st1(endp, 0);
-            void cptr.sprintf(cptr.decay(rumor_buf), __s_6s_s, __s_empty, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))));
+            void cptr.sprintf(
+                cptr.decay(rumor_buf),
+                __s_6s_s,
+                __s_empty,
+                (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf)))
+            );
             (yield* Y.icall(putstr()(tmpwin.v, 0, cptr.decay(rumor_buf))));
 
             void fclose(rumors);
@@ -361,7 +478,12 @@ export function* rumor_check() {
 /* 5.0: augments rumors_check(); test 'engrave' or 'epitaph' or 'bogusmon' */
 const __static_others_check_errfmt = cptr.bytes("others_check(\"%s\"): %s"); /** C ref: rumors.c:313 — char[23] (function-static) */
 
-/** C ref: rumors.c:308 — @param {CPtr<char>} ftype @param {CPtr<char>} fname @param {CPtr<winid>} winptr */
+/**
+ * C ref: rumors.c:308
+ * @param {CPtr<char>} ftype
+ * @param {CPtr<char>} fname
+ * @param {CPtr<winid>} winptr
+ */
 function* others_check(ftype, fname, winptr) {
     let fh;
     let line = new Uint8Array(256);
@@ -377,7 +499,11 @@ function* others_check(ftype, fname, winptr) {
                 cptr.stI32(winptr, tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT))));
                 if (tmpwin == -1) {
                     /* should panic, but won't for wizard mode check operation */
-                    (yield* impossible(cptr.decay(__static_others_check_errfmt), fname, __s_can_t_create_temporary_window));
+                    (yield* impossible(
+                        cptr.decay(__static_others_check_errfmt),
+                        fname,
+                        __s_can_t_create_temporary_window
+                    ));
                     break __lbl_closeit;
                 }
             }
@@ -386,12 +512,22 @@ function* others_check(ftype, fname, winptr) {
             /* "don't edit" comment */
             cptr.st1(cptr.decay(line), 0);
             if (!fgets(cptr.decay(line), 256, fh)) {
-                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __s_error_can_t_read_comment_line);
+                void cptr.sprintf(
+                    cptr.decay(xbuf),
+                    cptr.decay(__static_others_check_errfmt),
+                    fname,
+                    __s_error_can_t_read_comment_line
+                );
                 (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(xbuf))));
                 break __lbl_closeit;
             }
             if (cptr.ld1s(cptr.decay(line)) != 35) {
-                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, __s_malformed_first_line_is_not_a_comment);
+                void cptr.sprintf(
+                    cptr.decay(xbuf),
+                    cptr.decay(__static_others_check_errfmt),
+                    fname,
+                    __s_malformed_first_line_is_not_a_comment
+                );
                 (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(xbuf))));
                 /* show the bad line; we don't know whether it has been
                    encrypted via xcrypt() so show it both ways */
@@ -408,7 +544,14 @@ function* others_check(ftype, fname, winptr) {
                can only require a line to exist */
             cptr.st1(cptr.decay(line), 0);
             if (!fgets(cptr.decay(line), 256, fh) || cptr.ld1s(cptr.decay(line)) == 10) {
-                void cptr.sprintf(cptr.decay(xbuf), cptr.decay(__static_others_check_errfmt), fname, !cptr.ld1s(cptr.decay(line)) ? __s_can_t_read_first_non_comment_line : __s_first_non_comment_line_is_empty);
+                void cptr.sprintf(
+                    cptr.decay(xbuf),
+                    cptr.decay(__static_others_check_errfmt),
+                    fname,
+                    !cptr.ld1s(cptr.decay(line))
+                        ? __s_can_t_read_first_non_comment_line
+                        : __s_first_non_comment_line_is_empty
+                );
                 (yield* Y.icall(putstr()(tmpwin, 0, cptr.decay(xbuf))));
                 break __lbl_closeit;
             }
@@ -465,7 +608,17 @@ function* others_check(ftype, fname, winptr) {
    chosen; however, if padlength is 0, lines following long lines are
    more likely than average to be picked, and lines after short lines
    are less likely */
-/** C ref: rumors.c:420 — @param {CPtr<FILE>} fh @param {CPtr<char>} buf @param {CUInt} bufsiz @param {CPtr} rng @param {CLongLong} startpos @param {CLongLong} endpos @param {CUInt} padlength @returns {CPtr<char>} */
+/**
+ * C ref: rumors.c:420
+ * @param {CPtr<FILE>} fh
+ * @param {CPtr<char>} buf
+ * @param {CUInt} bufsiz
+ * @param {CPtr} rng
+ * @param {CLongLong} startpos
+ * @param {CLongLong} endpos
+ * @param {CUInt} padlength
+ * @returns {CPtr<char>}
+ */
 function* get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
     let newl;
     let xbufp;
@@ -489,7 +642,10 @@ function* get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
     /* 'rumors' is about 3/4 of the way to the limit on a 16-bit config
        for the whole, roughly 3/8 of the way for either half; all active
        configurations these days are at least 32-bits anyway */
-    void ((!!(filechunksize <= 2147483647n)) || ((yield* nhassert_failed(__s_filechunksize_int_max, __s_rumors_c, 449)), 0) ? 1 : 0);  /* essential for rn2() */
+    void ((!!(filechunksize <= 2147483647n)) ||
+        ((yield* nhassert_failed(__s_filechunksize_int_max, __s_rumors_c, 449)), 0)
+            ? 1
+            : 0);  /* essential for rn2() */
 
     /*
      * Position randomly which will probably be in the middle of a line.
@@ -525,7 +681,9 @@ function* get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
     if ((newl = cptr.strchr(buf, 10)) !== null)
         cptr.st1(newl, 0);
     /* decrypt line; make sure that our intermediate buffer is big enough */
-    xbufp = (cptr.strlen(buf) <= 255n) ? cptr.add(cptr.decay(xbuf), 0, 1) : (yield* alloc((Number(BigInt.asUintN(32, cptr.strlen(buf))) + 1) >>> 0));
+    xbufp = (cptr.strlen(buf) <= 255n)
+            ? cptr.add(cptr.decay(xbuf), 0, 1)
+            : (yield* alloc((Number(BigInt.asUintN(32, cptr.strlen(buf))) + 1) >>> 0));
     void cptr.strcpy(buf, (yield* xcrypt(buf, xbufp)));
     if (!cptr.eq(xbufp, cptr.add(cptr.decay(xbuf), 0, 1)))
         cptr.free(xbufp);
@@ -537,7 +695,14 @@ function* get_rnd_line(fh, buf, bufsiz, rng, startpos, endpos, padlength) {
 
 /* Gets a random line of text from file 'fname', and returns it.
    rng is the random number generator to use, and should act like rn2 does. */
-/** C ref: rumors.c:499 — @param {CPtr<char>} fname @param {CPtr<char>} buf @param {CPtr} rng @param {CUInt} padlength @returns {CPtr<char>} */
+/**
+ * C ref: rumors.c:499
+ * @param {CPtr<char>} fname
+ * @param {CPtr<char>} buf
+ * @param {CPtr} rng
+ * @param {CUInt} padlength
+ * @returns {CPtr<char>}
+ */
 export function* get_rnd_text(fname, buf, rng, padlength) {
     let fh = fopen(fname, __s_r);
 
@@ -553,7 +718,10 @@ export function* get_rnd_text(fname, buf, rng, padlength) {
         starttxt = ftell(fh);
 
         /* get a randomly chosen line; it comes back decrypted and unpadded */
-        void cptr.strcpy(buf, (yield* get_rnd_line(fh, cptr.decay(line), 256, rng, starttxt, 0n, padlength)));
+        void cptr.strcpy(
+            buf,
+            (yield* get_rnd_line(fh, cptr.decay(line), 256, rng, starttxt, 0n, padlength))
+        );
         void fclose(fh);
     } else {
         (yield* couldnt_open_file(fname));
@@ -587,7 +755,12 @@ export function* outrumor(truth, mechanism) {
     switch (mechanism) {
         case NHM.BY_ORACLE:
         /* Oracle delivers the rumor */
-        (yield* pline(__s_true_to_her_word_the_oracle_ssays, (!rn2(4) ? __s_offhandedly : (!rn2(3) ? __s_casually : (rn2(2) ? __s_nonchalantly : __s_empty)))));
+        (yield* pline(
+            __s_true_to_her_word_the_oracle_ssays,
+            (!rn2(4)
+                ? __s_offhandedly
+                : (!rn2(3) ? __s_casually : (rn2(2) ? __s_nonchalantly : __s_empty)))
+        ));
         ;
         (yield* verbalize(__s_pct_s, line));
         /* [WIS exercised by getrumor()] */
@@ -614,10 +787,18 @@ function* init_oracles(fp) {
     void fgets(cptr.decay(line), 256, fp);
     if (sscanf(cptr.decay(line), __s_5d, cnt) == 1 && cnt.v > 0) {
         cptr.stI32(svo, cnt.v >>> 0);
-        cptr.stPtro(svo, $instance_globals_saved_o_oracle_loc, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n))))));
+        cptr.stPtro(
+            svo,
+            $instance_globals_saved_o_oracle_loc,
+            (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt((cnt.v >>> 0) >>> 0) * 8n)))))
+        );
         for (i = 0; i < cnt.v; i++) {
             void fgets(cptr.decay(line), 256, fp);
-            void sscanf(cptr.decay(line), __s_5lx, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8));
+            void sscanf(
+                cptr.decay(line),
+                __s_5lx,
+                cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8)
+            );
         }
     }
     return;
@@ -631,7 +812,11 @@ export function* save_oracles(nhfp) {
         (yield* sfo_unsigned(nhfp, svo, __s_oracle_oracle_cnt));
         if (cptr.ldI32(svo)) {
             for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-                (yield* sfo_ulong(nhfp, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8), __s_oracle_oracle_loc));
+                (yield* sfo_ulong(
+                    nhfp,
+                    cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8),
+                    __s_oracle_oracle_loc
+                ));
                 ;
             }
         }
@@ -654,9 +839,20 @@ export function* restore_oracles(nhfp) {
     (yield* sfi_unsigned(nhfp, svo, __s_oracle_oracle_cnt));
     ;
     if (cptr.ldI32(svo)) {
-        cptr.stPtro(svo, $instance_globals_saved_o_oracle_loc, (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n))))));
+        cptr.stPtro(
+            svo,
+            $instance_globals_saved_o_oracle_loc,
+            (yield* alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(64, BigInt(cptr.ldI32(svo) >>> 0) * 8n)
+            ))))
+        );
         for (i = 0; i >>> 0 < cptr.ldI32(svo); ++i) {
-            (yield* sfi_ulong(nhfp, cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8), __s_oracle_oracle_loc));
+            (yield* sfi_ulong(
+                nhfp,
+                cptr.add(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), i, 8),
+                __s_oracle_oracle_loc
+            ));
             ;
         }
         cptr.stI32o(go, $instance_globals_o_oracle_flg, 1);  /* no need to call init_oracles() */
@@ -674,7 +870,8 @@ export function* outoracle(special, delphi) {
 
     /* early return if we couldn't open ORACLEFILE on previous attempt,
        or if all the oracularities are already exhausted */
-    if (cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0 || (cptr.ldI32o(go, $instance_globals_o_oracle_flg) > 0 && cptr.ldI32(svo) == 0))
+    if (cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0 ||
+            (cptr.ldI32o(go, $instance_globals_o_oracle_flg) > 0 && cptr.ldI32(svo) == 0))
         return;
 
     oracles = fopen(__s_oracles, __s_r);
@@ -692,18 +889,45 @@ export function* outoracle(special, delphi) {
             if (cptr.ldI32(svo) <= 1 && !special)
                 break __lbl_close_oracles;  /*(shouldn't happen)*/
             oracle_idx = special ? 0 : rnd(((cptr.ldI32(svo) | 0) - 1) | 0);
-            void fseek(oracles, BigInt.asIntN(64, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, 8)), 0);
+            void fseek(
+                oracles,
+                BigInt.asIntN(
+                    64,
+                    cptr.ldU64o(
+                        cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc),
+                        oracle_idx,
+                        8
+                    )
+                ),
+                0
+            );
             if (!special)
-                cptr.stU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), oracle_idx, cptr.ldU64o(cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc), cptr.stI32(svo, cptr.ldI32(svo) + -1), 8), 8);
+                cptr.stU64o(
+                    cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc),
+                    oracle_idx,
+                    cptr.ldU64o(
+                        cptr.ldPtro(svo, $instance_globals_saved_o_oracle_loc),
+                        cptr.stI32(svo, cptr.ldI32(svo) + -1),
+                        8
+                    ),
+                    8
+                );
 
             tmpwin = (yield* Y.icall(create_nhwindow()(NHM.NHW_TEXT)));
             if (delphi)
-                (yield* Y.icall(putstr()(tmpwin, 0, special ? __s_the_oracle_scornfully_takes_all_your : __s_the_oracle_meditates_for_a_moment_and)));
+                (yield* Y.icall(putstr()(
+                    tmpwin,
+                    0,
+                    special
+                        ? __s_the_oracle_scornfully_takes_all_your
+                        : __s_the_oracle_meditates_for_a_moment_and
+                )));
             else
                 (yield* Y.icall(putstr()(tmpwin, 0, __s_the_message_reads)));
             (yield* Y.icall(putstr()(tmpwin, 0, __s_empty)));
 
-            while (fgets(cptr.decay(line), NHM.COLNO, oracles) && strcmp(cptr.decay(line), __s_dash3_nl)) {
+            while (fgets(cptr.decay(line), NHM.COLNO, oracles) &&
+                    strcmp(cptr.decay(line), __s_dash3_nl)) {
                 if ((endp = cptr.strchr(cptr.decay(line), 10)) !== null)
                     cptr.st1(endp, 0);
                 (yield* Y.icall(putstr()(tmpwin, 0, (yield* xcrypt(cptr.decay(line), cptr.decay(xbuf))))));
@@ -741,7 +965,12 @@ export function* doconsult(oracl) {
         return NHM.ECMD_OK;
     }
 
-    void cptr.sprintf(cptr.decay(qbuf), __s_wilt_thou_settle_for_a_minor, minor_cost, (yield* currency(BigInt(minor_cost))));
+    void cptr.sprintf(
+        cptr.decay(qbuf),
+        __s_wilt_thou_settle_for_a_minor,
+        minor_cost,
+        (yield* currency(BigInt(minor_cost)))
+    );
     switch ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynqchars), 113, 1))) {
         default:
         case 113:
@@ -754,9 +983,15 @@ export function* doconsult(oracl) {
         u_pay = minor_cost;
         break;
         case 110:
-        if (umoney <= BigInt(minor_cost) || (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0))
+        if (umoney <= BigInt(minor_cost) ||
+                (cptr.ldI32(svo) == 1 || cptr.ldI32o(go, $instance_globals_o_oracle_flg) < 0))
             return NHM.ECMD_OK;
-        void cptr.sprintf(cptr.decay(qbuf), __s_then_dost_thou_desire_a_major_one_d_s, major_cost, (yield* currency(BigInt(major_cost))));
+        void cptr.sprintf(
+            cptr.decay(qbuf),
+            __s_then_dost_thou_desire_a_major_one_d_s,
+            major_cost,
+            (yield* currency(BigInt(major_cost)))
+        );
         if ((yield* yn_function(cptr.decay(qbuf), cptr.decay(ynchars), 110, 1)) != 121)
             return NHM.ECMD_OK;
         u_pay = (umoney < BigInt(major_cost)) ? Number(BigInt.asIntN(32, umoney)) : major_cost;
@@ -764,13 +999,16 @@ export function* doconsult(oracl) {
     }
     (yield* money2mon(oracl, BigInt(u_pay)));
     cptr.st1(disp, 1);
-    if (!(cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) && !(cptr.ldI32o(u, $you_uevent) & 1))
+    if (!(cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) &&
+            !(cptr.ldI32o(u, $you_uevent) & 1))
         (yield* record_achievement(NHC.ACH_ORCL));
     add_xpts = 0;  /* first oracle of each type gives experience points */
     if (u_pay == minor_cost) {
         (yield* outrumor(1, NHM.BY_ORACLE));
         if (!(cptr.ldI32o(u, $you_uevent) & 1))
-            add_xpts = (u_pay / ((cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) | 0 ? 25 : 10)) | 0;
+            add_xpts = (u_pay /
+                ((cptr.ldI32o(u, $you_uevent + $u_event_major_oracle) & 1) | 0 ? 25 : 10)) |
+                    0;
         /* 5 pts if very 1st, or 2 pts if major already done */
         cptr.stI32o(u, $you_uevent, 1);
     } else {
@@ -822,7 +1060,9 @@ export function* CapitalMon(word) {
 
     if (!CapMons)
         (yield* init_CapMons());
-    (__builtin_expect(BigInt((!(CapMons !== null))), 0n) ? __assert_rtn(__s_capitalmon, __s_rumors_c, 803, __s_capmons_0) : void 0);
+    (__builtin_expect(BigInt((!(CapMons !== null))), 0n)
+            ? __assert_rtn(__s_capitalmon, __s_rumors_c, 803, __s_capmons_0)
+            : void 0);
 
     wln = Number(BigInt.asUintN(32, cptr.strlen(word)));
     for (i = 0; i < (CapMonSiz - 1) >>> 0; ++i) {
@@ -836,7 +1076,10 @@ export function* CapitalMon(word) {
          * check full words though: "Foo" matches "Foo" and "Foo bar" and
          * "Foo's bar" but not "Foobar".  We use case-sensitive matching.
          */
-        if (!cptr.strncmp(nam, word, BigInt(nln >>> 0)) && (!cptr.ld1so(word, nln) || cptr.ld1so(word, nln) == 32 || cptr.ld1so(word, nln) == 39))
+        if (!cptr.strncmp(nam, word, BigInt(nln >>> 0)) &&
+                (!cptr.ld1so(word, nln) ||
+                    cptr.ld1so(word, nln) == 32 ||
+                    cptr.ld1so(word, nln) == 39))
             return 1;  /* 'word' is a capitalized monster name */
     }
     return 0;
@@ -907,10 +1150,12 @@ function* init_CapMons() {
                 void (yield* xcrypt(cptr.decay(hline), cptr.decay(xbuf)));
                 unpadline(cptr.decay(xbuf));
 
-                if (!cptr.ld1so(cptr.decay(xbuf), 0, 1) || !cptr.strchr(cptr.decay(bogon_codes), cptr.ld1so(cptr.decay(xbuf), 0, 1)))
+                if (!cptr.ld1so(cptr.decay(xbuf), 0, 1) ||
+                        !cptr.strchr(cptr.decay(bogon_codes), cptr.ld1so(cptr.decay(xbuf), 0, 1)))
                     code = 0, startp = cptr.add(cptr.decay(xbuf), 0, 1);  /* ordinary */
                 else
-                    code = cptr.ld1so(cptr.decay(xbuf), 0, 1), startp = cptr.add(cptr.decay(xbuf), 1, 1);  /* special */
+                    code = cptr.ld1so(cptr.decay(xbuf), 0, 1),
+                            startp = cptr.add(cptr.decay(xbuf), 1, 1);  /* special */
 
                 if (cptr.ld1s(startp) != lowc(cptr.ld1s(startp)) && !bogon_is_pname(code)) {
                     if (pass == 2)
@@ -923,7 +1168,10 @@ function* init_CapMons() {
         /* finish the current pass */
         if (pass == 1) {
             CapMonSiz = (((CapMonstCnt + CapBogonCnt) >>> 0) + 1) >>> 0;  /* +1: terminator */
-            CapMons = (yield* alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt(CapMonSiz >>> 0) * 8n)))));
+            CapMons = (yield* alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(64, BigInt(CapMonSiz >>> 0) * 8n)
+            ))));
         } else {
             /* terminator; not strictly needed */
             cptr.stPtro(CapMons, (CapMonSiz - 1) >>> 0, null, 8);
@@ -977,7 +1225,13 @@ export function free_CapMons() {
 // 8 bindings: 0 rebound+refilled, 5 rebound, 3 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(CapMonstCnt), S(CapBogonCnt), S(CapMonSiz), S(CapMons), S(__static_init_rumors_rumors_header), S(__static_getrumor_cookie_marker), S(__static_others_check_errfmt), S(__static_outrumor_fortune_msg)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(CapMonstCnt), S(CapBogonCnt), S(CapMonSiz), S(CapMons),
+        S(__static_init_rumors_rumors_header), S(__static_getrumor_cookie_marker),
+        S(__static_others_check_errfmt), S(__static_outrumor_fortune_msg)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("rumors.js: __resetState before __captureState");

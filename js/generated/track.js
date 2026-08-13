@@ -15,7 +15,7 @@ import { panic } from './end.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NHFILE_mode = FLD.NHFILE_mode, $coord_y = FLD.coord_y, $nhcoord_y = FLD.nhcoord_y,
-    $obj_otyp = FLD.obj_otyp, $sizeof_coord = FLD.sizeof_coord, $you_uy = FLD.you_uy;
+      $obj_otyp = FLD.obj_otyp, $sizeof_coord = FLD.sizeof_coord, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_track_utcnt = cptr.lit("track-utcnt");
@@ -41,7 +41,8 @@ export function initrack() {
 /* add to track */
 /** C ref: track.c:24 */
 export function settrack() {
-    if ((uleft.v && cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_STEALTH) || (uright.v && cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_STEALTH))
+    if ((uleft.v && cptr.ldI16o(uleft.v, $obj_otyp) == NHC.RIN_STEALTH) ||
+            (uright.v && cptr.ldI16o(uright.v, $obj_otyp) == NHC.RIN_STEALTH))
         return;
 
     if (utcnt.v < 100)
@@ -80,7 +81,8 @@ export function hastrack(x, y) {
     let i;
 
     for (i = 0; i < utcnt.v; i++)
-        if (cptr.ldI16o(utrack, i, $sizeof_coord) == x && cptr.ldI16o2(utrack, i, $sizeof_coord, $nhcoord_y) == y)
+        if (cptr.ldI16o(utrack, i, $sizeof_coord) == x &&
+                cptr.ldI16o2(utrack, i, $sizeof_coord, $nhcoord_y) == y)
             return 1;
 
     return 0;

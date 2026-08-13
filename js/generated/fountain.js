@@ -9,10 +9,18 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { canspotmon, glyph_is_cmap, is_watch, min } from './nhmacrofn.js';
-import { Blind, Deaf, Fire_resistance, Glib, Hallucination, Invisible, Levitation, Poison_resistance, Unchanging, display_nhwindow, wizard } from './nhprop.js';
-import { WIN_MESSAGE, c_common_strings, disp, flags, gi, gu, gv, gy, hands_obj, svl, svm, u, uarmg, ynchars } from './decl.js';
+import {
+    Blind, Deaf, Fire_resistance, Glib, Hallucination, Invisible, Levitation, Poison_resistance,
+    Unchanging, display_nhwindow, wizard
+} from './nhprop.js';
+import {
+    WIN_MESSAGE, c_common_strings, disp, flags, gi, gu, gv, gy, hands_obj, svl, svm, u, uarmg,
+    ynchars
+} from './decl.js';
 import { dunlev, dunlevs_in_dungeon, level_difficulty, surface } from './dungeon.js';
-import { You, You_feel, You_hear, You_see, Your, livelog_printf, pline, pline_The, verbalize } from './pline.js';
+import {
+    You, You_feel, You_hear, You_see, Your, livelog_printf, pline, pline_The, verbalize
+} from './pline.js';
 import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { fruitname, makeplural, rnd_class, the, xname } from './objnam.js';
 import { Amonnam, a_monnam, hcolor, hliquid, oname, rndmonnam } from './do_name.js';
@@ -54,36 +62,39 @@ import { polymorph_sink, trycall } from './do.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Gender_he = FLD.Gender_he, $Gender_him = FLD.Gender_him, $Gender_his = FLD.Gender_his,
-    $Role_mnum = FLD.Role_mnum,
-    $c_common_strings_c_nothing_seems_to_happen = FLD.c_common_strings_c_nothing_seems_to_happen,
-    $c_common_strings_c_something = FLD.c_common_strings_c_something,
-    $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_monsters = FLD.dlevel_t_monsters,
-    $dlevel_t_objects = FLD.dlevel_t_objects, $flag_debug = FLD.flag_debug, $flag_female = FLD.flag_female,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
-    $monst_mhp = FLD.monst_mhp, $monst_mpeaceful = FLD.monst_mpeaceful,
-    $monst_msleeping = FLD.monst_msleeping, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
-    $mvitals_mvflags = FLD.mvitals_mvflags, $obj_blessed = FLD.obj_blessed, $obj_corpsenm = FLD.obj_corpsenm,
-    $obj_cursed = FLD.obj_cursed, $obj_dknown = FLD.obj_dknown, $obj_oartifact = FLD.obj_oartifact,
-    $obj_oclass = FLD.obj_oclass, $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2,
-    $obj_oerodeproof = FLD.obj_oerodeproof, $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan,
-    $obj_spe = FLD.obj_spe, $objclass_oc_cost = FLD.objclass_oc_cost,
-    $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx, $objdescr_oc_descr = FLD.objdescr_oc_descr,
-    $permonst_mflags1 = FLD.permonst_mflags1, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_horizontal = FLD.rm_horizontal,
-    $rm_typ = FLD.rm_typ, $sizeof_Gender = FLD.sizeof_Gender, $sizeof_mvitals = FLD.sizeof_mvitals,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
-    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $u_roleplay_deaf = FLD.u_roleplay_deaf,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow, $you_acurr = FLD.you_acurr,
-    $you_amax = FLD.you_amax, $you_ualign = FLD.you_ualign, $you_uhunger = FLD.you_uhunger,
-    $you_ulevel = FLD.you_ulevel, $you_uluck = FLD.you_uluck, $you_uprops = FLD.you_uprops,
-    $you_uroleplay = FLD.you_uroleplay, $you_utrap = FLD.you_utrap, $you_utraptype = FLD.you_utraptype,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
+      $Role_mnum = FLD.Role_mnum,
+      $c_common_strings_c_nothing_seems_to_happen = FLD.c_common_strings_c_nothing_seems_to_happen,
+      $c_common_strings_c_something = FLD.c_common_strings_c_something,
+      $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_monsters = FLD.dlevel_t_monsters,
+      $dlevel_t_objects = FLD.dlevel_t_objects, $flag_debug = FLD.flag_debug,
+      $flag_female = FLD.flag_female, $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_m_mvitals = FLD.instance_globals_saved_m_mvitals,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
+      $monst_mhp = FLD.monst_mhp, $monst_mpeaceful = FLD.monst_mpeaceful,
+      $monst_msleeping = FLD.monst_msleeping, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
+      $mvitals_mvflags = FLD.mvitals_mvflags, $obj_blessed = FLD.obj_blessed,
+      $obj_corpsenm = FLD.obj_corpsenm, $obj_cursed = FLD.obj_cursed, $obj_dknown = FLD.obj_dknown,
+      $obj_oartifact = FLD.obj_oartifact, $obj_oclass = FLD.obj_oclass,
+      $obj_oeroded = FLD.obj_oeroded, $obj_oeroded2 = FLD.obj_oeroded2,
+      $obj_oerodeproof = FLD.obj_oerodeproof, $obj_otyp = FLD.obj_otyp, $obj_quan = FLD.obj_quan,
+      $obj_spe = FLD.obj_spe, $objclass_oc_cost = FLD.objclass_oc_cost,
+      $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx,
+      $objdescr_oc_descr = FLD.objdescr_oc_descr, $permonst_mflags1 = FLD.permonst_mflags1,
+      $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+      $rm_flags = FLD.rm_flags, $rm_horizontal = FLD.rm_horizontal, $rm_typ = FLD.rm_typ,
+      $sizeof_Gender = FLD.sizeof_Gender, $sizeof_mvitals = FLD.sizeof_mvitals,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+      $u_roleplay_deaf = FLD.u_roleplay_deaf,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $you_acurr = FLD.you_acurr, $you_amax = FLD.you_amax, $you_ualign = FLD.you_ualign,
+      $you_uhunger = FLD.you_uhunger, $you_ulevel = FLD.you_ulevel, $you_uluck = FLD.you_uluck,
+      $you_uprops = FLD.you_uprops, $you_uroleplay = FLD.you_uroleplay, $you_utrap = FLD.you_utrap,
+      $you_utraptype = FLD.you_utraptype, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_are_floating_high_above_the_s = cptr.lit("are floating high above the %s.");
@@ -203,7 +214,9 @@ const __s_a_ring_shining_in_its_midst = cptr.lit("a ring shining in its midst.")
 export function floating_above(what) {
     let umsg = __s_are_floating_high_above_the_s;
 
-    if (cptr.ldI32o(u, $you_utrap) && (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR || cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)) {
+    if (cptr.ldI32o(u, $you_utrap) &&
+            (cptr.ldI32o(u, $you_utraptype) == NHC.TT_INFLOOR ||
+                cptr.ldI32o(u, $you_utraptype) == NHC.TT_LAVA)) {
         /* when stuck in floor (not possible at fountain or sink location,
            so must be attempting to move down), override the usual message */
         umsg = __s_are_trapped_in_the_s;
@@ -218,15 +231,29 @@ function dowatersnakes() {
     let num = ((rn2(5) + 2) | 0);
     let mtmp;
 
-    if (!(cptr.ld1uo2(svm, NHC.PM_WATER_MOCCASIN, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
+    if (!(cptr.ld1uo2(
+        svm,
+        NHC.PM_WATER_MOCCASIN,
+        $sizeof_mvitals,
+        $instance_globals_saved_m_mvitals + $mvitals_mvflags
+    ) & 3)) {
         if (!Blind()) {
-            pline(__s_an_endless_stream_of_s_pours_forth, Hallucination() ? makeplural(rndmonnam(null)) : __s_snakes);
+            pline(
+                __s_an_endless_stream_of_s_pours_forth,
+                Hallucination() ? makeplural(rndmonnam(null)) : __s_snakes
+            );
         } else {
             ;
             You_hear(__s_s_hissing, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
         }
         while (num-- > 0)
-            if ((mtmp = makemon(cptr.add(mons, NHC.PM_WATER_MOCCASIN, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null && t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
+            if ((mtmp = makemon(
+                cptr.add(mons, NHC.PM_WATER_MOCCASIN, $sizeof_permonst),
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy),
+                NHM.MM_NOMSG
+            )) !== null &&
+                    t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)))
                 void mintrap(mtmp, NHM.NO_TRAP_FLAGS);
     } else {
         ;
@@ -239,8 +266,18 @@ function dowatersnakes() {
 function dowaterdemon() {
     let mtmp = cptr.box(0);
 
-    if (!(cptr.ld1uo2(svm, NHC.PM_WATER_DEMON, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)) {
-        if ((mtmp.v = makemon(cptr.add(mons, NHC.PM_WATER_DEMON, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
+    if (!(cptr.ld1uo2(
+        svm,
+        NHC.PM_WATER_DEMON,
+        $sizeof_mvitals,
+        $instance_globals_saved_m_mvitals + $mvitals_mvflags
+    ) & 3)) {
+        if ((mtmp.v = makemon(
+            cptr.add(mons, NHC.PM_WATER_DEMON, $sizeof_permonst),
+            cptr.ldI16(u),
+            cptr.ldI16o(u, $you_uy),
+            NHM.MM_NOMSG
+        )) !== null) {
             if (!Blind())
                 You(__s_unleash_s, a_monnam(mtmp.v));
             else
@@ -249,7 +286,21 @@ function dowaterdemon() {
             /* Give those on low levels a (slightly) better chance of survival
              */
             if (rnd(100) > ((80 + level_difficulty()) | 0)) {
-                pline(__s_grateful_for_s_release_s_grants_you_a, (cptr.ldPtro2(genders, pronoun_gender(mtmp.v, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), (cptr.ldPtro2(genders, pronoun_gender(mtmp.v, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_he)));
+                pline(
+                    __s_grateful_for_s_release_s_grants_you_a,
+                    (cptr.ldPtro2(
+                        genders,
+                        pronoun_gender(mtmp.v, NHM.PRONOUN_HALLU),
+                        $sizeof_Gender,
+                        $Gender_his
+                    )),
+                    (cptr.ldPtro2(
+                        genders,
+                        pronoun_gender(mtmp.v, NHM.PRONOUN_HALLU),
+                        $sizeof_Gender,
+                        $Gender_he
+                    ))
+                );
                 /* give a wish and discard the monster (mtmp set to null) */
                 mongrantswish(mtmp);
             } else if (t_at(cptr.ldI16o(mtmp.v, $monst_mx), cptr.ldI16o(mtmp.v, $monst_my)))
@@ -266,7 +317,18 @@ function dowaterdemon() {
 function dowaternymph() {
     let mtmp;
 
-    if (!(cptr.ld1uo2(svm, NHC.PM_WATER_NYMPH, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) && (mtmp = makemon(cptr.add(mons, NHC.PM_WATER_NYMPH, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG)) !== null) {
+    if (!(cptr.ld1uo2(
+        svm,
+        NHC.PM_WATER_NYMPH,
+        $sizeof_mvitals,
+        $instance_globals_saved_m_mvitals + $mvitals_mvflags
+    ) & 3) &&
+            (mtmp = makemon(
+                cptr.add(mons, NHC.PM_WATER_NYMPH, $sizeof_permonst),
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy),
+                NHM.MM_NOMSG
+            )) !== null) {
         if (!Blind())
             You(__s_attract_s, a_monnam(mtmp));
         else
@@ -303,7 +365,20 @@ function gush(x, y, poolcnt) {
     let mtmp;
     let ttmp;
 
-    if ((((x + y) | 0) % 2) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || rn2((1 + distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y)) | 0) || (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM) || (sobj_at(NHC.BOULDER, x, y)) || nexttodoor(x, y))
+    if ((((x + y) | 0) % 2) ||
+            ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) ||
+            rn2((1 + distmin(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), x, y)) | 0) ||
+            (cptr.ld1so3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) !=
+                NHC.ROOM) ||
+            (sobj_at(NHC.BOULDER, x, y)) ||
+            nexttodoor(x, y))
         return;
 
     if ((ttmp = t_at(x, y)) !== null && !delfloortrap(ttmp))
@@ -314,12 +389,30 @@ function gush(x, y, poolcnt) {
 
     /* Put a pool at x, y */
     set_levltyp(x, y, NHC.POOL);
-    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
+        0
+    );
     /* No kelp! */
     del_engr_at(x, y);
-    water_damage_chain(cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects), 1);
+    water_damage_chain(
+        cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_objects),
+        1
+    );
 
-    if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null)
+    if ((mtmp = (cptr.ldPtro3(
+        svl,
+        x,
+        168,
+        y,
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_monsters
+    ))) !== null)
         void minliquid(mtmp);
     else
         newsym(x, y);
@@ -332,8 +425,30 @@ function dofindgem() {
         You(__s_spot_a_gem_in_the_sparkling_waters);
     else
         You_feel(__s_a_gem_here);
-    void mksobj_at(rnd_class(NHC.DILITHIUM_CRYSTAL, ((NHC.LUCKSTONE - 1) | 0)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 0, 0);
-    cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.F_LOOTED);
+    void mksobj_at(
+        rnd_class(NHC.DILITHIUM_CRYSTAL, ((NHC.LUCKSTONE - 1) | 0)),
+        cptr.ldI16(u),
+        cptr.ldI16o(u, $you_uy),
+        0,
+        0
+    );
+    cptr.stI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
+        cptr.ldI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) |
+            NHM.F_LOOTED
+    );
     ;
     newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
     exercise(NHC.A_WIS, 1);  /* a discovery! */
@@ -341,12 +456,39 @@ function dofindgem() {
 
 /** C ref: fountain.c:179 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 function watchman_warn_fountain(mtmp) {
-    if (is_watch(cptr.ldPtro(mtmp, $monst_data)) && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.COULD_SEE) != 0) && (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
+    if (is_watch(cptr.ldPtro(mtmp, $monst_data)) &&
+            ((cptr.ld1uo(
+                cptr.ldPtro(
+                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                    cptr.ldI16o(mtmp, $monst_my),
+                    8
+                ),
+                cptr.ldI16o(mtmp, $monst_mx)
+            ) &
+                NHM.COULD_SEE) != 0) &&
+            (cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0) {
         if (!Deaf()) {
             pline(__s_s_yells, Amonnam(mtmp));
             verbalize(__s_hey_stop_using_that_fountain);
         } else {
-            pline(__s_s_earnestly_s_s_s, Amonnam(mtmp), ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) ? __s_shakes : __s_waves, (cptr.ldPtro2(genders, pronoun_gender(mtmp, NHM.PRONOUN_HALLU), $sizeof_Gender, $Gender_his)), ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) == 24576n) ? mbodypart(mtmp, NHC.HEAD) : makeplural(mbodypart(mtmp, NHC.ARM)));
+            pline(
+                __s_s_earnestly_s_s_s,
+                Amonnam(mtmp),
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) ==
+                    24576n)
+                    ? __s_shakes
+                    : __s_waves,
+                (cptr.ldPtro2(
+                    genders,
+                    pronoun_gender(mtmp, NHM.PRONOUN_HALLU),
+                    $sizeof_Gender,
+                    $Gender_his
+                )),
+                ((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags1) & 24576n) ==
+                    24576n)
+                    ? mbodypart(mtmp, NHC.HEAD)
+                    : makeplural(mbodypart(mtmp, NHC.ARM))
+            );
         }
         return 1;
     }
@@ -355,11 +497,55 @@ function watchman_warn_fountain(mtmp) {
 
 /** C ref: fountain.c:201 — @param {CInt} x @param {CInt} y @param {CInt} isyou */
 export function dryup(x, y, isyou) {
-    if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.FOUNTAIN) && (!rn2(3) || (((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED))) {
-        if (isyou && in_town(x, y) && !(((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_WARNED)) {
+    if (((cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) ==
+        NHC.FOUNTAIN) &&
+            (!rn2(3) ||
+                (((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.F_WARNED))) {
+        if (isyou &&
+                in_town(x, y) &&
+                !(((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) & 31) | 0) &
+                    NHM.F_WARNED)) {
             let mtmp;
 
-            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.F_WARNED);
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
+                cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) |
+                    NHM.F_WARNED
+            );
             ;
             /* Warn about future fountain use. */
             mtmp = get_iter_mons(watchman_warn_fountain);
@@ -375,7 +561,8 @@ export function dryup(x, y, isyou) {
         /* FIXME: sight-blocking clouds should use block_point() when
            being created and unblock_point() when going away, then this
            glyph hackery wouldn't be necessary */
-        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0)) {
+        if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
+                NHM.IN_SIGHT) != 0)) {
             let glyph = glyph_at(x, y);
 
             if (!glyph_is_cmap(glyph) || glyph_to_cmap(glyph) != NHC.S_cloud)
@@ -383,8 +570,24 @@ export function dryup(x, y, isyou) {
         }
         /* replace the fountain with ordinary floor */
         set_levltyp(x, y, NHC.ROOM);  /* updates level.flags.nfountains */
-        cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
-        cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 0);
+        cptr.stI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            0
+        );
+        cptr.stI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_horizontal,
+            0
+        );
         /* The location is seen if the hero/monster is invisible
            or felt if the hero is blind. */
         newsym(x, y);
@@ -397,7 +600,14 @@ export function dryup(x, y, isyou) {
 /** C ref: fountain.c:243 */
 export function drinkfountain() {
     /* What happens when you drink from a fountain? */
-    let mgkftn = schar((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal) & 1) | 0) == 1));
+    let mgkftn = schar((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_horizontal
+    ) & 1) | 0) == 1));
     let fate = rnd(30);
 
     if (Levitation()) {
@@ -428,7 +638,15 @@ export function drinkfountain() {
         display_nhwindow()(WIN_MESSAGE.v, 0);
         pline(__s_a_wisp_of_vapor_escapes_the_fountain);
         exercise(NHC.A_WIS, 1);
-        cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 0);
+        cptr.stI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_horizontal,
+            0
+        );
         return;
     }
 
@@ -480,7 +698,9 @@ export function drinkfountain() {
                 /* this is more severe than rndcurse() */
                 for (obj = cptr.ldPtro(gi, $instance_globals_i_invent); obj; obj = nextobj) {
                     nextobj = cptr.ldPtr(obj);
-                    if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && !(cptr.ldI32o(obj, $obj_cursed) & 1) && !rn2(5)) {
+                    if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
+                            !(cptr.ldI32o(obj, $obj_cursed) & 1) &&
+                            !rn2(5)) {
                         curse(obj);
                         ++buc_changed;
                     }
@@ -501,7 +721,14 @@ export function drinkfountain() {
                 You_see(__s_an_image_of_someone_stalking_you);
                 pline(__s_but_it_disappears);
             }
-            cptr.stI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic, cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) | 67108864n);
+            cptr.stI64o2(
+                u,
+                NHC.SEE_INVIS,
+                $sizeof_prop,
+                $you_uprops + $prop_intrinsic,
+                cptr.ldI64o2(u, NHC.SEE_INVIS, $sizeof_prop, $you_uprops + $prop_intrinsic) |
+                    67108864n
+            );
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
             exercise(NHC.A_WIS, 1);
             break;
@@ -511,7 +738,15 @@ export function drinkfountain() {
             exercise(NHC.A_WIS, 1);
             break;
             case 27:
-            if (!(((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED)) {
+            if (!(((cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) | 0) &
+                    NHM.F_LOOTED)) {
                 dofindgem();
                 break;
             }
@@ -525,7 +760,11 @@ export function drinkfountain() {
                 let mtmp;
 
                 pline(__s_this_s_gives_you_bad_breath, hliquid(__s_water));
-                for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
+                for (
+                    mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+                    mtmp;
+                    mtmp = cptr.ldPtr(mtmp)
+                ) {
                     if ((cptr.ldI32o((mtmp), $monst_mhp) < 1))
                         continue;
                     monflee(mtmp, 0, 0, 0);
@@ -556,7 +795,14 @@ export function dipfountain(obj) {
         return;
     }
 
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.LONG_SWORD && cptr.ldI32o(u, $you_ulevel) >= 5 && !rn2((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT) ? 6 : 30) && cptr.ldI64o(obj, $obj_quan) == 1n && !cptr.ld1so(obj, $obj_oartifact) && !exist_artifact(NHC.LONG_SWORD, artiname(NHC.ART_EXCALIBUR))) {
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.LONG_SWORD &&
+            cptr.ldI32o(u, $you_ulevel) >= 5 &&
+            !rn2((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_KNIGHT)
+                ? 6
+                : 30) &&
+            cptr.ldI64o(obj, $obj_quan) == 1n &&
+            !cptr.ld1so(obj, $obj_oartifact) &&
+            !exist_artifact(NHC.LONG_SWORD, artiname(NHC.ART_EXCALIBUR))) {
 
         if (cptr.ld1so(u, $you_ualign) != NHM.A_LAWFUL) {
             /* Ha!  Trying to cheat her. */
@@ -567,7 +813,18 @@ export function dipfountain(obj) {
                 (cptr.st1o(obj, $obj_spe, cptr.ld1so(obj, $obj_spe) + -1)) - (-1);
             cptr.stI32o(obj, $obj_oerodeproof, 0);
             exercise(NHC.A_WIS, 0);
-            livelog_printf(64n, __s_was_denied_s_the_s_has_deemed_s_unworthy, artiname(NHC.ART_EXCALIBUR), cptr.decay(__static_dipfountain_lady), (cptr.ldPtro2(genders, cptr.ld1so(flags, $flag_female) ? 1 : 0, $sizeof_Gender, $Gender_him)));
+            livelog_printf(
+                64n,
+                __s_was_denied_s_the_s_has_deemed_s_unworthy,
+                artiname(NHC.ART_EXCALIBUR),
+                cptr.decay(__static_dipfountain_lady),
+                (cptr.ldPtro2(
+                    genders,
+                    cptr.ld1so(flags, $flag_female) ? 1 : 0,
+                    $sizeof_Gender,
+                    $Gender_him
+                ))
+            );
         } else {
             /* The lady of the lake acts! - Eric Backus */
             /* Be *REAL* nice */
@@ -579,11 +836,24 @@ export function dipfountain(obj) {
             cptr.stI32o(obj, $obj_oeroded, cptr.stI32o(obj, $obj_oeroded2, 0));
             cptr.stI32o(obj, $obj_oerodeproof, 1);
             exercise(NHC.A_WIS, 1);
-            livelog_printf(64n, __s_was_given_s_by_the_s, artiname(NHC.ART_EXCALIBUR), cptr.decay(__static_dipfountain_lady));
+            livelog_printf(
+                64n,
+                __s_was_given_s_by_the_s,
+                artiname(NHC.ART_EXCALIBUR),
+                cptr.decay(__static_dipfountain_lady)
+            );
         }
         update_inventory();
         set_levltyp(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHC.ROOM);  /* updates level.flags.nfountains */
-        cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
+        cptr.stI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            0
+        );
         newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         if (in_town(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
             void angry_guards(0);
@@ -600,7 +870,9 @@ export function dipfountain(obj) {
 
     switch (rnd(30)) {
         case 16:
-        if (!is_hands && cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && !(cptr.ldI32o(obj, $obj_cursed) & 1)) {
+        if (!is_hands &&
+                cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
+                !(cptr.ldI32o(obj, $obj_cursed) & 1)) {
             curse(obj);
         }
         break;
@@ -626,7 +898,15 @@ export function dipfountain(obj) {
         dowatersnakes();
         break;
         case 24:
-        if (!(((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED)) {
+        if (!(((cptr.ldI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) & 31) | 0) &
+                NHM.F_LOOTED)) {
             dofindgem();
             break;
         }
@@ -652,11 +932,24 @@ export function dipfountain(obj) {
                 /* Amount to lose.  Might get rounded up as fountains don't
                  * pay change... */
                 money = somegold(money) / 10n;
-                for (otmp = cptr.ldPtro(gi, $instance_globals_i_invent); otmp && money > 0n; otmp = nextobj) {
+                for (
+                    otmp = cptr.ldPtro(gi, $instance_globals_i_invent);
+                    otmp && money > 0n;
+                    otmp = nextobj
+                ) {
                     nextobj = cptr.ldPtr(otmp);
                     if (cptr.ld1so(otmp, $obj_oclass) == NHC.COIN_CLASS) {
-                        let denomination = cptr.ldI16o2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_cost);
-                        let coin_loss = (BigInt.asIntN(64, BigInt.asIntN(64, money + BigInt(denomination)) - 1n)) / BigInt(denomination);
+                        let denomination = cptr.ldI16o2(
+                            objects,
+                            cptr.ldI16o(otmp, $obj_otyp),
+                            $sizeof_objclass,
+                            $objclass_oc_cost
+                        );
+                        let coin_loss = (BigInt.asIntN(
+                            64,
+                            BigInt.asIntN(64, money + BigInt(denomination)) - 1n
+                        )) /
+                                BigInt(denomination);
                         coin_loss = min(coin_loss, cptr.ldI64o(otmp, $obj_quan));
                         cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) - coin_loss);
                         money -= BigInt.asIntN(64, coin_loss * BigInt(denomination));
@@ -665,7 +958,23 @@ export function dipfountain(obj) {
                     }
                 }
                 You(__s_lost_some_of_your_gold_in_the_fountain);
-                cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & -2);
+                cptr.stI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(u),
+                        $sizeof_rm_x21,
+                        cptr.ldI16o(u, $you_uy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_flags
+                    ) &
+                        -2
+                );
                 ;
                 exercise(NHC.A_WIS, 0);
             }
@@ -676,11 +985,43 @@ export function dipfountain(obj) {
          * surface.  After all, there will have been more people going
          * by.  Just like a shopping mall!  Chris Woodbury  */
 
-        if ((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.F_LOOTED))
+        if ((((cptr.ldI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) & 31) | 0) &
+                NHM.F_LOOTED))
             break;
-        cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.F_LOOTED);
+        cptr.stI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            cptr.ldI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) |
+                NHM.F_LOOTED
+        );
         ;
-        void mkgold(BigInt(((rnd(Math.imul(((((dunlevs_in_dungeon(cptr.add(u, $you_uz)) - dunlev(cptr.add(u, $you_uz))) | 0) + 1) | 0), 2)) + 5) | 0)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        void mkgold(
+            BigInt(((rnd(Math.imul(
+                ((((dunlevs_in_dungeon(cptr.add(u, $you_uz)) -
+                    dunlev(cptr.add(u, $you_uz))) | 0) + 1) | 0),
+                2
+            )) + 5) | 0)),
+            cptr.ldI16(u),
+            cptr.ldI16o(u, $you_uy)
+        );
         if (!Blind())
             pline(__s_far_below_you_you_see_coins_glistening, hliquid(__s_water));
         exercise(NHC.A_WIS, 1);
@@ -688,7 +1029,10 @@ export function dipfountain(obj) {
         break;
         default:
         if (er == NHM.ER_NOTHING)
-            pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
+            pline(
+                __s_pct_s,
+                cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)
+            );
         break;
     }
     update_inventory();
@@ -719,13 +1063,47 @@ export function wash_hands() {
 /* convert a sink into a fountain */
 /** C ref: fountain.c:581 — @param {CInt} x @param {CInt} y */
 export function breaksink(x, y) {
-    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) || ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
+    if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
+        NHM.IN_SIGHT) != 0) ||
+            ((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)))
         pline_The(__s_pipes_break_water_spurts_out);
     /* updates level.flags.nsinks and level.flags.nfountains */
     set_levltyp(x, y, NHC.FOUNTAIN);
-    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, 0);
-    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_horizontal, 0);
-    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.F_LOOTED);
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
+        0
+    );
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_horizontal,
+        0
+    );
+    cptr.stI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags,
+        cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) |
+            NHM.F_LOOTED
+    );
     ;
     newsym(x, y);
 }
@@ -759,12 +1137,25 @@ export function drinksink() {
         /* boiling water burns considered fire damage */
         break;
         case 3:
-        if (cptr.ld1uo2(svm, NHC.PM_SEWER_RAT, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3)
+        if (cptr.ld1uo2(
+            svm,
+            NHC.PM_SEWER_RAT,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_mvflags
+        ) & 3)
             pline_The(__s_sink_seems_quite_dirty);
         else {
-            mtmp = makemon(cptr.add(mons, NHC.PM_SEWER_RAT, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG);
+            mtmp = makemon(
+                cptr.add(mons, NHC.PM_SEWER_RAT, $sizeof_permonst),
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy),
+                NHM.MM_NOMSG
+            );
             if (mtmp)
-                pline(__s_eek_there_s_s_in_the_sink, (Blind() || !canspotmon(mtmp)) ? __s_something_squirmy : a_monnam(mtmp));
+                pline(
+                    __s_eek_there_s_s_in_the_sink,
+                    (Blind() || !canspotmon(mtmp)) ? __s_something_squirmy : a_monnam(mtmp)
+                );
         }
         break;
         case 4:
@@ -776,7 +1167,20 @@ export function drinksink() {
             obfree(otmp, null);
         }
         cptr.stI32o(otmp, $obj_cursed, cptr.stI32o(otmp, $obj_blessed, 0));
-        pline(__s_some_s_liquid_flows_from_the_faucet, Blind() ? __s_odd : hcolor((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))));
+        pline(
+            __s_some_s_liquid_flows_from_the_faucet,
+            Blind()
+                ? __s_odd
+                : hcolor((cptr.ldPtro2(
+                    obj_descr,
+                    cptr.ldI16o(
+                        (cptr.add(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass)),
+                        $objclass_oc_descr_idx
+                    ),
+                    $sizeof_objdescr,
+                    $objdescr_oc_descr
+                )))
+        );
         if (!(Blind() || Hallucination()))
             observe_object(otmp);
         (cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) + 1n)) - (1n);  /* Avoid panic upon useup() */
@@ -785,10 +1189,34 @@ export function drinksink() {
         obfree(otmp, null);
         break;
         case 5:
-        if (!(((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING)) {
+        if (!(((cptr.ldI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) & 31) | 0) &
+                NHM.S_LRING)) {
             You(__s_find_a_ring_in_the_sink);
             void mkobj_at(NHC.RING_CLASS, cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 1);
-            cptr.stI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.S_LRING);
+            cptr.stI32o3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags,
+                cptr.ldI32o3(
+                    svl,
+                    cptr.ldI16(u),
+                    $sizeof_rm_x21,
+                    cptr.ldI16o(u, $you_uy),
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags
+                ) |
+                    NHM.S_LRING
+            );
             exercise(NHC.A_WIS, 1);
             newsym(cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
         } else
@@ -799,7 +1227,18 @@ export function drinksink() {
         break;
         case 7:
         pline_The(__s_s_moves_as_though_of_its_own_will, hliquid(__s_water));
-        if ((cptr.ld1uo2(svm, NHC.PM_WATER_ELEMENTAL, $sizeof_mvitals, $instance_globals_saved_m_mvitals + $mvitals_mvflags) & 3) || !makemon(cptr.add(mons, NHC.PM_WATER_ELEMENTAL, $sizeof_permonst), cptr.ldI16(u), cptr.ldI16o(u, $you_uy), NHM.MM_NOMSG))
+        if ((cptr.ld1uo2(
+            svm,
+            NHC.PM_WATER_ELEMENTAL,
+            $sizeof_mvitals,
+            $instance_globals_saved_m_mvitals + $mvitals_mvflags
+        ) & 3) ||
+                !makemon(
+                    cptr.add(mons, NHC.PM_WATER_ELEMENTAL, $sizeof_permonst),
+                    cptr.ldI16(u),
+                    cptr.ldI16o(u, $you_uy),
+                    NHM.MM_NOMSG
+                ))
             pline(__s_but_it_quiets_down);
         break;
         case 8:
@@ -809,7 +1248,12 @@ export function drinksink() {
         break;
         case 9:
         pline(__s_gaggg_this_tastes_like_sewage_you_vomit);
-        morehungry((((rng_log_enabled() ? (rng_log_set_caller(__s_fountain_c, 677, __s_drinksink), rn2((30 - (acurr(NHC.A_CON))) | 0)) : rn2((30 - (acurr(NHC.A_CON))) | 0)) + 11) | 0));
+        morehungry((((rng_log_enabled()
+                ? (
+                    rng_log_set_caller(__s_fountain_c, 677, __s_drinksink),
+                    rn2((30 - (acurr(NHC.A_CON))) | 0)
+                )
+                : rn2((30 - (acurr(NHC.A_CON))) | 0)) + 11) | 0));
         vomit();
         break;
         case 10:
@@ -839,7 +1283,11 @@ export function drinksink() {
         // @FallThrough
         ;
         default:
-        You(__s_take_a_sip_of_s_s, rn2(3) ? (rn2(2) ? __s_cold : __s_warm) : __s_hot, hliquid(__s_water));
+        You(
+            __s_take_a_sip_of_s_s,
+            rn2(3) ? (rn2(2) ? __s_cold : __s_warm) : __s_hot,
+            hliquid(__s_water)
+        );
     }
 }
 
@@ -847,7 +1295,15 @@ export function drinksink() {
 /** C ref: fountain.c:716 — @param {CPtr<struct obj>} obj */
 export function dipsink(obj) {
     let try_call = 0;
-    let not_looted_yet = schar(((((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING) == 0));
+    let not_looted_yet = schar(((((cptr.ldI32o3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) &
+            NHM.S_LRING) == 0));
     let is_hands = schar((cptr.eq(obj, hands_obj) || (uarmg.v && cptr.eq(obj, uarmg.v)) ? 1 : 0));
 
     if (!rn2(not_looted_yet ? 25 : 15)) {
@@ -863,12 +1319,19 @@ export function dipsink(obj) {
     } else if (cptr.ld1so(obj, $obj_oclass) != NHC.POTION_CLASS) {
         You(__s_hold_s_under_the_tap, the(xname(obj)));
         if (water_damage(obj, null, 1) == NHM.ER_NOTHING)
-            pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
+            pline(
+                __s_pct_s,
+                cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)
+            );
         return;
     }
 
     /* at this point the object must be a potion */
-    You(__s_pour_s_s_down_the_drain, (cptr.ldI64o(obj, $obj_quan) > 1n ? __s_one_of : __s_empty), the(xname(obj)));
+    You(
+        __s_pour_s_s_down_the_drain,
+        (cptr.ldI64o(obj, $obj_quan) > 1n ? __s_one_of : __s_empty),
+        the(xname(obj))
+    );
     switch (cptr.ldI16o(obj, $obj_otyp)) {
         case NHC.POT_POLYMORPH:
         polymorph_sink();
@@ -879,7 +1342,10 @@ export function dipsink(obj) {
             pline(__s_it_leaves_an_oily_film_on_the_basin);
             try_call = 1;
         } else {
-            pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
+            pline(
+                __s_pct_s,
+                cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)
+            );
         }
         break;
         case NHC.POT_ACID:
@@ -890,7 +1356,10 @@ export function dipsink(obj) {
         } else if (!Deaf()) {
             You_hear(__s_a_sucking_sound);
         } else {
-            pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
+            pline(
+                __s_pct_s,
+                cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)
+            );
             try_call = 0;
         }
         break;
@@ -899,7 +1368,15 @@ export function dipsink(obj) {
         try_call = 1;
         break;
         case NHC.POT_OBJECT_DETECTION:
-        if (!(((cptr.ldI32o3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING)) {
+        if (!(((cptr.ldI32o3(
+            svl,
+            cptr.ldI16(u),
+            $sizeof_rm_x21,
+            cptr.ldI16o(u, $you_uy),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) & 31) | 0) &
+                NHM.S_LRING)) {
             You(__s_sense_a_ring_lost_down_the_drain);
             try_call = 1;
             break;
@@ -914,14 +1391,26 @@ export function dipsink(obj) {
         /* potions with no potionbreathe() effects, plus water.  if effects
            are added to potionbreathe these should go to that instead (except
            for water). */
-        pline(__s_pct_s, cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen));
+        pline(
+            __s_pct_s,
+            cptr.ldPtro(c_common_strings, $c_common_strings_c_nothing_seems_to_happen)
+        );
         break;
         default:
         /* hero can feel the vapor on her skin, so no need to check Blind or
            breathless for this message */
         pline(__s_a_wisp_of_vapor_rises_up);
         /* NB: potionbreathe calls trycall or makeknown as appropriate */
-        if (!((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 1024n) != 0n) || ((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 4096n) == 0n))
+        if (!((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags1
+        ) &
+            1024n) != 0n) ||
+                ((cptr.ldU64o(
+                    (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+                    $permonst_mflags1
+                ) &
+                    4096n) == 0n))
             potionbreathe(obj);
         break;
     }
@@ -940,17 +1429,45 @@ export function sink_backs_up(x, y) {
     else if (!Deaf())
         void cptr.strcpy(cptr.decay(buf), __s_you_hear_a_sloshing_sound);  /* Deaf-aware */
     else
-        void cptr.sprintf(cptr.decay(buf), __s_something_splashes_you_in_the_s, body_part(NHC.FACE));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_something_splashes_you_in_the_s,
+            body_part(NHC.FACE)
+        );
     pline(__s_s_s, !Deaf() ? __s_flupp : __s_empty, cptr.decay(buf));
 
-    if (!(((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.S_LRING)) {
+    if (!(((cptr.ldI32o3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) &
+            NHM.S_LRING)) {
         if (!Blind())
             You_see(__s_a_ring_shining_in_its_midst);
         void mkobj_at(NHC.RING_CLASS, x, y, 1);
         newsym(x, y);
         exercise(NHC.A_DEX, 1);
         exercise(NHC.A_WIS, 1);  /* a discovery! */
-        cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) | NHM.S_LRING);
+        cptr.stI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) |
+                NHM.S_LRING
+        );
     }
 }
 

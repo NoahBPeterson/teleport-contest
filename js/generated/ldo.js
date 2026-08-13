@@ -24,29 +24,32 @@ import { luaY_parser } from './lparser.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $CClosure_f = FLD.CClosure_f, $CallInfo_callstatus = FLD.CallInfo_callstatus,
-    $CallInfo_next = FLD.CallInfo_next, $CallInfo_nresults = FLD.CallInfo_nresults,
-    $CallInfo_previous = FLD.CallInfo_previous, $CallInfo_top = FLD.CallInfo_top,
-    $CallInfo_u = FLD.CallInfo_u, $CallInfo_u2 = FLD.CallInfo_u2, $CloseP_status = FLD.CloseP_status,
-    $Dyndata_gt = FLD.Dyndata_gt, $Dyndata_label = FLD.Dyndata_label, $LClosure_p = FLD.LClosure_p,
-    $Labellist_size = FLD.Labellist_size, $Mbuffer_buffsize = FLD.Mbuffer_buffsize,
-    $Proto_code = FLD.Proto_code, $Proto_is_vararg = FLD.Proto_is_vararg,
-    $Proto_maxstacksize = FLD.Proto_maxstacksize, $Proto_numparams = FLD.Proto_numparams,
-    $SParser_buff = FLD.SParser_buff, $SParser_dyd = FLD.SParser_dyd, $SParser_mode = FLD.SParser_mode,
-    $SParser_name = FLD.SParser_name, $TString_tt = FLD.TString_tt, $TValue_tt_ = FLD.TValue_tt_,
-    $UpVal_u = FLD.UpVal_u, $UpVal_v = FLD.UpVal_v, $ZIO_p = FLD.ZIO_p,
-    $global_State_GCdebt = FLD.global_State_GCdebt, $global_State_gcstopem = FLD.global_State_gcstopem,
-    $global_State_mainthread = FLD.global_State_mainthread,
-    $global_State_memerrmsg = FLD.global_State_memerrmsg, $global_State_panic = FLD.global_State_panic,
-    $lua_Debug_currentline = FLD.lua_Debug_currentline, $lua_Debug_i_ci = FLD.lua_Debug_i_ci,
-    $lua_State_allowhook = FLD.lua_State_allowhook, $lua_State_base_ci = FLD.lua_State_base_ci,
-    $lua_State_ci = FLD.lua_State_ci, $lua_State_errfunc = FLD.lua_State_errfunc,
-    $lua_State_errorJmp = FLD.lua_State_errorJmp, $lua_State_hook = FLD.lua_State_hook,
-    $lua_State_hookmask = FLD.lua_State_hookmask, $lua_State_l_G = FLD.lua_State_l_G,
-    $lua_State_nCcalls = FLD.lua_State_nCcalls, $lua_State_oldpc = FLD.lua_State_oldpc,
-    $lua_State_openupval = FLD.lua_State_openupval, $lua_State_stack = FLD.lua_State_stack,
-    $lua_State_stack_last = FLD.lua_State_stack_last, $lua_State_status = FLD.lua_State_status,
-    $lua_State_tbclist = FLD.lua_State_tbclist, $lua_State_top = FLD.lua_State_top,
-    $lua_longjmp_b = FLD.lua_longjmp_b, $lua_longjmp_status = FLD.lua_longjmp_status;
+      $CallInfo_next = FLD.CallInfo_next, $CallInfo_nresults = FLD.CallInfo_nresults,
+      $CallInfo_previous = FLD.CallInfo_previous, $CallInfo_top = FLD.CallInfo_top,
+      $CallInfo_u = FLD.CallInfo_u, $CallInfo_u2 = FLD.CallInfo_u2,
+      $CloseP_status = FLD.CloseP_status, $Dyndata_gt = FLD.Dyndata_gt,
+      $Dyndata_label = FLD.Dyndata_label, $LClosure_p = FLD.LClosure_p,
+      $Labellist_size = FLD.Labellist_size, $Mbuffer_buffsize = FLD.Mbuffer_buffsize,
+      $Proto_code = FLD.Proto_code, $Proto_is_vararg = FLD.Proto_is_vararg,
+      $Proto_maxstacksize = FLD.Proto_maxstacksize, $Proto_numparams = FLD.Proto_numparams,
+      $SParser_buff = FLD.SParser_buff, $SParser_dyd = FLD.SParser_dyd,
+      $SParser_mode = FLD.SParser_mode, $SParser_name = FLD.SParser_name,
+      $TString_tt = FLD.TString_tt, $TValue_tt_ = FLD.TValue_tt_, $UpVal_u = FLD.UpVal_u,
+      $UpVal_v = FLD.UpVal_v, $ZIO_p = FLD.ZIO_p, $global_State_GCdebt = FLD.global_State_GCdebt,
+      $global_State_gcstopem = FLD.global_State_gcstopem,
+      $global_State_mainthread = FLD.global_State_mainthread,
+      $global_State_memerrmsg = FLD.global_State_memerrmsg,
+      $global_State_panic = FLD.global_State_panic,
+      $lua_Debug_currentline = FLD.lua_Debug_currentline, $lua_Debug_i_ci = FLD.lua_Debug_i_ci,
+      $lua_State_allowhook = FLD.lua_State_allowhook, $lua_State_base_ci = FLD.lua_State_base_ci,
+      $lua_State_ci = FLD.lua_State_ci, $lua_State_errfunc = FLD.lua_State_errfunc,
+      $lua_State_errorJmp = FLD.lua_State_errorJmp, $lua_State_hook = FLD.lua_State_hook,
+      $lua_State_hookmask = FLD.lua_State_hookmask, $lua_State_l_G = FLD.lua_State_l_G,
+      $lua_State_nCcalls = FLD.lua_State_nCcalls, $lua_State_oldpc = FLD.lua_State_oldpc,
+      $lua_State_openupval = FLD.lua_State_openupval, $lua_State_stack = FLD.lua_State_stack,
+      $lua_State_stack_last = FLD.lua_State_stack_last, $lua_State_status = FLD.lua_State_status,
+      $lua_State_tbclist = FLD.lua_State_tbclist, $lua_State_top = FLD.lua_State_top,
+      $lua_longjmp_b = FLD.lua_longjmp_b, $lua_longjmp_status = FLD.lua_longjmp_status;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_error_in_error_handling = cptr.lit("error in error handling");
@@ -113,7 +116,13 @@ export function luaD_throw(L, errcode) {
         cptr.st1o(L, $lua_State_status, uchar(errcode));
         if (cptr.ldPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_errorJmp)) {
             {
-                let io1 = (((cptr.postinc(() => cptr.ldPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_top), (v) => { cptr.stPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_top, v); }, 16))));  /* copy error obj. */
+                let io1 = (((cptr.postinc(
+                    () => cptr.ldPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_top),
+                    (v) => {
+                        cptr.stPtro(cptr.ldPtro(g, $global_State_mainthread), $lua_State_top, v);
+                    },
+                    16
+                ))));  /* copy error obj. */
                 let io2 = (((cptr.add(cptr.ldPtro(L, $lua_State_top), -(1), 16))));
                 cptr.memcpy(io1, io2, 8);
                 (cptr.st1o((io1), $TValue_tt_, (cptr.ld1uo(io2, $TValue_tt_))));
@@ -132,7 +141,13 @@ export function luaD_throw(L, errcode) {
     }
 }
 
-/** C ref: ldo.c:135 — @param {CPtr<lua_State>} L @param {CPtr} f @param {CPtr<void>} ud @returns {CInt} */
+/**
+ * C ref: ldo.c:135
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr} f
+ * @param {CPtr<void>} ud
+ * @returns {CInt}
+ */
 export function luaD_rawrunprotected(L, f, ud) {
     let oldnCcalls = cptr.ldI32o(L, $lua_State_nCcalls);
     let lj = cptr.alloc(208);
@@ -179,12 +194,45 @@ export function luaD_rawrunprotected(L, f, ud) {
 function relstack(L) {
     let ci;
     let up;
-    cptr.stI64o(L, $lua_State_top, (cptr.diff((((cptr.ldPtro(L, $lua_State_top)))), (((cptr.ldPtro(L, $lua_State_stack)))))));
-    cptr.stI64o(L, $lua_State_tbclist, (cptr.diff((((cptr.ldPtro(L, $lua_State_tbclist)))), (((cptr.ldPtro(L, $lua_State_stack)))))));
-    for (up = cptr.ldPtro(L, $lua_State_openupval); !cptr.eq(up, (null)); up = cptr.ldPtro(up, $UpVal_u))
-        cptr.stI64o(up, $UpVal_v, (cptr.diff(((((((cptr.ldPtro((up), $UpVal_v))))))), (((cptr.ldPtro(L, $lua_State_stack)))))));
-    for (ci = cptr.ldPtro(L, $lua_State_ci); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, $CallInfo_previous)) {
-        cptr.stI64o(ci, $CallInfo_top, (cptr.diff((((cptr.ldPtro(ci, $CallInfo_top)))), (((cptr.ldPtro(L, $lua_State_stack)))))));
+    cptr.stI64o(
+        L,
+        $lua_State_top,
+        (cptr.diff((((cptr.ldPtro(L, $lua_State_top)))), (((cptr.ldPtro(L, $lua_State_stack))))))
+    );
+    cptr.stI64o(
+        L,
+        $lua_State_tbclist,
+        (cptr.diff(
+            (((cptr.ldPtro(L, $lua_State_tbclist)))),
+            (((cptr.ldPtro(L, $lua_State_stack))))
+        ))
+    );
+    for (
+        up = cptr.ldPtro(L, $lua_State_openupval);
+        !cptr.eq(up, (null));
+        up = cptr.ldPtro(up, $UpVal_u)
+    )
+        cptr.stI64o(
+            up,
+            $UpVal_v,
+            (cptr.diff(
+                ((((((cptr.ldPtro((up), $UpVal_v))))))),
+                (((cptr.ldPtro(L, $lua_State_stack))))
+            ))
+        );
+    for (
+        ci = cptr.ldPtro(L, $lua_State_ci);
+        !cptr.eq(ci, (null));
+        ci = cptr.ldPtro(ci, $CallInfo_previous)
+    ) {
+        cptr.stI64o(
+            ci,
+            $CallInfo_top,
+            (cptr.diff(
+                (((cptr.ldPtro(ci, $CallInfo_top)))),
+                (((cptr.ldPtro(L, $lua_State_stack))))
+            ))
+        );
         cptr.stI64(ci, (cptr.diff((((cptr.ldPtr(ci)))), (((cptr.ldPtro(L, $lua_State_stack)))))));
     }
 }
@@ -196,12 +244,36 @@ function relstack(L) {
 function correctstack(L) {
     let ci;
     let up;
-    cptr.stPtro(L, $lua_State_top, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(L, $lua_State_top))))));
-    cptr.stPtro(L, $lua_State_tbclist, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(L, $lua_State_tbclist))))));
-    for (up = cptr.ldPtro(L, $lua_State_openupval); !cptr.eq(up, (null)); up = cptr.ldPtro(up, $UpVal_u))
-        cptr.stPtro(up, $UpVal_v, ((((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(up, $UpVal_v))))))));
-    for (ci = cptr.ldPtro(L, $lua_State_ci); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, $CallInfo_previous)) {
-        cptr.stPtro(ci, $CallInfo_top, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(ci, $CallInfo_top))))));
+    cptr.stPtro(
+        L,
+        $lua_State_top,
+        ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(L, $lua_State_top)))))
+    );
+    cptr.stPtro(
+        L,
+        $lua_State_tbclist,
+        ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(L, $lua_State_tbclist)))))
+    );
+    for (
+        up = cptr.ldPtro(L, $lua_State_openupval);
+        !cptr.eq(up, (null));
+        up = cptr.ldPtro(up, $UpVal_u)
+    )
+        cptr.stPtro(
+            up,
+            $UpVal_v,
+            ((((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(up, $UpVal_v)))))))
+        );
+    for (
+        ci = cptr.ldPtro(L, $lua_State_ci);
+        !cptr.eq(ci, (null));
+        ci = cptr.ldPtro(ci, $CallInfo_previous)
+    ) {
+        cptr.stPtro(
+            ci,
+            $CallInfo_top,
+            ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64o(ci, $CallInfo_top)))))
+        );
         cptr.stPtr(ci, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI64(ci))))));
         if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)))
             cptr.stI32o(ci, $CallInfo_u + 8, 1);  /* signal to update 'trap' in 'luaV_execute' */
@@ -220,7 +292,11 @@ export function luaD_errerr(L) {
         (void L, (void 0));
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* assume EXTRA_STACK */
+    cptr.postinc(
+        () => cptr.ldPtro(L, $lua_State_top),
+        (v) => { cptr.stPtro(L, $lua_State_top, v); },
+        16
+    );  /* assume EXTRA_STACK */
     luaD_throw(L, 5);
 }
 
@@ -235,16 +311,33 @@ export function luaD_errerr(L) {
 ** In case of allocation error, raise an error or return false according
 ** to 'raiseerror'.
 */
-/** C ref: ldo.c:219 — @param {CPtr<lua_State>} L @param {CInt} newsize @param {CInt} raiseerror @returns {CInt} */
+/**
+ * C ref: ldo.c:219
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} newsize
+ * @param {CInt} raiseerror
+ * @returns {CInt}
+ */
 export function luaD_reallocstack(L, newsize, raiseerror) {
-    let oldsize = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), $lua_State_stack_last), cptr.ldPtro((L), $lua_State_stack)) / 16n)))));
+    let oldsize = (Number(BigInt.asIntN(
+        32,
+        ((cptr.diff(
+            cptr.ldPtro((L), $lua_State_stack_last),
+            cptr.ldPtro((L), $lua_State_stack)
+        ) / 16n))
+    )));
     let i;
     let newstack;
     let oldgcstop = cptr.ld1uo((cptr.ldPtro(L, $lua_State_l_G)), $global_State_gcstopem);
     (void 0);
     relstack(L);  /* change pointers to offsets */
     cptr.st1o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_gcstopem, 1);  /* stop emergency collection */
-    newstack = (((luaM_realloc_(L, cptr.ldPtro(L, $lua_State_stack), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((oldsize + 5) | 0))))) * 16n), BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((newsize + 5) | 0))))) * 16n)))));
+    newstack = (((luaM_realloc_(
+        L,
+        cptr.ldPtro(L, $lua_State_stack),
+        BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((oldsize + 5) | 0))))) * 16n),
+        BigInt.asUintN(64, (BigInt.asUintN(64, BigInt((((newsize + 5) | 0))))) * 16n)
+    ))));
     cptr.st1o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_gcstopem, uchar(oldgcstop));  /* restore emergency collection */
     if ((__builtin_expect(BigInt(((cptr.eq(newstack, (null))) != 0)), 0n))) {
         correctstack(L);  /* change offsets back to pointers */
@@ -265,9 +358,21 @@ export function luaD_reallocstack(L, newsize, raiseerror) {
 ** Try to grow the stack by at least 'n' elements. When 'raiseerror'
 ** is true, raises any error; otherwise, return 0 in case of errors.
 */
-/** C ref: ldo.c:249 — @param {CPtr<lua_State>} L @param {CInt} n @param {CInt} raiseerror @returns {CInt} */
+/**
+ * C ref: ldo.c:249
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} n
+ * @param {CInt} raiseerror
+ * @returns {CInt}
+ */
 export function luaD_growstack(L, n, raiseerror) {
-    let size = (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), $lua_State_stack_last), cptr.ldPtro((L), $lua_State_stack)) / 16n)))));
+    let size = (Number(BigInt.asIntN(
+        32,
+        ((cptr.diff(
+            cptr.ldPtro((L), $lua_State_stack_last),
+            cptr.ldPtro((L), $lua_State_stack)
+        ) / 16n))
+    )));
     if ((__builtin_expect(BigInt(((size > 1000000) != 0)), 0n))) {
         /* if stack is larger than maximum, thread is already using the
            extra space reserved for errors, that is, thread is handling
@@ -278,7 +383,11 @@ export function luaD_growstack(L, n, raiseerror) {
         return 0;  /* if not 'raiseerror', just signal it */
     } else if (n < 1000000) {
         let newsize = Math.imul(2, size);  /* tentative new size */
-        let needed = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(L, $lua_State_stack)) / 16n))))) + n) | 0;
+        let needed = ((Number(BigInt.asIntN(
+            32,
+            ((cptr.diff(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(L, $lua_State_stack)) / 16n))
+        ))) + n) |
+                0;
         if (newsize > 1000000)
             newsize = 1000000;
         if (newsize < needed)
@@ -303,12 +412,20 @@ function stackinuse(L) {
     let ci;
     let res;
     let lim = cptr.ldPtro(L, $lua_State_top);
-    for (ci = cptr.ldPtro(L, $lua_State_ci); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, $CallInfo_previous)) {
+    for (
+        ci = cptr.ldPtro(L, $lua_State_ci);
+        !cptr.eq(ci, (null));
+        ci = cptr.ldPtro(ci, $CallInfo_previous)
+    ) {
         if (cptr.cmp(lim, cptr.ldPtro(ci, $CallInfo_top)) < 0)
             lim = cptr.ldPtro(ci, $CallInfo_top);
     }
     (void 0);
-    res = ((Number(BigInt.asIntN(32, ((cptr.diff(lim, cptr.ldPtro(L, $lua_State_stack)) / 16n))))) + 1) | 0;  /* part of stack in use */
+    res = ((Number(BigInt.asIntN(
+        32,
+        ((cptr.diff(lim, cptr.ldPtro(L, $lua_State_stack)) / 16n))
+    ))) + 1) |
+            0;  /* part of stack in use */
     if (res < 20)
         res = 20;  /* ensure a minimum size */
     return res;
@@ -329,7 +446,14 @@ export function luaD_shrinkstack(L) {
     let max = (inuse > 333333) ? 1000000 : Math.imul(inuse, 3);
     /* if thread is currently not handling a stack overflow and its
        size is larger than maximum "reasonable" size, shrink it */
-    if (inuse <= 1000000 && (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro((L), $lua_State_stack_last), cptr.ldPtro((L), $lua_State_stack)) / 16n))))) > max) {
+    if (inuse <= 1000000 &&
+            (Number(BigInt.asIntN(
+                32,
+                ((cptr.diff(
+                    cptr.ldPtro((L), $lua_State_stack_last),
+                    cptr.ldPtro((L), $lua_State_stack)
+                ) / 16n))
+            ))) > max) {
         let nsize = (inuse > 500000) ? 1000000 : Math.imul(inuse, 2);
         luaD_reallocstack(L, nsize, 0);  /* ok if that fails */
     } else
@@ -339,7 +463,11 @@ export function luaD_shrinkstack(L) {
 
 /** C ref: ldo.c:322 — @param {CPtr<lua_State>} L */
 export function luaD_inctop(L) {
-    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 1n) != 0)), 0n))) {
+    if ((__builtin_expect(
+        BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) /
+            16n <= 1n) != 0)),
+        0n
+    ))) {
         void 0;
         luaD_growstack(L, 1, 1);
         void 0;
@@ -347,7 +475,11 @@ export function luaD_inctop(L) {
         (void 0);
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+    cptr.postinc(
+        () => cptr.ldPtro(L, $lua_State_top),
+        (v) => { cptr.stPtro(L, $lua_State_top, v); },
+        16
+    );
 }
 
 /* }================================================================== */
@@ -357,14 +489,27 @@ export function luaD_inctop(L) {
 ** called. (Both 'L->hook' and 'L->hookmask', which trigger this
 ** function, can be changed asynchronously by signals.)
 */
-/** C ref: ldo.c:335 — @param {CPtr<lua_State>} L @param {CInt} event @param {CInt} line @param {CInt} ftransfer @param {CInt} ntransfer */
+/**
+ * C ref: ldo.c:335
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} event
+ * @param {CInt} line
+ * @param {CInt} ftransfer
+ * @param {CInt} ntransfer
+ */
 export function luaD_hook(L, event, line, ftransfer, ntransfer) {
     let hook = cptr.ldPtro(L, $lua_State_hook);
     if (hook && cptr.ld1uo(L, $lua_State_allowhook)) {
         let mask = 8;
         let ci = cptr.ldPtro(L, $lua_State_ci);
-        let top = (cptr.diff((((cptr.ldPtro(L, $lua_State_top)))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* preserve original 'top' */
-        let ci_top = (cptr.diff((((cptr.ldPtro(ci, $CallInfo_top)))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* idem for 'ci->top' */
+        let top = (cptr.diff(
+            (((cptr.ldPtro(L, $lua_State_top)))),
+            (((cptr.ldPtro(L, $lua_State_stack))))
+        ));  /* preserve original 'top' */
+        let ci_top = (cptr.diff(
+            (((cptr.ldPtro(ci, $CallInfo_top)))),
+            (((cptr.ldPtro(L, $lua_State_stack))))
+        ));  /* idem for 'ci->top' */
         let ar = cptr.alloc(136);
         cptr.stI32(ar, event);
         cptr.stI32o(ar, $lua_Debug_currentline, line);
@@ -374,9 +519,17 @@ export function luaD_hook(L, event, line, ftransfer, ntransfer) {
             cptr.stI16o(ci, $CallInfo_u2, u16(ftransfer));
             cptr.stI16o(ci, $CallInfo_u2 + 2, u16(ntransfer));
         }
-        if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)) && cptr.cmp(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(ci, $CallInfo_top)) < 0)
+        if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2)) &&
+                cptr.cmp(cptr.ldPtro(L, $lua_State_top), cptr.ldPtro(ci, $CallInfo_top)) < 0)
             cptr.stPtro(L, $lua_State_top, cptr.ldPtro(ci, $CallInfo_top));  /* protect entire activation register */
-        if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 20n) != 0)), 0n))) {
+        if ((__builtin_expect(
+            BigInt(((cptr.diff(
+                cptr.ldPtro(L, $lua_State_stack_last),
+                cptr.ldPtro(L, $lua_State_top)
+            ) /
+                16n <= 20n) != 0)),
+            0n
+        ))) {
             void 0;  /* ensure minimum stack size */
             luaD_growstack(L, 20, 1);
             void 0;
@@ -384,7 +537,10 @@ export function luaD_hook(L, event, line, ftransfer, ntransfer) {
             (void 0);
         }
         ;
-        if (cptr.cmp(cptr.ldPtro(ci, $CallInfo_top), cptr.add(cptr.ldPtro(L, $lua_State_top), 20, 16)) < 0)
+        if (cptr.cmp(
+            cptr.ldPtro(ci, $CallInfo_top),
+            cptr.add(cptr.ldPtro(L, $lua_State_top), 20, 16)
+        ) < 0)
             cptr.stPtro(ci, $CallInfo_top, cptr.add(cptr.ldPtro(L, $lua_State_top), 20, 16));
         cptr.st1o(L, $lua_State_allowhook, 0);  /* cannot call hooks inside a hook */
         cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) | mask);
@@ -393,7 +549,11 @@ export function luaD_hook(L, event, line, ftransfer, ntransfer) {
         (void 0);
         (void 0);
         cptr.st1o(L, $lua_State_allowhook, 1);
-        cptr.stPtro(ci, $CallInfo_top, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (ci_top)))));
+        cptr.stPtro(
+            ci,
+            $CallInfo_top,
+            ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (ci_top))))
+        );
         cptr.stPtro(L, $lua_State_top, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (top)))));
         cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) & ~mask);
     }
@@ -410,9 +570,17 @@ export function luaD_hookcall(L, ci) {
     if (cptr.ldI32o(L, $lua_State_hookmask) & 1) {
         let event = (cptr.ldU16o(ci, $CallInfo_callstatus) & 32) ? 4 : 0;
         let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p);
-        cptr.postinc(() => cptr.ldPtro(ci, $CallInfo_u), (v) => { cptr.stPtro(ci, $CallInfo_u, v); }, 4);  /* hooks assume 'pc' is already incremented */
+        cptr.postinc(
+            () => cptr.ldPtro(ci, $CallInfo_u),
+            (v) => { cptr.stPtro(ci, $CallInfo_u, v); },
+            4
+        );  /* hooks assume 'pc' is already incremented */
         luaD_hook(L, event, -1, 1, cptr.ld1uo(p, $Proto_numparams));
-        cptr.postdec(() => cptr.ldPtro(ci, $CallInfo_u), (v) => { cptr.stPtro(ci, $CallInfo_u, v); }, 4);  /* correct 'pc' */
+        cptr.postdec(
+            () => cptr.ldPtro(ci, $CallInfo_u),
+            (v) => { cptr.stPtro(ci, $CallInfo_u, v); },
+            4
+        );  /* correct 'pc' */
     }
 }
 
@@ -430,7 +598,9 @@ function rethook(L, ci, nres) {
         if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) {
             let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p);
             if (cptr.ld1uo(p, $Proto_is_vararg))
-                delta = (((cptr.ldI32o(ci, $CallInfo_u + 12) + cptr.ld1uo(p, $Proto_numparams)) | 0) + 1) | 0;
+                delta = (((cptr.ldI32o(ci, $CallInfo_u + 12) +
+                    cptr.ld1uo(p, $Proto_numparams)) | 0) + 1) |
+                        0;
         }
         cptr.stPtr(ci, cptr.add(cptr.ldPtr(ci), delta, 16));  /* if vararg, back to virtual 'func' */
         ftransfer = (Number(BigInt.asUintN(16, (cptr.diff(firstres, cptr.ldPtr(ci)) / 16n))));
@@ -438,7 +608,23 @@ function rethook(L, ci, nres) {
         cptr.stPtr(ci, cptr.sub(cptr.ldPtr(ci), delta, 16));
     }
     if ((!(cptr.ldU16o((ci = cptr.ldPtro(ci, $CallInfo_previous)), $CallInfo_callstatus) & 2)))
-        cptr.stI32o(L, $lua_State_oldpc, (((Number(BigInt.asIntN(32, ((cptr.diff((cptr.ldPtro(ci, $CallInfo_u)), cptr.ldPtro((cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p)), $Proto_code)) / 4n))))) - 1) | 0));  /* set 'oldpc' */
+        cptr.stI32o(
+            L,
+            $lua_State_oldpc,
+            (((Number(BigInt.asIntN(
+                32,
+                ((cptr.diff(
+                    (cptr.ldPtro(ci, $CallInfo_u)),
+                    cptr.ldPtro(
+                        (cptr.ldPtro(
+                            (((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))),
+                            $LClosure_p
+                        )),
+                        $Proto_code
+                    )
+                ) / 4n))
+            ))) - 1) | 0)
+        );  /* set 'oldpc' */
 }
 
 /*
@@ -450,7 +636,11 @@ function rethook(L, ci, nres) {
 function tryfuncTM(L, func) {
     let tm;
     let p;
-    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 1n) != 0)), 0n))) {
+    if ((__builtin_expect(
+        BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) /
+            16n <= 1n) != 0)),
+        0n
+    ))) {
         let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* space for metamethod */
         {
             if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
@@ -469,7 +659,10 @@ function tryfuncTM(L, func) {
     }
     ;
     tm = luaT_gettmbyobj(L, ((func)), NHC.TM_CALL);  /* (after previous GC) */
-    if ((__builtin_expect(BigInt((((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) != 0)), 0n)))
+    if ((__builtin_expect(
+        BigInt((((((((cptr.ld1uo(((tm)), $TValue_tt_))) & 15)) == 0)) != 0)),
+        0n
+    )))
         luaG_callerror(L, ((func)));  /* nothing to call */
     for (p = cptr.ldPtro(L, $lua_State_top); cptr.cmp(p, func) > 0; p = cptr.add(p, -1, 16)) {
         let io1 = (((p)));
@@ -480,7 +673,11 @@ function tryfuncTM(L, func) {
         (void 0);
     }
     ;
-    cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);  /* stack space pre-allocated by the caller */
+    cptr.postinc(
+        () => cptr.ldPtro(L, $lua_State_top),
+        (v) => { cptr.stPtro(L, $lua_State_top, v); },
+        16
+    );  /* stack space pre-allocated by the caller */
     {
         let io1 = (((func)));  /* metamethod is the new function to be called */
         let io2 = (tm);
@@ -499,7 +696,13 @@ function tryfuncTM(L, func) {
 ** expressions, multiple results for tail calls/single parameters)
 ** separated.
 */
-/** C ref: ldo.c:440 — @param {CPtr<lua_State>} L @param {CPtr} res @param {CInt} nres @param {CInt} wanted */
+/**
+ * C ref: ldo.c:440
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr} res
+ * @param {CInt} nres
+ * @param {CInt} wanted
+ */
 function moveresults(L, res, nres, wanted) {
     let firstresult;
     let i;
@@ -526,10 +729,18 @@ function moveresults(L, res, nres, wanted) {
         break;
         default:
         if (((wanted) < -1)) {
-            cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) | 512);  /* in case of yields */
+            cptr.stI16o(
+                cptr.ldPtro(L, $lua_State_ci),
+                $CallInfo_callstatus,
+                cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) | 512
+            );  /* in case of yields */
             cptr.stI32o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u2, nres);
             res = luaF_close(L, res, -1, 1);
-            cptr.stI16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus, cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) & -513);
+            cptr.stI16o(
+                cptr.ldPtro(L, $lua_State_ci),
+                $CallInfo_callstatus,
+                cptr.ldU16o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_callstatus) & -513
+            );
             if (cptr.ldI32o(L, $lua_State_hookmask)) {
                 let savedres = (cptr.diff((((res))), (((cptr.ldPtro(L, $lua_State_stack))))));
                 rethook(L, cptr.ldPtro(L, $lua_State_ci), nres);
@@ -568,7 +779,10 @@ function moveresults(L, res, nres, wanted) {
 /** C ref: ldo.c:492 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CInt} nres */
 export function luaD_poscall(L, ci, nres) {
     let wanted = cptr.ldI16o(ci, $CallInfo_nresults);
-    if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask) && !((wanted) < -1) ? 1 : 0) != 0)), 0n)))
+    if ((__builtin_expect(
+        BigInt(((cptr.ldI32o(L, $lua_State_hookmask) && !((wanted) < -1) ? 1 : 0) != 0)),
+        0n
+    )))
         rethook(L, ci, nres);
     /* move results to proper place */
     moveresults(L, cptr.ldPtr(ci), nres, wanted);
@@ -577,9 +791,23 @@ export function luaD_poscall(L, ci, nres) {
     cptr.stPtro(L, $lua_State_ci, cptr.ldPtro(ci, $CallInfo_previous));  /* back to caller (after closing variables) */
 }
 
-/** C ref: ldo.c:509 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nret @param {CInt} mask @param {CPtr} top @returns {CPtr<CallInfo>} */
+/**
+ * C ref: ldo.c:509
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr} func
+ * @param {CInt} nret
+ * @param {CInt} mask
+ * @param {CPtr} top
+ * @returns {CPtr<CallInfo>}
+ */
 function prepCallInfo(L, func, nret, mask, top) {
-    let ci = cptr.stPtro(L, $lua_State_ci, (cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next) ? cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next) : luaE_extendCI(L)));  /* new frame */
+    let ci = cptr.stPtro(
+        L,
+        $lua_State_ci,
+        (cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next)
+            ? cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_next)
+            : luaE_extendCI(L))
+    );  /* new frame */
     cptr.stPtr(ci, func);
     cptr.stI16o(ci, $CallInfo_nresults, i16(nret));
     cptr.stI16o(ci, $CallInfo_callstatus, u16(mask));
@@ -590,11 +818,22 @@ function prepCallInfo(L, func, nret, mask, top) {
 /*
 ** precall for C functions
 */
-/** C ref: ldo.c:523 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nresults @param {CPtr} f @returns {CInt} */
+/**
+ * C ref: ldo.c:523
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr} func
+ * @param {CInt} nresults
+ * @param {CPtr} f
+ * @returns {CInt}
+ */
 function precallC(L, func, nresults, f) {
     let n;  /* number of returns */
     let ci;
-    if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 20n) != 0)), 0n))) {
+    if ((__builtin_expect(
+        BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) /
+            16n <= 20n) != 0)),
+        0n
+    ))) {
         let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* ensure minimum stack size */
         {
             if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
@@ -612,10 +851,18 @@ function precallC(L, func, nresults, f) {
         (void 0);
     }
     ;
-    cptr.stPtro(L, $lua_State_ci, ci = prepCallInfo(L, func, nresults, 2, cptr.add(cptr.ldPtro(L, $lua_State_top), 20, 16)));
+    cptr.stPtro(
+        L,
+        $lua_State_ci,
+        ci = prepCallInfo(L, func, nresults, 2, cptr.add(cptr.ldPtro(L, $lua_State_top), 20, 16))
+    );
     (void 0);
     if ((__builtin_expect(BigInt(((cptr.ldI32o(L, $lua_State_hookmask) & 1) != 0)), 0n))) {
-        let narg = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), func) / 16n))))) - 1) | 0;
+        let narg = ((Number(BigInt.asIntN(
+            32,
+            ((cptr.diff(cptr.ldPtro(L, $lua_State_top), func) / 16n))
+        ))) - 1) |
+                0;
         luaD_hook(L, 0, -1, 1, narg);
     }
     (void 0);
@@ -632,12 +879,25 @@ function precallC(L, func, nresults, f) {
 ** (so that it includes the function itself). Return the number of
 ** results, if it was a C function, or -1 for a Lua function.
 */
-/** C ref: ldo.c:550 — @param {CPtr<lua_State>} L @param {CPtr<CallInfo>} ci @param {CPtr} func @param {CInt} narg1 @param {CInt} delta @returns {CInt} */
+/**
+ * C ref: ldo.c:550
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<CallInfo>} ci
+ * @param {CPtr} func
+ * @param {CInt} narg1
+ * @param {CInt} delta
+ * @returns {CInt}
+ */
 export function luaD_pretailcall(L, ci, func, narg1, delta) {
     __lbl_retry: while (true) {
         switch ((((cptr.ld1uo((((func))), $TValue_tt_))) & 63)) {
             case 38:
-            return precallC(L, func, -1, cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), $CClosure_f));
+            return precallC(
+                L,
+                func,
+                -1,
+                cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), $CClosure_f)
+            );
             case 22:
             return precallC(L, func, -1, (cptr.ldPtr(((((func)))))));
             case 6:
@@ -646,10 +906,20 @@ export function luaD_pretailcall(L, ci, func, narg1, delta) {
                 let fsize = cptr.ld1uo(p, $Proto_maxstacksize);  /* frame size */
                 let nfixparams = cptr.ld1uo(p, $Proto_numparams);
                 let i;
-                if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= BigInt(((fsize - delta) | 0))) != 0)), 0n))) {
+                if ((__builtin_expect(
+                    BigInt(((cptr.diff(
+                        cptr.ldPtro(L, $lua_State_stack_last),
+                        cptr.ldPtro(L, $lua_State_top)
+                    ) / 16n <=
+                        BigInt(((fsize - delta) | 0))) != 0)),
+                    0n
+                ))) {
                     let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));
                     {
-                        if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
+                        if (cptr.ldI64o(
+                            (cptr.ldPtro(L, $lua_State_l_G)),
+                            $global_State_GCdebt
+                        ) > 0n) {
                             void 0;
                             luaC_step(L);
                             void 0;
@@ -704,12 +974,23 @@ export function luaD_pretailcall(L, ci, func, narg1, delta) {
 ** returns NULL, with all the results on the stack, starting at the
 ** original function position.
 */
-/** C ref: ldo.c:595 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nresults @returns {CPtr<CallInfo>} */
+/**
+ * C ref: ldo.c:595
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr} func
+ * @param {CInt} nresults
+ * @returns {CPtr<CallInfo>}
+ */
 export function luaD_precall(L, func, nresults) {
     __lbl_retry: while (true) {
         switch ((((cptr.ld1uo((((func))), $TValue_tt_))) & 63)) {
             case 38:
-            precallC(L, func, nresults, cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), $CClosure_f));
+            precallC(
+                L,
+                func,
+                nresults,
+                cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), $CClosure_f)
+            );
             return null;
             case 22:
             precallC(L, func, nresults, (cptr.ldPtr(((((func)))))));
@@ -718,13 +999,27 @@ export function luaD_precall(L, func, nresults) {
             {
                 let ci;
                 let p = cptr.ldPtro(((((((cptr.ldPtr(((((func))))))))))), $LClosure_p);
-                let narg = ((Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), func) / 16n))))) - 1) | 0;  /* number of real arguments */
+                let narg = ((Number(BigInt.asIntN(
+                    32,
+                    ((cptr.diff(cptr.ldPtro(L, $lua_State_top), func) / 16n))
+                ))) - 1) |
+                        0;  /* number of real arguments */
                 let nfixparams = cptr.ld1uo(p, $Proto_numparams);
                 let fsize = cptr.ld1uo(p, $Proto_maxstacksize);  /* frame size */
-                if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= BigInt((fsize))) != 0)), 0n))) {
+                if ((__builtin_expect(
+                    BigInt(((cptr.diff(
+                        cptr.ldPtro(L, $lua_State_stack_last),
+                        cptr.ldPtro(L, $lua_State_top)
+                    ) / 16n <=
+                        BigInt((fsize))) != 0)),
+                    0n
+                ))) {
                     let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));
                     {
-                        if (cptr.ldI64o((cptr.ldPtro(L, $lua_State_l_G)), $global_State_GCdebt) > 0n) {
+                        if (cptr.ldI64o(
+                            (cptr.ldPtro(L, $lua_State_l_G)),
+                            $global_State_GCdebt
+                        ) > 0n) {
                             void 0;
                             luaC_step(L);
                             void 0;
@@ -739,10 +1034,28 @@ export function luaD_precall(L, func, nresults) {
                     (void 0);
                 }
                 ;
-                cptr.stPtro(L, $lua_State_ci, ci = prepCallInfo(L, func, nresults, 0, cptr.add(cptr.add(func, 1, 16), fsize, 16)));
+                cptr.stPtro(
+                    L,
+                    $lua_State_ci,
+                    ci = prepCallInfo(
+                        L,
+                        func,
+                        nresults,
+                        0,
+                        cptr.add(cptr.add(func, 1, 16), fsize, 16)
+                    )
+                );
                 cptr.stPtro(ci, $CallInfo_u, cptr.ldPtro(p, $Proto_code));  /* starting point */
                 for (; narg < nfixparams; narg++)
-                    (cptr.st1o((((cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16)))), $TValue_tt_, 0));  /* complete missing arguments */
+                    (cptr.st1o(
+                        (((cptr.postinc(
+                            () => cptr.ldPtro(L, $lua_State_top),
+                            (v) => { cptr.stPtro(L, $lua_State_top, v); },
+                            16
+                        )))),
+                        $TValue_tt_,
+                        0
+                    ));  /* complete missing arguments */
                 (void 0);
                 return ci;
             }
@@ -765,12 +1078,28 @@ export function luaD_precall(L, func, nresults) {
 ** check the stack before doing anything else. 'luaD_precall' already
 ** does that.
 */
-/** C ref: ldo.c:635 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CInt} nResults @param {CUInt} inc */
+/**
+ * C ref: ldo.c:635
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr} func
+ * @param {CInt} nResults
+ * @param {CUInt} inc
+ */
 function ccall(L, func, nResults, inc) {
     let ci;
     cptr.stI32o(L, $lua_State_nCcalls, (cptr.ldI32o(L, $lua_State_nCcalls) + inc) | 0);
-    if ((__builtin_expect(BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)), 0n))) {
-        if ((__builtin_expect(BigInt(((cptr.diff(cptr.ldPtro(L, $lua_State_stack_last), cptr.ldPtro(L, $lua_State_top)) / 16n <= 0n) != 0)), 0n))) {
+    if ((__builtin_expect(
+        BigInt(((((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200) != 0)),
+        0n
+    ))) {
+        if ((__builtin_expect(
+            BigInt(((cptr.diff(
+                cptr.ldPtro(L, $lua_State_stack_last),
+                cptr.ldPtro(L, $lua_State_top)
+            ) /
+                16n <= 0n) != 0)),
+            0n
+        ))) {
             let t__ = (cptr.diff((((func))), (((cptr.ldPtro(L, $lua_State_stack))))));  /* free any use of EXTRA_STACK */
             luaD_growstack(L, 0, 1);
             func = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (t__))));
@@ -825,12 +1154,19 @@ function finishpcallk(L, ci) {
     if ((__builtin_expect(BigInt(((status == 0) != 0)), 1n)))
         status = 1;  /* was interrupted by an yield */
     else {
-        let func = ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (cptr.ldI32o(ci, $CallInfo_u2)))));
+        let func = ((cptr.add(
+            (((cptr.ldPtro(L, $lua_State_stack)))),
+            (cptr.ldI32o(ci, $CallInfo_u2))
+        )));
         cptr.st1o(L, $lua_State_allowhook, uchar(((cptr.ldU16o(ci, $CallInfo_callstatus)) & 1)));  /* restore 'allowhook' */
         func = luaF_close(L, func, status, 1);  /* can yield or raise an error */
         luaD_seterrorobj(L, status, func);
         luaD_shrinkstack(L);  /* restore stack size in case of overflow */
-        ((cptr.stI16o((ci), $CallInfo_callstatus, u16(((cptr.ldU16o((ci), $CallInfo_callstatus) & -7169) | 0)))));  /* clear original status */
+        ((cptr.stI16o(
+            (ci),
+            $CallInfo_callstatus,
+            u16(((cptr.ldU16o((ci), $CallInfo_callstatus) & -7169) | 0))
+        )));  /* clear original status */
     }
     cptr.stI16o(ci, $CallInfo_callstatus, cptr.ldU16o(ci, $CallInfo_callstatus) & -17);
     cptr.stI64o(L, $lua_State_errfunc, cptr.ldI64o(ci, $CallInfo_u + 8));
@@ -866,8 +1202,15 @@ function finishCcall(L, ci) {
         if (cptr.ldU16o(ci, $CallInfo_callstatus) & 16)
             status = finishpcallk(L, ci);  /* finish it */
         {
-            if (cptr.cmp(cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top), cptr.ldPtro(L, $lua_State_top)) < 0)
-                cptr.stPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top, cptr.ldPtro(L, $lua_State_top));  /* finish 'lua_callk' */
+            if (cptr.cmp(
+                cptr.ldPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top),
+                cptr.ldPtro(L, $lua_State_top)
+            ) < 0)
+                cptr.stPtro(
+                    cptr.ldPtro(L, $lua_State_ci),
+                    $CallInfo_top,
+                    cptr.ldPtro(L, $lua_State_top)
+                );  /* finish 'lua_callk' */
         }
         ;
         (void 0);
@@ -904,7 +1247,11 @@ function unroll(L, ud) {
 /** C ref: ldo.c:761 — @param {CPtr<lua_State>} L @returns {CPtr<CallInfo>} */
 function findpcall(L) {
     let ci;
-    for (ci = cptr.ldPtro(L, $lua_State_ci); !cptr.eq(ci, (null)); ci = cptr.ldPtro(ci, $CallInfo_previous)) {
+    for (
+        ci = cptr.ldPtro(L, $lua_State_ci);
+        !cptr.eq(ci, (null));
+        ci = cptr.ldPtro(ci, $CallInfo_previous)
+    ) {
         if (cptr.ldU16o(ci, $CallInfo_callstatus) & 16)
             return ci;
     }
@@ -916,7 +1263,13 @@ function findpcall(L) {
 ** of the coroutine itself. (Such errors should not be handled by any
 ** coroutine error handler and should not kill the coroutine.)
 */
-/** C ref: ldo.c:776 — @param {CPtr<lua_State>} L @param {CPtr<char>} msg @param {CInt} narg @returns {CInt} */
+/**
+ * C ref: ldo.c:776
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} msg
+ * @param {CInt} narg
+ * @returns {CInt}
+ */
 function resume_error(L, msg, narg) {
     cptr.stPtro(L, $lua_State_top, cptr.sub(cptr.ldPtro(L, $lua_State_top), narg, 16));  /* remove args from the stack */
     {
@@ -928,7 +1281,11 @@ function resume_error(L, msg, narg) {
     }
     ;
     {
-        cptr.postinc(() => cptr.ldPtro(L, $lua_State_top), (v) => { cptr.stPtro(L, $lua_State_top, v); }, 16);
+        cptr.postinc(
+            () => cptr.ldPtro(L, $lua_State_top),
+            (v) => { cptr.stPtro(L, $lua_State_top, v); },
+            16
+        );
         (void L, (void 0));
     }
     ;
@@ -957,7 +1314,11 @@ function resume(L, ud) {
             /* undo increment made by 'luaG_traceexec': instruction was not
                executed yet */
             (void 0);
-            cptr.postdec(() => cptr.ldPtro(ci, $CallInfo_u), (v) => { cptr.stPtro(ci, $CallInfo_u, v); }, 4);
+            cptr.postdec(
+                () => cptr.ldPtro(ci, $CallInfo_u),
+                (v) => { cptr.stPtro(ci, $CallInfo_u, v); },
+                4
+            );
             cptr.stPtro(L, $lua_State_top, firstArg);  /* discard arguments */
             luaV_execute(L, ci);  /* just continue running Lua code */
         } else {
@@ -986,13 +1347,24 @@ function precover(L, status) {
     let ci;
     while (((status) > 1) && !cptr.eq((ci = findpcall(L)), (null))) {
         cptr.stPtro(L, $lua_State_ci, ci);  /* go down to recovery functions */
-        ((cptr.stI16o((ci), $CallInfo_callstatus, u16(((cptr.ldU16o((ci), $CallInfo_callstatus) & -7169) | ((status) << 10))))));  /* status to finish 'pcall' */
+        ((cptr.stI16o(
+            (ci),
+            $CallInfo_callstatus,
+            u16(((cptr.ldU16o((ci), $CallInfo_callstatus) & -7169) | ((status) << 10)))
+        )));  /* status to finish 'pcall' */
         status = luaD_rawrunprotected(L, unroll, (null));
     }
     return status;
 }
 
-/** C ref: ldo.c:842 — @param {CPtr<lua_State>} L @param {CPtr<lua_State>} from @param {CInt} nargs @param {CPtr<int>} nresults @returns {CInt} */
+/**
+ * C ref: ldo.c:842
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<lua_State>} from
+ * @param {CInt} nargs
+ * @param {CPtr<int>} nresults
+ * @returns {CInt}
+ */
 export function lua_resume(L, from, nargs, nresults) {
     nargs = cptr.box(nargs);
     let status;
@@ -1000,11 +1372,19 @@ export function lua_resume(L, from, nargs, nresults) {
     if (cptr.ld1uo(L, $lua_State_status) == 0) {
         if (!cptr.eq(cptr.ldPtro(L, $lua_State_ci), cptr.add(L, $lua_State_base_ci)))
             return resume_error(L, __s_cannot_resume_non_suspended_coroutine, nargs.v);
-        else if (cptr.diff(cptr.ldPtro(L, $lua_State_top), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)), 1, 16))) / 16n == BigInt(nargs.v))
+        else if (cptr.diff(
+            cptr.ldPtro(L, $lua_State_top),
+            (cptr.add(cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)), 1, 16))
+        ) / 16n ==
+                BigInt(nargs.v))
             return resume_error(L, __s_cannot_resume_dead_coroutine, nargs.v);
     } else if (cptr.ld1uo(L, $lua_State_status) != 1)
         return resume_error(L, __s_cannot_resume_dead_coroutine, nargs.v);
-    cptr.stI32o(L, $lua_State_nCcalls, (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) & 65535) >>> 0) : 0);
+    cptr.stI32o(
+        L,
+        $lua_State_nCcalls,
+        (from) ? ((cptr.ldI32o((from), $lua_State_nCcalls) & 65535) >>> 0) : 0
+    );
     if (((cptr.ldI32o((L), $lua_State_nCcalls) & 65535) >>> 0) >= 200)
         return resume_error(L, __s_c_stack_overflow, nargs.v);
     (cptr.stI32o(L, $lua_State_nCcalls, cptr.ldI32o(L, $lua_State_nCcalls) + 1)) - (1);
@@ -1020,7 +1400,18 @@ export function lua_resume(L, from, nargs, nresults) {
         luaD_seterrorobj(L, status, cptr.ldPtro(L, $lua_State_top));  /* push error message */
         cptr.stPtro(cptr.ldPtro(L, $lua_State_ci), $CallInfo_top, cptr.ldPtro(L, $lua_State_top));
     }
-    cptr.stI32(nresults, (status == 1) ? cptr.ldI32o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u2) : (Number(BigInt.asIntN(32, ((cptr.diff(cptr.ldPtro(L, $lua_State_top), (cptr.add(cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)), 1, 16))) / 16n))))));
+    cptr.stI32(
+        nresults,
+        (status == 1)
+            ? cptr.ldI32o(cptr.ldPtro(L, $lua_State_ci), $CallInfo_u2)
+            : (Number(BigInt.asIntN(
+                32,
+                ((cptr.diff(
+                    cptr.ldPtro(L, $lua_State_top),
+                    (cptr.add(cptr.ldPtr(cptr.ldPtro(L, $lua_State_ci)), 1, 16))
+                ) / 16n))
+            )))
+    );
     (void 0);
     return status;
 }
@@ -1030,14 +1421,24 @@ export function lua_isyieldable(L) {
     return (((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0);
 }
 
-/** C ref: ldo.c:882 — @param {CPtr<lua_State>} L @param {CInt} nresults @param {CLongLong} ctx @param {CPtr} k @returns {CInt} */
+/**
+ * C ref: ldo.c:882
+ * @param {CPtr<lua_State>} L
+ * @param {CInt} nresults
+ * @param {CLongLong} ctx
+ * @param {CPtr} k
+ * @returns {CInt}
+ */
 export function lua_yieldk(L, nresults, ctx, k) {
     let ci;
     (void L);
     (void 0);
     ci = cptr.ldPtro(L, $lua_State_ci);
     (void L, (void 0));
-    if ((__builtin_expect(BigInt(((!(((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0)) != 0)), 0n))) {
+    if ((__builtin_expect(
+        BigInt(((!(((cptr.ldI32o((L), $lua_State_nCcalls) & 4294901760) >>> 0) == 0)) != 0)),
+        0n
+    ))) {
         if (!cptr.eq(L, cptr.ldPtro((cptr.ldPtro(L, $lua_State_l_G)), $global_State_mainthread)))
             luaG_runerror(L, __s_attempt_to_yield_across_a_c_call);
         else
@@ -1077,7 +1478,13 @@ function closepaux(L, ud) {
 ** Calls 'luaF_close' in protected mode. Return the original status
 ** or, in case of errors, the new status.
 */
-/** C ref: ldo.c:935 — @param {CPtr<lua_State>} L @param {CLongLong} level @param {CInt} status @returns {CInt} */
+/**
+ * C ref: ldo.c:935
+ * @param {CPtr<lua_State>} L
+ * @param {CLongLong} level
+ * @param {CInt} status
+ * @returns {CInt}
+ */
 export function luaD_closeprotected(L, level, status) {
     let old_ci = cptr.ldPtro(L, $lua_State_ci);
     let old_allowhooks = cptr.ld1uo(L, $lua_State_allowhook);
@@ -1100,7 +1507,15 @@ export function luaD_closeprotected(L, level, status) {
 ** thread information ('allowhook', etc.) and in particular
 ** its stack level in case of errors.
 */
-/** C ref: ldo.c:957 — @param {CPtr<lua_State>} L @param {CPtr} func @param {CPtr<void>} u @param {CLongLong} old_top @param {CLongLong} ef @returns {CInt} */
+/**
+ * C ref: ldo.c:957
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr} func
+ * @param {CPtr<void>} u
+ * @param {CLongLong} old_top
+ * @param {CLongLong} ef
+ * @returns {CInt}
+ */
 export function luaD_pcall(L, func, u, old_top, ef) {
     let status;
     let old_ci = cptr.ldPtro(L, $lua_State_ci);
@@ -1112,7 +1527,11 @@ export function luaD_pcall(L, func, u, old_top, ef) {
         cptr.stPtro(L, $lua_State_ci, old_ci);
         cptr.st1o(L, $lua_State_allowhook, old_allowhooks);
         status = luaD_closeprotected(L, old_top, status);
-        luaD_seterrorobj(L, status, ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (old_top)))));
+        luaD_seterrorobj(
+            L,
+            status,
+            ((cptr.add((((cptr.ldPtro(L, $lua_State_stack)))), (old_top))))
+        );
         luaD_shrinkstack(L);  /* restore stack size in case of overflow */
     }
     cptr.stI64o(L, $lua_State_errfunc, old_errfunc);
@@ -1136,19 +1555,38 @@ function checkmode(L, mode, x) {
 function f_parser(L, ud) {
     let cl;
     let p = ((ud));
-    let c = (((cptr.stU64((cptr.ldPtr(p)), cptr.ldU64((cptr.ldPtr(p))) + -1n)) - (-1n)) > 0n ? (uchar(((cptr.ld1s(cptr.postinc(() => cptr.ldPtro((cptr.ldPtr(p)), $ZIO_p), (v) => { cptr.stPtro((cptr.ldPtr(p)), $ZIO_p, v); })))))) : luaZ_fill(cptr.ldPtr(p)));  /* read first character */
+    let c = (((cptr.stU64((cptr.ldPtr(p)), cptr.ldU64((cptr.ldPtr(p))) + -1n)) - (-1n)) > 0n
+            ? (uchar(((cptr.ld1s(cptr.postinc(
+                () => cptr.ldPtro((cptr.ldPtr(p)), $ZIO_p),
+                (v) => { cptr.stPtro((cptr.ldPtr(p)), $ZIO_p, v); }
+            ))))))
+            : luaZ_fill(cptr.ldPtr(p)));  /* read first character */
     if (c == cptr.ld1so(__s_lua, 0, 1)) {
         checkmode(L, cptr.ldPtro(p, $SParser_mode), __s_binary);
         cl = luaU_undump(L, cptr.ldPtr(p), cptr.ldPtro(p, $SParser_name));
     } else {
         checkmode(L, cptr.ldPtro(p, $SParser_mode), __s_text);
-        cl = luaY_parser(L, cptr.ldPtr(p), cptr.add(p, $SParser_buff), cptr.add(p, $SParser_dyd), cptr.ldPtro(p, $SParser_name), c);
+        cl = luaY_parser(
+            L,
+            cptr.ldPtr(p),
+            cptr.add(p, $SParser_buff),
+            cptr.add(p, $SParser_dyd),
+            cptr.ldPtro(p, $SParser_name),
+            c
+        );
     }
     (void 0);
     luaF_initupvals(L, cl);
 }
 
-/** C ref: ldo.c:1016 — @param {CPtr<lua_State>} L @param {CPtr<ZIO>} z @param {CPtr<char>} name @param {CPtr<char>} mode @returns {CInt} */
+/**
+ * C ref: ldo.c:1016
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<ZIO>} z
+ * @param {CPtr<char>} name
+ * @param {CPtr<char>} mode
+ * @returns {CInt}
+ */
 export function luaD_protectedparser(L, z, name, mode) {
     let p = cptr.alloc(96);
     let status;
@@ -1162,12 +1600,59 @@ export function luaD_protectedparser(L, z, name, mode) {
     cptr.stI32o(p, $SParser_dyd + $Dyndata_gt + $Labellist_size, 0);
     cptr.stPtro(p, $SParser_dyd + $Dyndata_label, null);
     cptr.stI32o(p, $SParser_dyd + $Dyndata_label + $Labellist_size, 0);
-    (cptr.stPtr((cptr.add(p, $SParser_buff)), null), cptr.stU64o((cptr.add(p, $SParser_buff)), $Mbuffer_buffsize, 0n));
-    status = luaD_pcall(L, f_parser, p, (cptr.diff((((cptr.ldPtro(L, $lua_State_top)))), (((cptr.ldPtro(L, $lua_State_stack)))))), cptr.ldI64o(L, $lua_State_errfunc));
-    (cptr.stPtr((cptr.add(p, $SParser_buff)), (((luaM_saferealloc_(L, (cptr.ldPtr((cptr.add(p, $SParser_buff)))), BigInt.asUintN(64, (cptr.ldU64o((cptr.add(p, $SParser_buff)), $Mbuffer_buffsize)) * 1n), 0n))))), cptr.stU64o((cptr.add(p, $SParser_buff)), $Mbuffer_buffsize, 0n));
-    luaM_free_(L, (cptr.ldPtro(p, $SParser_dyd)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, $SParser_dyd + 12)))) * 24n));
-    luaM_free_(L, (cptr.ldPtro(p, $SParser_dyd + $Dyndata_gt)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, $SParser_dyd + $Dyndata_gt + $Labellist_size)))) * 24n));
-    luaM_free_(L, (cptr.ldPtro(p, $SParser_dyd + $Dyndata_label)), BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, $SParser_dyd + $Dyndata_label + $Labellist_size)))) * 24n));
+    (
+        cptr.stPtr((cptr.add(p, $SParser_buff)), null),
+        cptr.stU64o((cptr.add(p, $SParser_buff)), $Mbuffer_buffsize, 0n)
+    );
+    status = luaD_pcall(
+        L,
+        f_parser,
+        p,
+        (cptr.diff((((cptr.ldPtro(L, $lua_State_top)))), (((cptr.ldPtro(L, $lua_State_stack)))))),
+        cptr.ldI64o(L, $lua_State_errfunc)
+    );
+    (
+        cptr.stPtr(
+            (cptr.add(p, $SParser_buff)),
+            (((luaM_saferealloc_(
+                L,
+                (cptr.ldPtr((cptr.add(p, $SParser_buff)))),
+                BigInt.asUintN(
+                    64,
+                    (cptr.ldU64o((cptr.add(p, $SParser_buff)), $Mbuffer_buffsize)) * 1n
+                ),
+                0n
+            ))))
+        ),
+        cptr.stU64o((cptr.add(p, $SParser_buff)), $Mbuffer_buffsize, 0n)
+    );
+    luaM_free_(
+        L,
+        (cptr.ldPtro(p, $SParser_dyd)),
+        BigInt.asUintN(64, BigInt.asUintN(64, BigInt((cptr.ldI32o(p, $SParser_dyd + 12)))) * 24n)
+    );
+    luaM_free_(
+        L,
+        (cptr.ldPtro(p, $SParser_dyd + $Dyndata_gt)),
+        BigInt.asUintN(
+            64,
+            BigInt.asUintN(
+                64,
+                BigInt((cptr.ldI32o(p, $SParser_dyd + $Dyndata_gt + $Labellist_size)))
+            ) * 24n
+        )
+    );
+    luaM_free_(
+        L,
+        (cptr.ldPtro(p, $SParser_dyd + $Dyndata_label)),
+        BigInt.asUintN(
+            64,
+            BigInt.asUintN(
+                64,
+                BigInt((cptr.ldI32o(p, $SParser_dyd + $Dyndata_label + $Labellist_size)))
+            ) * 24n
+        )
+    );
     (cptr.stI32o((L), $lua_State_nCcalls, (cptr.ldI32o((L), $lua_State_nCcalls) - 65536) | 0));
     return status;
 }

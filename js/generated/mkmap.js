@@ -20,26 +20,28 @@ import { alloc } from './alloc.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $dlevel_t_flags = FLD.dlevel_t_flags, $instance_globals_m_max_rx = FLD.instance_globals_m_max_rx,
-    $instance_globals_m_max_ry = FLD.instance_globals_m_max_ry,
-    $instance_globals_m_min_rx = FLD.instance_globals_m_min_rx,
-    $instance_globals_m_min_ry = FLD.instance_globals_m_min_ry,
-    $instance_globals_n_n_loc_filled = FLD.instance_globals_n_n_loc_filled,
-    $instance_globals_n_new_locations = FLD.instance_globals_n_new_locations,
-    $instance_globals_n_nsubroom = FLD.instance_globals_n_nsubroom,
-    $instance_globals_s_subrooms = FLD.instance_globals_s_subrooms,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_n_nroom = FLD.instance_globals_saved_n_nroom, $lev_init_bg = FLD.lev_init_bg,
-    $lev_init_fg = FLD.lev_init_fg, $lev_init_icedpools = FLD.lev_init_icedpools,
-    $lev_init_joined = FLD.lev_init_joined, $lev_init_lit = FLD.lev_init_lit,
-    $lev_init_smoothed = FLD.lev_init_smoothed, $lev_init_walled = FLD.lev_init_walled,
-    $levelflags_is_cavernous_lev = FLD.levelflags_is_cavernous_lev,
-    $levelflags_is_maze_lev = FLD.levelflags_is_maze_lev, $mkroom_hx = FLD.mkroom_hx,
-    $mkroom_hy = FLD.mkroom_hy, $mkroom_irregular = FLD.mkroom_irregular, $mkroom_ly = FLD.mkroom_ly,
-    $mkroom_rlit = FLD.mkroom_rlit, $nhcoord_y = FLD.nhcoord_y, $rm_edge = FLD.rm_edge,
-    $rm_flags = FLD.rm_flags, $rm_lit = FLD.rm_lit, $rm_roomno = FLD.rm_roomno, $rm_typ = FLD.rm_typ,
-    $sizeof_mkroom = FLD.sizeof_mkroom, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $you_uz = FLD.you_uz;
+const $dlevel_t_flags = FLD.dlevel_t_flags,
+      $instance_globals_m_max_rx = FLD.instance_globals_m_max_rx,
+      $instance_globals_m_max_ry = FLD.instance_globals_m_max_ry,
+      $instance_globals_m_min_rx = FLD.instance_globals_m_min_rx,
+      $instance_globals_m_min_ry = FLD.instance_globals_m_min_ry,
+      $instance_globals_n_n_loc_filled = FLD.instance_globals_n_n_loc_filled,
+      $instance_globals_n_new_locations = FLD.instance_globals_n_new_locations,
+      $instance_globals_n_nsubroom = FLD.instance_globals_n_nsubroom,
+      $instance_globals_s_subrooms = FLD.instance_globals_s_subrooms,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_n_nroom = FLD.instance_globals_saved_n_nroom,
+      $lev_init_bg = FLD.lev_init_bg, $lev_init_fg = FLD.lev_init_fg,
+      $lev_init_icedpools = FLD.lev_init_icedpools, $lev_init_joined = FLD.lev_init_joined,
+      $lev_init_lit = FLD.lev_init_lit, $lev_init_smoothed = FLD.lev_init_smoothed,
+      $lev_init_walled = FLD.lev_init_walled,
+      $levelflags_is_cavernous_lev = FLD.levelflags_is_cavernous_lev,
+      $levelflags_is_maze_lev = FLD.levelflags_is_maze_lev, $mkroom_hx = FLD.mkroom_hx,
+      $mkroom_hy = FLD.mkroom_hy, $mkroom_irregular = FLD.mkroom_irregular,
+      $mkroom_ly = FLD.mkroom_ly, $mkroom_rlit = FLD.mkroom_rlit, $nhcoord_y = FLD.nhcoord_y,
+      $rm_edge = FLD.rm_edge, $rm_flags = FLD.rm_flags, $rm_lit = FLD.rm_lit,
+      $rm_roomno = FLD.rm_roomno, $rm_typ = FLD.rm_typ, $sizeof_mkroom = FLD.sizeof_mkroom,
+      $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_no_start_end_room_loc_in_join_map = cptr.lit("No start/end room loc in join_map.");
@@ -54,9 +56,33 @@ function init_map(bg_typ) {
 
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
-            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, NHM.NO_ROOM);
-            cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, bg_typ);
-            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, 0);
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno,
+                NHM.NO_ROOM
+            );
+            cptr.st1o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                bg_typ
+            );
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_lit,
+                0
+            );
         }
 }
 
@@ -72,8 +98,24 @@ function init_fill(bg_typ, fg_typ) {
     while (count < limit) {
         x = i16(((rn2(77) + 2) | 0));
         y = i16(rnd(19));
-        if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == bg_typ) {
-            cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, fg_typ);
+        if (cptr.ld1so3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        ) ==
+                bg_typ) {
+            cptr.st1o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                fg_typ
+            );
             count++;
         }
     }
@@ -83,7 +125,14 @@ function init_fill(bg_typ, fg_typ) {
 function get_map(col, row, bg_typ) {
     if (col <= 0 || row < 0 || col > 78 || row >= 20)
         return bg_typ;
-    return cptr.ld1so3(svl, col, $sizeof_rm_x21, row, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    return cptr.ld1so3(
+        svl,
+        col,
+        $sizeof_rm_x21,
+        row,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    );
 }
 
 /** C ref: mkmap.c:62 — int[16] */
@@ -115,20 +164,41 @@ function pass_one(bg_typ, fg_typ) {
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
-                if (get_map(i16(((x + cptr.ldI32o(dirs, Math.imul(dr, 2), 4)) | 0)), i16(((y + cptr.ldI32o(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4)) | 0)), bg_typ) == fg_typ)
+                if (get_map(
+                    i16(((x + cptr.ldI32o(dirs, Math.imul(dr, 2), 4)) | 0)),
+                    i16(((y + cptr.ldI32o(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4)) | 0)),
+                    bg_typ
+                ) ==
+                        fg_typ)
                     count++;
 
             switch (count) {
                 case 0:
                 case 1:
                 case 2:
-                cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, bg_typ);
+                cptr.st1o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ,
+                    bg_typ
+                );
                 break;
                 case 5:
                 case 6:
                 case 7:
                 case 8:
-                cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, fg_typ);
+                cptr.st1o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ,
+                    fg_typ
+                );
                 break;
                 default:
                 break;
@@ -146,17 +216,54 @@ function pass_two(bg_typ, fg_typ) {
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
-                if (get_map(i16(((x + cptr.ldI32o(dirs, Math.imul(dr, 2), 4)) | 0)), i16(((y + cptr.ldI32o(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4)) | 0)), bg_typ) == fg_typ)
+                if (get_map(
+                    i16(((x + cptr.ldI32o(dirs, Math.imul(dr, 2), 4)) | 0)),
+                    i16(((y + cptr.ldI32o(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4)) | 0)),
+                    bg_typ
+                ) ==
+                        fg_typ)
                     count++;
             if (count == 5)
-                cptr.st1((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x))), bg_typ);
+                cptr.st1(
+                    (cptr.add(
+                        cptr.add(
+                            cptr.ldPtro(gn, $instance_globals_n_new_locations),
+                            (Math.imul((y), 79))
+                        ),
+                        (x)
+                    )),
+                    bg_typ
+                );
             else
-                cptr.st1((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x))), get_map(x, y, bg_typ));
+                cptr.st1(
+                    (cptr.add(
+                        cptr.add(
+                            cptr.ldPtro(gn, $instance_globals_n_new_locations),
+                            (Math.imul((y), 79))
+                        ),
+                        (x)
+                    )),
+                    get_map(x, y, bg_typ)
+                );
         }
 
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++)
-            cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, cptr.ld1s((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x)))));
+            cptr.st1o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                cptr.ld1s((cptr.add(
+                    cptr.add(
+                        cptr.ldPtro(gn, $instance_globals_n_new_locations),
+                        (Math.imul((y), 79))
+                    ),
+                    (x)
+                )))
+            );
 }
 
 /** C ref: mkmap.c:124 — @param {CInt} bg_typ @param {CInt} fg_typ */
@@ -169,17 +276,54 @@ function pass_three(bg_typ, fg_typ) {
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++) {
             for (count = 0, dr = 0; dr < 8; dr++)
-                if (get_map(i16(((x + cptr.ldI32o(dirs, Math.imul(dr, 2), 4)) | 0)), i16(((y + cptr.ldI32o(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4)) | 0)), bg_typ) == fg_typ)
+                if (get_map(
+                    i16(((x + cptr.ldI32o(dirs, Math.imul(dr, 2), 4)) | 0)),
+                    i16(((y + cptr.ldI32o(dirs, ((Math.imul(dr, 2)) + 1) | 0, 4)) | 0)),
+                    bg_typ
+                ) ==
+                        fg_typ)
                     count++;
             if (count < 3)
-                cptr.st1((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x))), bg_typ);
+                cptr.st1(
+                    (cptr.add(
+                        cptr.add(
+                            cptr.ldPtro(gn, $instance_globals_n_new_locations),
+                            (Math.imul((y), 79))
+                        ),
+                        (x)
+                    )),
+                    bg_typ
+                );
             else
-                cptr.st1((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x))), get_map(x, y, bg_typ));
+                cptr.st1(
+                    (cptr.add(
+                        cptr.add(
+                            cptr.ldPtro(gn, $instance_globals_n_new_locations),
+                            (Math.imul((y), 79))
+                        ),
+                        (x)
+                    )),
+                    get_map(x, y, bg_typ)
+                );
         }
 
     for (x = 2; x <= 78; x++)
         for (y = 1; y < 20; y++)
-            cptr.st1o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, cptr.ld1s((cptr.add(cptr.add(cptr.ldPtro(gn, $instance_globals_n_new_locations), (Math.imul((y), 79))), (x)))));
+            cptr.st1o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                cptr.ld1s((cptr.add(
+                    cptr.add(
+                        cptr.ldPtro(gn, $instance_globals_n_new_locations),
+                        (Math.imul((y), 79))
+                    ),
+                    (x)
+                )))
+            );
 }
 
 /*
@@ -188,14 +332,55 @@ function pass_three(bg_typ, fg_typ) {
  * if anyroom is TRUE, use IS_ROOM to check room membership instead of
  * exactly matching levl[sx][sy].typ and walls are included as well.
  */
-/** C ref: mkmap.c:153 — @param {CInt} sx @param {CInt} sy @param {CInt} rmno @param {CInt} lit @param {CInt} anyroom */
+/**
+ * C ref: mkmap.c:153
+ * @param {CInt} sx
+ * @param {CInt} sy
+ * @param {CInt} rmno
+ * @param {CInt} lit
+ * @param {CInt} anyroom
+ */
 export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
     let i;
     let nx;
-    let fg_typ = cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    let fg_typ = cptr.ld1so3(
+        svl,
+        sx,
+        $sizeof_rm_x21,
+        sy,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    );
 
     /* back up to find leftmost uninitialized location */
-    while (sx > 0 && (anyroom ? ((cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM) : cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) && ((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
+    while (sx > 0 &&
+            (anyroom
+                ? ((cptr.ld1so3(
+                    svl,
+                    sx,
+                    $sizeof_rm_x21,
+                    sy,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                )) >=
+                    NHC.ROOM)
+                : cptr.ld1so3(
+                    svl,
+                    sx,
+                    $sizeof_rm_x21,
+                    sy,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                ) ==
+                    fg_typ) &&
+            ((cptr.ldI32o3(
+                svl,
+                sx,
+                $sizeof_rm_x21,
+                sy,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno
+            ) & 63) | 0) != rmno)
         sx--;
     sx++;  /* compensate for extra decrement */
 
@@ -205,58 +390,268 @@ export function flood_fill_rm(sx, sy, rmno, lit, anyroom) {
     if (sy < cptr.ldI16o(gm, $instance_globals_m_min_ry))
         cptr.stI16o(gm, $instance_globals_m_min_ry, sy);
 
-    for (i = sx; i <= 78 && cptr.ld1so3(svl, i, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ; i++) {
-        cptr.stI32o3(svl, i, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, rmno >>> 0);
-        cptr.stI32o3(svl, i, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, lit);
+    for (
+        i = sx;
+        i <= 78 &&
+            cptr.ld1so3(
+                svl,
+                i,
+                $sizeof_rm_x21,
+                sy,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                fg_typ;
+        i++
+    ) {
+        cptr.stI32o3(
+            svl,
+            i,
+            $sizeof_rm_x21,
+            sy,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_roomno,
+            rmno >>> 0
+        );
+        cptr.stI32o3(
+            svl,
+            i,
+            $sizeof_rm_x21,
+            sy,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_lit,
+            lit
+        );
         if (anyroom) {
             /* add walls to room as well */
             let ii;
             let jj;
             for (ii = i16((i == sx ? (i - 1) | 0 : i)); ii <= ((i + 1) | 0); ii++)
                 for (jj = i16(((sy - 1) | 0)); jj <= ((sy + 1) | 0); jj++)
-                    if (isok(ii, jj) && (((cptr.ld1so3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || ((cptr.ld1so3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.DOOR) || cptr.ld1so3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR)) {
-                        cptr.stI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge, 1);
+                    if (isok(ii, jj) &&
+                            (((cptr.ld1so3(
+                                svl,
+                                ii,
+                                $sizeof_rm_x21,
+                                jj,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            )) &&
+                                (cptr.ld1so3(
+                                    svl,
+                                    ii,
+                                    $sizeof_rm_x21,
+                                    jj,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                )) <=
+                                    NHC.DBWALL) ||
+                                ((cptr.ld1so3(
+                                    svl,
+                                    ii,
+                                    $sizeof_rm_x21,
+                                    jj,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                )) ==
+                                    NHC.DOOR) ||
+                                cptr.ld1so3(
+                                    svl,
+                                    ii,
+                                    $sizeof_rm_x21,
+                                    jj,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                ) ==
+                                    NHC.SDOOR)) {
+                        cptr.stI32o3(
+                            svl,
+                            ii,
+                            $sizeof_rm_x21,
+                            jj,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_edge,
+                            1
+                        );
                         if (lit)
-                            cptr.stI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, lit);
+                            cptr.stI32o3(
+                                svl,
+                                ii,
+                                $sizeof_rm_x21,
+                                jj,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_lit,
+                                lit
+                            );
 
-                        if (((cptr.ldI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == NHM.NO_ROOM)
-                            cptr.stI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, rmno >>> 0);
-                        else if (((cptr.ldI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
-                            cptr.stI32o3(svl, ii, $sizeof_rm_x21, jj, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, NHM.SHARED);
+                        if (((cptr.ldI32o3(
+                            svl,
+                            ii,
+                            $sizeof_rm_x21,
+                            jj,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_roomno
+                        ) & 63) | 0) ==
+                                NHM.NO_ROOM)
+                            cptr.stI32o3(
+                                svl,
+                                ii,
+                                $sizeof_rm_x21,
+                                jj,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_roomno,
+                                rmno >>> 0
+                            );
+                        else if (((cptr.ldI32o3(
+                            svl,
+                            ii,
+                            $sizeof_rm_x21,
+                            jj,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_roomno
+                        ) & 63) | 0) != rmno)
+                            cptr.stI32o3(
+                                svl,
+                                ii,
+                                $sizeof_rm_x21,
+                                jj,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_roomno,
+                                NHM.SHARED
+                            );
                     }
         }
-        (cptr.stI32o(gn, $instance_globals_n_n_loc_filled, cptr.ldI32o(gn, $instance_globals_n_n_loc_filled) + 1)) - (1);
+        (cptr.stI32o(
+            gn,
+            $instance_globals_n_n_loc_filled,
+            cptr.ldI32o(gn, $instance_globals_n_n_loc_filled) + 1
+        )) -
+                (1);
     }
     nx = i;
 
     if (isok(sx, i16(((sy - 1) | 0)))) {
         for (i = sx; i < nx; i++)
-            if (cptr.ld1so3(svl, i, $sizeof_rm_x21, (sy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) {
-                if (((cptr.ldI32o3(svl, i, $sizeof_rm_x21, (sy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
+            if (cptr.ld1so3(
+                svl,
+                i,
+                $sizeof_rm_x21,
+                (sy - 1) | 0,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                    fg_typ) {
+                if (((cptr.ldI32o3(
+                    svl,
+                    i,
+                    $sizeof_rm_x21,
+                    (sy - 1) | 0,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_roomno
+                ) & 63) | 0) != rmno)
                     flood_fill_rm(i, i16(((sy - 1) | 0)), rmno, lit, anyroom);
             } else {
-                if ((i > sx || isok(i16(((i - 1) | 0)), i16(((sy - 1) | 0)))) && cptr.ld1so3(svl, (i - 1) | 0, $sizeof_rm_x21, (sy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) {
-                    if (((cptr.ldI32o3(svl, (i - 1) | 0, $sizeof_rm_x21, (sy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
+                if ((i > sx || isok(i16(((i - 1) | 0)), i16(((sy - 1) | 0)))) &&
+                        cptr.ld1so3(
+                            svl,
+                            (i - 1) | 0,
+                            $sizeof_rm_x21,
+                            (sy - 1) | 0,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        ) ==
+                            fg_typ) {
+                    if (((cptr.ldI32o3(
+                        svl,
+                        (i - 1) | 0,
+                        $sizeof_rm_x21,
+                        (sy - 1) | 0,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) | 0) != rmno)
                         flood_fill_rm(i16(((i - 1) | 0)), i16(((sy - 1) | 0)), rmno, lit, anyroom);
                 }
-                if ((i < ((nx - 1) | 0) || isok(i16(((i + 1) | 0)), i16(((sy - 1) | 0)))) && cptr.ld1so3(svl, (i + 1) | 0, $sizeof_rm_x21, (sy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) {
-                    if (((cptr.ldI32o3(svl, (i + 1) | 0, $sizeof_rm_x21, (sy - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
+                if ((i < ((nx - 1) | 0) || isok(i16(((i + 1) | 0)), i16(((sy - 1) | 0)))) &&
+                        cptr.ld1so3(
+                            svl,
+                            (i + 1) | 0,
+                            $sizeof_rm_x21,
+                            (sy - 1) | 0,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        ) ==
+                            fg_typ) {
+                    if (((cptr.ldI32o3(
+                        svl,
+                        (i + 1) | 0,
+                        $sizeof_rm_x21,
+                        (sy - 1) | 0,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) | 0) != rmno)
                         flood_fill_rm(i16(((i + 1) | 0)), i16(((sy - 1) | 0)), rmno, lit, anyroom);
                 }
             }
     }
     if (isok(sx, i16(((sy + 1) | 0)))) {
         for (i = sx; i < nx; i++)
-            if (cptr.ld1so3(svl, i, $sizeof_rm_x21, (sy + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) {
-                if (((cptr.ldI32o3(svl, i, $sizeof_rm_x21, (sy + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
+            if (cptr.ld1so3(
+                svl,
+                i,
+                $sizeof_rm_x21,
+                (sy + 1) | 0,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                    fg_typ) {
+                if (((cptr.ldI32o3(
+                    svl,
+                    i,
+                    $sizeof_rm_x21,
+                    (sy + 1) | 0,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_roomno
+                ) & 63) | 0) != rmno)
                     flood_fill_rm(i, i16(((sy + 1) | 0)), rmno, lit, anyroom);
             } else {
-                if ((i > sx || isok(i16(((i - 1) | 0)), i16(((sy + 1) | 0)))) && cptr.ld1so3(svl, (i - 1) | 0, $sizeof_rm_x21, (sy + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) {
-                    if (((cptr.ldI32o3(svl, (i - 1) | 0, $sizeof_rm_x21, (sy + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
+                if ((i > sx || isok(i16(((i - 1) | 0)), i16(((sy + 1) | 0)))) &&
+                        cptr.ld1so3(
+                            svl,
+                            (i - 1) | 0,
+                            $sizeof_rm_x21,
+                            (sy + 1) | 0,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        ) ==
+                            fg_typ) {
+                    if (((cptr.ldI32o3(
+                        svl,
+                        (i - 1) | 0,
+                        $sizeof_rm_x21,
+                        (sy + 1) | 0,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) | 0) != rmno)
                         flood_fill_rm(i16(((i - 1) | 0)), i16(((sy + 1) | 0)), rmno, lit, anyroom);
                 }
-                if ((i < ((nx - 1) | 0) || isok(i16(((i + 1) | 0)), i16(((sy + 1) | 0)))) && cptr.ld1so3(svl, (i + 1) | 0, $sizeof_rm_x21, (sy + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) {
-                    if (((cptr.ldI32o3(svl, (i + 1) | 0, $sizeof_rm_x21, (sy + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno)
+                if ((i < ((nx - 1) | 0) || isok(i16(((i + 1) | 0)), i16(((sy + 1) | 0)))) &&
+                        cptr.ld1so3(
+                            svl,
+                            (i + 1) | 0,
+                            $sizeof_rm_x21,
+                            (sy + 1) | 0,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        ) ==
+                            fg_typ) {
+                    if (((cptr.ldI32o3(
+                        svl,
+                        (i + 1) | 0,
+                        $sizeof_rm_x21,
+                        (sy + 1) | 0,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) | 0) != rmno)
                         flood_fill_rm(i16(((i + 1) | 0)), i16(((sy + 1) | 0)), rmno, lit, anyroom);
                 }
             }
@@ -276,9 +671,33 @@ function join_map_cleanup() {
 
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++)
-            cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, NHM.NO_ROOM);
-    cptr.stI32o(svn, $instance_globals_saved_n_nroom, cptr.stI32o(gn, $instance_globals_n_nsubroom, 0));
-    cptr.stI16o2(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom, $mkroom_hx, cptr.stI16o2(cptr.ldPtro(gs, $instance_globals_s_subrooms), cptr.ldI32o(gn, $instance_globals_n_nsubroom), $sizeof_mkroom, $mkroom_hx, -1));
+            cptr.stI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_roomno,
+                NHM.NO_ROOM
+            );
+    cptr.stI32o(
+        svn,
+        $instance_globals_saved_n_nroom,
+        cptr.stI32o(gn, $instance_globals_n_nsubroom, 0)
+    );
+    cptr.stI16o2(
+        svr,
+        cptr.ldI32o(svn, $instance_globals_saved_n_nroom),
+        $sizeof_mkroom,
+        $mkroom_hx,
+        cptr.stI16o2(
+            cptr.ldPtro(gs, $instance_globals_s_subrooms),
+            cptr.ldI32o(gn, $instance_globals_n_nsubroom),
+            $sizeof_mkroom,
+            $mkroom_hx,
+            -1
+        )
+    );
 }
 
 /** C ref: mkmap.c:258 — @param {CInt} bg_typ @param {CInt} fg_typ */
@@ -298,14 +717,59 @@ function join_map(bg_typ, fg_typ) {
          */
         for (x = 2; x <= 78; x++)
             for (y = 1; y < 20; y++) {
-                if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ && ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == NHM.NO_ROOM) {
-                    cptr.stI16o(gm, $instance_globals_m_min_rx, cptr.stI16o(gm, $instance_globals_m_max_rx, x));
-                    cptr.stI16o(gm, $instance_globals_m_min_ry, cptr.stI16o(gm, $instance_globals_m_max_ry, y));
+                if (cptr.ld1so3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                ) ==
+                    fg_typ &&
+                        ((cptr.ldI32o3(
+                            svl,
+                            x,
+                            $sizeof_rm_x21,
+                            y,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_roomno
+                        ) & 63) | 0) ==
+                            NHM.NO_ROOM) {
+                    cptr.stI16o(
+                        gm,
+                        $instance_globals_m_min_rx,
+                        cptr.stI16o(gm, $instance_globals_m_max_rx, x)
+                    );
+                    cptr.stI16o(
+                        gm,
+                        $instance_globals_m_min_ry,
+                        cptr.stI16o(gm, $instance_globals_m_max_ry, y)
+                    );
                     cptr.stI32o(gn, $instance_globals_n_n_loc_filled, 0);
-                    flood_fill_rm(x, y, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) | 0, 0, 0);
+                    flood_fill_rm(
+                        x,
+                        y,
+                        (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) | 0,
+                        0,
+                        0
+                    );
                     if (cptr.ldI32o(gn, $instance_globals_n_n_loc_filled) > 3) {
-                        add_room(cptr.ldI16o(gm, $instance_globals_m_min_rx), cptr.ldI16o(gm, $instance_globals_m_min_ry), cptr.ldI16o(gm, $instance_globals_m_max_rx), cptr.ldI16o(gm, $instance_globals_m_max_ry), 0, NHC.OROOM, 1);
-                        cptr.st1o2(svr, (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0, $sizeof_mkroom, $mkroom_irregular, 1);
+                        add_room(
+                            cptr.ldI16o(gm, $instance_globals_m_min_rx),
+                            cptr.ldI16o(gm, $instance_globals_m_min_ry),
+                            cptr.ldI16o(gm, $instance_globals_m_max_rx),
+                            cptr.ldI16o(gm, $instance_globals_m_max_ry),
+                            0,
+                            NHC.OROOM,
+                            1
+                        );
+                        cptr.st1o2(
+                            svr,
+                            (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0,
+                            $sizeof_mkroom,
+                            $mkroom_irregular,
+                            1
+                        );
                         if (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) >= 80)
                             break __lbl_joinm;
                     } else {
@@ -313,11 +777,44 @@ function join_map(bg_typ, fg_typ) {
                          * it's a tiny hole; erase it from the map to avoid
                          * having the player end up here with no way out.
                          */
-                        for (sx = cptr.ldI16o(gm, $instance_globals_m_min_rx); sx <= cptr.ldI16o(gm, $instance_globals_m_max_rx); sx++)
-                            for (sy = cptr.ldI16o(gm, $instance_globals_m_min_ry); sy <= cptr.ldI16o(gm, $instance_globals_m_max_ry); sy++)
-                                if (((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + NHM.ROOMOFFSET) | 0)) {
-                                    cptr.st1o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, bg_typ);
-                                    cptr.stI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, NHM.NO_ROOM);
+                        for (
+                            sx = cptr.ldI16o(gm, $instance_globals_m_min_rx);
+                            sx <= cptr.ldI16o(gm, $instance_globals_m_max_rx);
+                            sx++
+                        )
+                            for (
+                                sy = cptr.ldI16o(gm, $instance_globals_m_min_ry);
+                                sy <= cptr.ldI16o(gm, $instance_globals_m_max_ry);
+                                sy++
+                            )
+                                if (((cptr.ldI32o3(
+                                    svl,
+                                    sx,
+                                    $sizeof_rm_x21,
+                                    sy,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_roomno
+                                ) & 63) | 0) ==
+                                        ((cptr.ldI32o(svn, $instance_globals_saved_n_nroom) +
+                                            NHM.ROOMOFFSET) | 0)) {
+                                    cptr.st1o3(
+                                        svl,
+                                        sx,
+                                        $sizeof_rm_x21,
+                                        sy,
+                                        $sizeof_rm,
+                                        $instance_globals_saved_l_level + $rm_typ,
+                                        bg_typ
+                                    );
+                                    cptr.stI32o3(
+                                        svl,
+                                        sx,
+                                        $sizeof_rm_x21,
+                                        sy,
+                                        $sizeof_rm,
+                                        $instance_globals_saved_l_level + $rm_roomno,
+                                        NHM.NO_ROOM
+                                    );
                                 }
                     }
                 }
@@ -329,23 +826,53 @@ function join_map(bg_typ, fg_typ) {
      * so don't call sort_rooms(), which can screw up the roomno's
      * validity in the levl structure.
      */
-    for (croom = cptr.add(svr, 0, $sizeof_mkroom), croom2 = cptr.add(croom, 1, 224); cptr.cmp(croom2, cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom)) < 0; ) {
+    for (
+        croom = cptr.add(svr, 0, $sizeof_mkroom),
+        croom2 = cptr.add(croom, 1, 224);
+        cptr.cmp(
+            croom2,
+            cptr.add(svr, cptr.ldI32o(svn, $instance_globals_saved_n_nroom), $sizeof_mkroom)
+        ) < 0;
+    ) {
         /* pick random starting and end locations for "corridor" */
         if (!somexy(croom, sm) || !somexy(croom2, em)) {
             /* ack! -- the level is going to be busted */
             /* arbitrarily pick centers of both rooms and hope for the best */
             impossible(__s_no_start_end_room_loc_in_join_map);
-            cptr.stI16(sm, i16(((cptr.ldI16(croom) + ((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) / 2) | 0)) | 0)));
-            cptr.stI16o(sm, $nhcoord_y, i16(((cptr.ldI16o(croom, $mkroom_ly) + ((((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly)) | 0) / 2) | 0)) | 0)));
-            cptr.stI16(em, i16(((cptr.ldI16(croom2) + ((((cptr.ldI16o(croom2, $mkroom_hx) - cptr.ldI16(croom2)) | 0) / 2) | 0)) | 0)));
-            cptr.stI16o(em, $nhcoord_y, i16(((cptr.ldI16o(croom2, $mkroom_ly) + ((((cptr.ldI16o(croom2, $mkroom_hy) - cptr.ldI16o(croom2, $mkroom_ly)) | 0) / 2) | 0)) | 0)));
+            cptr.stI16(
+                sm,
+                i16(((cptr.ldI16(croom) +
+                    ((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) / 2) | 0)) | 0))
+            );
+            cptr.stI16o(
+                sm,
+                $nhcoord_y,
+                i16(((cptr.ldI16o(croom, $mkroom_ly) +
+                    ((((cptr.ldI16o(croom, $mkroom_hy) -
+                        cptr.ldI16o(croom, $mkroom_ly)) | 0) / 2) | 0)) | 0))
+            );
+            cptr.stI16(
+                em,
+                i16(((cptr.ldI16(croom2) +
+                    ((((cptr.ldI16o(croom2, $mkroom_hx) - cptr.ldI16(croom2)) | 0) / 2) | 0)) | 0))
+            );
+            cptr.stI16o(
+                em,
+                $nhcoord_y,
+                i16(((cptr.ldI16o(croom2, $mkroom_ly) +
+                    ((((cptr.ldI16o(croom2, $mkroom_hy) -
+                        cptr.ldI16o(croom2, $mkroom_ly)) | 0) / 2) | 0)) | 0))
+            );
         }
 
         void dig_corridor(sm, em, null, 0, fg_typ, bg_typ);
 
         /* choose next region to join */
         /* only increment croom if croom and croom2 are non-overlapping */
-        if (cptr.ldI16(croom2) > cptr.ldI16o(croom, $mkroom_hx) || ((cptr.ldI16o(croom2, $mkroom_ly) > cptr.ldI16o(croom, $mkroom_hy) || cptr.ldI16o(croom2, $mkroom_hy) < cptr.ldI16o(croom, $mkroom_ly)) && rn2(3))) {
+        if (cptr.ldI16(croom2) > cptr.ldI16o(croom, $mkroom_hx) ||
+                ((cptr.ldI16o(croom2, $mkroom_ly) > cptr.ldI16o(croom, $mkroom_hy) ||
+                    cptr.ldI16o(croom2, $mkroom_hy) < cptr.ldI16o(croom, $mkroom_ly)) &&
+                    rn2(3))) {
             croom = croom2;
         }
         croom2 = cptr.add(croom2, 1, 224);  /* always increment the next room */
@@ -353,7 +880,14 @@ function join_map(bg_typ, fg_typ) {
     join_map_cleanup();
 }
 
-/** C ref: mkmap.c:331 — @param {CInt} fg_typ @param {CInt} bg_typ @param {CInt} lit @param {CInt} walled @param {CInt} icedpools */
+/**
+ * C ref: mkmap.c:331
+ * @param {CInt} fg_typ
+ * @param {CInt} bg_typ
+ * @param {CInt} lit
+ * @param {CInt} walled
+ * @param {CInt} icedpools
+ */
 function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
     let x;
     let y;
@@ -364,8 +898,63 @@ function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
     if (lit) {
         for (x = 1; x < NHM.COLNO; x++)
             for (y = 0; y < NHM.ROWNO; y++)
-                if ((!((fg_typ) < NHC.POOL) && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == fg_typ) || (!((bg_typ) < NHC.POOL) && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == bg_typ) || (bg_typ == NHC.TREE && cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == bg_typ) || (walled && ((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL)))
-                    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, 1);
+                if ((!((fg_typ) < NHC.POOL) &&
+                    cptr.ld1so3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    ) ==
+                        fg_typ) ||
+                        (!((bg_typ) < NHC.POOL) &&
+                            cptr.ld1so3(
+                                svl,
+                                x,
+                                $sizeof_rm_x21,
+                                y,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            ) ==
+                                bg_typ) ||
+                        (bg_typ == NHC.TREE &&
+                            cptr.ld1so3(
+                                svl,
+                                x,
+                                $sizeof_rm_x21,
+                                y,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            ) ==
+                                bg_typ) ||
+                        (walled &&
+                            ((cptr.ld1so3(
+                                svl,
+                                x,
+                                $sizeof_rm_x21,
+                                y,
+                                $sizeof_rm,
+                                $instance_globals_saved_l_level + $rm_typ
+                            )) &&
+                                (cptr.ld1so3(
+                                    svl,
+                                    x,
+                                    $sizeof_rm_x21,
+                                    y,
+                                    $sizeof_rm,
+                                    $instance_globals_saved_l_level + $rm_typ
+                                )) <=
+                                    NHC.DBWALL)))
+                    cptr.stI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_lit,
+                        1
+                    );
         for (x = 0; x < cptr.ldI32o(svn, $instance_globals_saved_n_nroom); x++)
             cptr.st1o2(svr, x, $sizeof_mkroom, $mkroom_rlit, 1);
     }
@@ -373,10 +962,42 @@ function finish_map(fg_typ, bg_typ, lit, walled, icedpools) {
        ice might be frozen pool rather than frozen moat */
     for (x = 1; x < NHM.COLNO; x++)
         for (y = 0; y < NHM.ROWNO; y++) {
-            if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.LAVAPOOL)
-                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_lit, 1);
-            else if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.ICE)
-                cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, (icedpools ? NHM.ICED_POOL : NHM.ICED_MOAT) >>> 0);
+            if (cptr.ld1so3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                    NHC.LAVAPOOL)
+                cptr.stI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_lit,
+                    1
+                );
+            else if (cptr.ld1so3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                    NHC.ICE)
+                cptr.stI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_flags,
+                    (icedpools ? NHM.ICED_POOL : NHM.ICED_MOAT) >>> 0
+                );
         }
 }
 
@@ -400,10 +1021,16 @@ export function remove_rooms(lx, ly, hx, hy) {
 
     for (i = (cptr.ldI32o(svn, $instance_globals_saved_n_nroom) - 1) | 0; i >= 0; --i) {
         croom = cptr.add(svr, i, $sizeof_mkroom);
-        if (cptr.ldI16o(croom, $mkroom_hx) < lx || cptr.ldI16(croom) >= hx || cptr.ldI16o(croom, $mkroom_hy) < ly || cptr.ldI16o(croom, $mkroom_ly) >= hy)
+        if (cptr.ldI16o(croom, $mkroom_hx) < lx ||
+                cptr.ldI16(croom) >= hx ||
+                cptr.ldI16o(croom, $mkroom_hy) < ly ||
+                cptr.ldI16o(croom, $mkroom_ly) >= hy)
             continue;  /* no overlap */
 
-        if (cptr.ldI16(croom) < lx || cptr.ldI16o(croom, $mkroom_hx) >= hx || cptr.ldI16o(croom, $mkroom_ly) < ly || cptr.ldI16o(croom, $mkroom_hy) >= hy) {
+        if (cptr.ldI16(croom) < lx ||
+                cptr.ldI16o(croom, $mkroom_hx) >= hx ||
+                cptr.ldI16o(croom, $mkroom_ly) < ly ||
+                cptr.ldI16o(croom, $mkroom_hy) >= hy) {
             /* TODO: ensure remaining parts of room are still joined */
 
             if (!cptr.ld1so(croom, $mkroom_irregular))
@@ -426,7 +1053,15 @@ export function remove_rooms(lx, ly, hx, hy) {
 /** C ref: mkmap.c:412 — @param {CUInt} roomno */
 function remove_room(roomno) {
     let croom = cptr.add(svr, roomno, $sizeof_mkroom);
-    let maxroom = cptr.add(svr, cptr.stI32o(svn, $instance_globals_saved_n_nroom, cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + -1), $sizeof_mkroom);
+    let maxroom = cptr.add(
+        svr,
+        cptr.stI32o(
+            svn,
+            $instance_globals_saved_n_nroom,
+            cptr.ldI32o(svn, $instance_globals_saved_n_nroom) + -1
+        ),
+        $sizeof_mkroom
+    );
     let x;
     let y;
     let oroomno;
@@ -442,8 +1077,24 @@ function remove_room(roomno) {
         roomno = (roomno + NHM.ROOMOFFSET) | 0;
         for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); ++x)
             for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); ++y) {
-                if ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) == oroomno)
-                    cptr.stI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno, roomno);
+                if ((cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_roomno
+                ) & 63) ==
+                        oroomno)
+                    cptr.stI32o3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno,
+                        roomno
+                    );
             }
     }
 
@@ -453,7 +1104,15 @@ function remove_room(roomno) {
 /** C ref: mkmap.c:443 — @param {CInt} litstate @returns {CInt} */
 export function litstate_rnd(litstate) {
     if (litstate < 0)
-        return schar((((rng_log_enabled() ? (rng_log_set_caller(__s_mkmap_c, 446, __s_litstate_rnd), rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) : rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) < 11 && rn2(77)) ? 1 : 0));
+        return schar((((rng_log_enabled()
+            ? (
+                rng_log_set_caller(__s_mkmap_c, 446, __s_litstate_rnd),
+                rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)
+            )
+            : rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) < 11 &&
+            rn2(77))
+                ? 1
+                : 0));
     return schar(litstate);
 }
 
@@ -487,11 +1146,25 @@ export function mkmap(init_lev) {
     if (join)
         join_map(bg_typ, fg_typ);
 
-    finish_map(fg_typ, bg_typ, schar(lit), schar(walled), cptr.ld1so(init_lev, $lev_init_icedpools));
+    finish_map(
+        fg_typ,
+        bg_typ,
+        schar(lit),
+        schar(walled),
+        cptr.ld1so(init_lev, $lev_init_icedpools)
+    );
     /* a walled, joined level is cavernous, not mazelike -dlc */
     if (walled && join) {
-        cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev, 0);
-        cptr.stI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev, 1);
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_maze_lev,
+            0
+        );
+        cptr.stI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_is_cavernous_lev,
+            1
+        );
     }
     cptr.free(cptr.ldPtro(gn, $instance_globals_n_new_locations));
 }

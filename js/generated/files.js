@@ -8,12 +8,21 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, mark_synch, putmsghistory, putstr, raw_print, wait_synch, wizard } from './nhprop.js';
+import {
+    clear_nhwindow, create_nhwindow, destroy_nhwindow, discover, display_nhwindow, mark_synch,
+    putmsghistory, putstr, raw_print, wait_synch, wizard
+} from './nhprop.js';
 import { You_feel, impossible, pline, raw_printf } from './pline.js';
 import { alloc } from './alloc.js';
 import { bclose, close_check } from './sfstruct.js';
-import { c_eos, copynchars, eos, fuzzymatch, mungspaces, nh_deterministic_qsort, nh_snprintf, s_suffix, strip_newline, strncmpi } from './hacklib.js';
-import { WIN_MESSAGE, flags, gb, gc, gd, gh, gi, gl, gn, gs, gu, gw, hands_obj, iflags, program_state, svc, svd, svl, svm, svn, svp, u, ubirthday } from './decl.js';
+import {
+    c_eos, copynchars, eos, fuzzymatch, mungspaces, nh_deterministic_qsort, nh_snprintf, s_suffix,
+    strip_newline, strncmpi
+} from './hacklib.js';
+import {
+    WIN_MESSAGE, flags, gb, gc, gd, gh, gi, gl, gn, gs, gu, gw, hands_obj, iflags, program_state,
+    svc, svd, svl, svm, svn, svp, u, ubirthday
+} from './decl.js';
 import { sethanguphandler } from './unixmain.js';
 import { In_quest, Is_special, maxledgerno } from './dungeon.js';
 import { sysopt } from './sys.js';
@@ -31,7 +40,10 @@ import { addinv, merge_choice } from './invent.js';
 import { add_to_migration } from './mkobj.js';
 import { readobjnam } from './objnam.js';
 import { wish_history_add } from './zap.js';
-import { config_error_add, config_error_done, config_error_init, get_configfile, get_default_configfile, parse_conf_file, set_configfile_name } from './cfgfiles.js';
+import {
+    config_error_add, config_error_done, config_error_init, get_configfile, get_default_configfile,
+    parse_conf_file, set_configfile_name
+} from './cfgfiles.js';
 import { clear_symsetentry, proc_symset_line } from './symbols.js';
 import { getnow, hhmmss, yyyymmdd } from './calendar.js';
 import { freedynamicdata } from './save.js';
@@ -45,60 +57,66 @@ import { timet_to_seconds } from './allmain.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $Align_filecode = FLD.Align_filecode, $Gender_filecode = FLD.Gender_filecode,
-    $NHFILE_addinfo = FLD.NHFILE_addinfo, $NHFILE_bendian = FLD.NHFILE_bendian, $NHFILE_eof = FLD.NHFILE_eof,
-    $NHFILE_fieldlevel = FLD.NHFILE_fieldlevel, $NHFILE_fnidx = FLD.NHFILE_fnidx,
-    $NHFILE_fpdebug = FLD.NHFILE_fpdebug, $NHFILE_fpdef = FLD.NHFILE_fpdef, $NHFILE_fplog = FLD.NHFILE_fplog,
-    $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mode = FLD.NHFILE_mode,
-    $NHFILE_nhfpconvert = FLD.NHFILE_nhfpconvert, $NHFILE_rcount = FLD.NHFILE_rcount,
-    $NHFILE_structlevel = FLD.NHFILE_structlevel, $NHFILE_style = FLD.NHFILE_style,
-    $NHFILE_wcount = FLD.NHFILE_wcount, $Race_filecode = FLD.Race_filecode,
-    $Role_filecode = FLD.Role_filecode, $Role_mnum = FLD.Role_mnum,
-    $context_info_novel = FLD.context_info_novel, $d_level_dlevel = FLD.d_level_dlevel,
-    $dirent_d_name = FLD.dirent_d_name, $dungeon_boneid = FLD.dungeon_boneid,
-    $fieldlevel_content_binary = FLD.fieldlevel_content_binary, $flag_debug = FLD.flag_debug,
-    $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female, $flock_l_len = FLD.flock_l_len,
-    $flock_l_type = FLD.flock_l_type, $flock_l_whence = FLD.flock_l_whence,
-    $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_globals_b_bones = FLD.instance_globals_b_bones,
-    $instance_globals_c_chosen_symset_end = FLD.instance_globals_c_chosen_symset_end,
-    $instance_globals_c_chosen_symset_start = FLD.instance_globals_c_chosen_symset_start,
-    $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
-    $instance_globals_d_deferred_showpaths_dir = FLD.instance_globals_d_deferred_showpaths_dir,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_l_lock = FLD.instance_globals_l_lock,
-    $instance_globals_n_nesting = FLD.instance_globals_n_nesting,
-    $instance_globals_s_SAVEF = FLD.instance_globals_s_SAVEF,
-    $instance_globals_s_symset = FLD.instance_globals_s_symset,
-    $instance_globals_s_symset_count = FLD.instance_globals_s_symset_count,
-    $instance_globals_s_symset_which_set = FLD.instance_globals_s_symset_which_set,
-    $instance_globals_saved_l_level_info = FLD.instance_globals_saved_l_level_info,
-    $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_w_wizkit = FLD.instance_globals_w_wizkit,
-    $novel_tracking_count = FLD.novel_tracking_count, $novel_tracking_pasg = FLD.novel_tracking_pasg,
-    $obj_bknown = FLD.obj_bknown, $obj_oclass = FLD.obj_oclass, $obj_owornmask = FLD.obj_owornmask,
-    $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $s_level_boneid = FLD.s_level_boneid,
-    $sfstatus_to_msg_msg = FLD.sfstatus_to_msg_msg, $sinfo_done_hup = FLD.sinfo_done_hup,
-    $sinfo_in_paniclog = FLD.sinfo_in_paniclog, $sinfo_in_self_recover = FLD.sinfo_in_self_recover,
-    $sinfo_preserve_locks = FLD.sinfo_preserve_locks, $sinfo_wizkit_wishing = FLD.sinfo_wizkit_wishing,
-    $sizeof_Align = FLD.sizeof_Align, $sizeof_Gender = FLD.sizeof_Gender,
-    $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_flock = FLD.sizeof_flock, $sizeof_linfo = FLD.sizeof_linfo,
-    $sizeof_sfstatus_to_msg = FLD.sizeof_sfstatus_to_msg, $sizeof_symsetentry = FLD.sizeof_symsetentry,
-    $symsetentry_explicitly = FLD.symsetentry_explicitly, $symsetentry_name = FLD.symsetentry_name,
-    $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools, $sysopt_s_bonesformat = FLD.sysopt_s_bonesformat,
-    $sysopt_s_debugfiles = FLD.sysopt_s_debugfiles, $sysopt_s_livelog = FLD.sysopt_s_livelog,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
-    $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
-    $window_procs_wp_id = FLD.window_procs_wp_id, $you_ualign = FLD.you_ualign;
+      $NHFILE_addinfo = FLD.NHFILE_addinfo, $NHFILE_bendian = FLD.NHFILE_bendian,
+      $NHFILE_eof = FLD.NHFILE_eof, $NHFILE_fieldlevel = FLD.NHFILE_fieldlevel,
+      $NHFILE_fnidx = FLD.NHFILE_fnidx, $NHFILE_fpdebug = FLD.NHFILE_fpdebug,
+      $NHFILE_fpdef = FLD.NHFILE_fpdef, $NHFILE_fplog = FLD.NHFILE_fplog,
+      $NHFILE_ftype = FLD.NHFILE_ftype, $NHFILE_mode = FLD.NHFILE_mode,
+      $NHFILE_nhfpconvert = FLD.NHFILE_nhfpconvert, $NHFILE_rcount = FLD.NHFILE_rcount,
+      $NHFILE_structlevel = FLD.NHFILE_structlevel, $NHFILE_style = FLD.NHFILE_style,
+      $NHFILE_wcount = FLD.NHFILE_wcount, $Race_filecode = FLD.Race_filecode,
+      $Role_filecode = FLD.Role_filecode, $Role_mnum = FLD.Role_mnum,
+      $context_info_novel = FLD.context_info_novel, $d_level_dlevel = FLD.d_level_dlevel,
+      $dirent_d_name = FLD.dirent_d_name, $dungeon_boneid = FLD.dungeon_boneid,
+      $fieldlevel_content_binary = FLD.fieldlevel_content_binary, $flag_debug = FLD.flag_debug,
+      $flag_explore = FLD.flag_explore, $flag_female = FLD.flag_female,
+      $flock_l_len = FLD.flock_l_len, $flock_l_type = FLD.flock_l_type,
+      $flock_l_whence = FLD.flock_l_whence, $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_globals_b_bones = FLD.instance_globals_b_bones,
+      $instance_globals_c_chosen_symset_end = FLD.instance_globals_c_chosen_symset_end,
+      $instance_globals_c_chosen_symset_start = FLD.instance_globals_c_chosen_symset_start,
+      $instance_globals_d_deferred_showpaths = FLD.instance_globals_d_deferred_showpaths,
+      $instance_globals_d_deferred_showpaths_dir = FLD.instance_globals_d_deferred_showpaths_dir,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_l_lock = FLD.instance_globals_l_lock,
+      $instance_globals_n_nesting = FLD.instance_globals_n_nesting,
+      $instance_globals_s_SAVEF = FLD.instance_globals_s_SAVEF,
+      $instance_globals_s_symset = FLD.instance_globals_s_symset,
+      $instance_globals_s_symset_count = FLD.instance_globals_s_symset_count,
+      $instance_globals_s_symset_which_set = FLD.instance_globals_s_symset_which_set,
+      $instance_globals_saved_l_level_info = FLD.instance_globals_saved_l_level_info,
+      $instance_globals_saved_m_moves = FLD.instance_globals_saved_m_moves,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_w_wizkit = FLD.instance_globals_w_wizkit,
+      $novel_tracking_count = FLD.novel_tracking_count,
+      $novel_tracking_pasg = FLD.novel_tracking_pasg, $obj_bknown = FLD.obj_bknown,
+      $obj_oclass = FLD.obj_oclass, $obj_owornmask = FLD.obj_owornmask, $obj_ox = FLD.obj_ox,
+      $obj_oy = FLD.obj_oy, $s_level_boneid = FLD.s_level_boneid,
+      $sfstatus_to_msg_msg = FLD.sfstatus_to_msg_msg, $sinfo_done_hup = FLD.sinfo_done_hup,
+      $sinfo_in_paniclog = FLD.sinfo_in_paniclog,
+      $sinfo_in_self_recover = FLD.sinfo_in_self_recover,
+      $sinfo_preserve_locks = FLD.sinfo_preserve_locks,
+      $sinfo_wizkit_wishing = FLD.sinfo_wizkit_wishing, $sizeof_Align = FLD.sizeof_Align,
+      $sizeof_Gender = FLD.sizeof_Gender, $sizeof_dungeon = FLD.sizeof_dungeon,
+      $sizeof_flock = FLD.sizeof_flock, $sizeof_linfo = FLD.sizeof_linfo,
+      $sizeof_sfstatus_to_msg = FLD.sizeof_sfstatus_to_msg,
+      $sizeof_symsetentry = FLD.sizeof_symsetentry,
+      $symsetentry_explicitly = FLD.symsetentry_explicitly,
+      $symsetentry_name = FLD.symsetentry_name, $sysopt_s_bones_pools = FLD.sysopt_s_bones_pools,
+      $sysopt_s_bonesformat = FLD.sysopt_s_bonesformat,
+      $sysopt_s_debugfiles = FLD.sysopt_s_debugfiles, $sysopt_s_livelog = FLD.sysopt_s_livelog,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_mark_synch = FLD.window_procs_win_mark_synch,
+      $window_procs_win_putmsghistory = FLD.window_procs_win_putmsghistory,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch,
+      $window_procs_wp_id = FLD.window_procs_wp_id, $you_ualign = FLD.you_ualign;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_c_02x = cptr.lit("%c%02X");
@@ -216,7 +234,12 @@ const __s_lltype_ld_name_s_role_s_race_s_gender_s = cptr.lit("lltype=%ld\tname=%
 /* return a file's name without its path and optionally trailing 'type' */
 const __static_nh_basename_basebuf = new Uint8Array(80); /** C ref: files.c:202 — char[80] (function-static) */
 
-/** C ref: files.c:199 — @param {CPtr<char>} fname @param {CInt} keep_suffix @returns {CPtr<char>} */
+/**
+ * C ref: files.c:199
+ * @param {CPtr<char>} fname
+ * @param {CInt} keep_suffix
+ * @returns {CPtr<char>}
+ */
 export function nh_basename(fname, keep_suffix) {
     let p;
 
@@ -231,7 +254,12 @@ export function nh_basename(fname, keep_suffix) {
            just return that as-is without stripping off ".suffix" */
 
         if (ln < 80n) {
-            __builtin___strncpy_chk(cptr.decay(__static_nh_basename_basebuf), fname, ln, __builtin_object_size(cptr.decay(__static_nh_basename_basebuf), 1));
+            __builtin___strncpy_chk(
+                cptr.decay(__static_nh_basename_basebuf),
+                fname,
+                ln,
+                __builtin_object_size(cptr.decay(__static_nh_basename_basebuf), 1)
+            );
             cptr.st1o(cptr.decay(__static_nh_basename_basebuf), ln, 0, 1);
             fname = cptr.decay(__static_nh_basename_basebuf);
         }
@@ -264,7 +292,15 @@ export function nh_basename(fname, keep_suffix) {
  */
 const __static_fname_encode_hexdigits = cptr.bytes("0123456789ABCDEF"); /** C ref: files.c:264 — char[17] (function-static) */
 
-/** C ref: files.c:255 — @param {CPtr<char>} legal @param {CInt} quotechar @param {CPtr<char>} s @param {CPtr<char>} callerbuf @param {CInt} bufsz @returns {CPtr<char>} */
+/**
+ * C ref: files.c:255
+ * @param {CPtr<char>} legal
+ * @param {CInt} quotechar
+ * @param {CPtr<char>} s
+ * @param {CPtr<char>} callerbuf
+ * @param {CInt} bufsz
+ * @returns {CPtr<char>}
+ */
 export function fname_encode(legal, quotechar, s, callerbuf, bufsz) {
     let sp;
     let op;
@@ -283,7 +319,11 @@ export function fname_encode(legal, quotechar, s, callerbuf, bufsz) {
             void cptr.sprintf(op, __s_c_02x, quotechar, cptr.ld1s(sp));
             op = cptr.add(op, 3);
             cnt = (cnt + 3) | 0;
-        } else if ((cptr.strchr(legal, cptr.ld1s(sp)) !== null) || (cptr.strchr(cptr.decay(__static_fname_encode_hexdigits), cptr.ld1s(sp)) !== null)) {
+        } else if ((cptr.strchr(legal, cptr.ld1s(sp)) !== null) ||
+                (cptr.strchr(
+                    cptr.decay(__static_fname_encode_hexdigits),
+                    cptr.ld1s(sp)
+                ) !== null)) {
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(sp));
             cptr.st1(op, 0);
             cnt++;
@@ -309,7 +349,14 @@ export function fname_encode(legal, quotechar, s, callerbuf, bufsz) {
  */
 const __static_fname_decode_hexdigits = cptr.bytes("0123456789ABCDEF"); /** C ref: files.c:309 — char[17] (function-static) */
 
-/** C ref: files.c:305 — @param {CInt} quotechar @param {CPtr<char>} s @param {CPtr<char>} callerbuf @param {CInt} bufsz @returns {CPtr<char>} */
+/**
+ * C ref: files.c:305
+ * @param {CInt} quotechar
+ * @param {CPtr<char>} s
+ * @param {CPtr<char>} callerbuf
+ * @param {CInt} bufsz
+ * @returns {CPtr<char>}
+ */
 export function fname_decode(quotechar, s, callerbuf, bufsz) {
     let sp;
     let op;
@@ -344,7 +391,10 @@ export function fname_decode(quotechar, s, callerbuf, bufsz) {
             cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), schar(calc));
             cptr.st1(op, 0);
         } else {
-            cptr.st1(cptr.postinc(() => op, (v) => { op = v; }), cptr.ld1s(cptr.postinc(() => sp, (v) => { sp = v; })));
+            cptr.st1(
+                cptr.postinc(() => op, (v) => { op = v; }),
+                cptr.ld1s(cptr.postinc(() => sp, (v) => { sp = v; }))
+            );
             cptr.st1(op, 0);
         }
         cnt++;
@@ -353,7 +403,13 @@ export function fname_decode(quotechar, s, callerbuf, bufsz) {
 }
 
 /*ARGSUSED*/
-/** C ref: files.c:354 — @param {CPtr<char>} basenam @param {CInt} whichprefix @param {CInt} buffnum @returns {CPtr<char>} */
+/**
+ * C ref: files.c:354
+ * @param {CPtr<char>} basenam
+ * @param {CInt} whichprefix
+ * @param {CInt} buffnum
+ * @returns {CPtr<char>}
+ */
 export function fqname(basenam, whichprefix, buffnum) {
     return basenam;
 }
@@ -369,7 +425,13 @@ export function validate_prefix_locations(reasonbuf) {
 
 /* fopen a file, with OS-dependent bells and whistles */
 /* NOTE: a simpler version of this routine also exists in util/dlb_main.c */
-/** C ref: files.c:444 — @param {CPtr<char>} filename @param {CPtr<char>} mode @param {CInt} prefix @returns {CPtr<FILE>} */
+/**
+ * C ref: files.c:444
+ * @param {CPtr<char>} filename
+ * @param {CPtr<char>} mode
+ * @param {CInt} prefix
+ * @returns {CPtr<FILE>}
+ */
 export function fopen_datafile(filename, mode, prefix) {
     let fp;
 
@@ -465,7 +527,9 @@ function viable_nhfile(nhfp) {
          * not a structlevel legacy file,
          * nor a fieldlevel file.
          */
-        if (((cptr.ldI32(nhfp) == -1) && !cptr.ldPtro(nhfp, $NHFILE_fpdef)) || (cptr.ld1so(nhfp, $NHFILE_structlevel) && cptr.ldI32(nhfp) < 0) || (cptr.ld1so(nhfp, $NHFILE_fieldlevel) && !cptr.ldPtro(nhfp, $NHFILE_fpdef))) {
+        if (((cptr.ldI32(nhfp) == -1) && !cptr.ldPtro(nhfp, $NHFILE_fpdef)) ||
+                (cptr.ld1so(nhfp, $NHFILE_structlevel) && cptr.ldI32(nhfp) < 0) ||
+                (cptr.ld1so(nhfp, $NHFILE_fieldlevel) && !cptr.ldPtro(nhfp, $NHFILE_fpdef))) {
             /* not viable, start the cleanup */
             if (cptr.ld1so(nhfp, $NHFILE_fieldlevel)) {
                 if (cptr.ldPtro(nhfp, $NHFILE_fpdef)) {
@@ -541,9 +605,22 @@ export function create_levelfile(lev, errbuf) {
         cptr.stI32(nhfp, creat(fq_lock, NHM.FCMASK));
 
         if (cptr.ldI32(nhfp) >= 0)
-            cptr.st1o2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) | NHM.LFILE_EXISTS);
+            cptr.st1o2(
+                svl,
+                lev,
+                $sizeof_linfo,
+                $instance_globals_saved_l_level_info,
+                cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) |
+                    NHM.LFILE_EXISTS
+            );
         else if (errbuf)
-            void cptr.sprintf(errbuf, __s_cannot_create_file_s_for_level_d_errno_d, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
+            void cptr.sprintf(
+                errbuf,
+                __s_cannot_create_file_s_for_level_d_errno_d,
+                cptr.add(gl, $instance_globals_l_lock),
+                lev,
+                (cptr.ldI32(__error()))
+            );
     }
     nhfp = viable_nhfile(nhfp);
     return nhfp;
@@ -578,7 +655,13 @@ export function open_levelfile(lev, errbuf) {
            settle for `lock' instead of `fq_lock' because the latter
            might end up being too big for nethack's BUFSZ */
         if (cptr.ldI32(nhfp) < 0 && errbuf)
-            void cptr.sprintf(errbuf, __s_cannot_open_file_s_for_level_d_errno_d, cptr.add(gl, $instance_globals_l_lock), lev, (cptr.ldI32(__error())));
+            void cptr.sprintf(
+                errbuf,
+                __s_cannot_open_file_s_for_level_d_errno_d,
+                cptr.add(gl, $instance_globals_l_lock),
+                lev,
+                (cptr.ldI32(__error()))
+            );
     }
     nhfp = viable_nhfile(nhfp);
     return nhfp;
@@ -590,10 +673,18 @@ export function delete_levelfile(lev) {
      * Level 0 might be created by port specific code that doesn't
      * call create_levfile(), so always assume that it exists.
      */
-    if (lev == 0 || (cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) & NHM.LFILE_EXISTS)) {
+    if (lev == 0 ||
+            (cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) &
+                NHM.LFILE_EXISTS)) {
         set_levelfile_name(cptr.add(gl, $instance_globals_l_lock), lev);
         void unlink(fqname(cptr.add(gl, $instance_globals_l_lock), NHM.LEVELPREFIX, 0));
-        cptr.st1o2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info, cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) & -5);
+        cptr.st1o2(
+            svl,
+            lev,
+            $sizeof_linfo,
+            $instance_globals_saved_l_level_info,
+            cptr.ld1uo2(svl, lev, $sizeof_linfo, $instance_globals_saved_l_level_info) & -5
+        );
     }
 }
 
@@ -622,7 +713,12 @@ function strcmp_wrap(p, q) {
 /* set up "file" to be file name for retrieving bones, and return a
  * bonesid to be read/written in the bones file.
  */
-/** C ref: files.c:769 — @param {CPtr<char>} file @param {CPtr<d_level>} lev @returns {CPtr<char>} */
+/**
+ * C ref: files.c:769
+ * @param {CPtr<char>} file
+ * @param {CPtr<d_level>} lev
+ * @returns {CPtr<char>}
+ */
 function set_bonesfile_name(file, lev) {
     let sptr;
     let dptr;
@@ -642,7 +738,9 @@ function set_bonesfile_name(file, lev) {
      */
     void cptr.strcpy(file, __s_bon);
     if (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) > 1) {
-        let poolnum = ((cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) < 10 ? (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) : 10);
+        let poolnum = ((cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0) < 10
+                ? (cptr.ldI32o(sysopt, $sysopt_s_bones_pools) >>> 0)
+                : 10);
 
         poolnum = u32mod(Number(BigInt.asUintN(32, ubirthday.v)), poolnum);  /* 0..9 */
         void cptr.sprintf(eos(file), __s_pct_u, poolnum);
@@ -650,7 +748,12 @@ function set_bonesfile_name(file, lev) {
     dptr = eos(file);
     /* when this naming scheme was adopted, 'filecode' was one letter;
        3.3.0 turned it into a three letter string for quest levels */
-    void cptr.sprintf(dptr, __s_c_s, cptr.ld1so2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_boneid), In_quest(lev) ? cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode) : __s_0);
+    void cptr.sprintf(
+        dptr,
+        __s_c_s,
+        cptr.ld1so2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_boneid),
+        In_quest(lev) ? cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode) : __s_0
+    );
     if ((sptr = Is_special(lev)) !== null)
         void cptr.sprintf(eos(dptr), __s_dot_pct_c, cptr.ld1so(sptr, $s_level_boneid));
     else
@@ -675,7 +778,13 @@ function set_bonestemp_name() {
     return cptr.add(gl, $instance_globals_l_lock);
 }
 
-/** C ref: files.c:833 — @param {CPtr<d_level>} lev @param {CPtr<char *>} bonesid @param {CPtr<char>} errbuf @returns {CPtr<NHFILE>} */
+/**
+ * C ref: files.c:833
+ * @param {CPtr<d_level>} lev
+ * @param {CPtr<char *>} bonesid
+ * @param {CPtr<char>} errbuf
+ * @returns {CPtr<NHFILE>}
+ */
 export function create_bonesfile(lev, bonesid, errbuf) {
     let file;
     let nhfp = null;
@@ -709,7 +818,13 @@ export function create_bonesfile(lev, bonesid, errbuf) {
                 failed = (cptr.ldI32(__error()));
         }
         if (failed && errbuf)
-            void cptr.sprintf(errbuf, __s_cannot_create_bones_s_id_s_errno_d, cptr.add(gl, $instance_globals_l_lock), cptr.ldPtr(bonesid), (cptr.ldI32(__error())));
+            void cptr.sprintf(
+                errbuf,
+                __s_cannot_create_bones_s_id_s_errno_d,
+                cptr.add(gl, $instance_globals_l_lock),
+                cptr.ldPtr(bonesid),
+                (cptr.ldI32(__error()))
+            );
     }
 
     nhfp = viable_nhfile(nhfp);
@@ -732,7 +847,12 @@ export function commit_bonesfile(lev) {
         pline(__s_couldn_t_rename_s_to_s, tempname, fq_bones);
 }
 
-/** C ref: files.c:940 — @param {CPtr<d_level>} lev @param {CPtr<char *>} bonesid @returns {CPtr<NHFILE>} */
+/**
+ * C ref: files.c:940
+ * @param {CPtr<d_level>} lev
+ * @param {CPtr<char *>} bonesid
+ * @returns {CPtr<NHFILE>}
+ */
 export function open_bonesfile(lev, bonesid) {
     let fq_bones;
     let nhfp = null;
@@ -749,7 +869,11 @@ export function open_bonesfile(lev, bonesid) {
         cptr.stI32o(nhfp, $NHFILE_mode, NHM.READING);
         cptr.st1o(nhfp, $NHFILE_addinfo, 1);
         cptr.st1o(nhfp, $NHFILE_style, 1);
-        cptr.st1o(nhfp, $NHFILE_style + $fieldlevel_content_binary, schar((cptr.ldI32o2(sysopt, 0, 4, $sysopt_s_bonesformat) != NHC.exportascii)));
+        cptr.st1o(
+            nhfp,
+            $NHFILE_style + $fieldlevel_content_binary,
+            schar((cptr.ldI32o2(sysopt, 0, 4, $sysopt_s_bonesformat) != NHC.exportascii))
+        );
         cptr.stI32o(nhfp, $NHFILE_fnidx, cptr.ldI32o2(sysopt, 0, 4, $sysopt_s_bonesformat));
         cptr.stI32(nhfp, -1);
         cptr.stPtro(nhfp, $NHFILE_fpdef, null);
@@ -801,7 +925,10 @@ export function set_savefile_name(regularize_it) {
     if (regularize_it)
         regularize(cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), regoffset));
     if (indicator_spot == 1 && sfindicator && !overflow) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(sfindicator)) < 53n)
+        if (BigInt.asUintN(
+            64,
+            cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(sfindicator)
+        ) < 53n)
             void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), sfindicator);
         else
             overflow = 2;
@@ -810,19 +937,28 @@ export function set_savefile_name(regularize_it) {
        explicit dead code (the ">" comparison is detected as always
        FALSE at compile-time). Done to appease clang's -Wunreachable-code */
     if (cptr.strlen(__s_empty) > 0n && !overflow) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(__s_empty)) < 53n) {
+        if (BigInt.asUintN(
+            64,
+            cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(__s_empty)
+        ) < 53n) {
             void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), __s_empty);
         } else
             overflow = 3;
     }
     if (indicator_spot == 2 && sfindicator && !overflow) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(sfindicator)) < 53n)
+        if (BigInt.asUintN(
+            64,
+            cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(sfindicator)
+        ) < 53n)
             void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), sfindicator);
         else
             overflow = 4;
     }
     if (postappend && !overflow) {
-        if (BigInt.asUintN(64, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(postappend)) < 53n)
+        if (BigInt.asUintN(
+            64,
+            cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF)) + cptr.strlen(postappend)
+        ) < 53n)
             void cptr.strcat(cptr.add(gs, $instance_globals_s_SAVEF), postappend);
         else
             overflow = 5;
@@ -959,7 +1095,10 @@ export function check_panic_save() {
 
     set_error_savefile();
     savef = fqname(cptr.add(gs, $instance_globals_s_SAVEF), NHM.SAVEPREFIX, 0);
-    let ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(savef) + cptr.strlen(__s_dot_z)))));
+    let ln = Number(BigInt.asUintN(
+        32,
+        (BigInt.asUintN(64, cptr.strlen(savef) + cptr.strlen(__s_dot_z)))
+    ));
     let cfn = alloc((ln + 1) >>> 0);
 
     void cptr.strcpy(cfn, savef);
@@ -982,7 +1121,12 @@ export function check_panic_save() {
     return result;
 }
 
-/** C ref: files.c:1357 — @param {CPtr<char>} filename @param {CInt} without_wait_synch_per_file @returns {CPtr<char>} */
+/**
+ * C ref: files.c:1357
+ * @param {CPtr<char>} filename
+ * @param {CInt} without_wait_synch_per_file
+ * @returns {CPtr<char>}
+ */
 export function plname_from_file(filename, without_wait_synch_per_file) {
     let nhfp;
     let ln;
@@ -995,7 +1139,11 @@ export function plname_from_file(filename, without_wait_synch_per_file) {
         let sln = Number(BigInt.asIntN(32, cptr.strlen(cptr.add(gs, $instance_globals_s_SAVEF))));
         let xln = Number(BigInt.asIntN(32, cptr.strlen(__s_dot_z)));
 
-        if (sln > xln && !strcmp(cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), (sln - xln) | 0, 1), __s_dot_z))
+        if (sln > xln &&
+                !strcmp(
+                    cptr.add(cptr.add(gs, $instance_globals_s_SAVEF), (sln - xln) | 0, 1),
+                    __s_dot_z
+                ))
             cptr.st1o2(gs, (sln - xln) | 0, 1, $instance_globals_s_SAVEF, 0);
     }
     nh_uncompress(cptr.add(gs, $instance_globals_s_SAVEF));
@@ -1004,7 +1152,12 @@ export function plname_from_file(filename, without_wait_synch_per_file) {
             /* room for "name+role+race+gend+algn X" where the space before
                X is actually NUL and X is playmode: one of '-', 'X', or 'D' */
             ln = 49;
-            result = __builtin___memset_chk(alloc(ln), 0, BigInt(ln >>> 0), __builtin_object_size(alloc(ln), 0));
+            result = __builtin___memset_chk(
+                alloc(ln),
+                0,
+                BigInt(ln >>> 0),
+                __builtin_object_size(alloc(ln), 0)
+            );
             get_plname_from_file(nhfp, result, 0);
         }
         close_nhfile(nhfp);
@@ -1032,8 +1185,16 @@ export function get_saved_games() {
 
             if (!(dir = opendir(fqname(__s_save, NHM.SAVEPREFIX, 0))))
                 return null;
-            result = alloc(Number(BigInt.asUintN(32, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n))));  /* at most */
-            void __builtin___memset_chk(result, 0, BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n), __builtin_object_size(result, 0));
+            result = alloc(Number(BigInt.asUintN(
+                32,
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n)
+            )));  /* at most */
+            void __builtin___memset_chk(
+                result,
+                0,
+                BigInt.asUintN(64, BigInt.asUintN(64, BigInt(((n + 1) | 0))) * 8n),
+                __builtin_object_size(result, 0)
+            );
             for (i = 0, j = 0; i < n; i++) {
                 let uid = cptr.box(0);
                 let name = new Uint8Array(64);  /* more than PL_NSIZ+1 */
@@ -1041,12 +1202,22 @@ export function get_saved_games() {
 
                 if (!entry)
                     break;
-                if (sscanf(cptr.add(entry, $dirent_d_name), __s_d_63s, uid, cptr.decay(name)) == 2) {
+                if (sscanf(
+                    cptr.add(entry, $dirent_d_name),
+                    __s_d_63s,
+                    uid,
+                    cptr.decay(name)
+                ) == 2) {
                     if (uid.v == myuid) {
                         let filename = new Uint8Array(256);
                         let r;
 
-                        void cptr.sprintf(cptr.decay(filename), __s_save_d_s, uid.v, cptr.decay(name));
+                        void cptr.sprintf(
+                            cptr.decay(filename),
+                            __s_save_d_s,
+                            uid.v,
+                            cptr.decay(name)
+                        );
                         r = plname_from_file(cptr.decay(filename), 0);
                         if (r)
                             cptr.stPtro(result, j++, r, 8);
@@ -1080,13 +1251,26 @@ export function free_saved_games(saved) {
     }
 }
 
-/** C ref: files.c:1563 — @param {CPtr<char>} filename @param {CPtr<char>} mode @param {CPtr<FILE>} stream @param {CInt} uncomp */
+/**
+ * C ref: files.c:1563
+ * @param {CPtr<char>} filename
+ * @param {CPtr<char>} mode
+ * @param {CPtr<FILE>} stream
+ * @param {CInt} uncomp
+ */
 function redirect(filename, mode, stream, uncomp) {
     if (freopen(filename, mode, stream) === null) {
         let details;
         if ((details = strerror((cptr.ldI32(__error())))) === null)
             details = __s_empty;
-        void fprintf(__stderrp, __s_freopen_of_s_for_scompress_failed_d_s, filename, uncomp ? __s_un : __s_empty, (cptr.ldI32(__error())), details);
+        void fprintf(
+            __stderrp,
+            __s_freopen_of_s_for_scompress_failed_d_s,
+            filename,
+            uncomp ? __s_un : __s_empty,
+            (cptr.ldI32(__error())),
+            details
+        );
         nh_terminate(1);
     }
 }
@@ -1110,7 +1294,10 @@ function docompress_file(filename, uncomp) {
     let ln;
     let istty = schar((cptr.ldI32o(windowprocs, $window_procs_wp_id) == NHC.wp_tty));
     xtra = __s_dot_z;
-    ln = Number(BigInt.asUintN(32, (BigInt.asUintN(64, cptr.strlen(filename) + cptr.strlen(xtra)))));
+    ln = Number(BigInt.asUintN(
+        32,
+        (BigInt.asUintN(64, cptr.strlen(filename) + cptr.strlen(xtra)))
+    ));
     cfn = alloc((ln + 1) >>> 0);
 
     void cptr.strcpy(cfn, filename);
@@ -1165,7 +1352,12 @@ function docompress_file(filename, uncomp) {
         void setuid(getuid());
         void execv(cptr.ldPtro(args, 0, 8), args);
         perror(null);
-        void fprintf(__stderrp, __s_exec_to_scompress_s_failed, uncomp ? __s_un : __s_empty, filename);
+        void fprintf(
+            __stderrp,
+            __s_exec_to_scompress_s_failed,
+            uncomp ? __s_un : __s_empty,
+            filename
+        );
         cptr.free(cfn);
         nh_terminate(1);
     } else if (f == -1) {
@@ -1188,7 +1380,12 @@ function docompress_file(filename, uncomp) {
             void cptr.sprintf(cptr.decay(numbuf), __s_lparen_pct_d_rparen, (cptr.ldI32(__error())));
             details = cptr.decay(numbuf);
         }
-        raw_printf(__s_wait_when_scompressing_s_failed_s, uncomp ? __s_un : __s_empty, filename, details);
+        raw_printf(
+            __s_wait_when_scompressing_s_failed_s,
+            uncomp ? __s_un : __s_empty,
+            filename,
+            details
+        );
     }
     void signal(2, done1);
     if (wizard())
@@ -1263,7 +1460,12 @@ cptr.stPtro(sf2msg, 128 + $sfstatus_to_msg_msg, __s_windows_x64_savefile_on_unix
 cptr.stI32o(sf2msg, 144, NHM.SF_DM_MISMATCH);
 cptr.stPtro(sf2msg, 144 + $sfstatus_to_msg_msg, __s_generic_savefile_mismatch);
 
-/** C ref: files.c:2015 — @param {CInt} sfstatus @param {CPtr<char>} savefilenm @returns {CPtr<NHFILE>} */
+/**
+ * C ref: files.c:2015
+ * @param {CInt} sfstatus
+ * @param {CPtr<char>} savefilenm
+ * @returns {CPtr<NHFILE>}
+ */
 function problematic_savefile(sfstatus, savefilenm) {
     let i;
     let nhfp = null;
@@ -1285,7 +1487,12 @@ function problematic_savefile(sfstatus, savefilenm) {
         default:
         for (i = 0; i < 10; ++i) {
             if (cptr.ldI32o(sf2msg, i, $sizeof_sfstatus_to_msg) == sfstatus) {
-                raw_printf(__s_s_is_s_s, savefilenm, (sfstatus == NHM.SF_OUTDATED) ? __s_an : __s_a, cptr.ldPtro2(sf2msg, i, $sizeof_sfstatus_to_msg, $sfstatus_to_msg_msg));
+                raw_printf(
+                    __s_s_is_s_s,
+                    savefilenm,
+                    (sfstatus == NHM.SF_OUTDATED) ? __s_an : __s_a,
+                    cptr.ldPtro2(sf2msg, i, $sizeof_sfstatus_to_msg, $sfstatus_to_msg_msg)
+                );
                 break;
             }
         }
@@ -1309,7 +1516,13 @@ let converted_filename = null;
 /*
  * Returns non-zero if unconvert was successful
  */
-/** C ref: files.c:2062 — @param {CPtr<char>} filename @param {CInt} sfstatus @param {CInt} unconvert @returns {CInt} */
+/**
+ * C ref: files.c:2062
+ * @param {CPtr<char>} filename
+ * @param {CInt} sfstatus
+ * @param {CInt} unconvert
+ * @returns {CInt}
+ */
 function doconvert_file(filename, sfstatus, unconvert) {
     (void (filename));
     (void (sfstatus));
@@ -1355,7 +1568,9 @@ function make_converted_name(filename) {
         if (dir) {
             finaldirchar = c_eos(dir);
             finaldirchar = cptr.add(finaldirchar, -1);
-            if (!(cptr.ld1s(finaldirchar) == 47 || cptr.ld1s(finaldirchar) == 92 || cptr.ld1s(finaldirchar) == 58)) {
+            if (!(cptr.ld1s(finaldirchar) == 47 ||
+                    cptr.ld1s(finaldirchar) == 92 ||
+                    cptr.ld1s(finaldirchar) == 58)) {
                 needsep = 1;
                 ln = (ln + 1) | 0;
             }
@@ -1363,7 +1578,16 @@ function make_converted_name(filename) {
         }
     }
     unconverted_filename = alloc((ln + 1) >>> 0);
-    nh_snprintf(__s_make_converted_name, 2146, unconverted_filename, BigInt(((ln + 1) >>> 0) >>> 0), __s_s_s_s, dir ? dir : __s_empty, (dir && needsep) ? __s_slash : __s_empty, filename);
+    nh_snprintf(
+        __s_make_converted_name,
+        2146,
+        unconverted_filename,
+        BigInt(((ln + 1) >>> 0) >>> 0),
+        __s_s_s_s,
+        dir ? dir : __s_empty,
+        (dir && needsep) ? __s_slash : __s_empty,
+        filename
+    );
     xtra = __s_exportascii;
     ln = (ln + Number(BigInt.asUintN(32, cptr.strlen(xtra)))) | 0;
     converted_filename = alloc((ln + 1) >>> 0);
@@ -1414,10 +1638,21 @@ let lockfd = -1;
 let sflock = cptr.alloc($sizeof_flock);
 
 /* lock a file */
-/** C ref: files.c:2255 — @param {CPtr<char>} filename @param {CInt} whichprefix @param {CInt} retryct @returns {CInt} */
+/**
+ * C ref: files.c:2255
+ * @param {CPtr<char>} filename
+ * @param {CInt} whichprefix
+ * @param {CInt} retryct
+ * @returns {CInt}
+ */
 export function lock_file(filename, whichprefix, retryct) {
 
-    (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + 1)) - (1);
+    (cptr.stI32o(
+        gn,
+        $instance_globals_n_nesting,
+        cptr.ldI32o(gn, $instance_globals_n_nesting) + 1
+    )) -
+            (1);
     if (cptr.ldI32o(gn, $instance_globals_n_nesting) > 1) {
         impossible(__s_tried_to_nest_locks);
         return 1;
@@ -1427,7 +1662,12 @@ export function lock_file(filename, whichprefix, retryct) {
     if (lockfd == -1) {
         if (!cptr.ldI32o(program_state, $sinfo_done_hup))
             raw_printf(__s_cannot_open_file_s_is_nethack_installed, filename);
-        (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
+        (cptr.stI32o(
+            gn,
+            $instance_globals_n_nesting,
+            cptr.ldI32o(gn, $instance_globals_n_nesting) + -1
+        )) -
+                (-1);
         return 0;
     }
     cptr.stI16o(sflock, $flock_l_type, 3);
@@ -1444,7 +1684,12 @@ export function lock_file(filename, whichprefix, retryct) {
                 raw_print()(__s_i_give_up_sorry);
             if (!cptr.ldI32o(program_state, $sinfo_done_hup))
                 raw_printf(__s_some_other_process_has_an_unnatural, filename);
-            (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
+            (cptr.stI32o(
+                gn,
+                $instance_globals_n_nesting,
+                cptr.ldI32o(gn, $instance_globals_n_nesting) + -1
+            )) -
+                    (-1);
             return 0;
         }
     }
@@ -1465,7 +1710,12 @@ export function unlock_file(filename) {
         }
     }
 
-    (cptr.stI32o(gn, $instance_globals_n_nesting, cptr.ldI32o(gn, $instance_globals_n_nesting) + -1)) - (-1);
+    (cptr.stI32o(
+        gn,
+        $instance_globals_n_nesting,
+        cptr.ldI32o(gn, $instance_globals_n_nesting) + -1
+    )) -
+            (-1);
 }
 
 /* ----------  END FILE LOCKING HANDLING ----------- */
@@ -1480,7 +1730,12 @@ function fopen_wizkit_file() {
 
     envp = nh_getenv(__s_wizkit);
     if (envp && cptr.ld1s(envp))
-        void __builtin___strncpy_chk(cptr.add(gw, $instance_globals_w_wizkit), envp, 127n, __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1));
+        void __builtin___strncpy_chk(
+            cptr.add(gw, $instance_globals_w_wizkit),
+            envp,
+            127n,
+            __builtin_object_size(cptr.add(gw, $instance_globals_w_wizkit), 1)
+        );
     if (!cptr.ld1so2(gw, 0, 1, $instance_globals_w_wizkit))
         return null;
     if (access(cptr.add(gw, $instance_globals_w_wizkit), 4) == -1) {
@@ -1490,19 +1745,32 @@ function fopen_wizkit_file() {
          * place a file name may be wholly under the player's
          * control
          */
-        raw_printf(__s_access_to_s_denied_d, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error())));
+        raw_printf(
+            __s_access_to_s_denied_d,
+            cptr.add(gw, $instance_globals_w_wizkit),
+            (cptr.ldI32(__error()))
+        );
         wait_synch()();
         /* fall through to standard names */
     } else if ((fp = fopen(cptr.add(gw, $instance_globals_w_wizkit), __s_r)) !== null) {
         return fp;
     } else {
         /* access() above probably caught most problems for UNIX */
-        raw_printf(__s_couldn_t_open_requested_wizkit_file_s_d, cptr.add(gw, $instance_globals_w_wizkit), (cptr.ldI32(__error())));
+        raw_printf(
+            __s_couldn_t_open_requested_wizkit_file_s_d,
+            cptr.add(gw, $instance_globals_w_wizkit),
+            (cptr.ldI32(__error()))
+        );
         wait_synch()();
     }
     envp = nh_getenv(__s_home);
     if (envp)
-        void cptr.sprintf(cptr.decay(tmp_wizkit), __s_s_s, envp, cptr.add(gw, $instance_globals_w_wizkit));
+        void cptr.sprintf(
+            cptr.decay(tmp_wizkit),
+            __s_s_s,
+            envp,
+            cptr.add(gw, $instance_globals_w_wizkit)
+        );
     else
         void cptr.strcpy(cptr.decay(tmp_wizkit), cptr.add(gw, $instance_globals_w_wizkit));
     if ((fp = fopen(cptr.decay(tmp_wizkit), __s_r)) !== null)
@@ -1510,7 +1778,11 @@ function fopen_wizkit_file() {
     else if ((cptr.ldI32(__error())) != 2) {
         /* e.g., problems when setuid NetHack can't search home
          * directory restricted to user */
-        raw_printf(__s_couldn_t_open_default_gw_wizkit_file_s_d, cptr.decay(tmp_wizkit), (cptr.ldI32(__error())));
+        raw_printf(
+            __s_couldn_t_open_default_gw_wizkit_file_s_d,
+            cptr.decay(tmp_wizkit),
+            (cptr.ldI32(__error()))
+        );
         wait_synch()();
     }
     return null;
@@ -1527,7 +1799,9 @@ function wizkit_addinv(obj) {
     if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_CLERIC))
         cptr.stI32o(obj, $obj_bknown, 1);  /* ok to bypass set_bknown() */
     /* same criteria as lift_object()'s check for available inventory slot */
-    if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS && inv_cnt(0) >= NHC.invlet_basic && !merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj)) {
+    if (cptr.ld1so(obj, $obj_oclass) != NHC.COIN_CLASS &&
+            inv_cnt(0) >= NHC.invlet_basic &&
+            !merge_choice(cptr.ldPtro(gi, $instance_globals_i_invent), obj)) {
         /* inventory overflow; can't just place & stack object since
            hero isn't in position yet, so schedule for arrival later */
         add_to_migration(obj);
@@ -1596,12 +1870,28 @@ function fopen_sym_file() {
 export function read_sym_file(which_set) {
     let fp;
 
-    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 0);
+    cptr.stI32o2(
+        gs,
+        which_set,
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_explicitly,
+        0
+    );
     if (!(fp = fopen_sym_file()))
         return 0;
 
-    cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 1);
-    cptr.st1o(gc, $instance_globals_c_chosen_symset_start, cptr.st1o(gc, $instance_globals_c_chosen_symset_end, 0));
+    cptr.stI32o2(
+        gs,
+        which_set,
+        $sizeof_symsetentry,
+        $instance_globals_s_symset + $symsetentry_explicitly,
+        1
+    );
+    cptr.st1o(
+        gc,
+        $instance_globals_c_chosen_symset_start,
+        cptr.st1o(gc, $instance_globals_c_chosen_symset_end, 0)
+    );
     cptr.stI32o(gs, $instance_globals_s_symset_which_set, which_set);
     cptr.stI32o(gs, $instance_globals_s_symset_count, 0);
 
@@ -1610,24 +1900,77 @@ export function read_sym_file(which_set) {
     parse_conf_file(fp, proc_symset_line);
     void fclose(fp);
 
-    if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_start) && !cptr.ld1so(gc, $instance_globals_c_chosen_symset_end)) {
+    if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_start) &&
+            !cptr.ld1so(gc, $instance_globals_c_chosen_symset_end)) {
         /* name caller put in symset[which_set].name was not found;
            if it looks like "Default symbols", null it out and return
            success to use the default; otherwise, return failure */
-        if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) && (fuzzymatch(cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name), __s_default_symbols, __s_sp_dash_us, 1) || !strncmpi((cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)), (__s_default), -1)))
+        if (cptr.ldPtro2(
+            gs,
+            which_set,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_name
+        ) &&
+                (fuzzymatch(
+                    cptr.ldPtro2(
+                        gs,
+                        which_set,
+                        $sizeof_symsetentry,
+                        $instance_globals_s_symset + $symsetentry_name
+                    ),
+                    __s_default_symbols,
+                    __s_sp_dash_us,
+                    1
+                ) ||
+                    !strncmpi(
+                        (cptr.ldPtro2(
+                            gs,
+                            which_set,
+                            $sizeof_symsetentry,
+                            $instance_globals_s_symset + $symsetentry_name
+                        )),
+                        (__s_default),
+                        -1
+                    )))
             clear_symsetentry(which_set, 1);
         config_error_done();
 
         /* If name was defined, it was invalid. Then we're loading fallback */
-        if (cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name)) {
-            cptr.stI32o2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_explicitly, 0);
+        if (cptr.ldPtro2(
+            gs,
+            which_set,
+            $sizeof_symsetentry,
+            $instance_globals_s_symset + $symsetentry_name
+        )) {
+            cptr.stI32o2(
+                gs,
+                which_set,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_explicitly,
+                0
+            );
             return 0;
         }
 
         return 1;
     }
     if (!cptr.ld1so(gc, $instance_globals_c_chosen_symset_end))
-        config_error_add(__s_missing_finish_for_symset_s, cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) ? cptr.ldPtro2(gs, which_set, $sizeof_symsetentry, $instance_globals_s_symset + $symsetentry_name) : __s_unknown);
+        config_error_add(
+            __s_missing_finish_for_symset_s,
+            cptr.ldPtro2(
+                gs,
+                which_set,
+                $sizeof_symsetentry,
+                $instance_globals_s_symset + $symsetentry_name
+            )
+                ? cptr.ldPtro2(
+                    gs,
+                    which_set,
+                    $sizeof_symsetentry,
+                    $instance_globals_s_symset + $symsetentry_name
+                )
+                : __s_unknown
+        );
     config_error_done();
     return 1;
 }
@@ -1668,7 +2011,17 @@ export function paniclog(type, reason) {
             let uid = getuid() | 0;
             let playmode = schar((wizard() ? 68 : (discover() ? 88 : 45)));
 
-            void fprintf(lfile, __s_s_08ld_06ld_d_c_s_s, version_string(cptr.decay(buf), 256n), yyyymmdd(now), hhmmss(now), uid, playmode, type, reason);
+            void fprintf(
+                lfile,
+                __s_s_08ld_06ld_d_c_s_s,
+                version_string(cptr.decay(buf), 256n),
+                yyyymmdd(now),
+                hhmmss(now),
+                uid,
+                playmode,
+                type,
+                reason
+            );
             void fclose(lfile);
         }
         cptr.stI32o(program_state, $sinfo_in_paniclog, 0);
@@ -1676,7 +2029,12 @@ export function paniclog(type, reason) {
     return;
 }
 
-/** C ref: files.c:2836 — @param {CPtr<char>} filenm @param {CPtr<char>} type @param {CPtr<char>} reason */
+/**
+ * C ref: files.c:2836
+ * @param {CPtr<char>} filenm
+ * @param {CPtr<char>} type
+ * @param {CPtr<char>} reason
+ */
 export function testinglog(filenm, type, reason) {
     let lfile;
     let fnbuf = new Uint8Array(256);
@@ -1751,7 +2109,8 @@ export function debugcore(filename, wildcards) {
     if ((p = cptr.strstr(debugfiles, filename)) !== null) {
         let l = Number(BigInt.asIntN(32, cptr.strlen(filename)));
 
-        if ((cptr.eq(p, debugfiles) || cptr.ld1so(p, -1) == 32 || cptr.ld1so(p, -1) == 47) && (cptr.ld1so(p, l) == 32 || cptr.ld1so(p, l) == 0))
+        if ((cptr.eq(p, debugfiles) || cptr.ld1so(p, -1) == 32 || cptr.ld1so(p, -1) == 47) &&
+                (cptr.ld1so(p, l) == 32 || cptr.ld1so(p, l) == 0))
             return 1;
     }
     return 0;
@@ -1812,21 +2171,43 @@ export function reveal_paths(code) {
         void cptr.strcat(cptr.decay(buf), __s_slash);
     }
     endp = eos(cptr.decay(buf));
-    copynchars(endp, get_default_configfile(), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))))));
+    copynchars(
+        endp,
+        get_default_configfile(),
+        Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))
+    );
     if (envp) {
         if (access(cptr.decay(buf), 4) == -1) {
             /* read access to default failed; might be protected excessively
                but more likely it doesn't exist; try first alternate:
                "$HOME/Library/Pref..."; 'endp' points past '/' */
-            copynchars(endp, __s_library_preferences_nethack_defaults, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))))));
+            copynchars(
+                endp,
+                __s_library_preferences_nethack_defaults,
+                Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))))
+            );
             if (access(cptr.decay(buf), 4) == -1) {
                 /* first alternate failed, try second:
                    ".../NetHack Defaults.txt"; no 'endp', just append */
-                copynchars(eos(cptr.decay(buf)), __s_txt, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))))));
+                copynchars(
+                    eos(cptr.decay(buf)),
+                    __s_txt,
+                    Number(BigInt.asIntN(
+                        32,
+                        (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))
+                    ))
+                );
                 if (access(cptr.decay(buf), 4) == -1) {
                     /* second alternate failed too, so revert to the
                        original default ("$HOME/.nethackrc") for message */
-                    copynchars(endp, get_default_configfile(), Number(BigInt.asIntN(32, (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf)))))));
+                    copynchars(
+                        endp,
+                        get_default_configfile(),
+                        Number(BigInt.asIntN(
+                            32,
+                            (BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(buf))))
+                        ))
+                    );
                 }
             }
         }
@@ -1850,7 +2231,8 @@ function choose_passage(passagecnt, oid) {
 
     /* if a different book or we've used up all the passages already,
        reset in order to have all 'passagecnt' passages available */
-    if (oid != cptr.ldI32o(svc, $context_info_novel) || cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) == 0) {
+    if (oid != cptr.ldI32o(svc, $context_info_novel) ||
+            cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) == 0) {
         let i;
         let range = passagecnt;
         let limit = Number(BigInt.asIntN(32, (30n / 1n)));
@@ -1860,13 +2242,29 @@ function choose_passage(passagecnt, oid) {
             /* collect all of the N indices */
             cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, passagecnt);
             for (idx = 0; idx < Number(BigInt.asIntN(32, (30n / 1n))); idx++)
-                cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, schar(i16(((idx < passagecnt) ? (idx + 1) | 0 : 0))));
+                cptr.st1o2(
+                    svc,
+                    idx,
+                    1,
+                    $context_info_novel + $novel_tracking_pasg,
+                    schar(i16(((idx < passagecnt) ? (idx + 1) | 0 : 0)))
+                );
         } else {
             /* collect MAXPASSAGES of the N indices */
-            cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, Number(BigInt.asIntN(32, (30n / 1n))));
+            cptr.stI32o(
+                svc,
+                $context_info_novel + $novel_tracking_count,
+                Number(BigInt.asIntN(32, (30n / 1n)))
+            );
             for (idx = (i = 0); i < passagecnt; ++i, --range)
                 if (range > 0 && rn2(range) < limit) {
-                    cptr.st1o2(svc, idx++, 1, $context_info_novel + $novel_tracking_pasg, schar(i16(((i + 1) | 0))));
+                    cptr.st1o2(
+                        svc,
+                        idx++,
+                        1,
+                        $context_info_novel + $novel_tracking_pasg,
+                        schar(i16(((i + 1) | 0)))
+                    );
                     --limit;
                 }
         }
@@ -1876,12 +2274,36 @@ function choose_passage(passagecnt, oid) {
     res = cptr.ld1so2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg);
     /* move the last slot's passage index into the slot just used
        and reduce the number of passages available */
-    cptr.st1o2(svc, idx, 1, $context_info_novel + $novel_tracking_pasg, cptr.ld1so2(svc, cptr.stI32o(svc, $context_info_novel + $novel_tracking_count, cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) + -1), 1, $context_info_novel + $novel_tracking_pasg));
+    cptr.st1o2(
+        svc,
+        idx,
+        1,
+        $context_info_novel + $novel_tracking_pasg,
+        cptr.ld1so2(
+            svc,
+            cptr.stI32o(
+                svc,
+                $context_info_novel + $novel_tracking_count,
+                cptr.ldI32o(svc, $context_info_novel + $novel_tracking_count) + -1
+            ),
+            1,
+            $context_info_novel + $novel_tracking_pasg
+        )
+    );
     return res;
 }
 
 /* Returns True if you were able to read something. */
-/** C ref: files.c:3474 — @param {CPtr<char>} tribsection @param {CPtr<char>} tribtitle @param {CInt} tribpassage @param {CPtr<char>} nowin_buf @param {CInt} bufsz @param {CUInt} oid @returns {CInt} */
+/**
+ * C ref: files.c:3474
+ * @param {CPtr<char>} tribsection
+ * @param {CPtr<char>} tribtitle
+ * @param {CInt} tribpassage
+ * @param {CPtr<char>} nowin_buf
+ * @param {CInt} bufsz
+ * @param {CUInt} oid
+ * @returns {CInt}
+ */
 export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, bufsz, oid) {
     let fp;
     let line = new Uint8Array(256);
@@ -1969,7 +2391,9 @@ export function read_tribute(tribsection, tribtitle, tribpassage, nowin_buf, buf
                             scope = 2;
                             if (matchedsection && !strncmpi((st), (tribtitle), -1)) {
                                 matchedtitle = 1;
-                                targetpassage = !tribpassage ? choose_passage(passagecnt, oid) : ((tribpassage <= passagecnt) ? tribpassage : 0);
+                                targetpassage = !tribpassage
+                                        ? choose_passage(passagecnt, oid)
+                                        : ((tribpassage <= passagecnt) ? tribpassage : 0);
                             } else {
                                 matchedtitle = 0;
                             }
@@ -2100,7 +2524,20 @@ export function livelog_add(ll_type, str) {
         aindx = (1 - cptr.ld1so(u, $you_ualign)) | 0;
         /* format relies on STD C's implicit concatenation of
            adjacent string literals */
-        void fprintf(livelogfile, __s_lltype_ld_name_s_role_s_race_s_gender_s, (ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)), svp, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode), cptr.ldPtro2(genders, gindx, $sizeof_Gender, $Gender_filecode), cptr.ldPtro2(aligns, aindx, $sizeof_Align, $Align_filecode), cptr.ldI64o(svm, $instance_globals_saved_m_moves), timet_to_seconds(ubirthday.v), timet_to_seconds(now), str);
+        void fprintf(
+            livelogfile,
+            __s_lltype_ld_name_s_role_s_race_s_gender_s,
+            (ll_type & cptr.ldI64o(sysopt, $sysopt_s_livelog)),
+            svp,
+            cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode),
+            cptr.ldPtro(gu, $instance_globals_u_urace + $Race_filecode),
+            cptr.ldPtro2(genders, gindx, $sizeof_Gender, $Gender_filecode),
+            cptr.ldPtro2(aligns, aindx, $sizeof_Align, $Align_filecode),
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves),
+            timet_to_seconds(ubirthday.v),
+            timet_to_seconds(now),
+            str
+        );
         void fclose(livelogfile);
         unlock_file(__s_livelog);
     }
@@ -2110,7 +2547,13 @@ export function livelog_add(ll_type, str) {
 // 10 bindings: 2 rebound+refilled, 4 rebound, 4 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__static_nh_basename_basebuf), S(__static_fname_encode_hexdigits), S(__static_fname_decode_hexdigits), S(bei), S(sf2msg), S(cvtinit), S(unconverted_filename), S(converted_filename), S(lockfd), S(sflock)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__static_nh_basename_basebuf), S(__static_fname_encode_hexdigits),
+        S(__static_fname_decode_hexdigits), S(bei), S(sf2msg), S(cvtinit), S(unconverted_filename),
+        S(converted_filename), S(lockfd), S(sflock)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("files.js: __resetState before __captureState");

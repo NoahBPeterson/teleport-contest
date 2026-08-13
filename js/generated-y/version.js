@@ -13,10 +13,17 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, raw_print, wait_synch } from './nhprop.js';
-import { datamodel, eos, nh_snprintf, strip_newline, strncmpi, strstri, strsubst, tabexpand, what_datamodel_is_this } from './hacklib.js';
+import {
+    create_nhwindow, destroy_nhwindow, display_nhwindow, putstr, raw_print, wait_synch
+} from './nhprop.js';
+import {
+    datamodel, eos, nh_snprintf, strip_newline, strncmpi, strstri, strsubst, tabexpand,
+    what_datamodel_is_this
+} from './hacklib.js';
 import { nomakedefs } from './date.js';
-import { do_runtime_info, mdlib_version_string, release_runtime_info, runtime_info_init } from './mdlib.js';
+import {
+    do_runtime_info, mdlib_version_string, release_runtime_info, runtime_info_init
+} from './mdlib.js';
 import { WIN_MESSAGE, flags, gc, gh, gl, iflags } from './decl.js';
 import { nh_basename } from './files.js';
 import { pline, raw_printf } from './pline.js';
@@ -25,35 +32,41 @@ import { port_insert_pastebuf } from './unixmain.js';
 import { regex_id } from './posixregex.js';
 import { get_lua_version } from './nhlua.js';
 import { bufoff, bufon } from './sfstruct.js';
-import { sfi_char, sfi_uchar, sfi_version_info, sfo_char, sfo_uchar, sfo_version_info } from './sfbase.js';
+import {
+    sfi_char, sfi_uchar, sfi_version_info, sfo_char, sfo_uchar, sfo_version_info
+} from './sfbase.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NHFILE_fieldlevel = FLD.NHFILE_fieldlevel, $NHFILE_fnidx = FLD.NHFILE_fnidx,
-    $NHFILE_mode = FLD.NHFILE_mode, $NHFILE_structlevel = FLD.NHFILE_structlevel,
-    $critical_sizes_with_names_nm = FLD.critical_sizes_with_names_nm, $flag_versinfo = FLD.flag_versinfo,
-    $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
-    $instance_globals_c_converted_savefile_loaded = FLD.instance_globals_c_converted_savefile_loaded,
-    $instance_globals_l_lua_copyright = FLD.instance_globals_l_lua_copyright,
-    $instance_globals_l_lua_ver = FLD.instance_globals_l_lua_ver,
-    $nomakedefs_s_copyright_banner_c = FLD.nomakedefs_s_copyright_banner_c,
-    $nomakedefs_s_git_branch = FLD.nomakedefs_s_git_branch,
-    $nomakedefs_s_git_prefix = FLD.nomakedefs_s_git_prefix, $nomakedefs_s_git_sha = FLD.nomakedefs_s_git_sha,
-    $nomakedefs_s_ignored_features = FLD.nomakedefs_s_ignored_features,
-    $nomakedefs_s_version_features = FLD.nomakedefs_s_version_features,
-    $nomakedefs_s_version_id = FLD.nomakedefs_s_version_id,
-    $nomakedefs_s_version_number = FLD.nomakedefs_s_version_number,
-    $nomakedefs_s_version_sanity1 = FLD.nomakedefs_s_version_sanity1,
-    $nomakedefs_s_version_string = FLD.nomakedefs_s_version_string, $rt_opt_value = FLD.rt_opt_value,
-    $sizeof_critical_sizes_with_names = FLD.sizeof_critical_sizes_with_names,
-    $sizeof_rt_opt = FLD.sizeof_rt_opt, $version_info_entity_count = FLD.version_info_entity_count,
-    $version_info_feature_set = FLD.version_info_feature_set,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
-    $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
+      $NHFILE_mode = FLD.NHFILE_mode, $NHFILE_structlevel = FLD.NHFILE_structlevel,
+      $critical_sizes_with_names_nm = FLD.critical_sizes_with_names_nm,
+      $flag_versinfo = FLD.flag_versinfo,
+      $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
+      $instance_globals_c_converted_savefile_loaded = FLD.instance_globals_c_converted_savefile_loaded,
+      $instance_globals_l_lua_copyright = FLD.instance_globals_l_lua_copyright,
+      $instance_globals_l_lua_ver = FLD.instance_globals_l_lua_ver,
+      $nomakedefs_s_copyright_banner_c = FLD.nomakedefs_s_copyright_banner_c,
+      $nomakedefs_s_git_branch = FLD.nomakedefs_s_git_branch,
+      $nomakedefs_s_git_prefix = FLD.nomakedefs_s_git_prefix,
+      $nomakedefs_s_git_sha = FLD.nomakedefs_s_git_sha,
+      $nomakedefs_s_ignored_features = FLD.nomakedefs_s_ignored_features,
+      $nomakedefs_s_version_features = FLD.nomakedefs_s_version_features,
+      $nomakedefs_s_version_id = FLD.nomakedefs_s_version_id,
+      $nomakedefs_s_version_number = FLD.nomakedefs_s_version_number,
+      $nomakedefs_s_version_sanity1 = FLD.nomakedefs_s_version_sanity1,
+      $nomakedefs_s_version_string = FLD.nomakedefs_s_version_string,
+      $rt_opt_value = FLD.rt_opt_value,
+      $sizeof_critical_sizes_with_names = FLD.sizeof_critical_sizes_with_names,
+      $sizeof_rt_opt = FLD.sizeof_rt_opt,
+      $version_info_entity_count = FLD.version_info_entity_count,
+      $version_info_feature_set = FLD.version_info_feature_set,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_raw_print = FLD.window_procs_win_raw_print,
+      $window_procs_win_wait_synch = FLD.window_procs_win_wait_synch;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_version_string = cptr.lit("version_string");
@@ -170,7 +183,17 @@ const __s_i32lp64 = cptr.lit("I32LP64");
  * buf cannot be NULL */
 /** C ref: version.c:22 — @param {CPtr<char>} buf @param {CLongLong} bufsz @returns {CPtr<char>} */
 export function version_string(buf, bufsz) {
-    nh_snprintf(__s_version_string, 29, buf, bufsz, __s_pct_s, ((cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) : mdlib_version_string(buf, __s_dot)));
+    nh_snprintf(
+        __s_version_string,
+        29,
+        buf,
+        bufsz,
+        __s_pct_s,
+        ((cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) &&
+            cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0))
+            ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string)
+            : mdlib_version_string(buf, __s_dot))
+    );
     return buf;
 }
 
@@ -188,15 +211,45 @@ export function getversionstring(buf, bufsz) {
             p = cptr.add(p, -1);
         void cptr.strcpy(p, __s_sp_lparen);
         if (cptr.ldPtro(nomakedefs, $nomakedefs_s_git_sha))
-            nh_snprintf(__s_getversionstring, 58, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __s_s_s, c++ ? __s_comma : __s_empty, cptr.ldPtro(nomakedefs, $nomakedefs_s_git_sha));
+            nh_snprintf(
+                __s_getversionstring,
+                58,
+                eos(buf),
+                BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n),
+                __s_s_s,
+                c++ ? __s_comma : __s_empty,
+                cptr.ldPtro(nomakedefs, $nomakedefs_s_git_sha)
+            );
         if (cptr.ldPtro(nomakedefs, $nomakedefs_s_git_prefix))
-            nh_snprintf(__s_getversionstring, 68, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __s_sprefix_s, c++ ? __s_comma : __s_empty, cptr.ldPtro(nomakedefs, $nomakedefs_s_git_prefix));
+            nh_snprintf(
+                __s_getversionstring,
+                68,
+                eos(buf),
+                BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n),
+                __s_sprefix_s,
+                c++ ? __s_comma : __s_empty,
+                cptr.ldPtro(nomakedefs, $nomakedefs_s_git_prefix)
+            );
         if (c)
-            nh_snprintf(__s_getversionstring, 71, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __s_pct_s, __s_rparen);
+            nh_snprintf(
+                __s_getversionstring,
+                71,
+                eos(buf),
+                BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n),
+                __s_pct_s,
+                __s_rparen
+            );
         else
             cptr.st1(p, 0);
         if (dotoff)
-            nh_snprintf(__s_getversionstring, 76, eos(buf), BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n), __s_pct_s, __s_dot);
+            nh_snprintf(
+                __s_getversionstring,
+                76,
+                eos(buf),
+                BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n),
+                __s_pct_s,
+                __s_dot
+            );
     }
     return buf;
 }
@@ -208,7 +261,13 @@ export function getversionstring(buf, bufsz) {
    after release--or if branch info is unavailable--it will be
      "<game name> <x.y.z version number>";
    game name or branch name or both can be requested via flags */
-/** C ref: version.c:89 — @param {CPtr<char>} buf @param {CLongLong} bufsz @param {CInt} indent @returns {CPtr<char>} */
+/**
+ * C ref: version.c:89
+ * @param {CPtr<char>} buf
+ * @param {CLongLong} bufsz
+ * @param {CInt} indent
+ * @returns {CPtr<char>}
+ */
 export function* status_version(buf, bufsz, indent) {
     let name = null;
     let altname = null;
@@ -242,16 +301,43 @@ export function* status_version(buf, bufsz, indent) {
     cptr.st1(buf, 0);
     indentation = indent ? __s_sp : __s_empty;
     if (showname) {
-        nh_snprintf(__s_status_version, 137, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __s_s_s, indentation, name);
+        nh_snprintf(
+            __s_status_version,
+            137,
+            eos(buf),
+            BigInt.asUintN(64, bufsz - cptr.strlen(buf)),
+            __s_s_s,
+            indentation,
+            name
+        );
         indentation = __s_sp;  /* forced separator rather than optional indent */
     }
     if (showbranch) {
-        nh_snprintf(__s_status_version, 141, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __s_s_s, indentation, altname);
+        nh_snprintf(
+            __s_status_version,
+            141,
+            eos(buf),
+            BigInt.asUintN(64, bufsz - cptr.strlen(buf)),
+            __s_s_s,
+            indentation,
+            altname
+        );
         indentation = __s_sp;
     }
     if (shownum) {
         /* x.y.z version number */
-        nh_snprintf(__s_status_version, 149, eos(buf), BigInt.asUintN(64, bufsz - cptr.strlen(buf)), __s_s_s, indentation, (cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) && cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0)) ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) : mdlib_version_string(buf, __s_dot));
+        nh_snprintf(
+            __s_status_version,
+            149,
+            eos(buf),
+            BigInt.asUintN(64, bufsz - cptr.strlen(buf)),
+            __s_s_s,
+            indentation,
+            (cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string) &&
+                cptr.ld1so(cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string), 0))
+                ? cptr.ldPtro(nomakedefs, $nomakedefs_s_version_string)
+                : mdlib_version_string(buf, __s_dot)
+        );
     }
     return buf;
 }
@@ -342,7 +428,12 @@ export function* doextversion() {
                 done_rt = 1;
                 continue;
             }
-            void __builtin___strncpy_chk(cptr.decay(buf), rtbuf, 255n, __builtin_object_size(cptr.decay(buf), 1));
+            void __builtin___strncpy_chk(
+                cptr.decay(buf),
+                rtbuf,
+                255n,
+                __builtin_object_size(cptr.decay(buf), 1)
+            );
             cptr.st1o(cptr.decay(buf), 255, 0, 1);
         } else {
             break;
@@ -388,7 +479,15 @@ export function* early_version_info(pastebuf) {
     if (tmp) {
         /* retain one buffer so that it all goes into the paste buffer */
         cptr.st1(cptr.postinc(() => tmp, (v) => { tmp = v; }), 0);
-        nh_snprintf(__s_early_version_info, 292, cptr.decay(buf2), 256n, __s_s_s__2, cptr.decay(buf1), tmp);
+        nh_snprintf(
+            __s_early_version_info,
+            292,
+            cptr.decay(buf2),
+            256n,
+            __s_s_s__2,
+            cptr.decay(buf1),
+            tmp
+        );
         buf = cptr.decay(buf2);
     } else {
         buf = cptr.decay(buf1);
@@ -439,22 +538,38 @@ function* insert_rtoption(buf) {
         (yield* get_lua_version());
 
     for (i = 0; i < 3; ++i) {
-        if ((yield* strstri(buf, cptr.ldPtro(rt_opts, i, $sizeof_rt_opt))) && cptr.ld1s(cptr.ldPtro2(rt_opts, i, $sizeof_rt_opt, $rt_opt_value))) {
-            void strsubst(buf, cptr.ldPtro(rt_opts, i, $sizeof_rt_opt), cptr.ldPtro2(rt_opts, i, $sizeof_rt_opt, $rt_opt_value));
+        if ((yield* strstri(buf, cptr.ldPtro(rt_opts, i, $sizeof_rt_opt))) &&
+                cptr.ld1s(cptr.ldPtro2(rt_opts, i, $sizeof_rt_opt, $rt_opt_value))) {
+            void strsubst(
+                buf,
+                cptr.ldPtro(rt_opts, i, $sizeof_rt_opt),
+                cptr.ldPtro2(rt_opts, i, $sizeof_rt_opt, $rt_opt_value)
+            );
         }
         /* we don't break out of the loop after a match; there might be
            other matches on the same line */
     }
 }
 
-/** C ref: version.c:374 — @param {CPtr<struct version_info>} version_data @param {CPtr<char>} filename @param {CInt} complain @param {CLongLong} utdflags @returns {CInt} */
+/**
+ * C ref: version.c:374
+ * @param {CPtr<struct version_info>} version_data
+ * @param {CPtr<char>} filename
+ * @param {CInt} complain
+ * @param {CLongLong} utdflags
+ * @returns {CInt}
+ */
 export function* check_version(version_data, filename, complain, utdflags) {
     if (!filename) {
         complain = 0;  /* 'complain' requires 'filename' for pline("%s") */
     }
     if ((cptr.ldU64o(version_data, $version_info_feature_set) & 1073741824n) != 0n) {
         cptr.st1o(gc, $instance_globals_c_converted_savefile_loaded, 1);
-        cptr.stU64o(version_data, $version_info_feature_set, cptr.ldU64o(version_data, $version_info_feature_set) & 18446744072635809791n);
+        cptr.stU64o(
+            version_data,
+            $version_info_feature_set,
+            cptr.ldU64o(version_data, $version_info_feature_set) & 18446744072635809791n
+        );
     }
     if (cptr.ldU64(version_data) != cptr.ldU64o(nomakedefs, $nomakedefs_s_version_number)) {
         if (complain) {
@@ -463,7 +578,13 @@ export function* check_version(version_data, filename, complain, utdflags) {
                 (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
         }
         return 0;
-    } else if ((cptr.ldU64o(version_data, $version_info_feature_set) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))) != (cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))) || ((utdflags & 4n) == 0n && cptr.ldU64o(version_data, $version_info_entity_count) != cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1))) {
+    } else if ((cptr.ldU64o(version_data, $version_info_feature_set) &
+        BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))) !=
+        (cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features) &
+            BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))) ||
+            ((utdflags & 4n) == 0n &&
+                cptr.ldU64o(version_data, $version_info_entity_count) !=
+                    cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1))) {
         if (complain) {
             (yield* pline(__s_configuration_incompatibility_for_file_s, filename));
             (yield* Y.icall(display_nhwindow()(WIN_MESSAGE.v, 1)));
@@ -503,7 +624,9 @@ export function* get_feature_notice_ver(str) {
     ver_maj = atoi(cptr.ldPtro(istr, 0, 8));
     ver_min = atoi(cptr.ldPtro(istr, 1, 8));
     patch = atoi(cptr.ldPtro(istr, 2, 8));
-    return ((BigInt.asUintN(64, BigInt(ver_maj)) << 24n) | (BigInt.asUintN(64, BigInt(ver_min)) << 16n) | (BigInt.asUintN(64, BigInt(patch)) << 8n) | 0n);
+    return ((BigInt.asUintN(64, BigInt(ver_maj)) << 24n) |
+            (BigInt.asUintN(64, BigInt(ver_min)) << 16n) |
+            (BigInt.asUintN(64, BigInt(patch)) << 8n) | 0n);
     /* macro from hack.h */
 }
 
@@ -536,7 +659,18 @@ export function* dump_version_info() {
     if (cptr.strlen(hname) > 33n)
         hname = cptr.add(eos((hname)), -(33));  /* discard const for eos() */
     (yield* runtime_info_init());
-    nh_snprintf(__s_dump_version_info, 506, cptr.decay(buf), 256n, __s_12_33s_08lx_08lx_08lx, hname, cptr.ldU64o(nomakedefs, $nomakedefs_s_version_number), (cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features) & BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))), cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1));
+    nh_snprintf(
+        __s_dump_version_info,
+        506,
+        cptr.decay(buf),
+        256n,
+        __s_12_33s_08lx_08lx_08lx,
+        hname,
+        cptr.ldU64o(nomakedefs, $nomakedefs_s_version_number),
+        (cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features) &
+            BigInt.asUintN(64, ~cptr.ldU64o(nomakedefs, $nomakedefs_s_ignored_features))),
+        cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1)
+    );
     (yield* Y.icall(raw_print()(cptr.decay(buf))));
     release_runtime_info();
     return;
@@ -544,13 +678,24 @@ export function* dump_version_info() {
 
 /** C ref: version.c:512 — @param {CPtr<NHFILE>} nhfp */
 export function* store_version(nhfp) {
-    let version_data = cptr.alloc(24); cptr.stU64(version_data, 0n); cptr.stU64o(version_data, $version_info_feature_set, 0n); cptr.stU64o(version_data, $version_info_entity_count, 0n);
+    let version_data = cptr.alloc(24);
+    cptr.stU64(version_data, 0n);
+    cptr.stU64o(version_data, $version_info_feature_set, 0n);
+    cptr.stU64o(version_data, $version_info_entity_count, 0n);
     /* actual version number */
     cptr.stU64(version_data, cptr.ldU64o(nomakedefs, $nomakedefs_s_version_number));
     /* bitmask of config settings */
-    cptr.stU64o(version_data, $version_info_feature_set, cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features));
+    cptr.stU64o(
+        version_data,
+        $version_info_feature_set,
+        cptr.ldU64o(nomakedefs, $nomakedefs_s_version_features)
+    );
     /* # of monsters and objects */
-    cptr.stU64o(version_data, $version_info_entity_count, cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1));
+    cptr.stU64o(
+        version_data,
+        $version_info_entity_count,
+        cptr.ldU64o(nomakedefs, $nomakedefs_s_version_sanity1)
+    );
 
     /* bwrite() before bufon() uses plain write() */
     if (cptr.ld1so(nhfp, $NHFILE_structlevel))
@@ -746,12 +891,18 @@ export function* store_critical_bytes(nhfp) {
     /* int cmc = 0; */
 
     if (cptr.ldI32o(nhfp, $NHFILE_mode) & NHM.WRITING) {
-        indicate.v = schar(((cptr.ld1so(nhfp, $NHFILE_structlevel)) ? 104 : ((cptr.ldI32o(nhfp, $NHFILE_fnidx) == NHC.exportascii) ? 97 : 63)));
+        indicate.v = schar(((cptr.ld1so(nhfp, $NHFILE_structlevel))
+                ? 104
+                : ((cptr.ldI32o(nhfp, $NHFILE_fnidx) == NHC.exportascii) ? 97 : 63)));
         (yield* sfo_char(nhfp, indicate, __s_indicate_format, 1));
         (yield* sfo_char(nhfp, csc_count, __s_count_critical_sizes, 1));
         cnt = csc_count.v;
         for (i = 0; i < cnt; ++i) {
-            (yield* sfo_uchar(nhfp, cptr.add(critical_sizes, i, $sizeof_critical_sizes_with_names), __s_critical_sizes));
+            (yield* sfo_uchar(
+                nhfp,
+                cptr.add(critical_sizes, i, $sizeof_critical_sizes_with_names),
+                __s_critical_sizes
+            ));
         }
     }
 }
@@ -772,7 +923,13 @@ export function* store_critical_bytes(nhfp) {
  *   SF_DM_IL32LLP64_ON_I32LP64      (8) Windows x64 savefile on Unix 64
  *   SF_DM_MISMATCH                  (9) some other mismatch
  */
-/** C ref: version.c:713 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} name @param {CLongLong} utdflags @returns {CInt} */
+/**
+ * C ref: version.c:713
+ * @param {CPtr<NHFILE>} nhfp
+ * @param {CPtr<char>} name
+ * @param {CLongLong} utdflags
+ * @returns {CInt}
+ */
 export function* uptodate(nhfp, name, utdflags) {
     let vers_info = cptr.alloc(24);
     let indicator = cptr.box(0);
@@ -785,7 +942,20 @@ export function* uptodate(nhfp, name, utdflags) {
     if ((sfstatus = (yield* compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags))) != NHM.SF_UPTODATE) {
         if (sfstatus > 0 && idx_1st_mismatch.v) {
             if (!quietly)
-                (yield* raw_printf(__s_comparison_of_critical_bytes_mismatched, cptr.ld1uo(critical_sizes, idx_1st_mismatch.v, $sizeof_critical_sizes_with_names), cptr.ldPtro2(critical_sizes, idx_1st_mismatch.v, $sizeof_critical_sizes_with_names, $critical_sizes_with_names_nm)));
+                (yield* raw_printf(
+                    __s_comparison_of_critical_bytes_mismatched,
+                    cptr.ld1uo(
+                        critical_sizes,
+                        idx_1st_mismatch.v,
+                        $sizeof_critical_sizes_with_names
+                    ),
+                    cptr.ldPtro2(
+                        critical_sizes,
+                        idx_1st_mismatch.v,
+                        $sizeof_critical_sizes_with_names,
+                        $critical_sizes_with_names_nm
+                    )
+                ));
         }
     }
 
@@ -815,7 +985,13 @@ export function* uptodate(nhfp, name, utdflags) {
  *   SF_DM_IL32LLP64_ON_I32LP64      (8) Windows x64 savefile on Unix 64
  *   SF_DM_MISMATCH                  (9) some other mismatch
  */
-/** C ref: version.c:763 — @param {CPtr<NHFILE>} nhfp @param {CPtr<int>} idx_1st_mismatch @param {CLongLong} utdflags @returns {CInt} */
+/**
+ * C ref: version.c:763
+ * @param {CPtr<NHFILE>} nhfp
+ * @param {CPtr<int>} idx_1st_mismatch
+ * @param {CLongLong} utdflags
+ * @returns {CInt}
+ */
 export function* compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
     let active_csc_count = 80;
     let file_csc_count = cptr.box(0);
@@ -834,11 +1010,19 @@ export function* compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
         (yield* sfi_uchar(nhfp, cptr.add(cptr.decay(cscbuf), i, 1), __s_critical_sizes));
     }
     for (i = 1; i < cnt; ++i) {
-        if (cptr.ld1uo(cptr.decay(cscbuf), i, 1) != cptr.ld1uo(critical_sizes, i, $sizeof_critical_sizes_with_names)) {
+        if (cptr.ld1uo(cptr.decay(cscbuf), i, 1) !=
+                cptr.ld1uo(critical_sizes, i, $sizeof_critical_sizes_with_names)) {
             let dm = datamodel(0);
             let dmfile;
 
-            dmfile = what_datamodel_is_this(0, cptr.ld1uo(cptr.decay(cscbuf), 1, 1), cptr.ld1uo(cptr.decay(cscbuf), 2, 1), cptr.ld1uo(cptr.decay(cscbuf), 3, 1), cptr.ld1uo(cptr.decay(cscbuf), 4, 1), cptr.ld1uo(cptr.decay(cscbuf), 5, 1));  /* ptr */
+            dmfile = what_datamodel_is_this(
+                0,
+                cptr.ld1uo(cptr.decay(cscbuf), 1, 1),
+                cptr.ld1uo(cptr.decay(cscbuf), 2, 1),
+                cptr.ld1uo(cptr.decay(cscbuf), 3, 1),
+                cptr.ld1uo(cptr.decay(cscbuf), 4, 1),
+                cptr.ld1uo(cptr.decay(cscbuf), 5, 1)
+            );  /* ptr */
 
             if (!strcmp(dmfile, __s_il32llp64) && !strcmp(dm, __s_ilp32ll64)) {
                 /*  Windows x64 savefile on x86 */
@@ -881,7 +1065,13 @@ export function* compare_critical_bytes(nhfp, idx_1st_mismatch, utdflags) {
  *   SF_DM_IL32LLP64_ON_I32LP64      (8) Windows x64 savefile on Unix 64
  *   SF_DM_MISMATCH                  (9) some other mismatch
  */
-/** C ref: version.c:840 — @param {CPtr<NHFILE>} nhfp @param {CPtr<char>} name @param {CInt} without_waitsynch_perfile @returns {CInt} */
+/**
+ * C ref: version.c:840
+ * @param {CPtr<NHFILE>} nhfp
+ * @param {CPtr<char>} name
+ * @param {CInt} without_waitsynch_perfile
+ * @returns {CInt}
+ */
 export function* validate(nhfp, name, without_waitsynch_perfile) {
     let utdflags = 0n;
     let validsf = 0;

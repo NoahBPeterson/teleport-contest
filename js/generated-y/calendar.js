@@ -17,8 +17,8 @@ import { d } from './rnd.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $tm_tm_hour = FLD.tm_tm_hour, $tm_tm_mday = FLD.tm_tm_mday, $tm_tm_min = FLD.tm_tm_min,
-    $tm_tm_mon = FLD.tm_tm_mon, $tm_tm_wday = FLD.tm_tm_wday, $tm_tm_yday = FLD.tm_tm_yday,
-    $tm_tm_year = FLD.tm_tm_year;
+      $tm_tm_mon = FLD.tm_tm_mon, $tm_tm_wday = FLD.tm_tm_wday, $tm_tm_yday = FLD.tm_tm_yday,
+      $tm_tm_year = FLD.tm_tm_year;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_nethack_fixed_datetime = cptr.lit("NETHACK_FIXED_DATETIME");
@@ -69,9 +69,15 @@ export function* yyyymmdd(date) {
     else
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 1900n);
     /* yyyy --> yyyymm */
-    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0)));
+    datenum = BigInt.asIntN(
+        64,
+        BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0))
+    );
     /* yyyymm --> yyyymmdd */
-    datenum = BigInt.asIntN(64, BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32o(lt, $tm_tm_mday)));
+    datenum = BigInt.asIntN(
+        64,
+        BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32o(lt, $tm_tm_mday))
+    );
     return datenum;
 }
 
@@ -86,7 +92,15 @@ export function* hhmmss(date) {
     else
         lt = localtime(date);
 
-    timenum = BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_hour)) * 10000n) + BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_min)) * 100n)) + BigInt(cptr.ldI32(lt)));
+    timenum = BigInt.asIntN(
+        64,
+        BigInt.asIntN(
+            64,
+            BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_hour)) * 10000n) +
+                BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_min)) * 100n)
+        ) +
+            BigInt(cptr.ldI32(lt))
+    );
     return timenum;
 }
 
@@ -109,7 +123,19 @@ export function* yyyymmddhhmmss(date) {
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 2000n);
     else
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 1900n);
-    nh_snprintf(__s_yyyymmddhhmmss, 120, cptr.decay(__static_yyyymmddhhmmss_datestr), 15n, __s_04ld_02d_02d_02d_02d_02d, datenum, (cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0, cptr.ldI32o(lt, $tm_tm_mday), cptr.ldI32o(lt, $tm_tm_hour), cptr.ldI32o(lt, $tm_tm_min), cptr.ldI32(lt));
+    nh_snprintf(
+        __s_yyyymmddhhmmss,
+        120,
+        cptr.decay(__static_yyyymmddhhmmss_datestr),
+        15n,
+        __s_04ld_02d_02d_02d_02d_02d,
+        datenum,
+        (cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0,
+        cptr.ldI32o(lt, $tm_tm_mday),
+        cptr.ldI32o(lt, $tm_tm_hour),
+        cptr.ldI32o(lt, $tm_tm_min),
+        cptr.ldI32(lt)
+    );
     //debugpline1("yyyymmddhhmmss() produced date string %s", datestr);
     return cptr.decay(__static_yyyymmddhhmmss_datestr);
 }
@@ -134,27 +160,45 @@ export function* time_from_yyyymmddhhmmss(buf) {
         d = buf;
         p = cptr.decay(y);  /* year */
         for (k = 0; k < 4; ++k)
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
+            cptr.st1(
+                cptr.postinc(() => p, (v) => { p = v; }),
+                cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; }))
+            );
         cptr.st1(p, 0);
         p = cptr.decay(mo);  /* month */
         for (k = 0; k < 2; ++k)
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
+            cptr.st1(
+                cptr.postinc(() => p, (v) => { p = v; }),
+                cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; }))
+            );
         cptr.st1(p, 0);
         p = cptr.decay(md);  /* day */
         for (k = 0; k < 2; ++k)
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
+            cptr.st1(
+                cptr.postinc(() => p, (v) => { p = v; }),
+                cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; }))
+            );
         cptr.st1(p, 0);
         p = cptr.decay(h);  /* hour */
         for (k = 0; k < 2; ++k)
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
+            cptr.st1(
+                cptr.postinc(() => p, (v) => { p = v; }),
+                cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; }))
+            );
         cptr.st1(p, 0);
         p = cptr.decay(mi);  /* minutes */
         for (k = 0; k < 2; ++k)
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
+            cptr.st1(
+                cptr.postinc(() => p, (v) => { p = v; }),
+                cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; }))
+            );
         cptr.st1(p, 0);
         p = cptr.decay(s);  /* seconds */
         for (k = 0; k < 2; ++k)
-            cptr.st1(cptr.postinc(() => p, (v) => { p = v; }), cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; })));
+            cptr.st1(
+                cptr.postinc(() => p, (v) => { p = v; }),
+                cptr.ld1s(cptr.postinc(() => d, (v) => { d = v; }))
+            );
         cptr.st1(p, 0);
         /* Avoid recursion when getnow() itself is using fixed datetime. */
         void time(now);

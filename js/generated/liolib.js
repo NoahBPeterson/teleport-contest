@@ -6,14 +6,26 @@
 import { schar } from '../cmachine.js';
 import * as cptr from '../cptr.js';
 import * as FLD from './nhfield.js';
-import { luaL_argerror, luaL_buffinit, luaL_checkany, luaL_checkinteger, luaL_checklstring, luaL_checkoption, luaL_checkstack, luaL_checkudata, luaL_checkversion_, luaL_error, luaL_execresult, luaL_fileresult, luaL_newmetatable, luaL_optinteger, luaL_optlstring, luaL_prepbuffsize, luaL_pushresult, luaL_setfuncs, luaL_setmetatable, luaL_testudata } from './lauxlib.js';
-import { lua_copy, lua_createtable, lua_getfield, lua_gettop, lua_isinteger, lua_newuserdatauv, lua_pushboolean, lua_pushcclosure, lua_pushfstring, lua_pushinteger, lua_pushnil, lua_pushstring, lua_pushvalue, lua_rawlen, lua_rotate, lua_setfield, lua_settop, lua_stringtonumber, lua_toboolean, lua_tointegerx, lua_tolstring, lua_tonumberx, lua_touserdata, lua_type } from './lapi.js';
+import {
+    luaL_argerror, luaL_buffinit, luaL_checkany, luaL_checkinteger, luaL_checklstring,
+    luaL_checkoption, luaL_checkstack, luaL_checkudata, luaL_checkversion_, luaL_error,
+    luaL_execresult, luaL_fileresult, luaL_newmetatable, luaL_optinteger, luaL_optlstring,
+    luaL_prepbuffsize, luaL_pushresult, luaL_setfuncs, luaL_setmetatable, luaL_testudata
+} from './lauxlib.js';
+import {
+    lua_copy, lua_createtable, lua_getfield, lua_gettop, lua_isinteger, lua_newuserdatauv,
+    lua_pushboolean, lua_pushcclosure, lua_pushfstring, lua_pushinteger, lua_pushnil,
+    lua_pushstring, lua_pushvalue, lua_rawlen, lua_rotate, lua_setfield, lua_settop,
+    lua_stringtonumber, lua_toboolean, lua_tointegerx, lua_tolstring, lua_tonumberx, lua_touserdata,
+    lua_type
+} from './lapi.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $FILE__r = FLD.FILE__r, $LStream_closef = FLD.LStream_closef, $RN_buff = FLD.RN_buff, $RN_c = FLD.RN_c,
-    $RN_n = FLD.RN_n, $luaL_Buffer_n = FLD.luaL_Buffer_n, $luaL_Buffer_size = FLD.luaL_Buffer_size,
-    $luaL_Reg_func = FLD.luaL_Reg_func, $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
+const $FILE__r = FLD.FILE__r, $LStream_closef = FLD.LStream_closef, $RN_buff = FLD.RN_buff,
+      $RN_c = FLD.RN_c, $RN_n = FLD.RN_n, $luaL_Buffer_n = FLD.luaL_Buffer_n,
+      $luaL_Buffer_size = FLD.luaL_Buffer_size, $luaL_Reg_func = FLD.luaL_Reg_func,
+      $sizeof_luaL_Reg = FLD.sizeof_luaL_Reg;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_rwa = cptr.lit("rwa");
@@ -75,7 +87,15 @@ const __s_stderr = cptr.lit("stderr");
 /* Check whether 'mode' matches '[rwa]%+?[L_MODEEXT]*' */
 /** C ref: liolib.c:40 — @param {CPtr<char>} mode @returns {CInt} */
 function l_checkmode(mode) {
-    return (cptr.ld1s(mode) != 0 && !cptr.eq(cptr.strchr(__s_rwa, cptr.ld1s((cptr.postinc(() => mode, (v) => { mode = v; })))), (null)) && (cptr.ld1s(mode) != 43 || (void (cptr.preinc(() => mode, (v) => { mode = v; })), 1)) && (strspn(mode, __s_b) == cptr.strlen(mode)) ? 1 : 0);  /* check extensions */
+    return (cptr.ld1s(mode) != 0 &&
+        !cptr.eq(
+            cptr.strchr(__s_rwa, cptr.ld1s((cptr.postinc(() => mode, (v) => { mode = v; })))),
+            (null)
+        ) &&
+        (cptr.ld1s(mode) != 43 || (void (cptr.preinc(() => mode, (v) => { mode = v; })), 1)) &&
+        (strspn(mode, __s_b) == cptr.strlen(mode))
+            ? 1
+            : 0);  /* check extensions */
 }
 
 /** C ref: liolib.c:155 — typedef LStream (type alias only, no runtime output) */
@@ -178,7 +198,12 @@ function newfile(L) {
     return p;
 }
 
-/** C ref: liolib.c:261 — @param {CPtr<lua_State>} L @param {CPtr<char>} fname @param {CPtr<char>} mode */
+/**
+ * C ref: liolib.c:261
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} fname
+ * @param {CPtr<char>} mode
+ */
 function opencheck(L, fname, mode) {
     let p = newfile(L);
     cptr.stPtr(p, fopen(fname, mode));
@@ -192,7 +217,10 @@ function io_open(L) {
     let mode = (luaL_optlstring(L, 2, (__s_r), null));
     let p = newfile(L);
     let md = mode;  /* to traverse/check mode */
-    (void ((__builtin_expect(BigInt(((l_checkmode(md)) != 0)), 1n)) || luaL_argerror(L, 2, (__s_invalid_mode)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((l_checkmode(md)) != 0)), 1n)) ||
+        luaL_argerror(L, 2, (__s_invalid_mode))
+            ? 1
+            : 0));
     cptr.stI32(__error(), 0);
     cptr.stPtr(p, fopen(filename, mode));
     return (cptr.eq(cptr.ldPtr(p), (null))) ? luaL_fileresult(L, 0, filename) : 1;
@@ -213,7 +241,16 @@ function io_popen(L) {
     let filename = (luaL_checklstring(L, 1, null));
     let mode = (luaL_optlstring(L, 2, (__s_r), null));
     let p = newprefile(L);
-    (void ((__builtin_expect(BigInt(((((cptr.ld1so(mode, 0) == 114 || cptr.ld1so(mode, 0) == 119) && cptr.ld1so(mode, 1) == 0 ? 1 : 0)) != 0)), 1n)) || luaL_argerror(L, 2, (__s_invalid_mode)) ? 1 : 0));
+    (void ((__builtin_expect(
+        BigInt(((((cptr.ld1so(mode, 0) == 114 || cptr.ld1so(mode, 0) == 119) &&
+            cptr.ld1so(mode, 1) == 0
+            ? 1
+            : 0)) != 0)),
+        1n
+    )) ||
+        luaL_argerror(L, 2, (__s_invalid_mode))
+            ? 1
+            : 0));
     cptr.stI32(__error(), 0);
     cptr.stPtr(p, (fflush(null), popen(filename, mode)));
     cptr.stPtro(p, $LStream_closef, io_pclose);
@@ -228,17 +265,32 @@ function io_tmpfile(L) {
     return (cptr.eq(cptr.ldPtr(p), (null))) ? luaL_fileresult(L, 0, null) : 1;
 }
 
-/** C ref: liolib.c:311 — @param {CPtr<lua_State>} L @param {CPtr<char>} findex @returns {CPtr<FILE>} */
+/**
+ * C ref: liolib.c:311
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} findex
+ * @returns {CPtr<FILE>}
+ */
 function getiofile(L, findex) {
     let p;
     lua_getfield(L, -1001000, findex);
     p = lua_touserdata(L, -1);
     if ((__builtin_expect(BigInt((((cptr.ldPtro((p), $LStream_closef) === (null))) != 0)), 0n)))
-        luaL_error(L, __s_default_s_file_is_closed, cptr.add(findex, (BigInt.asUintN(64, 5n / 1n - 1n))));
+        luaL_error(
+            L,
+            __s_default_s_file_is_closed,
+            cptr.add(findex, (BigInt.asUintN(64, 5n / 1n - 1n)))
+        );
     return cptr.ldPtr(p);
 }
 
-/** C ref: liolib.c:321 — @param {CPtr<lua_State>} L @param {CPtr<char>} f @param {CPtr<char>} mode @returns {CInt} */
+/**
+ * C ref: liolib.c:321
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<char>} f
+ * @param {CPtr<char>} mode
+ * @returns {CInt}
+ */
 function g_iofile(L, f, mode) {
     if (!(lua_type(L, 1) <= 0)) {
         let filename = lua_tolstring(L, 1, null);
@@ -277,7 +329,10 @@ function io_output(L) {
 /** C ref: liolib.c:366 — @param {CPtr<lua_State>} L @param {CInt} toclose */
 function aux_lines(L, toclose) {
     let n = (lua_gettop(L) - 1) | 0;  /* number of arguments to read */
-    (void ((__builtin_expect(BigInt(((n <= 250) != 0)), 1n)) || luaL_argerror(L, 252, (__s_too_many_arguments)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((n <= 250) != 0)), 1n)) ||
+        luaL_argerror(L, 252, (__s_too_many_arguments))
+            ? 1
+            : 0));
     lua_pushvalue(L, 1);  /* file */
     lua_pushinteger(L, BigInt(n));  /* number of arguments to read */
     lua_pushboolean(L, toclose);  /* close/not close file when finished */
@@ -337,8 +392,27 @@ function nextc(rn) {
         cptr.st1o2(rn, 0, 1, $RN_buff, 0);  /* invalidate result */
         return 0;  /* fail */
     } else {
-        cptr.st1o2(rn, (cptr.stI32o(rn, $RN_n, cptr.ldI32o(rn, $RN_n) + 1)) - (1), 1, $RN_buff, schar(cptr.ldI32o(rn, $RN_c)));  /* save current char */
-        cptr.stI32o(rn, $RN_c, (cptr.stI32o((cptr.ldPtr(rn)), $FILE__r, cptr.ldI32o((cptr.ldPtr(rn)), $FILE__r) + -1) < 0 ? __srget(cptr.ldPtr(rn)) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((cptr.ldPtr(rn))), (v) => { cptr.stPtr((cptr.ldPtr(rn)), v); })))));  /* read next one */
+        cptr.st1o2(
+            rn,
+            (cptr.stI32o(rn, $RN_n, cptr.ldI32o(rn, $RN_n) + 1)) - (1),
+            1,
+            $RN_buff,
+            schar(cptr.ldI32o(rn, $RN_c))
+        );  /* save current char */
+        cptr.stI32o(
+            rn,
+            $RN_c,
+            (cptr.stI32o(
+                (cptr.ldPtr(rn)),
+                $FILE__r,
+                cptr.ldI32o((cptr.ldPtr(rn)), $FILE__r) + -1
+            ) < 0
+                ? __srget(cptr.ldPtr(rn))
+                : (cptr.ld1u(cptr.postinc(
+                    () => cptr.ldPtr((cptr.ldPtr(rn))),
+                    (v) => { cptr.stPtr((cptr.ldPtr(rn)), v); }
+                ))))
+        );  /* read next one */
         return 1;
     }
 }
@@ -348,7 +422,8 @@ function nextc(rn) {
 */
 /** C ref: liolib.c:457 — @param {CPtr<RN>} rn @param {CPtr<char>} set @returns {CInt} */
 function test2(rn, set) {
-    if (cptr.ldI32o(rn, $RN_c) == cptr.ld1so(set, 0) || cptr.ldI32o(rn, $RN_c) == cptr.ld1so(set, 1))
+    if (cptr.ldI32o(rn, $RN_c) == cptr.ld1so(set, 0) ||
+            cptr.ldI32o(rn, $RN_c) == cptr.ld1so(set, 1))
         return nextc(rn);
     else
         return 0;
@@ -382,7 +457,20 @@ function read_number(L, f) {
     cptr.st1o(cptr.decay(decp), 1, 46, 1);  /* always accept a dot */
     flockfile(cptr.ldPtr(rn));
     do {
-        cptr.stI32o(rn, $RN_c, (cptr.stI32o((cptr.ldPtr(rn)), $FILE__r, cptr.ldI32o((cptr.ldPtr(rn)), $FILE__r) + -1) < 0 ? __srget(cptr.ldPtr(rn)) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((cptr.ldPtr(rn))), (v) => { cptr.stPtr((cptr.ldPtr(rn)), v); })))));  /* skip spaces */
+        cptr.stI32o(
+            rn,
+            $RN_c,
+            (cptr.stI32o(
+                (cptr.ldPtr(rn)),
+                $FILE__r,
+                cptr.ldI32o((cptr.ldPtr(rn)), $FILE__r) + -1
+            ) < 0
+                ? __srget(cptr.ldPtr(rn))
+                : (cptr.ld1u(cptr.postinc(
+                    () => cptr.ldPtr((cptr.ldPtr(rn))),
+                    (v) => { cptr.stPtr((cptr.ldPtr(rn)), v); }
+                ))))
+        );  /* skip spaces */
     } while (isspace(cptr.ldI32o(rn, $RN_c)));
     test2(rn, __s_dash_plus);  /* optional sign */
     if (test2(rn, __s_00)) {
@@ -417,7 +505,13 @@ function test_eof(L, f) {
     return (c != -1);
 }
 
-/** C ref: liolib.c:522 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CInt} chop @returns {CInt} */
+/**
+ * C ref: liolib.c:522
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<FILE>} f
+ * @param {CInt} chop
+ * @returns {CInt}
+ */
 function read_line(L, f, chop) {
     let b = cptr.alloc(1056);
     let c;
@@ -426,13 +520,35 @@ function read_line(L, f, chop) {
         let buff = luaL_prepbuffsize(b, 1024n);  /* preallocate buffer space */
         let i = 0;
         flockfile(f);  /* no memory errors can happen inside the lock */
-        while (i < 1024 && (c = (cptr.stI32o((f), $FILE__r, cptr.ldI32o((f), $FILE__r) + -1) < 0 ? __srget(f) : (cptr.ld1u(cptr.postinc(() => cptr.ldPtr((f)), (v) => { cptr.stPtr((f), v); }))))) != -1 && c != 10)
+        while (i < 1024 &&
+                (c = (cptr.stI32o((f), $FILE__r, cptr.ldI32o((f), $FILE__r) + -1) < 0
+                    ? __srget(f)
+                    : (cptr.ld1u(cptr.postinc(
+                        () => cptr.ldPtr((f)),
+                        (v) => { cptr.stPtr((f), v); }
+                    ))))) !=
+                    -1 &&
+                c != 10)
             cptr.st1o(buff, i++, schar(c));  /* read up to end of line or buffer limit */
         funlockfile(f);
-        (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((i)))));
+        (cptr.stU64o(
+            (b),
+            $luaL_Buffer_n,
+            cptr.ldU64o((b), $luaL_Buffer_n) + BigInt.asUintN(64, BigInt((i)))
+        ));
     } while (c != -1 && c != 10);  /* repeat until end of line */
     if (!chop && c == 10)
-        (void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) || luaL_prepbuffsize((b), 1n) ? 1 : 0), (cptr.st1o(cptr.ldPtr((b)), (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n), schar((c)))));  /* add ending newline to result */
+        (
+            void (cptr.ldU64o((b), $luaL_Buffer_n) < cptr.ldU64o((b), $luaL_Buffer_size) ||
+                luaL_prepbuffsize((b), 1n)
+                ? 1
+                : 0),
+            (cptr.st1o(
+                cptr.ldPtr((b)),
+                (cptr.stU64o((b), $luaL_Buffer_n, cptr.ldU64o((b), $luaL_Buffer_n) + 1n)) - (1n),
+                schar((c))
+            ))
+        );  /* add ending newline to result */
     luaL_pushresult(b);  /* close buffer */
     /* return ok if read something (either a newline or something else) */
     return (c == 10 || lua_rawlen(L, -1) > 0n ? 1 : 0);
@@ -451,7 +567,13 @@ function read_all(L, f) {
     luaL_pushresult(b);  /* close buffer */
 }
 
-/** C ref: liolib.c:556 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CLongLong} n @returns {CInt} */
+/**
+ * C ref: liolib.c:556
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<FILE>} f
+ * @param {CLongLong} n
+ * @returns {CInt}
+ */
 function read_chars(L, f, n) {
     let nr;  /* number of chars actually read */
     let p;
@@ -464,7 +586,13 @@ function read_chars(L, f, n) {
     return (nr > 0n);  /* true iff read something */
 }
 
-/** C ref: liolib.c:569 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CInt} first @returns {CInt} */
+/**
+ * C ref: liolib.c:569
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<FILE>} f
+ * @param {CInt} first
+ * @returns {CInt}
+ */
 function g_read(L, f, first) {
     let nargs = (lua_gettop(L) - 1) | 0;
     let n;
@@ -559,7 +687,13 @@ function io_readline(L) {
 
 /* }====================================================== */
 
-/** C ref: liolib.c:664 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CInt} arg @returns {CInt} */
+/**
+ * C ref: liolib.c:664
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<FILE>} f
+ * @param {CInt} arg
+ * @returns {CInt}
+ */
 function g_write(L, f, arg) {
     let nargs = (lua_gettop(L) - arg) | 0;
     let status = 1;
@@ -567,7 +701,9 @@ function g_write(L, f, arg) {
     for (; nargs--; arg++) {
         if (lua_type(L, arg) == 3) {
             /* optimization: could be done exactly as for strings */
-            let len = lua_isinteger(L, arg) ? fprintf(f, __s_lld, lua_tointegerx(L, (arg), null)) : fprintf(f, __s_14g, lua_tonumberx(L, (arg), null));
+            let len = lua_isinteger(L, arg)
+                    ? fprintf(f, __s_lld, lua_tointegerx(L, (arg), null))
+                    : fprintf(f, __s_14g, lua_tonumberx(L, (arg), null));
             status = status && (len > 0) ? 1 : 0;
         } else {
             let l = cptr.box(0n);
@@ -609,7 +745,10 @@ function f_seek(L) {
     let op = luaL_checkoption(L, 2, __s_cur, __static_f_seek_modenames);
     let p3 = luaL_optinteger(L, 3, 0n);
     let offset = p3;
-    (void ((__builtin_expect(BigInt(((offset == p3) != 0)), 1n)) || luaL_argerror(L, 3, (__s_not_an_integer_in_proper_range)) ? 1 : 0));
+    (void ((__builtin_expect(BigInt(((offset == p3) != 0)), 1n)) ||
+        luaL_argerror(L, 3, (__s_not_an_integer_in_proper_range))
+            ? 1
+            : 0));
     cptr.stI32(__error(), 0);
     op = fseeko(f, offset, cptr.ldI32o(__static_f_seek_mode, op, 4));
     if ((__builtin_expect(BigInt(((op) != 0)), 0n)))
@@ -745,7 +884,13 @@ function io_noclose(L) {
     return 2;
 }
 
-/** C ref: liolib.c:819 — @param {CPtr<lua_State>} L @param {CPtr<FILE>} f @param {CPtr<char>} k @param {CPtr<char>} fname */
+/**
+ * C ref: liolib.c:819
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<FILE>} f
+ * @param {CPtr<char>} k
+ * @param {CPtr<char>} fname
+ */
 function createstdfile(L, f, k, fname) {
     let p = newprefile(L);
     cptr.stPtr(p, f);
@@ -759,7 +904,11 @@ function createstdfile(L, f, k, fname) {
 
 /** C ref: liolib.c:832 — @param {CPtr<lua_State>} L @returns {CInt} */
 export function luaopen_io(L) {
-    (luaL_checkversion_(L, 504, 136n), lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))), luaL_setfuncs(L, iolib, 0));  /* new module */
+    (
+        luaL_checkversion_(L, 504, 136n),
+        lua_createtable(L, 0, Number(BigInt.asIntN(32, BigInt.asUintN(64, 192n / 16n - 1n)))),
+        luaL_setfuncs(L, iolib, 0)
+    );  /* new module */
     createmeta(L);
     /* create (and set) default files */
     createstdfile(L, __stdinp, (__s_io_input), __s_stdin);

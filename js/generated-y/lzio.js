@@ -28,10 +28,19 @@ export function* luaZ_fill(z) {
         return -1;
     cptr.stU64(z, BigInt.asUintN(64, size.v - 1n));  /* discount char being returned */
     cptr.stPtro(z, $ZIO_p, buff);
-    return (uchar(((cptr.ld1s((cptr.postinc(() => cptr.ldPtro(z, $ZIO_p), (v) => { cptr.stPtro(z, $ZIO_p, v); })))))));
+    return (uchar(((cptr.ld1s((cptr.postinc(
+        () => cptr.ldPtro(z, $ZIO_p),
+        (v) => { cptr.stPtro(z, $ZIO_p, v); }
+    )))))));
 }
 
-/** C ref: lzio.c:38 — @param {CPtr<lua_State>} L @param {CPtr<ZIO>} z @param {CPtr} reader @param {CPtr<void>} data */
+/**
+ * C ref: lzio.c:38
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<ZIO>} z
+ * @param {CPtr} reader
+ * @param {CPtr<void>} data
+ */
 export function luaZ_init(L, z, reader, data) {
     cptr.stPtro(z, $ZIO_L, L);
     cptr.stPtro(z, $ZIO_reader, reader);
@@ -41,7 +50,13 @@ export function luaZ_init(L, z, reader, data) {
 }
 
 /* --------------------------------------------------------------- read --- */
-/** C ref: lzio.c:48 — @param {CPtr<ZIO>} z @param {CPtr<void>} b @param {CLongLong} n @returns {*} */
+/**
+ * C ref: lzio.c:48
+ * @param {CPtr<ZIO>} z
+ * @param {CPtr<void>} b
+ * @param {CLongLong} n
+ * @returns {*}
+ */
 export function* luaZ_read(z, b, n) {
     while (n) {
         let m;

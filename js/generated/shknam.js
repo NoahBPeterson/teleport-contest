@@ -12,7 +12,9 @@ import { has_eshk, ismnum, vegetarian } from './nhmacrofn.js';
 import { Hallucination, display_nhwindow, wizard } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
-import { WIN_MESSAGE, flags, gd, program_state, svb, svc, svd, svl, svr, u, ubirthday } from './decl.js';
+import {
+    WIN_MESSAGE, flags, gd, program_state, svb, svc, svd, svl, svr, u, ubirthday
+} from './decl.js';
 import { panic } from './end.js';
 import { rn2, rnd } from './rnd.js';
 import { mkobj_at, mksobj_at } from './mkobj.js';
@@ -37,41 +39,47 @@ import { noit_mon_nam } from './do_name.js';
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $context_info_tribute = FLD.context_info_tribute,
-    $dgn_topology_d_orcus_level = FLD.dgn_topology_d_orcus_level, $dlevel_t_flags = FLD.dlevel_t_flags,
-    $dlevel_t_monlist = FLD.dlevel_t_monlist, $dlevel_t_monsters = FLD.dlevel_t_monsters,
-    $eshk_bill_p = FLD.eshk_bill_p, $eshk_billct = FLD.eshk_billct, $eshk_credit = FLD.eshk_credit,
-    $eshk_customer = FLD.eshk_customer, $eshk_debit = FLD.eshk_debit,
-    $eshk_dismiss_kops = FLD.eshk_dismiss_kops, $eshk_following = FLD.eshk_following,
-    $eshk_loan = FLD.eshk_loan, $eshk_robbed = FLD.eshk_robbed, $eshk_shd = FLD.eshk_shd,
-    $eshk_shk = FLD.eshk_shk, $eshk_shknam = FLD.eshk_shknam, $eshk_shoplevel = FLD.eshk_shoplevel,
-    $eshk_shoproom = FLD.eshk_shoproom, $eshk_shoptype = FLD.eshk_shoptype,
-    $eshk_surcharge = FLD.eshk_surcharge, $eshk_visitct = FLD.eshk_visitct, $flag_debug = FLD.flag_debug,
-    $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
-    $instance_globals_saved_d_doors = FLD.instance_globals_saved_d_doors,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level, $itp_itype = FLD.itp_itype,
-    $levelflags_has_shop = FLD.levelflags_has_shop, $mextra_eshk = FLD.mextra_eshk,
-    $mkroom_doorct = FLD.mkroom_doorct, $mkroom_fdoor = FLD.mkroom_fdoor, $mkroom_hx = FLD.mkroom_hx,
-    $mkroom_hy = FLD.mkroom_hy, $mkroom_irregular = FLD.mkroom_irregular, $mkroom_ly = FLD.mkroom_ly,
-    $mkroom_resident = FLD.mkroom_resident, $mkroom_rtype = FLD.mkroom_rtype,
-    $monst_female = FLD.monst_female, $monst_isshk = FLD.monst_isshk, $monst_m_id = FLD.monst_m_id,
-    $monst_mextra = FLD.monst_mextra, $monst_mhp = FLD.monst_mhp, $monst_mpeaceful = FLD.monst_mpeaceful,
-    $monst_msleeping = FLD.monst_msleeping, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
-    $nhcoord_y = FLD.nhcoord_y, $obj_corpsenm = FLD.obj_corpsenm, $obj_oclass = FLD.obj_oclass,
-    $obj_otyp = FLD.obj_otyp, $obj_spe = FLD.obj_spe, $objclass_oc_class = FLD.objclass_oc_class,
-    $objclass_oc_material = FLD.objclass_oc_material, $objclass_oc_prob = FLD.objclass_oc_prob,
-    $permonst_mlet = FLD.permonst_mlet, $prop_intrinsic = FLD.prop_intrinsic, $rm_edge = FLD.rm_edge,
-    $rm_flags = FLD.rm_flags, $rm_roomno = FLD.rm_roomno, $rm_typ = FLD.rm_typ,
-    $s_level_flags = FLD.s_level_flags, $shclass_annotation = FLD.shclass_annotation,
-    $shclass_iprobs = FLD.shclass_iprobs, $shclass_prob = FLD.shclass_prob,
-    $shclass_shdist = FLD.shclass_shdist, $shclass_shknms = FLD.shclass_shknms,
-    $shclass_symb = FLD.shclass_symb, $sizeof_coord = FLD.sizeof_coord, $sizeof_itp = FLD.sizeof_itp,
-    $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
-    $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_shclass = FLD.sizeof_shclass,
-    $tribute_info_bookstock = FLD.tribute_info_bookstock, $tribute_info_enabled = FLD.tribute_info_enabled,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow, $you_uprops = FLD.you_uprops,
-    $you_uz = FLD.you_uz;
+      $dgn_topology_d_orcus_level = FLD.dgn_topology_d_orcus_level,
+      $dlevel_t_flags = FLD.dlevel_t_flags, $dlevel_t_monlist = FLD.dlevel_t_monlist,
+      $dlevel_t_monsters = FLD.dlevel_t_monsters, $eshk_bill_p = FLD.eshk_bill_p,
+      $eshk_billct = FLD.eshk_billct, $eshk_credit = FLD.eshk_credit,
+      $eshk_customer = FLD.eshk_customer, $eshk_debit = FLD.eshk_debit,
+      $eshk_dismiss_kops = FLD.eshk_dismiss_kops, $eshk_following = FLD.eshk_following,
+      $eshk_loan = FLD.eshk_loan, $eshk_robbed = FLD.eshk_robbed, $eshk_shd = FLD.eshk_shd,
+      $eshk_shk = FLD.eshk_shk, $eshk_shknam = FLD.eshk_shknam,
+      $eshk_shoplevel = FLD.eshk_shoplevel, $eshk_shoproom = FLD.eshk_shoproom,
+      $eshk_shoptype = FLD.eshk_shoptype, $eshk_surcharge = FLD.eshk_surcharge,
+      $eshk_visitct = FLD.eshk_visitct, $flag_debug = FLD.flag_debug,
+      $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
+      $instance_globals_saved_d_doors = FLD.instance_globals_saved_d_doors,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $itp_itype = FLD.itp_itype, $levelflags_has_shop = FLD.levelflags_has_shop,
+      $mextra_eshk = FLD.mextra_eshk, $mkroom_doorct = FLD.mkroom_doorct,
+      $mkroom_fdoor = FLD.mkroom_fdoor, $mkroom_hx = FLD.mkroom_hx, $mkroom_hy = FLD.mkroom_hy,
+      $mkroom_irregular = FLD.mkroom_irregular, $mkroom_ly = FLD.mkroom_ly,
+      $mkroom_resident = FLD.mkroom_resident, $mkroom_rtype = FLD.mkroom_rtype,
+      $monst_female = FLD.monst_female, $monst_isshk = FLD.monst_isshk,
+      $monst_m_id = FLD.monst_m_id, $monst_mextra = FLD.monst_mextra, $monst_mhp = FLD.monst_mhp,
+      $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
+      $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y,
+      $obj_corpsenm = FLD.obj_corpsenm, $obj_oclass = FLD.obj_oclass, $obj_otyp = FLD.obj_otyp,
+      $obj_spe = FLD.obj_spe, $objclass_oc_class = FLD.objclass_oc_class,
+      $objclass_oc_material = FLD.objclass_oc_material, $objclass_oc_prob = FLD.objclass_oc_prob,
+      $permonst_mlet = FLD.permonst_mlet, $prop_intrinsic = FLD.prop_intrinsic,
+      $rm_edge = FLD.rm_edge, $rm_flags = FLD.rm_flags, $rm_roomno = FLD.rm_roomno,
+      $rm_typ = FLD.rm_typ, $s_level_flags = FLD.s_level_flags,
+      $shclass_annotation = FLD.shclass_annotation, $shclass_iprobs = FLD.shclass_iprobs,
+      $shclass_prob = FLD.shclass_prob, $shclass_shdist = FLD.shclass_shdist,
+      $shclass_shknms = FLD.shclass_shknms, $shclass_symb = FLD.shclass_symb,
+      $sizeof_coord = FLD.sizeof_coord, $sizeof_itp = FLD.sizeof_itp,
+      $sizeof_objclass = FLD.sizeof_objclass, $sizeof_objdescr = FLD.sizeof_objdescr,
+      $sizeof_permonst = FLD.sizeof_permonst, $sizeof_prop = FLD.sizeof_prop,
+      $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
+      $sizeof_shclass = FLD.sizeof_shclass, $tribute_info_bookstock = FLD.tribute_info_bookstock,
+      $tribute_info_enabled = FLD.tribute_info_enabled,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $you_uprops = FLD.you_uprops, $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_njezjin = cptr.lit("Njezjin");
@@ -1137,12 +1145,16 @@ function veggy_item(obj, otyp) {
     }
 
     if (oclass == NHC.FOOD_CLASS) {
-        if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) == NHC.VEGGY || otyp == NHC.EGG)
+        if (((cptr.ldI32o2(objects, otyp, $sizeof_objclass, $objclass_oc_material) & 31) | 0) ==
+            NHC.VEGGY ||
+                otyp == NHC.EGG)
             return 1;
         if (otyp == NHC.TIN && corpsenm == NHC.NON_PM)
             return schar((cptr.ld1so(obj, $obj_spe) == 1));  /* 0 = empty, 1 = spinach */
         if (otyp == NHC.TIN || otyp == NHC.CORPSE)
-            return schar((ismnum(corpsenm) && vegetarian(cptr.add(mons, corpsenm, $sizeof_permonst)) ? 1 : 0));
+            return schar((ismnum(corpsenm) && vegetarian(cptr.add(mons, corpsenm, $sizeof_permonst))
+                    ? 1
+                    : 0));
     }
     return 0;
 }
@@ -1158,7 +1170,11 @@ function shkveg() {
 
     void __builtin___memset_chk(ok, 0, 1924n, __builtin_object_size(ok, 0));  /* lint suppression */
     j = (maxprob = 0);
-    for (i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases); i < NHC.NUM_OBJECTS; ++i) {
+    for (
+        i = cptr.ldI32o2(svb, oclass, 4, $instance_globals_saved_b_bases);
+        i < NHC.NUM_OBJECTS;
+        ++i
+    ) {
         if (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != oclass)
             break;
 
@@ -1173,12 +1189,18 @@ function shkveg() {
 
     j = 0;
     i = cptr.ldI32o(ok, 0, 4);
-    while ((prob = (prob - cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0) > 0) {
+    while ((prob = (prob -
+            cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0) > 0) {
         j++;
         i = cptr.ldI32o(ok, j, 4);
     }
 
-    if (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != oclass || !(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)))
+    if (cptr.ld1so2(objects, i, $sizeof_objclass, $objclass_oc_class) != oclass ||
+            !(cptr.ldPtro(
+                obj_descr,
+                cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))),
+                $sizeof_objdescr
+            )))
         panic(__s_shkveg_probtype_error_oclass_d_i_d, oclass, i);
     return i;
 }
@@ -1194,14 +1216,22 @@ function mkveggy_at(sx, sy) {
 }
 
 /* make an object of the appropriate type for a shop square */
-/** C ref: shknam.c:454 — @param {CPtr<struct shclass>} shp @param {CInt} sx @param {CInt} sy @param {CInt} mkspecl */
+/**
+ * C ref: shknam.c:454
+ * @param {CPtr<struct shclass>} shp
+ * @param {CInt} sx
+ * @param {CInt} sy
+ * @param {CInt} mkspecl
+ */
 function mkshobj_at(shp, sx, sy, mkspecl) {
     let mtmp;
     let ptr;
     let atype;
 
     /* 3.6 tribute */
-    if (mkspecl && (!strcmp(cptr.ldPtr(shp), __s_rare_books) || !strcmp(cptr.ldPtr(shp), __s_second_hand_bookstore))) {
+    if (mkspecl &&
+            (!strcmp(cptr.ldPtr(shp), __s_rare_books) ||
+                !strcmp(cptr.ldPtr(shp), __s_second_hand_bookstore))) {
         let novel = mksobj_at(NHC.SPE_NOVEL, i16(sx), i16(sy), 0, 0);
 
         if (novel)
@@ -1209,7 +1239,17 @@ function mkshobj_at(shp, sx, sy, mkspecl) {
         return;
     }
 
-    if (rn2(100) < depth(cptr.add(u, $you_uz)) && !(cptr.ldPtro3(svl, sx, 168, sy, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null) && (ptr = mkclass(NHC.S_MIMIC, 0)) !== null && (mtmp = makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS)) !== null) {
+    if (rn2(100) < depth(cptr.add(u, $you_uz)) &&
+            !(cptr.ldPtro3(
+                svl,
+                sx,
+                168,
+                sy,
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters
+            ) !== null) &&
+            (ptr = mkclass(NHC.S_MIMIC, 0)) !== null &&
+            (mtmp = makemon(ptr, i16(sx), i16(sy), NHM.NO_MM_FLAGS)) !== null) {
         /* nothing */
     } else {
         atype = get_shop_item(Number(BigInt.asIntN(32, (cptr.diff(shp, shtypes) / 112n))));
@@ -1233,7 +1273,10 @@ function nameshk(shk, nlp) {
     let name_wanted = cptr.ldI32o(shk, $monst_m_id) | 0;
     let sptr;
 
-    if (cptr.eq(nlp, shklight) && In_mines(cptr.add(u, $you_uz)) && (sptr = Is_special(cptr.add(u, $you_uz))) !== null && (cptr.ldI32o(sptr, $s_level_flags) & 1) | 0) {
+    if (cptr.eq(nlp, shklight) &&
+            In_mines(cptr.add(u, $you_uz)) &&
+            (sptr = Is_special(cptr.add(u, $you_uz))) !== null &&
+            (cptr.ldI32o(sptr, $s_level_flags) & 1) | 0) {
         /* special-case minetown lighting shk */
         shname = __s_izchak;
         cptr.stI32o(shk, $monst_female, 0);
@@ -1244,14 +1287,18 @@ function nameshk(shk, nlp) {
            use ledger_no rather than depth to keep minetown distinct. */
         let nseed = Number(BigInt.asIntN(32, (ubirthday.v / 257n)));
 
-        name_wanted = (name_wanted + ((((ledger_no(cptr.add(u, $you_uz)) + (nseed % 13)) | 0) - (nseed % 5)) | 0)) | 0;
+        name_wanted = (name_wanted +
+            ((((ledger_no(cptr.add(u, $you_uz)) + (nseed % 13)) | 0) - (nseed % 5)) | 0)) |
+                0;
         if (name_wanted < 0)
             name_wanted = (name_wanted + 18) | 0;
         cptr.stI32o(shk, $monst_female, (name_wanted & 1) >>> 0);
 
         for (names_avail = 0; cptr.ldPtro(nlp, names_avail, 8); names_avail++)
             continue;
-        (__builtin_expect(BigInt((!(names_avail > 0))), 0n) ? __assert_rtn(__s_nameshk, __s_shknam_c, 514, __s_names_avail_0) : void 0);
+        (__builtin_expect(BigInt((!(names_avail > 0))), 0n)
+                ? __assert_rtn(__s_nameshk, __s_shknam_c, 514, __s_names_avail_0)
+                : void 0);
         name_wanted = name_wanted % names_avail;
 
         for (trycnt = 0; trycnt < 50; trycnt++) {
@@ -1276,11 +1323,25 @@ function nameshk(shk, nlp) {
                 cptr.stI32o(shk, $monst_female, 0);
 
             /* is name already in use on this level? */
-            for (mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist); mtmp; mtmp = cptr.ldPtr(mtmp)) {
-                if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) || (cptr.eq(mtmp, shk)) || !(cptr.ldI32o(mtmp, $monst_isshk) & 1))
+            for (
+                mtmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_monlist);
+                mtmp;
+                mtmp = cptr.ldPtr(mtmp)
+            ) {
+                if ((cptr.ldI32o((mtmp), $monst_mhp) < 1) ||
+                        (cptr.eq(mtmp, shk)) ||
+                        !(cptr.ldI32o(mtmp, $monst_isshk) & 1))
                     continue;
-                (__builtin_expect(BigInt((!(has_eshk(mtmp)))), 0n) ? __assert_rtn(__s_nameshk, __s_shknam_c, 542, __s_has_eshk_mtmp) : void 0);
-                if (strcmp(cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam), shname))
+                (__builtin_expect(BigInt((!(has_eshk(mtmp)))), 0n)
+                        ? __assert_rtn(__s_nameshk, __s_shknam_c, 542, __s_has_eshk_mtmp)
+                        : void 0);
+                if (strcmp(
+                    cptr.add(
+                        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
+                        $eshk_shknam
+                    ),
+                    shname
+                ))
                     continue;
                 name_wanted = names_avail;  /* try a random name */
                 break;
@@ -1289,8 +1350,22 @@ function nameshk(shk, nlp) {
                 break;  /* new name */
         }
     }
-    void __builtin___strncpy_chk(cptr.add((cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)), $eshk_shknam), shname, 32n, __builtin_object_size(cptr.add((cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)), $eshk_shknam), 1));
-    cptr.st1o2((cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)), 31, 1, $eshk_shknam, 0);
+    void __builtin___strncpy_chk(
+        cptr.add((cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)), $eshk_shknam),
+        shname,
+        32n,
+        __builtin_object_size(
+            cptr.add((cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)), $eshk_shknam),
+            1
+        )
+    );
+    cptr.st1o2(
+        (cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk)),
+        31,
+        1,
+        $eshk_shknam,
+        0
+    );
 }
 
 /** C ref: shknam.c:557 — @param {CPtr<struct monst>} mtmp */
@@ -1299,14 +1374,27 @@ export function neweshk(mtmp) {
         cptr.stPtro(mtmp, $monst_mextra, newmextra());
     if (!(cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)))
         cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk, alloc(4960));
-    void __builtin___memset_chk((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), 0, 4960n, __builtin_object_size((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), 0));
-    cptr.stI32((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), cptr.ldI32o(mtmp, $monst_m_id));
-    cptr.stPtro((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_bill_p, null);
+    void __builtin___memset_chk(
+        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
+        0,
+        4960n,
+        __builtin_object_size((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), 0)
+    );
+    cptr.stI32(
+        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
+        cptr.ldI32o(mtmp, $monst_m_id)
+    );
+    cptr.stPtro(
+        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
+        $eshk_bill_p,
+        null
+    );
 }
 
 /** C ref: shknam.c:569 — @param {CPtr<struct monst>} mtmp */
 export function free_eshk(mtmp) {
-    if (cptr.ldPtro(mtmp, $monst_mextra) && (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk))) {
+    if (cptr.ldPtro(mtmp, $monst_mextra) &&
+            (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk))) {
         cptr.free((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)));
         cptr.stPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk, null);
     }
@@ -1316,27 +1404,111 @@ export function free_eshk(mtmp) {
 /* find a door in room sroom which is good for shop entrance.
    returns -1 if no good door found, or the svd.doors index
    and the door coordinates in sx, sy */
-/** C ref: shknam.c:582 — @param {CPtr<struct mkroom>} sroom @param {CPtr<coordxy>} sx @param {CPtr<coordxy>} sy @returns {CInt} */
+/**
+ * C ref: shknam.c:582
+ * @param {CPtr<struct mkroom>} sroom
+ * @param {CPtr<coordxy>} sx
+ * @param {CPtr<coordxy>} sy
+ * @returns {CInt}
+ */
 function good_shopdoor(sroom, sx, sy) {
     let i;
 
     for (i = 0; i < cptr.ld1so(sroom, $mkroom_doorct); i++) {
         let di = (cptr.ldI32o(sroom, $mkroom_fdoor) + i) | 0;
 
-        cptr.stI16(sx, cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), di, $sizeof_coord));
-        cptr.stI16(sy, cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), di, $sizeof_coord, $nhcoord_y));
+        cptr.stI16(
+            sx,
+            cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), di, $sizeof_coord)
+        );
+        cptr.stI16(
+            sy,
+            cptr.ldI16o2(
+                cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                di,
+                $sizeof_coord,
+                $nhcoord_y
+            )
+        );
 
         /* check that the shopkeeper placement is sane */
         if (cptr.ld1so(sroom, $mkroom_irregular)) {
-            let rmno = Number(BigInt.asIntN(32, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n))));
+            let rmno = Number(BigInt.asIntN(
+                32,
+                (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n))
+            ));
 
-            if (isok(i16(((cptr.ldI16(sx) - 1) | 0)), cptr.ldI16(sy)) && !(cptr.ldI32o3(svl, (cptr.ldI16(sx) - 1) | 0, $sizeof_rm_x21, cptr.ldI16(sy), $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (cptr.ldI16(sx) - 1) | 0, $sizeof_rm_x21, cptr.ldI16(sy), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
+            if (isok(i16(((cptr.ldI16(sx) - 1) | 0)), cptr.ldI16(sy)) &&
+                    !(cptr.ldI32o3(
+                        svl,
+                        (cptr.ldI16(sx) - 1) | 0,
+                        $sizeof_rm_x21,
+                        cptr.ldI16(sy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_edge
+                    ) & 1) &&
+                    ((cptr.ldI32o3(
+                        svl,
+                        (cptr.ldI16(sx) - 1) | 0,
+                        $sizeof_rm_x21,
+                        cptr.ldI16(sy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) | 0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + -1)) - (-1);
-            else if (isok(i16(((cptr.ldI16(sx) + 1) | 0)), cptr.ldI16(sy)) && !(cptr.ldI32o3(svl, (cptr.ldI16(sx) + 1) | 0, $sizeof_rm_x21, cptr.ldI16(sy), $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, (cptr.ldI16(sx) + 1) | 0, $sizeof_rm_x21, cptr.ldI16(sy), $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
+            else if (isok(i16(((cptr.ldI16(sx) + 1) | 0)), cptr.ldI16(sy)) &&
+                    !(cptr.ldI32o3(
+                        svl,
+                        (cptr.ldI16(sx) + 1) | 0,
+                        $sizeof_rm_x21,
+                        cptr.ldI16(sy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_edge
+                    ) & 1) &&
+                    ((cptr.ldI32o3(
+                        svl,
+                        (cptr.ldI16(sx) + 1) | 0,
+                        $sizeof_rm_x21,
+                        cptr.ldI16(sy),
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) | 0) == rmno)
                 (cptr.stI16(sx, cptr.ldI16(sx) + 1)) - (1);
-            else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) - 1) | 0))) && !(cptr.ldI32o3(svl, cptr.ldI16(sx), $sizeof_rm_x21, (cptr.ldI16(sy) - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, cptr.ldI16(sx), $sizeof_rm_x21, (cptr.ldI16(sy) - 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
+            else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) - 1) | 0))) &&
+                    !(cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(sx),
+                        $sizeof_rm_x21,
+                        (cptr.ldI16(sy) - 1) | 0,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_edge
+                    ) & 1) &&
+                    ((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(sx),
+                        $sizeof_rm_x21,
+                        (cptr.ldI16(sy) - 1) | 0,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) | 0) == rmno)
                 (cptr.stI16(sy, cptr.ldI16(sy) + -1)) - (-1);
-            else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) + 1) | 0))) && !(cptr.ldI32o3(svl, cptr.ldI16(sx), $sizeof_rm_x21, (cptr.ldI16(sy) + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) && ((cptr.ldI32o3(svl, cptr.ldI16(sx), $sizeof_rm_x21, (cptr.ldI16(sy) + 1) | 0, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) == rmno)
+            else if (isok(cptr.ldI16(sx), i16(((cptr.ldI16(sy) + 1) | 0))) &&
+                    !(cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(sx),
+                        $sizeof_rm_x21,
+                        (cptr.ldI16(sy) + 1) | 0,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_edge
+                    ) & 1) &&
+                    ((cptr.ldI32o3(
+                        svl,
+                        cptr.ldI16(sx),
+                        $sizeof_rm_x21,
+                        (cptr.ldI16(sy) + 1) | 0,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_roomno
+                    ) & 63) | 0) == rmno)
                 (cptr.stI16(sy, cptr.ldI16(sy) + 1)) - (1);
             else
                 continue;
@@ -1357,7 +1529,12 @@ function good_shopdoor(sroom, sx, sy) {
 }
 
 /* create a new shopkeeper in the given room */
-/** C ref: shknam.c:628 — @param {CPtr<struct shclass>} shp @param {CPtr<struct mkroom>} sroom @returns {CInt} */
+/**
+ * C ref: shknam.c:628
+ * @param {CPtr<struct shclass>} shp
+ * @param {CPtr<struct mkroom>} sroom
+ * @returns {CInt}
+ */
 function shkinit(shp, sroom) {
     let sh;
     let sx = cptr.box(0);
@@ -1374,10 +1551,34 @@ function shkinit(shp, sroom) {
             let j = cptr.ld1so(sroom, $mkroom_doorct);
 
             impossible(__s_where_is_shopdoor);
-            pline(__s_room_at_d_d_d_d, cptr.ldI16(sroom), cptr.ldI16o(sroom, $mkroom_ly), cptr.ldI16o(sroom, $mkroom_hx), cptr.ldI16o(sroom, $mkroom_hy));
-            pline(__s_doormax_d_doorct_d_fdoor_d, cptr.ldI32(gd), cptr.ld1so(sroom, $mkroom_doorct), sh);
+            pline(
+                __s_room_at_d_d_d_d,
+                cptr.ldI16(sroom),
+                cptr.ldI16o(sroom, $mkroom_ly),
+                cptr.ldI16o(sroom, $mkroom_hx),
+                cptr.ldI16o(sroom, $mkroom_hy)
+            );
+            pline(
+                __s_doormax_d_doorct_d_fdoor_d,
+                cptr.ldI32(gd),
+                cptr.ld1so(sroom, $mkroom_doorct),
+                sh
+            );
             while (j--) {
-                pline(__s_door_d_d, cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord), cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord, $nhcoord_y));
+                pline(
+                    __s_door_d_d,
+                    cptr.ldI16o(
+                        cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                        sh,
+                        $sizeof_coord
+                    ),
+                    cptr.ldI16o2(
+                        cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                        sh,
+                        $sizeof_coord,
+                        $nhcoord_y
+                    )
+                );
                 sh++;
             }
             display_nhwindow()(WIN_MESSAGE.v, 0);
@@ -1385,49 +1586,161 @@ function shkinit(shp, sroom) {
         return -1;
     }
 
-    if ((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters) !== null))
-        void rloc((cptr.ldPtro3(svl, sx.v, 168, sy.v, 8, $instance_globals_saved_l_level + $dlevel_t_monsters)), NHM.RLOC_NOMSG);  /* insurance */
+    if ((cptr.ldPtro3(
+        svl,
+        sx.v,
+        168,
+        sy.v,
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_monsters
+    ) !== null))
+        void rloc(
+            (cptr.ldPtro3(
+                svl,
+                sx.v,
+                168,
+                sy.v,
+                8,
+                $instance_globals_saved_l_level + $dlevel_t_monsters
+            )),
+            NHM.RLOC_NOMSG
+        );  /* insurance */
 
     /* now initialize the shopkeeper monster structure */
-    if (!(shk = makemon(cptr.add(mons, NHC.PM_SHOPKEEPER, $sizeof_permonst), sx.v, sy.v, NHM.MM_ESHK)))
+    if (!(shk = makemon(
+        cptr.add(mons, NHC.PM_SHOPKEEPER, $sizeof_permonst),
+        sx.v,
+        sy.v,
+        NHM.MM_ESHK
+    )))
         return -1;
     eshkp = (cptr.ldPtro(cptr.ldPtro((shk), $monst_mextra), $mextra_eshk));  /* makemon(...,MM_ESHK) allocates this */
     cptr.stI32o(shk, $monst_isshk, cptr.stI32o(shk, $monst_mpeaceful, 1));
     set_malign(shk);
     cptr.stI32o(shk, $monst_msleeping, 0);
     mon_learns_traps(shk, NHC.ALL_TRAPS);  /* we know all the traps already */
-    cptr.st1o(eshkp, $eshk_shoproom, Number(BigInt.asIntN(8, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n)))));
+    cptr.st1o(
+        eshkp,
+        $eshk_shoproom,
+        Number(BigInt.asIntN(8, (BigInt.asIntN(64, (cptr.diff(sroom, svr) / 224n) + 3n))))
+    );
     cptr.stPtro(sroom, $mkroom_resident, shk);
     cptr.stI32o(eshkp, $eshk_shoptype, cptr.ld1so(sroom, $mkroom_rtype));
     assign_level(cptr.add(eshkp, $eshk_shoplevel), cptr.add(u, $you_uz));
-    cptr.memcpy(cptr.add(eshkp, $eshk_shd), cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord), 4);
+    cptr.memcpy(
+        cptr.add(eshkp, $eshk_shd),
+        cptr.add(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord),
+        4
+    );
     cptr.stI16o(eshkp, $eshk_shk, sx.v);
     cptr.stI16o(eshkp, $eshk_shk + $nhcoord_y, sy.v);
-    cptr.stI64o(eshkp, $eshk_robbed, cptr.stI64o(eshkp, $eshk_credit, cptr.stI64o(eshkp, $eshk_debit, cptr.stI64o(eshkp, $eshk_loan, 0n))));
-    cptr.st1o(eshkp, $eshk_following, cptr.st1o(eshkp, $eshk_surcharge, cptr.st1o(eshkp, $eshk_dismiss_kops, 0)));
+    cptr.stI64o(
+        eshkp,
+        $eshk_robbed,
+        cptr.stI64o(
+            eshkp,
+            $eshk_credit,
+            cptr.stI64o(eshkp, $eshk_debit, cptr.stI64o(eshkp, $eshk_loan, 0n))
+        )
+    );
+    cptr.st1o(
+        eshkp,
+        $eshk_following,
+        cptr.st1o(eshkp, $eshk_surcharge, cptr.st1o(eshkp, $eshk_dismiss_kops, 0))
+    );
     cptr.stI32o(eshkp, $eshk_billct, cptr.stI32o(eshkp, $eshk_visitct, 0));
     cptr.stPtro(eshkp, $eshk_bill_p, null);
     cptr.st1o2(eshkp, 0, 1, $eshk_customer, 0);
     mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt(rnd(100)))));  /* initial capital */
     if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings))
         void mongets(shk, NHC.TOUCHSTONE);
-    if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shktools) || cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkwands) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings) && rn2(2)) || (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkgeneral) && rn2(5)))
+    if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shktools) ||
+            cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkwands) ||
+            (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings) && rn2(2)) ||
+            (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkgeneral) && rn2(5)))
         void mongets(shk, NHC.SCR_CHARGING);
     nameshk(shk, cptr.ldPtro(shp, $shclass_shknms));
 
     return sh;
 }
 
-/** C ref: shknam.c:695 — @param {CPtr<struct mkroom>} sroom @param {CInt} rmno @param {CInt} sh @param {CInt} sx @param {CInt} sy @returns {CInt} */
+/**
+ * C ref: shknam.c:695
+ * @param {CPtr<struct mkroom>} sroom
+ * @param {CInt} rmno
+ * @param {CInt} sh
+ * @param {CInt} sx
+ * @param {CInt} sy
+ * @returns {CInt}
+ */
 function stock_room_goodpos(sroom, rmno, sh, sx, sy) {
     if (cptr.ld1so(sroom, $mkroom_irregular)) {
-        if ((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_edge) & 1) | 0 || ((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_roomno) & 63) | 0) != rmno || distmin(i16(sx), i16(sy), cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord), cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord, $nhcoord_y)) <= 1)
+        if ((cptr.ldI32o3(
+            svl,
+            sx,
+            $sizeof_rm_x21,
+            sy,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_edge
+        ) & 1) | 0 ||
+                ((cptr.ldI32o3(
+                    svl,
+                    sx,
+                    $sizeof_rm_x21,
+                    sy,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_roomno
+                ) & 63) | 0) != rmno ||
+                distmin(
+                    i16(sx),
+                    i16(sy),
+                    cptr.ldI16o(
+                        cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                        sh,
+                        $sizeof_coord
+                    ),
+                    cptr.ldI16o2(
+                        cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                        sh,
+                        $sizeof_coord,
+                        $nhcoord_y
+                    )
+                ) <= 1)
             return 0;
-    } else if ((sx == cptr.ldI16(sroom) && cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord) == ((sx - 1) | 0)) || (sx == cptr.ldI16o(sroom, $mkroom_hx) && cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord) == ((sx + 1) | 0)) || (sy == cptr.ldI16o(sroom, $mkroom_ly) && cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord, $nhcoord_y) == ((sy - 1) | 0)) || (sy == cptr.ldI16o(sroom, $mkroom_hy) && cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord, $nhcoord_y) == ((sy + 1) | 0)))
+    } else if ((sx == cptr.ldI16(sroom) &&
+        cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord) ==
+            ((sx - 1) | 0)) ||
+            (sx == cptr.ldI16o(sroom, $mkroom_hx) &&
+                cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), sh, $sizeof_coord) ==
+                    ((sx + 1) | 0)) ||
+            (sy == cptr.ldI16o(sroom, $mkroom_ly) &&
+                cptr.ldI16o2(
+                    cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                    sh,
+                    $sizeof_coord,
+                    $nhcoord_y
+                ) ==
+                    ((sy - 1) | 0)) ||
+            (sy == cptr.ldI16o(sroom, $mkroom_hy) &&
+                cptr.ldI16o2(
+                    cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+                    sh,
+                    $sizeof_coord,
+                    $nhcoord_y
+                ) ==
+                    ((sy + 1) | 0)))
         return 0;
 
     /* only generate items on solid floor squares */
-    if (!((cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) >= NHC.ROOM)) {
+    if (!((cptr.ld1so3(
+        svl,
+        sx,
+        $sizeof_rm_x21,
+        sy,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) >=
+            NHC.ROOM)) {
         return 0;
     }
 
@@ -1457,20 +1770,81 @@ export function stock_room(shp_indx, sroom) {
         return;
 
     /* make sure no doorways without doors, and no trapped doors, in shops */
-    sx = cptr.ldI16o(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(sroom, $mkroom_fdoor), $sizeof_coord);
-    sy = cptr.ldI16o2(cptr.ldPtro(svd, $instance_globals_saved_d_doors), cptr.ldI32o(sroom, $mkroom_fdoor), $sizeof_coord, $nhcoord_y);
-    if (((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_NODOOR) {
-        cptr.stI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_ISOPEN);
+    sx = cptr.ldI16o(
+        cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+        cptr.ldI32o(sroom, $mkroom_fdoor),
+        $sizeof_coord
+    );
+    sy = cptr.ldI16o2(
+        cptr.ldPtro(svd, $instance_globals_saved_d_doors),
+        cptr.ldI32o(sroom, $mkroom_fdoor),
+        $sizeof_coord,
+        $nhcoord_y
+    );
+    if (((cptr.ldI32o3(
+        svl,
+        sx,
+        $sizeof_rm_x21,
+        sy,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) ==
+            NHM.D_NODOOR) {
+        cptr.stI32o3(
+            svl,
+            sx,
+            $sizeof_rm_x21,
+            sy,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            NHM.D_ISOPEN
+        );
         newsym(i16(sx), i16(sy));
     }
-    if (cptr.ld1so3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR) {
-        cvt_sdoor_to_door(cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21), sy, $sizeof_rm));  /* .typ = DOOR */
+    if (cptr.ld1so3(
+        svl,
+        sx,
+        $sizeof_rm_x21,
+        sy,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    ) ==
+            NHC.SDOOR) {
+        cvt_sdoor_to_door(cptr.add(
+            cptr.add(cptr.add(svl, $instance_globals_saved_l_level), sx, $sizeof_rm_x21),
+            sy,
+            $sizeof_rm
+        ));  /* .typ = DOOR */
         newsym(i16(sx), i16(sy));
     }
-    if (((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & NHM.D_TRAPPED)
-        cptr.stI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags, NHM.D_LOCKED);
+    if (((cptr.ldI32o3(
+        svl,
+        sx,
+        $sizeof_rm_x21,
+        sy,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) &
+            NHM.D_TRAPPED)
+        cptr.stI32o3(
+            svl,
+            sx,
+            $sizeof_rm_x21,
+            sy,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags,
+            NHM.D_LOCKED
+        );
 
-    if (((cptr.ldI32o3(svl, sx, $sizeof_rm_x21, sy, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) == NHM.D_LOCKED) {
+    if (((cptr.ldI32o3(
+        svl,
+        sx,
+        $sizeof_rm_x21,
+        sy,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_flags
+    ) & 31) | 0) ==
+            NHM.D_LOCKED) {
         let m = sx;
         let n = sy;
 
@@ -1484,11 +1858,39 @@ export function stock_room(shp_indx, sroom) {
             n++;
         void cptr.sprintf(cptr.decay(buf), __s_closed_for_inventory);
         make_engr_at(i16(m), i16(n), cptr.decay(buf), null, 0n, NHM.DUST);
-        if (cptr.ld1so3(svl, m, $sizeof_rm_x21, n, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.CORR && cptr.ld1so3(svl, m, $sizeof_rm_x21, n, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM)
-            cptr.st1o3(svl, m, $sizeof_rm_x21, n, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(((Is_special(cptr.add(u, $you_uz)) || cptr.ld1s(in_rooms(i16(m), i16(n), 0))) ? NHC.ROOM : NHC.CORR)));
+        if (cptr.ld1so3(
+            svl,
+            m,
+            $sizeof_rm_x21,
+            n,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        ) !=
+            NHC.CORR &&
+                cptr.ld1so3(
+                    svl,
+                    m,
+                    $sizeof_rm_x21,
+                    n,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                ) !=
+                    NHC.ROOM)
+            cptr.st1o3(
+                svl,
+                m,
+                $sizeof_rm_x21,
+                n,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                schar(((Is_special(cptr.add(u, $you_uz)) || cptr.ld1s(in_rooms(i16(m), i16(n), 0)))
+                    ? NHC.ROOM
+                    : NHC.CORR))
+            );
     }
 
-    if (cptr.ld1so(svc, $context_info_tribute + $tribute_info_enabled) && !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_bookstock) & 1)) {
+    if (cptr.ld1so(svc, $context_info_tribute + $tribute_info_enabled) &&
+            !(cptr.ldI32o(svc, $context_info_tribute + $tribute_info_bookstock) & 1)) {
         /*
          * Out of the number of spots where we're actually
          * going to put stuff, randomly single out one in particular.
@@ -1505,7 +1907,12 @@ export function stock_room(shp_indx, sroom) {
         for (sy = cptr.ldI16o(sroom, $mkroom_ly); sy <= cptr.ldI16o(sroom, $mkroom_hy); sy++)
             if (stock_room_goodpos(sroom, rmno, sh, sx, sy)) {
                 stockcount++;
-                mkshobj_at(shp, sx, sy, schar(((stockcount) && (stockcount == specialspot) ? 1 : 0)));
+                mkshobj_at(
+                    shp,
+                    sx,
+                    sy,
+                    schar(((stockcount) && (stockcount == specialspot) ? 1 : 0))
+                );
             }
 
     /*
@@ -1514,7 +1921,10 @@ export function stock_room(shp_indx, sroom) {
      */
 
     /* Hack for Orcus's level: it's a ghost town, get rid of shopkeepers */
-    if (on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_orcus_level))) {
+    if (on_level(
+        cptr.add(u, $you_uz),
+        cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_orcus_level)
+    )) {
         let mtmp = shop_keeper(schar(rmno));
         mongone(mtmp);
     }
@@ -1523,20 +1933,40 @@ export function stock_room(shp_indx, sroom) {
 }
 
 /* does shkp's shop stock this item type? */
-/** C ref: shknam.c:805 — @param {CPtr<struct monst>} shkp @param {CPtr<struct obj>} obj @returns {CInt} */
+/**
+ * C ref: shknam.c:805
+ * @param {CPtr<struct monst>} shkp
+ * @param {CPtr<struct obj>} obj
+ * @returns {CInt}
+ */
 export function saleable(shkp, obj) {
     let i;
-    let shp_indx = (cptr.ldI32o((cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)), $eshk_shoptype) - NHC.SHOPBASE) | 0;
+    let shp_indx = (cptr.ldI32o(
+        (cptr.ldPtro(cptr.ldPtro((shkp), $monst_mextra), $mextra_eshk)),
+        $eshk_shoptype
+    ) -
+        NHC.SHOPBASE) |
+            0;
     let shp = cptr.add(shtypes, shp_indx, $sizeof_shclass);
 
     if (cptr.ld1so(shp, $shclass_symb) == NHC.RANDOM_CLASS)
         return 1;
-    for (i = 0; i < Number(BigInt.asIntN(32, (72n / 8n))) && cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs); i++) {
+    for (
+        i = 0;
+        i < Number(BigInt.asIntN(32, (72n / 8n))) &&
+            cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs);
+        i++
+    ) {
         /* pseudo-class needs special handling */
-        if (cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) == ((NHC.MAXOCLASSES + 1) | 0)) {
+        if (cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) ==
+                ((NHC.MAXOCLASSES + 1) | 0)) {
             if (veggy_item(obj, 0))
                 return 1;
-        } else if ((cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) < 0) ? cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) == -cptr.ldI16o(obj, $obj_otyp) : cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) == cptr.ld1so(obj, $obj_oclass))
+        } else if ((cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) < 0)
+                ? cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) ==
+                    -cptr.ldI16o(obj, $obj_otyp)
+                : cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype) ==
+                    cptr.ld1so(obj, $obj_oclass))
             return 1;
     }
     /* not found */
@@ -1552,7 +1982,12 @@ export function get_shop_item(type) {
     let j;
 
     /* select an appropriate object type at random */
-    for (j = rnd(100), i = 0; (j = (j - cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs)) | 0) > 0; i++)
+    for (
+        j = rnd(100),
+        i = 0;
+        (j = (j - cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs)) | 0) > 0;
+        i++
+    )
         continue;
 
     return cptr.ldI32o2(shp, i, $sizeof_itp, $shclass_iprobs + $itp_itype);
@@ -1586,7 +2021,10 @@ export function shkname(mtmp) {
     } else if (!has_eshk(mtmp)) {
         panic(__s_shkname_shopkeeper_s_lacks_eshk_data, nam);
     } else {
-        let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
+        let shknm = cptr.add(
+            (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
+            $eshk_shknam
+        );
 
         if (Hallucination() && !cptr.ldI32(program_state)) {
             let nlp;
@@ -1616,12 +2054,22 @@ export function shkname(mtmp) {
 
 /** C ref: shknam.c:900 — @param {CPtr<struct monst>} mtmp @returns {CInt} */
 export function shkname_is_pname(mtmp) {
-    let shknm = cptr.add((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)), $eshk_shknam);
+    let shknm = cptr.add(
+        (cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_eshk)),
+        $eshk_shknam
+    );
 
-    return schar((cptr.ld1s(shknm) == 45 || cptr.ld1s(shknm) == 43 || cptr.ld1s(shknm) == 61 ? 1 : 0));
+    return schar((cptr.ld1s(shknm) == 45 || cptr.ld1s(shknm) == 43 || cptr.ld1s(shknm) == 61
+            ? 1
+            : 0));
 }
 
-/** C ref: shknam.c:908 — @param {CPtr<struct monst>} shkp @param {CInt} override_hallucination @returns {CInt} */
+/**
+ * C ref: shknam.c:908
+ * @param {CPtr<struct monst>} shkp
+ * @param {CInt} override_hallucination
+ * @returns {CInt}
+ */
 export function is_izchak(shkp, override_hallucination) {
     let shknm;
 
@@ -1643,7 +2091,12 @@ export function is_izchak(shkp, override_hallucination) {
 // 12 bindings: 0 rebound+refilled, 0 rebound, 12 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(shkliquors), S(shkbooks), S(shkarmors), S(shkwands), S(shkrings), S(shkfoods), S(shkweapons), S(shktools), S(shklight), S(shkgeneral), S(shkhealthfoods), S(shtypes)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(shkliquors), S(shkbooks), S(shkarmors), S(shkwands), S(shkrings), S(shkfoods),
+        S(shkweapons), S(shktools), S(shklight), S(shkgeneral), S(shkhealthfoods), S(shtypes)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("shknam.js: __resetState before __captureState");

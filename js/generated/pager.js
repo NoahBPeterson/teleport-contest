@@ -8,15 +8,37 @@ import * as cptr from '../cptr.js';
 import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
-import { SURFACE_AT, ceiling_hider, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph, engraving_to_defsym, glyph_is_body, glyph_is_cmap, glyph_is_monster, glyph_is_object, glyph_is_statue, glyph_is_trap, glyph_is_warning, glyph_to_body_corpsenm, glyph_to_obj, glyph_to_statue_corpsenm, glyph_to_trap, glyph_to_warning, has_mcorpsenm, is_cmap_drawbridge, is_cmap_engraving, is_cmap_trap, is_obj_mappear } from './nhmacrofn.js';
-import { Blind, Detect_monsters, EDetect_monsters, EHalluc_resistance, Hallucination, Infravision, Invis, Invisible, Levitation, Punished, U_AP_TYPE, Ugender, Unblind_telepat, Upolyd, create_nhwindow, destroy_nhwindow, display_file, display_nhwindow, end_menu, putmixed, putstr, sokoban_dnum, start_menu, wizard } from './nhprop.js';
-import { WIN_MESSAGE, c_common_strings, cg, flags, gd, gf, gi, go, gs, gu, gv, gw, gy, iflags, program_state, svc, svd, svl, svp, u, uball, ynchars } from './decl.js';
-import { copynchars, digit, dist2, eos, lcase, mungspaces, nh_snprintf, strip_newline, strkitten, strncmpi, strstri, strsubst, tabexpand, upstart, visctrl } from './hacklib.js';
+import {
+    SURFACE_AT, ceiling_hider, cmap_a_to_glyph, cmap_b_to_glyph, cmap_c_to_glyph,
+    engraving_to_defsym, glyph_is_body, glyph_is_cmap, glyph_is_monster, glyph_is_object,
+    glyph_is_statue, glyph_is_trap, glyph_is_warning, glyph_to_body_corpsenm, glyph_to_obj,
+    glyph_to_statue_corpsenm, glyph_to_trap, glyph_to_warning, has_mcorpsenm, is_cmap_drawbridge,
+    is_cmap_engraving, is_cmap_trap, is_obj_mappear
+} from './nhmacrofn.js';
+import {
+    Blind, Detect_monsters, EDetect_monsters, EHalluc_resistance, Hallucination, Infravision, Invis,
+    Invisible, Levitation, Punished, U_AP_TYPE, Ugender, Unblind_telepat, Upolyd, create_nhwindow,
+    destroy_nhwindow, display_file, display_nhwindow, end_menu, putmixed, putstr, sokoban_dnum,
+    start_menu, wizard
+} from './nhprop.js';
+import {
+    WIN_MESSAGE, c_common_strings, cg, flags, gd, gf, gi, go, gs, gu, gv, gw, gy, iflags,
+    program_state, svc, svd, svl, svp, u, uball, ynchars
+} from './decl.js';
+import {
+    copynchars, digit, dist2, eos, lcase, mungspaces, nh_snprintf, strip_newline, strkitten,
+    strncmpi, strstri, strsubst, tabexpand, upstart, visctrl
+} from './hacklib.js';
 import { dumplogmsg, impossible, pline } from './pline.js';
-import { Mgender, coyotename, distant_monnam, hliquid, mon_nam, pmname, rndmonnam, y_monnam } from './do_name.js';
+import {
+    Mgender, coyotename, distant_monnam, hliquid, mon_nam, pmname, rndmonnam, y_monnam
+} from './do_name.js';
 import { mons } from './monst.js';
 import { visible_region_at } from './region.js';
-import { an, ansimpleoname, distant_name, doname_vague_quan, doname_with_price, fruit_from_name, makeplural, makesingular, simpleonames, singular, the, xname } from './objnam.js';
+import {
+    an, ansimpleoname, distant_name, doname_vague_quan, doname_with_price, fruit_from_name,
+    makeplural, makesingular, simpleonames, singular, the, xname
+} from './objnam.js';
 import { align_str, trap_predicament } from './insight.js';
 import { trapped_chest_at, trapped_door_at } from './detect.js';
 import { t_at, trapname } from './trap.js';
@@ -34,11 +56,16 @@ import { observe_object } from './o_init.js';
 import { closed_door } from './monmove.js';
 import { dmgtype_fromattack, sticks } from './mondata.js';
 import { howmonseen } from './vision.js';
-import { cmd_from_func, cmdname_from_func, cmdq_clear, cmdq_pop, do_reqmenu, doextlist, dokeylist, getdir, isok, key2extcmddesc, key2txt, yn_function } from './cmd.js';
+import {
+    cmd_from_func, cmdname_from_func, cmdq_clear, cmdq_pop, do_reqmenu, doextlist, dokeylist,
+    getdir, isok, key2extcmddesc, key2txt, yn_function
+} from './cmd.js';
 import { rn2_on_display_rng } from './rnd.js';
 import { altarmask_at } from './pray.js';
 import { pmatch } from './strutil.js';
-import { add_menu, add_menu_str, decode_mixed, encglyph, getlin, select_menu, windowprocs } from './windows.js';
+import {
+    add_menu, add_menu_str, decode_mixed, encglyph, getlin, select_menu, windowprocs
+} from './windows.js';
 import { ok_to_quest } from './quest.js';
 import { engr_at } from './engrave.js';
 import { coord_desc, getpos } from './getpos.js';
@@ -50,80 +77,89 @@ import { doset, doset_simple, option_help, show_menu_controls } from './options.
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
 const $NhRegion_glyph = FLD.NhRegion_glyph, $Race_adj = FLD.Race_adj, $Race_mnum = FLD.Race_mnum,
-    $Role_mnum = FLD.Role_mnum, $_cmd_queue_key = FLD._cmd_queue_key,
-    $c_common_strings_c_something = FLD.c_common_strings_c_something,
-    $class_sym_explain = FLD.class_sym_explain, $const_globals_zeroany = FLD.const_globals_zeroany,
-    $context_info_current_fruit = FLD.context_info_current_fruit,
-    $context_info_warntype = FLD.context_info_warntype, $coord_y = FLD.coord_y,
-    $d_level_dlevel = FLD.d_level_dlevel, $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
-    $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_juiblex_level = FLD.dgn_topology_d_juiblex_level,
-    $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
-    $dgn_topology_d_medusa_level = FLD.dgn_topology_d_medusa_level,
-    $dgn_topology_d_qstart_level = FLD.dgn_topology_d_qstart_level,
-    $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
-    $dgn_topology_d_sokoban_dnum = FLD.dgn_topology_d_sokoban_dnum,
-    $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
-    $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist, $dlevel_t_flags = FLD.dlevel_t_flags,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters, $engr_engr_txt = FLD.engr_engr_txt,
-    $engr_engr_x = FLD.engr_engr_x, $engr_engr_y = FLD.engr_engr_y, $engr_eread = FLD.engr_eread,
-    $flag_debug = FLD.flag_debug, $flag_female = FLD.flag_female, $flag_help = FLD.flag_help,
-    $flag_lootabc = FLD.flag_lootabc, $flag_showrace = FLD.flag_showrace, $flag_verbose = FLD.flag_verbose,
-    $glyphinfo_ttychar = FLD.glyphinfo_ttychar, $instance_flags_altmeta = FLD.instance_flags_altmeta,
-    $instance_flags_getpos_coords = FLD.instance_flags_getpos_coords,
-    $instance_flags_ice_rating = FLD.instance_flags_ice_rating,
-    $instance_flags_save_uswallow = FLD.instance_flags_save_uswallow,
-    $instance_flags_terrainmode = FLD.instance_flags_terrainmode,
-    $instance_globals_d_decor_levitate_override = FLD.instance_globals_d_decor_levitate_override,
-    $instance_globals_i_invent = FLD.instance_globals_i_invent,
-    $instance_globals_o_ov_primary_syms = FLD.instance_globals_o_ov_primary_syms,
-    $instance_globals_o_ov_rogue_syms = FLD.instance_globals_o_ov_rogue_syms,
-    $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
-    $instance_globals_w_warnsyms = FLD.instance_globals_w_warnsyms,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
-    $levelflags_arboreal = FLD.levelflags_arboreal, $levelflags_hero_memory = FLD.levelflags_hero_memory,
-    $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $monst_data = FLD.monst_data, $monst_female = FLD.monst_female,
-    $monst_isshk = FLD.monst_isshk, $monst_m_ap_type = FLD.monst_m_ap_type,
-    $monst_mappearance = FLD.monst_mappearance, $monst_mextra = FLD.monst_mextra,
-    $monst_mfrozen = FLD.monst_mfrozen, $monst_mleashed = FLD.monst_mleashed,
-    $monst_mpeaceful = FLD.monst_mpeaceful, $monst_msleeping = FLD.monst_msleeping,
-    $monst_mstrategy = FLD.monst_mstrategy, $monst_mtame = FLD.monst_mtame,
-    $monst_mtrapped = FLD.monst_mtrapped, $monst_mundetected = FLD.monst_mundetected,
-    $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y,
-    $obj_corpsenm = FLD.obj_corpsenm, $obj_dknown = FLD.obj_dknown, $obj_invlet = FLD.obj_invlet,
-    $obj_no_charge = FLD.obj_no_charge, $obj_oclass = FLD.obj_oclass, $obj_otyp = FLD.obj_otyp,
-    $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
-    $obj_timed = FLD.obj_timed, $obj_where = FLD.obj_where, $objclass_oc_class = FLD.objclass_oc_class,
-    $permonst_mflags1 = FLD.permonst_mflags1, $permonst_mflags2 = FLD.permonst_mflags2,
-    $permonst_mlet = FLD.permonst_mlet, $permonst_pmidx = FLD.permonst_pmidx,
-    $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags,
-    $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $sizeof_class_sym = FLD.sizeof_class_sym,
-    $sizeof_glyphinfo = FLD.sizeof_glyphinfo, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_nhcoord = FLD.sizeof_nhcoord, $sizeof_objclass = FLD.sizeof_objclass,
-    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
-    $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm, $sizeof_rm_x21 = FLD.sizeof_rm_x21,
-    $sizeof_symdef = FLD.sizeof_symdef, $symdef_explanation = FLD.symdef_explanation,
-    $sysopt_s_fmtd_wizard_list = FLD.sysopt_s_fmtd_wizard_list, $sysopt_s_hideusage = FLD.sysopt_s_hideusage,
-    $trap_madeby_u = FLD.trap_madeby_u, $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp,
-    $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty, $warntype_info_polyd = FLD.warntype_info_polyd,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_file = FLD.window_procs_win_display_file,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_putmixed = FLD.window_procs_win_putmixed,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
-    $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_mfemale = FLD.you_mfemale,
-    $you_uinwater = FLD.you_uinwater, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-    $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck,
-    $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap, $you_uundetected = FLD.you_uundetected,
-    $you_uy = FLD.you_uy, $you_uz = FLD.you_uz, $you_xray_range = FLD.you_xray_range;
+      $Role_mnum = FLD.Role_mnum, $_cmd_queue_key = FLD._cmd_queue_key,
+      $c_common_strings_c_something = FLD.c_common_strings_c_something,
+      $class_sym_explain = FLD.class_sym_explain,
+      $const_globals_zeroany = FLD.const_globals_zeroany,
+      $context_info_current_fruit = FLD.context_info_current_fruit,
+      $context_info_warntype = FLD.context_info_warntype, $coord_y = FLD.coord_y,
+      $d_level_dlevel = FLD.d_level_dlevel,
+      $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dgn_topology_d_juiblex_level = FLD.dgn_topology_d_juiblex_level,
+      $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
+      $dgn_topology_d_medusa_level = FLD.dgn_topology_d_medusa_level,
+      $dgn_topology_d_qstart_level = FLD.dgn_topology_d_qstart_level,
+      $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
+      $dgn_topology_d_sokoban_dnum = FLD.dgn_topology_d_sokoban_dnum,
+      $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
+      $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist, $dlevel_t_flags = FLD.dlevel_t_flags,
+      $dlevel_t_monsters = FLD.dlevel_t_monsters, $engr_engr_txt = FLD.engr_engr_txt,
+      $engr_engr_x = FLD.engr_engr_x, $engr_engr_y = FLD.engr_engr_y, $engr_eread = FLD.engr_eread,
+      $flag_debug = FLD.flag_debug, $flag_female = FLD.flag_female, $flag_help = FLD.flag_help,
+      $flag_lootabc = FLD.flag_lootabc, $flag_showrace = FLD.flag_showrace,
+      $flag_verbose = FLD.flag_verbose, $glyphinfo_ttychar = FLD.glyphinfo_ttychar,
+      $instance_flags_altmeta = FLD.instance_flags_altmeta,
+      $instance_flags_getpos_coords = FLD.instance_flags_getpos_coords,
+      $instance_flags_ice_rating = FLD.instance_flags_ice_rating,
+      $instance_flags_save_uswallow = FLD.instance_flags_save_uswallow,
+      $instance_flags_terrainmode = FLD.instance_flags_terrainmode,
+      $instance_globals_d_decor_levitate_override = FLD.instance_globals_d_decor_levitate_override,
+      $instance_globals_i_invent = FLD.instance_globals_i_invent,
+      $instance_globals_o_ov_primary_syms = FLD.instance_globals_o_ov_primary_syms,
+      $instance_globals_o_ov_rogue_syms = FLD.instance_globals_o_ov_rogue_syms,
+      $instance_globals_s_showsyms = FLD.instance_globals_s_showsyms,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_v_viz_array = FLD.instance_globals_v_viz_array,
+      $instance_globals_w_warnsyms = FLD.instance_globals_w_warnsyms,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst,
+      $levelflags_arboreal = FLD.levelflags_arboreal,
+      $levelflags_hero_memory = FLD.levelflags_hero_memory,
+      $mextra_mcorpsenm = FLD.mextra_mcorpsenm, $monst_data = FLD.monst_data,
+      $monst_female = FLD.monst_female, $monst_isshk = FLD.monst_isshk,
+      $monst_m_ap_type = FLD.monst_m_ap_type, $monst_mappearance = FLD.monst_mappearance,
+      $monst_mextra = FLD.monst_mextra, $monst_mfrozen = FLD.monst_mfrozen,
+      $monst_mleashed = FLD.monst_mleashed, $monst_mpeaceful = FLD.monst_mpeaceful,
+      $monst_msleeping = FLD.monst_msleeping, $monst_mstrategy = FLD.monst_mstrategy,
+      $monst_mtame = FLD.monst_mtame, $monst_mtrapped = FLD.monst_mtrapped,
+      $monst_mundetected = FLD.monst_mundetected, $monst_mx = FLD.monst_mx,
+      $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y, $obj_corpsenm = FLD.obj_corpsenm,
+      $obj_dknown = FLD.obj_dknown, $obj_invlet = FLD.obj_invlet,
+      $obj_no_charge = FLD.obj_no_charge, $obj_oclass = FLD.obj_oclass, $obj_otyp = FLD.obj_otyp,
+      $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy, $obj_quan = FLD.obj_quan, $obj_spe = FLD.obj_spe,
+      $obj_timed = FLD.obj_timed, $obj_where = FLD.obj_where,
+      $objclass_oc_class = FLD.objclass_oc_class, $permonst_mflags1 = FLD.permonst_mflags1,
+      $permonst_mflags2 = FLD.permonst_mflags2, $permonst_mlet = FLD.permonst_mlet,
+      $permonst_pmidx = FLD.permonst_pmidx, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $rm_flags = FLD.rm_flags, $rm_seenv = FLD.rm_seenv,
+      $rm_typ = FLD.rm_typ, $sizeof_class_sym = FLD.sizeof_class_sym,
+      $sizeof_glyphinfo = FLD.sizeof_glyphinfo, $sizeof_menu_item = FLD.sizeof_menu_item,
+      $sizeof_nhcoord = FLD.sizeof_nhcoord, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_permonst = FLD.sizeof_permonst,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_symdef = FLD.sizeof_symdef,
+      $symdef_explanation = FLD.symdef_explanation,
+      $sysopt_s_fmtd_wizard_list = FLD.sysopt_s_fmtd_wizard_list,
+      $sysopt_s_hideusage = FLD.sysopt_s_hideusage, $trap_madeby_u = FLD.trap_madeby_u,
+      $trap_tseen = FLD.trap_tseen, $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx,
+      $trap_ty = FLD.trap_ty, $warntype_info_polyd = FLD.warntype_info_polyd,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_file = FLD.window_procs_win_display_file,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_putmixed = FLD.window_procs_win_putmixed,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_dx = FLD.you_dx,
+      $you_dy = FLD.you_dy, $you_dz = FLD.you_dz, $you_mfemale = FLD.you_mfemale,
+      $you_uinwater = FLD.you_uinwater, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops, $you_usteed = FLD.you_usteed,
+      $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_utrap = FLD.you_utrap,
+      $you_uundetected = FLD.you_uundetected, $you_uy = FLD.you_uy, $you_uz = FLD.you_uz,
+      $you_xray_range = FLD.you_xray_range;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_append_str_buf_contains_lu_characters = cptr.lit("append_str: 'buf' contains %lu characters.");
@@ -467,9 +503,19 @@ function append_str(buf, new_str) {
 
     /* some space available, but not necessarily enough for full append */
     space_left = BigInt.asUintN(64, 255n - oldlen);  /* space remaining in buf */
-    void __builtin___strncat_chk(buf, cptr.decay(__static_append_str_sep), space_left, __builtin_object_size(buf, 1));
+    void __builtin___strncat_chk(
+        buf,
+        cptr.decay(__static_append_str_sep),
+        space_left,
+        __builtin_object_size(buf, 1)
+    );
     if (space_left > 4n)
-        void __builtin___strncat_chk(buf, new_str, BigInt.asUintN(64, space_left - 4n), __builtin_object_size(buf, 1));
+        void __builtin___strncat_chk(
+            buf,
+            new_str,
+            BigInt.asUintN(64, space_left - 4n),
+            __builtin_object_size(buf, 1)
+        );
     return 1;  /* something was appended, possibly just part of " or " */
 }
 
@@ -482,22 +528,51 @@ export function self_lookat(outbuf) {
     /* include race with role unless polymorphed */
     cptr.st1o(cptr.decay(race), 0, 0, 1);
     if (!Upolyd())
-        void cptr.sprintf(cptr.decay(race), __s_pct_s_sp, cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj));
-    void cptr.sprintf(outbuf, __s_s_s_s_called_s, (Invis() && ((Unblind_telepat() || Detect_monsters()) || !Blind())) ? __s_invisible : __s_empty, cptr.decay(race), pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), Ugender()), svp);
+        void cptr.sprintf(
+            cptr.decay(race),
+            __s_pct_s_sp,
+            cptr.ldPtro(gu, $instance_globals_u_urace + $Race_adj)
+        );
+    void cptr.sprintf(
+        outbuf,
+        __s_s_s_s_called_s,
+        (Invis() && ((Unblind_telepat() || Detect_monsters()) || !Blind()))
+            ? __s_invisible
+            : __s_empty,
+        cptr.decay(race),
+        pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), Ugender()),
+        svp
+    );
     if (cptr.ldPtro(u, $you_usteed))
         void cptr.sprintf(eos(outbuf), __s_mounted_on_s, y_monnam(cptr.ldPtro(u, $you_usteed)));
-    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 || (Upolyd() && U_AP_TYPE()) || visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
+    if ((cptr.ldI32o(u, $you_uundetected) & 1) | 0 ||
+            (Upolyd() && U_AP_TYPE()) ||
+            visible_region_at(cptr.ldI16(u), cptr.ldI16o(u, $you_uy)))
         mhidden_description(cptr.add(gy, $instance_globals_y_youmonst), 11, eos(outbuf));
     if (Punished())
-        void cptr.sprintf(eos(outbuf), __s_chained_to_s, uball.v ? ansimpleoname(uball.v) : __s_nothing);
+        void cptr.sprintf(
+            eos(outbuf),
+            __s_chained_to_s,
+            uball.v ? ansimpleoname(uball.v) : __s_nothing
+        );
     if (cptr.ldI32o(u, $you_utrap))
-        void cptr.sprintf(eos(outbuf), __s_comma_sp_pct_s, trap_predicament(cptr.decay(trapbuf), 0, 0));
+        void cptr.sprintf(
+            eos(outbuf),
+            __s_comma_sp_pct_s,
+            trap_predicament(cptr.decay(trapbuf), 0, 0)
+        );
     return outbuf;
 }
 
 /* format a description of 'mon's health for look_at_monster(), done_in_by();
    result isn't Healer-specific (not trained for arbitrary creatures) */
-/** C ref: pager.c:138 — @param {CPtr<struct monst>} mon @param {CInt} addspace @param {CPtr<char>} outbuf @returns {CPtr<char>} */
+/**
+ * C ref: pager.c:138
+ * @param {CPtr<struct monst>} mon
+ * @param {CInt} addspace
+ * @param {CPtr<char>} outbuf
+ * @returns {CPtr<char>}
+ */
 export function monhealthdescr(mon, addspace, outbuf) {
     (void (mon));
     (void (addspace));
@@ -506,7 +581,13 @@ export function monhealthdescr(mon, addspace, outbuf) {
 }
 
 /* copy a trap's description into outbuf[] */
-/** C ref: pager.c:167 — @param {CPtr<char>} outbuf @param {CInt} tnum @param {CInt} x @param {CInt} y */
+/**
+ * C ref: pager.c:167
+ * @param {CPtr<char>} outbuf
+ * @param {CInt} tnum
+ * @param {CInt} x
+ * @param {CInt} y
+ */
 function trap_description(outbuf, tnum, x, y) {
     /*
      * Trap detection used to display a bear trap at locations having
@@ -524,7 +605,12 @@ function trap_description(outbuf, tnum, x, y) {
 
 /* describe a hidden monster; used for look_at during extended monster
    detection and for probing; also when looking at self and camera feedback */
-/** C ref: pager.c:186 — @param {CPtr<struct monst>} mon @param {CUInt} mhid_flags @param {CPtr<char>} outbuf */
+/**
+ * C ref: pager.c:186
+ * @param {CPtr<struct monst>} mon
+ * @param {CUInt} mhid_flags
+ * @param {CPtr<char>} outbuf
+ */
 export function mhidden_description(mon, mhid_flags, outbuf) {
     let otmp = cptr.box(0), what, reg, buflen, incl_article, force_region, fakeobj, x, y, glyph;
     let __go_objfrommap = false;
@@ -536,43 +622,83 @@ export function mhidden_description(mon, mhid_flags, outbuf) {
         let isyou = schar((cptr.eq(mon, cptr.add(gy, $instance_globals_y_youmonst))));
         x = i16((isyou ? cptr.ldI16(u) : cptr.ldI16o(mon, $monst_mx)));
         y = i16((isyou ? cptr.ldI16o(u, $you_uy) : cptr.ldI16o(mon, $monst_my)));
-        glyph = ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory) & 1) | 0 && !isyou) ? cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level) : glyph_at(x, y);
+        glyph = ((cptr.ldI32o(
+            svl,
+            $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hero_memory
+        ) & 1) | 0 &&
+            !isyou)
+                ? cptr.ldI32o3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level
+                )
+                : glyph_at(x, y);
 
         cptr.st1(outbuf, 0);
-        if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE || (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT) {
+        if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE ||
+                (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT) {
             if (incl_prefix)
                 void cptr.strcpy(outbuf, __s_mimicking);
             if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE) {
-                what = cptr.ldPtro2(defsyms, cptr.ldI32o(mon, $monst_mappearance), $sizeof_symdef, $symdef_explanation);
+                what = cptr.ldPtro2(
+                    defsyms,
+                    cptr.ldI32o(mon, $monst_mappearance),
+                    $sizeof_symdef,
+                    $symdef_explanation
+                );
                 if (incl_article)
                     what = an(what);
                 void cptr.strcat(outbuf, what);
-            } else if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_OBJECT && glyph_is_object(glyph)) {
+            } else if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ==
+                NHC.M_AP_OBJECT &&
+                    glyph_is_object(glyph)) {
                 __go_objfrommap = true; break __skip_objfrommap;
             } else {
-                void cptr.strcat(outbuf, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
+                void cptr.strcat(
+                    outbuf,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
+                );
             }
         } else if ((cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_MONSTER) {
             if (show_altmon) {
                 if (incl_prefix)
                     void cptr.strcat(outbuf, __s_masquerading_as);
-                what = pmname(cptr.add(mons, cptr.ldI32o(mon, $monst_mappearance), $sizeof_permonst), Mgender(mon));
+                what = pmname(
+                    cptr.add(mons, cptr.ldI32o(mon, $monst_mappearance), $sizeof_permonst),
+                    Mgender(mon)
+                );
                 if (incl_prefix)
                     what = an(what);
                 void cptr.strcat(outbuf, what);
             }
-        } else if (isyou ? (cptr.ldI32o(u, $you_uundetected) & 1) | 0 : (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
+        } else if (isyou
+                ? (cptr.ldI32o(u, $you_uundetected) & 1) | 0
+                : (cptr.ldI32o(mon, $monst_mundetected) & 1) | 0) {
             void cptr.strcpy(outbuf, __s_hiding);
             if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 128n) != 0n)) {
                 void cptr.strcat(outbuf, __s_under);
                 /* remembered glyph, not glyph_at() which is 'mon' */
                 if (glyph_is_object(glyph))
                     { __go_objfrommap = true; break __skip_objfrommap; }
-                void cptr.strcat(outbuf, cptr.ldPtro(c_common_strings, $c_common_strings_c_something));
-            } else if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 256n) != 0n)) {
-                void cptr.sprintf(eos(outbuf), __s_on_the_s, ceiling_hider(cptr.ldPtro(mon, $monst_data)) ? __s_ceiling : surface(x, y));
+                void cptr.strcat(
+                    outbuf,
+                    cptr.ldPtro(c_common_strings, $c_common_strings_c_something)
+                );
+            } else if (((cptr.ldU64o(
+                (cptr.ldPtro(mon, $monst_data)),
+                $permonst_mflags1
+            ) & 256n) != 0n)) {
+                void cptr.sprintf(
+                    eos(outbuf),
+                    __s_on_the_s,
+                    ceiling_hider(cptr.ldPtro(mon, $monst_data)) ? __s_ceiling : surface(x, y)
+                );
             } else {
-                if (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_EEL && is_pool(x, y))
+                if (cptr.ld1so(cptr.ldPtro(mon, $monst_data), $permonst_mlet) == NHC.S_EEL &&
+                        is_pool(x, y))
                     void cptr.strcat(outbuf, __s_in_murky_water);
             }
         }
@@ -580,7 +706,9 @@ export function mhidden_description(mon, mhid_flags, outbuf) {
     if (__go_objfrommap) {
         otmp.v = null;
         fakeobj = object_from_map(glyph, x, y, otmp);
-        what = (otmp.v && cptr.ldI16o(otmp.v, $obj_otyp) != NHC.STRANGE_OBJECT) ? simpleonames(otmp.v) : cptr.ldPtro(obj_descr, NHC.STRANGE_OBJECT, $sizeof_objdescr);
+        what = (otmp.v && cptr.ldI16o(otmp.v, $obj_otyp) != NHC.STRANGE_OBJECT)
+                ? simpleonames(otmp.v)
+                : cptr.ldPtro(obj_descr, NHC.STRANGE_OBJECT, $sizeof_objdescr);
         if (incl_article && (!otmp.v || cptr.ldI64o(otmp.v, $obj_quan) == 1n))
             what = an(what);
         void cptr.strcat(outbuf, what);
@@ -600,29 +728,58 @@ export function mhidden_description(mon, mhid_flags, outbuf) {
            but a visible region marks all its spots as can't-be-seen, so
            this monster's spot is !cansee and !couldsee [maybe we need an
            additional vision bit for "hero's side of edge of gas cloud"?] */
-        if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= Math.imul(r, ((r + 1) | 0)) || force_region) {
+        if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <=
+            Math.imul(r, ((r + 1) | 0)) ||
+                force_region) {
             let rglyph = cptr.ldI32o(reg, $NhRegion_glyph);
-            let poison_gas = schar((glyph_is_cmap(rglyph) && glyph_to_cmap(rglyph) == NHC.S_poisoncloud ? 1 : 0));
+            let poison_gas = schar((glyph_is_cmap(rglyph) &&
+                glyph_to_cmap(rglyph) == NHC.S_poisoncloud
+                    ? 1
+                    : 0));
 
-            nh_snprintf(__s_mhidden_description, 277, eos(outbuf), BigInt.asUintN(64, 256n - buflen), __s_in_a_cloud_of_s, poison_gas ? __s_poison_gas : __s_vapor);
+            nh_snprintf(
+                __s_mhidden_description,
+                277,
+                eos(outbuf),
+                BigInt.asUintN(64, 256n - buflen),
+                __s_in_a_cloud_of_s,
+                poison_gas ? __s_poison_gas : __s_vapor
+            );
         }
     }
 }
 
 /* extracted from lookat(); also used by namefloorobj() */
-/** C ref: pager.c:284 — @param {CInt} glyph @param {CInt} x @param {CInt} y @param {CPtr<struct obj *>} obj_p @returns {CInt} */
+/**
+ * C ref: pager.c:284
+ * @param {CInt} glyph
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<struct obj *>} obj_p
+ * @returns {CInt}
+ */
 export function object_from_map(glyph, x, y, obj_p) {
     let fakeobj = 0;
     let mimic_obj = 0;
     let mtmp;
     let otmp;
-    let glyphotyp = glyph_is_object(glyph) ? glyph_to_obj(glyph) : (glyph_is_cmap(glyph) ? (sobj_at(NHC.CHEST, x, y) ? NHC.CHEST : NHC.LARGE_BOX) : NHC.STRANGE_OBJECT);
+    let glyphotyp = glyph_is_object(glyph)
+            ? glyph_to_obj(glyph)
+            : (glyph_is_cmap(glyph)
+                ? (sobj_at(NHC.CHEST, x, y) ? NHC.CHEST : NHC.LARGE_BOX)
+                : NHC.STRANGE_OBJECT);
 
     cptr.stPtr(obj_p, null);
     /* TODO: check inside containers in case glyph came from detection */
     if ((otmp = sobj_at(glyphotyp, x, y)) === null)
-        for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist); otmp; otmp = cptr.ldPtr(otmp))
-            if (cptr.ldI16o(otmp, $obj_ox) == x && cptr.ldI16o(otmp, $obj_oy) == y && cptr.ldI16o(otmp, $obj_otyp) == glyphotyp)
+        for (
+            otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist);
+            otmp;
+            otmp = cptr.ldPtr(otmp)
+        )
+            if (cptr.ldI16o(otmp, $obj_ox) == x &&
+                    cptr.ldI16o(otmp, $obj_oy) == y &&
+                    cptr.ldI16o(otmp, $obj_otyp) == glyphotyp)
                 break;
 
     /* there might be a mimic here posing as an object */
@@ -635,7 +792,11 @@ export function object_from_map(glyph, x, y, obj_p) {
 
     if (!otmp || cptr.ldI16o(otmp, $obj_otyp) != glyphotyp) {
         /* this used to exclude STRANGE_OBJECT; now caller deals with it */
-        if ((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, glyphotyp, $sizeof_objclass))), $sizeof_objdescr))) {
+        if ((cptr.ldPtro(
+            obj_descr,
+            cptr.ldI16((cptr.add(objects, glyphotyp, $sizeof_objclass))),
+            $sizeof_objdescr
+        ))) {
             /* map shows a regular object, but one that's not actually here */
             otmp = mksobj(glyphotyp, 0, 0);
         } else {
@@ -663,9 +824,17 @@ export function object_from_map(glyph, x, y, obj_p) {
                 /* override svc.context.current_fruit to avoid
                      look, use 'O' to make new named fruit, look again
                    giving different results when current_fruit changes */
-                cptr.st1o(otmp, $obj_spe, schar((cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm))));
+                cptr.st1o(
+                    otmp,
+                    $obj_spe,
+                    schar((cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm)))
+                );
             else
-                cptr.stI32o(otmp, $obj_corpsenm, (cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm)));
+                cptr.stI32o(
+                    otmp,
+                    $obj_corpsenm,
+                    (cptr.ldI32o(cptr.ldPtro((mtmp), $monst_mextra), $mextra_mcorpsenm))
+                );
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.CORPSE && glyph_is_body(glyph)) {
             cptr.stI32o(otmp, $obj_corpsenm, glyph_to_body_corpsenm(glyph));
         } else if (cptr.ldI16o(otmp, $obj_otyp) == NHC.STATUE && glyph_is_statue(glyph)) {
@@ -676,14 +845,26 @@ export function object_from_map(glyph, x, y, obj_p) {
         /* extra fields needed for shop price with doname() formatting */
         cptr.st1o(otmp, $obj_where, NHM.OBJ_FLOOR);
         cptr.stI16o(otmp, $obj_ox, x), cptr.stI16o(otmp, $obj_oy, y);
-        cptr.stI32o(otmp, $obj_no_charge, (cptr.ldI16o(otmp, $obj_otyp) == NHC.STRANGE_OBJECT && costly_spot(x, y) ? 1 : 0) >>> 0);
+        cptr.stI32o(
+            otmp,
+            $obj_no_charge,
+            (cptr.ldI16o(otmp, $obj_otyp) == NHC.STRANGE_OBJECT && costly_spot(x, y) ? 1 : 0) >>> 0
+        );
     }
     /* if located at adjacent spot, mark it as having been seen up close
        (corpse type will be known even if dknown is 0, so we don't need a
        touch check for cockatrice corpse--we're looking without touching) */
-    if (otmp && (dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) && !Blind() && !Hallucination() && (fakeobj || cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR) && !cptr.ldI32o(iflags, $instance_flags_terrainmode))
+    if (otmp &&
+            (dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) &&
+            !Blind() &&
+            !Hallucination() &&
+            (fakeobj || cptr.ld1so(otmp, $obj_where) == NHM.OBJ_FLOOR) &&
+            !cptr.ldI32o(iflags, $instance_flags_terrainmode))
         observe_object(otmp);  /* if a pile, clearly see the top item only */
-    if (fakeobj && mtmp && mimic_obj && ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 || ((cptr.ld1uo((mtmp), $monst_m_ap_type) & -8) & NHM.M_AP_F_DKNOWN))) {
+    if (fakeobj && mtmp &&
+            mimic_obj &&
+            ((cptr.ldI32o(otmp, $obj_dknown) & 1) | 0 ||
+                ((cptr.ld1uo((mtmp), $monst_m_ap_type) & -8) & NHM.M_AP_F_DKNOWN))) {
         cptr.st1o(mtmp, $monst_m_ap_type, cptr.ld1uo(mtmp, $monst_m_ap_type) | NHM.M_AP_F_DKNOWN);
         observe_object(otmp);
     }
@@ -691,13 +872,29 @@ export function object_from_map(glyph, x, y, obj_p) {
     return fakeobj;  /* when True, caller needs to dealloc *obj_p */
 }
 
-/** C ref: pager.c:380 — @param {CPtr<char>} buf @param {CInt} x @param {CInt} y @param {CInt} glyph */
+/**
+ * C ref: pager.c:380
+ * @param {CPtr<char>} buf
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CInt} glyph
+ */
 function look_at_object(buf, x, y, glyph) {
     let otmp = cptr.box(null);
     let fakeobj = object_from_map(glyph, x, y, otmp);
 
     if (otmp.v) {
-        void cptr.strcpy(buf, (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.STRANGE_OBJECT) ? distant_name(otmp.v, (cptr.ldI32o(otmp.v, $obj_dknown) & 1) | 0 ? doname_with_price : doname_vague_quan) : cptr.ldPtro(obj_descr, NHC.STRANGE_OBJECT, $sizeof_objdescr));
+        void cptr.strcpy(
+            buf,
+            (cptr.ldI16o(otmp.v, $obj_otyp) != NHC.STRANGE_OBJECT)
+                ? distant_name(
+                    otmp.v,
+                    (cptr.ldI32o(otmp.v, $obj_dknown) & 1) | 0
+                        ? doname_with_price
+                        : doname_vague_quan
+                )
+                : cptr.ldPtro(obj_descr, NHC.STRANGE_OBJECT, $sizeof_objdescr)
+        );
         if (fakeobj) {
             cptr.st1o(otmp.v, $obj_where, NHM.OBJ_FREE);  /* object_from_map set it to OBJ_FLOOR */
             dealloc_obj(otmp.v), otmp.v = null;  /* has no contents */
@@ -708,12 +905,82 @@ function look_at_object(buf, x, y, glyph) {
 
     if (otmp.v && cptr.ld1so(otmp.v, $obj_where) == NHM.OBJ_BURIED)
         void cptr.strcat(buf, __s_buried);
-    else if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.TREE || ((cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal) & 1) | 0 && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.STONE)))
+    else if (((cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) ==
+        NHC.TREE ||
+            ((cptr.ldI32o(
+                svl,
+                $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_arboreal
+            ) & 1) | 0 &&
+                (cptr.ld1so3(
+                    svl,
+                    x,
+                    $sizeof_rm_x21,
+                    y,
+                    $sizeof_rm,
+                    $instance_globals_saved_l_level + $rm_typ
+                )) ==
+                    NHC.STONE)))
         /* "dangling": "hanging" could imply that it's growing on this tree */
-        nh_snprintf(__s_look_at_object, 407, eos(buf), BigInt.asUintN(64, 256n - cptr.strlen(buf)), __s_s_in_a_tree, (otmp.v && is_treefruit(otmp.v)) ? __s_dangling : __s_stuck);
-    else if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SCORR)
+        nh_snprintf(
+            __s_look_at_object,
+            407,
+            eos(buf),
+            BigInt.asUintN(64, 256n - cptr.strlen(buf)),
+            __s_s_in_a_tree,
+            (otmp.v && is_treefruit(otmp.v)) ? __s_dangling : __s_stuck
+        );
+    else if (cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    ) ==
+        NHC.STONE ||
+            cptr.ld1so3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                NHC.SCORR)
         void cptr.strcat(buf, __s_embedded_in_stone);
-    else if (((cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) && (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) <= NHC.DBWALL) || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SDOOR)
+    else if (((cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    )) &&
+        (cptr.ld1so3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        )) <=
+            NHC.DBWALL) ||
+            cptr.ld1so3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                NHC.SDOOR)
         void cptr.strcat(buf, __s_embedded_in_a_wall);
     else if (closed_door(x, y))
         void cptr.strcat(buf, __s_embedded_in_a_door);
@@ -724,20 +991,63 @@ function look_at_object(buf, x, y, glyph) {
     return;
 }
 
-/** C ref: pager.c:422 — @param {CPtr<char>} buf @param {CPtr<char>} monbuf @param {CPtr<struct monst>} mtmp @param {CInt} x @param {CInt} y */
+/**
+ * C ref: pager.c:422
+ * @param {CPtr<char>} buf
+ * @param {CPtr<char>} monbuf
+ * @param {CPtr<struct monst>} mtmp
+ * @param {CInt} x
+ * @param {CInt} y
+ */
 function look_at_monster(buf, monbuf, mtmp, x, y) {
     let name;
     let monnambuf = new Uint8Array(256);
     let healthbuf = new Uint8Array(256);
     let accurate = schar((!Hallucination()));
 
-    name = (cptr.eq(cptr.ldPtro(mtmp, $monst_data), cptr.add(mons, NHC.PM_COYOTE, $sizeof_permonst)) && accurate) ? coyotename(mtmp, cptr.decay(monnambuf)) : distant_monnam(mtmp, NHM.ARTICLE_NONE, cptr.decay(monnambuf));
-    void cptr.sprintf(buf, __s_s_s_s_s, (cptr.ldI16o(mtmp, $monst_mx) != x || cptr.ldI16o(mtmp, $monst_my) != y) ? (((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && accurate) ? __s_tail_of : __s_tail_of_a) : __s_empty, accurate ? monhealthdescr(mtmp, 1, cptr.decay(healthbuf)) : __s_empty, (cptr.ld1so(mtmp, $monst_mtame) && accurate) ? __s_tame : (((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && accurate) ? __s_peaceful : __s_empty), name);
+    name = (cptr.eq(
+        cptr.ldPtro(mtmp, $monst_data),
+        cptr.add(mons, NHC.PM_COYOTE, $sizeof_permonst)
+    ) &&
+        accurate)
+            ? coyotename(mtmp, cptr.decay(monnambuf))
+            : distant_monnam(mtmp, NHM.ARTICLE_NONE, cptr.decay(monnambuf));
+    void cptr.sprintf(
+        buf,
+        __s_s_s_s_s,
+        (cptr.ldI16o(mtmp, $monst_mx) != x || cptr.ldI16o(mtmp, $monst_my) != y)
+            ? (((cptr.ldI32o(mtmp, $monst_isshk) & 1) | 0 && accurate)
+                ? __s_tail_of
+                : __s_tail_of_a)
+            : __s_empty,
+        accurate ? monhealthdescr(mtmp, 1, cptr.decay(healthbuf)) : __s_empty,
+        (cptr.ld1so(mtmp, $monst_mtame) && accurate)
+            ? __s_tame
+            : (((cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) | 0 && accurate)
+                ? __s_peaceful
+                : __s_empty),
+        name
+    );
     if (cptr.eq(cptr.ldPtro(u, $you_ustuck), mtmp)) {
-        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0)
-            void cptr.strcat(buf, (dmgtype_fromattack((cptr.ldPtro(mtmp, $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_swallowing_you : __s_engulfing_you);
+        if ((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0)
+            void cptr.strcat(
+                buf,
+                (dmgtype_fromattack(
+                    (cptr.ldPtro(mtmp, $monst_data)),
+                    NHM.AD_DGST,
+                    NHM.AT_ENGL
+                ) !== null)
+                    ? __s_swallowing_you
+                    : __s_engulfing_you
+            );
         else
-            void cptr.strcat(buf, (Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data))) ? __s_being_held : __s_holding_you);
+            void cptr.strcat(
+                buf,
+                (Upolyd() && sticks(cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)))
+                    ? __s_being_held
+                    : __s_holding_you
+            );
     }
     /* if mtmp isn't able to move (other than because it is a type of
        monster that never moves), say so [excerpt from mstatusline() for
@@ -755,7 +1065,16 @@ function look_at_monster(buf, monbuf, mtmp, x, y) {
 
     if ((cptr.ldI32o(mtmp, $monst_mleashed) & 1))
         void cptr.strcat(buf, __s_leashed_to_you);
-    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 && ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), cptr.ldI16o(mtmp, $monst_my), 8), cptr.ldI16o(mtmp, $monst_mx)) & NHM.IN_SIGHT) != 0)) {
+    if ((cptr.ldI32o(mtmp, $monst_mtrapped) & 1) | 0 &&
+            ((cptr.ld1uo(
+                cptr.ldPtro(
+                    cptr.ldPtro(gv, $instance_globals_v_viz_array),
+                    cptr.ldI16o(mtmp, $monst_my),
+                    8
+                ),
+                cptr.ldI16o(mtmp, $monst_mx)
+            ) &
+                NHM.IN_SIGHT) != 0)) {
         let t = t_at(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my));
         let tt = t ? (cptr.ldI32o(t, $trap_ttyp) & 31) | 0 : NHC.NO_TRAP;
 
@@ -768,7 +1087,9 @@ function look_at_monster(buf, monbuf, mtmp, x, y) {
 
     /* we know the hero sees a monster at this location, but if it's shown
        due to persistent monster detection he might remember something else */
-    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 || (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) || visible_region_at(x, y))
+    if ((cptr.ldI32o(mtmp, $monst_mundetected) & 1) | 0 ||
+            (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) ||
+            visible_region_at(x, y))
         mhidden_description(mtmp, 11, eos(buf));
 
     if (monbuf) {
@@ -818,9 +1139,18 @@ function look_at_monster(buf, monbuf, mtmp, x, y) {
                 if (Hallucination()) {
                     void cptr.strcat(monbuf, __s_paranoid_delusion);
                 } else {
-                    let mW = (cptr.ldU64o(svc, $context_info_warntype) | cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd));
+                    let mW = (cptr.ldU64o(svc, $context_info_warntype) |
+                            cptr.ldU64o(svc, $context_info_warntype + $warntype_info_polyd));
                     let m2 = cptr.ldU64o(cptr.ldPtro(mtmp, $monst_data), $permonst_mflags2);
-                    let whom = ((mW & 8n & m2) ? __s_human : ((mW & 16n & m2) ? __s_elf : ((mW & 128n & m2) ? __s_orc : ((mW & 256n & m2) ? __s_demon : pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp))))));
+                    let whom = ((mW & 8n & m2)
+                            ? __s_human
+                            : ((mW & 16n & m2)
+                                ? __s_elf
+                                : ((mW & 128n & m2)
+                                    ? __s_orc
+                                    : ((mW & 256n & m2)
+                                        ? __s_demon
+                                        : pmname(cptr.ldPtro(mtmp, $monst_data), Mgender(mtmp))))));
 
                     void cptr.sprintf(eos(monbuf), __s_warned_of_s, makeplural(whom));
                 }
@@ -852,28 +1182,109 @@ export function waterbody_name(x, y) {
     ltyp = schar(SURFACE_AT(x, y));
 
     if (ltyp == NHC.LAVAPOOL) {
-        nh_snprintf(__s_waterbody_name, 572, cptr.decay(__static_waterbody_name_pooltype), 40n, __s_molten_s, hliquid(__s_lava));
+        nh_snprintf(
+            __s_waterbody_name,
+            572,
+            cptr.decay(__static_waterbody_name_pooltype),
+            40n,
+            __s_molten_s,
+            hliquid(__s_lava)
+        );
         return cptr.decay(__static_waterbody_name_pooltype);
     } else if (ltyp == NHC.ICE) {
         if (!hallucinate)
             return __s_ice;
-        nh_snprintf(__s_waterbody_name, 577, cptr.decay(__static_waterbody_name_pooltype), 40n, __s_frozen_s, hliquid(__s_water));
+        nh_snprintf(
+            __s_waterbody_name,
+            577,
+            cptr.decay(__static_waterbody_name_pooltype),
+            40n,
+            __s_frozen_s,
+            hliquid(__s_water)
+        );
         return cptr.decay(__static_waterbody_name_pooltype);
     } else if (ltyp == NHC.POOL) {
-        nh_snprintf(__s_waterbody_name, 580, cptr.decay(__static_waterbody_name_pooltype), 40n, __s_pool_of_s, hliquid(__s_water));
+        nh_snprintf(
+            __s_waterbody_name,
+            580,
+            cptr.decay(__static_waterbody_name_pooltype),
+            40n,
+            __s_pool_of_s,
+            hliquid(__s_water)
+        );
         return cptr.decay(__static_waterbody_name_pooltype);
     } else if (ltyp == NHC.MOAT) {
         /* a bit of extra flavor over general moat */
         if (hallucinate) {
-            nh_snprintf(__s_waterbody_name, 585, cptr.decay(__static_waterbody_name_pooltype), 40n, __s_deep_s, hliquid(__s_water));
+            nh_snprintf(
+                __s_waterbody_name,
+                585,
+                cptr.decay(__static_waterbody_name_pooltype),
+                40n,
+                __s_deep_s,
+                hliquid(__s_water)
+            );
             return cptr.decay(__static_waterbody_name_pooltype);
-        } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))))) {
+        } else if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level
+            )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level
+                    )
+                )))) {
             /* somewhat iffy since ordinary stairs can take you beneath,
                but previous generic "water" was rather anti-climactic */
             return __s_shallow_sea;
-        } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level))))) {
+        } else if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level
+            )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level
+                    )
+                )))) {
             return __s_swamp;
-        } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) && (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))))) {
+        } else if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) &&
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_qstart_level
+                        )
+                    )))) {
             /* samurai quest home level has two isolated moat spots;
                they sound silly if farlook describes them as such */
             return __s_pond;
@@ -881,12 +1292,43 @@ export function waterbody_name(x, y) {
             return __s_moat;
         }
     } else if (((ltyp) == NHC.WATER)) {
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
+        if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )
+                ))))
             return __s_limitless_water;  /* even if hallucinating */
-        nh_snprintf(__s_waterbody_name, 603, cptr.decay(__static_waterbody_name_pooltype), 40n, __s_wall_of_s, hliquid(__s_water));
+        nh_snprintf(
+            __s_waterbody_name,
+            603,
+            cptr.decay(__static_waterbody_name_pooltype),
+            40n,
+            __s_wall_of_s,
+            hliquid(__s_water)
+        );
         return cptr.decay(__static_waterbody_name_pooltype);
     } else if (ltyp == NHC.LAVAWALL) {
-        nh_snprintf(__s_waterbody_name, 606, cptr.decay(__static_waterbody_name_pooltype), 40n, __s_wall_of_s, hliquid(__s_lava));
+        nh_snprintf(
+            __s_waterbody_name,
+            606,
+            cptr.decay(__static_waterbody_name_pooltype),
+            40n,
+            __s_wall_of_s,
+            hliquid(__s_lava)
+        );
         return cptr.decay(__static_waterbody_name_pooltype);
     }
     /* default; should be unreachable */
@@ -901,7 +1343,13 @@ cptr.stPtro(__static_ice_descr_icetyp, 24, __s_unsteady);
 cptr.stPtro(__static_ice_descr_icetyp, 32, __s_thin);
 cptr.stPtro(__static_ice_descr_icetyp, 40, __s_slushy); /** C ref: pager.c:616 — char *[6] (function-static) */
 
-/** C ref: pager.c:614 — @param {CInt} x @param {CInt} y @param {CPtr<char>} outbuf @returns {CPtr<char>} */
+/**
+ * C ref: pager.c:614
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<char>} outbuf
+ * @returns {CPtr<char>}
+ */
 export function ice_descr(x, y, outbuf) {
     /* same formula as is used in distant_name() for objects */
     let r = (cptr.ldI32o(u, $you_xray_range) > 2) ? cptr.ldI32o(u, $you_xray_range) : 2;
@@ -909,16 +1357,50 @@ export function ice_descr(x, y, outbuf) {
 
     cptr.st1o(iflags, $instance_flags_ice_rating, -1);  /* secondary output, for 'mention_decor' */
     if (SURFACE_AT(x, y) != NHC.ICE) {
-        void cptr.sprintf(outbuf, __s_ice_d, cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ));
-    } else if ((dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > neardist || (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.IN_SIGHT) != 0) && (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || Levitation()))) && !cptr.ld1so(gd, $instance_globals_d_decor_levitate_override)) {
+        void cptr.sprintf(
+            outbuf,
+            __s_ice_d,
+            cptr.ld1so3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            )
+        );
+    } else if ((dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) > neardist ||
+        (!((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
+            NHM.IN_SIGHT) != 0) &&
+            (!((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) || Levitation()))) &&
+            !cptr.ld1so(gd, $instance_globals_d_decor_levitate_override)) {
         void cptr.strcpy(outbuf, waterbody_name(x, y));  /* "ice" or "frozen <liquid>" */
     } else {
         let time_left = spot_time_left(x, y, NHC.MELT_ICE_AWAY);
 
         /* other, real ice thickness/strength terminology exists but seems
            to be too unfamiliar for nethack's use */
-        cptr.st1o(iflags, $instance_flags_ice_rating, schar((!time_left ? 0 : ((time_left > 1000n) ? 1 : ((time_left > 100n) ? 2 : ((time_left > 50n) ? 3 : ((time_left > 14n) ? 4 : 5)))))));  /* slushy */
-        void cptr.sprintf(outbuf, __s_s_s, cptr.ldPtro(__static_ice_descr_icetyp, cptr.ld1so(iflags, $instance_flags_ice_rating), 8), waterbody_name(x, y));
+        cptr.st1o(
+            iflags,
+            $instance_flags_ice_rating,
+            schar((!time_left
+                ? 0
+                : ((time_left > 1000n)
+                    ? 1
+                    : ((time_left > 100n)
+                        ? 2
+                        : ((time_left > 50n) ? 3 : ((time_left > 14n) ? 4 : 5))))))
+        );  /* slushy */
+        void cptr.sprintf(
+            outbuf,
+            __s_s_s,
+            cptr.ldPtro(
+                __static_ice_descr_icetyp,
+                cptr.ld1so(iflags, $instance_flags_ice_rating),
+                8
+            ),
+            waterbody_name(x, y)
+        );
     }
     return outbuf;
 }
@@ -927,7 +1409,14 @@ export function ice_descr(x, y, outbuf) {
  * Return the name of the glyph found at (x,y).
  * If not hallucinating and the glyph is a monster, also monster data.
  */
-/** C ref: pager.c:657 — @param {CInt} x @param {CInt} y @param {CPtr<char>} buf @param {CPtr<char>} monbuf @returns {CPtr<struct permonst>} */
+/**
+ * C ref: pager.c:657
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<char>} buf
+ * @param {CPtr<char>} monbuf
+ * @returns {CPtr<struct permonst>}
+ */
 function lookat(x, y, buf, monbuf) {
     let mtmp = null;
     let pm = null;
@@ -935,21 +1424,46 @@ function lookat(x, y, buf, monbuf) {
 
     cptr.st1o(buf, 0, cptr.st1o(monbuf, 0, 0));
     glyph = glyph_at(x, y);
-    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && ((Blind() || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) || (Unblind_telepat() || Detect_monsters())) && !((cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0 && glyph == (((Hallucination() ? ((rn2_on_display_rng)(NHC.NUMMONS)) : (cptr.ldI32o((cptr.ldPtro((cptr.ldPtro(u, $you_ustuck)), $monst_data)), $permonst_pmidx))) + ((((cptr.ldI32o((cptr.ldPtro(u, $you_ustuck)), $monst_female) & 1) | 0) == 0) ? NHC.GLYPH_MON_MALE_OFF : NHC.GLYPH_MON_FEM_OFF)) | 0)) && (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0)) {
+    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
+            ((Blind() ||
+                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
+                (Unblind_telepat() || Detect_monsters())) &&
+            !((cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0 &&
+                glyph ==
+                    (((Hallucination()
+                        ? ((rn2_on_display_rng)(NHC.NUMMONS))
+                        : (cptr.ldI32o(
+                            (cptr.ldPtro((cptr.ldPtro(u, $you_ustuck)), $monst_data)),
+                            $permonst_pmidx
+                        ))) +
+                        ((((cptr.ldI32o(
+                            (cptr.ldPtro(u, $you_ustuck)),
+                            $monst_female
+                        ) & 1) | 0) == 0)
+                            ? NHC.GLYPH_MON_MALE_OFF
+                            : NHC.GLYPH_MON_FEM_OFF)) | 0)) &&
+            (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0)) {
         /* fill in buf[] */
         void self_lookat(buf);
 
         /* file lookup can't distinguish between "gnomish wizard" monster
            and correspondingly named player character, always picking the
            former; force it to find the general "wizard" entry instead */
-        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_GNOME) && !Upolyd())
+        if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) &&
+                (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_GNOME) &&
+                !Upolyd())
             pm = cptr.add(mons, NHC.PM_WIZARD, $sizeof_permonst);
 
         /* When you see yourself normally, no explanation is appended
            (even if you could also see yourself via other means).
            Sensing self while blind or swallowed is treated as if it
            were by normal vision (cf canseeself()). */
-        if ((Invisible() || (cptr.ldI32o(u, $you_uundetected) & 1) | 0) && !Blind() && !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0)) {
+        if ((Invisible() || (cptr.ldI32o(u, $you_uundetected) & 1) | 0) &&
+                !Blind() &&
+                !((cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                    (cptr.ldI32o(iflags, $instance_flags_save_uswallow) & 1) | 0)) {
             let how = 0;
 
             if (Infravision())
@@ -960,7 +1474,15 @@ function lookat(x, y, buf, monbuf) {
                 how |= 4;
 
             if (how)
-                void cptr.sprintf(eos(buf), __s_seen_s_s_s_s_s, ((how & 1) >>> 0) ? __s_infravision : __s_empty, (((how & 3) >>> 0) > 2) ? __s_comma_sp : __s_empty, ((how & 2) >>> 0) ? __s_telepathy : __s_empty, (((how & 7) >>> 0) > 4) ? __s_comma_sp : __s_empty, ((how & 4) >>> 0) ? __s_monster_detection : __s_empty);
+                void cptr.sprintf(
+                    eos(buf),
+                    __s_seen_s_s_s_s_s,
+                    ((how & 1) >>> 0) ? __s_infravision : __s_empty,
+                    (((how & 3) >>> 0) > 2) ? __s_comma_sp : __s_empty,
+                    ((how & 2) >>> 0) ? __s_telepathy : __s_empty,
+                    (((how & 7) >>> 0) > 4) ? __s_comma_sp : __s_empty,
+                    ((how & 4) >>> 0) ? __s_monster_detection : __s_empty
+                );
         }
     } else if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         /* when swallowed, we're only called for spots adjacent to hero,
@@ -968,7 +1490,14 @@ function lookat(x, y, buf, monbuf) {
         void cptr.sprintf(buf, __s_interior_of_s, mon_nam(cptr.ldPtro(u, $you_ustuck)));
         pm = cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data);
     } else if (glyph_is_monster(glyph)) {
-        if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
+        if ((mtmp = (cptr.ldPtro3(
+            svl,
+            x,
+            168,
+            y,
+            8,
+            $instance_globals_saved_l_level + $dlevel_t_monsters
+        ))) !== null) {
             look_at_monster(buf, monbuf, mtmp, x, y);
             pm = cptr.ldPtro(mtmp, $monst_data);
         } else if (Hallucination()) {
@@ -984,16 +1513,42 @@ function lookat(x, y, buf, monbuf) {
     } else if (glyph_is_warning(glyph)) {
         let warnindx = glyph_to_warning(glyph);
 
-        void cptr.strcpy(buf, cptr.ldPtro2(def_warnsyms, warnindx, $sizeof_symdef, $symdef_explanation));
+        void cptr.strcpy(
+            buf,
+            cptr.ldPtro2(def_warnsyms, warnindx, $sizeof_symdef, $symdef_explanation)
+        );
     } else if (((glyph) == NHC.GLYPH_INVIS_OFF)) {
         void cptr.strcpy(buf, cptr.decay(invisexplain));  /* redundant; handled by caller */
     } else if (((glyph) == NHC.GLYPH_NOTHING_OFF)) {
         void cptr.strcpy(buf, __s_dark_part_of_a_room);
     } else if (((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) {
-        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+        if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+                !(((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )
+                    )))) {
             /* "unknown" == previously mapped but not visible when
                submerged; better terminology appreciated... */
-            void cptr.strcpy(buf, ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) ? __s_land : __s_unknown);
+            void cptr.strcpy(
+                buf,
+                ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
+                    ? __s_land
+                    : __s_unknown
+            );
         } else {
             void cptr.strcpy(buf, __s_unexplored_area);
         }
@@ -1005,19 +1560,81 @@ function lookat(x, y, buf, monbuf) {
         switch (symidx) {
             case NHC.S_altar:
             amsk = altarmask_at(x, y);
-            algn = (schar(((((amsk & NHM.AM_MASK) & NHM.AM_MASK) == 0) ? -128 : ((((amsk & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : ((((amsk & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))));
-            void cptr.sprintf(buf, __s_s_saltar, ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) && (amsk & NHM.AM_SANCTUM)) ? __s_aligned : align_str(algn), (amsk & NHM.AM_SANCTUM) ? __s_high : __s_empty);
+            algn = (schar(((((amsk & NHM.AM_MASK) & NHM.AM_MASK) == 0)
+                    ? -128
+                    : ((((amsk & NHM.AM_MASK) & NHM.AM_MASK) == NHM.AM_LAWFUL)
+                        ? NHM.A_LAWFUL
+                        : ((((amsk & NHM.AM_MASK) & NHM.AM_MASK)) - 2) | 0))));
+            void cptr.sprintf(
+                buf,
+                __s_s_saltar,
+                ((((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_astral_level
+                        )
+                    ))) &&
+                    !(dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2) &&
+                    (amsk & NHM.AM_SANCTUM))
+                    ? __s_aligned
+                    : align_str(algn),
+                (amsk & NHM.AM_SANCTUM) ? __s_high : __s_empty
+            );
             break;
             case NHC.S_ndoor:
             if (is_drawbridge_wall(x, y) >= 0)
                 void cptr.strcpy(buf, __s_open_drawbridge_portcullis);
-            else if ((((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0) & -17) == NHM.D_BROKEN)
+            else if ((((cptr.ldI32o3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_flags
+            ) & 31) | 0) &
+                -17) ==
+                    NHM.D_BROKEN)
                 void cptr.strcpy(buf, __s_broken_door);
             else
                 void cptr.strcpy(buf, __s_doorway);
             break;
             case NHC.S_cloud:
-            void cptr.strcpy(buf, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) ? __s_cloudy_area : __s_fog_vapor_cloud);
+            void cptr.strcpy(
+                buf,
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                        )
+                    )))
+                    ? __s_cloudy_area
+                    : __s_fog_vapor_cloud
+            );
             break;
             case NHC.S_pool:
             case NHC.S_water:
@@ -1031,22 +1648,73 @@ function lookat(x, y, buf, monbuf) {
             void cptr.strcpy(buf, __s_engraving);
             break;
             case NHC.S_stone:
-            if (!cptr.ld1uo3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv)) {
+            if (!cptr.ld1uo3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_seenv
+            )) {
                 void cptr.strcpy(buf, __s_unexplored);
                 break;
-            } else if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) {
+            } else if (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+                    !(((cptr.ldI16o(
+                        (cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )),
+                        $d_level_dlevel
+                    ) ||
+                        cptr.ldI16((cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )))) &&
+                        on_level(
+                            cptr.add(u, $you_uz),
+                            cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_water_level
+                            )
+                        )))) {
                 /* "unknown" == previously mapped but not visible when
                    submerged; better terminology appreciated... */
-                void cptr.strcpy(buf, ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) ? __s_land : __s_unknown);
+                void cptr.strcpy(
+                    buf,
+                    ((dist2(((x)), ((y)), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2))
+                        ? __s_land
+                        : __s_unknown
+                );
                 break;
-            } else if (cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.STONE || cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) == NHC.SCORR) {
+            } else if (cptr.ld1so3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) ==
+                NHC.STONE ||
+                    cptr.ld1so3(
+                        svl,
+                        x,
+                        $sizeof_rm_x21,
+                        y,
+                        $sizeof_rm,
+                        $instance_globals_saved_l_level + $rm_typ
+                    ) ==
+                        NHC.SCORR) {
                 void cptr.strcpy(buf, __s_stone);
                 break;
             }
             // @FallThrough
             ;
             default:
-            void cptr.strcpy(buf, cptr.ldPtro2(defsyms, symidx, $sizeof_symdef, $symdef_explanation));
+            void cptr.strcpy(
+                buf,
+                cptr.ldPtro2(defsyms, symidx, $sizeof_symdef, $symdef_explanation)
+            );
             break;
         }
     } else {
@@ -1063,7 +1731,12 @@ export function ia_checkfile(otmp) {
 
     /* singular() of xname() of otmp is what "/i" looks up */
     void cptr.strcpy(cptr.decay(itemnam), singular(otmp, xname));
-    return checkfile(cptr.decay(itemnam), null, ((NHC.chkfilIaCheck | NHC.chkfilDontAsk) >>> 0), null);
+    return checkfile(
+        cptr.decay(itemnam),
+        null,
+        ((NHC.chkfilIaCheck | NHC.chkfilDontAsk) >>> 0),
+        null
+    );
 }
 
 /*
@@ -1078,7 +1751,14 @@ export function ia_checkfile(otmp) {
  *
  * Returns True if an entry is found, False otherwise.
  */
-/** C ref: pager.c:830 — @param {CPtr<char>} inp @param {CPtr<struct permonst>} pm @param {CUInt} chkflags @param {CPtr<char>} supplemental_name @returns {CInt} */
+/**
+ * C ref: pager.c:830
+ * @param {CPtr<char>} inp
+ * @param {CPtr<struct permonst>} pm
+ * @param {CUInt} chkflags
+ * @param {CPtr<char>} supplemental_name
+ * @returns {CInt}
+ */
 function checkfile(inp, pm, chkflags, supplemental_name) {
     let fp;
     let buf = new Uint8Array(256);
@@ -1174,7 +1854,9 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
         /* remove enchantment ("+0 aklys"); [for 3.6.0 and earlier, this wasn't
            needed because looking at items on the map used xname() rather than
            doname() hence known enchantment was implicitly suppressed] */
-        if (cptr.ld1s(dbase_str) && cptr.strchr(__s_plus_dash, cptr.ld1so(dbase_str, 0)) && digit(cptr.ld1so(dbase_str, 1))) {
+        if (cptr.ld1s(dbase_str) &&
+                cptr.strchr(__s_plus_dash, cptr.ld1so(dbase_str, 0)) &&
+                digit(cptr.ld1so(dbase_str, 1))) {
             dbase_str = cptr.add(dbase_str, 1);  /* skip sign */
             while (digit(cptr.ld1s(dbase_str)))
                 dbase_str = cptr.add(dbase_str, 1);
@@ -1220,7 +1902,10 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
                The Eyes of the Overworld" simplified above to "lenses named
                The Eyes of the Overworld", now reduced to "The Eyes of the
                Overworld", skip "The" as with base name processing) */
-            if (alt && (!strncmpi(alt, __s_a_sp, 2) || !strncmpi(alt, __s_an, 3) || !strncmpi(alt, __s_the, 4)))
+            if (alt &&
+                    (!strncmpi(alt, __s_a_sp, 2) ||
+                        !strncmpi(alt, __s_an, 3) ||
+                        !strncmpi(alt, __s_the, 4)))
                 alt = cptr.add(cptr.strchr(alt, 32), 1);
             /* remove charges or "(lit)" or wizmode "(N aum)" */
             if ((ep = strstri(dbase_str, __s_sp_lparen)) !== null && cptr.cmp(ep, dbase_str) > 0)
@@ -1233,7 +1918,10 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
                if the fruit name is an extant object, looking at the fruit yields
                that object's description. */
             if (!alt && fruit_from_name(dbase_str, 1, null))
-                alt = cptr.strcpy(cptr.decay(newstr), cptr.ldPtro(obj_descr, NHC.SLIME_MOLD, $sizeof_objdescr));
+                alt = cptr.strcpy(
+                    cptr.decay(newstr),
+                    cptr.ldPtro(obj_descr, NHC.SLIME_MOLD, $sizeof_objdescr)
+                );
             else if (!alt)
                 alt = makesingular(dbase_str);
 
@@ -1246,7 +1934,8 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
                     break __lbl_checkfile_done;
                 }
                 /* skip first record; read second */
-                if (!fgets(cptr.decay(buf), NHM.BUFSZ, fp) || !fgets(cptr.decay(buf), NHM.BUFSZ, fp)) {
+                if (!fgets(cptr.decay(buf), NHM.BUFSZ, fp) ||
+                        !fgets(cptr.decay(buf), NHM.BUFSZ, fp)) {
                     impossible(__s_can_t_read_data_file);
                     break __lbl_checkfile_done;
                 } else if (sscanf(cptr.decay(buf), __s_8lx, txt_offset) < 1 || txt_offset.v == 0n)
@@ -1263,11 +1952,16 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
                     } else if (!skipping_entry) {
                         if (!(ep = cptr.strchr(cptr.decay(buf), 10)))
                             break __lbl_bad_data_file;
-                        void strip_newline((cptr.cmp(ep, cptr.decay(buf)) > 0) ? cptr.add(ep, -(1)) : ep);
+                        void strip_newline((cptr.cmp(ep, cptr.decay(buf)) > 0)
+                                ? cptr.add(ep, -(1))
+                                : ep);
                         /* if we match a key that begins with "~", skip
                            this entry */
                         chk_skip = (cptr.ld1s(cptr.decay(buf)) == 126) ? 1 : 0;
-                        if ((pass == 0 && pmatch(cptr.add(cptr.decay(buf), chk_skip, 1), dbase_str)) || (pass == 1 && alt && pmatch(cptr.add(cptr.decay(buf), chk_skip, 1), alt))) {
+                        if ((pass == 0 &&
+                            pmatch(cptr.add(cptr.decay(buf), chk_skip, 1), dbase_str)) ||
+                                (pass == 1 && alt &&
+                                    pmatch(cptr.add(cptr.decay(buf), chk_skip, 1), alt))) {
                             if (chk_skip) {
                                 skipping_entry = 1;
                                 continue;
@@ -1293,7 +1987,10 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
                     } while (!digit(cptr.ld1s(cptr.decay(buf))));
                     if (sscanf(cptr.decay(buf), __s_ld_d, entry_offset, entry_count) < 2)
                         break __lbl_bad_data_file;
-                    fseekoffset = BigInt.asIntN(64, BigInt.asIntN(64, txt_offset.v) + entry_offset.v);
+                    fseekoffset = BigInt.asIntN(
+                        64,
+                        BigInt.asIntN(64, txt_offset.v) + entry_offset.v
+                    );
                     if (pass == 1)
                         pass1offset = fseekoffset;
                     else if (fseekoffset == pass1offset)
@@ -1306,7 +2003,18 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
 
                         void cptr.strcpy(cptr.decay(question), __s_more_info_about);
                         /* +2 => length of "\"?" */
-                        copynchars(eos(cptr.decay(question)), entrytext, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 127n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(question)) + 2n)))))));
+                        copynchars(
+                            eos(cptr.decay(question)),
+                            entrytext,
+                            Number(BigInt.asIntN(
+                                32,
+                                (BigInt.asUintN(
+                                    64,
+                                    127n -
+                                        (BigInt.asUintN(64, cptr.strlen(cptr.decay(question)) + 2n))
+                                ))
+                            ))
+                        );
                         void cptr.strcat(cptr.decay(question), __s_quot_query);
                         if (yn_function(cptr.decay(question), cptr.decay(ynchars), 110, 1) == 121)
                             yes_to_moreinfo = 1;
@@ -1343,7 +2051,8 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
                                    something else so we don't require it) */
                                 do {
                                     tp = cptr.add(tp, 1);
-                                } while (cptr.cmp(tp, cptr.add(cptr.decay(tabbuf), 8, 1)) < 0 && cptr.ld1s(tp) == 32);
+                                } while (cptr.cmp(tp, cptr.add(cptr.decay(tabbuf), 8, 1)) < 0 &&
+                                        cptr.ld1s(tp) == 32);
                             } else if (cptr.ld1s(tp)) {
                                 break __lbl_bad_data_file;
                             }
@@ -1373,8 +2082,32 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
 }
 
 /* extracted from do_screen_description() */
-/** C ref: pager.c:1133 — @param {CInt} found @param {CInt} idx @param {CInt} glyph @param {CInt} article @param {*} cc @param {CPtr<char>} x_str @param {CPtr<char>} prefix @param {CPtr<boolean>} hit_trap @param {CPtr<char *>} firstmatch @param {CPtr<char>} out_str @returns {CInt} */
-function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap, firstmatch, out_str) {
+/**
+ * C ref: pager.c:1133
+ * @param {CInt} found
+ * @param {CInt} idx
+ * @param {CInt} glyph
+ * @param {CInt} article
+ * @param {*} cc
+ * @param {CPtr<char>} x_str
+ * @param {CPtr<char>} prefix
+ * @param {CPtr<boolean>} hit_trap
+ * @param {CPtr<char *>} firstmatch
+ * @param {CPtr<char>} out_str
+ * @returns {CInt}
+ */
+function add_cmap_descr(
+    found,
+    idx,
+    glyph,
+    article,
+    cc,
+    x_str,
+    prefix,
+    hit_trap,
+    firstmatch,
+    out_str
+) {
     cc = cptr.dup(cc, $sizeof_nhcoord); // by-value struct param
     let mbuf = null;
     let p;
@@ -1387,13 +2120,43 @@ function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap,
             if (idx == NHC.S_pool)
                 x_str = __s_pool_of_water;
             else if (idx == NHC.S_water)
-                x_str = !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? __s_wall_of_water : __s_limitless_water;
+                x_str = !(((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )
+                    )))
+                        ? __s_wall_of_water
+                        : __s_limitless_water;
         }
         if (absidx == NHC.S_pool)
             idx = NHC.S_pool;
-    } else if (absidx == NHC.S_pool || idx == NHC.S_water || idx == NHC.S_lava || idx == NHC.S_lavawall || idx == NHC.S_ice) {
+    } else if (absidx == NHC.S_pool ||
+            idx == NHC.S_water ||
+            idx == NHC.S_lava ||
+            idx == NHC.S_lavawall ||
+            idx == NHC.S_ice) {
         /* replace some descriptions (x_str) with waterbody_name() */
-        let save_ltyp = cptr.ld1so3(svl, cptr.ldI16(cc), $sizeof_rm_x21, cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+        let save_ltyp = cptr.ld1so3(
+            svl,
+            cptr.ldI16(cc),
+            $sizeof_rm_x21,
+            cptr.ldI16o(cc, $nhcoord_y),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ
+        );
         let save_prop = EHalluc_resistance();
 
         /* grab a scratch buffer we can safely return (via *firstmatch
@@ -1401,19 +2164,47 @@ function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap,
         mbuf = mon_nam(cptr.add(gy, $instance_globals_y_youmonst));
 
         if (absidx == NHC.S_pool) {
-            cptr.st1o3(svl, cptr.ldI16(cc), $sizeof_rm_x21, cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(((idx == NHC.S_pool) ? NHC.POOL : NHC.MOAT)));
+            cptr.st1o3(
+                svl,
+                cptr.ldI16(cc),
+                $sizeof_rm_x21,
+                cptr.ldI16o(cc, $nhcoord_y),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                schar(((idx == NHC.S_pool) ? NHC.POOL : NHC.MOAT))
+            );
             idx = NHC.S_pool;  /* force fake negative moat value to be positive */
         } else {
             /* we might be examining a pool location but trying to match
                water or lava; override the terrain with what we're matching
                because that's what waterbody_name() bases its result on;
                it's not pool so must be one of water/lava/ice to get here */
-            cptr.st1o3(svl, cptr.ldI16(cc), $sizeof_rm_x21, cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, schar(((idx == NHC.S_water) ? NHC.WATER : ((idx == NHC.S_lava) ? NHC.LAVAPOOL : ((idx == NHC.S_lavawall) ? NHC.LAVAWALL : NHC.ICE)))));
+            cptr.st1o3(
+                svl,
+                cptr.ldI16(cc),
+                $sizeof_rm_x21,
+                cptr.ldI16o(cc, $nhcoord_y),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ,
+                schar(((idx == NHC.S_water)
+                    ? NHC.WATER
+                    : ((idx == NHC.S_lava)
+                        ? NHC.LAVAPOOL
+                        : ((idx == NHC.S_lavawall) ? NHC.LAVAWALL : NHC.ICE))))
+            );
         }
         cptr.stI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops, 1n);
         void cptr.strcpy(mbuf, waterbody_name(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y)));
         cptr.stI64o2(u, NHC.HALLUC_RES, $sizeof_prop, $you_uprops, save_prop);
-        cptr.st1o3(svl, cptr.ldI16(cc), $sizeof_rm_x21, cptr.ldI16o(cc, $nhcoord_y), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ, save_ltyp);
+        cptr.st1o3(
+            svl,
+            cptr.ldI16(cc),
+            $sizeof_rm_x21,
+            cptr.ldI16o(cc, $nhcoord_y),
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_typ,
+            save_ltyp
+        );
 
         /* shorten the feedback for farlook/quicklook: "pool or ..." */
         if (!strcmp(mbuf, __s_pool_of_water))
@@ -1424,7 +2215,19 @@ function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap,
         /* avoid "an ice" and so forth; "a pool", "a moat", and
            "a wall of ..." are grammatically correct but make
            "a pool or a moat or a wall of water" become too verbose */
-        article = !(!cptr.strncmp(x_str, __s_water, 5n) || !cptr.strncmp(x_str, __s_ice, 3n) || !cptr.strncmp(x_str, __s_pool, 4n) || !cptr.strncmp(x_str, __s_moat, 4n) || !cptr.strncmp(x_str, __s_lava, 4n) || !cptr.strncmp(x_str, __s_swamp, 5n) || !cptr.strncmp(x_str, __s_molten, 6n) || !cptr.strncmp(x_str, __s_shallow, 7n) || !cptr.strncmp(x_str, __s_limitless, 9n) || !cptr.strncmp(x_str, __s_wall_of_lava, 12n) || !cptr.strncmp(x_str, __s_wall_of_water, 13n) || !cptr.strncmp(x_str, __s_frozen, 6n) || ((p = cptr.strchr(x_str, 32)) !== null && !strncmpi((p), (__s_ice__2), -1)));
+        article = !(!cptr.strncmp(x_str, __s_water, 5n) ||
+                !cptr.strncmp(x_str, __s_ice, 3n) ||
+                !cptr.strncmp(x_str, __s_pool, 4n) ||
+                !cptr.strncmp(x_str, __s_moat, 4n) ||
+                !cptr.strncmp(x_str, __s_lava, 4n) ||
+                !cptr.strncmp(x_str, __s_swamp, 5n) ||
+                !cptr.strncmp(x_str, __s_molten, 6n) ||
+                !cptr.strncmp(x_str, __s_shallow, 7n) ||
+                !cptr.strncmp(x_str, __s_limitless, 9n) ||
+                !cptr.strncmp(x_str, __s_wall_of_lava, 12n) ||
+                !cptr.strncmp(x_str, __s_wall_of_water, 13n) ||
+                !cptr.strncmp(x_str, __s_frozen, 6n) ||
+                ((p = cptr.strchr(x_str, 32)) !== null && !strncmpi((p), (__s_ice__2), -1)));
     }
 
     if (!found) {
@@ -1433,13 +2236,27 @@ function add_cmap_descr(found, idx, glyph, article, cc, x_str, prefix, hit_trap,
             void cptr.sprintf(out_str, __s_sa_trap, prefix);
             cptr.st1(hit_trap, 1);
         } else {
-            void cptr.sprintf(out_str, __s_s_s__2, prefix, (article == 2) ? the(x_str) : ((article == 1) ? an(x_str) : x_str));
+            void cptr.sprintf(
+                out_str,
+                __s_s_s__2,
+                prefix,
+                (article == 2) ? the(x_str) : ((article == 1) ? an(x_str) : x_str)
+            );
         }
         cptr.stPtr(firstmatch, x_str);
         found = 1;
-    } else if (!(cptr.ld1s(hit_trap) && is_cmap_trap(idx)) && !(found >= 3 && is_cmap_drawbridge(idx)) && (idx != NHC.S_vibrating_square || In_hell(cptr.add(u, $you_uz)) || (glyph_is_trap(glyph) && glyph_to_trap(glyph) == NHC.VIBRATING_SQUARE))) {
+    } else if (!(cptr.ld1s(hit_trap) && is_cmap_trap(idx)) &&
+            !(found >= 3 && is_cmap_drawbridge(idx)) &&
+            (idx != NHC.S_vibrating_square ||
+                In_hell(cptr.add(u, $you_uz)) ||
+                (glyph_is_trap(glyph) && glyph_to_trap(glyph) == NHC.VIBRATING_SQUARE))) {
         /* append unless out_str already contains the string to append */
-        found = (found + append_str(out_str, (article == 2) ? the(x_str) : ((article == 1) ? an(x_str) : x_str))) | 0;
+        found = (found +
+            append_str(
+                out_str,
+                (article == 2) ? the(x_str) : ((article == 1) ? an(x_str) : x_str)
+            )) |
+                0;
         if (is_cmap_trap(idx) && idx != NHC.S_vibrating_square)
             cptr.st1(hit_trap, 1);
     }
@@ -1450,7 +2267,16 @@ const __static_do_screen_description_mon_interior = cptr.bytes("the interior of 
 const __static_do_screen_description_unreconnoitered = cptr.bytes("unreconnoitered"); /** C ref: pager.c:1254 — char[16] (function-static) */
 const __static_do_screen_description_look_buf = new Uint8Array(256); /** C ref: pager.c:1255 — char[256] (function-static) */
 
-/** C ref: pager.c:1247 — @param {*} cc @param {CInt} looked @param {CInt} sym @param {CPtr<char>} out_str @param {CPtr<char *>} firstmatch @param {CPtr<struct permonst *>} for_supplement @returns {CInt} */
+/**
+ * C ref: pager.c:1247
+ * @param {*} cc
+ * @param {CInt} looked
+ * @param {CInt} sym
+ * @param {CPtr<char>} out_str
+ * @param {CPtr<char *>} firstmatch
+ * @param {CPtr<struct permonst *>} for_supplement
+ * @returns {CInt}
+ */
 export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_supplement) {
     cc = cptr.dup(cc, $sizeof_nhcoord); // by-value struct param
     let prefix = new Uint8Array(256);
@@ -1462,7 +2288,27 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
     let found = 0;  /* count of matching syms found */
     let hit_trap = cptr.box(0);
     let need_to_look = 0;
-    let submerged = schar((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? 1 : 0));
+    let submerged = schar((((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+        !(((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                )
+            )))
+            ? 1
+            : 0));
     let hallucinate = schar((Hallucination() && !cptr.ldI32(program_state) ? 1 : 0));
     let x_str;
     let tmpsym;
@@ -1501,7 +2347,15 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
     x_str = null;
     if (!looked) {
         ;  /* skip special handling */
-    } else if ((((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || submerged) && !(dist2(((cptr.ldI16(cc))), ((cptr.ldI16o(cc, $nhcoord_y))), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= 2)) || (((cptr.ldI32o(iflags, $instance_flags_terrainmode) & 33) >>> 0) == NHM.TER_DETECT && glyph == NHC.GLYPH_CMAP_STONE_OFF)) {
+    } else if ((((cptr.ldI32o(u, $you_uswallow) & 1) | 0 || submerged) &&
+        !(dist2(
+            ((cptr.ldI16(cc))),
+            ((cptr.ldI16o(cc, $nhcoord_y))),
+            cptr.ldI16(u),
+            cptr.ldI16o(u, $you_uy)
+        ) <= 2)) ||
+            (((cptr.ldI32o(iflags, $instance_flags_terrainmode) & 33) >>> 0) == NHM.TER_DETECT &&
+                glyph == NHC.GLYPH_CMAP_STONE_OFF)) {
         x_str = cptr.decay(__static_do_screen_description_unreconnoitered);
         need_to_look = 0;
     } else if (is_swallow_sym(sym)) {
@@ -1530,26 +2384,89 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                         let monbuf = new Uint8Array(256);
                         let temp_buf = new Uint8Array(256);
 
-                        pm = lookat(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), cptr.decay(__static_do_screen_description_look_buf), cptr.decay(monbuf));
+                        pm = lookat(
+                            cptr.ldI16(cc),
+                            cptr.ldI16o(cc, $nhcoord_y),
+                            cptr.decay(__static_do_screen_description_look_buf),
+                            cptr.decay(monbuf)
+                        );
                         if (pm && for_supplement)
                             cptr.stPtr(for_supplement, pm);
                         if (!strcmp(cptr.decay(__static_do_screen_description_look_buf), __s_ice))
-                            void ice_descr(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), cptr.decay(__static_do_screen_description_look_buf));
-                        if (!strcmp(cptr.decay(__static_do_screen_description_look_buf), __s_staircase_down) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)) && !ok_to_quest())
-                            void cptr.strcpy(cptr.decay(__static_do_screen_description_look_buf), __s_blocked_staircase_down);
+                            void ice_descr(
+                                cptr.ldI16(cc),
+                                cptr.ldI16o(cc, $nhcoord_y),
+                                cptr.decay(__static_do_screen_description_look_buf)
+                            );
+                        if (!strcmp(
+                            cptr.decay(__static_do_screen_description_look_buf),
+                            __s_staircase_down
+                        ) &&
+                                on_level(
+                                    cptr.add(u, $you_uz),
+                                    cptr.add(
+                                        svd,
+                                        $instance_globals_saved_d_dungeon_topology +
+                                            $dgn_topology_d_qstart_level
+                                    )
+                                ) &&
+                                !ok_to_quest())
+                            void cptr.strcpy(
+                                cptr.decay(__static_do_screen_description_look_buf),
+                                __s_blocked_staircase_down
+                            );
 
-                        if (cptr.ld1so(cptr.decay(__static_do_screen_description_look_buf), 0, 1) != 0)
-                            cptr.stPtr(firstmatch, cptr.decay(__static_do_screen_description_look_buf));
+                        if (cptr.ld1so(
+                            cptr.decay(__static_do_screen_description_look_buf),
+                            0,
+                            1
+                        ) != 0)
+                            cptr.stPtr(
+                                firstmatch,
+                                cptr.decay(__static_do_screen_description_look_buf)
+                            );
                         if (cptr.ld1s((cptr.ldPtr(firstmatch)))) {
-                            void cptr.sprintf(cptr.decay(temp_buf), __s_sp_lparen_pct_s, cptr.ldPtr(firstmatch));
-                            void add_quoted_engraving(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), cptr.decay(temp_buf), 0);
+                            void cptr.sprintf(
+                                cptr.decay(temp_buf),
+                                __s_sp_lparen_pct_s,
+                                cptr.ldPtr(firstmatch)
+                            );
+                            void add_quoted_engraving(
+                                cptr.ldI16(cc),
+                                cptr.ldI16o(cc, $nhcoord_y),
+                                cptr.decay(temp_buf),
+                                0
+                            );
                             void cptr.strcat(cptr.decay(temp_buf), __s_rparen);
-                            void __builtin___strncat_chk(out_str, cptr.decay(temp_buf), BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n), __builtin_object_size(out_str, 1));
+                            void __builtin___strncat_chk(
+                                out_str,
+                                cptr.decay(temp_buf),
+                                BigInt.asUintN(
+                                    64,
+                                    BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n
+                                ),
+                                __builtin_object_size(out_str, 1)
+                            );
                             found = 1;  /* we have something to look up */
                         }
                         if (cptr.ld1so(cptr.decay(monbuf), 0, 1)) {
-                            nh_snprintf(__s_do_screen_description, 1619, cptr.decay(temp_buf), 256n, __s_seen_s, cptr.decay(monbuf));
-                            void __builtin___strncat_chk(out_str, cptr.decay(temp_buf), BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n), __builtin_object_size(out_str, 1));
+                            nh_snprintf(
+                                __s_do_screen_description,
+                                1619,
+                                cptr.decay(temp_buf),
+                                256n,
+                                __s_seen_s,
+                                cptr.decay(monbuf)
+                            );
+                            void __builtin___strncat_chk(
+                                out_str,
+                                cptr.decay(temp_buf),
+                                BigInt.asUintN(
+                                    64,
+                                    BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n
+                                ),
+                                __builtin_object_size(out_str, 1)
+                            );
                         }
                     }
                 }
@@ -1559,40 +2476,124 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
     }
     __lbl_check_monsters: while (true) {
         /* Check for monsters */
-        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0) {
+        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_MON) >>> 0) != 0) {
             for (i = 1; i < NHC.MAXMCLASSES; i++) {
                 if (i == NHC.S_invisible)
                     continue;
-                if (sym == (looked ? cptr.ld1uo2(gs, (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0, 1, $instance_globals_s_showsyms) : cptr.ld1so(def_monsyms, i, $sizeof_class_sym)) && cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain) && cptr.ld1s(cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain))) {
+                if (sym ==
+                    (looked
+                        ? cptr.ld1uo2(
+                            gs,
+                            (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0,
+                            1,
+                            $instance_globals_s_showsyms
+                        )
+                        : cptr.ld1so(def_monsyms, i, $sizeof_class_sym)) &&
+                        cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain) &&
+                        cptr.ld1s(cptr.ldPtro2(
+                            def_monsyms,
+                            i,
+                            $sizeof_class_sym,
+                            $class_sym_explain
+                        ))) {
                     need_to_look = 1;
                     if (!found) {
-                        void cptr.sprintf(out_str, __s_s_s__2, cptr.decay(prefix), an(cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain)));
-                        cptr.stPtr(firstmatch, cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain));
+                        void cptr.sprintf(
+                            out_str,
+                            __s_s_s__2,
+                            cptr.decay(prefix),
+                            an(cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain))
+                        );
+                        cptr.stPtr(
+                            firstmatch,
+                            cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain)
+                        );
                         found++;
                     } else {
-                        found = (found + append_str(out_str, an(cptr.ldPtro2(def_monsyms, i, $sizeof_class_sym, $class_sym_explain)))) | 0;
+                        found = (found +
+                            append_str(
+                                out_str,
+                                an(cptr.ldPtro2(
+                                    def_monsyms,
+                                    i,
+                                    $sizeof_class_sym,
+                                    $class_sym_explain
+                                ))
+                            )) |
+                                0;
                     }
                 }
             }
             /* handle '@' as a special case if it refers to you and you're
                playing a character which isn't normally displayed by that
                symbol; firstmatch is assumed to already be set for '@' */
-            if ((looked ? (sym == cptr.ld1uo2(gs, ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0), 1, $instance_globals_s_showsyms) && ((cptr.ldI16(cc)) == cptr.ldI16(u) && (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy)) ? 1 : 0) : (sym == cptr.ld1so(def_monsyms, NHC.S_HUMAN, $sizeof_class_sym) && !cptr.ld1so(flags, $flag_showrace) ? 1 : 0)) && !((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_HUMAN) || (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF)) && !Upolyd())
+            if ((looked
+                ? (sym ==
+                    cptr.ld1uo2(
+                        gs,
+                        ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0),
+                        1,
+                        $instance_globals_s_showsyms
+                    ) &&
+                    ((cptr.ldI16(cc)) == cptr.ldI16(u) &&
+                        (cptr.ldI16o(cc, $nhcoord_y)) == cptr.ldI16o(u, $you_uy))
+                    ? 1
+                    : 0)
+                : (sym == cptr.ld1so(def_monsyms, NHC.S_HUMAN, $sizeof_class_sym) &&
+                    !cptr.ld1so(flags, $flag_showrace)
+                    ? 1
+                    : 0)) &&
+                    !((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_HUMAN) ||
+                        (cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_ELF)) &&
+                    !Upolyd())
                 found = (found + append_str(out_str, __s_you)) | 0;  /* tack on "or you" */
         }
 
         /* Now check for objects */
-        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) || ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_OBJ) >>> 0) != 0) {
+        if (!cptr.ldI32o(iflags, $instance_flags_terrainmode) ||
+                ((cptr.ldI32o(iflags, $instance_flags_terrainmode) & NHM.TER_OBJ) >>> 0) != 0) {
             let oc_ptr;
             let bouldersym;
 
-            j = ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0);
-            bouldersym = uchar(((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? cptr.ld1uo2(go, j, 1, $instance_globals_o_ov_rogue_syms) : cptr.ld1uo2(go, j, 1, $instance_globals_o_ov_primary_syms)));
+            j = ((NHC.SYM_BOULDER +
+                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0);
+            bouldersym = uchar(((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                    )
+                )))
+                    ? cptr.ld1uo2(go, j, 1, $instance_globals_o_ov_rogue_syms)
+                    : cptr.ld1uo2(go, j, 1, $instance_globals_o_ov_primary_syms)));
             if (!bouldersym)
                 bouldersym = uchar(cptr.ld1so(def_oc_syms, NHC.ROCK_CLASS, $sizeof_class_sym));
 
             for (i = 1; i < NHC.MAXOCLASSES; i++) {
-                if ((i != NHC.ROCK_CLASS) ? (sym == (looked ? cptr.ld1uo2(gs, (i + (((0) + NHC.MAXPCHARS) | 0)) | 0, 1, $instance_globals_s_showsyms) : cptr.ld1so(def_oc_syms, i, $sizeof_class_sym))) : (glyph_is_statue(glyph) || sym == bouldersym ? 1 : 0)) {
+                if ((i != NHC.ROCK_CLASS)
+                        ? (sym ==
+                            (looked
+                                ? cptr.ld1uo2(
+                                    gs,
+                                    (i + (((0) + NHC.MAXPCHARS) | 0)) | 0,
+                                    1,
+                                    $instance_globals_s_showsyms
+                                )
+                                : cptr.ld1so(def_oc_syms, i, $sizeof_class_sym)))
+                        : (glyph_is_statue(glyph) || sym == bouldersym ? 1 : 0)) {
                     oc_ptr = cptr.ldPtro2(def_oc_syms, i, $sizeof_class_sym, $class_sym_explain);
                     /* for added fun, engravings are shown with the same symbol
                        as S_rock which is why we want to shorten this */
@@ -1627,7 +2628,9 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
         if (sym == NHC.DEF_INVISIBLE) {
             /* for active clairvoyance, use alternate "unseen creature" */
             let usealt = schar(((EDetect_monsters() & 536870912n) != 0n));
-            let unseen_explain = (usealt || Blind()) ? cptr.decay(altinvisexplain) : cptr.decay(invisexplain);
+            let unseen_explain = (usealt || Blind())
+                    ? cptr.decay(altinvisexplain)
+                    : cptr.decay(invisexplain);
 
             if (!found) {
                 void cptr.sprintf(out_str, __s_s_s__2, cptr.decay(prefix), an(unseen_explain));
@@ -1637,7 +2640,17 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                 found = (found + append_str(out_str, an(unseen_explain))) | 0;
             }
         }
-        if ((glyph && ((glyph) == NHC.GLYPH_NOTHING_OFF)) || (looked && sym == cptr.ld1uo2(gs, ((NHC.SYM_NOTHING + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms))) {
+        if ((glyph && ((glyph) == NHC.GLYPH_NOTHING_OFF)) ||
+                (looked &&
+                    sym ==
+                        cptr.ld1uo2(
+                            gs,
+                            ((NHC.SYM_NOTHING +
+                                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                            1,
+                            $instance_globals_s_showsyms
+                        ))) {
             x_str = __s_the_dark_part_of_a_room;
             if (!found) {
                 void cptr.sprintf(out_str, __s_s_s__2, cptr.decay(prefix), x_str);
@@ -1647,7 +2660,17 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                 found = (found + append_str(out_str, x_str)) | 0;
             }
         }
-        if ((glyph && ((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) || (looked && sym == cptr.ld1uo2(gs, ((NHC.SYM_UNEXPLORED + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0), 1, $instance_globals_s_showsyms))) {
+        if ((glyph && ((glyph) == NHC.GLYPH_UNEXPLORED_OFF)) ||
+                (looked &&
+                    sym ==
+                        cptr.ld1uo2(
+                            gs,
+                            ((NHC.SYM_UNEXPLORED +
+                                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                            1,
+                            $instance_globals_s_showsyms
+                        ))) {
             x_str = __s_unexplored;
             if (submerged)
                 x_str = __s_land;  /* replace "unexplored" */
@@ -1677,14 +2700,21 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
              * If S_water (and corresponding tile) were renumbered, this
              * hackery could go away.
              */
-            alt_i = (i == NHC.S_lava) ? NHC.S_water : ((i == NHC.S_lavawall) ? NHC.S_lava : ((i == NHC.S_water) ? NHC.S_lavawall : i));  /* other; handle in defsyms[] order */
+            alt_i = (i == NHC.S_lava)
+                    ? NHC.S_water
+                    : ((i == NHC.S_lavawall)
+                        ? NHC.S_lava
+                        : ((i == NHC.S_water) ? NHC.S_lavawall : i));  /* other; handle in defsyms[] order */
             x_str = cptr.ldPtro2(defsyms, alt_i, $sizeof_symdef, $symdef_explanation);
             /* cmap includes beams, shield effects, swallow boundaries, and
                explosions; skip all of those */
             if (!cptr.ld1s(x_str))
                 continue;
 
-            if (sym == (looked ? cptr.ld1uo2(gs, alt_i, 1, $instance_globals_s_showsyms) : cptr.ld1uo(defsyms, alt_i, $sizeof_symdef))) {
+            if (sym ==
+                    (looked
+                        ? cptr.ld1uo2(gs, alt_i, 1, $instance_globals_s_showsyms)
+                        : cptr.ld1uo(defsyms, alt_i, $sizeof_symdef))) {
                 let article;  /* article==2 => "the", 1 => "an", 0 => (none) */
 
                 /* check if dark part of a room was already included above */
@@ -1693,19 +2723,54 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
 
                 /* avoid "an unexplored", "an stone", "an air",
                    "a floor of a room", "a dark part of a room" */
-                article = strstri(x_str, __s_of_a_room) ? 2 : !(alt_i == NHC.S_stone || strcmp(x_str, __s_air) == 0 || strcmp(x_str, __s_land) == 0);
+                article = strstri(x_str, __s_of_a_room)
+                        ? 2
+                        : !(alt_i == NHC.S_stone ||
+                            strcmp(x_str, __s_air) == 0 ||
+                            strcmp(x_str, __s_land) == 0);
 
-                found = add_cmap_descr(found, alt_i, glyph, article, cc, x_str, cptr.decay(prefix), hit_trap, firstmatch, out_str);
+                found = add_cmap_descr(
+                    found,
+                    alt_i,
+                    glyph,
+                    article,
+                    cc,
+                    x_str,
+                    cptr.decay(prefix),
+                    hit_trap,
+                    firstmatch,
+                    out_str
+                );
                 if (alt_i == NHC.S_pool) {
                     /* "pool of water" and "moat" use the same symbol and glyph
                        but have different descriptions; when handling pool, add
                        it a second time for moat but pass an alternate symbol;
                        skip incrementing 'found' to avoid "can be many things" */
-                    void add_cmap_descr(found, -38, glyph, 1, cc, __s_moat, cptr.decay(prefix), hit_trap, firstmatch, out_str);
+                    void add_cmap_descr(
+                        found,
+                        -38,
+                        glyph,
+                        1,
+                        cc,
+                        __s_moat,
+                        cptr.decay(prefix),
+                        hit_trap,
+                        firstmatch,
+                        out_str
+                    );
                     need_to_look = 1;
                 }
 
-                if (alt_i == NHC.S_altar || is_cmap_trap(alt_i) || (hallucinate && (alt_i == NHC.S_water || alt_i == NHC.S_lava || alt_i == NHC.S_lavawall || alt_i == NHC.S_ice)) || alt_i == NHC.S_engroom || alt_i == NHC.S_engrcorr || alt_i == NHC.S_grave)
+                if (alt_i == NHC.S_altar ||
+                        is_cmap_trap(alt_i) ||
+                        (hallucinate &&
+                            (alt_i == NHC.S_water ||
+                                alt_i == NHC.S_lava ||
+                                alt_i == NHC.S_lavawall ||
+                                alt_i == NHC.S_ice)) ||
+                        alt_i == NHC.S_engroom ||
+                        alt_i == NHC.S_engrcorr ||
+                        alt_i == NHC.S_grave)
                     need_to_look = 1;
             }
         }
@@ -1713,7 +2778,10 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
         /* Now check for warning symbols */
         for (i = 1; i < NHM.WARNCOUNT; i++) {
             x_str = cptr.ldPtro2(def_warnsyms, i, $sizeof_symdef, $symdef_explanation);
-            if (sym == (looked ? cptr.ld1uo2(gw, i, 1, $instance_globals_w_warnsyms) : cptr.ld1uo(def_warnsyms, i, $sizeof_symdef))) {
+            if (sym ==
+                    (looked
+                        ? cptr.ld1uo2(gw, i, 1, $instance_globals_w_warnsyms)
+                        : cptr.ld1uo(def_warnsyms, i, $sizeof_symdef))) {
                 if (!found) {
                     void cptr.sprintf(out_str, __s_s_s__2, cptr.decay(prefix), x_str);
                     cptr.stPtr(firstmatch, x_str);
@@ -1732,7 +2800,12 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
 
         /* if we ignored venom and list turned out to be short, put it back */
         if (skipped_venom && found < 2) {
-            x_str = cptr.ldPtro2(def_oc_syms, NHC.VENOM_CLASS, $sizeof_class_sym, $class_sym_explain);
+            x_str = cptr.ldPtro2(
+                def_oc_syms,
+                NHC.VENOM_CLASS,
+                $sizeof_class_sym,
+                $class_sym_explain
+            );
             if (!found) {
                 void cptr.sprintf(out_str, __s_s_s__2, cptr.decay(prefix), an(x_str));
                 cptr.stPtr(firstmatch, x_str);
@@ -1743,22 +2816,69 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
         }
 
         /* Finally, handle some optional overriding symbols */
-        for (j = (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0); j < (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0) + NHC.MAXOTHER) | 0); ++j) {
-            if (j == ((NHC.SYM_INVISIBLE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0) || j == ((NHC.SYM_BOULDER + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0))
+        for (
+            j = (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                NHC.MAXMCLASSES) | 0) + 6) | 0);
+            j <
+                (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                    NHC.MAXMCLASSES) | 0) + 6) | 0) +
+                    NHC.MAXOTHER) | 0);
+            ++j
+        ) {
+            if (j ==
+                ((NHC.SYM_INVISIBLE +
+                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0) ||
+                    j ==
+                        ((NHC.SYM_BOULDER +
+                            (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                                NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0))
                 continue;  /* already handled above */
-            tmpsym = uchar(((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) ? cptr.ld1uo2(go, j, 1, $instance_globals_o_ov_rogue_syms) : cptr.ld1uo2(go, j, 1, $instance_globals_o_ov_primary_syms)));
+            tmpsym = uchar(((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                    )
+                )))
+                    ? cptr.ld1uo2(go, j, 1, $instance_globals_o_ov_rogue_syms)
+                    : cptr.ld1uo2(go, j, 1, $instance_globals_o_ov_primary_syms)));
             if (tmpsym && sym == tmpsym) {
                 switch (j) {
-                    case ((NHC.SYM_PET_OVERRIDE + (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) + NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0):
+                    case ((NHC.SYM_PET_OVERRIDE +
+                            (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
+                                NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0):
                     if (looked) {
                         /* convert to symbol without override in effect */
-                        map_glyphinfo(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), glyph, NHM.MG_FLAG_NOOVERRIDE, glyphinfo);
+                        map_glyphinfo(
+                            cptr.ldI16(cc),
+                            cptr.ldI16o(cc, $nhcoord_y),
+                            glyph,
+                            NHM.MG_FLAG_NOOVERRIDE,
+                            glyphinfo
+                        );
                         sym = cptr.ldI32o(glyphinfo, $glyphinfo_ttychar);
                         continue __lbl_check_monsters;
                     }
                     break;
                     case 195:
-                    sym = cptr.ld1uo2(gs, ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0), 1, $instance_globals_s_showsyms);
+                    sym = cptr.ld1uo2(
+                        gs,
+                        ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0),
+                        1,
+                        $instance_globals_s_showsyms
+                    );
                     continue __lbl_check_monsters;
                 }
             }
@@ -1779,25 +2899,75 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
             if (found > 1 || need_to_look) {
                 let monbuf = new Uint8Array(256);
                 let temp_buf = new Uint8Array(256);
-                pm = lookat(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), cptr.decay(__static_do_screen_description_look_buf), cptr.decay(monbuf));
+                pm = lookat(
+                    cptr.ldI16(cc),
+                    cptr.ldI16o(cc, $nhcoord_y),
+                    cptr.decay(__static_do_screen_description_look_buf),
+                    cptr.decay(monbuf)
+                );
                 if (pm && for_supplement)
                     cptr.stPtr(for_supplement, pm);
                 if (!strcmp(cptr.decay(__static_do_screen_description_look_buf), __s_ice))
-                    void ice_descr(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), cptr.decay(__static_do_screen_description_look_buf));
-                if (!strcmp(cptr.decay(__static_do_screen_description_look_buf), __s_staircase_down) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)) && !ok_to_quest())
-                    void cptr.strcpy(cptr.decay(__static_do_screen_description_look_buf), __s_blocked_staircase_down);
+                    void ice_descr(
+                        cptr.ldI16(cc),
+                        cptr.ldI16o(cc, $nhcoord_y),
+                        cptr.decay(__static_do_screen_description_look_buf)
+                    );
+                if (!strcmp(
+                    cptr.decay(__static_do_screen_description_look_buf),
+                    __s_staircase_down
+                ) &&
+                        on_level(
+                            cptr.add(u, $you_uz),
+                            cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_qstart_level
+                            )
+                        ) &&
+                        !ok_to_quest())
+                    void cptr.strcpy(
+                        cptr.decay(__static_do_screen_description_look_buf),
+                        __s_blocked_staircase_down
+                    );
                 if (cptr.ld1so(cptr.decay(__static_do_screen_description_look_buf), 0, 1) != 0)
                     cptr.stPtr(firstmatch, cptr.decay(__static_do_screen_description_look_buf));
                 if (cptr.ld1s((cptr.ldPtr(firstmatch)))) {
-                    void cptr.sprintf(cptr.decay(temp_buf), __s_sp_lparen_pct_s, cptr.ldPtr(firstmatch));
-                    void add_quoted_engraving(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y), cptr.decay(temp_buf), 0);
+                    void cptr.sprintf(
+                        cptr.decay(temp_buf),
+                        __s_sp_lparen_pct_s,
+                        cptr.ldPtr(firstmatch)
+                    );
+                    void add_quoted_engraving(
+                        cptr.ldI16(cc),
+                        cptr.ldI16o(cc, $nhcoord_y),
+                        cptr.decay(temp_buf),
+                        0
+                    );
                     void cptr.strcat(cptr.decay(temp_buf), __s_rparen);
-                    void __builtin___strncat_chk(out_str, cptr.decay(temp_buf), BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n), __builtin_object_size(out_str, 1));
+                    void __builtin___strncat_chk(
+                        out_str,
+                        cptr.decay(temp_buf),
+                        BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n),
+                        __builtin_object_size(out_str, 1)
+                    );
                     found = 1;
                 }
                 if (cptr.ld1so(cptr.decay(monbuf), 0, 1)) {
-                    nh_snprintf(__s_do_screen_description, 1619, cptr.decay(temp_buf), 256n, __s_seen_s, cptr.decay(monbuf));
-                    void __builtin___strncat_chk(out_str, cptr.decay(temp_buf), BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n), __builtin_object_size(out_str, 1));
+                    nh_snprintf(
+                        __s_do_screen_description,
+                        1619,
+                        cptr.decay(temp_buf),
+                        256n,
+                        __s_seen_s,
+                        cptr.decay(monbuf)
+                    );
+                    void __builtin___strncat_chk(
+                        out_str,
+                        cptr.decay(temp_buf),
+                        BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n),
+                        __builtin_object_size(out_str, 1)
+                    );
                 }
             }
         }
@@ -1806,7 +2976,14 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
 }
 
 /* when farlook is reporting on an engraving, include its text */
-/** C ref: pager.c:1631 — @param {CInt} x @param {CInt} y @param {CPtr<char>} buf @param {CInt} force @returns {CInt} */
+/**
+ * C ref: pager.c:1631
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<char>} buf
+ * @param {CInt} force
+ * @returns {CInt}
+ */
 function add_quoted_engraving(x, y, buf, force) {
     let temp_buf = new Uint8Array(256);
     let ep = engr_at(x, y);
@@ -1830,11 +3007,31 @@ function add_quoted_engraving(x, y, buf, force) {
         return 0;
 
     if ((cptr.ldI32o(ep, $engr_eread) & 1))
-        nh_snprintf(__s_add_quoted_engraving, 1660, cptr.decay(temp_buf), 256n, __s_with_s_s, headstone ? __s_headstone_reading : __s_remembered_text, cptr.ldPtro2(ep, NHC.remembered_text, 8, $engr_engr_txt));
+        nh_snprintf(
+            __s_add_quoted_engraving,
+            1660,
+            cptr.decay(temp_buf),
+            256n,
+            __s_with_s_s,
+            headstone ? __s_headstone_reading : __s_remembered_text,
+            cptr.ldPtro2(ep, NHC.remembered_text, 8, $engr_engr_txt)
+        );
     else
-        nh_snprintf(__s_add_quoted_engraving, 1663, cptr.decay(temp_buf), 256n, __s_s_you_haven_t_read, headstone ? __s_whose_headstone : __s_that);
+        nh_snprintf(
+            __s_add_quoted_engraving,
+            1663,
+            cptr.decay(temp_buf),
+            256n,
+            __s_s_you_haven_t_read,
+            headstone ? __s_whose_headstone : __s_that
+        );
 
-    void __builtin___strncat_chk(buf, cptr.decay(temp_buf), BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(buf)) - 1n), __builtin_object_size(buf, 1));
+    void __builtin___strncat_chk(
+        buf,
+        cptr.decay(temp_buf),
+        BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(buf)) - 1n),
+        __builtin_object_size(buf, 1)
+    );
     return 1;
 }
 
@@ -1844,7 +3041,30 @@ export const what_is_a_location = cptr.bytes("a monster, object or location");
 
 /** C ref: pager.c:1673 — @param {CInt} mode @param {CPtr<coord>} click_cc @returns {CInt} */
 export function do_look(mode, click_cc) {
-    let quick, clicklook, out_str, cq, cmdq, firstmatch = cptr.box(0), pm, supplemental_pm = cptr.box(0), i, ans, sym, found, cc, save_verbose, from_screen, clr, pick_list = cptr.box(0), win, any, invlet, invobj, dmpbuf, temp_buf, supplemental_name;
+    let quick,
+            clicklook,
+            out_str,
+            cq,
+            cmdq,
+            firstmatch = cptr.box(0),
+            pm,
+            supplemental_pm = cptr.box(0),
+            i,
+            ans,
+            sym,
+            found,
+            cc,
+            save_verbose,
+            from_screen,
+            clr,
+            pick_list = cptr.box(0),
+            win,
+            any,
+            invlet,
+            invobj,
+            dmpbuf,
+            temp_buf,
+            supplemental_name;
     let __pc = 0;
     __dispatch: while (true) {
         switch (__pc) {
@@ -1908,11 +3128,41 @@ export function do_look(mode, click_cc) {
              */
 
             cptr.st1(any, 47);
-            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? 47 : 121)), NHM.ATR_NONE, clr, __s_something_on_the_map, NHM.MENU_ITEMFLAGS_NONE);
+            add_menu(
+                win,
+                nul_glyphinfo.v,
+                any,
+                schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                schar((cptr.ld1so(flags, $flag_lootabc) ? 47 : 121)),
+                NHM.ATR_NONE,
+                clr,
+                __s_something_on_the_map,
+                NHM.MENU_ITEMFLAGS_NONE
+            );
             cptr.st1(any, 105);
-            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), 0, NHM.ATR_NONE, clr, __s_something_you_re_carrying, NHM.MENU_ITEMFLAGS_NONE);
+            add_menu(
+                win,
+                nul_glyphinfo.v,
+                any,
+                schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                0,
+                NHM.ATR_NONE,
+                clr,
+                __s_something_you_re_carrying,
+                NHM.MENU_ITEMFLAGS_NONE
+            );
             cptr.st1(any, 63);
-            add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? 63 : 110)), NHM.ATR_NONE, clr, __s_something_else_by_symbol_or_name, NHM.MENU_ITEMFLAGS_NONE);
+            add_menu(
+                win,
+                nul_glyphinfo.v,
+                any,
+                schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                schar((cptr.ld1so(flags, $flag_lootabc) ? 63 : 110)),
+                NHM.ATR_NONE,
+                clr,
+                __s_something_else_by_symbol_or_name,
+                NHM.MENU_ITEMFLAGS_NONE
+            );
             if (!(cptr.ldI32o(u, $you_uswallow) & 1) && !Hallucination()) {
                 cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
                 add_menu_str(win, __s_empty);
@@ -1923,21 +3173,101 @@ export function do_look(mode, click_cc) {
                    symbol/monster class letter doesn't match up with
                    bogus monster type, so suppress when hallucinating */
                 cptr.st1(any, 109);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 0)), NHM.ATR_NONE, clr, __s_nearby_monsters, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(
+                    win,
+                    nul_glyphinfo.v,
+                    any,
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 0)),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_nearby_monsters,
+                    NHM.MENU_ITEMFLAGS_NONE
+                );
                 cptr.st1(any, 77);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 0)), NHM.ATR_NONE, clr, __s_all_monsters_shown_on_map, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(
+                    win,
+                    nul_glyphinfo.v,
+                    any,
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 0)),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_all_monsters_shown_on_map,
+                    NHM.MENU_ITEMFLAGS_NONE
+                );
                 cptr.st1(any, 111);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 0)), NHM.ATR_NONE, clr, __s_nearby_objects, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(
+                    win,
+                    nul_glyphinfo.v,
+                    any,
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 0)),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_nearby_objects,
+                    NHM.MENU_ITEMFLAGS_NONE
+                );
                 cptr.st1(any, 79);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 0)), NHM.ATR_NONE, clr, __s_all_objects_shown_on_map, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(
+                    win,
+                    nul_glyphinfo.v,
+                    any,
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 0)),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_all_objects_shown_on_map,
+                    NHM.MENU_ITEMFLAGS_NONE
+                );
                 cptr.st1(any, 116);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 94)), NHM.ATR_NONE, clr, __s_nearby_traps, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(
+                    win,
+                    nul_glyphinfo.v,
+                    any,
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 94)),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_nearby_traps,
+                    NHM.MENU_ITEMFLAGS_NONE
+                );
                 cptr.st1(any, 84);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 34)), NHM.ATR_NONE, clr, __s_all_seen_or_remembered_traps, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(
+                    win,
+                    nul_glyphinfo.v,
+                    any,
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 34)),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_all_seen_or_remembered_traps,
+                    NHM.MENU_ITEMFLAGS_NONE
+                );
                 cptr.st1(any, 101);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : 96)), NHM.ATR_NONE, clr, __s_nearby_engravings, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(
+                    win,
+                    nul_glyphinfo.v,
+                    any,
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : 96)),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_nearby_engravings,
+                    NHM.MENU_ITEMFLAGS_NONE
+                );
                 cptr.st1(any, 69);
-                add_menu(win, nul_glyphinfo.v, any, schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))), schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 124)), NHM.ATR_NONE, clr, __s_all_seen_or_remembered_engravings, NHM.MENU_ITEMFLAGS_NONE);
+                add_menu(
+                    win,
+                    nul_glyphinfo.v,
+                    any,
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? 0 : cptr.ld1s(any))),
+                    schar((cptr.ld1so(flags, $flag_lootabc) ? cptr.ld1s(any) : 124)),
+                    NHM.ATR_NONE,
+                    clr,
+                    __s_all_seen_or_remembered_engravings,
+                    NHM.MENU_ITEMFLAGS_NONE
+                );
             }
             end_menu()(win, __s_what_do_you_want_to_look_at);
             if (select_menu(win, NHM.PICK_ONE, pick_list) > 0) {
@@ -1968,13 +3298,22 @@ export function do_look(mode, click_cc) {
                 if (!invlet || invlet == 27)
                     return NHM.ECMD_OK;
                 cptr.st1(cptr.decay(out_str), 0);
-                for (invobj = cptr.ldPtro(gi, $instance_globals_i_invent); invobj; invobj = cptr.ldPtr(invobj))
+                for (
+                    invobj = cptr.ldPtro(gi, $instance_globals_i_invent);
+                    invobj;
+                    invobj = cptr.ldPtr(invobj)
+                )
                     if (cptr.ld1so(invobj, $obj_invlet) == invlet) {
                         void cptr.strcpy(cptr.decay(out_str), singular(invobj, xname));
                         break;
                     }
                 if (cptr.ld1s(cptr.decay(out_str)))
-                    void checkfile(cptr.decay(out_str), pm, ((NHC.chkfilUsrTyped | NHC.chkfilDontAsk) >>> 0), null);
+                    void checkfile(
+                        cptr.decay(out_str),
+                        pm,
+                        ((NHC.chkfilUsrTyped | NHC.chkfilDontAsk) >>> 0),
+                        null
+                    );
                 return NHM.ECMD_OK;
             }
             case 63:
@@ -1984,11 +3323,17 @@ export function do_look(mode, click_cc) {
                 /* remove leading and trailing whitespace and
                    condense consecutive internal whitespace */
                 mungspaces(cptr.decay(out_str));
-            if (cptr.ld1so(cptr.decay(out_str), 0, 1) == 0 || cptr.ld1so(cptr.decay(out_str), 0, 1) == 27)
+            if (cptr.ld1so(cptr.decay(out_str), 0, 1) == 0 ||
+                    cptr.ld1so(cptr.decay(out_str), 0, 1) == 27)
                 return NHM.ECMD_OK;
 
             if (cptr.ld1so(cptr.decay(out_str), 1, 1)) {
-                void checkfile(cptr.decay(out_str), pm, ((NHC.chkfilUsrTyped | NHC.chkfilDontAsk) >>> 0), null);
+                void checkfile(
+                    cptr.decay(out_str),
+                    pm,
+                    ((NHC.chkfilUsrTyped | NHC.chkfilDontAsk) >>> 0),
+                    null
+                );
                 return NHM.ECMD_OK;
             }
             sym = cptr.ld1so(cptr.decay(out_str), 0, 1);
@@ -2033,7 +3378,11 @@ export function do_look(mode, click_cc) {
 
         /* Save the verbose flag, we change it later. */
         save_verbose = cptr.ld1so(flags, $flag_verbose);
-        cptr.st1o(flags, $flag_verbose, schar((cptr.ld1so(flags, $flag_verbose) && !quick ? 1 : 0)));
+        cptr.st1o(
+            flags,
+            $flag_verbose,
+            schar((cptr.ld1so(flags, $flag_verbose) && !quick ? 1 : 0))
+        );
         /*
          * The user typed one letter, or we're identifying from the screen.
          */
@@ -2056,7 +3405,14 @@ export function do_look(mode, click_cc) {
                 }
             }
 
-            found = do_screen_description(cc, schar((from_screen || clicklook ? 1 : 0)), sym, cptr.decay(out_str), firstmatch, supplemental_pm);
+            found = do_screen_description(
+                cc,
+                schar((from_screen || clicklook ? 1 : 0)),
+                sym,
+                cptr.decay(out_str),
+                firstmatch,
+                supplemental_pm
+            );
 
             /* Finally, print out our explanation. */
             if (found) {
@@ -2071,21 +3427,35 @@ export function do_look(mode, click_cc) {
                        at present, force space, but we ought to use defsyms[]
                        value for the glyph the graphics character came from */
                     void decode_mixed(cptr.decay(dmpbuf), cptr.decay(out_str));
-                    if (cptr.ld1so(cptr.decay(dmpbuf), 0, 1) < 32 || cptr.ld1so(cptr.decay(dmpbuf), 0, 1) >= 127)
+                    if (cptr.ld1so(cptr.decay(dmpbuf), 0, 1) < 32 ||
+                            cptr.ld1so(cptr.decay(dmpbuf), 0, 1) >= 127)
                         cptr.st1o(cptr.decay(dmpbuf), 0, 32, 1);
                     dumplogmsg(cptr.decay(dmpbuf));
                 }
 
                 /* check the data file for information about this thing */
-                if (found == 1 && ans != NHC.LOOK_QUICK && ans != NHC.LOOK_ONCE && (ans == NHC.LOOK_VERBOSE || (cptr.ld1so(flags, $flag_help) && !quick)) && !clicklook) {
+                if (found == 1 &&
+                        ans != NHC.LOOK_QUICK &&
+                        ans != NHC.LOOK_ONCE &&
+                        (ans == NHC.LOOK_VERBOSE || (cptr.ld1so(flags, $flag_help) && !quick)) &&
+                        !clicklook) {
                     temp_buf = new Uint8Array(256);
                     supplemental_name = new Uint8Array(256);
 
                     cptr.st1o(cptr.decay(supplemental_name), 0, 0, 1);
                     void cptr.strcpy(cptr.decay(temp_buf), firstmatch.v);
-                    void checkfile(cptr.decay(temp_buf), pm, ((ans == NHC.LOOK_VERBOSE) ? NHC.chkfilDontAsk : NHC.chkfilNone) >>> 0, cptr.decay(supplemental_name));
+                    void checkfile(
+                        cptr.decay(temp_buf),
+                        pm,
+                        ((ans == NHC.LOOK_VERBOSE) ? NHC.chkfilDontAsk : NHC.chkfilNone) >>> 0,
+                        cptr.decay(supplemental_name)
+                    );
                     if (supplemental_pm.v)
-                        do_supplemental_info(cptr.decay(supplemental_name), supplemental_pm.v, schar((ans == NHC.LOOK_VERBOSE)));
+                        do_supplemental_info(
+                            cptr.decay(supplemental_name),
+                            supplemental_pm.v,
+                            schar((ans == NHC.LOOK_VERBOSE))
+                        );
                 }
             } else {
                 pline(__s_i_ve_never_heard_of_such_things);
@@ -2100,12 +3470,45 @@ export function do_look(mode, click_cc) {
     }
 }
 
-/** C ref: pager.c:1966 — @param {CPtr<coordxy>} lo_x @param {CPtr<coordxy>} lo_y @param {CPtr<coordxy>} hi_x @param {CPtr<coordxy>} hi_y @param {CInt} nearby */
+/**
+ * C ref: pager.c:1966
+ * @param {CPtr<coordxy>} lo_x
+ * @param {CPtr<coordxy>} lo_y
+ * @param {CPtr<coordxy>} hi_x
+ * @param {CPtr<coordxy>} hi_y
+ * @param {CInt} nearby
+ */
 function look_region_nearby(lo_x, lo_y, hi_x, hi_y, nearby) {
-    cptr.stI16(lo_y, i16((nearby ? (((cptr.ldI16o(u, $you_uy) - NHM.BOLT_LIM) | 0) > 0 ? ((cptr.ldI16o(u, $you_uy) - NHM.BOLT_LIM) | 0) : 0) : 0)));
-    cptr.stI16(lo_x, i16((nearby ? (((cptr.ldI16(u) - NHM.BOLT_LIM) | 0) > 1 ? ((cptr.ldI16(u) - NHM.BOLT_LIM) | 0) : 1) : 1)));
-    cptr.stI16(hi_y, i16((nearby ? (((cptr.ldI16o(u, $you_uy) + NHM.BOLT_LIM) | 0) < 20 ? ((cptr.ldI16o(u, $you_uy) + NHM.BOLT_LIM) | 0) : 20) : 20)));
-    cptr.stI16(hi_x, i16((nearby ? (((cptr.ldI16(u) + NHM.BOLT_LIM) | 0) < 79 ? ((cptr.ldI16(u) + NHM.BOLT_LIM) | 0) : 79) : 79)));
+    cptr.stI16(
+        lo_y,
+        i16((nearby
+            ? (((cptr.ldI16o(u, $you_uy) - NHM.BOLT_LIM) | 0) > 0
+                ? ((cptr.ldI16o(u, $you_uy) - NHM.BOLT_LIM) | 0)
+                : 0)
+            : 0))
+    );
+    cptr.stI16(
+        lo_x,
+        i16((nearby
+            ? (((cptr.ldI16(u) - NHM.BOLT_LIM) | 0) > 1 ? ((cptr.ldI16(u) - NHM.BOLT_LIM) | 0) : 1)
+            : 1))
+    );
+    cptr.stI16(
+        hi_y,
+        i16((nearby
+            ? (((cptr.ldI16o(u, $you_uy) + NHM.BOLT_LIM) | 0) < 20
+                ? ((cptr.ldI16o(u, $you_uy) + NHM.BOLT_LIM) | 0)
+                : 20)
+            : 20))
+    );
+    cptr.stI16(
+        hi_x,
+        i16((nearby
+            ? (((cptr.ldI16(u) + NHM.BOLT_LIM) | 0) < 79
+                ? ((cptr.ldI16(u) + NHM.BOLT_LIM) | 0)
+                : 79)
+            : 79))
+    );
 }
 
 /** C ref: pager.c:1979 — @param {CInt} nearby @param {CInt} do_mons */
@@ -2132,10 +3535,21 @@ function look_all(nearby, do_mons) {
                 if (glyph_is_monster(glyph)) {
                     let mtmp;
 
-                    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && ((Blind() || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) || (Unblind_telepat() || Detect_monsters()))) {
+                    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
+                            ((Blind() ||
+                                (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                                (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
+                                (Unblind_telepat() || Detect_monsters()))) {
                         void self_lookat(cptr.decay(lookbuf));
                         ++count;
-                    } else if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null) {
+                    } else if ((mtmp = (cptr.ldPtro3(
+                        svl,
+                        x,
+                        168,
+                        y,
+                        8,
+                        $instance_globals_saved_l_level + $dlevel_t_monsters
+                    ))) !== null) {
                         look_at_monster(cptr.decay(lookbuf), null, mtmp, x, y);
                         ++count;
                     }
@@ -2146,7 +3560,10 @@ function look_all(nearby, do_mons) {
                 } else if (glyph_is_warning(glyph)) {
                     let warnindx = glyph_to_warning(glyph);
 
-                    void cptr.strcpy(cptr.decay(lookbuf), cptr.ldPtro2(def_warnsyms, warnindx, $sizeof_symdef, $symdef_explanation));
+                    void cptr.strcpy(
+                        cptr.decay(lookbuf),
+                        cptr.ldPtro2(def_warnsyms, warnindx, $sizeof_symdef, $symdef_explanation)
+                    );
                     ++count;
                 }
             } else {
@@ -2160,13 +3577,36 @@ function look_all(nearby, do_mons) {
                 let which = new Uint8Array(12);
                 let cmode;
 
-                cmode = schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) != 110) ? cptr.ldI32o(iflags, $instance_flags_getpos_coords) : 109));
+                cmode = schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) != 110)
+                        ? cptr.ldI32o(iflags, $instance_flags_getpos_coords)
+                        : 109));
                 if (count == 1) {
                     void cptr.strcpy(cptr.decay(which), do_mons ? __s_monsters : __s_objects);
                     if (nearby)
-                        void cptr.sprintf(cptr.decay(outbuf), __s_s_currently_shown_near_s, upstart(cptr.decay(which)), (cmode != 99) ? coord_desc(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), cptr.decay(coordbuf), cmode) : (!((Blind() || (cptr.ldI32o(u, $you_uswallow) & 1) | 0 || (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) || (Unblind_telepat() || Detect_monsters())) ? __s_your_position : __s_you));
+                        void cptr.sprintf(
+                            cptr.decay(outbuf),
+                            __s_s_currently_shown_near_s,
+                            upstart(cptr.decay(which)),
+                            (cmode != 99)
+                                ? coord_desc(
+                                    cptr.ldI16(u),
+                                    cptr.ldI16o(u, $you_uy),
+                                    cptr.decay(coordbuf),
+                                    cmode
+                                )
+                                : (!((Blind() ||
+                                    (cptr.ldI32o(u, $you_uswallow) & 1) | 0 ||
+                                    (!Invisible() && !(cptr.ldI32o(u, $you_uundetected) & 1))) ||
+                                    (Unblind_telepat() || Detect_monsters()))
+                                    ? __s_your_position
+                                    : __s_you)
+                        );
                     else
-                        void cptr.sprintf(cptr.decay(outbuf), __s_all_s_currently_shown_on_the_map, cptr.decay(which));
+                        void cptr.sprintf(
+                            cptr.decay(outbuf),
+                            __s_all_s_currently_shown_on_the_map,
+                            cptr.decay(which)
+                        );
                     putstr()(win, 0, cptr.decay(outbuf));
                     /* hack alert! Qt watches a text window for any line
                        with 4 consecutive spaces and renders the window
@@ -2185,10 +3625,19 @@ function look_all(nearby, do_mons) {
                 if (cmode == 109 && y < 10)
                     void strkitten(cptr.decay(coordbuf), 32);
                 /* prefix: "coords  C  " where 'C' is mon or obj symbol */
-                void cptr.sprintf(cptr.decay(outbuf), (cmode == 115) ? __s_pct_s_sp2 : ((cmode == 109) ? __s_8s : __s_12s), cptr.decay(coordbuf));
+                void cptr.sprintf(
+                    cptr.decay(outbuf),
+                    (cmode == 115) ? __s_pct_s_sp2 : ((cmode == 109) ? __s_8s : __s_12s),
+                    cptr.decay(coordbuf)
+                );
                 void cptr.sprintf(eos(cptr.decay(outbuf)), __s_pct_s_sp2, encglyph(glyph));
                 /* guard against potential overflow */
-                cptr.st1o(cptr.decay(lookbuf), BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(outbuf))), 0, 1);
+                cptr.st1o(
+                    cptr.decay(lookbuf),
+                    BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(outbuf))),
+                    0,
+                    1
+                );
                 void cptr.strcat(cptr.decay(outbuf), cptr.decay(lookbuf));
                 putmixed()(win, 0, cptr.decay(outbuf));
             }
@@ -2197,7 +3646,11 @@ function look_all(nearby, do_mons) {
     if (count)
         display_nhwindow()(win, 1);
     else
-        pline(__s_no_s_are_currently_shown_s, do_mons ? __s_monsters : __s_objects, nearby ? __s_nearby : __s_on_the_map);
+        pline(
+            __s_no_s_are_currently_shown_s,
+            do_mons ? __s_monsters : __s_objects,
+            nearby ? __s_nearby : __s_on_the_map
+        );
     destroy_nhwindow()(win);
 }
 
@@ -2228,19 +3681,152 @@ function look_traps(nearby) {
                 tnum = glyph_to_trap(glyph);
                 trap_description(cptr.decay(lookbuf), tnum, x, y);
                 ++count;
-            } else if ((t = t_at(x, y)) !== null && (cptr.ldI32o(t, $trap_tseen) & 1) | 0 && ((!(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level))))) || ((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) & NHM.COULD_SEE) != 0))) {
-                void cptr.strcpy(cptr.decay(lookbuf), trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0));
+            } else if ((t = t_at(x, y)) !== null &&
+                    (cptr.ldI32o(t, $trap_tseen) & 1) | 0 &&
+                    ((!(((cptr.ldI16o(
+                        (cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )),
+                        $d_level_dlevel
+                    ) ||
+                        cptr.ldI16((cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )))) &&
+                        on_level(
+                            cptr.add(u, $you_uz),
+                            cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_water_level
+                            )
+                        ))) &&
+                        !(((cptr.ldI16o(
+                            (cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_air_level
+                            )),
+                            $d_level_dlevel
+                        ) ||
+                            cptr.ldI16((cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_air_level
+                            )))) &&
+                            on_level(
+                                cptr.add(u, $you_uz),
+                                cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_air_level
+                                )
+                            )))) ||
+                        ((cptr.ld1uo(
+                            cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
+                            x
+                        ) &
+                            NHM.COULD_SEE) != 0))) {
+                void cptr.strcpy(
+                    cptr.decay(lookbuf),
+                    trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0)
+                );
                 void cptr.sprintf(eos(cptr.decay(lookbuf)), __s_obscured_by_s, encglyph(glyph));
-                glyph = (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_trwall) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < NHC.S_altar) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <= NHC.S_goodpos) ? (((((((((NHC.S_arrow_trap + (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0) : NHC.MAX_GLYPH))))));
+                glyph = (((((((NHC.S_arrow_trap +
+                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) ==
+                    NHC.S_stone)
+                        ? NHC.GLYPH_CMAP_STONE_OFF
+                        : (((((((NHC.S_arrow_trap +
+                            (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <=
+                            NHC.S_trwall)
+                            ? (((((((((NHC.S_arrow_trap +
+                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) -
+                                NHC.S_vwall) | 0) +
+                                (In_mines(cptr.add(u, $you_uz))
+                                    ? NHC.GLYPH_CMAP_MINES_OFF
+                                    : (In_hell(cptr.add(u, $you_uz))
+                                        ? NHC.GLYPH_CMAP_GEH_OFF
+                                        : ((((cptr.ldI16o(
+                                            (cptr.add(
+                                                svd,
+                                                $instance_globals_saved_d_dungeon_topology +
+                                                    $dgn_topology_d_knox_level
+                                            )),
+                                            $d_level_dlevel
+                                        ) ||
+                                            cptr.ldI16((cptr.add(
+                                                svd,
+                                                $instance_globals_saved_d_dungeon_topology +
+                                                    $dgn_topology_d_knox_level
+                                            )))) &&
+                                            on_level(
+                                                cptr.add(u, $you_uz),
+                                                cptr.add(
+                                                    svd,
+                                                    $instance_globals_saved_d_dungeon_topology +
+                                                        $dgn_topology_d_knox_level
+                                                )
+                                            )))
+                                            ? NHC.GLYPH_CMAP_KNOX_OFF
+                                            : ((cptr.ldI16((cptr.add(u, $you_uz))) ==
+                                                sokoban_dnum())
+                                                ? NHC.GLYPH_CMAP_SOKO_OFF
+                                                : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
+                            : (((((((NHC.S_arrow_trap +
+                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <
+                                NHC.S_altar)
+                                ? (((((((((NHC.S_arrow_trap +
+                                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) -
+                                    NHC.S_ndoor) | 0) +
+                                    NHC.GLYPH_CMAP_A_OFF) | 0)
+                                : (((((((NHC.S_arrow_trap +
+                                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) ==
+                                    NHC.S_altar)
+                                    ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
+                                    : (((((((NHC.S_arrow_trap +
+                                        (((cptr.ldI32o(
+                                            (t),
+                                            $trap_ttyp
+                                        ) & 31) | 0))) | 0) - 1) | 0)) <
+                                        ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
+                                        ? (((((((((NHC.S_arrow_trap +
+                                            (((cptr.ldI32o(
+                                                (t),
+                                                $trap_ttyp
+                                            ) & 31) | 0))) | 0) - 1) | 0)) -
+                                            NHC.S_grave) | 0) +
+                                            NHC.GLYPH_CMAP_B_OFF) | 0)
+                                        : (((((((NHC.S_arrow_trap +
+                                            (((cptr.ldI32o(
+                                                (t),
+                                                $trap_ttyp
+                                            ) & 31) | 0))) | 0) - 1) | 0)) <=
+                                            NHC.S_goodpos)
+                                            ? (((((((((NHC.S_arrow_trap +
+                                                (((cptr.ldI32o(
+                                                    (t),
+                                                    $trap_ttyp
+                                                ) & 31) | 0))) | 0) - 1) | 0)) -
+                                                NHC.S_digbeam) | 0) +
+                                                NHC.GLYPH_CMAP_C_OFF) | 0)
+                                            : NHC.MAX_GLYPH))))));
                 ++count;
             }
             if (cptr.ld1s(cptr.decay(lookbuf))) {
                 let coordbuf = new Uint8Array(20);
                 let cmode;
 
-                cmode = schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) != 110) ? cptr.ldI32o(iflags, $instance_flags_getpos_coords) : 109));
+                cmode = schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) != 110)
+                        ? cptr.ldI32o(iflags, $instance_flags_getpos_coords)
+                        : 109));
                 if (count == 1) {
-                    void cptr.sprintf(cptr.decay(outbuf), __s_sseen_or_remembered_traps_s, nearby ? __s_nearby__2 : __s_empty, nearby ? __s_empty : __s_on_this_level);
+                    void cptr.sprintf(
+                        cptr.decay(outbuf),
+                        __s_sseen_or_remembered_traps_s,
+                        nearby ? __s_nearby__2 : __s_empty,
+                        nearby ? __s_empty : __s_on_this_level
+                    );
                     putstr()(win, 0, upstart(cptr.decay(outbuf)));
                     /* hack alert! Qt watches a text window for any line
                        with 4 consecutive spaces and renders the window
@@ -2248,10 +3834,19 @@ function look_traps(nearby) {
                     putstr()(win, 0, __s_sp4);  /* separator */
                 }
                 /* prefix: "coords  C  " where 'C' is trap symbol */
-                void cptr.sprintf(cptr.decay(outbuf), (cmode == 115) ? __s_pct_s_sp2 : ((cmode == 109) ? __s_8s : __s_12s), coord_desc(x, y, cptr.decay(coordbuf), cmode));
+                void cptr.sprintf(
+                    cptr.decay(outbuf),
+                    (cmode == 115) ? __s_pct_s_sp2 : ((cmode == 109) ? __s_8s : __s_12s),
+                    coord_desc(x, y, cptr.decay(coordbuf), cmode)
+                );
                 void cptr.sprintf(eos(cptr.decay(outbuf)), __s_pct_s_sp2, encglyph(glyph));
                 /* guard against potential overflow */
-                cptr.st1o(cptr.decay(lookbuf), BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(outbuf))), 0, 1);
+                cptr.st1o(
+                    cptr.decay(lookbuf),
+                    BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(outbuf))),
+                    0,
+                    1
+                );
                 void cptr.strcat(cptr.decay(outbuf), cptr.decay(lookbuf));
                 putmixed()(win, 0, cptr.decay(outbuf));
             }
@@ -2289,7 +3884,14 @@ function look_engrs(nearby) {
     for (y = lo_y.v; y <= hi_y.v; y++) {
         for (x = lo_x.v; x <= hi_x.v; x++) {
             cptr.st1o(cptr.decay(lookbuf), 0, 0, 1);
-            if (!cptr.ld1uo3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv))
+            if (!cptr.ld1uo3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_seenv
+            ))
                 continue;
             /* this won't find remembered engravings which aren't there
                anymore (in case the hero is unaware that they're gone;
@@ -2299,7 +3901,11 @@ function look_engrs(nearby) {
             if (!e)
                 continue;
             is_headstone = schar(((cptr.ld1so3(svl, x, 21, y, 1, 0)) == NHC.GRAVE));
-            void cptr.sprintf(cptr.decay(lookbuf), __s_sp_lparen_pct_s, is_headstone ? __s_grave__2 : __s_engraving);
+            void cptr.sprintf(
+                cptr.decay(lookbuf),
+                __s_sp_lparen_pct_s,
+                is_headstone ? __s_grave__2 : __s_engraving
+            );
             void add_quoted_engraving(x, y, cptr.decay(lookbuf), 1);
             /* the paren is used by farlook and add_quoted_engraving()
                expected to see it; we don't want it here */
@@ -2318,17 +3924,76 @@ function look_engrs(nearby) {
                 ++count;
             } else {
                 /* engraving or grave covered by object(s) */
-                nh_snprintf(__s_look_engrs, 2190, eos(cptr.decay(lookbuf)), BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(lookbuf))), __s_obscured_by_s, encglyph(glyph));
-                glyph = is_headstone ? (((((NHC.S_grave) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0) : (((engraving_to_defsym(e)) == NHC.S_stone) ? NHC.GLYPH_CMAP_STONE_OFF : (((engraving_to_defsym(e)) <= NHC.S_trwall) ? (((((engraving_to_defsym(e)) - NHC.S_vwall) | 0) + (In_mines(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_MINES_OFF : (In_hell(cptr.add(u, $you_uz)) ? NHC.GLYPH_CMAP_GEH_OFF : ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) ? NHC.GLYPH_CMAP_KNOX_OFF : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ? NHC.GLYPH_CMAP_SOKO_OFF : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0) : (((engraving_to_defsym(e)) < NHC.S_altar) ? cmap_a_to_glyph(e) : (((engraving_to_defsym(e)) == NHC.S_altar) ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0) : (((engraving_to_defsym(e)) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)) ? cmap_b_to_glyph(e) : (((engraving_to_defsym(e)) <= NHC.S_goodpos) ? cmap_c_to_glyph(e) : NHC.MAX_GLYPH))))));
+                nh_snprintf(
+                    __s_look_engrs,
+                    2190,
+                    eos(cptr.decay(lookbuf)),
+                    BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(lookbuf))),
+                    __s_obscured_by_s,
+                    encglyph(glyph)
+                );
+                glyph = is_headstone
+                        ? (((((NHC.S_grave) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                        : (((engraving_to_defsym(e)) == NHC.S_stone)
+                            ? NHC.GLYPH_CMAP_STONE_OFF
+                            : (((engraving_to_defsym(e)) <= NHC.S_trwall)
+                                ? (((((engraving_to_defsym(e)) - NHC.S_vwall) | 0) +
+                                    (In_mines(cptr.add(u, $you_uz))
+                                        ? NHC.GLYPH_CMAP_MINES_OFF
+                                        : (In_hell(cptr.add(u, $you_uz))
+                                            ? NHC.GLYPH_CMAP_GEH_OFF
+                                            : ((((cptr.ldI16o(
+                                                (cptr.add(
+                                                    svd,
+                                                    $instance_globals_saved_d_dungeon_topology +
+                                                        $dgn_topology_d_knox_level
+                                                )),
+                                                $d_level_dlevel
+                                            ) ||
+                                                cptr.ldI16((cptr.add(
+                                                    svd,
+                                                    $instance_globals_saved_d_dungeon_topology +
+                                                        $dgn_topology_d_knox_level
+                                                )))) &&
+                                                on_level(
+                                                    cptr.add(u, $you_uz),
+                                                    cptr.add(
+                                                        svd,
+                                                        $instance_globals_saved_d_dungeon_topology +
+                                                            $dgn_topology_d_knox_level
+                                                    )
+                                                )))
+                                                ? NHC.GLYPH_CMAP_KNOX_OFF
+                                                : ((cptr.ldI16((cptr.add(u, $you_uz))) ==
+                                                    sokoban_dnum())
+                                                    ? NHC.GLYPH_CMAP_SOKO_OFF
+                                                    : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
+                                : (((engraving_to_defsym(e)) < NHC.S_altar)
+                                    ? cmap_a_to_glyph(e)
+                                    : (((engraving_to_defsym(e)) == NHC.S_altar)
+                                        ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
+                                        : (((engraving_to_defsym(e)) <
+                                            ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
+                                            ? cmap_b_to_glyph(e)
+                                            : (((engraving_to_defsym(e)) <= NHC.S_goodpos)
+                                                ? cmap_c_to_glyph(e)
+                                                : NHC.MAX_GLYPH))))));
                 ++count;
             }
             if (cptr.ld1s(cptr.decay(lookbuf))) {
                 let coordbuf = new Uint8Array(20);
                 let cmode;
 
-                cmode = schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) != 110) ? cptr.ldI32o(iflags, $instance_flags_getpos_coords) : 109));
+                cmode = schar(((cptr.ldI32o(iflags, $instance_flags_getpos_coords) != 110)
+                        ? cptr.ldI32o(iflags, $instance_flags_getpos_coords)
+                        : 109));
                 if (count == 1) {
-                    void cptr.sprintf(cptr.decay(outbuf), __s_sseen_or_remembered_engravings_s, nearby ? __s_nearby__2 : __s_empty, nearby ? __s_empty : __s_on_this_level);
+                    void cptr.sprintf(
+                        cptr.decay(outbuf),
+                        __s_sseen_or_remembered_engravings_s,
+                        nearby ? __s_nearby__2 : __s_empty,
+                        nearby ? __s_empty : __s_on_this_level
+                    );
                     putstr()(win, 0, upstart(cptr.decay(outbuf)));
                     /* hack alert! Qt watches a text window for any line
                        with 4 consecutive spaces and renders the window
@@ -2336,10 +4001,19 @@ function look_engrs(nearby) {
                     putstr()(win, 0, __s_sp4);  /* separator */
                 }
                 /* prefix: "coords  C  " where 'C' is engrvng|grave symbol */
-                void cptr.sprintf(cptr.decay(outbuf), (cmode == 115) ? __s_pct_s_sp2 : ((cmode == 109) ? __s_8s : __s_12s), coord_desc(x, y, cptr.decay(coordbuf), cmode));
+                void cptr.sprintf(
+                    cptr.decay(outbuf),
+                    (cmode == 115) ? __s_pct_s_sp2 : ((cmode == 109) ? __s_8s : __s_12s),
+                    coord_desc(x, y, cptr.decay(coordbuf), cmode)
+                );
                 void cptr.sprintf(eos(cptr.decay(outbuf)), __s_pct_s_sp, encglyph(glyph));
                 /* guard against potential overflow */
-                cptr.st1o(cptr.decay(lookbuf), BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(outbuf))), 0, 1);
+                cptr.st1o(
+                    cptr.decay(lookbuf),
+                    BigInt.asUintN(64, 255n - cptr.strlen(cptr.decay(outbuf))),
+                    0,
+                    1
+                );
                 void cptr.strcat(cptr.decay(outbuf), cptr.decay(lookbuf));
                 putmixed()(win, 0, cptr.decay(outbuf));
             }
@@ -2374,7 +4048,12 @@ cptr.stPtro(suptext2, 32, __s_the_perpetrator_was_last_seen_hanging);
 cptr.stPtro(suptext2, 40, __s_stairs_leading_to_the_gnomish_mines);
 cptr.stPtro(suptext2, 48, null);
 
-/** C ref: pager.c:2253 — @param {CPtr<char>} name @param {CPtr<struct permonst>} pm @param {CInt} without_asking */
+/**
+ * C ref: pager.c:2253
+ * @param {CPtr<char>} name
+ * @param {CPtr<struct permonst>} pm
+ * @param {CInt} without_asking
+ */
 function do_supplemental_info(name, pm, without_asking) {
     let textp;
     let datawin = -1;
@@ -2401,7 +4080,17 @@ function do_supplemental_info(name, pm, without_asking) {
             if (!without_asking) {
                 void cptr.strcpy(cptr.decay(question), __s_more_info_about);
                 /* +2 => length of "\"?" */
-                copynchars(eos(cptr.decay(question)), entrytext, Number(BigInt.asIntN(32, (BigInt.asUintN(64, 127n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(question)) + 2n)))))));
+                copynchars(
+                    eos(cptr.decay(question)),
+                    entrytext,
+                    Number(BigInt.asIntN(
+                        32,
+                        (BigInt.asUintN(
+                            64,
+                            127n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(question)) + 2n))
+                        ))
+                    ))
+                );
                 void cptr.strcat(cptr.decay(question), __s_quot_query);
                 if (yn_function(cptr.decay(question), cptr.decay(ynchars), 110, 1) == 121)
                     yes_to_moreinfo = 1;
@@ -2425,7 +4114,11 @@ function do_supplemental_info(name, pm, without_asking) {
                     let txt;
 
                     if (strstri(cptr.ldPtro(textp, i, 8), __s_pct_s) !== null) {
-                        void cptr.sprintf(cptr.decay(buf), cptr.ldPtro(textp, i, 8), subs++ ? gang : cptr.decay(fullname));
+                        void cptr.sprintf(
+                            cptr.decay(buf),
+                            cptr.ldPtro(textp, i, 8),
+                            subs++ ? gang : cptr.decay(fullname)
+                        );
                         txt = cptr.decay(buf);
                     } else
                         txt = cptr.ldPtro(textp, i, 8);
@@ -2469,7 +4162,10 @@ export function doidtrap() {
        chain; usually they revert to normal door or chest when the hero
        sees them but player might be using '^' while the hero is blind */
     glyph = glyph_at(x, y);
-    if (glyph_is_trap(glyph) && ((tt = glyph_to_trap(glyph)) == NHC.BEAR_TRAP || tt == NHC.TRAPPED_DOOR || tt == NHC.TRAPPED_CHEST)) {
+    if (glyph_is_trap(glyph) &&
+            ((tt = glyph_to_trap(glyph)) == NHC.BEAR_TRAP ||
+                tt == NHC.TRAPPED_DOOR ||
+                tt == NHC.TRAPPED_CHEST)) {
         let chesttrap = trapped_chest_at(tt, x, y);
 
         if (chesttrap || trapped_door_at(tt, x, y)) {
@@ -2484,10 +4180,21 @@ export function doidtrap() {
                 break;
             tt = (cptr.ldI32o(trap, $trap_ttyp) & 31) | 0;
             if (cptr.ldI32o(u, $you_dz)) {
-                if (cptr.ldI32o(u, $you_dz) < 0 ? ((tt) == NHC.HOLE || (tt) == NHC.TRAPDOOR ? 1 : 0) : tt == NHC.ROCKTRAP)
+                if (cptr.ldI32o(u, $you_dz) < 0
+                        ? ((tt) == NHC.HOLE || (tt) == NHC.TRAPDOOR ? 1 : 0)
+                        : tt == NHC.ROCKTRAP)
                     break;
             }
-            pline(__s_that_is_s_s_s, an(trapname(tt, 0)), !(cptr.ldI32o(trap, $trap_madeby_u) & 1) ? __s_empty : ((tt == NHC.WEB) ? __s_woven : ((tt == NHC.HOLE || tt == NHC.PIT) ? __s_dug : __s_set)), !(cptr.ldI32o(trap, $trap_madeby_u) & 1) ? __s_empty : __s_by_you);
+            pline(
+                __s_that_is_s_s_s,
+                an(trapname(tt, 0)),
+                !(cptr.ldI32o(trap, $trap_madeby_u) & 1)
+                    ? __s_empty
+                    : ((tt == NHC.WEB)
+                        ? __s_woven
+                        : ((tt == NHC.HOLE || tt == NHC.PIT) ? __s_dug : __s_set)),
+                !(cptr.ldI32o(trap, $trap_madeby_u) & 1) ? __s_empty : __s_by_you
+            );
             return NHM.ECMD_OK;
         }
     pline(__s_i_can_t_see_a_trap_there);
@@ -2560,7 +4267,12 @@ export function dowhatdoes_core(q, cbuf) {
 
         /* note: if "%-8s" gets changed, the "%8.8s" in dowhatdoes() will
            need a comparable change */
-        void cptr.sprintf(cptr.decay(buf), __s_8s_s, key2txt(uchar(q), cptr.decay(keybuf)), ec_desc);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_8s_s,
+            key2txt(uchar(q), cptr.decay(keybuf)),
+            ec_desc
+        );
         void cptr.strcpy(cbuf, cptr.decay(buf));
         return cbuf;
     }
@@ -2577,7 +4289,10 @@ export function dowhatdoes() {
     let reslt;
 
     if (!__static_dowhatdoes_once) {
-        pline(__s_ask_about_or_to_get_more_info_s, cptr.ld1so(iflags, $instance_flags_altmeta) ? __s_for_esc_type_it_twice : __s_empty);
+        pline(
+            __s_ask_about_or_to_get_more_info_s,
+            cptr.ld1so(iflags, $instance_flags_altmeta) ? __s_for_esc_type_it_twice : __s_empty
+        );
         __static_dowhatdoes_once = 1;
     }
     introff();  /* disables ^C but not ^\ */
@@ -2628,13 +4343,21 @@ function docontact() {
         putstr()(cwin, 0, cptr.decay(buf));
         putstr()(cwin, 0, __s_empty);
     } else if (cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list)) {
-        void cptr.sprintf(cptr.decay(buf), __s_to_contact_local_support_contact_s, cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_to_contact_local_support_contact_s,
+            cptr.ldPtro(sysopt, $sysopt_s_fmtd_wizard_list)
+        );
         putstr()(cwin, 0, cptr.decay(buf));
         putstr()(cwin, 0, __s_empty);
     }
     putstr()(cwin, 0, __s_to_contact_the_nethack_development_team);
     /*XXX overflow possibilities*/
-    void cptr.sprintf(cptr.decay(buf), __s_see_the_contact_form_on_our_website_or, __s_devteam_nethack_org);
+    void cptr.sprintf(
+        cptr.decay(buf),
+        __s_see_the_contact_form_on_our_website_or,
+        __s_devteam_nethack_org
+    );
     putstr()(cwin, 0, cptr.decay(buf));
     putstr()(cwin, 0, __s_empty);
     putstr()(cwin, 0, __s_for_more_information_on_nethack_or_to);
@@ -2772,18 +4495,37 @@ export function dohelp() {
     for (i = 0; cptr.ldPtro2(help_menu_items, i, 16, 8); i++) {
         if (!wizard() && cptr.ldPtro(help_menu_items, i, 16) === dispfile_debughelp)
             continue;
-        if (cptr.ldI32o(sysopt, $sysopt_s_hideusage) && cptr.ldPtro(help_menu_items, i, 16) === dispfile_usagehelp)
+        if (cptr.ldI32o(sysopt, $sysopt_s_hideusage) &&
+                cptr.ldPtro(help_menu_items, i, 16) === dispfile_usagehelp)
             continue;
 
         if (cptr.ld1so(cptr.ldPtro2(help_menu_items, i, 16, 8), 0) == 37) {
-            void cptr.sprintf(cptr.decay(helpbuf), cptr.ldPtro2(help_menu_items, i, 16, 8), __s_macos);
+            void cptr.sprintf(
+                cptr.decay(helpbuf),
+                cptr.ldPtro2(help_menu_items, i, 16, 8),
+                __s_macos
+            );
         } else if (cptr.ldPtro(help_menu_items, i, 16) === dispfile_optmenu) {
-            void cptr.sprintf(cptr.decay(helpbuf), cptr.ldPtro2(help_menu_items, i, 16, 8), setopt_cmd(cptr.decay(tmpbuf)));
+            void cptr.sprintf(
+                cptr.decay(helpbuf),
+                cptr.ldPtro2(help_menu_items, i, 16, 8),
+                setopt_cmd(cptr.decay(tmpbuf))
+            );
         } else {
             void cptr.strcpy(cptr.decay(helpbuf), cptr.ldPtro2(help_menu_items, i, 16, 8));
         }
         cptr.stI32(any, (i + 1) | 0);
-        add_menu(tmpwin, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, clr, cptr.decay(helpbuf), NHM.MENU_ITEMFLAGS_NONE);
+        add_menu(
+            tmpwin,
+            nul_glyphinfo.v,
+            any,
+            0,
+            0,
+            NHM.ATR_NONE,
+            clr,
+            cptr.decay(helpbuf),
+            NHM.MENU_ITEMFLAGS_NONE
+        );
     }
     end_menu()(tmpwin, __s_select_one_item);
     n = select_menu(tmpwin, NHM.PICK_ONE, selected);
@@ -2816,7 +4558,12 @@ function setopt_cmd(outbuf) {
         cmdnm = cmdname_from_func(doset, cptr.decay(cmdbuf), 1);
         if (!cmdnm)
             cmdnm = __s_optionsfull;
-        void cptr.sprintf(eos(outbuf), __s_s_31s, (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty, cmdnm);
+        void cptr.sprintf(
+            eos(outbuf),
+            __s_s_31s,
+            (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty,
+            cmdnm
+        );
 
         /* since there's no key bound to #optionsfull, include 'm O' */
         void cptr.strcat(outbuf, __s_or);
@@ -2830,7 +4577,12 @@ function setopt_cmd(outbuf) {
             cmdnm = cmdname_from_func(do_reqmenu, cptr.decay(cmdbuf), 1);
             if (!cmdnm)
                 cmdnm = __s_reqmenu;
-            void cptr.sprintf(eos(outbuf), __s_s_31s, (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty, cmdnm);
+            void cptr.sprintf(
+                eos(outbuf),
+                __s_s_31s,
+                (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty,
+                cmdnm
+            );
         }
         /* this is slightly iffy because the user shouldn't type <space> to
            get the command we're describing, but it improves readability */
@@ -2844,7 +4596,12 @@ function setopt_cmd(outbuf) {
             cmdnm = cmdname_from_func(doset_simple, cptr.decay(cmdbuf), 1);
             if (!cmdnm)
                 cmdnm = __s_options;
-            void cptr.sprintf(eos(outbuf), __s_s_31s, (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty, cmdnm);
+            void cptr.sprintf(
+                eos(outbuf),
+                __s_s_31s,
+                (cptr.ld1s(cmdnm) != 35) ? __s_hash : __s_empty,
+                cmdnm
+            );
         }
     }
     void cptr.strcat(outbuf, __s_apos);
@@ -2862,7 +4619,16 @@ export function dohistory() {
 // 13 bindings: 0 rebound+refilled, 1 rebound, 12 refilled.
 // S/P are supplied by js/generated/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(invisexplain), S(altinvisexplain), S(__static_append_str_sep), S(__static_waterbody_name_pooltype), S(__static_ice_descr_icetyp), S(__static_do_screen_description_mon_interior), S(__static_do_screen_description_unreconnoitered), S(__static_do_screen_description_look_buf), S(what_is_a_location), S(suptext1), S(suptext2), S(__static_dowhatdoes_once), S(help_menu_items)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(invisexplain), S(altinvisexplain), S(__static_append_str_sep),
+        S(__static_waterbody_name_pooltype), S(__static_ice_descr_icetyp),
+        S(__static_do_screen_description_mon_interior),
+        S(__static_do_screen_description_unreconnoitered),
+        S(__static_do_screen_description_look_buf), S(what_is_a_location), S(suptext1), S(suptext2),
+        S(__static_dowhatdoes_once), S(help_menu_items)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("pager.js: __resetState before __captureState");

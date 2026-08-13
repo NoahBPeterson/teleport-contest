@@ -14,20 +14,42 @@ import * as NHC from './nhconst.js';
 import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Align2amask, Amask2msa, IS_AIR, IS_WALL, Msa2amask, SURFACE_AT } from './nhmacrofn.js';
-import { Blind, EAggravate_monster, Flying, Hallucination, Levitation, Sokoban, Underwater, Upolyd, clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu, mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, tutorial_dnum, wizard } from './nhprop.js';
+import {
+    Blind, EAggravate_monster, Flying, Hallucination, Levitation, Sokoban, Underwater, Upolyd,
+    clear_nhwindow, cliparound, create_nhwindow, destroy_nhwindow, display_nhwindow, end_menu,
+    mines_dnum, putstr, quest_dnum, sokoban_dnum, start_menu, tower_dnum, tutorial_dnum, wizard
+} from './nhprop.js';
 import { debugcore } from './files.js';
-import { WIN_MAP, cg, emptystr, flags, gf, gu, iflags, svb, svd, sve, svi, svl, svm, svn, svq, svr, svs, svt, svu, u, vowels } from './decl.js';
-import { sfi_branch, sfi_char, sfi_d_level, sfi_dgn_topology, sfi_dungeon, sfi_int, sfi_int16, sfi_linfo, sfi_mapseen_feat, sfi_mapseen_flags, sfi_mapseen_rooms, sfi_nhcoord, sfi_unsigned, sfi_xint16, sfo_branch, sfo_char, sfo_d_level, sfo_dgn_topology, sfo_dungeon, sfo_int, sfo_int16, sfo_linfo, sfo_mapseen_feat, sfo_mapseen_flags, sfo_mapseen_rooms, sfo_nhcoord, sfo_unsigned, sfo_xint16 } from './sfbase.js';
+import {
+    WIN_MAP, cg, emptystr, flags, gf, gu, iflags, svb, svd, sve, svi, svl, svm, svn, svq, svr, svs,
+    svt, svu, u, vowels
+} from './decl.js';
+import {
+    sfi_branch, sfi_char, sfi_d_level, sfi_dgn_topology, sfi_dungeon, sfi_int, sfi_int16, sfi_linfo,
+    sfi_mapseen_feat, sfi_mapseen_flags, sfi_mapseen_rooms, sfi_nhcoord, sfi_unsigned, sfi_xint16,
+    sfo_branch, sfo_char, sfo_d_level, sfo_dgn_topology, sfo_dungeon, sfo_int, sfo_int16, sfo_linfo,
+    sfo_mapseen_feat, sfo_mapseen_flags, sfo_mapseen_rooms, sfo_nhcoord, sfo_unsigned, sfo_xint16
+} from './sfbase.js';
 import { savecemetery } from './save.js';
 import { alloc, dupstr } from './alloc.js';
 import { done, panic } from './end.js';
-import { eos, highc, mungspaces, nh_snprintf, strncmpi, strstri, strsubst, trimspaces } from './hacklib.js';
+import {
+    eos, highc, mungspaces, nh_snprintf, strncmpi, strstri, strsubst, trimspaces
+} from './hacklib.js';
 import { rn2, rnd } from './rnd.js';
 import { You, impossible, pline } from './pline.js';
-import { lua_getfield, lua_getglobal, lua_gettable, lua_gettop, lua_len, lua_next, lua_pushinteger, lua_pushnil, lua_settop, lua_tointegerx, lua_type } from './lapi.js';
+import {
+    lua_getfield, lua_getglobal, lua_gettable, lua_gettop, lua_len, lua_next, lua_pushinteger,
+    lua_pushnil, lua_settop, lua_tointegerx, lua_type
+} from './lapi.js';
 import { luaL_checkoption } from './lauxlib.js';
-import { get_table_int, get_table_int_opt, get_table_option, get_table_str, get_table_str_opt, nhl_done, nhl_init, nhl_loadlua } from './nhlua.js';
-import { add_menu, add_menu_heading, add_menu_str, getlin, select_menu, windowprocs } from './windows.js';
+import {
+    get_table_int, get_table_int_opt, get_table_option, get_table_str, get_table_str_opt, nhl_done,
+    nhl_init, nhl_loadlua
+} from './nhlua.js';
+import {
+    add_menu, add_menu_heading, add_menu_str, getlin, select_menu, windowprocs
+} from './windows.js';
 import { On_stairs, stairway_at, stairway_find_special_dir } from './stairs.js';
 import { goto_level } from './do.js';
 import { an, makeplural } from './objnam.js';
@@ -51,142 +73,159 @@ import { formatkiller } from './topten.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $NHFILE_mode = FLD.NHFILE_mode, $Race_mnum = FLD.Race_mnum, $Role_filecode = FLD.Role_filecode,
-    $branch_end1 = FLD.branch_end1, $branch_end1_up = FLD.branch_end1_up, $branch_end2 = FLD.branch_end2,
-    $branch_id = FLD.branch_id, $branch_type = FLD.branch_type,
-    $cemetery_bonesknown = FLD.cemetery_bonesknown, $cemetery_frpx = FLD.cemetery_frpx,
-    $cemetery_frpy = FLD.cemetery_frpy, $cemetery_how = FLD.cemetery_how, $cemetery_who = FLD.cemetery_who,
-    $const_globals_zeroany = FLD.const_globals_zeroany, $couple_rand = FLD.couple_rand,
-    $d_flags_align = FLD.d_flags_align, $d_flags_hellish = FLD.d_flags_hellish,
-    $d_flags_maze_like = FLD.d_flags_maze_like, $d_flags_rogue_like = FLD.d_flags_rogue_like,
-    $d_flags_unconnected = FLD.d_flags_unconnected, $d_level_dlevel = FLD.d_level_dlevel,
-    $dest_area_hx = FLD.dest_area_hx, $dest_area_hy = FLD.dest_area_hy, $dest_area_ly = FLD.dest_area_ly,
-    $dest_area_nhx = FLD.dest_area_nhx, $dest_area_nhy = FLD.dest_area_nhy,
-    $dest_area_nlx = FLD.dest_area_nlx, $dest_area_nly = FLD.dest_area_nly,
-    $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
-    $dgn_topology_d_asmodeus_level = FLD.dgn_topology_d_asmodeus_level,
-    $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
-    $dgn_topology_d_baalzebub_level = FLD.dgn_topology_d_baalzebub_level,
-    $dgn_topology_d_bigroom_level = FLD.dgn_topology_d_bigroom_level,
-    $dgn_topology_d_earth_level = FLD.dgn_topology_d_earth_level,
-    $dgn_topology_d_fire_level = FLD.dgn_topology_d_fire_level,
-    $dgn_topology_d_juiblex_level = FLD.dgn_topology_d_juiblex_level,
-    $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
-    $dgn_topology_d_medusa_level = FLD.dgn_topology_d_medusa_level,
-    $dgn_topology_d_mineend_level = FLD.dgn_topology_d_mineend_level,
-    $dgn_topology_d_mines_dnum = FLD.dgn_topology_d_mines_dnum,
-    $dgn_topology_d_nemesis_level = FLD.dgn_topology_d_nemesis_level,
-    $dgn_topology_d_orcus_level = FLD.dgn_topology_d_orcus_level,
-    $dgn_topology_d_portal_level = FLD.dgn_topology_d_portal_level,
-    $dgn_topology_d_qlocate_level = FLD.dgn_topology_d_qlocate_level,
-    $dgn_topology_d_qstart_level = FLD.dgn_topology_d_qstart_level,
-    $dgn_topology_d_quest_dnum = FLD.dgn_topology_d_quest_dnum,
-    $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
-    $dgn_topology_d_sanctum_level = FLD.dgn_topology_d_sanctum_level,
-    $dgn_topology_d_sokoban_dnum = FLD.dgn_topology_d_sokoban_dnum,
-    $dgn_topology_d_sokoend_level = FLD.dgn_topology_d_sokoend_level,
-    $dgn_topology_d_stronghold_level = FLD.dgn_topology_d_stronghold_level,
-    $dgn_topology_d_tower_dnum = FLD.dgn_topology_d_tower_dnum,
-    $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum,
-    $dgn_topology_d_valley_level = FLD.dgn_topology_d_valley_level,
-    $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
-    $dgn_topology_d_wiz1_level = FLD.dgn_topology_d_wiz1_level,
-    $dgn_topology_d_wiz2_level = FLD.dgn_topology_d_wiz2_level,
-    $dgn_topology_d_wiz3_level = FLD.dgn_topology_d_wiz3_level, $dlevel_t_bonesinfo = FLD.dlevel_t_bonesinfo,
-    $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist, $dlevel_t_flags = FLD.dlevel_t_flags,
-    $dlevel_t_monsters = FLD.dlevel_t_monsters, $dungeon_boneid = FLD.dungeon_boneid,
-    $dungeon_depth_start = FLD.dungeon_depth_start, $dungeon_dunlev_ureached = FLD.dungeon_dunlev_ureached,
-    $dungeon_entry_lev = FLD.dungeon_entry_lev, $dungeon_fill_lvl = FLD.dungeon_fill_lvl,
-    $dungeon_flags = FLD.dungeon_flags, $dungeon_ledger_start = FLD.dungeon_ledger_start,
-    $dungeon_num_dunlevs = FLD.dungeon_num_dunlevs, $dungeon_proto = FLD.dungeon_proto,
-    $dungeon_themerms = FLD.dungeon_themerms, $exclusion_zone_hx = FLD.exclusion_zone_hx,
-    $exclusion_zone_hy = FLD.exclusion_zone_hy, $exclusion_zone_lx = FLD.exclusion_zone_lx,
-    $exclusion_zone_ly = FLD.exclusion_zone_ly, $exclusion_zone_next = FLD.exclusion_zone_next,
-    $flag_debug = FLD.flag_debug, $instance_flags_last_msg = FLD.instance_flags_last_msg,
-    $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
-    $instance_flags_terrain_typ = FLD.instance_flags_terrain_typ,
-    $instance_flags_window_inited = FLD.instance_flags_window_inited,
-    $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
-    $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
-    $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
-    $instance_globals_saved_l_level_info = FLD.instance_globals_saved_l_level_info,
-    $instance_globals_saved_s_sp_levchn = FLD.instance_globals_saved_s_sp_levchn,
-    $instance_globals_u_urace = FLD.instance_globals_u_urace,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole, $lchoice_dgn = FLD.lchoice_dgn,
-    $lchoice_lev = FLD.lchoice_lev, $lchoice_menuletter = FLD.lchoice_menuletter,
-    $lchoice_playerlev = FLD.lchoice_playerlev, $level_map_lev_spec = FLD.level_map_lev_spec,
-    $levelflags_hardfloor = FLD.levelflags_hardfloor,
-    $levelflags_sokoban_rules = FLD.levelflags_sokoban_rules, $mapseen_br = FLD.mapseen_br,
-    $mapseen_custom = FLD.mapseen_custom, $mapseen_custom_lth = FLD.mapseen_custom_lth,
-    $mapseen_feat = FLD.mapseen_feat, $mapseen_feat_msalign = FLD.mapseen_feat_msalign,
-    $mapseen_feat_naltar = FLD.mapseen_feat_naltar, $mapseen_feat_ngrave = FLD.mapseen_feat_ngrave,
-    $mapseen_feat_nshop = FLD.mapseen_feat_nshop, $mapseen_feat_nsink = FLD.mapseen_feat_nsink,
-    $mapseen_feat_ntemple = FLD.mapseen_feat_ntemple, $mapseen_feat_nthrone = FLD.mapseen_feat_nthrone,
-    $mapseen_feat_ntree = FLD.mapseen_feat_ntree, $mapseen_feat_shoptype = FLD.mapseen_feat_shoptype,
-    $mapseen_final_resting_place = FLD.mapseen_final_resting_place, $mapseen_flags = FLD.mapseen_flags,
-    $mapseen_flags_bigroom = FLD.mapseen_flags_bigroom, $mapseen_flags_castle = FLD.mapseen_flags_castle,
-    $mapseen_flags_castletune = FLD.mapseen_flags_castletune,
-    $mapseen_flags_forgot = FLD.mapseen_flags_forgot,
-    $mapseen_flags_knownbones = FLD.mapseen_flags_knownbones,
-    $mapseen_flags_ludios = FLD.mapseen_flags_ludios, $mapseen_flags_msanctum = FLD.mapseen_flags_msanctum,
-    $mapseen_flags_oracle = FLD.mapseen_flags_oracle,
-    $mapseen_flags_quest_summons = FLD.mapseen_flags_quest_summons,
-    $mapseen_flags_questing = FLD.mapseen_flags_questing,
-    $mapseen_flags_roguelevel = FLD.mapseen_flags_roguelevel,
-    $mapseen_flags_sokosolved = FLD.mapseen_flags_sokosolved,
-    $mapseen_flags_valley = FLD.mapseen_flags_valley,
-    $mapseen_flags_vibrating_square = FLD.mapseen_flags_vibrating_square, $mapseen_lev = FLD.mapseen_lev,
-    $mapseen_msrooms = FLD.mapseen_msrooms, $mapseen_rooms_untended = FLD.mapseen_rooms_untended,
-    $mkroom_orig_rtype = FLD.mkroom_orig_rtype, $mkroom_rtype = FLD.mkroom_rtype,
-    $monst_data = FLD.monst_data, $monst_m_ap_type = FLD.monst_m_ap_type,
-    $monst_mappearance = FLD.monst_mappearance, $monst_mx = FLD.monst_mx, $monst_my = FLD.monst_my,
-    $nhcoord_y = FLD.nhcoord_y, $nhl_sandbox_info_memlimit = FLD.nhl_sandbox_info_memlimit,
-    $nhl_sandbox_info_perpcall = FLD.nhl_sandbox_info_perpcall,
-    $nhl_sandbox_info_steps = FLD.nhl_sandbox_info_steps, $obj_ox = FLD.obj_ox, $obj_oy = FLD.obj_oy,
-    $permonst_mflags1 = FLD.permonst_mflags1, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $proto_dungeon_final_lev = FLD.proto_dungeon_final_lev,
-    $proto_dungeon_n_brs = FLD.proto_dungeon_n_brs, $proto_dungeon_n_levs = FLD.proto_dungeon_n_levs,
-    $proto_dungeon_start = FLD.proto_dungeon_start, $proto_dungeon_tmpbranch = FLD.proto_dungeon_tmpbranch,
-    $proto_dungeon_tmplevel = FLD.proto_dungeon_tmplevel, $q_score_got_quest = FLD.q_score_got_quest,
-    $q_score_leader_is_dead = FLD.q_score_leader_is_dead, $rm_flags = FLD.rm_flags, $rm_seenv = FLD.rm_seenv,
-    $rm_typ = FLD.rm_typ, $s_level_boneid = FLD.s_level_boneid, $s_level_dlevel = FLD.s_level_dlevel,
-    $s_level_flags = FLD.s_level_flags, $s_level_proto = FLD.s_level_proto,
-    $s_level_rndlevs = FLD.s_level_rndlevs, $shclass_annotation = FLD.shclass_annotation,
-    $sizeof_d_level = FLD.sizeof_d_level, $sizeof_dungeon = FLD.sizeof_dungeon,
-    $sizeof_level_map = FLD.sizeof_level_map, $sizeof_linfo = FLD.sizeof_linfo,
-    $sizeof_mapseen_rooms = FLD.sizeof_mapseen_rooms, $sizeof_menu_item = FLD.sizeof_menu_item,
-    $sizeof_mkroom = FLD.sizeof_mkroom, $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
-    $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_shclass = FLD.sizeof_shclass,
-    $sizeof_tmpbranch = FLD.sizeof_tmpbranch, $sizeof_tmpdungeon = FLD.sizeof_tmpdungeon,
-    $sizeof_tmplevel = FLD.sizeof_tmplevel, $stairway_tolev = FLD.stairway_tolev,
-    $stairway_u_traversed = FLD.stairway_u_traversed, $stairway_up = FLD.stairway_up,
-    $tmpbranch_chain = FLD.tmpbranch_chain, $tmpbranch_lev = FLD.tmpbranch_lev,
-    $tmpbranch_type = FLD.tmpbranch_type, $tmpbranch_up = FLD.tmpbranch_up,
-    $tmpdungeon_align = FLD.tmpdungeon_align, $tmpdungeon_boneschar = FLD.tmpdungeon_boneschar,
-    $tmpdungeon_branches = FLD.tmpdungeon_branches, $tmpdungeon_chance = FLD.tmpdungeon_chance,
-    $tmpdungeon_entry_lev = FLD.tmpdungeon_entry_lev, $tmpdungeon_flags = FLD.tmpdungeon_flags,
-    $tmpdungeon_lev = FLD.tmpdungeon_lev, $tmpdungeon_levels = FLD.tmpdungeon_levels,
-    $tmpdungeon_protoname = FLD.tmpdungeon_protoname, $tmplevel_boneschar = FLD.tmplevel_boneschar,
-    $tmplevel_chain = FLD.tmplevel_chain, $tmplevel_chainlvl = FLD.tmplevel_chainlvl,
-    $tmplevel_chance = FLD.tmplevel_chance, $tmplevel_flags = FLD.tmplevel_flags,
-    $tmplevel_lev = FLD.tmplevel_lev, $tmplevel_rndlevs = FLD.tmplevel_rndlevs, $trap_tseen = FLD.trap_tseen,
-    $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
-    $u_event_qcalled = FLD.u_event_qcalled, $u_event_qcompleted = FLD.u_event_qcompleted,
-    $u_event_qexpelled = FLD.u_event_qexpelled, $u_event_uheard_tune = FLD.u_event_uheard_tune,
-    $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
-    $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
-    $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
-    $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
-    $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
-    $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
-    $window_procs_win_putstr = FLD.window_procs_win_putstr,
-    $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_ualign = FLD.you_ualign,
-    $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave, $you_uinwater = FLD.you_uinwater,
-    $you_ulevel = FLD.you_ulevel, $you_umonnum = FLD.you_umonnum, $you_umonster = FLD.you_umonster,
-    $you_uprops = FLD.you_uprops, $you_urooms = FLD.you_urooms, $you_usteed = FLD.you_usteed,
-    $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow, $you_uundetected = FLD.you_uundetected,
-    $you_ux0 = FLD.you_ux0, $you_uy = FLD.you_uy, $you_uy0 = FLD.you_uy0, $you_uz = FLD.you_uz,
-    $you_uz0 = FLD.you_uz0;
+const $NHFILE_mode = FLD.NHFILE_mode, $Race_mnum = FLD.Race_mnum,
+      $Role_filecode = FLD.Role_filecode, $branch_end1 = FLD.branch_end1,
+      $branch_end1_up = FLD.branch_end1_up, $branch_end2 = FLD.branch_end2,
+      $branch_id = FLD.branch_id, $branch_type = FLD.branch_type,
+      $cemetery_bonesknown = FLD.cemetery_bonesknown, $cemetery_frpx = FLD.cemetery_frpx,
+      $cemetery_frpy = FLD.cemetery_frpy, $cemetery_how = FLD.cemetery_how,
+      $cemetery_who = FLD.cemetery_who, $const_globals_zeroany = FLD.const_globals_zeroany,
+      $couple_rand = FLD.couple_rand, $d_flags_align = FLD.d_flags_align,
+      $d_flags_hellish = FLD.d_flags_hellish, $d_flags_maze_like = FLD.d_flags_maze_like,
+      $d_flags_rogue_like = FLD.d_flags_rogue_like, $d_flags_unconnected = FLD.d_flags_unconnected,
+      $d_level_dlevel = FLD.d_level_dlevel, $dest_area_hx = FLD.dest_area_hx,
+      $dest_area_hy = FLD.dest_area_hy, $dest_area_ly = FLD.dest_area_ly,
+      $dest_area_nhx = FLD.dest_area_nhx, $dest_area_nhy = FLD.dest_area_nhy,
+      $dest_area_nlx = FLD.dest_area_nlx, $dest_area_nly = FLD.dest_area_nly,
+      $dgn_topology_d_air_level = FLD.dgn_topology_d_air_level,
+      $dgn_topology_d_asmodeus_level = FLD.dgn_topology_d_asmodeus_level,
+      $dgn_topology_d_astral_level = FLD.dgn_topology_d_astral_level,
+      $dgn_topology_d_baalzebub_level = FLD.dgn_topology_d_baalzebub_level,
+      $dgn_topology_d_bigroom_level = FLD.dgn_topology_d_bigroom_level,
+      $dgn_topology_d_earth_level = FLD.dgn_topology_d_earth_level,
+      $dgn_topology_d_fire_level = FLD.dgn_topology_d_fire_level,
+      $dgn_topology_d_juiblex_level = FLD.dgn_topology_d_juiblex_level,
+      $dgn_topology_d_knox_level = FLD.dgn_topology_d_knox_level,
+      $dgn_topology_d_medusa_level = FLD.dgn_topology_d_medusa_level,
+      $dgn_topology_d_mineend_level = FLD.dgn_topology_d_mineend_level,
+      $dgn_topology_d_mines_dnum = FLD.dgn_topology_d_mines_dnum,
+      $dgn_topology_d_nemesis_level = FLD.dgn_topology_d_nemesis_level,
+      $dgn_topology_d_orcus_level = FLD.dgn_topology_d_orcus_level,
+      $dgn_topology_d_portal_level = FLD.dgn_topology_d_portal_level,
+      $dgn_topology_d_qlocate_level = FLD.dgn_topology_d_qlocate_level,
+      $dgn_topology_d_qstart_level = FLD.dgn_topology_d_qstart_level,
+      $dgn_topology_d_quest_dnum = FLD.dgn_topology_d_quest_dnum,
+      $dgn_topology_d_rogue_level = FLD.dgn_topology_d_rogue_level,
+      $dgn_topology_d_sanctum_level = FLD.dgn_topology_d_sanctum_level,
+      $dgn_topology_d_sokoban_dnum = FLD.dgn_topology_d_sokoban_dnum,
+      $dgn_topology_d_sokoend_level = FLD.dgn_topology_d_sokoend_level,
+      $dgn_topology_d_stronghold_level = FLD.dgn_topology_d_stronghold_level,
+      $dgn_topology_d_tower_dnum = FLD.dgn_topology_d_tower_dnum,
+      $dgn_topology_d_tutorial_dnum = FLD.dgn_topology_d_tutorial_dnum,
+      $dgn_topology_d_valley_level = FLD.dgn_topology_d_valley_level,
+      $dgn_topology_d_water_level = FLD.dgn_topology_d_water_level,
+      $dgn_topology_d_wiz1_level = FLD.dgn_topology_d_wiz1_level,
+      $dgn_topology_d_wiz2_level = FLD.dgn_topology_d_wiz2_level,
+      $dgn_topology_d_wiz3_level = FLD.dgn_topology_d_wiz3_level,
+      $dlevel_t_bonesinfo = FLD.dlevel_t_bonesinfo,
+      $dlevel_t_buriedobjlist = FLD.dlevel_t_buriedobjlist, $dlevel_t_flags = FLD.dlevel_t_flags,
+      $dlevel_t_monsters = FLD.dlevel_t_monsters, $dungeon_boneid = FLD.dungeon_boneid,
+      $dungeon_depth_start = FLD.dungeon_depth_start,
+      $dungeon_dunlev_ureached = FLD.dungeon_dunlev_ureached,
+      $dungeon_entry_lev = FLD.dungeon_entry_lev, $dungeon_fill_lvl = FLD.dungeon_fill_lvl,
+      $dungeon_flags = FLD.dungeon_flags, $dungeon_ledger_start = FLD.dungeon_ledger_start,
+      $dungeon_num_dunlevs = FLD.dungeon_num_dunlevs, $dungeon_proto = FLD.dungeon_proto,
+      $dungeon_themerms = FLD.dungeon_themerms, $exclusion_zone_hx = FLD.exclusion_zone_hx,
+      $exclusion_zone_hy = FLD.exclusion_zone_hy, $exclusion_zone_lx = FLD.exclusion_zone_lx,
+      $exclusion_zone_ly = FLD.exclusion_zone_ly, $exclusion_zone_next = FLD.exclusion_zone_next,
+      $flag_debug = FLD.flag_debug, $instance_flags_last_msg = FLD.instance_flags_last_msg,
+      $instance_flags_menu_requested = FLD.instance_flags_menu_requested,
+      $instance_flags_terrain_typ = FLD.instance_flags_terrain_typ,
+      $instance_flags_window_inited = FLD.instance_flags_window_inited,
+      $instance_globals_saved_d_dndest = FLD.instance_globals_saved_d_dndest,
+      $instance_globals_saved_d_dungeon_topology = FLD.instance_globals_saved_d_dungeon_topology,
+      $instance_globals_saved_l_level = FLD.instance_globals_saved_l_level,
+      $instance_globals_saved_l_level_info = FLD.instance_globals_saved_l_level_info,
+      $instance_globals_saved_s_sp_levchn = FLD.instance_globals_saved_s_sp_levchn,
+      $instance_globals_u_urace = FLD.instance_globals_u_urace,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole, $lchoice_dgn = FLD.lchoice_dgn,
+      $lchoice_lev = FLD.lchoice_lev, $lchoice_menuletter = FLD.lchoice_menuletter,
+      $lchoice_playerlev = FLD.lchoice_playerlev, $level_map_lev_spec = FLD.level_map_lev_spec,
+      $levelflags_hardfloor = FLD.levelflags_hardfloor,
+      $levelflags_sokoban_rules = FLD.levelflags_sokoban_rules, $mapseen_br = FLD.mapseen_br,
+      $mapseen_custom = FLD.mapseen_custom, $mapseen_custom_lth = FLD.mapseen_custom_lth,
+      $mapseen_feat = FLD.mapseen_feat, $mapseen_feat_msalign = FLD.mapseen_feat_msalign,
+      $mapseen_feat_naltar = FLD.mapseen_feat_naltar,
+      $mapseen_feat_ngrave = FLD.mapseen_feat_ngrave, $mapseen_feat_nshop = FLD.mapseen_feat_nshop,
+      $mapseen_feat_nsink = FLD.mapseen_feat_nsink,
+      $mapseen_feat_ntemple = FLD.mapseen_feat_ntemple,
+      $mapseen_feat_nthrone = FLD.mapseen_feat_nthrone,
+      $mapseen_feat_ntree = FLD.mapseen_feat_ntree,
+      $mapseen_feat_shoptype = FLD.mapseen_feat_shoptype,
+      $mapseen_final_resting_place = FLD.mapseen_final_resting_place,
+      $mapseen_flags = FLD.mapseen_flags, $mapseen_flags_bigroom = FLD.mapseen_flags_bigroom,
+      $mapseen_flags_castle = FLD.mapseen_flags_castle,
+      $mapseen_flags_castletune = FLD.mapseen_flags_castletune,
+      $mapseen_flags_forgot = FLD.mapseen_flags_forgot,
+      $mapseen_flags_knownbones = FLD.mapseen_flags_knownbones,
+      $mapseen_flags_ludios = FLD.mapseen_flags_ludios,
+      $mapseen_flags_msanctum = FLD.mapseen_flags_msanctum,
+      $mapseen_flags_oracle = FLD.mapseen_flags_oracle,
+      $mapseen_flags_quest_summons = FLD.mapseen_flags_quest_summons,
+      $mapseen_flags_questing = FLD.mapseen_flags_questing,
+      $mapseen_flags_roguelevel = FLD.mapseen_flags_roguelevel,
+      $mapseen_flags_sokosolved = FLD.mapseen_flags_sokosolved,
+      $mapseen_flags_valley = FLD.mapseen_flags_valley,
+      $mapseen_flags_vibrating_square = FLD.mapseen_flags_vibrating_square,
+      $mapseen_lev = FLD.mapseen_lev, $mapseen_msrooms = FLD.mapseen_msrooms,
+      $mapseen_rooms_untended = FLD.mapseen_rooms_untended,
+      $mkroom_orig_rtype = FLD.mkroom_orig_rtype, $mkroom_rtype = FLD.mkroom_rtype,
+      $monst_data = FLD.monst_data, $monst_m_ap_type = FLD.monst_m_ap_type,
+      $monst_mappearance = FLD.monst_mappearance, $monst_mx = FLD.monst_mx,
+      $monst_my = FLD.monst_my, $nhcoord_y = FLD.nhcoord_y,
+      $nhl_sandbox_info_memlimit = FLD.nhl_sandbox_info_memlimit,
+      $nhl_sandbox_info_perpcall = FLD.nhl_sandbox_info_perpcall,
+      $nhl_sandbox_info_steps = FLD.nhl_sandbox_info_steps, $obj_ox = FLD.obj_ox,
+      $obj_oy = FLD.obj_oy, $permonst_mflags1 = FLD.permonst_mflags1,
+      $prop_blocked = FLD.prop_blocked, $prop_intrinsic = FLD.prop_intrinsic,
+      $proto_dungeon_final_lev = FLD.proto_dungeon_final_lev,
+      $proto_dungeon_n_brs = FLD.proto_dungeon_n_brs,
+      $proto_dungeon_n_levs = FLD.proto_dungeon_n_levs,
+      $proto_dungeon_start = FLD.proto_dungeon_start,
+      $proto_dungeon_tmpbranch = FLD.proto_dungeon_tmpbranch,
+      $proto_dungeon_tmplevel = FLD.proto_dungeon_tmplevel,
+      $q_score_got_quest = FLD.q_score_got_quest,
+      $q_score_leader_is_dead = FLD.q_score_leader_is_dead, $rm_flags = FLD.rm_flags,
+      $rm_seenv = FLD.rm_seenv, $rm_typ = FLD.rm_typ, $s_level_boneid = FLD.s_level_boneid,
+      $s_level_dlevel = FLD.s_level_dlevel, $s_level_flags = FLD.s_level_flags,
+      $s_level_proto = FLD.s_level_proto, $s_level_rndlevs = FLD.s_level_rndlevs,
+      $shclass_annotation = FLD.shclass_annotation, $sizeof_d_level = FLD.sizeof_d_level,
+      $sizeof_dungeon = FLD.sizeof_dungeon, $sizeof_level_map = FLD.sizeof_level_map,
+      $sizeof_linfo = FLD.sizeof_linfo, $sizeof_mapseen_rooms = FLD.sizeof_mapseen_rooms,
+      $sizeof_menu_item = FLD.sizeof_menu_item, $sizeof_mkroom = FLD.sizeof_mkroom,
+      $sizeof_prop = FLD.sizeof_prop, $sizeof_rm = FLD.sizeof_rm,
+      $sizeof_rm_x21 = FLD.sizeof_rm_x21, $sizeof_shclass = FLD.sizeof_shclass,
+      $sizeof_tmpbranch = FLD.sizeof_tmpbranch, $sizeof_tmpdungeon = FLD.sizeof_tmpdungeon,
+      $sizeof_tmplevel = FLD.sizeof_tmplevel, $stairway_tolev = FLD.stairway_tolev,
+      $stairway_u_traversed = FLD.stairway_u_traversed, $stairway_up = FLD.stairway_up,
+      $tmpbranch_chain = FLD.tmpbranch_chain, $tmpbranch_lev = FLD.tmpbranch_lev,
+      $tmpbranch_type = FLD.tmpbranch_type, $tmpbranch_up = FLD.tmpbranch_up,
+      $tmpdungeon_align = FLD.tmpdungeon_align, $tmpdungeon_boneschar = FLD.tmpdungeon_boneschar,
+      $tmpdungeon_branches = FLD.tmpdungeon_branches, $tmpdungeon_chance = FLD.tmpdungeon_chance,
+      $tmpdungeon_entry_lev = FLD.tmpdungeon_entry_lev, $tmpdungeon_flags = FLD.tmpdungeon_flags,
+      $tmpdungeon_lev = FLD.tmpdungeon_lev, $tmpdungeon_levels = FLD.tmpdungeon_levels,
+      $tmpdungeon_protoname = FLD.tmpdungeon_protoname,
+      $tmplevel_boneschar = FLD.tmplevel_boneschar, $tmplevel_chain = FLD.tmplevel_chain,
+      $tmplevel_chainlvl = FLD.tmplevel_chainlvl, $tmplevel_chance = FLD.tmplevel_chance,
+      $tmplevel_flags = FLD.tmplevel_flags, $tmplevel_lev = FLD.tmplevel_lev,
+      $tmplevel_rndlevs = FLD.tmplevel_rndlevs, $trap_tseen = FLD.trap_tseen,
+      $trap_ttyp = FLD.trap_ttyp, $trap_tx = FLD.trap_tx, $trap_ty = FLD.trap_ty,
+      $u_event_qcalled = FLD.u_event_qcalled, $u_event_qcompleted = FLD.u_event_qcompleted,
+      $u_event_qexpelled = FLD.u_event_qexpelled, $u_event_uheard_tune = FLD.u_event_uheard_tune,
+      $window_procs_win_clear_nhwindow = FLD.window_procs_win_clear_nhwindow,
+      $window_procs_win_cliparound = FLD.window_procs_win_cliparound,
+      $window_procs_win_create_nhwindow = FLD.window_procs_win_create_nhwindow,
+      $window_procs_win_destroy_nhwindow = FLD.window_procs_win_destroy_nhwindow,
+      $window_procs_win_display_nhwindow = FLD.window_procs_win_display_nhwindow,
+      $window_procs_win_end_menu = FLD.window_procs_win_end_menu,
+      $window_procs_win_putstr = FLD.window_procs_win_putstr,
+      $window_procs_win_start_menu = FLD.window_procs_win_start_menu, $you_ualign = FLD.you_ualign,
+      $you_uevent = FLD.you_uevent, $you_uhave = FLD.you_uhave, $you_uinwater = FLD.you_uinwater,
+      $you_ulevel = FLD.you_ulevel, $you_umonnum = FLD.you_umonnum,
+      $you_umonster = FLD.you_umonster, $you_uprops = FLD.you_uprops, $you_urooms = FLD.you_urooms,
+      $you_usteed = FLD.you_usteed, $you_ustuck = FLD.you_ustuck, $you_uswallow = FLD.you_uswallow,
+      $you_uundetected = FLD.you_uundetected, $you_ux0 = FLD.you_ux0, $you_uy = FLD.you_uy,
+      $you_uy0 = FLD.you_uy0, $you_uz = FLD.you_uz, $you_uz0 = FLD.you_uz0;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_dungeon_c = cptr.lit("dungeon.c");
@@ -493,9 +532,14 @@ const __s_her = cptr.lit(" her ");
 const __s_s_syou_s_c = cptr.lit("%s%syou, %s%c");
 const __s_s_s_s_s_c = cptr.lit("%s%s%s, %s%c");
 
-/** C ref: dungeon.c:16 — struct proto_dungeon { tmpdungeon, tmplevel, final_lev, tmpbranch, start, n_levs, n_brs } (memory model v0.5) */
+/**
+ * C ref: dungeon.c:16 — struct proto_dungeon { tmpdungeon, tmplevel, final_lev, tmpbranch, start,
+ *     n_levs, n_brs } (memory model v0.5)
+ */
 
-/** C ref: dungeon.c:27 — struct lchoice { idx, lev, playerlev, dgn, menuletter } (memory model v0.5) */
+/**
+ * C ref: dungeon.c:27 — struct lchoice { idx, lev, playerlev, dgn, menuletter } (memory model v0.5)
+ */
 
 /** C ref: dungeon.c:91 */
 function* dumpit() {
@@ -507,22 +551,84 @@ function* dumpit() {
         return;
 
     for (i = 0; i < cptr.ldI32(svn); i++) {
-        fprintf(__stderrp, __s_d_s_s, i, cptr.add(svd, i, $sizeof_dungeon), cptr.add(cptr.add(svd, i, $sizeof_dungeon), $dungeon_proto));
-        fprintf(__stderrp, __s_num_dunlevs_d_dunlev_ureached_d, cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_num_dunlevs), cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached));
-        fprintf(__stderrp, __s_depth_start_d_ledger_start_d, cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start), cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_ledger_start));
-        fprintf(__stderrp, __s_flags_s_s_s, (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_flags + $d_flags_rogue_like) & 1) | 0 ? __s_rogue_like : __s_empty, (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_flags + $d_flags_maze_like) & 1) | 0 ? __s_maze_like : __s_empty, (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_flags + $d_flags_hellish) & 1) | 0 ? __s_hellish : __s_empty);
+        fprintf(
+            __stderrp,
+            __s_d_s_s,
+            i,
+            cptr.add(svd, i, $sizeof_dungeon),
+            cptr.add(cptr.add(svd, i, $sizeof_dungeon), $dungeon_proto)
+        );
+        fprintf(
+            __stderrp,
+            __s_num_dunlevs_d_dunlev_ureached_d,
+            cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_num_dunlevs),
+            cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached)
+        );
+        fprintf(
+            __stderrp,
+            __s_depth_start_d_ledger_start_d,
+            cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start),
+            cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_ledger_start)
+        );
+        fprintf(
+            __stderrp,
+            __s_flags_s_s_s,
+            (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_flags + $d_flags_rogue_like) & 1) | 0
+                ? __s_rogue_like
+                : __s_empty,
+            (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_flags + $d_flags_maze_like) & 1) | 0
+                ? __s_maze_like
+                : __s_empty,
+            (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_flags + $d_flags_hellish) & 1) | 0
+                ? __s_hellish
+                : __s_empty
+        );
         void (yield* getchar());
     }
     fprintf(__stderrp, __s_special_levels);
     for (x = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); x; x = cptr.ldPtr(x)) {
         fprintf(__stderrp, __s_s_d, cptr.add(x, $s_level_proto), cptr.ld1uo(x, $s_level_rndlevs));
-        fprintf(__stderrp, __s_on_d_d, cptr.ldI16o(x, $s_level_dlevel), cptr.ldI16o(x, $s_level_dlevel + $d_level_dlevel));
-        fprintf(__stderrp, __s_flags_s_s_s_s, (cptr.ldI32o(x, $s_level_flags + $d_flags_rogue_like) & 1) | 0 ? __s_rogue_like : __s_empty, (cptr.ldI32o(x, $s_level_flags + $d_flags_maze_like) & 1) | 0 ? __s_maze_like : __s_empty, (cptr.ldI32o(x, $s_level_flags + $d_flags_hellish) & 1) | 0 ? __s_hellish : __s_empty, (cptr.ldI32o(x, $s_level_flags) & 1) | 0 ? __s_town : __s_empty);
+        fprintf(
+            __stderrp,
+            __s_on_d_d,
+            cptr.ldI16o(x, $s_level_dlevel),
+            cptr.ldI16o(x, $s_level_dlevel + $d_level_dlevel)
+        );
+        fprintf(
+            __stderrp,
+            __s_flags_s_s_s_s,
+            (cptr.ldI32o(x, $s_level_flags + $d_flags_rogue_like) & 1) | 0
+                ? __s_rogue_like
+                : __s_empty,
+            (cptr.ldI32o(x, $s_level_flags + $d_flags_maze_like) & 1) | 0
+                ? __s_maze_like
+                : __s_empty,
+            (cptr.ldI32o(x, $s_level_flags + $d_flags_hellish) & 1) | 0 ? __s_hellish : __s_empty,
+            (cptr.ldI32o(x, $s_level_flags) & 1) | 0 ? __s_town : __s_empty
+        );
         void (yield* getchar());
     }
     fprintf(__stderrp, __s_branches);
     for (br = cptr.ldPtr(svb); br; br = cptr.ldPtr(br)) {
-        fprintf(__stderrp, __s_d_s_end1_d_d_end2_d_d_s, cptr.ldI32o(br, $branch_id), cptr.ldI32o(br, $branch_type) == NHM.BR_STAIR ? __s_stair : (cptr.ldI32o(br, $branch_type) == NHM.BR_NO_END1 ? __s_no_end1 : (cptr.ldI32o(br, $branch_type) == NHM.BR_NO_END2 ? __s_no_end2 : (cptr.ldI32o(br, $branch_type) == NHM.BR_PORTAL ? __s_portal : __s_unknown))), cptr.ldI16o(br, $branch_end1), cptr.ldI16o(br, $branch_end1 + $d_level_dlevel), cptr.ldI16o(br, $branch_end2), cptr.ldI16o(br, $branch_end2 + $d_level_dlevel), cptr.ld1so(br, $branch_end1_up) ? __s_end1_up : __s_end1_down);
+        fprintf(
+            __stderrp,
+            __s_d_s_end1_d_d_end2_d_d_s,
+            cptr.ldI32o(br, $branch_id),
+            cptr.ldI32o(br, $branch_type) == NHM.BR_STAIR
+                ? __s_stair
+                : (cptr.ldI32o(br, $branch_type) == NHM.BR_NO_END1
+                    ? __s_no_end1
+                    : (cptr.ldI32o(br, $branch_type) == NHM.BR_NO_END2
+                        ? __s_no_end2
+                        : (cptr.ldI32o(br, $branch_type) == NHM.BR_PORTAL
+                            ? __s_portal
+                            : __s_unknown))),
+            cptr.ldI16o(br, $branch_end1),
+            cptr.ldI16o(br, $branch_end1 + $d_level_dlevel),
+            cptr.ldI16o(br, $branch_end2),
+            cptr.ldI16o(br, $branch_end2 + $d_level_dlevel),
+            cptr.ld1so(br, $branch_end1_up) ? __s_end1_up : __s_end1_down
+        );
     }
     void (yield* getchar());
     fprintf(__stderrp, __s_done);
@@ -531,7 +637,12 @@ function* dumpit() {
 }
 
 /* Save the dungeon structures. */
-/** C ref: dungeon.c:149 — @param {CPtr<NHFILE>} nhfp @param {CInt} perform_write @param {CInt} free_data */
+/**
+ * C ref: dungeon.c:149
+ * @param {CPtr<NHFILE>} nhfp
+ * @param {CInt} perform_write
+ * @param {CInt} free_data
+ */
 export function* save_dungeon(nhfp, perform_write, free_data) {
     let i;
     let count = cptr.box(0);
@@ -545,7 +656,11 @@ export function* save_dungeon(nhfp, perform_write, free_data) {
         for (i = 0; i < cptr.ldI32(svn); ++i) {
             (yield* sfo_dungeon(nhfp, cptr.add(svd, i, $sizeof_dungeon), __s_dungeon));
         }
-        (yield* sfo_dgn_topology(nhfp, cptr.add(svd, $instance_globals_saved_d_dungeon_topology), __s_svd_dungeon_topology));
+        (yield* sfo_dgn_topology(
+            nhfp,
+            cptr.add(svd, $instance_globals_saved_d_dungeon_topology),
+            __s_svd_dungeon_topology
+        ));
         (yield* sfo_char(nhfp, svt, __s_tune, 6));
         for (count.v = 0, curr = cptr.ldPtr(svb); curr; curr = cptr.ldPtr(curr))
             count.v++;
@@ -557,7 +672,11 @@ export function* save_dungeon(nhfp, perform_write, free_data) {
         count.v = maxledgerno();
         (yield* sfo_int(nhfp, count, __s_level_info_count));
         for (i = 0; i < count.v; ++i) {
-            (yield* sfo_linfo(nhfp, cptr.add(cptr.add(svl, $instance_globals_saved_l_level_info), i, $sizeof_linfo), __s_svl_level_info));
+            (yield* sfo_linfo(
+                nhfp,
+                cptr.add(cptr.add(svl, $instance_globals_saved_l_level_info), i, $sizeof_linfo),
+                __s_svl_level_info
+            ));
         }
         (yield* sfo_nhcoord(nhfp, svi, __s_svi_inv_pos));
 
@@ -604,7 +723,11 @@ export function* restore_dungeon(nhfp) {
     for (i = 0; i < cptr.ldI32(svn); ++i) {
         (yield* sfi_dungeon(nhfp, cptr.add(svd, i, $sizeof_dungeon), __s_dungeon));
     }
-    (yield* sfi_dgn_topology(nhfp, cptr.add(svd, $instance_globals_saved_d_dungeon_topology), __s_svd_dungeon_topology));
+    (yield* sfi_dgn_topology(
+        nhfp,
+        cptr.add(svd, $instance_globals_saved_d_dungeon_topology),
+        __s_svd_dungeon_topology
+    ));
     (yield* sfi_char(nhfp, svt, __s_tune, 6));
 
     last = cptr.stPtr(svb, null);
@@ -629,7 +752,11 @@ export function* restore_dungeon(nhfp) {
     if (count.v >= 512)
         (yield* panic(__s_level_information_count_larger_d_than, count.v));
     for (i = 0; i < count.v; ++i) {
-        (yield* sfi_linfo(nhfp, cptr.add(cptr.add(svl, $instance_globals_saved_l_level_info), i, $sizeof_linfo), __s_svl_level_info));
+        (yield* sfi_linfo(
+            nhfp,
+            cptr.add(cptr.add(svl, $instance_globals_saved_l_level_info), i, $sizeof_linfo),
+            __s_svl_level_info
+        ));
     }
 
     (yield* sfi_nhcoord(nhfp, svi, __s_svi_inv_pos));
@@ -665,14 +792,23 @@ function* dname_to_dnum(s) {
 /** C ref: dungeon.c:300 — @param {CPtr<char>} s @returns {CPtr<s_level>} */
 export function* find_level(s) {
     let curr;
-    for (curr = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); curr; curr = cptr.ldPtr(curr))
+    for (
+        curr = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn);
+        curr;
+        curr = cptr.ldPtr(curr)
+    )
         if (!(yield* strncmpi((s), (cptr.add(curr, $s_level_proto)), -1)))
             break;
     return curr;
 }
 
 /* Find the branch that links the named dungeon. */
-/** C ref: dungeon.c:311 — @param {CPtr<char>} s @param {CPtr<struct proto_dungeon>} pd @returns {CInt} */
+/**
+ * C ref: dungeon.c:311
+ * @param {CPtr<char>} s
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @returns {CInt}
+ */
 function* find_branch(s, pd) {
     let i;
 
@@ -689,10 +825,14 @@ function* find_branch(s, pd) {
 
         for (br = cptr.ldPtr(svb); br; br = cptr.ldPtr(br)) {
             dnam = cptr.add(svd, cptr.ldI16o(br, $branch_end2), $sizeof_dungeon);
-            if (!(yield* strncmpi((dnam), (s), -1)) || (!(yield* strncmpi(dnam, __s_the, 4)) && !(yield* strncmpi((cptr.add(dnam, 4)), (s), -1))))
+            if (!(yield* strncmpi((dnam), (s), -1)) ||
+                    (!(yield* strncmpi(dnam, __s_the, 4)) && !(yield* strncmpi((cptr.add(dnam, 4)), (s), -1))))
                 break;
         }
-        i = br ? ((ledger_no(cptr.add(br, $branch_end1)) << 8) | ledger_no(cptr.add(br, $branch_end2))) : -1;
+        i = br
+                ? ((ledger_no(cptr.add(br, $branch_end1)) << 8) |
+                    ledger_no(cptr.add(br, $branch_end2)))
+                : -1;
     }
     return i;
 }
@@ -701,7 +841,12 @@ function* find_branch(s, pd) {
  * Find the "parent" by searching the prototype branch list for the branch
  * listing, then figuring out to which dungeon it belongs.
  */
-/** C ref: dungeon.c:346 — @param {CPtr<char>} s @param {CPtr<struct proto_dungeon>} pd @returns {*} */
+/**
+ * C ref: dungeon.c:346
+ * @param {CPtr<char>} s
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @returns {*}
+ */
 function* parent_dnum(s, pd) {
     let i;
     let pdnum;
@@ -730,7 +875,16 @@ function* parent_dnum(s, pd) {
  *       a negative random component means from the (adjusted) base to the
  *       end of the dungeon.
  */
-/** C ref: dungeon.c:380 — @param {CInt} dgn @param {CInt} base @param {CInt} randc @param {CInt} chain @param {CPtr<struct proto_dungeon>} pd @param {CPtr<int>} adjusted_base @returns {CInt} */
+/**
+ * C ref: dungeon.c:380
+ * @param {CInt} dgn
+ * @param {CInt} base
+ * @param {CInt} randc
+ * @param {CInt} chain
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @param {CPtr<int>} adjusted_base
+ * @returns {CInt}
+ */
 function* level_range(dgn, base, randc, chain, pd, adjusted_base) {
     let lmax = cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs);
 
@@ -760,7 +914,12 @@ function* level_range(dgn, base, randc, chain, pd, adjusted_base) {
     return 1;
 }
 
-/** C ref: dungeon.c:415 — @param {CPtr<char>} s @param {CPtr<struct proto_dungeon>} pd @returns {*} */
+/**
+ * C ref: dungeon.c:415
+ * @param {CPtr<char>} s
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @returns {*}
+ */
 function* parent_dlevel(s, pd) {
     let i;
     let j;
@@ -770,7 +929,19 @@ function* parent_dlevel(s, pd) {
     let curr;
 
     i = (yield* find_branch(s, pd));
-    num = (yield* level_range(i16(dnum), cptr.ldI16o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_lev), cptr.ldI16o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_lev + $couple_rand), cptr.ldI32o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_chain), pd, base));
+    num = (yield* level_range(
+        i16(dnum),
+        cptr.ldI16o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_lev),
+        cptr.ldI16o2(
+            pd,
+            i,
+            $sizeof_tmpbranch,
+            $proto_dungeon_tmpbranch + $tmpbranch_lev + $couple_rand
+        ),
+        cptr.ldI32o2(pd, i, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_chain),
+        pd,
+        base
+    ));
 
     /* KMH -- Try our best to find a level without an existing branch */
     i = (j = rn2(num));
@@ -778,7 +949,10 @@ function* parent_dlevel(s, pd) {
         if (++i >= num)
             i = 0;
         for (curr = cptr.ldPtr(svb); curr; curr = cptr.ldPtr(curr))
-            if ((cptr.ldI16o(curr, $branch_end1) == dnum && cptr.ldI16o(curr, $branch_end1 + $d_level_dlevel) == ((base.v + i) | 0)) || (cptr.ldI16o(curr, $branch_end2) == dnum && cptr.ldI16o(curr, $branch_end2 + $d_level_dlevel) == ((base.v + i) | 0)))
+            if ((cptr.ldI16o(curr, $branch_end1) == dnum &&
+                cptr.ldI16o(curr, $branch_end1 + $d_level_dlevel) == ((base.v + i) | 0)) ||
+                    (cptr.ldI16o(curr, $branch_end2) == dnum &&
+                        cptr.ldI16o(curr, $branch_end2 + $d_level_dlevel) == ((base.v + i) | 0)))
                 break;
     } while (curr && i != j);
     return i16(((base.v + i) | 0));
@@ -834,9 +1008,45 @@ export function* insert_branch(new_branch, extract_first) {
      */
     prev = null;
     prev_val = -1n;
-    new_val = (BigInt.asIntN(64, (BigInt.asIntN(64, BigInt.asIntN(64, (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI16o((new_branch), $branch_end1)) * 33n) + BigInt(cptr.ldI16o((new_branch), $branch_end1 + $d_level_dlevel)))) * 17n) * 33n)) + (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI16o((new_branch), $branch_end2)) * 33n) + BigInt(cptr.ldI16o((new_branch), $branch_end2 + $d_level_dlevel))))));
+    new_val = (BigInt.asIntN(
+        64,
+        (BigInt.asIntN(
+            64,
+            BigInt.asIntN(
+                64,
+                (BigInt.asIntN(
+                    64,
+                    BigInt.asIntN(64, BigInt(cptr.ldI16o((new_branch), $branch_end1)) * 33n) +
+                        BigInt(cptr.ldI16o((new_branch), $branch_end1 + $d_level_dlevel))
+                )) * 17n
+            ) * 33n
+        )) +
+            (BigInt.asIntN(
+                64,
+                BigInt.asIntN(64, BigInt(cptr.ldI16o((new_branch), $branch_end2)) * 33n) +
+                    BigInt(cptr.ldI16o((new_branch), $branch_end2 + $d_level_dlevel))
+            ))
+    ));
     for (curr = cptr.ldPtr(svb); curr; prev_val = curr_val, prev = curr, curr = cptr.ldPtr(curr)) {
-        curr_val = (BigInt.asIntN(64, (BigInt.asIntN(64, BigInt.asIntN(64, (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI16o((curr), $branch_end1)) * 33n) + BigInt(cptr.ldI16o((curr), $branch_end1 + $d_level_dlevel)))) * 17n) * 33n)) + (BigInt.asIntN(64, BigInt.asIntN(64, BigInt(cptr.ldI16o((curr), $branch_end2)) * 33n) + BigInt(cptr.ldI16o((curr), $branch_end2 + $d_level_dlevel))))));
+        curr_val = (BigInt.asIntN(
+            64,
+            (BigInt.asIntN(
+                64,
+                BigInt.asIntN(
+                    64,
+                    (BigInt.asIntN(
+                        64,
+                        BigInt.asIntN(64, BigInt(cptr.ldI16o((curr), $branch_end1)) * 33n) +
+                            BigInt(cptr.ldI16o((curr), $branch_end1 + $d_level_dlevel))
+                    )) * 17n
+                ) * 33n
+            )) +
+                (BigInt.asIntN(
+                    64,
+                    BigInt.asIntN(64, BigInt(cptr.ldI16o((curr), $branch_end2)) * 33n) +
+                        BigInt(cptr.ldI16o((curr), $branch_end2 + $d_level_dlevel))
+                ))
+        ));
         if (prev_val < new_val && new_val <= curr_val)
             break;
     }
@@ -852,7 +1062,13 @@ export function* insert_branch(new_branch, extract_first) {
 /* Add a dungeon branch to the branch list. */
 let __static_add_branch_branch_id = 0; /** C ref: dungeon.c:518 — int (function-static) */
 
-/** C ref: dungeon.c:514 — @param {CInt} dgn @param {CInt} child_entry_level @param {CPtr<struct proto_dungeon>} pd @returns {CPtr<branch>} */
+/**
+ * C ref: dungeon.c:514
+ * @param {CInt} dgn
+ * @param {CInt} child_entry_level
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @returns {CPtr<branch>}
+ */
 function* add_branch(dgn, child_entry_level, pd) {
     let branch_num;
     let new_branch;
@@ -862,12 +1078,35 @@ function* add_branch(dgn, child_entry_level, pd) {
     void __builtin___memset_chk(new_branch, 0, 32n, __builtin_object_size(new_branch, 0));
     cptr.stPtr(new_branch, null);
     cptr.stI32o(new_branch, $branch_id, __static_add_branch_branch_id++);
-    cptr.stI32o(new_branch, $branch_type, (yield* correct_branch_type(cptr.add(cptr.add(pd, $proto_dungeon_tmpbranch), branch_num, $sizeof_tmpbranch))));
+    cptr.stI32o(
+        new_branch,
+        $branch_type,
+        (yield* correct_branch_type(cptr.add(
+            cptr.add(pd, $proto_dungeon_tmpbranch),
+            branch_num,
+            $sizeof_tmpbranch
+        )))
+    );
     cptr.stI16o(new_branch, $branch_end1, (yield* parent_dnum(cptr.add(svd, dgn, $sizeof_dungeon), pd)));
-    cptr.stI16o(new_branch, $branch_end1 + $d_level_dlevel, (yield* parent_dlevel(cptr.add(svd, dgn, $sizeof_dungeon), pd)));
+    cptr.stI16o(
+        new_branch,
+        $branch_end1 + $d_level_dlevel,
+        (yield* parent_dlevel(cptr.add(svd, dgn, $sizeof_dungeon), pd))
+    );
     cptr.stI16o(new_branch, $branch_end2, i16(dgn));
     cptr.stI16o(new_branch, $branch_end2 + $d_level_dlevel, i16(child_entry_level));
-    cptr.st1o(new_branch, $branch_end1_up, schar((cptr.ldI32o2(pd, branch_num, $sizeof_tmpbranch, $proto_dungeon_tmpbranch + $tmpbranch_up) ? 1 : 0)));
+    cptr.st1o(
+        new_branch,
+        $branch_end1_up,
+        schar((cptr.ldI32o2(
+            pd,
+            branch_num,
+            $sizeof_tmpbranch,
+            $proto_dungeon_tmpbranch + $tmpbranch_up
+        )
+            ? 1
+            : 0))
+    );
 
     (yield* insert_branch(new_branch, 0));
     return new_branch;
@@ -885,8 +1124,14 @@ function add_level(new_lev) {
     let curr;
 
     prev = null;
-    for (curr = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); curr; curr = cptr.ldPtr(curr)) {
-        if (cptr.ldI16o(curr, $s_level_dlevel) == cptr.ldI16o(new_lev, $s_level_dlevel) && cptr.ldI16o(curr, $s_level_dlevel + $d_level_dlevel) > cptr.ldI16o(new_lev, $s_level_dlevel + $d_level_dlevel))
+    for (
+        curr = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn);
+        curr;
+        curr = cptr.ldPtr(curr)
+    ) {
+        if (cptr.ldI16o(curr, $s_level_dlevel) == cptr.ldI16o(new_lev, $s_level_dlevel) &&
+                cptr.ldI16o(curr, $s_level_dlevel + $d_level_dlevel) >
+                    cptr.ldI16o(new_lev, $s_level_dlevel + $d_level_dlevel))
             break;
         prev = curr;
     }
@@ -899,7 +1144,12 @@ function add_level(new_lev) {
     }
 }
 
-/** C ref: dungeon.c:566 — @param {CInt} dgn @param {CInt} proto_index @param {CPtr<struct proto_dungeon>} pd */
+/**
+ * C ref: dungeon.c:566
+ * @param {CInt} dgn
+ * @param {CInt} proto_index
+ * @param {CPtr<struct proto_dungeon>} pd
+ */
 function* init_level(dgn, proto_index, pd) {
     let new_level;
     let tlevel = cptr.add(cptr.add(pd, $proto_dungeon_tmplevel), proto_index, $sizeof_tmplevel);
@@ -916,19 +1166,50 @@ function* init_level(dgn, proto_index, pd) {
     cptr.stI16o(new_level, $s_level_dlevel, i16(dgn));
     cptr.stI16o(new_level, $s_level_dlevel + $d_level_dlevel, 0);  /* for now */
 
-    cptr.stI32o(new_level, $s_level_flags, (!!(cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.TOWN)) >>> 0);
-    cptr.stI32o(new_level, $s_level_flags + $d_flags_hellish, (!!(cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.HELLISH)) >>> 0);
-    cptr.stI32o(new_level, $s_level_flags + $d_flags_maze_like, (!!(cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.MAZELIKE)) >>> 0);
-    cptr.stI32o(new_level, $s_level_flags + $d_flags_rogue_like, (!!(cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.ROGUELIKE)) >>> 0);
-    cptr.stI32o(new_level, $s_level_flags + $d_flags_align, ((cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.D_ALIGN_MASK) >> 4) >>> 0);
+    cptr.stI32o(
+        new_level,
+        $s_level_flags,
+        (!!(cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.TOWN)) >>> 0
+    );
+    cptr.stI32o(
+        new_level,
+        $s_level_flags + $d_flags_hellish,
+        (!!(cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.HELLISH)) >>> 0
+    );
+    cptr.stI32o(
+        new_level,
+        $s_level_flags + $d_flags_maze_like,
+        (!!(cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.MAZELIKE)) >>> 0
+    );
+    cptr.stI32o(
+        new_level,
+        $s_level_flags + $d_flags_rogue_like,
+        (!!(cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.ROGUELIKE)) >>> 0
+    );
+    cptr.stI32o(
+        new_level,
+        $s_level_flags + $d_flags_align,
+        ((cptr.ldI32o(tlevel, $tmplevel_flags) & NHM.D_ALIGN_MASK) >> 4) >>> 0
+    );
     if (!(cptr.ldI32o(new_level, $s_level_flags + $d_flags_align) & 7))
-        cptr.stI32o(new_level, $s_level_flags + $d_flags_align, ((cptr.ldI32o2(pd, dgn, $sizeof_tmpdungeon, $tmpdungeon_flags) & NHM.D_ALIGN_MASK) >> 4) >>> 0);
+        cptr.stI32o(
+            new_level,
+            $s_level_flags + $d_flags_align,
+            ((cptr.ldI32o2(pd, dgn, $sizeof_tmpdungeon, $tmpdungeon_flags) &
+                NHM.D_ALIGN_MASK) >> 4) >>> 0
+        );
 
     cptr.st1o(new_level, $s_level_rndlevs, uchar(cptr.ldI32o(tlevel, $tmplevel_rndlevs)));
     cptr.stPtr(new_level, null);
 }
 
-/** C ref: dungeon.c:598 — @param {CInt} idx @param {CPtr<boolean>} map @param {CPtr<struct proto_dungeon>} pd @returns {CInt} */
+/**
+ * C ref: dungeon.c:598
+ * @param {CInt} idx
+ * @param {CPtr<boolean>} map
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @returns {CInt}
+ */
 function* possible_places(idx, map, pd) {
     let i;
     let start = cptr.box(0);
@@ -940,14 +1221,40 @@ function* possible_places(idx, map, pd) {
         cptr.st1o(map, i, 0);
 
     /* get base and range and set those entries to true */
-    count = (yield* level_range(cptr.ldI16o(lev, $s_level_dlevel), cptr.ldI16o2(pd, idx, $sizeof_tmplevel, $proto_dungeon_tmplevel + $tmplevel_lev), cptr.ldI16o2(pd, idx, $sizeof_tmplevel, $proto_dungeon_tmplevel + $tmplevel_lev + $couple_rand), cptr.ldI32o2(pd, idx, $sizeof_tmplevel, $proto_dungeon_tmplevel + $tmplevel_chain), pd, start));
+    count = (yield* level_range(
+        cptr.ldI16o(lev, $s_level_dlevel),
+        cptr.ldI16o2(pd, idx, $sizeof_tmplevel, $proto_dungeon_tmplevel + $tmplevel_lev),
+        cptr.ldI16o2(
+            pd,
+            idx,
+            $sizeof_tmplevel,
+            $proto_dungeon_tmplevel + $tmplevel_lev + $couple_rand
+        ),
+        cptr.ldI32o2(pd, idx, $sizeof_tmplevel, $proto_dungeon_tmplevel + $tmplevel_chain),
+        pd,
+        start
+    ));
     for (i = start.v; i < ((start.v + count) | 0); i++)
         cptr.st1o(map, i, 1);
 
     /* mark off already placed levels */
     for (i = cptr.ldI32o(pd, $proto_dungeon_start); i < idx; i++) {
-        if (cptr.ldPtro2(pd, i, 8, $proto_dungeon_final_lev) && cptr.ld1so(map, cptr.ldI16o(cptr.ldPtro2(pd, i, 8, $proto_dungeon_final_lev), $s_level_dlevel + $d_level_dlevel))) {
-            cptr.st1o(map, cptr.ldI16o(cptr.ldPtro2(pd, i, 8, $proto_dungeon_final_lev), $s_level_dlevel + $d_level_dlevel), 0);
+        if (cptr.ldPtro2(pd, i, 8, $proto_dungeon_final_lev) &&
+                cptr.ld1so(
+                    map,
+                    cptr.ldI16o(
+                        cptr.ldPtro2(pd, i, 8, $proto_dungeon_final_lev),
+                        $s_level_dlevel + $d_level_dlevel
+                    )
+                )) {
+            cptr.st1o(
+                map,
+                cptr.ldI16o(
+                    cptr.ldPtro2(pd, i, 8, $proto_dungeon_final_lev),
+                    $s_level_dlevel + $d_level_dlevel
+                ),
+                0
+            );
             --count;
         }
     }
@@ -974,7 +1281,12 @@ function* pick_level(map, nth) {
  * all possible places have been tried.  If all possible places have
  * been exhausted, return false.
  */
-/** C ref: dungeon.c:666 — @param {CInt} proto_index @param {CPtr<struct proto_dungeon>} pd @returns {CInt} */
+/**
+ * C ref: dungeon.c:666
+ * @param {CInt} proto_index
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @returns {CInt}
+ */
 function* place_level(proto_index, pd) {
     let map = new Uint8Array(33);  /* valid levels are 1..MAXLEVEL inclusive */
     let lev;
@@ -992,7 +1304,11 @@ function* place_level(proto_index, pd) {
     npossible = (yield* possible_places(proto_index, cptr.decay(map), pd));
 
     for (; npossible; --npossible) {
-        cptr.stI16o(lev, $s_level_dlevel + $d_level_dlevel, (yield* pick_level(cptr.decay(map), rn2(npossible))));
+        cptr.stI16o(
+            lev,
+            $s_level_dlevel + $d_level_dlevel,
+            (yield* pick_level(cptr.decay(map), rn2(npossible)))
+        );
         if ((yield* place_level((proto_index + 1) | 0, pd)))
             return 1;
         cptr.st1o(cptr.decay(map), cptr.ldI16o(lev, $s_level_dlevel + $d_level_dlevel), 0, 1);  /* this choice didn't work */
@@ -1005,57 +1321,161 @@ function* place_level(proto_index, pd) {
 /** C ref: dungeon.c:710 — struct level_map[27] */
 const level_map = cptr.alloc(27 * $sizeof_level_map);
 cptr.stPtro(level_map, 0, __s_air);
-cptr.stPtro(level_map, 0 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level));
+cptr.stPtro(
+    level_map,
+    0 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)
+);
 cptr.stPtro(level_map, 16, __s_asmodeus);
-cptr.stPtro(level_map, 16 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_asmodeus_level));
+cptr.stPtro(
+    level_map,
+    16 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_asmodeus_level)
+);
 cptr.stPtro(level_map, 32, __s_astral);
-cptr.stPtro(level_map, 32 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level));
+cptr.stPtro(
+    level_map,
+    32 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)
+);
 cptr.stPtro(level_map, 48, __s_baalz);
-cptr.stPtro(level_map, 48 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_baalzebub_level));
+cptr.stPtro(
+    level_map,
+    48 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_baalzebub_level)
+);
 cptr.stPtro(level_map, 64, __s_bigrm);
-cptr.stPtro(level_map, 64 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level));
+cptr.stPtro(
+    level_map,
+    64 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)
+);
 cptr.stPtro(level_map, 80, __s_castle);
-cptr.stPtro(level_map, 80 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level));
+cptr.stPtro(
+    level_map,
+    80 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)
+);
 cptr.stPtro(level_map, 96, __s_earth);
-cptr.stPtro(level_map, 96 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level));
+cptr.stPtro(
+    level_map,
+    96 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)
+);
 cptr.stPtro(level_map, 112, __s_fakewiz1);
-cptr.stPtro(level_map, 112 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_portal_level));
+cptr.stPtro(
+    level_map,
+    112 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_portal_level)
+);
 cptr.stPtro(level_map, 128, __s_fire);
-cptr.stPtro(level_map, 128 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level));
+cptr.stPtro(
+    level_map,
+    128 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)
+);
 cptr.stPtro(level_map, 144, __s_juiblex);
-cptr.stPtro(level_map, 144 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level));
+cptr.stPtro(
+    level_map,
+    144 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_juiblex_level)
+);
 cptr.stPtro(level_map, 160, __s_knox);
-cptr.stPtro(level_map, 160 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level));
+cptr.stPtro(
+    level_map,
+    160 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)
+);
 cptr.stPtro(level_map, 176, __s_medusa);
-cptr.stPtro(level_map, 176 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level));
+cptr.stPtro(
+    level_map,
+    176 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)
+);
 cptr.stPtro(level_map, 192, __s_oracle);
-cptr.stPtro(level_map, 192 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology));
+cptr.stPtro(
+    level_map,
+    192 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology)
+);
 cptr.stPtro(level_map, 208, __s_orcus);
-cptr.stPtro(level_map, 208 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_orcus_level));
+cptr.stPtro(
+    level_map,
+    208 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_orcus_level)
+);
 cptr.stPtro(level_map, 224, __s_rogue);
-cptr.stPtro(level_map, 224 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level));
+cptr.stPtro(
+    level_map,
+    224 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)
+);
 cptr.stPtro(level_map, 240, __s_sanctum);
-cptr.stPtro(level_map, 240 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level));
+cptr.stPtro(
+    level_map,
+    240 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)
+);
 cptr.stPtro(level_map, 256, __s_valley);
-cptr.stPtro(level_map, 256 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level));
+cptr.stPtro(
+    level_map,
+    256 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)
+);
 cptr.stPtro(level_map, 272, __s_water);
-cptr.stPtro(level_map, 272 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level));
+cptr.stPtro(
+    level_map,
+    272 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)
+);
 cptr.stPtro(level_map, 288, __s_wizard1);
-cptr.stPtro(level_map, 288 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level));
+cptr.stPtro(
+    level_map,
+    288 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)
+);
 cptr.stPtro(level_map, 304, __s_wizard2);
-cptr.stPtro(level_map, 304 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level));
+cptr.stPtro(
+    level_map,
+    304 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level)
+);
 cptr.stPtro(level_map, 320, __s_wizard3);
-cptr.stPtro(level_map, 320 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level));
+cptr.stPtro(
+    level_map,
+    320 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level)
+);
 cptr.stPtro(level_map, 336, __s_minend);
-cptr.stPtro(level_map, 336 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level));
+cptr.stPtro(
+    level_map,
+    336 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mineend_level)
+);
 cptr.stPtro(level_map, 352, __s_soko1);
-cptr.stPtro(level_map, 352 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level));
+cptr.stPtro(
+    level_map,
+    352 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoend_level)
+);
 cptr.stPtro(level_map, 368, __s_x_strt);
-cptr.stPtro(level_map, 368 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level));
+cptr.stPtro(
+    level_map,
+    368 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)
+);
 cptr.stPtro(level_map, 384, __s_x_loca);
-cptr.stPtro(level_map, 384 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level));
+cptr.stPtro(
+    level_map,
+    384 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qlocate_level)
+);
 cptr.stPtro(level_map, 400, __s_x_goal);
-cptr.stPtro(level_map, 400 + $level_map_lev_spec, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level));
+cptr.stPtro(
+    level_map,
+    400 + $level_map_lev_spec,
+    cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_nemesis_level)
+);
 cptr.stPtro(level_map, 416, __s_empty);
 cptr.stPtro(level_map, 416 + $level_map_lev_spec, null);
 
@@ -1090,13 +1510,21 @@ function* get_dgn_flags(L) {
             (yield* lua_pushinteger(L, BigInt(((f + 1) | 0))));
             (yield* lua_gettable(L, -2));
             if (lua_type(L, -1) == 4) {
-                dgn_flags |= cptr.ldI32o(__static_get_dgn_flags_flagstrs2i, (yield* luaL_checkoption(L, -1, null, __static_get_dgn_flags_flagstrs)), 4);
+                dgn_flags |= cptr.ldI32o(
+                    __static_get_dgn_flags_flagstrs2i,
+                    (yield* luaL_checkoption(L, -1, null, __static_get_dgn_flags_flagstrs)),
+                    4
+                );
                 (yield* lua_settop(L, -2));
             } else
                 (yield* impossible(__s_flags_i_is_not_a_string, f));
         }
     } else if (lua_type(L, -1) == 4) {
-        dgn_flags |= cptr.ldI32o(__static_get_dgn_flags_flagstrs2i, (yield* luaL_checkoption(L, -1, null, __static_get_dgn_flags_flagstrs)), 4);
+        dgn_flags |= cptr.ldI32o(
+            __static_get_dgn_flags_flagstrs2i,
+            (yield* luaL_checkoption(L, -1, null, __static_get_dgn_flags_flagstrs)),
+            4
+        );
     } else if (lua_type(L, -1) != 0)
         (yield* impossible(__s_flags_is_not_an_array_or_string));
     (yield* lua_settop(L, -2));
@@ -1122,11 +1550,20 @@ cptr.stI32o(__static_get_dgn_align_dgnaligns2i, 20, NHM.D_ALIGN_NONE); /** C ref
 /** C ref: dungeon.c:781 — @param {CPtr<lua_State>} L @returns {CInt} */
 function* get_dgn_align(L) {
 
-    let a = cptr.ldI32o(__static_get_dgn_align_dgnaligns2i, (yield* get_table_option(L, __s_alignment, __s_unaligned, __static_get_dgn_align_dgnaligns)), 4);
+    let a = cptr.ldI32o(
+        __static_get_dgn_align_dgnaligns2i,
+        (yield* get_table_option(L, __s_alignment, __s_unaligned, __static_get_dgn_align_dgnaligns)),
+        4
+    );
     return a;
 }
 
-/** C ref: dungeon.c:797 — @param {CPtr<lua_State>} L @param {CPtr<struct proto_dungeon>} pd @param {CInt} dngidx */
+/**
+ * C ref: dungeon.c:797
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @param {CInt} dngidx
+ */
 function* init_dungeon_levels(L, pd, dngidx) {
     let lvl_name;
     let lvl_bonetag;
@@ -1162,7 +1599,11 @@ function* init_dungeon_levels(L, pd, dngidx) {
             /* array index is offset by cumulative number of levels
                defined for preceding branches (iterations of 'while'
                loop we're inside, not branch connections below) */
-            tmpl = cptr.add(cptr.add(pd, $proto_dungeon_tmplevel), (cptr.ldI32o(pd, $proto_dungeon_n_levs) + f) | 0, $sizeof_tmplevel);
+            tmpl = cptr.add(
+                cptr.add(pd, $proto_dungeon_tmplevel),
+                (cptr.ldI32o(pd, $proto_dungeon_n_levs) + f) | 0,
+                $sizeof_tmplevel
+            );
             {
                 if ((yield* debugcore(__s_dungeon_c, 1))) {
 
@@ -1178,7 +1619,11 @@ function* init_dungeon_levels(L, pd, dngidx) {
             cptr.stI32o(tmpl, $tmplevel_chance, lvl_chance);
             cptr.stI32o(tmpl, $tmplevel_rndlevs, lvl_nlevels);
             cptr.stI32o(tmpl, $tmplevel_flags, lvl_flags | lvl_align);
-            cptr.st1o(tmpl, $tmplevel_boneschar, schar((cptr.ld1s(lvl_bonetag) ? cptr.ld1s(lvl_bonetag) : 0)));
+            cptr.st1o(
+                tmpl,
+                $tmplevel_boneschar,
+                schar((cptr.ld1s(lvl_bonetag) ? cptr.ld1s(lvl_bonetag) : 0))
+            );
             cptr.free(lvl_bonetag);
             cptr.stI32o(tmpl, $tmplevel_chain, -1);
             if (lvl_chain) {
@@ -1193,11 +1638,18 @@ function* init_dungeon_levels(L, pd, dngidx) {
                     {
                         if ((yield* debugcore(__s_dungeon_c, 1))) {
                             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-                            (yield* pline(__s_checking_i_s, bi, cptr.ldPtro2(pd, bi, $sizeof_tmplevel, $proto_dungeon_tmplevel)));
+                            (yield* pline(
+                                __s_checking_i_s,
+                                bi,
+                                cptr.ldPtro2(pd, bi, $sizeof_tmplevel, $proto_dungeon_tmplevel)
+                            ));
                             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                         }
                     }
-                    if (!strcmp(cptr.ldPtro2(pd, bi, $sizeof_tmplevel, $proto_dungeon_tmplevel), lvl_chain)) {
+                    if (!strcmp(
+                        cptr.ldPtro2(pd, bi, $sizeof_tmplevel, $proto_dungeon_tmplevel),
+                        lvl_chain
+                    )) {
                         cptr.stI32o(tmpl, $tmplevel_chain, bi);
                         break;
                     }
@@ -1236,7 +1688,12 @@ cptr.stI32o(__static_init_dungeon_branches_brtypes2i, 8, NHM.TBR_NO_DOWN);
 cptr.stI32o(__static_init_dungeon_branches_brtypes2i, 12, NHM.TBR_NO_UP);
 cptr.stI32o(__static_init_dungeon_branches_brtypes2i, 16, NHM.TBR_STAIR); /** C ref: dungeon.c:877 — int[5] (function-static) */
 
-/** C ref: dungeon.c:867 — @param {CPtr<lua_State>} L @param {CPtr<struct proto_dungeon>} pd @param {CInt} dngidx */
+/**
+ * C ref: dungeon.c:867
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @param {CInt} dngidx
+ */
 function* init_dungeon_branches(L, pd, dngidx) {
     let br_name;
     let br_chain;
@@ -1261,9 +1718,31 @@ function* init_dungeon_branches(L, pd, dngidx) {
             br_chain = (yield* get_table_str_opt(L, __s_chainlevel, null));
             br_base = (yield* get_table_int(L, __s_base));
             br_range = (yield* get_table_int_opt(L, __s_range, 0));
-            br_type = cptr.ldI32o(__static_init_dungeon_branches_brtypes2i, (yield* get_table_option(L, __s_branchtype, __s_stair, __static_init_dungeon_branches_brtypes)), 4);
-            br_up = cptr.ldI32o(__static_init_dungeon_branches_brdirstr2i, (yield* get_table_option(L, __s_direction, __s_down, __static_init_dungeon_branches_brdirstr)), 4);
-            tmpb = cptr.add(cptr.add(pd, $proto_dungeon_tmpbranch), (cptr.ldI32o(pd, $proto_dungeon_n_brs) + f) | 0, $sizeof_tmpbranch);
+            br_type = cptr.ldI32o(
+                __static_init_dungeon_branches_brtypes2i,
+                (yield* get_table_option(
+                    L,
+                    __s_branchtype,
+                    __s_stair,
+                    __static_init_dungeon_branches_brtypes
+                )),
+                4
+            );
+            br_up = cptr.ldI32o(
+                __static_init_dungeon_branches_brdirstr2i,
+                (yield* get_table_option(
+                    L,
+                    __s_direction,
+                    __s_down,
+                    __static_init_dungeon_branches_brdirstr
+                )),
+                4
+            );
+            tmpb = cptr.add(
+                cptr.add(pd, $proto_dungeon_tmpbranch),
+                (cptr.ldI32o(pd, $proto_dungeon_n_brs) + f) | 0,
+                $sizeof_tmpbranch
+            );
             {
                 if ((yield* debugcore(__s_dungeon_c, 1))) {
 
@@ -1286,8 +1765,15 @@ function* init_dungeon_branches(L, pd, dngidx) {
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
-                for (bi = 0; bi < ((((cptr.ldI32o(pd, $proto_dungeon_n_levs) + f) | 0) - 1) | 0); bi++)
-                    if (!strcmp(cptr.ldPtro2(pd, bi, $sizeof_tmplevel, $proto_dungeon_tmplevel), br_chain)) {
+                for (
+                    bi = 0;
+                    bi < ((((cptr.ldI32o(pd, $proto_dungeon_n_levs) + f) | 0) - 1) | 0);
+                    bi++
+                )
+                    if (!strcmp(
+                        cptr.ldPtro2(pd, bi, $sizeof_tmplevel, $proto_dungeon_tmplevel),
+                        br_chain
+                    )) {
                         cptr.stI32o(tmpb, $tmpbranch_chain, bi);
                         break;
                     }
@@ -1317,13 +1803,27 @@ function init_dungeon_set_entry(pd, dngidx) {
      * redundant.  It is used only here and in print_dungeon().
      */
     if (dgn_entry < 0) {
-        cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev, i16(((((cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs) + dgn_entry) | 0) + 1) | 0)));
+        cptr.stI16o2(
+            svd,
+            dngidx,
+            $sizeof_dungeon,
+            $dungeon_entry_lev,
+            i16(((((cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs) +
+                dgn_entry) | 0) + 1) | 0))
+        );
         if (cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) <= 0)
             cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev, 1);
     } else if (dgn_entry > 0) {
         cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev, i16(dgn_entry));
-        if (cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) > cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs))
-            cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev, cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs));
+        if (cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) >
+                cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs))
+            cptr.stI16o2(
+                svd,
+                dngidx,
+                $sizeof_dungeon,
+                $dungeon_entry_lev,
+                cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs)
+            );
     } else {
         cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev, 1);  /* defaults to top level */
     }
@@ -1360,10 +1860,24 @@ function* init_dungeon_set_depth(pd, dngidx) {
      *
      * We'll say that portals stay on the same depth.
      */
-    cptr.stI32o2(svd, dngidx, $sizeof_dungeon, $dungeon_depth_start, (((from_depth + (cptr.ldI32o(br, $branch_type) == NHM.BR_PORTAL ? 0 : (from_up ? -1 : 1))) | 0) - ((cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) - 1) | 0)) | 0);
+    cptr.stI32o2(
+        svd,
+        dngidx,
+        $sizeof_dungeon,
+        $dungeon_depth_start,
+        (((from_depth +
+            (cptr.ldI32o(br, $branch_type) == NHM.BR_PORTAL ? 0 : (from_up ? -1 : 1))) | 0) -
+            ((cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) - 1) | 0)) | 0
+    );
 }
 
-/** C ref: dungeon.c:997 — @param {CPtr<lua_State>} L @param {CPtr<struct proto_dungeon>} pd @param {CInt} dngidx @returns {CInt} */
+/**
+ * C ref: dungeon.c:997
+ * @param {CPtr<lua_State>} L
+ * @param {CPtr<struct proto_dungeon>} pd
+ * @param {CInt} dngidx
+ * @returns {CInt}
+ */
 function* init_dungeon_dungeons(L, pd, dngidx) {
     let dgn_name;
     let dgn_bonetag;
@@ -1435,7 +1949,13 @@ function* init_dungeon_dungeons(L, pd, dngidx) {
 
     cptr.stPtro(pd, dngidx, dgn_name, $sizeof_tmpdungeon);
     cptr.stPtro2(pd, dngidx, $sizeof_tmpdungeon, $tmpdungeon_protoname, dgn_protoname);
-    cptr.st1o2(pd, dngidx, $sizeof_tmpdungeon, $tmpdungeon_boneschar, schar((cptr.ld1s(dgn_bonetag) ? cptr.ld1s(dgn_bonetag) : 0)));
+    cptr.st1o2(
+        pd,
+        dngidx,
+        $sizeof_tmpdungeon,
+        $tmpdungeon_boneschar,
+        schar((cptr.ld1s(dgn_bonetag) ? cptr.ld1s(dgn_bonetag) : 0))
+    );
     cptr.stI16o2(pd, dngidx, $sizeof_tmpdungeon, $tmpdungeon_lev, i16(dgn_base));
     cptr.stI16o2(pd, dngidx, $sizeof_tmpdungeon, $tmpdungeon_lev + $couple_rand, i16(dgn_range));
     cptr.stI32o2(pd, dngidx, $sizeof_tmpdungeon, $tmpdungeon_flags, dgn_flags);
@@ -1446,17 +1966,35 @@ function* init_dungeon_dungeons(L, pd, dngidx) {
     /* FIXME: these should have length checks */
     void cptr.strcpy(cptr.add(cptr.add(svd, dngidx, $sizeof_dungeon), $dungeon_fill_lvl), dgn_fill);
     void cptr.strcpy(cptr.add(svd, dngidx, $sizeof_dungeon), dgn_name);
-    void cptr.strcpy(cptr.add(cptr.add(svd, dngidx, $sizeof_dungeon), $dungeon_proto), dgn_protoname);
-    void cptr.strcpy(cptr.add(cptr.add(svd, dngidx, $sizeof_dungeon), $dungeon_themerms), dgn_themerms);
+    void cptr.strcpy(
+        cptr.add(cptr.add(svd, dngidx, $sizeof_dungeon), $dungeon_proto),
+        dgn_protoname
+    );
+    void cptr.strcpy(
+        cptr.add(cptr.add(svd, dngidx, $sizeof_dungeon), $dungeon_themerms),
+        dgn_themerms
+    );
     /* FIXME: accept "none", convert that to '\0' */
-    cptr.st1o2(svd, dngidx, $sizeof_dungeon, $dungeon_boneid, schar((cptr.ld1s(dgn_bonetag) ? cptr.ld1s(dgn_bonetag) : 0)));
+    cptr.st1o2(
+        svd,
+        dngidx,
+        $sizeof_dungeon,
+        $dungeon_boneid,
+        schar((cptr.ld1s(dgn_bonetag) ? cptr.ld1s(dgn_bonetag) : 0))
+    );
     cptr.free(dgn_fill);
     /* free((genericptr) dgn_protoname); -- stored in pd.tmpdungeon[] */
     cptr.free(dgn_bonetag);
     cptr.free(dgn_themerms);
 
     if (dgn_range)
-        cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs, i16(((rn2(dgn_range) + (dgn_base)) | 0)));
+        cptr.stI16o2(
+            svd,
+            dngidx,
+            $sizeof_dungeon,
+            $dungeon_num_dunlevs,
+            i16(((rn2(dgn_range) + (dgn_base)) | 0))
+        );
     else
         cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs, i16(dgn_base));
 
@@ -1465,15 +2003,46 @@ function* init_dungeon_dungeons(L, pd, dngidx) {
         cptr.stI32o2(svd, dngidx, $sizeof_dungeon, $dungeon_depth_start, 1);
         cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_dunlev_ureached, 1);
     } else {
-        cptr.stI32o2(svd, dngidx, $sizeof_dungeon, $dungeon_ledger_start, (cptr.ldI32o2(svd, (dngidx - 1) | 0, $sizeof_dungeon, $dungeon_ledger_start) + cptr.ldI16o2(svd, (dngidx - 1) | 0, $sizeof_dungeon, $dungeon_num_dunlevs)) | 0);
+        cptr.stI32o2(
+            svd,
+            dngidx,
+            $sizeof_dungeon,
+            $dungeon_ledger_start,
+            (cptr.ldI32o2(svd, (dngidx - 1) | 0, $sizeof_dungeon, $dungeon_ledger_start) +
+                cptr.ldI16o2(svd, (dngidx - 1) | 0, $sizeof_dungeon, $dungeon_num_dunlevs)) | 0
+        );
         cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_dunlev_ureached, 0);
     }
 
-    cptr.stI32o2(svd, dngidx, $sizeof_dungeon, $dungeon_flags + $d_flags_hellish, (!!(dgn_flags & NHM.HELLISH)) >>> 0);
-    cptr.stI32o2(svd, dngidx, $sizeof_dungeon, $dungeon_flags + $d_flags_maze_like, (!!(dgn_flags & NHM.MAZELIKE)) >>> 0);
-    cptr.stI32o2(svd, dngidx, $sizeof_dungeon, $dungeon_flags + $d_flags_rogue_like, (!!(dgn_flags & NHM.ROGUELIKE)) >>> 0);
+    cptr.stI32o2(
+        svd,
+        dngidx,
+        $sizeof_dungeon,
+        $dungeon_flags + $d_flags_hellish,
+        (!!(dgn_flags & NHM.HELLISH)) >>> 0
+    );
+    cptr.stI32o2(
+        svd,
+        dngidx,
+        $sizeof_dungeon,
+        $dungeon_flags + $d_flags_maze_like,
+        (!!(dgn_flags & NHM.MAZELIKE)) >>> 0
+    );
+    cptr.stI32o2(
+        svd,
+        dngidx,
+        $sizeof_dungeon,
+        $dungeon_flags + $d_flags_rogue_like,
+        (!!(dgn_flags & NHM.ROGUELIKE)) >>> 0
+    );
     cptr.stI32o2(svd, dngidx, $sizeof_dungeon, $dungeon_flags + $d_flags_align, dgn_align >>> 0);
-    cptr.stI32o2(svd, dngidx, $sizeof_dungeon, $dungeon_flags + $d_flags_unconnected, (!!(dgn_flags & NHM.UNCONNECTED)) >>> 0);
+    cptr.stI32o2(
+        svd,
+        dngidx,
+        $sizeof_dungeon,
+        $dungeon_flags + $d_flags_unconnected,
+        (!!(dgn_flags & NHM.UNCONNECTED)) >>> 0
+    );
 
     init_dungeon_set_entry(pd, dngidx);
 
@@ -1510,7 +2079,11 @@ function* fixup_level_locations() {
      * Find most of the special levels and dungeons so we can access their
      * locations quickly.
      */
-    for (lev_map = level_map; cptr.ld1so(cptr.ldPtr(lev_map), 0); lev_map = cptr.add(lev_map, 1, 16)) {
+    for (
+        lev_map = level_map;
+        cptr.ld1so(cptr.ldPtr(lev_map), 0);
+        lev_map = cptr.add(lev_map, 1, 16)
+    ) {
         x = (yield* find_level(cptr.ldPtr(lev_map)));
         if (x) {
             assign_level(cptr.ldPtro(lev_map, $level_map_lev_spec), cptr.add(x, $s_level_dlevel));
@@ -1518,8 +2091,19 @@ function* fixup_level_locations() {
                 /* This is where the name substitution on the
                  * levels of the quest dungeon occur.
                  */
-                void cptr.sprintf(cptr.add(x, $s_level_proto), __s_s_s, cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode), cptr.add(cptr.ldPtr(lev_map), 1));
-            } else if (cptr.eq(cptr.ldPtro(lev_map, $level_map_lev_spec), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))) {
+                void cptr.sprintf(
+                    cptr.add(x, $s_level_proto),
+                    __s_s_s,
+                    cptr.ldPtro(gu, $instance_globals_u_urole + $Role_filecode),
+                    cptr.add(cptr.ldPtr(lev_map), 1)
+                );
+            } else if (cptr.eq(
+                cptr.ldPtro(lev_map, $level_map_lev_spec),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                )
+            )) {
                 let br;
                 /*
                  * Kludge to allow floating Knox entrance.  We
@@ -1527,7 +2111,13 @@ function* fixup_level_locations() {
                  * entrance (end1) has a bogus dnum, namely n_dgns.
                  */
                 for (br = cptr.ldPtr(svb); br; br = cptr.ldPtr(br))
-                    if (on_level(cptr.add(br, $branch_end2), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))
+                    if (on_level(
+                        cptr.add(br, $branch_end2),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                        )
+                    ))
                         break;
 
                 if (br) {
@@ -1541,11 +2131,31 @@ function* fixup_level_locations() {
     /*
      *  I hate hardwiring these names. :-(
      */
-    cptr.stI16o(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_quest_dnum, (yield* dname_to_dnum(__s_the_quest)));
-    cptr.stI16o(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoban_dnum, (yield* dname_to_dnum(__s_sokoban)));
-    cptr.stI16o(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mines_dnum, (yield* dname_to_dnum(__s_the_gnomish_mines)));
-    cptr.stI16o(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_tower_dnum, (yield* dname_to_dnum(__s_vlad_s_tower)));
-    cptr.stI16o(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_tutorial_dnum, (yield* dname_to_dnum(__s_the_tutorial)));
+    cptr.stI16o(
+        svd,
+        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_quest_dnum,
+        (yield* dname_to_dnum(__s_the_quest))
+    );
+    cptr.stI16o(
+        svd,
+        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sokoban_dnum,
+        (yield* dname_to_dnum(__s_sokoban))
+    );
+    cptr.stI16o(
+        svd,
+        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_mines_dnum,
+        (yield* dname_to_dnum(__s_the_gnomish_mines))
+    );
+    cptr.stI16o(
+        svd,
+        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_tower_dnum,
+        (yield* dname_to_dnum(__s_vlad_s_tower))
+    );
+    cptr.stI16o(
+        svd,
+        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_tutorial_dnum,
+        (yield* dname_to_dnum(__s_the_tutorial))
+    );
 
     /* one special fixup for dummy surface level */
     if ((x = (yield* find_level(__s_dummy))) !== null) {
@@ -1554,8 +2164,15 @@ function* fixup_level_locations() {
            making the dummy level overlay level 1; but the whole reason
            for having the dummy level is to make earth have depth -1
            instead of 0, so adjust the start point to shift endgame up */
-        if (dunlevs_in_dungeon(cptr.add(x, $s_level_dlevel)) > ((1 - cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start)) | 0))
-            cptr.stI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start, (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start) - 1) | 0);
+        if (dunlevs_in_dungeon(cptr.add(x, $s_level_dlevel)) >
+                ((1 - cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start)) | 0))
+            cptr.stI32o2(
+                svd,
+                i,
+                $sizeof_dungeon,
+                $dungeon_depth_start,
+                (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_depth_start) - 1) | 0
+            );
         /* TODO: strip "dummy" out all the way here,
            so that it's hidden from '#wizwhere' feedback. */
     }
@@ -1571,7 +2188,12 @@ function free_proto_dungeon(pd) {
     for (i = 0; i < cptr.ldI32o(pd, $proto_dungeon_n_levs); i++) {
         cptr.free(cptr.ldPtro2(pd, i, $sizeof_tmplevel, $proto_dungeon_tmplevel));
         if (cptr.ldPtro2(pd, i, $sizeof_tmplevel, $proto_dungeon_tmplevel + $tmplevel_chainlvl))
-            cptr.free(cptr.ldPtro2(pd, i, $sizeof_tmplevel, $proto_dungeon_tmplevel + $tmplevel_chainlvl));
+            cptr.free(cptr.ldPtro2(
+                pd,
+                i,
+                $sizeof_tmplevel,
+                $proto_dungeon_tmplevel + $tmplevel_chainlvl
+            ));
     }
     for (i = 0; i < cptr.ldI32(svn); i++) {
         cptr.free(cptr.ldPtro(pd, i, $sizeof_tmpdungeon));
@@ -1587,7 +2209,11 @@ export function* init_dungeons() {
     let cl = 0;
     let pd = cptr.alloc(3952);
     let tidx;
-    let sbi = cptr.alloc(16); cptr.stI32(sbi, NHM.NHL_SB_SAFE); cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576); cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0); cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
+    let sbi = cptr.alloc(16);
+    cptr.stI32(sbi, NHM.NHL_SB_SAFE);
+    cptr.stI32o(sbi, $nhl_sandbox_info_memlimit, 1048576);
+    cptr.stI32o(sbi, $nhl_sandbox_info_steps, 0);
+    cptr.stI32o(sbi, $nhl_sandbox_info_perpcall, 1048576);
 
     void __builtin___memset_chk(pd, 0, 3952n, __builtin_object_size(pd, 0));
     cptr.stI32o(pd, $proto_dungeon_n_levs, cptr.stI32o(pd, $proto_dungeon_n_brs, 0));
@@ -1651,9 +2277,24 @@ export function* init_dungeons() {
              */
             if (!(yield* place_level(cptr.ldI32o(pd, $proto_dungeon_start), pd)))
                 (yield* panic(__s_init_dungeon_couldn_t_place_levels));
-            for (; cptr.ldI32o(pd, $proto_dungeon_start) < cptr.ldI32o(pd, $proto_dungeon_n_levs); (cptr.stI32o(pd, $proto_dungeon_start, cptr.ldI32o(pd, $proto_dungeon_start) + 1)) - (1))
-                if (cptr.ldPtro2(pd, cptr.ldI32o(pd, $proto_dungeon_start), 8, $proto_dungeon_final_lev))
-                    add_level(cptr.ldPtro2(pd, cptr.ldI32o(pd, $proto_dungeon_start), 8, $proto_dungeon_final_lev));
+            for (
+                ;
+                cptr.ldI32o(pd, $proto_dungeon_start) < cptr.ldI32o(pd, $proto_dungeon_n_levs);
+                (cptr.stI32o(pd, $proto_dungeon_start, cptr.ldI32o(pd, $proto_dungeon_start) + 1)) -
+                    (1)
+            )
+                if (cptr.ldPtro2(
+                    pd,
+                    cptr.ldI32o(pd, $proto_dungeon_start),
+                    8,
+                    $proto_dungeon_final_lev
+                ))
+                    add_level(cptr.ldPtro2(
+                        pd,
+                        cptr.ldI32o(pd, $proto_dungeon_start),
+                        8,
+                        $proto_dungeon_final_lev
+                    ));
             /* levels handling end */
             i++;
         }
@@ -1664,7 +2305,11 @@ export function* init_dungeons() {
     {
         if ((yield* debugcore(__s_dungeon_c, 1))) {
             let save_plnmsg = cptr.ldI32o(iflags, $instance_flags_last_msg);
-            (yield* pline(__s_init_dungeon_lua_done_n_levs_i_n_brs_i, cptr.ldI32o(pd, $proto_dungeon_n_levs), cptr.ldI32o(pd, $proto_dungeon_n_brs)));
+            (yield* pline(
+                __s_init_dungeon_lua_done_n_levs_i_n_brs_i,
+                cptr.ldI32o(pd, $proto_dungeon_n_levs),
+                cptr.ldI32o(pd, $proto_dungeon_n_brs)
+            ));
             cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
         }
     }
@@ -1713,7 +2358,11 @@ export function deepest_lev_reached(noquest) {
     for (i = 0; i < cptr.ldI32(svn); i++) {
         if (noquest && i == quest_dnum())
             continue;
-        cptr.stI16o(tmp, $d_level_dlevel, cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached));
+        cptr.stI16o(
+            tmp,
+            $d_level_dlevel,
+            cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_dunlev_ureached)
+        );
         if (cptr.ldI16o(tmp, $d_level_dlevel) == 0)
             continue;
         cptr.stI16(tmp, i16(i));
@@ -1727,7 +2376,8 @@ export function deepest_lev_reached(noquest) {
    save/restore */
 /** C ref: dungeon.c:1376 — @param {CPtr<d_level>} lev @returns {*} */
 export function ledger_no(lev) {
-    return i16(((cptr.ldI16o(lev, $d_level_dlevel) + cptr.ldI32o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_ledger_start)) | 0));
+    return i16(((cptr.ldI16o(lev, $d_level_dlevel) +
+            cptr.ldI32o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_ledger_start)) | 0));
 }
 
 /*
@@ -1742,7 +2392,18 @@ export function ledger_no(lev) {
  */
 /** C ref: dungeon.c:1392 @returns {*} */
 export function maxledgerno() {
-    return i16(((cptr.ldI32o2(svd, (cptr.ldI32(svn) - 1) | 0, $sizeof_dungeon, $dungeon_ledger_start) + cptr.ldI16o2(svd, (cptr.ldI32(svn) - 1) | 0, $sizeof_dungeon, $dungeon_num_dunlevs)) | 0));
+    return i16(((cptr.ldI32o2(
+        svd,
+        (cptr.ldI32(svn) - 1) | 0,
+        $sizeof_dungeon,
+        $dungeon_ledger_start
+    ) +
+            cptr.ldI16o2(
+                svd,
+                (cptr.ldI32(svn) - 1) | 0,
+                $sizeof_dungeon,
+                $dungeon_num_dunlevs
+            )) | 0));
 }
 
 /* return the dungeon that this ledgerno exists in */
@@ -1752,7 +2413,10 @@ export function* ledger_to_dnum(ledgerno) {
 
     /* find i such that (i->base + 1) <= ledgerno <= (i->base + i->count) */
     for (i = 0; i < cptr.ldI32(svn); i++)
-        if (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_ledger_start) < ledgerno && ledgerno <= ((cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_ledger_start) + cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_num_dunlevs)) | 0))
+        if (cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_ledger_start) < ledgerno &&
+                ledgerno <=
+                    ((cptr.ldI32o2(svd, i, $sizeof_dungeon, $dungeon_ledger_start) +
+                        cptr.ldI16o2(svd, i, $sizeof_dungeon, $dungeon_num_dunlevs)) | 0))
             return i;
 
     (yield* panic(__s_level_number_out_of_range_ledger_to, ledgerno));
@@ -1763,20 +2427,35 @@ export function* ledger_to_dnum(ledgerno) {
 /* return the level of the dungeon this ledgerno exists in */
 /** C ref: dungeon.c:1422 — @param {CInt} ledgerno @returns {*} */
 export function* ledger_to_dlev(ledgerno) {
-    return i16(((ledgerno - cptr.ldI32o2(svd, (yield* ledger_to_dnum(ledgerno)), $sizeof_dungeon, $dungeon_ledger_start)) | 0));
+    return i16(((ledgerno -
+            cptr.ldI32o2(
+                svd,
+                (yield* ledger_to_dnum(ledgerno)),
+                $sizeof_dungeon,
+                $dungeon_ledger_start
+            )) | 0));
 }
 
 /* returns the depth of a level, in floors below the surface
    (note levels in different dungeons can have the same depth) */
 /** C ref: dungeon.c:1431 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function depth(lev) {
-    return schar(((((cptr.ldI32o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_depth_start) + cptr.ldI16o(lev, $d_level_dlevel)) | 0) - 1) | 0));
+    return schar(((((cptr.ldI32o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_depth_start) +
+            cptr.ldI16o(lev, $d_level_dlevel)) | 0) - 1) | 0));
 }
 
 /* are "lev1" and "lev2" actually the same? */
-/** C ref: dungeon.c:1439 — @param {CPtr<d_level>} lev1 @param {CPtr<d_level>} lev2 @returns {CInt} */
+/**
+ * C ref: dungeon.c:1439
+ * @param {CPtr<d_level>} lev1
+ * @param {CPtr<d_level>} lev2
+ * @returns {CInt}
+ */
 export function on_level(lev1, lev2) {
-    return schar((cptr.ldI16(lev1) == cptr.ldI16(lev2) && cptr.ldI16o(lev1, $d_level_dlevel) == cptr.ldI16o(lev2, $d_level_dlevel) ? 1 : 0));
+    return schar((cptr.ldI16(lev1) == cptr.ldI16(lev2) &&
+        cptr.ldI16o(lev1, $d_level_dlevel) == cptr.ldI16o(lev2, $d_level_dlevel)
+            ? 1
+            : 0));
 }
 
 /* is this level referenced in the special level chain? */
@@ -1784,7 +2463,11 @@ export function on_level(lev1, lev2) {
 export function Is_special(lev) {
     let levtmp;
 
-    for (levtmp = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn); levtmp; levtmp = cptr.ldPtr(levtmp))
+    for (
+        levtmp = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn);
+        levtmp;
+        levtmp = cptr.ldPtr(levtmp)
+    )
         if (on_level(lev, cptr.add(levtmp, $s_level_dlevel)))
             return levtmp;
 
@@ -1800,7 +2483,8 @@ export function Is_branchlev(lev) {
     let curr;
 
     for (curr = cptr.ldPtr(svb); curr; curr = cptr.ldPtr(curr)) {
-        if (on_level(lev, cptr.add(curr, $branch_end1)) || on_level(lev, cptr.add(curr, $branch_end2)))
+        if (on_level(lev, cptr.add(curr, $branch_end1)) ||
+                on_level(lev, cptr.add(curr, $branch_end2)))
             return curr;
     }
     return null;
@@ -1812,7 +2496,8 @@ export function* builds_up(lev) {
     let dptr = cptr.add(svd, cptr.ldI16(lev), $sizeof_dungeon);
     let br;
     if (cptr.ldI16o(dptr, $dungeon_num_dunlevs) > 1)
-        return schar((cptr.ldI16o(dptr, $dungeon_entry_lev) == cptr.ldI16o(dptr, $dungeon_num_dunlevs)));
+        return schar((cptr.ldI16o(dptr, $dungeon_entry_lev) ==
+                cptr.ldI16o(dptr, $dungeon_num_dunlevs)));
     /* else, single-level branch; find branch connection that connects this
      * dungeon from a parent dungeon and determine whether it builds up from
      * that */
@@ -1836,11 +2521,19 @@ export function* next_level(at_stairs) {
 
     if (at_stairs && stway) {
         cptr.stI16(newlevel, cptr.ldI16o(stway, $stairway_tolev));
-        cptr.stI16o(newlevel, $d_level_dlevel, cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel));
+        cptr.stI16o(
+            newlevel,
+            $d_level_dlevel,
+            cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel)
+        );
         (yield* goto_level(newlevel, at_stairs, 0, 0));
     } else {
         cptr.stI16(newlevel, cptr.ldI16o(u, $you_uz));
-        cptr.stI16o(newlevel, $d_level_dlevel, i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1) | 0)));
+        cptr.stI16o(
+            newlevel,
+            $d_level_dlevel,
+            i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1) | 0))
+        );
         (yield* goto_level(newlevel, at_stairs, schar((!at_stairs)), 0));
     }
 }
@@ -1858,17 +2551,27 @@ export function* prev_level(at_stairs) {
         /* Taking an up dungeon branch. */
         /* KMH -- Upwards branches are okay if not level 1 */
         /* (Just make sure it doesn't go above depth 1) */
-        if (!cptr.ldI16o(u, $you_uz) && cptr.ldI16o(u, $you_uz + $d_level_dlevel) == 1 && !(cptr.ldI32o(u, $you_uhave) & 1))
+        if (!cptr.ldI16o(u, $you_uz) &&
+                cptr.ldI16o(u, $you_uz + $d_level_dlevel) == 1 &&
+                !(cptr.ldI32o(u, $you_uhave) & 1))
             (yield* done(NHC.ESCAPED));
         else {
             cptr.stI16(newlevel, cptr.ldI16o(stway, $stairway_tolev));
-            cptr.stI16o(newlevel, $d_level_dlevel, cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel));
+            cptr.stI16o(
+                newlevel,
+                $d_level_dlevel,
+                cptr.ldI16o(stway, $stairway_tolev + $d_level_dlevel)
+            );
             (yield* goto_level(newlevel, at_stairs, 0, 0));
         }
     } else {
         /* Going up a stairs or rising through the ceiling. */
         cptr.stI16(newlevel, cptr.ldI16o(u, $you_uz));
-        cptr.stI16o(newlevel, $d_level_dlevel, i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) - 1) | 0)));
+        cptr.stI16o(
+            newlevel,
+            $d_level_dlevel,
+            i16(((cptr.ldI16o(u, $you_uz + $d_level_dlevel) - 1) | 0))
+        );
         (yield* goto_level(newlevel, at_stairs, 0, 0));
     }
 }
@@ -1883,11 +2586,33 @@ function* earth_sense() {
         return;
     if (cptr.ldPtro(u, $you_usteed) || Flying() || Levitation() || Upolyd())
         return;
-    if (cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.CORR && cptr.ld1so3(svl, cptr.ldI16(u), $sizeof_rm_x21, cptr.ldI16o(u, $you_uy), $sizeof_rm, $instance_globals_saved_l_level + $rm_typ) != NHC.ROOM)
+    if (cptr.ld1so3(
+        svl,
+        cptr.ldI16(u),
+        $sizeof_rm_x21,
+        cptr.ldI16o(u, $you_uy),
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    ) !=
+        NHC.CORR &&
+            cptr.ld1so3(
+                svl,
+                cptr.ldI16(u),
+                $sizeof_rm_x21,
+                cptr.ldI16o(u, $you_uy),
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_typ
+            ) !=
+                NHC.ROOM)
         return;
 
-    for (otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist); otmp; otmp = cptr.ldPtr(otmp))
-        if (((cptr.ldI16o(otmp, $obj_ox)) == cptr.ldI16(u) && (cptr.ldI16o(otmp, $obj_oy)) == cptr.ldI16o(u, $you_uy))) {
+    for (
+        otmp = cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_buriedobjlist);
+        otmp;
+        otmp = cptr.ldPtr(otmp)
+    )
+        if (((cptr.ldI16o(otmp, $obj_ox)) == cptr.ldI16(u) &&
+                (cptr.ldI16o(otmp, $obj_oy)) == cptr.ldI16o(u, $you_uy))) {
             (yield* You(__s_sense_something_below_your_s, (yield* makeplural((yield* body_part(NHC.FOOT))))));
             return;
         }
@@ -1907,7 +2632,8 @@ export function* u_on_newpos(x, y) {
     cptr.stI32o(u, $you_uundetected, 0);
     /* ridden steed always shares hero's location */
     if (cptr.ldPtro(u, $you_usteed))
-        cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_mx, cptr.ldI16(u)), cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_my, cptr.ldI16o(u, $you_uy));
+        cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_mx, cptr.ldI16(u)),
+                cptr.stI16o(cptr.ldPtro(u, $you_usteed), $monst_my, cptr.ldI16o(u, $you_uy));
     /* when changing levels, don't leave old position set with
        stale values from previous level */
     if (!on_level(cptr.add(u, $you_uz), cptr.add(u, $you_uz0))) {
@@ -1942,11 +2668,44 @@ export function* u_on_rndspot(upflag) {
            destination instead of its enclosing region.
            Note: up vs down doesn't matter in this case
            because both specify the same exclusion area. */
-        (yield* place_lregion(cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy), 0, 0, 0, 0, NHC.LR_DOWNTELE, null));
+        (yield* place_lregion(
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy),
+            0,
+            0,
+            0,
+            0,
+            NHC.LR_DOWNTELE,
+            null
+        ));
     else if (up)
-        (yield* place_lregion(cptr.ldI16(svu), cptr.ldI16o(svu, $dest_area_ly), cptr.ldI16o(svu, $dest_area_hx), cptr.ldI16o(svu, $dest_area_hy), cptr.ldI16o(svu, $dest_area_nlx), cptr.ldI16o(svu, $dest_area_nly), cptr.ldI16o(svu, $dest_area_nhx), cptr.ldI16o(svu, $dest_area_nhy), NHC.LR_UPTELE, null));
+        (yield* place_lregion(
+            cptr.ldI16(svu),
+            cptr.ldI16o(svu, $dest_area_ly),
+            cptr.ldI16o(svu, $dest_area_hx),
+            cptr.ldI16o(svu, $dest_area_hy),
+            cptr.ldI16o(svu, $dest_area_nlx),
+            cptr.ldI16o(svu, $dest_area_nly),
+            cptr.ldI16o(svu, $dest_area_nhx),
+            cptr.ldI16o(svu, $dest_area_nhy),
+            NHC.LR_UPTELE,
+            null
+        ));
     else
-        (yield* place_lregion(cptr.ldI16o(svd, $instance_globals_saved_d_dndest), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_ly), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hx), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hy), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx), cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy), NHC.LR_DOWNTELE, null));
+        (yield* place_lregion(
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_ly),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hx),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_hy),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx),
+            cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy),
+            NHC.LR_DOWNTELE,
+            null
+        ));
 
     /* might have just left solid rock and unblocked levitation */
     (yield* switch_terrain());
@@ -1954,12 +2713,20 @@ export function* u_on_rndspot(upflag) {
 
 /** C ref: dungeon.c:1643 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function Is_botlevel(lev) {
-    return schar((cptr.ldI16o(lev, $d_level_dlevel) == cptr.ldI16o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_num_dunlevs)));
+    return schar((cptr.ldI16o(lev, $d_level_dlevel) ==
+            cptr.ldI16o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_num_dunlevs)));
 }
 
 /** C ref: dungeon.c:1649 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function Can_dig_down(lev) {
-    return schar((!(cptr.ldI32o(svl, $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor) & 1) && !Is_botlevel(lev) && !Invocation_lev(lev) ? 1 : 0));
+    return schar((!(cptr.ldI32o(
+        svl,
+        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_hardfloor
+    ) & 1) &&
+        !Is_botlevel(lev) &&
+        !Invocation_lev(lev)
+            ? 1
+            : 0));
 }
 
 /*
@@ -1969,7 +2736,27 @@ export function Can_dig_down(lev) {
  */
 /** C ref: dungeon.c:1662 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function Can_fall_thru(lev) {
-    return schar((Can_dig_down(lev) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) ? 1 : 0));
+    return schar((Can_dig_down(lev) ||
+        (((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+            )))) &&
+            on_level(
+                lev,
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+                )
+            )))
+            ? 1
+            : 0));
 }
 
 /*
@@ -1978,15 +2765,51 @@ export function Can_fall_thru(lev) {
  * level that has a stairwell style branch to the next higher dungeon.
  * Checks for amulets and such must be done elsewhere.
  */
-/** C ref: dungeon.c:1674 — @param {CInt} x @param {CInt} y @param {CPtr<d_level>} lev @returns {CInt} */
+/**
+ * C ref: dungeon.c:1674
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<d_level>} lev
+ * @returns {CInt}
+ */
 export function* Can_rise_up(x, y, lev) {
     let stway = stairway_find_special_dir(0);
 
     /* can't rise up from inside the top of the Wizard's tower */
     /* KMH -- or in sokoban */
-    if ((cptr.ldI16((lev)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) || (cptr.ldI16((lev)) == sokoban_dnum()) || ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) && (yield* In_W_tower(x, y, lev))))
+    if ((cptr.ldI16((lev)) ==
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+        )))) ||
+            (cptr.ldI16((lev)) == sokoban_dnum()) ||
+            ((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level
+                )))) &&
+                on_level(
+                    lev,
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level
+                    )
+                ))) &&
+                (yield* In_W_tower(x, y, lev))))
         return 0;
-    return schar((cptr.ldI16o(lev, $d_level_dlevel) > 1 || (cptr.ldI16o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_entry_lev) == 1 && ledger_no(lev) != 1 && stway && cptr.ld1so(stway, $stairway_up)) ? 1 : 0));
+    return schar((cptr.ldI16o(lev, $d_level_dlevel) > 1 ||
+        (cptr.ldI16o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_entry_lev) == 1 &&
+            ledger_no(lev) != 1 &&
+            stway &&
+            cptr.ld1so(stway, $stairway_up))
+            ? 1
+            : 0));
 }
 
 /** C ref: dungeon.c:1690 — @param {CPtr<d_level>} lev @returns {CInt} */
@@ -1994,7 +2817,29 @@ export function has_ceiling(lev) {
     /* FIXME: some (most? all?) of the quest home levels are conceptually
        above ground and don't have ceilings outside of their buildings
        but we don't presently check for that */
-    if ((cptr.ldI16((lev)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))))
+    if ((cptr.ldI16((lev)) ==
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+        )))) &&
+            !(((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                )))) &&
+                on_level(
+                    lev,
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                    )
+                ))))
         return 0;
     return 1;
 }
@@ -2013,7 +2858,11 @@ export function avoid_ceiling(lev) {
 
 /** C ref: dungeon.c:1714 — @param {CInt} x @param {CInt} y @returns {CPtr<char>} */
 export function* ceiling(x, y) {
-    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+    let lev = cptr.add(
+        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+        y,
+        $sizeof_rm
+    );
     let what;
 
     /* other room types will no longer exist when we're interested --
@@ -2025,19 +2874,68 @@ export function* ceiling(x, y) {
         what = __s_temple_s_ceiling;
     else if (cptr.ld1s((yield* in_rooms(x, y, NHC.SHOPBASE))))
         what = __s_shop_s_ceiling;
-    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))))
+    else if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                )
+            ))))
         /* water plane has no surface; its air bubbles aren't below sky */
         what = __s_water_above;
     else if (IS_AIR(cptr.ld1so(lev, $rm_typ)))
         what = __s_sky;
-    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)))))
+    else if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+                )
+            ))))
         what = __s_flames_above;
     else if (In_quest(cptr.add(u, $you_uz)))
         /* just in case; try to avoid in caller if you can */
         what = __s_expanse_above;
     else if (Underwater())
         what = __s_water_s_surface;
-    else if ((((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level))))) || IS_WALL(cptr.ld1so(lev, $rm_typ)) || ((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) || cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
+    else if ((((cptr.ld1so(lev, $rm_typ)) >= NHC.ROOM) &&
+        !(((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                )
+            )))) ||
+            IS_WALL(cptr.ld1so(lev, $rm_typ)) ||
+            ((cptr.ld1so(lev, $rm_typ)) == NHC.DOOR) ||
+            cptr.ld1so(lev, $rm_typ) == NHC.SDOOR)
         what = __s_ceiling;
     else
         what = __s_rock_cavern;
@@ -2047,16 +2945,77 @@ export function* ceiling(x, y) {
 
 /** C ref: dungeon.c:1750 — @param {CInt} x @param {CInt} y @returns {CPtr<char>} */
 export function surface(x, y) {
-    let lev = cptr.add(cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21), y, $sizeof_rm);
+    let lev = cptr.add(
+        cptr.add(cptr.add(svl, $instance_globals_saved_l_level), x, $sizeof_rm_x21),
+        y,
+        $sizeof_rm
+    );
     let levtyp = SURFACE_AT(x, y);
 
-    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) && (cptr.ldI32o(u, $you_uswallow) & 1) | 0 && ((cptr.ldU64o((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), $permonst_mflags1) & 262144n) != 0n))
+    if (((x) == cptr.ldI16(u) && (y) == cptr.ldI16o(u, $you_uy)) &&
+            (cptr.ldI32o(u, $you_uswallow) & 1) | 0 &&
+            ((cptr.ldU64o(
+                (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
+                $permonst_mflags1
+            ) &
+                262144n) != 0n))
         /* 'husk' is iffy but maw is wrong for 't' class */
-        return (dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_DGST, NHM.AT_ENGL) !== null) ? __s_maw : ((dmgtype_fromattack((cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)), NHM.AD_WRAP, NHM.AT_ENGL) !== null) ? __s_husk : __s_nonesuch);  /* can't happen (fingers crossed...) */
+        return (dmgtype_fromattack(
+            (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
+            NHM.AD_DGST,
+            NHM.AT_ENGL
+        ) !== null)
+                ? __s_maw
+                : ((dmgtype_fromattack(
+                    (cptr.ldPtro(cptr.ldPtro(u, $you_ustuck), $monst_data)),
+                    NHM.AD_WRAP,
+                    NHM.AT_ENGL
+                ) !== null)
+                    ? __s_husk
+                    : __s_nonesuch);  /* can't happen (fingers crossed...) */
     else if (IS_AIR(levtyp))
-        return (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) ? __s_air_bubble : ((levtyp == NHC.CLOUD) ? __s_cloud : __s_air);
+        return (((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                )
+            )))
+                ? __s_air_bubble
+                : ((levtyp == NHC.CLOUD) ? __s_cloud : __s_air);
     else if (is_pool(x, y))
-        return (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level))))) ? __s_bottom : hliquid(__s_water);
+        return (((cptr.ldI32o(u, $you_uinwater) & 1)) | 0 &&
+            !(((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )
+                ))))
+                ? __s_bottom
+                : hliquid(__s_water);
     else if (is_ice(x, y))
         return __s_ice;
     else if (is_lava(x, y))
@@ -2075,7 +3034,25 @@ export function surface(x, y) {
         return __s_wall;  /* 'surface' during Passes_walls */
     else if (((levtyp) == NHC.DOOR))
         return __s_doorway;  /* even for closed door */
-    else if (((levtyp) >= NHC.ROOM) && !(((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))))
+    else if (((levtyp) >= NHC.ROOM) &&
+            !(((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                    )
+                ))))
         return __s_floor;
     else
         return __s_ground;
@@ -2100,7 +3077,9 @@ export function* get_level(newlevel, levnum) {
     if (levnum <= 0) {
         /* can only currently happen in endgame */
         levnum = cptr.ldI16o(u, $you_uz + $d_level_dlevel);
-    } else if (levnum > ((((cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start) + cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs)) | 0) - 1) | 0)) {
+    } else if (levnum >
+            ((((cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start) +
+                cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs)) | 0) - 1) | 0)) {
         /* beyond end of dungeon, jump to last level */
         levnum = cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs);
     } else {
@@ -2129,7 +3108,9 @@ export function* get_level(newlevel, levnum) {
         }
 
         /* We're within the same dungeon; calculate the level. */
-        levnum = (((levnum - cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start)) | 0) + 1) | 0;
+        levnum = (((levnum -
+            cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start)) | 0) + 1) |
+                0;
     }
 
     cptr.stI16(newlevel, dgn);
@@ -2199,11 +3180,66 @@ export function In_V_tower(lev) {
 /* is `lev' a level containing the Wizard's tower? */
 /** C ref: dungeon.c:1914 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function On_W_tower_level(lev) {
-    return schar(((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level)))) ? 1 : 0));
+    return schar(((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level
+        )))) &&
+        on_level(
+            lev,
+            cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz1_level)
+        ))) ||
+        (((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level
+            )))) &&
+            on_level(
+                lev,
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz2_level
+                )
+            ))) ||
+        (((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level
+            )))) &&
+            on_level(
+                lev,
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_wiz3_level
+                )
+            )))
+            ? 1
+            : 0));
 }
 
 /* is <x,y> of `lev' inside the Wizard's tower? */
-/** C ref: dungeon.c:1923 — @param {CInt} x @param {CInt} y @param {CPtr<d_level>} lev @returns {CInt} */
+/**
+ * C ref: dungeon.c:1923
+ * @param {CInt} x
+ * @param {CInt} y
+ * @param {CPtr<d_level>} lev
+ * @returns {CInt}
+ */
 export function* In_W_tower(x, y, lev) {
     if (!On_W_tower_level(lev))
         return 0;
@@ -2216,19 +3252,35 @@ export function* In_W_tower(x, y, lev) {
      * (from above or below) define the tower's boundary.
      *  assert( svu.updest.nIJ == svd.dndest.nIJ for I={l|h},J={x|y} );
      */
-    return schar(((x) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) && (x) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) && (y) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) && (y) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy)) ? 1 : 0));
+    return schar(((x) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nlx)) &&
+        (x) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhx)) &&
+        (y) >= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nly)) &&
+        (y) <= (cptr.ldI16o(svd, $instance_globals_saved_d_dndest + $dest_area_nhy))
+            ? 1
+            : 0));
 }
 
 /* are you in one of the Hell levels? */
 /** C ref: dungeon.c:1942 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function In_hell(lev) {
-    return schar(((cptr.ldI32o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_flags + $d_flags_hellish) & 1)));
+    return schar(((cptr.ldI32o2(
+        svd,
+        cptr.ldI16(lev),
+        $sizeof_dungeon,
+        $dungeon_flags + $d_flags_hellish
+    ) & 1)));
 }
 
 /* sets *lev to be the gateway to Gehennom... */
 /** C ref: dungeon.c:1949 — @param {CPtr<d_level>} lev */
 export function find_hell(lev) {
-    cptr.stI16(lev, cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level))));
+    cptr.stI16(
+        lev,
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level
+        )))
+    );
     cptr.stI16o(lev, $d_level_dlevel, 1);
 }
 
@@ -2248,7 +3300,20 @@ export function single_level_branch(lev) {
      * TODO:  this should be generalized instead of assuming that
      * Fort Ludios is the only single level branch in the dungeon.
      */
-    return schar((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(lev, cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)) ? 1 : 0)));
+    return schar((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+        )))) &&
+        on_level(
+            lev,
+            cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)
+        )
+            ? 1
+            : 0)));
 }
 
 /* equivalent to dest = source */
@@ -2259,10 +3324,19 @@ export function assign_level(dest, src) {
 }
 
 /* dest = src + rn1(range) */
-/** C ref: dungeon.c:1986 — @param {CPtr<d_level>} dest @param {CPtr<d_level>} src @param {CInt} range */
+/**
+ * C ref: dungeon.c:1986
+ * @param {CPtr<d_level>} dest
+ * @param {CPtr<d_level>} src
+ * @param {CInt} range
+ */
 export function assign_rnd_level(dest, src, range) {
     cptr.stI16(dest, cptr.ldI16(src));
-    cptr.stI16o(dest, $d_level_dlevel, i16(((cptr.ldI16o(src, $d_level_dlevel) + ((range > 0) ? rnd(range) : -rnd(-range))) | 0)));
+    cptr.stI16o(
+        dest,
+        $d_level_dlevel,
+        i16(((cptr.ldI16o(src, $d_level_dlevel) + ((range > 0) ? rnd(range) : -rnd(-range))) | 0))
+    );
 
     if (cptr.ldI16o(dest, $d_level_dlevel) > dunlevs_in_dungeon(dest))
         cptr.stI16o(dest, $d_level_dlevel, dunlevs_in_dungeon(dest));
@@ -2280,9 +3354,19 @@ export function induced_align(pct) {
         if (rn2(100) < pct)
             return (cptr.ldI32o(lev, $s_level_flags + $d_flags_align) & 7);
 
-    if ((cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_flags + $d_flags_align) & 7))
+    if ((cptr.ldI32o2(
+        svd,
+        cptr.ldI16o(u, $you_uz),
+        $sizeof_dungeon,
+        $dungeon_flags + $d_flags_align
+    ) & 7))
         if (rn2(100) < pct)
-            return (cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_flags + $d_flags_align) & 7);
+            return (cptr.ldI32o2(
+                svd,
+                cptr.ldI16o(u, $you_uz),
+                $sizeof_dungeon,
+                $dungeon_flags + $d_flags_align
+            ) & 7);
 
     al = schar(((rn2(3) - 1) | 0));
     return Align2amask(al);
@@ -2290,7 +3374,11 @@ export function induced_align(pct) {
 
 /** C ref: dungeon.c:2017 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function Invocation_lev(lev) {
-    return schar((In_hell(lev) && cptr.ldI16o(lev, $d_level_dlevel) == ((cptr.ldI16o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_num_dunlevs) - 1) | 0) ? 1 : 0));
+    return schar((In_hell(lev) &&
+        cptr.ldI16o(lev, $d_level_dlevel) ==
+            ((cptr.ldI16o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_num_dunlevs) - 1) | 0)
+            ? 1
+            : 0));
 }
 
 /* use instead of depth() wherever a degree of difficulty is made
@@ -2300,8 +3388,16 @@ export function Invocation_lev(lev) {
 export function* level_difficulty() {
     let res;
 
-    if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))) {
-        res = i16(((depth(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)) + ((cptr.ldI32o(u, $you_ulevel) / 2) | 0)) | 0));
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            ))))) {
+        res = i16(((depth(cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
+        )) +
+                ((cptr.ldI32o(u, $you_ulevel) / 2) | 0)) | 0));
     } else if ((cptr.ldI32o(u, $you_uhave) & 1)) {
         res = deepest_lev_reached(0);
     } else {
@@ -2312,7 +3408,17 @@ export function* level_difficulty() {
            they were easier; adjust for the extra effort involved in
            going down to the entrance and then up to the location */
         if ((yield* builds_up(cptr.add(u, $you_uz))))
-            res = i16(res + Math.imul(2, ((((cptr.ldI16o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_entry_lev) - cptr.ldI16o(u, $you_uz + $d_level_dlevel)) | 0) + 1) | 0)));
+            res = i16(res +
+                    Math.imul(
+                        2,
+                        ((((cptr.ldI16o2(
+                            svd,
+                            cptr.ldI16o(u, $you_uz),
+                            $sizeof_dungeon,
+                            $dungeon_entry_lev
+                        ) -
+                            cptr.ldI16o(u, $you_uz + $d_level_dlevel)) | 0) + 1) | 0)
+                    ));
     }
     /* ring of aggravate monster */
     if (EAggravate_monster())
@@ -2365,7 +3471,31 @@ export function* lev_by_name(nam) {
 
     if (mseen || slev) {
         idx = ledger_no(dlev);
-        if ((cptr.ldI16(dlev) == cptr.ldI16o(u, $you_uz) || (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level))) && cptr.ldI16(dlev) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) || (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))) && cptr.ldI16(dlev) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level))))) && (wizard() || (cptr.ld1uo2(svl, idx, $sizeof_linfo, $instance_globals_saved_l_level_info) & NHM.VISITED) == NHM.VISITED)) {
+        if ((cptr.ldI16(dlev) == cptr.ldI16o(u, $you_uz) ||
+            (cptr.ldI16o(u, $you_uz) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level
+                ))) &&
+                cptr.ldI16(dlev) ==
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level
+                    )))) ||
+            (cptr.ldI16o(u, $you_uz) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level
+                ))) &&
+                cptr.ldI16(dlev) ==
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level
+                    ))))) &&
+                (wizard() ||
+                    (cptr.ld1uo2(svl, idx, $sizeof_linfo, $instance_globals_saved_l_level_info) &
+                        NHM.VISITED) ==
+                        NHM.VISITED)) {
             lev = depth(dlev);
         }
     } else {
@@ -2379,12 +3509,47 @@ export function* lev_by_name(nam) {
             idx &= 255;
             /* either wizard mode, or else _both_ sides of branch seen; */
             /* (flags & VISITED)==VISITED: see comment about amnesia above */
-            if (wizard() || (((cptr.ld1uo2(svl, idx, $sizeof_linfo, $instance_globals_saved_l_level_info) & NHM.VISITED) == NHM.VISITED) && ((cptr.ld1uo2(svl, idxtoo, $sizeof_linfo, $instance_globals_saved_l_level_info) & NHM.VISITED) == NHM.VISITED))) {
+            if (wizard() ||
+                    (((cptr.ld1uo2(svl, idx, $sizeof_linfo, $instance_globals_saved_l_level_info) &
+                        NHM.VISITED) ==
+                        NHM.VISITED) &&
+                        ((cptr.ld1uo2(
+                            svl,
+                            idxtoo,
+                            $sizeof_linfo,
+                            $instance_globals_saved_l_level_info
+                        ) &
+                            NHM.VISITED) ==
+                            NHM.VISITED))) {
                 if ((yield* ledger_to_dnum(i16(idxtoo))) == cptr.ldI16o(u, $you_uz))
                     idx = idxtoo;
                 cptr.stI16(dlev, (yield* ledger_to_dnum(i16(idx))));
                 cptr.stI16o(dlev, $d_level_dlevel, (yield* ledger_to_dlev(i16(idx))));
-                if ((cptr.ldI16(dlev) == cptr.ldI16o(u, $you_uz) || (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level))) && cptr.ldI16(dlev) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level)))) || (cptr.ldI16o(u, $you_uz) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_medusa_level))) && cptr.ldI16(dlev) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level))))))
+                if ((cptr.ldI16(dlev) == cptr.ldI16o(u, $you_uz) ||
+                        (cptr.ldI16o(u, $you_uz) ==
+                            cptr.ldI16((cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_valley_level
+                            ))) &&
+                            cptr.ldI16(dlev) ==
+                                cptr.ldI16((cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_medusa_level
+                                )))) ||
+                        (cptr.ldI16o(u, $you_uz) ==
+                            cptr.ldI16((cptr.add(
+                                svd,
+                                $instance_globals_saved_d_dungeon_topology +
+                                    $dgn_topology_d_medusa_level
+                            ))) &&
+                            cptr.ldI16(dlev) ==
+                                cptr.ldI16((cptr.add(
+                                    svd,
+                                    $instance_globals_saved_d_dungeon_topology +
+                                        $dgn_topology_d_valley_level
+                                ))))))
                     lev = depth(dlev);
             }
         }
@@ -2398,10 +3563,15 @@ function unplaced_floater(dptr) {
     let idx = Number(BigInt.asIntN(32, (cptr.diff(dptr, svd) / 112n)));
 
     /* if other floating branches are added, this will need to change */
-    if (idx != cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))
+    if (idx !=
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+            ))))
         return 0;
     for (br = cptr.ldPtr(svb); br; br = cptr.ldPtr(br))
-        if (cptr.ldI16o(br, $branch_end1) == cptr.ldI32(svn) && cptr.ldI16o(br, $branch_end2) == idx)
+        if (cptr.ldI16o(br, $branch_end1) == cptr.ldI32(svn) &&
+                cptr.ldI16o(br, $branch_end2) == idx)
             return 1;
     return 0;
 }
@@ -2412,20 +3582,43 @@ function* unreachable_level(lvl_p, unplaced) {
 
     if (unplaced)
         return 1;
-    if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && !(cptr.ldI16((lvl_p)) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+        )))) &&
+            !(cptr.ldI16((lvl_p)) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))))
         return 1;
-    if ((dummy = (yield* find_level(__s_dummy))) !== null && on_level(lvl_p, cptr.add(dummy, $s_level_dlevel)))
+    if ((dummy = (yield* find_level(__s_dummy))) !== null &&
+            on_level(lvl_p, cptr.add(dummy, $s_level_dlevel)))
         return 1;
     return 0;
 }
 
-/** C ref: dungeon.c:2204 — @param {CInt} win @param {CPtr<char>} entry @param {CPtr<struct lchoice>} lchoices @param {CPtr<d_level>} lvl_p @param {CInt} cannotreach */
+/**
+ * C ref: dungeon.c:2204
+ * @param {CInt} win
+ * @param {CPtr<char>} entry
+ * @param {CPtr<struct lchoice>} lchoices
+ * @param {CPtr<d_level>} lvl_p
+ * @param {CInt} cannotreach
+ */
 function* tport_menu(win, entry, lchoices, lvl_p, cannotreach) {
     let tmpbuf = new Uint8Array(256);
     let any = cptr.alloc(8);
     let clr = NHM.NO_COLOR;
 
-    cptr.st1o2(lchoices, cptr.ldI32(lchoices), 1, $lchoice_lev, schar(cptr.ldI16o(lvl_p, $d_level_dlevel)));
+    cptr.st1o2(
+        lchoices,
+        cptr.ldI32(lchoices),
+        1,
+        $lchoice_lev,
+        schar(cptr.ldI16o(lvl_p, $d_level_dlevel))
+    );
     cptr.stI16o2(lchoices, cptr.ldI32(lchoices), 2, $lchoice_dgn, cptr.ldI16(lvl_p));
     cptr.st1o2(lchoices, cptr.ldI32(lchoices), 1, $lchoice_playerlev, depth(lvl_p));
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
@@ -2437,7 +3630,17 @@ function* tport_menu(win, entry, lchoices, lvl_p, cannotreach) {
     } else {
         cptr.stI32(any, (cptr.ldI32(lchoices) + 1) | 0);
     }
-    (yield* add_menu(win, nul_glyphinfo.v, any, cptr.ld1so(lchoices, $lchoice_menuletter), 0, NHM.ATR_NONE, clr, entry, NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        win,
+        nul_glyphinfo.v,
+        any,
+        cptr.ld1so(lchoices, $lchoice_menuletter),
+        0,
+        NHM.ATR_NONE,
+        clr,
+        entry,
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
     /* this assumes there are at most 52 interesting levels */
     if (cptr.ld1so(lchoices, $lchoice_menuletter) == 122)
         cptr.st1o(lchoices, $lchoice_menuletter, 65);
@@ -2465,21 +3668,47 @@ function br_string(type) {
 
 /** C ref: dungeon.c:2256 — @param {CPtr<d_level>} dlev @returns {CInt} */
 function chr_u_on_lvl(dlev) {
-    return schar((cptr.ldI16o(u, $you_uz) == cptr.ldI16(dlev) && cptr.ldI16o(u, $you_uz + $d_level_dlevel) == cptr.ldI16o(dlev, $d_level_dlevel) ? 42 : 32));
+    return schar((cptr.ldI16o(u, $you_uz) == cptr.ldI16(dlev) &&
+        cptr.ldI16o(u, $you_uz + $d_level_dlevel) == cptr.ldI16o(dlev, $d_level_dlevel)
+            ? 42
+            : 32));
 }
 
 /* Print all child branches between the lower and upper bounds. */
-/** C ref: dungeon.c:2263 — @param {CInt} win @param {CInt} dnum @param {CInt} lower_bound @param {CInt} upper_bound @param {CInt} bymenu @param {CPtr<struct lchoice>} lchoices_p */
+/**
+ * C ref: dungeon.c:2263
+ * @param {CInt} win
+ * @param {CInt} dnum
+ * @param {CInt} lower_bound
+ * @param {CInt} upper_bound
+ * @param {CInt} bymenu
+ * @param {CPtr<struct lchoice>} lchoices_p
+ */
 function* print_branch(win, dnum, lower_bound, upper_bound, bymenu, lchoices_p) {
     let br;
     let buf = new Uint8Array(256);
 
     /* This assumes that end1 is the "parent". */
     for (br = cptr.ldPtr(svb); br; br = cptr.ldPtr(br)) {
-        if (cptr.ldI16o(br, $branch_end1) == dnum && lower_bound < cptr.ldI16o(br, $branch_end1 + $d_level_dlevel) && cptr.ldI16o(br, $branch_end1 + $d_level_dlevel) <= upper_bound) {
-            void cptr.sprintf(cptr.decay(buf), __s_c_s_to_s_d, bymenu ? chr_u_on_lvl(cptr.add(br, $branch_end1)) : 32, br_string(cptr.ldI32o(br, $branch_type)), cptr.add(svd, cptr.ldI16o(br, $branch_end2), $sizeof_dungeon), depth(cptr.add(br, $branch_end1)));
+        if (cptr.ldI16o(br, $branch_end1) == dnum &&
+                lower_bound < cptr.ldI16o(br, $branch_end1 + $d_level_dlevel) &&
+                cptr.ldI16o(br, $branch_end1 + $d_level_dlevel) <= upper_bound) {
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_c_s_to_s_d,
+                bymenu ? chr_u_on_lvl(cptr.add(br, $branch_end1)) : 32,
+                br_string(cptr.ldI32o(br, $branch_type)),
+                cptr.add(svd, cptr.ldI16o(br, $branch_end2), $sizeof_dungeon),
+                depth(cptr.add(br, $branch_end1))
+            );
             if (bymenu)
-                (yield* tport_menu(win, cptr.decay(buf), lchoices_p, cptr.add(br, $branch_end1), (yield* unreachable_level(cptr.add(br, $branch_end1), 0))));
+                (yield* tport_menu(
+                    win,
+                    cptr.decay(buf),
+                    lchoices_p,
+                    cptr.add(br, $branch_end1),
+                    (yield* unreachable_level(cptr.add(br, $branch_end1), 0))
+                ));
             else
                 (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
@@ -2487,7 +3716,13 @@ function* print_branch(win, dnum, lower_bound, upper_bound, bymenu, lchoices_p) 
 }
 
 /* Print available dungeon information. */
-/** C ref: dungeon.c:2290 — @param {CInt} bymenu @param {CPtr<schar>} rlev @param {CPtr<xint16>} rdgn @returns {CInt} */
+/**
+ * C ref: dungeon.c:2290
+ * @param {CInt} bymenu
+ * @param {CPtr<schar>} rlev
+ * @param {CPtr<xint16>} rdgn
+ * @returns {CInt}
+ */
 export function* print_dungeon(bymenu, rlev, rdgn) {
     let i;
     let last_level;
@@ -2509,22 +3744,56 @@ export function* print_dungeon(bymenu, rlev, rdgn) {
     }
 
     for (i = 0, dptr = svd; i < cptr.ldI32(svn); i++, dptr = cptr.add(dptr, 1, 112)) {
-        if (bymenu && (cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && i != cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level))))
+        if (bymenu &&
+                (cptr.ldI16((cptr.add(u, $you_uz))) ==
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )))) &&
+                i !=
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    ))))
             continue;
         unplaced = unplaced_floater(dptr);
         descr = unplaced ? __s_depth : __s_level__2;
         nlev = cptr.ldI16o(dptr, $dungeon_num_dunlevs);
         if (nlev > 1)
-            nh_snprintf(__s_print_dungeon, 2317, cptr.decay(buf), 256n, __s_s_s_d_to_d, dptr, (yield* makeplural(descr)), cptr.ldI32o(dptr, $dungeon_depth_start), (((cptr.ldI32o(dptr, $dungeon_depth_start) + nlev) | 0) - 1) | 0);
+            nh_snprintf(
+                __s_print_dungeon,
+                2317,
+                cptr.decay(buf),
+                256n,
+                __s_s_s_d_to_d,
+                dptr,
+                (yield* makeplural(descr)),
+                cptr.ldI32o(dptr, $dungeon_depth_start),
+                (((cptr.ldI32o(dptr, $dungeon_depth_start) + nlev) | 0) - 1) | 0
+            );
         else
-            nh_snprintf(__s_print_dungeon, 2320, cptr.decay(buf), 256n, __s_s_s_d, dptr, descr, cptr.ldI32o(dptr, $dungeon_depth_start));
+            nh_snprintf(
+                __s_print_dungeon,
+                2320,
+                cptr.decay(buf),
+                256n,
+                __s_s_s_d,
+                dptr,
+                descr,
+                cptr.ldI32o(dptr, $dungeon_depth_start)
+            );
 
         /* Most entrances are uninteresting. */
         if (cptr.ldI16o(dptr, $dungeon_entry_lev) != 1) {
             if (cptr.ldI16o(dptr, $dungeon_entry_lev) == nlev)
                 void cptr.strcat(cptr.decay(buf), __s_entrance_from_below);
             else
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_entrance_on_d, (((cptr.ldI32o(dptr, $dungeon_depth_start) + cptr.ldI16o(dptr, $dungeon_entry_lev)) | 0) - 1) | 0);
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_entrance_on_d,
+                    (((cptr.ldI32o(dptr, $dungeon_depth_start) +
+                        cptr.ldI16o(dptr, $dungeon_entry_lev)) | 0) - 1) | 0
+                );
         }
         if (bymenu) {
             (yield* add_menu_heading(win, cptr.decay(buf)));
@@ -2535,18 +3804,60 @@ export function* print_dungeon(bymenu, rlev, rdgn) {
          * Circle through the special levels to find levels that are in
          * this dungeon.
          */
-        for (slev = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn), last_level = 0; slev; slev = cptr.ldPtr(slev)) {
+        for (
+            slev = cptr.ldPtro(svs, $instance_globals_saved_s_sp_levchn),
+            last_level = 0;
+            slev;
+            slev = cptr.ldPtr(slev)
+        ) {
             if (cptr.ldI16o(slev, $s_level_dlevel) != i)
                 continue;
 
             /* print any branches before this level */
-            (yield* print_branch(win, i, last_level, cptr.ldI16o(slev, $s_level_dlevel + $d_level_dlevel), bymenu, lchoices));
+            (yield* print_branch(
+                win,
+                i,
+                last_level,
+                cptr.ldI16o(slev, $s_level_dlevel + $d_level_dlevel),
+                bymenu,
+                lchoices
+            ));
 
-            void cptr.sprintf(cptr.decay(buf), __s_c_s_d, chr_u_on_lvl(cptr.add(slev, $s_level_dlevel)), cptr.add(slev, $s_level_proto), depth(cptr.add(slev, $s_level_dlevel)));
-            if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(slev, $s_level_dlevel), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_c_s_d,
+                chr_u_on_lvl(cptr.add(slev, $s_level_dlevel)),
+                cptr.add(slev, $s_level_proto),
+                depth(cptr.add(slev, $s_level_dlevel))
+            );
+            if ((((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+                )))) &&
+                    on_level(
+                        cptr.add(slev, $s_level_dlevel),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_stronghold_level
+                        )
+                    ))))
                 void cptr.sprintf(eos(cptr.decay(buf)), __s_tune_s, svt);
             if (bymenu)
-                (yield* tport_menu(win, cptr.decay(buf), lchoices, cptr.add(slev, $s_level_dlevel), (yield* unreachable_level(cptr.add(slev, $s_level_dlevel), unplaced))));
+                (yield* tport_menu(
+                    win,
+                    cptr.decay(buf),
+                    lchoices,
+                    cptr.add(slev, $s_level_dlevel),
+                    (yield* unreachable_level(cptr.add(slev, $s_level_dlevel), unplaced))
+                ));
             else
                 (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
 
@@ -2584,7 +3895,12 @@ export function* print_dungeon(bymenu, rlev, rdgn) {
                 (yield* Y.icall(putstr()(win, 0, __s_floating_branches)));
                 first = 0;
             }
-            void cptr.sprintf(cptr.decay(buf), __s_s_to_s, br_string(cptr.ldI32o(br, $branch_type)), cptr.add(svd, cptr.ldI16o(br, $branch_end2), $sizeof_dungeon));
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_s_to_s,
+                br_string(cptr.ldI32o(br, $branch_type)),
+                cptr.add(svd, cptr.ldI16o(br, $branch_end2), $sizeof_dungeon)
+            );
             (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
         }
     }
@@ -2592,7 +3908,14 @@ export function* print_dungeon(bymenu, rlev, rdgn) {
     /* I hate searching for the invocation pos while debugging. -dean */
     if (Invocation_lev(cptr.add(u, $you_uz))) {
         (yield* Y.icall(putstr()(win, 0, __s_empty)));
-        void cptr.sprintf(cptr.decay(buf), __s_invocation_position_d_d_hero_d_d, cptr.ldI16(svi), cptr.ldI16o(svi, $nhcoord_y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_invocation_position_d_d_hero_d_d,
+            cptr.ldI16(svi),
+            cptr.ldI16o(svi, $nhcoord_y),
+            cptr.ldI16(u),
+            cptr.ldI16o(u, $you_uy)
+        );
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     } else {
         let trap;
@@ -2608,8 +3931,124 @@ export function* print_dungeon(bymenu, rlev, rdgn) {
                 break;
 
         if (trap)
-            void cptr.sprintf(cptr.decay(buf), __s_portal_d_d_hero_d_d, cptr.ldI16o(trap, $trap_tx), cptr.ldI16o(trap, $trap_ty), cptr.ldI16(u), cptr.ldI16o(u, $you_uy));
-        else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level)))) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)))) || (yield* at_dgn_entrance(__s_the_quest)) || (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))))
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_portal_d_d_hero_d_d,
+                cptr.ldI16o(trap, $trap_tx),
+                cptr.ldI16o(trap, $trap_ty),
+                cptr.ldI16(u),
+                cptr.ldI16o(u, $you_uy)
+            );
+        else if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_earth_level
+                )
+            ))) ||
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
+                        )
+                    ))) ||
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_fire_level
+                        )
+                    ))) ||
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_air_level
+                        )
+                    ))) ||
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology +
+                                $dgn_topology_d_qstart_level
+                        )
+                    ))) ||
+                (yield* at_dgn_entrance(__s_the_quest)) ||
+                (((cptr.ldI16o(
+                    (cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                    )),
+                    $d_level_dlevel
+                ) ||
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                    )))) &&
+                    on_level(
+                        cptr.add(u, $you_uz),
+                        cptr.add(
+                            svd,
+                            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                        )
+                    ))))
             void cptr.strcpy(cptr.decay(buf), __s_no_portal_found);
 
         /* only give output if we found a portal or expected one and didn't */
@@ -2640,9 +4079,11 @@ export function* recbranch_mapseen(source, dest) {
 
     /* we only care about forward branches */
     for (br = cptr.ldPtr(svb); br; br = cptr.ldPtr(br)) {
-        if (on_level(source, cptr.add(br, $branch_end1)) && on_level(dest, cptr.add(br, $branch_end2)))
+        if (on_level(source, cptr.add(br, $branch_end1)) &&
+                on_level(dest, cptr.add(br, $branch_end2)))
             break;
-        if (on_level(source, cptr.add(br, $branch_end2)) && on_level(dest, cptr.add(br, $branch_end1)))
+        if (on_level(source, cptr.add(br, $branch_end2)) &&
+                on_level(dest, cptr.add(br, $branch_end1)))
             return;
     }
 
@@ -2655,7 +4096,11 @@ export function* recbranch_mapseen(source, dest) {
             (yield* impossible(__s_two_branches_on_the_same_level));
         cptr.stPtro(mptr, $mapseen_br, br);
     } else {
-        (yield* impossible(__s_can_t_note_branch_for_unseen_level_d_d, cptr.ldI16(source), cptr.ldI16o(source, $d_level_dlevel)));
+        (yield* impossible(
+            __s_can_t_note_branch_for_unseen_level_d_d,
+            cptr.ldI16(source),
+            cptr.ldI16o(source, $d_level_dlevel)
+        ));
     }
 }
 
@@ -2691,7 +4136,12 @@ function* query_annotation(lev) {
     if (cptr.ldPtro(mptr, $mapseen_custom)) {
         let tmpbuf = new Uint8Array(256);
 
-        void cptr.sprintf(cptr.decay(tmpbuf), __s_replace_annotation_30s_s_with, cptr.ldPtro(mptr, $mapseen_custom), (cptr.strlen(cptr.ldPtro(mptr, $mapseen_custom)) > 30n) ? __s_dot3 : __s_empty);
+        void cptr.sprintf(
+            cptr.decay(tmpbuf),
+            __s_replace_annotation_30s_s_with,
+            cptr.ldPtro(mptr, $mapseen_custom),
+            (cptr.strlen(cptr.ldPtro(mptr, $mapseen_custom)) > 30n) ? __s_dot3 : __s_empty
+        );
         (yield* getlin(cptr.decay(tmpbuf), cptr.decay(nbuf)));
     } else {
         let qbuf = new Uint8Array(128);
@@ -2701,7 +4151,8 @@ function* query_annotation(lev) {
             void cptr.strcpy(cptr.decay(lbuf), __s_this_dungeon_level);
         } else {
             let dflgs = (cptr.ldI16(lev) == cptr.ldI16o(u, $you_uz)) ? 0 : 2;
-            let save_uz = cptr.alloc(4); cptr.memcpy(save_uz, cptr.add(u, $you_uz), $sizeof_d_level);
+            let save_uz = cptr.alloc(4);
+            cptr.memcpy(save_uz, cptr.add(u, $you_uz), $sizeof_d_level);
 
             cptr.memcpy(cptr.add(u, $you_uz), lev, 4);
             void describe_level(cptr.decay(lbuf), dflgs);
@@ -2714,7 +4165,14 @@ function* query_annotation(lev) {
                values will end up with one anyway; remove it */
             void (yield* trimspaces(cptr.decay(lbuf)));
         }
-        nh_snprintf(__s_query_annotation, 2543, cptr.decay(qbuf), 128n, __s_what_do_you_want_to_call_s, cptr.decay(lbuf));
+        nh_snprintf(
+            __s_query_annotation,
+            2543,
+            cptr.decay(qbuf),
+            128n,
+            __s_what_do_you_want_to_call_s,
+            cptr.decay(lbuf)
+        );
         (yield* getlin(cptr.decay(qbuf), cptr.decay(nbuf)));
     }
 
@@ -2736,7 +4194,11 @@ function* query_annotation(lev) {
     if (cptr.ld1s(cptr.decay(nbuf)) && strcmp(cptr.decay(nbuf), __s_sp)) {
         cptr.stPtro(mptr, $mapseen_custom, (yield* dupstr(cptr.decay(nbuf))));
         /* _lth field does not include trailing '\0' in the count */
-        cptr.stI32o(mptr, $mapseen_custom_lth, Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro(mptr, $mapseen_custom)))));
+        cptr.stI32o(
+            mptr,
+            $mapseen_custom_lth,
+            Number(BigInt.asUintN(32, cptr.strlen(cptr.ldPtro(mptr, $mapseen_custom))))
+        );
     }
 }
 
@@ -2821,7 +4283,8 @@ function* find_mapseen_by_str(s) {
     let mptr;
 
     for (mptr = cptr.ldPtr(svm); mptr; mptr = cptr.ldPtr(mptr))
-        if (cptr.ldPtro(mptr, $mapseen_custom) && !(yield* strncmpi((s), (cptr.ldPtro(mptr, $mapseen_custom)), -1)))
+        if (cptr.ldPtro(mptr, $mapseen_custom) &&
+                !(yield* strncmpi((s), (cptr.ldPtro(mptr, $mapseen_custom)), -1)))
             break;
 
     return mptr;
@@ -2835,7 +4298,14 @@ export function rm_mapseen(ledger_num) {
     let bpnext;
 
     for (mptr = cptr.ldPtr(svm); mptr; mprev = mptr, mptr = cptr.ldPtr(mptr))
-        if (((cptr.ldI32o2(svd, cptr.ldI16o(mptr, $mapseen_lev), $sizeof_dungeon, $dungeon_ledger_start) + cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel)) | 0) == ledger_num)
+        if (((cptr.ldI32o2(
+            svd,
+            cptr.ldI16o(mptr, $mapseen_lev),
+            $sizeof_dungeon,
+            $dungeon_ledger_start
+        ) +
+            cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel)) | 0) ==
+                ledger_num)
             break;
     if (!mptr)
         return;
@@ -2873,10 +4343,19 @@ function* save_mapseen(nhfp, mptr) {
     (yield* sfo_unsigned(nhfp, cptr.add(mptr, $mapseen_custom_lth), __s_mapseen_custom_lth));
 
     if (cptr.ldI32o(mptr, $mapseen_custom_lth)) {
-        (yield* sfo_char(nhfp, cptr.ldPtro(mptr, $mapseen_custom), __s_mapseen_custom, cptr.ldI32o(mptr, $mapseen_custom_lth) | 0));
+        (yield* sfo_char(
+            nhfp,
+            cptr.ldPtro(mptr, $mapseen_custom),
+            __s_mapseen_custom,
+            cptr.ldI32o(mptr, $mapseen_custom_lth) | 0
+        ));
     }
     for (i = 0; i < 82; ++i) {
-        (yield* sfo_mapseen_rooms(nhfp, cptr.add(cptr.add(mptr, $mapseen_msrooms), i, $sizeof_mapseen_rooms), __s_mapseen_msrooms));
+        (yield* sfo_mapseen_rooms(
+            nhfp,
+            cptr.add(cptr.add(mptr, $mapseen_msrooms), i, $sizeof_mapseen_rooms),
+            __s_mapseen_msrooms
+        ));
     }
     (yield* savecemetery(nhfp, cptr.add(mptr, $mapseen_final_resting_place)));
 }
@@ -2906,21 +4385,40 @@ function* load_mapseen(nhfp) {
 
     if (cptr.ldI32o(load, $mapseen_custom_lth)) {
         /* length doesn't include terminator (which isn't saved & restored) */
-        cptr.stPtro(load, $mapseen_custom, (yield* alloc((cptr.ldI32o(load, $mapseen_custom_lth) + 1) >>> 0)));
-        (yield* sfi_char(nhfp, cptr.ldPtro(load, $mapseen_custom), __s_mapseen_custom, cptr.ldI32o(load, $mapseen_custom_lth) | 0));
+        cptr.stPtro(
+            load,
+            $mapseen_custom,
+            (yield* alloc((cptr.ldI32o(load, $mapseen_custom_lth) + 1) >>> 0))
+        );
+        (yield* sfi_char(
+            nhfp,
+            cptr.ldPtro(load, $mapseen_custom),
+            __s_mapseen_custom,
+            cptr.ldI32o(load, $mapseen_custom_lth) | 0
+        ));
         cptr.st1o(cptr.ldPtro(load, $mapseen_custom), cptr.ldI32o(load, $mapseen_custom_lth), 0);
     } else {
         cptr.stPtro(load, $mapseen_custom, null);
     }
     for (i = 0; i < 82; ++i) {
-        (yield* sfi_mapseen_rooms(nhfp, cptr.add(cptr.add(load, $mapseen_msrooms), i, $sizeof_mapseen_rooms), __s_mapseen_msrooms));
+        (yield* sfi_mapseen_rooms(
+            nhfp,
+            cptr.add(cptr.add(load, $mapseen_msrooms), i, $sizeof_mapseen_rooms),
+            __s_mapseen_msrooms
+        ));
     }
     (yield* restcemetery(nhfp, cptr.add(load, $mapseen_final_resting_place)));
     return load;
 }
 
 /* for '#stats' wizard-mode command, to show memory used for #overview data */
-/** C ref: dungeon.c:2761 — @param {CInt} win @param {CPtr<char>} statsfmt @param {CPtr<long>} total_count @param {CPtr<long>} total_size */
+/**
+ * C ref: dungeon.c:2761
+ * @param {CInt} win
+ * @param {CPtr<char>} statsfmt
+ * @param {CPtr<long>} total_count
+ * @param {CPtr<long>} total_size
+ */
 export function* overview_stats(win, statsfmt, total_count, total_size) {
     let buf = new Uint8Array(256);
     let hdrbuf = new Uint8Array(128);
@@ -2960,8 +4458,14 @@ export function* overview_stats(win, statsfmt, total_count, total_size) {
         void cptr.sprintf(cptr.decay(buf), statsfmt, cptr.decay(hdrbuf), acount, asize);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     }
-    cptr.stI64(total_count, cptr.ldI64(total_count) + BigInt.asIntN(64, BigInt.asIntN(64, ocount + bcount) + acount));
-    cptr.stI64(total_size, cptr.ldI64(total_size) + BigInt.asIntN(64, BigInt.asIntN(64, osize + bsize) + asize));
+    cptr.stI64(
+        total_count,
+        cptr.ldI64(total_count) + BigInt.asIntN(64, BigInt.asIntN(64, ocount + bcount) + acount)
+    );
+    cptr.stI64(
+        total_size,
+        cptr.ldI64(total_size) + BigInt.asIntN(64, BigInt.asIntN(64, osize + bsize) + asize)
+    );
 }
 
 /* Remove all mapseen objects for a particular dnum.
@@ -2996,7 +4500,9 @@ export function* init_mapseen(lev) {
     void __builtin___memset_chk(init, 0, 816n, __builtin_object_size(init, 0));
     /* memset is fine for feature bits, flags, and rooms array;
        explicitly initialize pointers to null */
-    cptr.stPtr(init, null), cptr.stPtro(init, $mapseen_br, null), cptr.stPtro(init, $mapseen_custom, null);
+    cptr.stPtr(init, null),
+            cptr.stPtro(init, $mapseen_br, null),
+            cptr.stPtro(init, $mapseen_custom, null);
     cptr.stPtro(init, $mapseen_final_resting_place, null);
     /* svl.lastseentyp[][] is reused for each level, so get rid of
        previous level's data */
@@ -3007,7 +4513,10 @@ export function* init_mapseen(lev) {
 
     /* walk until we get to the place where we should insert init */
     for (mptr = cptr.ldPtr(svm), prev = null; mptr; prev = mptr, mptr = cptr.ldPtr(mptr)) {
-        if (cptr.ldI16o(mptr, $mapseen_lev) > cptr.ldI16o(init, $mapseen_lev) || (cptr.ldI16o(mptr, $mapseen_lev) == cptr.ldI16o(init, $mapseen_lev) && cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel) > cptr.ldI16o(init, $mapseen_lev + $d_level_dlevel)))
+        if (cptr.ldI16o(mptr, $mapseen_lev) > cptr.ldI16o(init, $mapseen_lev) ||
+                (cptr.ldI16o(mptr, $mapseen_lev) == cptr.ldI16o(init, $mapseen_lev) &&
+                    cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel) >
+                        cptr.ldI16o(init, $mapseen_lev + $d_level_dlevel)))
             break;
     }
     if (!prev) {
@@ -3027,7 +4536,8 @@ export function* init_mapseen(lev) {
 function interest_mapseen(mptr) {
     if (on_level(cptr.add(u, $you_uz), cptr.add(mptr, $mapseen_lev)))
         return 1;
-    if ((cptr.ldI32o(mptr, $mapseen_flags) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_forgot) & 1) | 0)
+    if ((cptr.ldI32o(mptr, $mapseen_flags) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_forgot) & 1) | 0)
         return 0;
     /* when in tutorial, show all tutorial levels visited whether interesting
        or not and don't show any other levels; when outside tutorial, don't
@@ -3039,35 +4549,97 @@ function interest_mapseen(mptr) {
             return 0;
     }
     /* level is of interest if it has an auto-generated annotation */
-    if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_oracle) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_bigroom) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_roguelevel) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_castle) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_valley) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_msanctum) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_vibrating_square) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_quest_summons) & 1) | 0 || (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_questing) & 1) | 0)
+    if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_oracle) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_bigroom) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_roguelevel) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_castle) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_valley) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_msanctum) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_vibrating_square) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_quest_summons) & 1) | 0 ||
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_questing) & 1) | 0)
         return 1;
     /* when in Sokoban, list all sokoban levels visited; when not in it,
        list any visited Sokoban level which remains unsolved (will usually
        only be furthest one reached, but it's possible to enter pits and
        climb out on the far side on the first Sokoban level; also, wizard
        mode overrides teleport restrictions) */
-    if ((cptr.ldI16((cptr.add(mptr, $mapseen_lev))) == sokoban_dnum()) && ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) || !(cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_sokosolved) & 1)))
+    if ((cptr.ldI16((cptr.add(mptr, $mapseen_lev))) == sokoban_dnum()) &&
+            ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) ||
+                !(cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_sokosolved) & 1)))
         return 1;
     /* when in the endgame, list all endgame levels visited, whether they
        have annotations or not, so that #overview doesn't become extremely
        sparse once the rest of the dungeon has been flagged as notreachable */
-    if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
-        return schar((cptr.ldI16((cptr.add(mptr, $mapseen_lev))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))));
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )))))
+        return schar((cptr.ldI16((cptr.add(mptr, $mapseen_lev))) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))));
     /* level is of interest if it has non-zero feature count or known bones
        or user annotation or known connection to another dungeon branch
        or is the furthest level reached in its branch */
-    return schar((((cptr.ldI32((cptr.add(mptr, $mapseen_feat))) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nsink) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nthrone) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_naltar) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ngrave) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ntree) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nshop) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ntemple) & 3) | 0) || (cptr.ldPtro(mptr, $mapseen_final_resting_place) && ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_knownbones) & 1) | 0 || wizard())) || cptr.ldPtro(mptr, $mapseen_custom) || cptr.ldPtro(mptr, $mapseen_br) || (cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel) == cptr.ldI16o2(svd, cptr.ldI16o(mptr, $mapseen_lev), $sizeof_dungeon, $dungeon_dunlev_ureached)) ? 1 : 0));
+    return schar((((cptr.ldI32((cptr.add(mptr, $mapseen_feat))) & 3) | 0 ||
+        (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nsink) & 3) | 0 ||
+        (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nthrone) & 3) | 0 ||
+        (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_naltar) & 3) | 0 ||
+        (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ngrave) & 3) | 0 ||
+        (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ntree) & 3) | 0 ||
+        (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nshop) & 3) | 0 ||
+        (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ntemple) & 3) | 0) ||
+        (cptr.ldPtro(mptr, $mapseen_final_resting_place) &&
+            ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_knownbones) & 1) | 0 ||
+                wizard())) ||
+        cptr.ldPtro(mptr, $mapseen_custom) ||
+        cptr.ldPtro(mptr, $mapseen_br) ||
+        (cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel) ==
+            cptr.ldI16o2(
+                svd,
+                cptr.ldI16o(mptr, $mapseen_lev),
+                $sizeof_dungeon,
+                $dungeon_dunlev_ureached
+            ))
+            ? 1
+            : 0));
 }
 
 /* update the lastseentyp at x,y */
 /** C ref: dungeon.c:2927 — @param {CInt} x @param {CInt} y */
 export function update_lastseentyp(x, y) {
     let mtmp;
-    let ltyp = cptr.ld1so3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ);
+    let ltyp = cptr.ld1so3(
+        svl,
+        x,
+        $sizeof_rm_x21,
+        y,
+        $sizeof_rm,
+        $instance_globals_saved_l_level + $rm_typ
+    );
 
     if (ltyp == NHC.DRAWBRIDGE_UP)
-        ltyp = db_under_typ((cptr.ldI32o3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_flags) & 31) | 0);
-    if ((mtmp = (cptr.ldPtro3(svl, x, 168, y, 8, $instance_globals_saved_l_level + $dlevel_t_monsters))) !== null && (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE && canseemon(mtmp))
+        ltyp = db_under_typ((cptr.ldI32o3(
+            svl,
+            x,
+            $sizeof_rm_x21,
+            y,
+            $sizeof_rm,
+            $instance_globals_saved_l_level + $rm_flags
+        ) & 31) | 0);
+    if ((mtmp = (cptr.ldPtro3(
+        svl,
+        x,
+        168,
+        y,
+        8,
+        $instance_globals_saved_l_level + $dlevel_t_monsters
+    ))) !== null &&
+            (cptr.ld1uo((mtmp), $monst_m_ap_type) & NHM.M_AP_TYPMASK) == NHC.M_AP_FURNITURE &&
+            canseemon(mtmp))
         ltyp = cmap_to_type(cptr.ldI32o(mtmp, $monst_mappearance) | 0);
     cptr.st1o3(svl, x, 21, y, 1, 0, schar(ltyp));
 }
@@ -3116,7 +4688,34 @@ function count_feat_lastseentyp(mptr, x, y) {
         /* get the altarmask for this location; might be a mimic */
         atmp = altarmask_at(x, y) >>> 0;
         /* convert to index: 0..3 */
-        atmp = ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))) && (cptr.ld1uo3(svl, x, $sizeof_rm_x21, y, $sizeof_rm, $instance_globals_saved_l_level + $rm_seenv) & 255) != 255) ? NHM.MSA_NONE : Amask2msa(atmp);
+        atmp = ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )
+            ))) &&
+            (cptr.ld1uo3(
+                svl,
+                x,
+                $sizeof_rm_x21,
+                y,
+                $sizeof_rm,
+                $instance_globals_saved_l_level + $rm_seenv
+            ) & 255) != 255)
+                ? NHM.MSA_NONE
+                : Amask2msa(atmp);
         if (!(cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3))
             cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_msalign, atmp);
         else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_msalign) & 3) != atmp)
@@ -3126,7 +4725,24 @@ function count_feat_lastseentyp(mptr, x, y) {
             cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_naltar, count >>> 0);
         break;
         case NHC.DOOR:
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))) {
+        if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+            )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                    )
+                )))) {
             let ty;
             let tx = (x - 4) | 0;
 
@@ -3141,7 +4757,16 @@ function count_feat_lastseentyp(mptr, x, y) {
              * both throne and door on the lower of the two rows.
              */
             for (ty = (y - 1) | 0; ty <= ((y + 1) | 0); ++ty)
-                if (isok(i16(tx), i16(ty)) && ((cptr.ld1so3(svl, tx, $sizeof_rm_x21, ty, $sizeof_rm, $instance_globals_saved_l_level + $rm_typ)) == NHC.THRONE)) {
+                if (isok(i16(tx), i16(ty)) &&
+                        ((cptr.ld1so3(
+                            svl,
+                            tx,
+                            $sizeof_rm_x21,
+                            ty,
+                            $sizeof_rm,
+                            $instance_globals_saved_l_level + $rm_typ
+                        )) ==
+                            NHC.THRONE)) {
                     cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_ludios, 1);
                     break;
                 }
@@ -3153,8 +4778,27 @@ function count_feat_lastseentyp(mptr, x, y) {
         ;
         case NHC.DBWALL:
         case NHC.DRAWBRIDGE_DOWN:
-        if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level)))))
-            cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castle, 1), cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castletune, 1);
+        if ((((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_stronghold_level
+            )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology +
+                            $dgn_topology_d_stronghold_level
+                    )
+                ))))
+            cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castle, 1),
+                    cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castletune, 1);
         break;
         default:
         break;
@@ -3187,7 +4831,12 @@ export function* recalc_mapseen() {
         return;
 
     /* reset all features; mptr->feat.* = 0; */
-    void __builtin___memset_chk(cptr.add(mptr, $mapseen_feat), 0, 52n, __builtin_object_size(cptr.add(mptr, $mapseen_feat), 0));
+    void __builtin___memset_chk(
+        cptr.add(mptr, $mapseen_feat),
+        0,
+        52n,
+        __builtin_object_size(cptr.add(mptr, $mapseen_feat), 0)
+    );
     /* reset most flags; some level-specific ones are left as-is */
     if ((cptr.ldI32o(mptr, $mapseen_flags) & 1)) {
         cptr.stI32o(mptr, $mapseen_flags, 0);  /* reached it; Eye of the Aethiopica? */
@@ -3205,27 +4854,107 @@ export function* recalc_mapseen() {
         }
     }
     cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_knownbones, 0);
-    cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_sokosolved, ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) && !Sokoban() ? 1 : 0) >>> 0);
+    cptr.stI32o(
+        mptr,
+        $mapseen_flags + $mapseen_flags_sokosolved,
+        ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum()) && !Sokoban() ? 1 : 0) >>> 0
+    );
     /* mptr->flags.bigroom retains previous value when hero can't see */
     if (!Blind())
-        cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_bigroom, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level)) ? 1 : 0)) >>> 0);
+        cptr.stI32o(
+            mptr,
+            $mapseen_flags + $mapseen_flags_bigroom,
+            (((cptr.ldI16o(
+                (cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level
+                )),
+                $d_level_dlevel
+            ) ||
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level
+                )))) &&
+                on_level(
+                    cptr.add(u, $you_uz),
+                    cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_bigroom_level
+                    )
+                )
+                ? 1
+                : 0)) >>> 0
+        );
     else if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_forgot) & 1))
         cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_bigroom, 0);
-    cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_roguelevel, (((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level)) ? 1 : 0)) >>> 0);
+    cptr.stI32o(
+        mptr,
+        $mapseen_flags + $mapseen_flags_roguelevel,
+        (((cptr.ldI16o(
+            (cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+            )),
+            $d_level_dlevel
+        ) ||
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+            )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_rogue_level
+                )
+            )
+            ? 1
+            : 0)) >>> 0
+    );
     cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_oracle, 0);  /* recalculated during room traversal below */
     cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_castletune, 0);
     /* flags.castle retains previous value */
     cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_forgot, 0);
     /* flags.quest_summons disabled once quest finished */
-    cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_quest_summons, ((yield* at_dgn_entrance(__s_the_quest)) && (cptr.ldI32o(u, $you_uevent + $u_event_qcalled) & 1) | 0 && !((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 || (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 || (cptr.ldI32o(svq, $q_score_leader_is_dead) & 1) | 0) ? 1 : 0) >>> 0);
-    cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_questing, (on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)) && (cptr.ldI32o(svq, $q_score_got_quest) & 1) | 0 ? 1 : 0) >>> 0);
+    cptr.stI32o(
+        mptr,
+        $mapseen_flags + $mapseen_flags_quest_summons,
+        ((yield* at_dgn_entrance(__s_the_quest)) &&
+            (cptr.ldI32o(u, $you_uevent + $u_event_qcalled) & 1) | 0 &&
+            !((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1) | 0 ||
+                (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ||
+                (cptr.ldI32o(svq, $q_score_leader_is_dead) & 1) | 0)
+            ? 1
+            : 0) >>> 0
+    );
+    cptr.stI32o(
+        mptr,
+        $mapseen_flags + $mapseen_flags_questing,
+        (on_level(
+            cptr.add(u, $you_uz),
+            cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)
+        ) &&
+            (cptr.ldI32o(svq, $q_score_got_quest) & 1) | 0
+            ? 1
+            : 0) >>> 0
+    );
     /* flags.msanctum, .valley, and .vibrating_square handled below */
 
     /* track rooms the hero is in */
     for (i = 0; (uroom = cptr.ld1so2(u, i, 1, $you_urooms)) != 0; ++i) {
         ridx = (uroom - NHM.ROOMOFFSET) >>> 0;
         cptr.stI32o2(mptr, ridx, $sizeof_mapseen_rooms, $mapseen_msrooms, 1);
-        cptr.stI32o2(mptr, ridx, $sizeof_mapseen_rooms, $mapseen_msrooms + $mapseen_rooms_untended, ((cptr.ld1so2(svr, ridx, $sizeof_mkroom, $mkroom_rtype) >= NHC.SHOPBASE) ? (!(mtmp = (yield* shop_keeper(uroom))) || !(yield* inhishop(mtmp)) ? 1 : 0) : ((cptr.ld1so2(svr, ridx, $sizeof_mkroom, $mkroom_rtype) == NHC.TEMPLE) ? (!(mtmp = (yield* findpriest(uroom))) || !(yield* inhistemple(mtmp)) ? 1 : 0) : 0)) >>> 0);
+        cptr.stI32o2(
+            mptr,
+            ridx,
+            $sizeof_mapseen_rooms,
+            $mapseen_msrooms + $mapseen_rooms_untended,
+            ((cptr.ld1so2(svr, ridx, $sizeof_mkroom, $mkroom_rtype) >= NHC.SHOPBASE)
+                ? (!(mtmp = (yield* shop_keeper(uroom))) || !(yield* inhishop(mtmp)) ? 1 : 0)
+                : ((cptr.ld1so2(svr, ridx, $sizeof_mkroom, $mkroom_rtype) == NHC.TEMPLE)
+                    ? (!(mtmp = (yield* findpriest(uroom))) || !(yield* inhistemple(mtmp)) ? 1 : 0)
+                    : 0)) >>> 0
+        );
     }
 
     /* recalculate room knowledge: for now, just shops and temples
@@ -3234,18 +4963,34 @@ export function* recalc_mapseen() {
     for (i = 0; i < Number(BigInt.asIntN(32, (656n / 8n))) >>> 0; ++i) {
         if ((cptr.ldI32o2(mptr, i, $sizeof_mapseen_rooms, $mapseen_msrooms) & 1)) {
             if (cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_rtype) >= NHC.SHOPBASE) {
-                if ((cptr.ldI32o2(mptr, i, $sizeof_mapseen_rooms, $mapseen_msrooms + $mapseen_rooms_untended) & 1))
-                    cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype, (((NHC.SHOPBASE - 1) | 0) >>> 0));
+                if ((cptr.ldI32o2(
+                    mptr,
+                    i,
+                    $sizeof_mapseen_rooms,
+                    $mapseen_msrooms + $mapseen_rooms_untended
+                ) & 1))
+                    cptr.stI32o(
+                        mptr,
+                        $mapseen_feat + $mapseen_feat_shoptype,
+                        (((NHC.SHOPBASE - 1) | 0) >>> 0)
+                    );
                 else if (!(cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3))
-                    cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype, cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_rtype));
-                else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype) & 31) != cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_rtype))
+                    cptr.stI32o(
+                        mptr,
+                        $mapseen_feat + $mapseen_feat_shoptype,
+                        cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_rtype)
+                    );
+                else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype) & 31) !=
+                        cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_rtype))
                     cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype, 0);
-                count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3) | 0) + 1) | 0;
+                count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3) | 0) + 1) |
+                        0;
                 if (count <= 3)
                     cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_nshop, count >>> 0);
             } else if (cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_rtype) == NHC.TEMPLE) {
                 /* altar and temple alignment handled below */
-                count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3) | 0) + 1) | 0;
+                count = (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3) | 0) + 1) |
+                        0;
                 if (count <= 3)
                     cptr.stI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple, count >>> 0);
             } else if (cptr.ld1so2(svr, i, $sizeof_mkroom, $mkroom_orig_rtype) == NHC.DELPHI) {
@@ -3286,7 +5031,21 @@ export function* recalc_mapseen() {
        but it is possible for the priest to be killed prior to that; we
        assume that both of those levels only contain one altar, so add the
        annotation if that altar has been mapped (seen or magic mapping) */
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level))))) {
+    if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level
+                )
+            )))) {
         /* don't clear valley if naltar==0; maybe altar got destroyed? */
         if (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) > 0)
             cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_valley, 1);
@@ -3294,7 +5053,21 @@ export function* recalc_mapseen() {
         /* Sanctum and Gateway-to-Sanctum are mutually exclusive automatic
            annotations but handling that is tricky because they're stored
            with data for different levels */
-    } else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level))))) {
+    } else if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
+                )
+            )))) {
         if (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) > 0)
             cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_msanctum, 1);
 
@@ -3302,7 +5075,11 @@ export function* recalc_mapseen() {
             let invocat_lvl = cptr.alloc(4);
 
             cptr.memcpy(invocat_lvl, cptr.add(u, $you_uz), 4);
-            cptr.stI16o(invocat_lvl, $d_level_dlevel, cptr.ldI16o(invocat_lvl, $d_level_dlevel) - 1);
+            cptr.stI16o(
+                invocat_lvl,
+                $d_level_dlevel,
+                cptr.ldI16o(invocat_lvl, $d_level_dlevel) - 1
+            );
             if ((oth_mptr = find_mapseen(invocat_lvl)) !== null)
                 cptr.stI32o(oth_mptr, $mapseen_flags + $mapseen_flags_vibrating_square, 0);
         }
@@ -3315,10 +5092,23 @@ export function* recalc_mapseen() {
         for (t = cptr.ldPtr(gf); t; t = cptr.ldPtr(t))
             if (((cptr.ldI32o(t, $trap_ttyp) & 31) | 0) == NHC.VIBRATING_SQUARE)
                 break;
-        cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_vibrating_square, (t ? (cptr.ldI32o(t, $trap_tseen) & 1) | 0 : ((oth_mptr = find_mapseen(cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level))) === null || !(cptr.ldI32o(oth_mptr, $mapseen_flags + $mapseen_flags_msanctum) & 1) ? 1 : 0)) >>> 0);
+        cptr.stI32o(
+            mptr,
+            $mapseen_flags + $mapseen_flags_vibrating_square,
+            (t
+                ? (cptr.ldI32o(t, $trap_tseen) & 1) | 0
+                : ((oth_mptr = find_mapseen(cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
+                ))) === null ||
+                    !(cptr.ldI32o(oth_mptr, $mapseen_flags + $mapseen_flags_msanctum) & 1)
+                    ? 1
+                    : 0)) >>> 0
+        );
     }
 
-    if (cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_bonesinfo) && !cptr.ldPtro(mptr, $mapseen_final_resting_place)) {
+    if (cptr.ldPtro(svl, $instance_globals_saved_l_level + $dlevel_t_bonesinfo) &&
+            !cptr.ldPtro(mptr, $mapseen_final_resting_place)) {
         /* clone the bonesinfo so we aren't dependent upon this
            level being in memory */
         bonesaddr = cptr.add(mptr, $mapseen_final_resting_place);
@@ -3335,7 +5125,14 @@ export function* recalc_mapseen() {
        guarantee of either a grave or a ghost, so we go by whether the
        current hero has seen the map location where each old one died */
     for (bp = cptr.ldPtro(mptr, $mapseen_final_resting_place); bp; bp = cptr.ldPtr(bp))
-        if (cptr.ld1so3(svl, cptr.ldI16o(bp, $cemetery_frpx), 21, cptr.ldI16o(bp, $cemetery_frpy), 1, 0)) {
+        if (cptr.ld1so3(
+            svl,
+            cptr.ldI16o(bp, $cemetery_frpx),
+            21,
+            cptr.ldI16o(bp, $cemetery_frpy),
+            1,
+            0
+        )) {
             cptr.st1o(bp, $cemetery_bonesknown, 1);
             cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_knownbones, 1);
         }
@@ -3350,9 +5147,37 @@ export function mapseen_temple(priest) {
 
     if (!mptr)
         return;
-    if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)))))
+    if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_valley_level
+                )
+            ))))
         cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_valley, 1);
-    else if ((((cptr.ldI16o((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)), $d_level_dlevel) || cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))) && on_level(cptr.add(u, $you_uz), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)))))
+    else if ((((cptr.ldI16o(
+        (cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level)),
+        $d_level_dlevel
+    ) ||
+        cptr.ldI16((cptr.add(
+            svd,
+            $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
+        )))) &&
+            on_level(
+                cptr.add(u, $you_uz),
+                cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_sanctum_level
+                )
+            ))))
         cptr.stI32o(mptr, $mapseen_flags + $mapseen_flags_msanctum, 1);
 }
 
@@ -3392,10 +5217,19 @@ export function* show_overview(why, reason) {
     (yield* Y.icall(start_menu()(win, 0n)));
     /* show the endgame levels before the rest of the dungeon,
        so that the Planes (dnum 5-ish) come out above main dungeon (dnum 0) */
-    if ((cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
+    if ((cptr.ldI16((cptr.add(u, $you_uz))) ==
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )))))
         (yield* traverse_mapseenchn(1, win, why, reason, lastdun));
     /* if game is over or we're not in the endgame yet, show the dungeon */
-    if (why > 0 || !(cptr.ldI16((cptr.add(u, $you_uz))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
+    if (why > 0 ||
+            !(cptr.ldI16((cptr.add(u, $you_uz))) ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                )))))
         (yield* traverse_mapseenchn(0, win, why, reason, lastdun));
     (yield* Y.icall(end_menu()(win, null)));
     n = (yield* select_menu(win, (why != -1) ? NHM.PICK_NONE : NHM.PICK_ONE, selected));
@@ -3413,13 +5247,25 @@ export function* show_overview(why, reason) {
 }
 
 /* display endgame levels or non-endgame levels, not both */
-/** C ref: dungeon.c:3344 — @param {CInt} viewendgame @param {CInt} win @param {CInt} why @param {CInt} reason @param {CPtr<int>} lastdun_p */
+/**
+ * C ref: dungeon.c:3344
+ * @param {CInt} viewendgame
+ * @param {CInt} win
+ * @param {CInt} why
+ * @param {CInt} reason
+ * @param {CPtr<int>} lastdun_p
+ */
 function* traverse_mapseenchn(viewendgame, win, why, reason, lastdun_p) {
     let mptr;
     let showheader;
 
     for (mptr = cptr.ldPtr(svm); mptr; mptr = cptr.ldPtr(mptr)) {
-        if (viewendgame ^ (cptr.ldI16((cptr.add(mptr, $mapseen_lev))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
+        if (viewendgame ^
+                (cptr.ldI16((cptr.add(mptr, $mapseen_lev))) ==
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )))))
             continue;
 
         /* only print out info for a level or a dungeon if it's of interest */
@@ -3452,7 +5298,10 @@ function seen_string(x, obj) {
 /** C ref: dungeon.c:3388 — @param {CPtr<branch>} br @returns {CPtr<char>} */
 function br_string2(br) {
     /* Special case: quest portal says closed if kicked from quest */
-    let closed_portal = schar((cptr.ldI16o(br, $branch_end2) == quest_dnum() && (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0 ? 1 : 0));
+    let closed_portal = schar((cptr.ldI16o(br, $branch_end2) == quest_dnum() &&
+        (cptr.ldI32o(u, $you_uevent + $u_event_qexpelled) & 1) | 0
+            ? 1
+            : 0));
 
     switch (cptr.ldI32o(br, $branch_type)) {
         case NHM.BR_PORTAL:
@@ -3516,29 +5365,53 @@ function shop_string(rtype) {
 
 /* if player knows about the mastermind tune, append it to Castle annotation;
    if drawbridge has been destroyed, flags.castletune will be zero */
-/** C ref: dungeon.c:3460 — @param {CPtr<mapseen>} mptr @param {CPtr<char>} outbuf @param {CLongLong} bsz @returns {CPtr<char>} */
+/**
+ * C ref: dungeon.c:3460
+ * @param {CPtr<mapseen>} mptr
+ * @param {CPtr<char>} outbuf
+ * @param {CLongLong} bsz
+ * @returns {CPtr<char>}
+ */
 function tunesuffix(mptr, outbuf, bsz) {
     cptr.st1(outbuf, 0);
-    if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_castletune) & 1) | 0 && (cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) {
+    if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_castletune) & 1) | 0 &&
+            (cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) {
         let tmp = new Uint8Array(256);
 
         if (((cptr.ldI32o(u, $you_uevent + $u_event_uheard_tune) & 3) | 0) == 2)
             void cptr.sprintf(cptr.decay(tmp), __s_notes_s, svt);
         else
             void cptr.strcpy(cptr.decay(tmp), __s_5_note_tune);
-        nh_snprintf(__s_tunesuffix, 3473, outbuf, bsz, __s_play_s_to_open_or_close_drawbridge, cptr.decay(tmp));
+        nh_snprintf(
+            __s_tunesuffix,
+            3473,
+            outbuf,
+            bsz,
+            __s_play_s_to_open_or_close_drawbridge,
+            cptr.decay(tmp)
+        );
     }
     return outbuf;
 }
 
-/** C ref: dungeon.c:3516 — @param {CInt} win @param {CPtr<mapseen>} mptr @param {CInt} final @param {CInt} how @param {CInt} printdun */
+/**
+ * C ref: dungeon.c:3516
+ * @param {CInt} win
+ * @param {CPtr<mapseen>} mptr
+ * @param {CInt} final
+ * @param {CInt} how
+ * @param {CInt} printdun
+ */
 function* print_mapseen(win, mptr, final, how, printdun) {
     let buf = new Uint8Array(256);
     let tmpbuf = new Uint8Array(256);
     let i;
     let depthstart;
     let dnum;
-    let died_here = schar((final == 2 && on_level(cptr.add(u, $you_uz), cptr.add(mptr, $mapseen_lev)) ? 1 : 0));
+    let died_here = schar((final == 2 &&
+        on_level(cptr.add(u, $you_uz), cptr.add(mptr, $mapseen_lev))
+            ? 1
+            : 0));
     let any = cptr.alloc(8);
 
     /* Damnable special cases */
@@ -3546,26 +5419,75 @@ function* print_mapseen(win, mptr, final, how, printdun) {
      * other text.
      */
     dnum = cptr.ldI16o(mptr, $mapseen_lev);
-    if (dnum == quest_dnum() || dnum == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level))))
+    if (dnum == quest_dnum() ||
+            dnum ==
+                cptr.ldI16((cptr.add(
+                    svd,
+                    $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_knox_level
+                ))))
         depthstart = 1;
     else
         depthstart = cptr.ldI32o2(svd, dnum, $sizeof_dungeon, $dungeon_depth_start);
 
     if (printdun) {
-        if (cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_dunlev_ureached) == cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_entry_lev) || (cptr.ldI16((cptr.add(mptr, $mapseen_lev))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
-            void cptr.sprintf(cptr.decay(buf), __s_pct_s_colon, cptr.add(svd, dnum, $sizeof_dungeon));
+        if (cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_dunlev_ureached) ==
+            cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_entry_lev) ||
+                (cptr.ldI16((cptr.add(mptr, $mapseen_lev))) ==
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )))))
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_pct_s_colon,
+                cptr.add(svd, dnum, $sizeof_dungeon)
+            );
         else if ((yield* builds_up(cptr.add(mptr, $mapseen_lev))))
-            void cptr.sprintf(cptr.decay(buf), __s_s_levels_d_up_to_d, cptr.add(svd, dnum, $sizeof_dungeon), (((depthstart + cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_entry_lev)) | 0) - 1) | 0, (((depthstart + cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_dunlev_ureached)) | 0) - 1) | 0);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_s_levels_d_up_to_d,
+                cptr.add(svd, dnum, $sizeof_dungeon),
+                (((depthstart +
+                    cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_entry_lev)) | 0) - 1) | 0,
+                (((depthstart +
+                    cptr.ldI16o2(
+                        svd,
+                        dnum,
+                        $sizeof_dungeon,
+                        $dungeon_dunlev_ureached
+                    )) | 0) - 1) | 0
+            );
         else
-            void cptr.sprintf(cptr.decay(buf), __s_s_levels_d_to_d, cptr.add(svd, dnum, $sizeof_dungeon), depthstart, (((depthstart + cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_dunlev_ureached)) | 0) - 1) | 0);
+            void cptr.sprintf(
+                cptr.decay(buf),
+                __s_s_levels_d_to_d,
+                cptr.add(svd, dnum, $sizeof_dungeon),
+                depthstart,
+                (((depthstart +
+                    cptr.ldI16o2(
+                        svd,
+                        dnum,
+                        $sizeof_dungeon,
+                        $dungeon_dunlev_ureached
+                    )) | 0) - 1) | 0
+            );
 
         (yield* add_menu_heading(win, cptr.decay(buf)));
     }
 
     /* calculate level number */
     i = (((depthstart + cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel)) | 0) - 1) | 0;
-    if ((cptr.ldI16((cptr.add(mptr, $mapseen_lev))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
-        void cptr.sprintf(cptr.decay(buf), __s_s_s__2, (final != -1) ? __s_sp3 : __s_empty, endgamelevelname(cptr.decay(tmpbuf), i));
+    if ((cptr.ldI16((cptr.add(mptr, $mapseen_lev))) ==
+            cptr.ldI16((cptr.add(
+                svd,
+                $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+            )))))
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s__2,
+            (final != -1) ? __s_sp3 : __s_empty,
+            endgamelevelname(cptr.decay(tmpbuf), i)
+        );
     else
         void cptr.sprintf(cptr.decay(buf), __s_slevel_d, (final != -1) ? __s_sp3 : __s_empty, i);
 
@@ -3574,23 +5496,54 @@ function* print_mapseen(win, mptr, final, how, printdun) {
         let slev;
 
         if ((slev = Is_special(cptr.add(mptr, $mapseen_lev))) !== null)
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_lbrack_pct_s_rbrack, cptr.add(slev, $s_level_proto));
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_sp_lbrack_pct_s_rbrack,
+                cptr.add(slev, $s_level_proto)
+            );
     }
     /* [perhaps print custom annotation on its own line when it's long] */
     if (cptr.ldPtro(mptr, $mapseen_custom))
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_sp_quot_pct_s_quot, cptr.ldPtro(mptr, $mapseen_custom));
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_sp_quot_pct_s_quot,
+            cptr.ldPtro(mptr, $mapseen_custom)
+        );
     if (on_level(cptr.add(u, $you_uz), cptr.add(mptr, $mapseen_lev)))
-        void cptr.sprintf(eos(cptr.decay(buf)), __s_you_s_here, (final <= 0 || (final == 1 && how == NHC.ASCENDED)) ? __s_are : ((final == 1 && how == NHC.ESCAPED) ? __s_left_from : __s_were));
+        void cptr.sprintf(
+            eos(cptr.decay(buf)),
+            __s_you_s_here,
+            (final <= 0 || (final == 1 && how == NHC.ASCENDED))
+                ? __s_are
+                : ((final == 1 && how == NHC.ESCAPED) ? __s_left_from : __s_were)
+        );
 
     cptr.memcpy(any, cptr.add(cg, $const_globals_zeroany), 8);
     if (final == -1)
         cptr.stI32(any, (ledger_no(cptr.add(mptr, $mapseen_lev)) + 1) | 0);
-    (yield* add_menu(win, nul_glyphinfo.v, any, 0, 0, NHM.ATR_NONE, NHM.NO_COLOR, cptr.decay(buf), NHM.MENU_ITEMFLAGS_NONE));
+    (yield* add_menu(
+        win,
+        nul_glyphinfo.v,
+        any,
+        0,
+        0,
+        NHM.ATR_NONE,
+        NHM.NO_COLOR,
+        cptr.decay(buf),
+        NHM.MENU_ITEMFLAGS_NONE
+    ));
 
     if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_forgot) & 1))
         return;
 
-    if (((cptr.ldI32((cptr.add(mptr, $mapseen_feat))) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nsink) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nthrone) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_naltar) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ngrave) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ntree) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nshop) & 3) | 0 || (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ntemple) & 3) | 0)) {
+    if (((cptr.ldI32((cptr.add(mptr, $mapseen_feat))) & 3) | 0 ||
+            (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nsink) & 3) | 0 ||
+            (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nthrone) & 3) | 0 ||
+            (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_naltar) & 3) | 0 ||
+            (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ngrave) & 3) | 0 ||
+            (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ntree) & 3) | 0 ||
+            (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_nshop) & 3) | 0 ||
+            (cptr.ldI32o((cptr.add(mptr, $mapseen_feat)), $mapseen_feat_ntemple) & 3) | 0)) {
         cptr.st1o(cptr.decay(buf), 0, 0, 1);
 
         i = 0;  /* interest counter */
@@ -3601,31 +5554,118 @@ function* print_mapseen(win, mptr, final, how, printdun) {
             if (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3) | 0) > 1)
                 {
                     if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3))
-                        void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3))), (__s_shop__2)), (__s_shop__2), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                        void cptr.sprintf(
+                            eos(cptr.decay(buf)),
+                            __s_s_s_s_s,
+                            (i++ > 0 ? __s_comma_sp : __s_sp6),
+                            seen_string(
+                                i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nshop) & 3))),
+                                (__s_shop__2)
+                            ),
+                            (__s_shop__2),
+                            (((((cptr.ldI32o(
+                                mptr,
+                                $mapseen_feat + $mapseen_feat_nshop
+                            ) & 3)) | 0) == 1)
+                                ? __s_empty
+                                : __s_s)
+                        );
                 }
             else
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), (yield* an(shop_string((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_shoptype) & 31) | 0))));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_s_s,
+                    (i++ > 0 ? __s_comma_sp : __s_sp6),
+                    (yield* an(shop_string((cptr.ldI32o(
+                        mptr,
+                        $mapseen_feat + $mapseen_feat_shoptype
+                    ) & 31) | 0)))
+                );
         }
-        if (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) > 0 || ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3) | 0) > 0) {
+        if (((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) > 0 ||
+                ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3) | 0) > 0) {
             let atmp;
             {
-                if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3) | 0 && (cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) {
+                if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3) | 0 &&
+                        (cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3) | 0) {
 
                     /* being aware of a temple doesn't guarantee being aware of its
                        altar (via entrance message when entering while blinded, or
                        possibly it being out of view in an irregularly shaped room);
                        FIXME: if all temples present have been desecrated, we ought
                        to say so */
-                    void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s_and_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3))), (__s_temple)), (__s_temple), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3)) | 0) == 1) ? __s_empty : __s_s), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3))), (__s_altar)), (__s_altar), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                    void cptr.sprintf(
+                        eos(cptr.decay(buf)),
+                        __s_s_s_s_s_and_s_s_s,
+                        (i++ > 0 ? __s_comma_sp : __s_sp6),
+                        seen_string(
+                            i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3))),
+                            (__s_temple)
+                        ),
+                        (__s_temple),
+                        (((((cptr.ldI32o(
+                            mptr,
+                            $mapseen_feat + $mapseen_feat_ntemple
+                        ) & 3)) | 0) == 1)
+                            ? __s_empty
+                            : __s_s),
+                        seen_string(
+                            i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3))),
+                            (__s_altar)
+                        ),
+                        (__s_altar),
+                        (((((cptr.ldI32o(
+                            mptr,
+                            $mapseen_feat + $mapseen_feat_naltar
+                        ) & 3)) | 0) == 1)
+                            ? __s_empty
+                            : __s_s)
+                    );
                 } else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3)) {
                     {
                         if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3))
-                            void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3))), (__s_temple)), (__s_temple), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntemple) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                            void cptr.sprintf(
+                                eos(cptr.decay(buf)),
+                                __s_s_s_s_s,
+                                (i++ > 0 ? __s_comma_sp : __s_sp6),
+                                seen_string(
+                                    i16(((cptr.ldI32o(
+                                        mptr,
+                                        $mapseen_feat + $mapseen_feat_ntemple
+                                    ) & 3))),
+                                    (__s_temple)
+                                ),
+                                (__s_temple),
+                                (((((cptr.ldI32o(
+                                    mptr,
+                                    $mapseen_feat + $mapseen_feat_ntemple
+                                ) & 3)) | 0) == 1)
+                                    ? __s_empty
+                                    : __s_s)
+                            );
                     }
                 } else if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3)) {
                     {
                         if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3))
-                            void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3))), (__s_altar)), (__s_altar), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_naltar) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                            void cptr.sprintf(
+                                eos(cptr.decay(buf)),
+                                __s_s_s_s_s,
+                                (i++ > 0 ? __s_comma_sp : __s_sp6),
+                                seen_string(
+                                    i16(((cptr.ldI32o(
+                                        mptr,
+                                        $mapseen_feat + $mapseen_feat_naltar
+                                    ) & 3))),
+                                    (__s_altar)
+                                ),
+                                (__s_altar),
+                                (((((cptr.ldI32o(
+                                    mptr,
+                                    $mapseen_feat + $mapseen_feat_naltar
+                                ) & 3)) | 0) == 1)
+                                    ? __s_empty
+                                    : __s_s)
+                            );
                     }
                 }
             }
@@ -3633,28 +5673,92 @@ function* print_mapseen(win, mptr, final, how, printdun) {
             /* only print out altar's god if they are all to your god */
             atmp = (cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_msalign) & 3);  /*    0,  1,  2,  3 */
             atmp = Msa2amask(atmp);  /*    0,  1,  2,  4 */
-            if ((schar((((((atmp) & NHM.AM_MASK) >>> 0) == 0) ? -128 : (((((atmp) & NHM.AM_MASK) >>> 0) == NHM.AM_LAWFUL) ? NHM.A_LAWFUL : (((((atmp) & NHM.AM_MASK) >>> 0) | 0) - 2) | 0)))) == cptr.ld1so(u, $you_ualign))
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_to_s, (yield* align_gname(cptr.ld1so(u, $you_ualign))));
+            if ((schar((((((atmp) & NHM.AM_MASK) >>> 0) == 0)
+                ? -128
+                : (((((atmp) & NHM.AM_MASK) >>> 0) == NHM.AM_LAWFUL)
+                    ? NHM.A_LAWFUL
+                    : (((((atmp) & NHM.AM_MASK) >>> 0) | 0) - 2) | 0)))) ==
+                    cptr.ld1so(u, $you_ualign))
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_to_s,
+                    (yield* align_gname(cptr.ld1so(u, $you_ualign)))
+                );
         }
         {
             if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone) & 3))
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone) & 3))), (__s_throne)), (__s_throne), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_s_s_s_s,
+                    (i++ > 0 ? __s_comma_sp : __s_sp6),
+                    seen_string(
+                        i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone) & 3))),
+                        (__s_throne)
+                    ),
+                    (__s_throne),
+                    (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nthrone) & 3)) | 0) == 1)
+                        ? __s_empty
+                        : __s_s)
+                );
         }
         {
             if ((cptr.ldI32o(mptr, $mapseen_feat) & 3))
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat) & 3))), (__s_fountain)), (__s_fountain), (((((cptr.ldI32o(mptr, $mapseen_feat) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_s_s_s_s,
+                    (i++ > 0 ? __s_comma_sp : __s_sp6),
+                    seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat) & 3))), (__s_fountain)),
+                    (__s_fountain),
+                    (((((cptr.ldI32o(mptr, $mapseen_feat) & 3)) | 0) == 1) ? __s_empty : __s_s)
+                );
         }
         {
             if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nsink) & 3))
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nsink) & 3))), (__s_sink)), (__s_sink), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nsink) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_s_s_s_s,
+                    (i++ > 0 ? __s_comma_sp : __s_sp6),
+                    seen_string(
+                        i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nsink) & 3))),
+                        (__s_sink)
+                    ),
+                    (__s_sink),
+                    (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_nsink) & 3)) | 0) == 1)
+                        ? __s_empty
+                        : __s_s)
+                );
         }
         {
             if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave) & 3))
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave) & 3))), (__s_grave)), (__s_grave), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_s_s_s_s,
+                    (i++ > 0 ? __s_comma_sp : __s_sp6),
+                    seen_string(
+                        i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave) & 3))),
+                        (__s_grave)
+                    ),
+                    (__s_grave),
+                    (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ngrave) & 3)) | 0) == 1)
+                        ? __s_empty
+                        : __s_s)
+                );
         }
         {
             if ((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntree) & 3))
-                void cptr.sprintf(eos(cptr.decay(buf)), __s_s_s_s_s, (i++ > 0 ? __s_comma_sp : __s_sp6), seen_string(i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntree) & 3))), (__s_tree)), (__s_tree), (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntree) & 3)) | 0) == 1) ? __s_empty : __s_s));
+                void cptr.sprintf(
+                    eos(cptr.decay(buf)),
+                    __s_s_s_s_s,
+                    (i++ > 0 ? __s_comma_sp : __s_sp6),
+                    seen_string(
+                        i16(((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntree) & 3))),
+                        (__s_tree)
+                    ),
+                    (__s_tree),
+                    (((((cptr.ldI32o(mptr, $mapseen_feat + $mapseen_feat_ntree) & 3)) | 0) == 1)
+                        ? __s_empty
+                        : __s_s)
+                );
         }
         /* capitalize afterwards */
         i = Number(BigInt.asIntN(32, cptr.strlen(__s_sp6)));
@@ -3669,13 +5773,28 @@ function* print_mapseen(win, mptr, final, how, printdun) {
     if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_oracle) & 1)) {
         void cptr.sprintf(cptr.decay(buf), __s_soracle_of_delphi, __s_sp6);
     } else if ((cptr.ldI16((cptr.add(mptr, $mapseen_lev))) == sokoban_dnum())) {
-        void cptr.sprintf(cptr.decay(buf), __s_s_s__3, __s_sp6, (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_sokosolved) & 1) | 0 ? __s_solved : __s_unsolved);
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s__3,
+            __s_sp6,
+            (cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_sokosolved) & 1) | 0
+                ? __s_solved
+                : __s_unsolved
+        );
     } else if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_bigroom) & 1)) {
         void cptr.sprintf(cptr.decay(buf), __s_sa_very_big_room, __s_sp6);
     } else if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_roguelevel) & 1)) {
         void cptr.sprintf(cptr.decay(buf), __s_sa_primitive_area, __s_sp6);
-    } else if (on_level(cptr.add(mptr, $mapseen_lev), cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level))) {
-        void cptr.sprintf(cptr.decay(buf), __s_shome_s, __s_sp6, (cptr.ldI32o(mptr, $mapseen_flags) & 1) | 0 ? __s_no_way_back : __s_empty);
+    } else if (on_level(
+        cptr.add(mptr, $mapseen_lev),
+        cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_qstart_level)
+    )) {
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_shome_s,
+            __s_sp6,
+            (cptr.ldI32o(mptr, $mapseen_flags) & 1) | 0 ? __s_no_way_back : __s_empty
+        );
         if ((cptr.ldI32o(u, $you_uevent + $u_event_qcompleted) & 1))
             void cptr.sprintf(cptr.decay(buf), __s_scompleted_quest_for_s, __s_sp6, ldrname());
         else if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_questing) & 1))
@@ -3686,7 +5805,15 @@ function* print_mapseen(win, mptr, final, how, printdun) {
            indicates that the fort's entrance has been seen (or mapped) */
         void cptr.sprintf(cptr.decay(buf), __s_sfort_ludios, __s_sp6);
     } else if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_castle) & 1)) {
-        nh_snprintf(__s_print_mapseen, 3663, cptr.decay(buf), 256n, __s_sthe_castle_s, __s_sp6, tunesuffix(mptr, cptr.decay(tmpbuf), 256n));
+        nh_snprintf(
+            __s_print_mapseen,
+            3663,
+            cptr.decay(buf),
+            256n,
+            __s_sthe_castle_s,
+            __s_sp6,
+            tunesuffix(mptr, cptr.decay(tmpbuf), 256n)
+        );
     } else if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_valley) & 1)) {
         void cptr.sprintf(cptr.decay(buf), __s_svalley_of_the_dead, __s_sp6);
     } else if ((cptr.ldI32o(mptr, $mapseen_flags + $mapseen_flags_vibrating_square) & 1)) {
@@ -3705,14 +5832,33 @@ function* print_mapseen(win, mptr, final, how, printdun) {
 
     /* print out branches */
     if (cptr.ldPtro(mptr, $mapseen_br)) {
-        void cptr.sprintf(cptr.decay(buf), __s_s_s_to_s, __s_sp6, br_string2(cptr.ldPtro(mptr, $mapseen_br)), cptr.add(svd, cptr.ldI16o(cptr.ldPtro(mptr, $mapseen_br), $branch_end2), $sizeof_dungeon));
+        void cptr.sprintf(
+            cptr.decay(buf),
+            __s_s_s_to_s,
+            __s_sp6,
+            br_string2(cptr.ldPtro(mptr, $mapseen_br)),
+            cptr.add(
+                svd,
+                cptr.ldI16o(cptr.ldPtro(mptr, $mapseen_br), $branch_end2),
+                $sizeof_dungeon
+            )
+        );
 
         /* Since mapseen objects are printed out in increasing order
          * of dlevel, clarify which level this branch is going to
          * if the branch goes upwards.  Unless it's the end game.
          */
-        if (cptr.ld1so(cptr.ldPtro(mptr, $mapseen_br), $branch_end1_up) && !(cptr.ldI16((cptr.add(cptr.ldPtro(mptr, $mapseen_br), $branch_end2))) == cptr.ldI16((cptr.add(svd, $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level)))))
-            void cptr.sprintf(eos(cptr.decay(buf)), __s_level_d, depth(cptr.add(cptr.ldPtro(mptr, $mapseen_br), $branch_end2)));
+        if (cptr.ld1so(cptr.ldPtro(mptr, $mapseen_br), $branch_end1_up) &&
+                !(cptr.ldI16((cptr.add(cptr.ldPtro(mptr, $mapseen_br), $branch_end2))) ==
+                    cptr.ldI16((cptr.add(
+                        svd,
+                        $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_astral_level
+                    )))))
+            void cptr.sprintf(
+                eos(cptr.decay(buf)),
+                __s_level_d,
+                depth(cptr.add(cptr.ldPtro(mptr, $mapseen_br), $branch_end2))
+            );
         void cptr.strcat(cptr.decay(buf), __s_dot);
         (yield* add_menu_str(win, cptr.decay(buf)));
     }
@@ -3737,12 +5883,30 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                 void strsubst(cptr.decay(tmpbuf), __s_herself, __s_yourself);
                 void strsubst(cptr.decay(tmpbuf), __s_his, __s_your);
                 void strsubst(cptr.decay(tmpbuf), __s_her, __s_your);
-                nh_snprintf(__s_print_mapseen, 3716, cptr.decay(buf), 256n, __s_s_syou_s_c, __s_sp6, __s_sp3, cptr.decay(tmpbuf), --kncnt ? 44 : 46);
+                nh_snprintf(
+                    __s_print_mapseen,
+                    3716,
+                    cptr.decay(buf),
+                    256n,
+                    __s_s_syou_s_c,
+                    __s_sp6,
+                    __s_sp3,
+                    cptr.decay(tmpbuf),
+                    --kncnt ? 44 : 46
+                );
                 (yield* add_menu_str(win, cptr.decay(buf)));
             }
             for (bp = cptr.ldPtro(mptr, $mapseen_final_resting_place); bp; bp = cptr.ldPtr(bp)) {
                 if (cptr.ld1so(bp, $cemetery_bonesknown) || wizard() || final > 0) {
-                    void cptr.sprintf(cptr.decay(buf), __s_s_s_s_s_c, __s_sp6, __s_sp3, cptr.add(bp, $cemetery_who), cptr.add(bp, $cemetery_how), --kncnt ? 44 : 46);
+                    void cptr.sprintf(
+                        cptr.decay(buf),
+                        __s_s_s_s_s_c,
+                        __s_sp6,
+                        __s_sp3,
+                        cptr.add(bp, $cemetery_who),
+                        cptr.add(bp, $cemetery_how),
+                        --kncnt ? 44 : 46
+                    );
                     (yield* add_menu_str(win, cptr.decay(buf)));
                 }
             }
@@ -3754,7 +5918,15 @@ function* print_mapseen(win, mptr, final, how, printdun) {
 // 10 bindings: 0 rebound+refilled, 1 rebound, 9 refilled.
 // S/P are supplied by js/generated-y/__reset.js so this module needs no new import.
 let __c2js_rs = null;
-export function __captureState(S) { __c2js_rs = [S(__static_add_branch_branch_id), S(level_map), S(__static_get_dgn_flags_flagstrs), S(__static_get_dgn_flags_flagstrs2i), S(__static_get_dgn_align_dgnaligns), S(__static_get_dgn_align_dgnaligns2i), S(__static_init_dungeon_branches_brdirstr), S(__static_init_dungeon_branches_brdirstr2i), S(__static_init_dungeon_branches_brtypes), S(__static_init_dungeon_branches_brtypes2i)]; }
+export function __captureState(S) {
+    __c2js_rs = [
+        S(__static_add_branch_branch_id), S(level_map), S(__static_get_dgn_flags_flagstrs),
+        S(__static_get_dgn_flags_flagstrs2i), S(__static_get_dgn_align_dgnaligns),
+        S(__static_get_dgn_align_dgnaligns2i), S(__static_init_dungeon_branches_brdirstr),
+        S(__static_init_dungeon_branches_brdirstr2i), S(__static_init_dungeon_branches_brtypes),
+        S(__static_init_dungeon_branches_brtypes2i)
+    ];
+}
 export function __resetState(P) {
     const r = __c2js_rs;
     if (r === null) throw new Error("dungeon.js: __resetState before __captureState");

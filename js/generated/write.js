@@ -10,7 +10,9 @@ import * as NHM from './nhmacro.js';
 import * as FLD from './nhfield.js';
 import { Blind, Glib, Hallucination } from './nhprop.js';
 import { obj_descr, objects } from './objects.js';
-import { There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The } from './pline.js';
+import {
+    There, You, You_cant, Your, impossible, livelog_printf, pline, pline_The
+} from './pline.js';
 import { gu, gy, svb, svp, u } from './decl.js';
 import { The, Tobjnam, an, aobjnam, ysimple_name } from './objnam.js';
 import { fingers_or_gloves } from './do_wear.js';
@@ -28,20 +30,21 @@ import { wipeout_text } from './engrave.js';
 
 // struct field offsets used below, bound at module scope so V8 folds them
 // (values from ./nhfield.js, which is the whole table)
-const $Role_mnum = FLD.Role_mnum, $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
-    $instance_globals_u_urole = FLD.instance_globals_u_urole,
-    $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
-    $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed, $obj_cursed = FLD.obj_cursed,
-    $obj_dknown = FLD.obj_dknown, $obj_oclass = FLD.obj_oclass, $obj_otyp = FLD.obj_otyp,
-    $obj_spe = FLD.obj_spe, $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx,
-    $objclass_oc_encountered = FLD.objclass_oc_encountered,
-    $objclass_oc_name_known = FLD.objclass_oc_name_known, $objclass_oc_oc2 = FLD.objclass_oc_oc2,
-    $objclass_oc_uname = FLD.objclass_oc_uname, $objdescr_oc_descr = FLD.objdescr_oc_descr,
-    $permonst_mflags1 = FLD.permonst_mflags1, $prop_blocked = FLD.prop_blocked,
-    $prop_intrinsic = FLD.prop_intrinsic, $sizeof_objclass = FLD.sizeof_objclass,
-    $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_prop = FLD.sizeof_prop,
-    $u_conduct_literate = FLD.u_conduct_literate, $you_uconduct = FLD.you_uconduct,
-    $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
+const $Role_mnum = FLD.Role_mnum,
+      $instance_globals_saved_b_bases = FLD.instance_globals_saved_b_bases,
+      $instance_globals_u_urole = FLD.instance_globals_u_urole,
+      $instance_globals_y_youmonst = FLD.instance_globals_y_youmonst, $monst_data = FLD.monst_data,
+      $obj_bknown = FLD.obj_bknown, $obj_blessed = FLD.obj_blessed, $obj_cursed = FLD.obj_cursed,
+      $obj_dknown = FLD.obj_dknown, $obj_oclass = FLD.obj_oclass, $obj_otyp = FLD.obj_otyp,
+      $obj_spe = FLD.obj_spe, $objclass_oc_descr_idx = FLD.objclass_oc_descr_idx,
+      $objclass_oc_encountered = FLD.objclass_oc_encountered,
+      $objclass_oc_name_known = FLD.objclass_oc_name_known, $objclass_oc_oc2 = FLD.objclass_oc_oc2,
+      $objclass_oc_uname = FLD.objclass_oc_uname, $objdescr_oc_descr = FLD.objdescr_oc_descr,
+      $permonst_mflags1 = FLD.permonst_mflags1, $prop_blocked = FLD.prop_blocked,
+      $prop_intrinsic = FLD.prop_intrinsic, $sizeof_objclass = FLD.sizeof_objclass,
+      $sizeof_objdescr = FLD.sizeof_objdescr, $sizeof_prop = FLD.sizeof_prop,
+      $u_conduct_literate = FLD.u_conduct_literate, $you_uconduct = FLD.you_uconduct,
+      $you_ulevel = FLD.you_ulevel, $you_uprops = FLD.you_uprops;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_you_can_t_write_such_a_weird_scroll = cptr.lit("You can't write such a weird scroll!");
@@ -106,7 +109,10 @@ const __s_cloth = cptr.lit("cloth");
 /** C ref: write.c:14 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function cost(otmp) {
     if (cptr.ld1so(otmp, $obj_oclass) == NHC.SPBOOK_CLASS)
-        return (Math.imul(10, cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2)));
+        return (Math.imul(
+            10,
+            cptr.ld1so2(objects, cptr.ldI16o(otmp, $obj_otyp), $sizeof_objclass, $objclass_oc_oc2)
+        ));
 
     switch (cptr.ldI16o(otmp, $obj_otyp)) {
         case NHC.SCR_MAIL:
@@ -149,10 +155,13 @@ function cost(otmp) {
 /* getobj callback for object to write on */
 /** C ref: write.c:61 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function write_ok(obj) {
-    if (!obj || (cptr.ld1so(obj, $obj_oclass) != NHC.SCROLL_CLASS && cptr.ld1so(obj, $obj_oclass) != NHC.SPBOOK_CLASS))
+    if (!obj ||
+            (cptr.ld1so(obj, $obj_oclass) != NHC.SCROLL_CLASS &&
+                cptr.ld1so(obj, $obj_oclass) != NHC.SPBOOK_CLASS))
         return NHC.GETOBJ_EXCLUDE;
 
-    if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_BLANK_PAPER || cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BLANK_PAPER)
+    if (cptr.ldI16o(obj, $obj_otyp) == NHC.SCR_BLANK_PAPER ||
+            cptr.ldI16o(obj, $obj_otyp) == NHC.SPE_BLANK_PAPER)
         return NHC.GETOBJ_SUGGEST;
 
     return NHC.GETOBJ_DOWNPLAY;
@@ -181,7 +190,11 @@ export function dowrite(pen) {
     let spell_knowledge;
     __lbl_found: {
 
-        if (((cptr.ldU64o((cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)), $permonst_mflags1) & 8192n) != 0n)) {
+        if (((cptr.ldU64o(
+            (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
+            $permonst_mflags1
+        ) &
+                8192n) != 0n)) {
             You(__s_need_hands_to_be_able_to_write);
             return NHM.ECMD_OK;
         } else if (Glib()) {
@@ -196,7 +209,11 @@ export function dowrite(pen) {
             return NHM.ECMD_CANCEL;
         /* can't write on a novel (unless/until it's been converted into a blank
            spellbook), but we want messages saying so to avoid "spellbook" */
-        typeword = (cptr.ldI16o(paper, $obj_otyp) == NHC.SPE_NOVEL) ? __s_book : ((cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) ? __s_spellbook : __s_scroll);
+        typeword = (cptr.ldI16o(paper, $obj_otyp) == NHC.SPE_NOVEL)
+                ? __s_book
+                : ((cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS)
+                    ? __s_spellbook
+                    : __s_scroll);
         if (Blind()) {
             if (!(cptr.ldI32o(paper, $obj_dknown) & 1)) {
                 You(__s_don_t_know_whether_that_s_is_blank_or, typeword);
@@ -208,7 +225,8 @@ export function dowrite(pen) {
             }
         }
         observe_object(paper);
-        if (cptr.ldI16o(paper, $obj_otyp) != NHC.SCR_BLANK_PAPER && cptr.ldI16o(paper, $obj_otyp) != NHC.SPE_BLANK_PAPER) {
+        if (cptr.ldI16o(paper, $obj_otyp) != NHC.SCR_BLANK_PAPER &&
+                cptr.ldI16o(paper, $obj_otyp) != NHC.SPE_BLANK_PAPER) {
             pline(__s_that_s_is_not_blank, typeword);
             exercise(NHC.A_WIS, 0);
             return NHM.ECMD_TIME;
@@ -236,16 +254,40 @@ export function dowrite(pen) {
 
         deferred = (real = 0);  /* not any scroll or book */
         deferralchance = 0;  /* incremented for each oc_uname match */
-        first = cptr.ldI32o2(svb, cptr.ld1so(paper, $obj_oclass), 4, $instance_globals_saved_b_bases);
-        last = (cptr.ldI32o2(svb, (cptr.ld1so(paper, $obj_oclass) + 1) | 0, 4, $instance_globals_saved_b_bases) - 1) | 0;
+        first = cptr.ldI32o2(
+            svb,
+            cptr.ld1so(paper, $obj_oclass),
+            4,
+            $instance_globals_saved_b_bases
+        );
+        last = (cptr.ldI32o2(
+            svb,
+            (cptr.ld1so(paper, $obj_oclass) + 1) | 0,
+            4,
+            $instance_globals_saved_b_bases
+        ) - 1) |
+                0;
         /* first loop: look for match with name/description */
         for (i = first; i <= last; i++) {
             /* extra shufflable descr not representing a real object */
-            if (!(cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr)))
+            if (!(cptr.ldPtro(
+                obj_descr,
+                cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))),
+                $sizeof_objdescr
+            )))
                 continue;
 
-            if (!strncmpi(((cptr.ldPtro(obj_descr, cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))), $sizeof_objdescr))), (nm), -1)) {
-                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
+            if (!strncmpi(
+                ((cptr.ldPtro(
+                    obj_descr,
+                    cptr.ldI16((cptr.add(objects, i, $sizeof_objclass))),
+                    $sizeof_objdescr
+                ))),
+                (nm),
+                -1
+            )) {
+                if ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 ||
+                        cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
                     break __lbl_found;
                 } else {
                     /* save item in case there are no better by_descr matches */
@@ -254,7 +296,16 @@ export function dowrite(pen) {
                 }
             }
 
-            if (!strncmpi(((cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr))), (nm), -1)) {
+            if (!strncmpi(
+                ((cptr.ldPtro2(
+                    obj_descr,
+                    cptr.ldI16o((cptr.add(objects, i, $sizeof_objclass)), $objclass_oc_descr_idx),
+                    $sizeof_objdescr,
+                    $objdescr_oc_descr
+                ))),
+                (nm),
+                -1
+            )) {
                 by_descr = 1;
                 break __lbl_found;
             }
@@ -265,7 +316,22 @@ export function dowrite(pen) {
         for (i = first; i <= last; i++) {
             /* player might assign same name multiple times and if so,
                we choose one of those matches randomly */
-            if (cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname) && !strncmpi((cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname)), (nm), -1) && !(real && (cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1) | 0) && !(rng_log_enabled() ? (rng_log_set_caller(__s_write_c, 193, __s_dowrite), rn2(++deferralchance)) : rn2(++deferralchance))) {
+            if (cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname) &&
+                    !strncmpi(
+                        (cptr.ldPtro2(objects, i, $sizeof_objclass, $objclass_oc_uname)),
+                        (nm),
+                        -1
+                    ) &&
+                    !(real &&
+                        (cptr.ldI32o2(
+                            objects,
+                            i,
+                            $sizeof_objclass,
+                            $objclass_oc_name_known
+                        ) & 1) | 0) &&
+                    !(rng_log_enabled()
+                        ? (rng_log_set_caller(__s_write_c, 193, __s_dowrite), rn2(++deferralchance))
+                        : rn2(++deferralchance))) {
                 deferred = i;
                 /* writing by user-assigned name is same as by description:
                    fails for books, works for scrolls (having an assigned
@@ -292,9 +358,17 @@ export function dowrite(pen) {
         let tearup = schar((!rn2(3)));
 
         if (!fanfic) {
-            You(__s_s_to_write_the_great_yendorian_novel, !tearup ? __s_prepare : __s_try, !Hallucination() ? __s_lack : __s_have_too_much);
+            You(
+                __s_s_to_write_the_great_yendorian_novel,
+                !tearup ? __s_prepare : __s_try,
+                !Hallucination() ? __s_lack : __s_have_too_much
+            );
         } else {
-            You(__s_sproduce_really_s_fan_fiction, !tearup ? __s_start_to : __s_empty, !Hallucination() ? __s_lame : __s_awesome);
+            You(
+                __s_sproduce_really_s_fan_fiction,
+                !tearup ? __s_start_to : __s_empty,
+                !Hallucination() ? __s_lame : __s_awesome
+            );
         }
         if (!tearup) {
             You(__s_give_up_on_the_idea);
@@ -306,18 +380,31 @@ export function dowrite(pen) {
     } else if (i == NHC.SPE_BOOK_OF_THE_DEAD) {
         pline(__s_no_mere_dungeon_adventurer_could_write);
         return NHM.ECMD_TIME;
-    } else if (by_descr && cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS && !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1)) {
+    } else if (by_descr &&
+            cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS &&
+            !(cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1)) {
         /* can't write unknown spellbooks by description */
         pline(__s_unfortunately_you_don_t_have_enough);
         return NHM.ECMD_TIME;
     }
 
     /* KMH, conduct */
-    if (!((cptr.stI64o(u, $you_uconduct + $u_conduct_literate, cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n)) - (1n)))
+    if (!((cptr.stI64o(
+        u,
+        $you_uconduct + $u_conduct_literate,
+        cptr.ldI64o(u, $you_uconduct + $u_conduct_literate) + 1n
+    )) -
+            (1n)))
         livelog_printf(32n, __s_became_literate_by_writing_s, an(typeword));
 
     new_obj = mksobj(i, 0, 0);
-    cptr.stI32o(new_obj, $obj_bknown, ((cptr.ldI32o(paper, $obj_bknown) & 1) | 0 && (cptr.ldI32o(pen, $obj_bknown) & 1) | 0 ? 1 : 0) >>> 0);
+    cptr.stI32o(
+        new_obj,
+        $obj_bknown,
+        ((cptr.ldI32o(paper, $obj_bknown) & 1) | 0 && (cptr.ldI32o(pen, $obj_bknown) & 1) | 0
+            ? 1
+            : 0) >>> 0
+    );
 
     /* shk imposes a flat rate per use, not based on actual charges used */
     check_unpaid(pen);
@@ -380,7 +467,25 @@ export function dowrite(pen) {
         spell_knowledge = NHC.spe_Unknown;
     }
     /* if known, then either by-name or by-descr works */
-    if (!(cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) && !(by_descr && (cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_encountered) & 1) | 0) && spell_knowledge != NHC.spe_Fresh && rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) && cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) || spell_knowledge == NHC.spe_GoingStale) ? 5 : 15)) {
+    if (!(cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(new_obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_name_known
+    ) & 1) &&
+            !(by_descr &&
+                (cptr.ldI32o2(
+                    objects,
+                    cptr.ldI16o(new_obj, $obj_otyp),
+                    $sizeof_objclass,
+                    $objclass_oc_encountered
+                ) & 1) | 0) &&
+            spell_knowledge != NHC.spe_Fresh &&
+            rnl((((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD) &&
+                cptr.ld1so(paper, $obj_oclass) != NHC.SPBOOK_CLASS) ||
+                spell_knowledge == NHC.spe_GoingStale)
+                ? 5
+                : 15)) {
         You(__s_s_to_write_that, by_descr ? __s_fail : __s_don_t_know_how);
         /* scrolls disappear, spellbooks don't */
         if (cptr.ld1so(paper, $obj_oclass) == NHC.SPBOOK_CLASS) {
@@ -388,8 +493,23 @@ export function dowrite(pen) {
             update_inventory();  /* pen charges */
         } else {
             if (by_descr) {
-                void cptr.strcpy(cptr.decay(namebuf), (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr)));
-                wipeout_text(cptr.decay(namebuf), (((36 - cptr.ldI32o(u, $you_ulevel)) | 0) / 6) | 0, 0);
+                void cptr.strcpy(
+                    cptr.decay(namebuf),
+                    (cptr.ldPtro2(
+                        obj_descr,
+                        cptr.ldI16o(
+                            (cptr.add(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass)),
+                            $objclass_oc_descr_idx
+                        ),
+                        $sizeof_objdescr,
+                        $objdescr_oc_descr
+                    ))
+                );
+                wipeout_text(
+                    cptr.decay(namebuf),
+                    (((36 - cptr.ldI32o(u, $you_ulevel)) | 0) / 6) | 0,
+                    0
+                );
             } else
                 void cptr.sprintf(cptr.decay(namebuf), __s_s_was_here, svp);
             You(__s_write_s_and_the_scroll_disappears, cptr.decay(namebuf));
@@ -418,7 +538,10 @@ export function dowrite(pen) {
     /* success */
     if (cptr.ld1so(new_obj, $obj_oclass) == NHC.SPBOOK_CLASS) {
         /* acknowledge the change in the object's description... */
-        pline_The(__s_spellbook_warps_strangely_then_turns_s, new_book_description(cptr.ldI16o(new_obj, $obj_otyp), cptr.decay(namebuf)));
+        pline_The(
+            __s_spellbook_warps_strangely_then_turns_s,
+            new_book_description(cptr.ldI16o(new_obj, $obj_otyp), cptr.decay(namebuf))
+        );
     }
     cptr.stI32o(new_obj, $obj_blessed, (curseval > 0) >>> 0);
     cptr.stI32o(new_obj, $obj_cursed, (curseval < 0) >>> 0);
@@ -432,10 +555,21 @@ export function dowrite(pen) {
        where the label associated with the type-name isn't known yet;
        but if writing by description, the description is always known */
     cptr.stI32o(new_obj, $obj_dknown, 0);
-    if ((cptr.ldI32o2(objects, cptr.ldI16o(new_obj, $obj_otyp), $sizeof_objclass, $objclass_oc_name_known) & 1) | 0 || by_descr)
+    if ((cptr.ldI32o2(
+        objects,
+        cptr.ldI16o(new_obj, $obj_otyp),
+        $sizeof_objclass,
+        $objclass_oc_name_known
+    ) & 1) | 0 ||
+            by_descr)
         observe_object(new_obj);
 
-    new_obj = hold_another_object(new_obj, __s_oops_s_out_of_your_grasp, The(aobjnam(new_obj, __s_slip)), null);
+    new_obj = hold_another_object(
+        new_obj,
+        __s_oops_s_out_of_your_grasp,
+        The(aobjnam(new_obj, __s_slip)),
+        null
+    );
     (void (new_obj));  /* try to avoid complaint about dead assignment */
     return NHM.ECMD_TIME;
 }
@@ -458,8 +592,17 @@ function new_book_description(booktype, outbuf) {
     let descr;
     let comp_p;
 
-    descr = (cptr.ldPtro2(obj_descr, cptr.ldI16o((cptr.add(objects, booktype, $sizeof_objclass)), $objclass_oc_descr_idx), $sizeof_objdescr, $objdescr_oc_descr));
-    for (comp_p = __static_new_book_description_compositions; cptr.ldPtr(comp_p); comp_p = cptr.add(comp_p, 1, 8))
+    descr = (cptr.ldPtro2(
+        obj_descr,
+        cptr.ldI16o((cptr.add(objects, booktype, $sizeof_objclass)), $objclass_oc_descr_idx),
+        $sizeof_objdescr,
+        $objdescr_oc_descr
+    ));
+    for (
+        comp_p = __static_new_book_description_compositions;
+        cptr.ldPtr(comp_p);
+        comp_p = cptr.add(comp_p, 1, 8)
+    )
         if (!strncmpi((descr), (cptr.ldPtr(comp_p)), -1))
             break;
 
