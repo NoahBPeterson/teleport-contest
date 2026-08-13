@@ -435,7 +435,7 @@ export function* m_break_boulder(mtmp, x, y) {
             cptr.stI32o(
                 mtmp,
                 $monst_mspec_used,
-                (cptr.ldI32o(mtmp, $monst_mspec_used) + ((rn2(20) + 10) | 0)) | 0
+                (cptr.ldI32o(mtmp, $monst_mspec_used) + (rn2(20) + 10)) | 0
             );
         }
         if (((cptr.ld1uo(cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8), x) &
@@ -2104,8 +2104,9 @@ function holds_up_web(x, y) {
    hold up a web */
 /** C ref: monmove.c:1244 — @param {CInt} x @param {CInt} y @returns {CInt} */
 function count_webbing_walls(x, y) {
-    return ((((((holds_up_web(x, i16(((y - 1) | 0))) + holds_up_web(i16(((x + 1) | 0)), y)) | 0) +
-        holds_up_web(x, i16(((y + 1) | 0)))) | 0) +
+    return ((holds_up_web(x, i16(((y - 1) | 0))) +
+            holds_up_web(i16(((x + 1) | 0)), y) +
+            holds_up_web(x, i16(((y + 1) | 0))) +
             holds_up_web(i16(((x - 1) | 0)), y)) | 0);
 }
 
@@ -2141,10 +2142,7 @@ function* maybe_spin_web(mtmp) {
             ))
                 ? 15
                 : 5),
-            ((count_webbing_walls(
-                cptr.ldI16o(mtmp, $monst_mx),
-                cptr.ldI16o(mtmp, $monst_my)
-            ) + 1) | 0)
+            count_webbing_walls(cptr.ldI16o(mtmp, $monst_mx), cptr.ldI16o(mtmp, $monst_my)) + 1
         )) -
                 (Math.imul(3, count_traps(NHC.WEB)))) | 0);
 
@@ -3270,7 +3268,7 @@ export function* m_move(mtmp, after) {
                     mtrk = cptr.add(cptr.add(mtmp, $monst_mtrack), 0, $sizeof_coord);
                     for (j = 0; j < jcnt; mtrk = cptr.add(mtrk, 1, 4), j++)
                         if (nx == cptr.ldI16(mtrk) && ny == cptr.ldI16o(mtrk, $coord_y))
-                            if (rn2(Math.imul(4, ((cnt - j) | 0))))
+                            if (rn2(Math.imul(4, cnt - j)))
                                 break __lbl_nxti;
                 }
 
@@ -3651,9 +3649,8 @@ export function set_apparxy(mtmp) {
                 my = cptr.ldI16o(u, $you_uy);
                 break;  /* punt */
             }
-            mx = i16(((((cptr.ldI16(u) - displ) | 0) + rn2((Math.imul(2, displ) + 1) | 0)) | 0));
-            my = i16(((((cptr.ldI16o(u, $you_uy) - displ) | 0) +
-                    rn2((Math.imul(2, displ) + 1) | 0)) | 0));
+            mx = i16(((cptr.ldI16(u) - displ + rn2((Math.imul(2, displ) + 1) | 0)) | 0));
+            my = i16(((cptr.ldI16o(u, $you_uy) - displ + rn2((Math.imul(2, displ) + 1) | 0)) | 0));
         } while (!isok(mx, my) ||
                 (displ != 2 &&
                     mx == cptr.ldI16o(mtmp, $monst_mx) &&

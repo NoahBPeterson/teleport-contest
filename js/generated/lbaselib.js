@@ -135,13 +135,12 @@ function b_str2int(s, base, pn) {
     do {
         let digit = (isdigit(uchar(cptr.ld1s(s))))
                 ? (cptr.ld1s(s) - 48) | 0
-                : (((toupper(uchar(cptr.ld1s(s))) - 65) | 0) + 10) | 0;
+                : (toupper(uchar(cptr.ld1s(s))) - 65 + 10) | 0;
         if (digit >= base)
             return null;  /* invalid numeral */
         n = BigInt.asUintN(
             64,
-            BigInt.asUintN(64, n * BigInt.asUintN(64, BigInt(base))) +
-                BigInt.asUintN(64, BigInt(digit))
+            n * BigInt.asUintN(64, BigInt(base)) + BigInt.asUintN(64, BigInt(digit))
         );
         s = cptr.add(s, 1);
     } while (isalnum(uchar(cptr.ld1s(s))));

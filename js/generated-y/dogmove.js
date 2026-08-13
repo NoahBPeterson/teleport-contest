@@ -574,11 +574,8 @@ export function* dog_eat(mtmp, obj, x, y, devour) {
                         (200n /
                             (BigInt.asIntN(
                                 64,
-                                BigInt.asIntN(
-                                    64,
-                                    BigInt(cptr.ldI32o(edog, $edog_dropdist) >>> 0) +
-                                        cptr.ldI64o(svm, $instance_globals_saved_m_moves)
-                                ) -
+                                BigInt(cptr.ldI32o(edog, $edog_dropdist) >>> 0) +
+                                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
                                     cptr.ldI64o(edog, $edog_droptime)
                             )))
                     ))) | 0
@@ -1686,9 +1683,9 @@ export function* dog_move(mtmp, after) {
                      * the pet will balk at attacking rather than the highest level
                      * they are willing to attack; note the >= used when comparing it.
                      */
-                    let balk = (((cptr.ld1uo(mtmp, $monst_m_lev) +
+                    let balk = (cptr.ld1uo(mtmp, $monst_m_lev) +
                         (((Math.imul(5, cptr.ldI32o(mtmp, $monst_mhp))) /
-                            cptr.ldI32o(mtmp, $monst_mhpmax)) | 0)) | 0) - 2) |
+                            cptr.ldI32o(mtmp, $monst_mhpmax)) | 0) - 2) |
                             0;
 
                     if (cptr.ld1uo(mtmp2, $monst_m_lev) >= balk ||
@@ -1910,18 +1907,18 @@ export function* dog_move(mtmp, after) {
                                         $sizeof_coord,
                                         $monst_mtrack + $nhcoord_y
                                     ))
-                            if (rn2(Math.imul(NHM.MTSZ, ((k - j) | 0))))
+                            if (rn2(Math.imul(NHM.MTSZ, k - j)))
                                 break __lbl_nxti;
                 }
 
                 j = Math.imul(
-                    (((ndist = (dist2(
+                    (ndist = (dist2(
                         nx,
                         ny,
                         cptr.ldI16o(gg, $instance_globals_g_gx),
                         cptr.ldI16o(gg, $instance_globals_g_gy)
                     ))) -
-                        nidist) | 0),
+                        nidist,
                     appr
                 );
                 if ((j == 0 && !rn2(++chcnt)) ||
@@ -2009,7 +2006,7 @@ export function* dog_move(mtmp, after) {
                         $sizeof_rm,
                         $instance_globals_saved_l_level
                     )) >=
-                        ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) &&
+                        ((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT - 1) | 0) &&
                         (cptr.ldI32o3(
                             svl,
                             nix,
@@ -2036,7 +2033,7 @@ export function* dog_move(mtmp, after) {
                             $sizeof_rm,
                             $instance_globals_saved_l_level
                         )) >
-                            ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) &&
+                            ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0) &&
                             (cptr.ldI32o3(
                                 svl,
                                 nix,
@@ -2063,7 +2060,7 @@ export function* dog_move(mtmp, after) {
                             $sizeof_rm,
                             $instance_globals_saved_l_level
                         )) <
-                            ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ||
+                            ((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT - 1) | 0)) ||
                         ((cptr.ldI32o3(
                             svl,
                             nix,
@@ -2081,8 +2078,7 @@ export function* dog_move(mtmp, after) {
                                 $sizeof_rm,
                                 $instance_globals_saved_l_level
                             )) <
-                                ((((NHC.GLYPH_OBJ_PILETOP_OFF +
-                                    NHC.FIRST_OBJECT) | 0) - 1) | 0))) ||
+                                ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0))) ||
                     (((((cptr.ldI32o3(
                         svl,
                         nix,

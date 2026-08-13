@@ -317,11 +317,11 @@ export function worm_move(worm) {
                 : (Math.imul(8, cptr.ld1uo(worm, $monst_m_lev)));
         /* note: wsegs includes the hidden segment co-located with the head */
         if (wsegs > 33)
-            whplimit = (whplimit + Math.imul(2, ((wsegs - 33) | 0))) | 0, wsegs = 33;
+            whplimit = (whplimit + Math.imul(2, wsegs - 33)) | 0, wsegs = 33;
         if (wsegs > 22)
-            whplimit = (whplimit + Math.imul(4, ((wsegs - 22) | 0))) | 0, wsegs = 22;
+            whplimit = (whplimit + Math.imul(4, wsegs - 22)) | 0, wsegs = 22;
         if (wsegs > 11)
-            whplimit = (whplimit + Math.imul(6, ((wsegs - 11) | 0))) | 0, wsegs = 11;
+            whplimit = (whplimit + Math.imul(6, wsegs - 11)) | 0, wsegs = 11;
         whplimit = (whplimit + Math.imul(8, wsegs)) | 0;
         if (whplimit > NHM.MHPMAX)
             whplimit = NHM.MHPMAX;
@@ -1170,7 +1170,7 @@ export function flip_worm_segs_vertical(worm, miny, maxy) {
     let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
     while (curr) {
-        cptr.stI16o(curr, $wseg_wy, i16(((((maxy - cptr.ldI16o(curr, $wseg_wy)) | 0) + miny) | 0)));
+        cptr.stI16o(curr, $wseg_wy, i16(((maxy - cptr.ldI16o(curr, $wseg_wy) + miny) | 0)));
         curr = cptr.ldPtr(curr);
     }
 }
@@ -1180,7 +1180,7 @@ export function flip_worm_segs_horizontal(worm, minx, maxx) {
     let curr = cptr.ldPtro(wtails, (cptr.ldI32o(worm, $monst_wormno) & 31), 8);
 
     while (curr) {
-        cptr.stI16o(curr, $wseg_wx, i16(((((maxx - cptr.ldI16o(curr, $wseg_wx)) | 0) + minx) | 0)));
+        cptr.stI16o(curr, $wseg_wx, i16(((maxx - cptr.ldI16o(curr, $wseg_wx) + minx) | 0)));
         curr = cptr.ldPtr(curr);
     }
 }

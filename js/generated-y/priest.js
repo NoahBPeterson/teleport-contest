@@ -498,14 +498,14 @@ export function* priestini(lvl, sroom, sx, sy, sanctum) {
         px = (sx +
             cptr.ld1so(
                 cptr.decay(xdir),
-                (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)),
+                (((i + si + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)),
                 1
             )) |
                 0;
         py = (sy +
             cptr.ld1so(
                 cptr.decay(ydir),
-                (((((i + si) | 0) + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)),
+                (((i + si + ((NHC.N_DIRS_Z - 2) | 0)) | 0) % ((NHC.N_DIRS_Z - 2) | 0)),
                 1
             )) |
                 0;
@@ -1175,9 +1175,8 @@ export function* priest_talk(priest) {
         let offer;
         let suggested = BigInt((Math.imul(
             (cptr.ldI32o(u, $you_ulevelpeak) ? cptr.ldI32o(u, $you_ulevelpeak) : 1) >>> 0,
-            (((rn2(101) >>> 0) +
-                ((150 +
-                    (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0)) >>> 0)) >>> 0)
+            (rn2(101) >>> 0) +
+                (150 + (Math.imul((cheapskate ? cptr.ldI32(cheapskate) : 0), 40) >>> 0))
         ) >>> 0) >>> 0);
         let quan = money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) /
                 (BigInt.asIntN(64, suggested * 3n));
@@ -1190,7 +1189,7 @@ export function* priest_talk(priest) {
             cptr.decay(buf),
             __s_how_much_will_you_offer_suggested_ld_or,
             BigInt.asIntN(64, suggested * quan),
-            BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 2n)
+            BigInt.asIntN(64, suggested * quan * 2n)
         );
 
         if (cptr.ld1so(flags, $flag_debug))
@@ -1217,7 +1216,7 @@ export function* priest_talk(priest) {
                 /* give player some token */
                 (yield* exercise(NHC.A_WIS, 1));
             }
-        } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 2n)) {
+        } else if (offer < BigInt.asIntN(64, suggested * quan * 2n)) {
             ;
             (yield* verbalize(__s_thou_art_indeed_a_pious_individual));
             if (money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent)) <
@@ -1243,7 +1242,7 @@ export function* priest_talk(priest) {
                     ))
                 ))
             );
-        } else if (offer < BigInt.asIntN(64, BigInt.asIntN(64, suggested * quan) * 3n)) {
+        } else if (offer < BigInt.asIntN(64, suggested * quan * 3n)) {
             let orig_ublessed = cptr.ldI32o(u, $you_ublessed);
 
             /* u.ublessed is only active when Protection is enabled via

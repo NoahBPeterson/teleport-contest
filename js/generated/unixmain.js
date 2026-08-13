@@ -144,11 +144,7 @@ export function main(argc, argv) {
                 mac_exe = cptr.ldPtro(argv.v, 0, 8);
             mac_tmp_len = Number(BigInt.asIntN(
                 32,
-                BigInt.asUintN(
-                    64,
-                    (BigInt.asUintN(64, cptr.strlen(mac_exe) * 2n)) +
-                        cptr.strlen(__s_app_contents_macos)
-                )
+                BigInt.asUintN(64, cptr.strlen(mac_exe) * 2n + cptr.strlen(__s_app_contents_macos))
             ));
             if (mac_tmp_len <= arg0_len) {
                 mac_tmp = cptr.malloc(BigInt.asUintN(64, BigInt(((mac_tmp_len + 1) | 0))));
@@ -161,11 +157,8 @@ export function main(argc, argv) {
                         32,
                         BigInt.asUintN(
                             64,
-                            BigInt.asUintN(
-                                64,
-                                BigInt.asUintN(64, BigInt(((arg0_len - mac_tmp_len) | 0))) +
-                                    cptr.strlen(mac_exe)
-                            ) + 5n
+                            BigInt.asUintN(64, BigInt(((arg0_len - mac_tmp_len) | 0))) +
+                                cptr.strlen(mac_exe) + 5n
                         )
                     ));
                     if (mac_lhs_len > ((mac_tmp_len - 1) | 0))

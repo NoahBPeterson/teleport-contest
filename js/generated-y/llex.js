@@ -172,11 +172,7 @@ export function* luaX_init(L) {
     let i;
     let e = ((yield* luaS_newlstr(L, __s_env, BigInt.asUintN(64, (5n / 1n) - 1n))));  /* create env name */
     luaC_fix(L, ((((e)))));  /* never collect this name */
-    for (
-        i = 0;
-        i < ((((NHC.TK_WHILE - ((((Math.imul(127, 2) + 1) | 0) + 1) | 0)) | 0) + 1) | 0);
-        i++
-    ) {
+    for (i = 0; i < ((NHC.TK_WHILE - (Math.imul(127, 2) + 1 + 1) + 1) | 0); i++) {
         let ts = (yield* luaS_new(L, cptr.ldPtro(luaX_tokens, i, 8)));
         luaC_fix(L, ((((ts)))));  /* reserved words are never collected */
         cptr.st1o(ts, $TString_extra, (uchar((((i + 1) | 0)))));  /* reserved word */
@@ -695,8 +691,7 @@ function* read_long_string(ls, seminfo, sep) {
                 cptr.add((cptr.ldPtr((cptr.ldPtro(ls, $LexState_buff)))), sep),
                 BigInt.asUintN(
                     64,
-                    (cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n)) -
-                        BigInt.asUintN(64, 2n * sep)
+                    (cptr.ldU64o((cptr.ldPtro(ls, $LexState_buff)), $Mbuffer_n)) - 2n * sep
                 )
             ))
         );
@@ -851,7 +846,7 @@ function* readdecesc(ls) {
         i < 3 && (cptr.ld1uo(cptr.decay(luai_ctype_), ((cptr.ldI32(ls)) + 1) | 0, 1) & 2);
         i++
     ) {
-        r = (((Math.imul(10, r) + cptr.ldI32(ls)) | 0) - 48) | 0;
+        r = (Math.imul(10, r) + cptr.ldI32(ls) - 48) | 0;
         (
             (yield* save(ls, cptr.ldI32(ls))),
             (cptr.stI32(
@@ -1427,7 +1422,7 @@ function* llex(ls, seminfo) {
                     cptr.stPtr(seminfo, ts);
                     if ((cptr.ld1uo((ts), $TString_tt) == 4 &&
                             cptr.ld1uo((ts), $TString_extra) > 0))
-                        return (((cptr.ld1uo(ts, $TString_extra) - 1) | 0) + 256) | 0;
+                        return (cptr.ld1uo(ts, $TString_extra) - 1 + 256) | 0;
                     else {
                         return NHC.TK_NAME;
                     }

@@ -62,13 +62,13 @@ const $dlevel_t_flags = FLD.dlevel_t_flags, $engr_engr_x = FLD.engr_engr_x,
 
 /** C: include/hack.h — the `ARM_BONUS(obj)` macro body */
 export function ARM_BONUS(obj) {
-    return ((((cptr.ld1so2(
+    return ((cptr.ld1so2(
         objects,
         cptr.ldI16o((obj), $obj_otyp),
         $sizeof_objclass,
         $objclass_oc_oc1
     ) +
-        cptr.ld1so((obj), $obj_spe)) | 0) -
+        cptr.ld1so((obj), $obj_spe) -
         (((((cptr.ldI32o((obj), $obj_oeroded) & 3) | 0) >
             ((cptr.ldI32o((obj), $obj_oeroded2) & 3) | 0)
             ? (cptr.ldI32o((obj), $obj_oeroded) & 3) | 0
@@ -409,7 +409,7 @@ export function ceiling_hider(ptr) {
 
 /** C: include/display.h — the `cmap_a_to_glyph(cmap_idx)` macro body */
 export function cmap_a_to_glyph(cmap_idx) {
-    return (((((((cptr.ld1so3(
+    return (((((cptr.ld1so3(
         svl,
         cptr.ldI16o((cmap_idx), $engr_engr_x),
         $sizeof_rm_x21,
@@ -420,13 +420,13 @@ export function cmap_a_to_glyph(cmap_idx) {
         NHC.CORR)
         ? NHC.S_engrcorr
         : NHC.S_engroom)) -
-        NHC.S_ndoor) | 0) +
+        NHC.S_ndoor +
         NHC.GLYPH_CMAP_A_OFF) | 0);
 }
 
 /** C: include/display.h — the `cmap_b_to_glyph(cmap_idx)` macro body */
 export function cmap_b_to_glyph(cmap_idx) {
-    return (((((((cptr.ld1so3(
+    return (((((cptr.ld1so3(
         svl,
         cptr.ldI16o((cmap_idx), $engr_engr_x),
         $sizeof_rm_x21,
@@ -437,13 +437,13 @@ export function cmap_b_to_glyph(cmap_idx) {
         NHC.CORR)
         ? NHC.S_engrcorr
         : NHC.S_engroom)) -
-        NHC.S_grave) | 0) +
+        NHC.S_grave +
         NHC.GLYPH_CMAP_B_OFF) | 0);
 }
 
 /** C: include/display.h — the `cmap_c_to_glyph(cmap_idx)` macro body */
 export function cmap_c_to_glyph(cmap_idx) {
-    return (((((((cptr.ld1so3(
+    return (((((cptr.ld1so3(
         svl,
         cptr.ldI16o((cmap_idx), $engr_engr_x),
         $sizeof_rm_x21,
@@ -454,7 +454,7 @@ export function cmap_c_to_glyph(cmap_idx) {
         NHC.CORR)
         ? NHC.S_engrcorr
         : NHC.S_engroom)) -
-        NHC.S_digbeam) | 0) +
+        NHC.S_digbeam +
         NHC.GLYPH_CMAP_C_OFF) | 0);
 }
 
@@ -486,8 +486,8 @@ export function corpse_eater(ptr) {
 
 /** C: include/mondata.h — the `could_twoweap(ptr)` macro body */
 export function could_twoweap(ptr) {
-    return ((((((cptr.ld1uo2((ptr), 0, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP) +
-        (cptr.ld1uo2((ptr), 1, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP)) | 0) +
+    return ((((cptr.ld1uo2((ptr), 0, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP) +
+        (cptr.ld1uo2((ptr), 1, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP) +
         (cptr.ld1uo2((ptr), 2, $sizeof_attack, $permonst_mattk) == NHM.AT_WEAP)) | 0) > 1);
 }
 
@@ -531,7 +531,8 @@ export function engraving_to_defsym(ep) {
 
 /** C: include/display.h — the `explosion_to_glyph(expltyp, idx)` macro body */
 export function explosion_to_glyph(expltyp, idx) {
-    return (((((idx) - NHC.S_expl_tl) | 0) +
+    return (((idx) -
+        NHC.S_expl_tl +
         (((expltyp) == NHC.EXPL_FROSTY)
             ? NHC.GLYPH_EXPLODE_FROSTY_OFF
             : (((expltyp) == NHC.EXPL_MAGICAL)
@@ -603,7 +604,7 @@ export function glyph_is_body_piletop(glyph) {
 /** C: include/display.h — the `glyph_is_cmap(glyph)` macro body */
 export function glyph_is_cmap(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_STONE_OFF &&
-        (glyph) < ((NHC.GLYPH_CMAP_C_OFF + ((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0)) | 0)
+        (glyph) < ((NHC.GLYPH_CMAP_C_OFF + (NHC.S_goodpos - NHC.S_digbeam + 1)) | 0)
         ? 1
         : 0);
 }
@@ -611,7 +612,7 @@ export function glyph_is_cmap(glyph) {
 /** C: include/display.h — the `glyph_is_cmap_a(glyph)` macro body */
 export function glyph_is_cmap_a(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_A_OFF &&
-        (glyph) < ((((((NHC.S_brdnladder - NHC.S_ndoor) | 0) + 1) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+        (glyph) < ((NHC.S_brdnladder - NHC.S_ndoor + 1 + NHC.GLYPH_CMAP_A_OFF) | 0)
         ? 1
         : 0);
 }
@@ -625,8 +626,7 @@ export function glyph_is_cmap_altar(glyph) {
 export function glyph_is_cmap_b(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_B_OFF &&
         ((glyph) <
-            ((((((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0) - NHC.S_grave) | 0) +
-                NHC.GLYPH_CMAP_B_OFF) | 0))
+            ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0))
         ? 1
         : 0);
 }
@@ -634,7 +634,7 @@ export function glyph_is_cmap_b(glyph) {
 /** C: include/display.h — the `glyph_is_cmap_c(glyph)` macro body */
 export function glyph_is_cmap_c(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_C_OFF &&
-        (glyph) < ((((((NHC.S_goodpos - NHC.S_digbeam) | 0) + 1) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)
+        (glyph) < ((NHC.S_goodpos - NHC.S_digbeam + 1 + NHC.GLYPH_CMAP_C_OFF) | 0)
         ? 1
         : 0);
 }
@@ -642,7 +642,7 @@ export function glyph_is_cmap_c(glyph) {
 /** C: include/display.h — the `glyph_is_cmap_gehennom(glyph)` macro body */
 export function glyph_is_cmap_gehennom(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_GEH_OFF &&
-        (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_GEH_OFF) | 0)
+        (glyph) < ((NHC.S_trwall - NHC.S_vwall + 1 + NHC.GLYPH_CMAP_GEH_OFF) | 0)
         ? 1
         : 0);
 }
@@ -650,7 +650,7 @@ export function glyph_is_cmap_gehennom(glyph) {
 /** C: include/display.h — the `glyph_is_cmap_knox(glyph)` macro body */
 export function glyph_is_cmap_knox(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_KNOX_OFF &&
-        (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_KNOX_OFF) | 0)
+        (glyph) < ((NHC.S_trwall - NHC.S_vwall + 1 + NHC.GLYPH_CMAP_KNOX_OFF) | 0)
         ? 1
         : 0);
 }
@@ -658,7 +658,7 @@ export function glyph_is_cmap_knox(glyph) {
 /** C: include/display.h — the `glyph_is_cmap_main(glyph)` macro body */
 export function glyph_is_cmap_main(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_MAIN_OFF &&
-        (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MAIN_OFF) | 0)
+        (glyph) < ((NHC.S_trwall - NHC.S_vwall + 1 + NHC.GLYPH_CMAP_MAIN_OFF) | 0)
         ? 1
         : 0);
 }
@@ -666,7 +666,7 @@ export function glyph_is_cmap_main(glyph) {
 /** C: include/display.h — the `glyph_is_cmap_mines(glyph)` macro body */
 export function glyph_is_cmap_mines(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_MINES_OFF &&
-        (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_MINES_OFF) | 0)
+        (glyph) < ((NHC.S_trwall - NHC.S_vwall + 1 + NHC.GLYPH_CMAP_MINES_OFF) | 0)
         ? 1
         : 0);
 }
@@ -674,7 +674,7 @@ export function glyph_is_cmap_mines(glyph) {
 /** C: include/display.h — the `glyph_is_cmap_sokoban(glyph)` macro body */
 export function glyph_is_cmap_sokoban(glyph) {
     return ((glyph) >= NHC.GLYPH_CMAP_SOKO_OFF &&
-        (glyph) < ((((((NHC.S_trwall - NHC.S_vwall) | 0) + 1) | 0) + NHC.GLYPH_CMAP_SOKO_OFF) | 0)
+        (glyph) < ((NHC.S_trwall - NHC.S_vwall + 1 + NHC.GLYPH_CMAP_SOKO_OFF) | 0)
         ? 1
         : 0);
 }
@@ -736,9 +736,9 @@ export function glyph_is_female_pet(glyph) {
 /** C: include/display.h — the `glyph_is_generic_object(glyph)` macro body */
 export function glyph_is_generic_object(glyph) {
     return (((glyph) > NHC.GLYPH_OBJ_OFF &&
-        (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ||
+        (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT - 1) | 0)) ||
         ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF &&
-            (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))
+            (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0))
         ? 1
         : 0);
 }
@@ -802,7 +802,7 @@ export function glyph_is_normal_female_monster(glyph) {
 /** C: include/display.h — the `glyph_is_normal_generic_obj(glyph)` macro body */
 export function glyph_is_normal_generic_obj(glyph) {
     return ((glyph) > NHC.GLYPH_OBJ_OFF &&
-        (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)
+        (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT - 1) | 0)
         ? 1
         : 0);
 }
@@ -818,7 +818,7 @@ export function glyph_is_normal_male_monster(glyph) {
 /** C: include/display.h — the `glyph_is_normal_piletop_obj(glyph)` macro body */
 export function glyph_is_normal_piletop_obj(glyph) {
     return ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF ||
-        ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) &&
+        ((glyph) > ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0) &&
             (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0))
         ? 1
         : 0);
@@ -827,15 +827,15 @@ export function glyph_is_normal_piletop_obj(glyph) {
 /** C: include/display.h — the `glyph_is_object(glyph)` macro body */
 export function glyph_is_object(glyph) {
     return (((glyph) == NHC.GLYPH_OBJ_OFF ||
-        ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) &&
+        ((glyph) >= ((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT - 1) | 0) &&
             (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) ||
         ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF ||
-            ((glyph) > ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) &&
+            ((glyph) > ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0) &&
                 (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))) ||
         (((glyph) > NHC.GLYPH_OBJ_OFF &&
-            (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ||
+            (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT - 1) | 0)) ||
             ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF &&
-                (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))) ||
+                (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0))) ||
         (((((glyph) >= NHC.GLYPH_STATUE_MALE_OFF) &&
             ((glyph) < ((NHC.GLYPH_STATUE_MALE_OFF + NHC.NUMMONS) | 0))) ||
             (((glyph) >= NHC.GLYPH_STATUE_MALE_PILETOP_OFF) &&
@@ -864,7 +864,7 @@ export function glyph_is_pet(glyph) {
 /** C: include/display.h — the `glyph_is_piletop_generic_obj(glyph)` macro body */
 export function glyph_is_piletop_generic_obj(glyph) {
     return ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF &&
-        (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)
+        (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0)
         ? 1
         : 0);
 }
@@ -909,10 +909,9 @@ export function glyph_is_swallow(glyph) {
 
 /** C: include/display.h — the `glyph_is_trap(glyph)` macro body */
 export function glyph_is_trap(glyph) {
-    return ((glyph) >= ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0) &&
+    return ((glyph) >= ((NHC.GLYPH_CMAP_B_OFF + (NHC.S_arrow_trap - NHC.S_grave)) | 0) &&
         (glyph) <
-            (((((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) +
-                ((NHC.TRAPNUM - 1) | 0)) | 0)
+            ((NHC.GLYPH_CMAP_B_OFF + (NHC.S_arrow_trap - NHC.S_grave) + (NHC.TRAPNUM - 1)) | 0)
         ? 1
         : 0);
 }
@@ -935,8 +934,7 @@ export function glyph_to_body_corpsenm(glyph) {
 /** C: include/display.h — the `glyph_to_explosion(glyph)` macro body */
 export function glyph_to_explosion(glyph) {
     return (((glyph) >= NHC.GLYPH_EXPLODE_OFF && (glyph) < ((9 + NHC.GLYPH_EXPLODE_FROSTY_OFF) | 0))
-        ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) %
-            ((((NHC.S_expl_br - NHC.S_expl_tl) | 0) + 1) | 0))
+        ? ((((glyph) - NHC.GLYPH_EXPLODE_OFF) | 0) % ((NHC.S_expl_br - NHC.S_expl_tl + 1) | 0))
         : 0);
 }
 
@@ -986,25 +984,23 @@ export function glyph_to_obj(glyph) {
                     ((glyph) < ((NHC.GLYPH_STATUE_FEM_PILETOP_OFF + NHC.NUMMONS) | 0)))))
             ? NHC.STATUE
             : ((((glyph) > NHC.GLYPH_OBJ_OFF &&
-                (glyph) < ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)) ||
+                (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT - 1) | 0)) ||
                 ((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF &&
-                    (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0)))
+                    (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0)))
                 ? (((glyph) -
                     (((glyph) > NHC.GLYPH_OBJ_PILETOP_OFF &&
-                        (glyph) < ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0))
+                        (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0))
                         ? NHC.GLYPH_OBJ_PILETOP_OFF
                         : NHC.GLYPH_OBJ_OFF)) | 0)
                 : (((glyph) == NHC.GLYPH_OBJ_OFF ||
-                    ((glyph) >= ((((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) &&
+                    ((glyph) >= ((NHC.GLYPH_OBJ_OFF + NHC.FIRST_OBJECT - 1) | 0) &&
                         (glyph) < ((NHC.GLYPH_OBJ_OFF + NHC.NUM_OBJECTS) | 0)) ||
                     ((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF ||
-                        ((glyph) >
-                            ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) &&
+                        ((glyph) > ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0) &&
                             (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0))))
                     ? (((glyph) -
                         (((glyph) == NHC.GLYPH_OBJ_PILETOP_OFF ||
-                            ((glyph) >
-                                ((((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT) | 0) - 1) | 0) &&
+                            ((glyph) > ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.FIRST_OBJECT - 1) | 0) &&
                                 (glyph) < ((NHC.GLYPH_OBJ_PILETOP_OFF + NHC.NUM_OBJECTS) | 0)))
                             ? NHC.GLYPH_OBJ_PILETOP_OFF
                             : NHC.GLYPH_OBJ_OFF)) | 0)
@@ -1042,14 +1038,13 @@ export function glyph_to_swallow(glyph) {
 
 /** C: include/display.h — the `glyph_to_trap(glyph)` macro body */
 export function glyph_to_trap(glyph) {
-    return (((glyph) >= ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0) &&
+    return (((glyph) >= ((NHC.GLYPH_CMAP_B_OFF + (NHC.S_arrow_trap - NHC.S_grave)) | 0) &&
         (glyph) <
-            (((((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) +
-                ((NHC.TRAPNUM - 1) | 0)) | 0))
-        ? ((((((((((glyph) -
-            ((NHC.GLYPH_CMAP_B_OFF + ((NHC.S_arrow_trap - NHC.S_grave) | 0)) | 0)) | 0) +
-            NHC.S_arrow_trap) | 0) -
-            NHC.S_arrow_trap) | 0) + 1) | 0))
+            ((NHC.GLYPH_CMAP_B_OFF + (NHC.S_arrow_trap - NHC.S_grave) + (NHC.TRAPNUM - 1)) | 0))
+        ? ((((glyph) -
+            ((NHC.GLYPH_CMAP_B_OFF + (NHC.S_arrow_trap - NHC.S_grave)) | 0) +
+            NHC.S_arrow_trap -
+            NHC.S_arrow_trap + 1) | 0))
         : NHC.MAX_GLYPH);
 }
 
@@ -1322,9 +1317,7 @@ export function is_cmap_room(i) { return ((i) >= NHC.S_room && (i) <= NHC.S_dark
 
 /** C: include/sym.h — the `is_cmap_trap(i)` macro body */
 export function is_cmap_trap(i) {
-    return ((i) >= NHC.S_arrow_trap && (i) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0)
-        ? 1
-        : 0);
+    return ((i) >= NHC.S_arrow_trap && (i) < ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0) ? 1 : 0);
 }
 
 /** C: include/sym.h — the `is_cmap_wall(i)` macro body */

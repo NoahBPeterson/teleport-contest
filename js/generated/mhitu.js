@@ -2273,9 +2273,7 @@ function gulpmu(mtmp, mattk) {
             /* having good armor & high constitution makes
                it take longer for you to be digested, but
                you'll end up trapped inside for longer too */
-            tim_tmp = ((((((acurr(NHC.A_CON)) + 10) | 0) - cptr.ld1so(u, $you_uac)) | 0) +
-                rn2(20)) |
-                    0;
+            tim_tmp = ((acurr(NHC.A_CON)) + 10 - cptr.ld1so(u, $you_uac) + rn2(20)) | 0;
             if (tim_tmp < 0)
                 tim_tmp = 0;
             tim_tmp = (tim_tmp / cptr.ld1uo(mtmp, $monst_m_lev)) | 0;
@@ -2826,7 +2824,7 @@ export function gazemu(mtmp, mattk) {
                 cptr.stI32o(
                     mtmp,
                     $monst_mspec_used,
-                    (cptr.ldI32o(mtmp, $monst_mspec_used) + ((conf + rn2(6)) | 0)) | 0
+                    (cptr.ldI32o(mtmp, $monst_mspec_used) + (conf + rn2(6))) | 0
                 );
                 if (!HConfusion())
                     pline_mon(mtmp, __s_s_gaze_confuses_you, s_suffix(Monnam(mtmp)));
@@ -2848,7 +2846,7 @@ export function gazemu(mtmp, mattk) {
                 cptr.stI32o(
                     mtmp,
                     $monst_mspec_used,
-                    (cptr.ldI32o(mtmp, $monst_mspec_used) + ((stun + rn2(6)) | 0)) | 0
+                    (cptr.ldI32o(mtmp, $monst_mspec_used) + (stun + rn2(6))) | 0
                 );
                 pline_mon(mtmp, __s_s_stares_piercingly_at_you, Monnam(mtmp));
                 make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(stun)), 1);
@@ -3246,10 +3244,7 @@ export function doseduce(mon) {
 
     if (uarm.v || uarmc.v) {
         if (!Deaf()) {
-            if (!(((BigInt.asIntN(
-                64,
-                yyyymmdd(0n) - (BigInt.asIntN(64, BigInt(getyear()) * 10000n))
-            )) == 229n) &&
+            if (!(((BigInt.asIntN(64, yyyymmdd(0n) - BigInt(getyear()) * 10000n)) == 229n) &&
                     (cptr.ldI32o(mon, $monst_female) & 1) | 0)) {
                 ;
                 verbalize(
@@ -3720,10 +3715,10 @@ function passiveum(olduasmon, mtmp, mattk) {
                 cptr.stI32o(u, $you_mhmax, cptr.ldI32o(u, $you_mh));
             if (cptr.ldI32o(u, $you_mhmax) >
                     (Math.imul(
-                        ((cptr.ld1so(
+                        cptr.ld1so(
                             cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                             $permonst_mlevel
-                        ) + 1) | 0),
+                        ) + 1,
                         8
                     )))
                 void split_mon(cptr.add(gy, $instance_globals_y_youmonst), mtmp);

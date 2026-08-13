@@ -671,7 +671,7 @@ function* io_readline(L) {
     (yield* lua_settop(L, 1));
     (yield* luaL_checkstack(L, n, __s_too_many_arguments));
     for (i = 1; i <= n; i++)
-        (yield* lua_pushvalue(L, ((-1001000 - ((3 + i) | 0)) | 0)));
+        (yield* lua_pushvalue(L, ((-1001000 - (3 + i)) | 0)));
     n = (yield* g_read(L, cptr.ldPtr(p), 2));  /* 'n' is number of results */
     (void 0);  /* should return at least a nil */
     if (lua_toboolean(L, -n))

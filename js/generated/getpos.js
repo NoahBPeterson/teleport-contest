@@ -1408,17 +1408,17 @@ export function getpos_menu(ccp, gloc) {
 function truncate_to_map(cx, cy, dx, dy) {
     /* diagonal moves complicate this... */
     if (((cptr.ldI16(cx) + dx) | 0) < 1) {
-        dy = schar(dy - Math.imul(sgn(dy), ((1 - ((cptr.ldI16(cx) + dx) | 0)) | 0)));
+        dy = schar(dy - Math.imul(sgn(dy), 1 - (cptr.ldI16(cx) + dx)));
         dx = schar(((1 - cptr.ldI16(cx)) | 0));  /* so that (cx+dx == 1) */
     } else if (((cptr.ldI16(cx) + dx) | 0) > 79) {
-        dy = schar(dy + Math.imul(sgn(dy), ((79 - ((cptr.ldI16(cx) + dx) | 0)) | 0)));
+        dy = schar(dy + Math.imul(sgn(dy), 79 - (cptr.ldI16(cx) + dx)));
         dx = schar(((79 - cptr.ldI16(cx)) | 0));
     }
     if (((cptr.ldI16(cy) + dy) | 0) < 0) {
-        dx = schar(dx - Math.imul(sgn(dx), ((0 - ((cptr.ldI16(cy) + dy) | 0)) | 0)));
+        dx = schar(dx - Math.imul(sgn(dx), 0 - (cptr.ldI16(cy) + dy)));
         dy = schar(((0 - cptr.ldI16(cy)) | 0));  /* so that (cy+dy == 0) */
     } else if (((cptr.ldI16(cy) + dy) | 0) > 20) {
-        dx = schar(dx + Math.imul(sgn(dx), ((20 - ((cptr.ldI16(cy) + dy) | 0)) | 0)));
+        dx = schar(dx + Math.imul(sgn(dx), 20 - (cptr.ldI16(cy) + dy)));
         dy = schar(((20 - cptr.ldI16(cy)) | 0));
     }
     cptr.stI16(cx, cptr.ldI16(cx) + dx);
@@ -1745,13 +1745,13 @@ export function getpos(ccp, force, goal) {
             while (isok(i16(((cx.v + dx) | 0)), i16(((cy.v + dy) | 0))) &&
                     glyph == glyph_at(i16(((cx.v + dx) | 0)), i16(((cy.v + dy) | 0))) &&
                     isok(
-                        i16(((((cx.v + dx) | 0) + cptr.ldI32o(u, $you_dx)) | 0)),
-                        i16(((((cy.v + dy) | 0) + cptr.ldI32o(u, $you_dy)) | 0))
+                        i16(((cx.v + dx + cptr.ldI32o(u, $you_dx)) | 0)),
+                        i16(((cy.v + dy + cptr.ldI32o(u, $you_dy)) | 0))
                     ) &&
                     glyph ==
                         glyph_at(
-                            i16(((((cx.v + dx) | 0) + cptr.ldI32o(u, $you_dx)) | 0)),
-                            i16(((((cy.v + dy) | 0) + cptr.ldI32o(u, $you_dy)) | 0))
+                            i16(((cx.v + dx + cptr.ldI32o(u, $you_dx)) | 0)),
+                            i16(((cy.v + dy + cptr.ldI32o(u, $you_dy)) | 0))
                         )) {
                 dx = (dx + cptr.ldI32o(u, $you_dx)) | 0;
                 dy = (dy + cptr.ldI32o(u, $you_dy)) | 0;

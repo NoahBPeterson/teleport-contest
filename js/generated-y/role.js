@@ -3288,7 +3288,7 @@ export function* role_menu_extra(which, where, preselect) {
         void cptr.sprintf(cptr.decay(buf), __s_4s_s_forces_s, __s_empty, constrainer, forcedvalue);
         (yield* add_menu_str(where, cptr.decay(buf)));
     } else if (what) {
-        cptr.stI32(any, ((-2 - (((which) + 1) | 0)) | 0));
+        cptr.stI32(any, ((-2 - ((which) + 1)) | 0));
         void cptr.sprintf(
             cptr.decay(buf),
             __s_pick_s_s_first,

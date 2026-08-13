@@ -837,7 +837,7 @@ function nomux_sgr_fg(fg) {
     if (fg >= 0 && fg <= 7)
         return (30 + fg) | 0;
     if (fg >= 8 && fg <= 15)
-        return (90 + ((fg - 8) | 0)) | 0;
+        return (90 + (fg - 8)) | 0;
     return 37;
 
 }
@@ -1359,13 +1359,7 @@ function init_hilite() {
             scratch = tparm(setf, cptr.ldI32o(ti_map, c, 12));
             work = alloc(Number(BigInt.asUintN(
                 32,
-                BigInt.asUintN(
-                    64,
-                    BigInt.asUintN(
-                        64,
-                        cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))
-                    ) + 1n
-                )
+                BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len)) + 1n)
             )));
             void cptr.strcpy(work, MD);
             cptr.stPtro(hilites, cptr.ldI32o2(ti_map, c, 12, 8), work, 8);
@@ -1385,13 +1379,7 @@ function init_hilite() {
             NHM.CLR_WHITE,
             alloc(Number(BigInt.asUintN(
                 32,
-                BigInt.asUintN(
-                    64,
-                    BigInt.asUintN(
-                        64,
-                        cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))
-                    ) + 1n
-                )
+                BigInt.asUintN(64, cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len)) + 1n)
             ))),
             8
         );
@@ -1420,10 +1408,7 @@ function init_hilite() {
                     32,
                     BigInt.asUintN(
                         64,
-                        BigInt.asUintN(
-                            64,
-                            cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len))
-                        ) + 1n
+                        cptr.strlen(scratch) + BigInt.asUintN(64, BigInt(md_len)) + 1n
                     )
                 ))),
                 8

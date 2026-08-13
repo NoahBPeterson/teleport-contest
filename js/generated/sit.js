@@ -1085,7 +1085,7 @@ export function rndcurse() {
             continue;
         nobj++;
     }
-    cnt = rnd((6 / (((((!!Antimagic()) + (!!Half_spell_damage())) | 0) + 1) | 0)) | 0);
+    cnt = rnd((6 / (((!!Antimagic()) + (!!Half_spell_damage()) + 1) | 0)) | 0);
     if (nobj) {
         for (; cnt > 0; cnt--) {
             onum = rnd(nobj);

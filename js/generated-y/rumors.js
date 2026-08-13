@@ -1167,7 +1167,7 @@ function* init_CapMons() {
 
         /* finish the current pass */
         if (pass == 1) {
-            CapMonSiz = (((CapMonstCnt + CapBogonCnt) >>> 0) + 1) >>> 0;  /* +1: terminator */
+            CapMonSiz = (CapMonstCnt + CapBogonCnt + 1) >>> 0;  /* +1: terminator */
             CapMons = (yield* alloc(Number(BigInt.asUintN(
                 32,
                 BigInt.asUintN(64, BigInt(CapMonSiz >>> 0) * 8n)

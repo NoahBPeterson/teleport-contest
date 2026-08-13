@@ -146,7 +146,7 @@ function posrelatI(pos, len) {
     else if (pos < -BigInt.asIntN(64, len))
         return 1n;  /* clip to 1 */
     else
-        return BigInt.asUintN(64, BigInt.asUintN(64, len + BigInt.asUintN(64, pos)) + 1n);
+        return BigInt.asUintN(64, len + BigInt.asUintN(64, pos) + 1n);
 }
 
 /*
@@ -171,7 +171,7 @@ function getendpos(L, arg, def, len) {
     else if (pos < -BigInt.asIntN(64, len))
         return 0n;
     else
-        return BigInt.asUintN(64, BigInt.asUintN(64, len + BigInt.asUintN(64, pos)) + 1n);
+        return BigInt.asUintN(64, len + BigInt.asUintN(64, pos) + 1n);
 }
 
 /** C ref: lstrlib.c:100 — @param {CPtr<lua_State>} L @returns {CInt} */
@@ -184,7 +184,7 @@ function str_sub(L) {
         lua_pushlstring(
             L,
             cptr.add(cptr.add(s, start), -(1)),
-            BigInt.asUintN(64, (BigInt.asUintN(64, end - start)) + 1n)
+            BigInt.asUintN(64, end - start + 1n)
         );
     else
         lua_pushstring(L, __s_empty);
@@ -199,7 +199,7 @@ function str_reverse(L) {
     let s = luaL_checklstring(L, 1, l);
     let p = luaL_buffinitsize(L, b, l.v);
     for (i = 0n; i < l.v; i++)
-        cptr.st1o(p, i, cptr.ld1so(s, BigInt.asUintN(64, BigInt.asUintN(64, l.v - i) - 1n)));
+        cptr.st1o(p, i, cptr.ld1so(s, BigInt.asUintN(64, l.v - i - 1n)));
     luaL_pushresultsize(b, l.v);
     return 1;
 }
@@ -250,8 +250,7 @@ function str_rep(L) {
     else {
         let totallen = BigInt.asUintN(
             64,
-            BigInt.asUintN(64, BigInt.asUintN(64, n) * l.v) +
-                BigInt.asUintN(64, BigInt.asUintN(64, (BigInt.asIntN(64, n - 1n))) * lsep.v)
+            BigInt.asUintN(64, n) * l.v + BigInt.asUintN(64, (BigInt.asIntN(64, n - 1n))) * lsep.v
         );
         let b = cptr.alloc(1056);
         let p = luaL_buffinitsize(L, b, totallen);
@@ -289,7 +288,7 @@ function str_byte(L) {
             L,
             BigInt((uchar((cptr.ld1so(
                 s,
-                BigInt.asUintN(64, BigInt.asUintN(64, posi + BigInt.asUintN(64, BigInt(i))) - 1n)
+                BigInt.asUintN(64, posi + BigInt.asUintN(64, BigInt(i)) - 1n)
             )))) >>> 0)
         );
     return n;
@@ -1668,7 +1667,7 @@ function addlenmod(form, lenmod) {
     let lm = cptr.strlen(lenmod);
     let spec = cptr.ld1so(form, BigInt.asUintN(64, l - 1n));
     cptr.strcpy(cptr.add(cptr.add(form, l), -(1)), lenmod);
-    cptr.st1o(form, BigInt.asUintN(64, BigInt.asUintN(64, l + lm) - 1n), spec);
+    cptr.st1o(form, BigInt.asUintN(64, l + lm - 1n), spec);
     cptr.st1o(form, BigInt.asUintN(64, l + lm), 0);
 }
 
@@ -1980,10 +1979,10 @@ function getnum(fmt, df) {
         let a = 0;
         do {
             a = (Math.imul(a, 10) +
-                ((cptr.ld1s((cptr.postinc(
+                (cptr.ld1s((cptr.postinc(
                     () => cptr.ldPtr(fmt),
                     (v) => { cptr.stPtr(fmt, v); }
-                ))) - 48) | 0)) |
+                ))) - 48)) |
                     0;
         } while (digit(cptr.ld1s(cptr.ldPtr(fmt))) && a <= 214748363);
         return a;
@@ -2179,15 +2178,11 @@ function packint(b, n, islittle, size, neg) {
     cptr.st1o(buff, islittle ? 0 : (size - 1) | 0, Number(BigInt.asIntN(8, (n & 255n))));  /* first byte */
     for (i = 1; i < size; i++) {
         n >>= 8n;
-        cptr.st1o(
-            buff,
-            islittle ? i : (((size - 1) | 0) - i) | 0,
-            Number(BigInt.asIntN(8, (n & 255n)))
-        );
+        cptr.st1o(buff, islittle ? i : (size - 1 - i) | 0, Number(BigInt.asIntN(8, (n & 255n))));
     }
     if (neg && size > 8) {
         for (i = 8; i < size; i++)
-            cptr.st1o(buff, islittle ? i : (((size - 1) | 0) - i) | 0, -1);
+            cptr.st1o(buff, islittle ? i : (size - 1 - i) | 0, -1);
     }
     (cptr.stU64o(
         (b),
@@ -2476,7 +2471,7 @@ function unpackint(L, str, islittle, size, issigned) {
     let limit = (size <= 8) ? size : 8;
     for (i = (limit - 1) | 0; i >= 0; i--) {
         res <<= 8n;
-        res |= BigInt(uchar(cptr.ld1so(str, islittle ? i : (((size - 1) | 0) - i) | 0)) >>> 0);
+        res |= BigInt(uchar(cptr.ld1so(str, islittle ? i : (size - 1 - i) | 0)) >>> 0);
     }
     if (size < 8) {
         if (issigned) {
@@ -2487,10 +2482,7 @@ function unpackint(L, str, islittle, size, issigned) {
         let mask = (!issigned || BigInt.asIntN(64, res) >= 0n) ? 0 : 255;
         for (i = limit; i < size; i++) {
             if ((__builtin_expect(
-                BigInt(((uchar(cptr.ld1so(
-                    str,
-                    islittle ? i : (((size - 1) | 0) - i) | 0
-                )) != mask) != 0)),
+                BigInt(((uchar(cptr.ld1so(str, islittle ? i : (size - 1 - i) | 0)) != mask) != 0)),
                 0n
             )))
                 luaL_error(L, __s_d_byte_integer_does_not_fit_into_lua, size);
@@ -2579,10 +2571,7 @@ function str_unpack(L) {
                 );
                 (void ((__builtin_expect(
                     BigInt(((len <=
-                        BigInt.asUintN(
-                            64,
-                            BigInt.asUintN(64, ld.v - pos) - BigInt.asUintN(64, BigInt(size.v))
-                        )) != 0)),
+                        BigInt.asUintN(64, ld.v - pos - BigInt.asUintN(64, BigInt(size.v)))) != 0)),
                     1n
                 )) ||
                     luaL_argerror(L, 2, (__s_data_string_too_short))

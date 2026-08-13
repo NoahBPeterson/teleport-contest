@@ -953,9 +953,12 @@ function* dig() {
         svc,
         $context_info_digging,
         (cptr.ldI32o(svc, $context_info_digging) +
-            ((((((((((10 + rn2(5)) | 0) + (yield* abon())) | 0) + cptr.ld1so(uwep.v, $obj_spe)) | 0) -
-                greatest_erosion(uwep.v)) | 0) +
-                cptr.ld1so(u, $you_udaminc)) | 0)) | 0
+            (10 +
+                rn2(5) +
+                (yield* abon()) +
+                cptr.ld1so(uwep.v, $obj_spe) -
+                greatest_erosion(uwep.v) +
+                cptr.ld1so(u, $you_udaminc))) | 0
     );
     if ((cptr.ldI16o(gu, $instance_globals_u_urace + $Race_mnum) == NHC.PM_DWARF))
         cptr.stI32o(
@@ -2119,7 +2122,7 @@ export function* use_pick_axe2(obj) {
         let buf = new Uint8Array(256);
         let dam;
 
-        dam = (((rnd(2) + dbon()) | 0) + cptr.ld1so(obj, $obj_spe)) | 0;
+        dam = (rnd(2) + dbon() + cptr.ld1so(obj, $obj_spe)) | 0;
         if (dam <= 0)
             dam = 1;
         (yield* You(__s_hit_yourself_with_s, (yield* yname(uwep.v))));
@@ -2647,10 +2650,10 @@ export function* draft_message(unexpected) {
             let dridx;
 
             /* Lawful: 0..1, Neutral: 1..2, Chaotic: 2..3 */
-            dridx = ((rn2(2) + ((1 - sgn(cptr.ld1so(u, $you_ualign))) | 0)) | 0);
+            dridx = ((rn2(2) + (1 - sgn(cptr.ld1so(u, $you_ualign)))) | 0);
             if (cptr.ldI32o(u, $you_ualign + $align_record) < 4)
                 /* L: +(0..2), N: +(-1..1), C: +(-2..0); all: 0..3 */
-                dridx = (dridx + ((rn2(3) + ((sgn(cptr.ld1so(u, $you_ualign)) - 1) | 0)) | 0)) | 0;
+                dridx = (dridx + (rn2(3) + (sgn(cptr.ld1so(u, $you_ualign)) - 1))) | 0;
             (yield* You_feel(__s_like_s, cptr.ldPtro(__static_draft_message_draft_reaction, dridx, 8)));
         }
     }
@@ -2814,7 +2817,7 @@ export function* zap_dig() {
         diridx = xytodir(cptr.ldI32o(u, $you_dx), cptr.ldI32o(u, $you_dy));
     }
     digdepth = ((rn2(18) + 8) | 0);
-    (yield* tmp_at(-1, (i16(((((((NHC.S_digbeam) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))));
+    (yield* tmp_at(-1, (i16(((((NHC.S_digbeam) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0))))));
     while (--digdepth >= 0) {
         if (!isok(zx, zy))
             break;

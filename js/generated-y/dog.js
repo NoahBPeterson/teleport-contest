@@ -796,7 +796,7 @@ export function* mon_arrive(mtmp, when) {
         /* heal monster for time spent in limbo */
         let nmv = BigInt.asIntN(
             64,
-            BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - 1n) -
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves) - 1n -
                 cptr.ldI64o(mtmp, $monst_mlstmv)
         );
 
@@ -857,11 +857,10 @@ export function* mon_arrive(mtmp, when) {
                that we know that the current endgame levels always
                build upwards and never have any exclusion subregion
                inside their TELEPORT_REGION settings. */
-            xlocale = i16(((rn2((((cptr.ldI16o(svu, $dest_area_hx) -
-                cptr.ldI16(svu)) | 0) + 1) | 0) +
+            xlocale = i16(((rn2((cptr.ldI16o(svu, $dest_area_hx) - cptr.ldI16(svu) + 1) | 0) +
                     (cptr.ldI16(svu))) | 0));
-            ylocale = i16(((rn2((((cptr.ldI16o(svu, $dest_area_hy) -
-                cptr.ldI16o(svu, $dest_area_ly)) | 0) + 1) | 0) +
+            ylocale = i16(((rn2((cptr.ldI16o(svu, $dest_area_hy) -
+                cptr.ldI16o(svu, $dest_area_ly) + 1) | 0) +
                     (cptr.ldI16o(svu, $dest_area_ly))) | 0));
             break;
         }

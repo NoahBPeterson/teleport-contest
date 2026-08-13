@@ -52,7 +52,7 @@ function u_posrelat(pos, len) {
     else if (BigInt.asUintN(64, 0n - BigInt.asUintN(64, pos)) > len)
         return 0n;
     else
-        return BigInt.asIntN(64, BigInt.asIntN(64, BigInt.asIntN(64, len) + pos) + 1n);
+        return BigInt.asIntN(64, BigInt.asIntN(64, len) + pos + 1n);
 }
 
 /*

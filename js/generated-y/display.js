@@ -522,7 +522,7 @@ export function* magic_map_background(x, y, show) {
             !(cptr.ldI32o(lev, $rm_waslit) & 1)) {
         /* Floor spaces are dark if unlit.  Corridors are dark if unlit. */
         if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM &&
-                glyph == (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
+                glyph == (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
             glyph = (cptr.ld1so(flags, $flag_dark_room) &&
                 cptr.ld1so(iflags, $instance_flags_wc_color))
                     ? (((((((cptr.ldI16o(
@@ -572,7 +572,7 @@ export function* magic_map_background(x, y, show) {
                             ? NHC.S_stone
                             : NHC.S_darkroom)) <=
                             NHC.S_trwall)
-                            ? (((((((((cptr.ldI16o(
+                            ? (((((((cptr.ldI16o(
                                 (cptr.add(
                                     svd,
                                     $instance_globals_saved_d_dungeon_topology +
@@ -595,7 +595,7 @@ export function* magic_map_background(x, y, show) {
                                 )))
                                 ? NHC.S_stone
                                 : NHC.S_darkroom)) -
-                                NHC.S_vwall) | 0) +
+                                NHC.S_vwall +
                                 (In_mines(cptr.add(u, $you_uz))
                                     ? NHC.GLYPH_CMAP_MINES_OFF
                                     : (In_hell(cptr.add(u, $you_uz))
@@ -650,7 +650,7 @@ export function* magic_map_background(x, y, show) {
                                 ? NHC.S_stone
                                 : NHC.S_darkroom)) <
                                 NHC.S_altar)
-                                ? (((((((((cptr.ldI16o(
+                                ? (((((((cptr.ldI16o(
                                     (cptr.add(
                                         svd,
                                         $instance_globals_saved_d_dungeon_topology +
@@ -673,7 +673,7 @@ export function* magic_map_background(x, y, show) {
                                     )))
                                     ? NHC.S_stone
                                     : NHC.S_darkroom)) -
-                                    NHC.S_ndoor) | 0) +
+                                    NHC.S_ndoor +
                                     NHC.GLYPH_CMAP_A_OFF) | 0)
                                 : (((((((cptr.ldI16o(
                                     (cptr.add(
@@ -723,8 +723,8 @@ export function* magic_map_background(x, y, show) {
                                         )))
                                         ? NHC.S_stone
                                         : NHC.S_darkroom)) <
-                                        ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                        ? (((((((((cptr.ldI16o(
+                                        ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                        ? (((((((cptr.ldI16o(
                                             (cptr.add(
                                                 svd,
                                                 $instance_globals_saved_d_dungeon_topology +
@@ -747,7 +747,7 @@ export function* magic_map_background(x, y, show) {
                                             )))
                                             ? NHC.S_stone
                                             : NHC.S_darkroom)) -
-                                            NHC.S_grave) | 0) +
+                                            NHC.S_grave +
                                             NHC.GLYPH_CMAP_B_OFF) | 0)
                                         : (((((((cptr.ldI16o(
                                             (cptr.add(
@@ -773,7 +773,7 @@ export function* magic_map_background(x, y, show) {
                                             ? NHC.S_stone
                                             : NHC.S_darkroom)) <=
                                             NHC.S_goodpos)
-                                            ? (((((((((cptr.ldI16o(
+                                            ? (((((((cptr.ldI16o(
                                                 (cptr.add(
                                                     svd,
                                                     $instance_globals_saved_d_dungeon_topology +
@@ -796,13 +796,13 @@ export function* magic_map_background(x, y, show) {
                                                 )))
                                                 ? NHC.S_stone
                                                 : NHC.S_darkroom)) -
-                                                NHC.S_digbeam) | 0) +
+                                                NHC.S_digbeam +
                                                 NHC.GLYPH_CMAP_C_OFF) | 0)
                                             : NHC.MAX_GLYPH))))))
                     : NHC.GLYPH_NOTHING_OFF;
         else if (cptr.ld1so(lev, $rm_typ) == NHC.CORR &&
-                glyph == (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
-            glyph = (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0);
+                glyph == (((NHC.S_litcorr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
+            glyph = (((NHC.S_corr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0);
     }
     if ((cptr.ldI32o(
         svl,
@@ -857,16 +857,14 @@ export function* map_background(x, y, show) {
 export function* map_trap(trap, show) {
     let x = cptr.ldI16o(trap, $trap_tx);
     let y = cptr.ldI16o(trap, $trap_ty);
-    let glyph = (((((((NHC.S_arrow_trap +
-        (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) ==
+    let glyph = (((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) | 0)) ==
         NHC.S_stone)
             ? NHC.GLYPH_CMAP_STONE_OFF
-            : (((((((NHC.S_arrow_trap +
-                (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <=
+            : (((((NHC.S_arrow_trap + (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) | 0)) <=
                 NHC.S_trwall)
-                ? (((((((((NHC.S_arrow_trap +
-                    (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) -
-                    NHC.S_vwall) | 0) +
+                ? ((NHC.S_arrow_trap +
+                    (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1 -
+                    NHC.S_vwall +
                     (In_mines(cptr.add(u, $you_uz))
                         ? NHC.GLYPH_CMAP_MINES_OFF
                         : (In_hell(cptr.add(u, $you_uz))
@@ -896,33 +894,30 @@ export function* map_trap(trap, show) {
                                 : ((cptr.ldI16((cptr.add(u, $you_uz))) == sokoban_dnum())
                                     ? NHC.GLYPH_CMAP_SOKO_OFF
                                     : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
-                : (((((((NHC.S_arrow_trap +
-                    (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <
+                : (((((NHC.S_arrow_trap +
+                    (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) | 0)) <
                     NHC.S_altar)
-                    ? (((((((((NHC.S_arrow_trap +
-                        (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) -
-                        NHC.S_ndoor) | 0) +
+                    ? ((NHC.S_arrow_trap +
+                        (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1 -
+                        NHC.S_ndoor +
                         NHC.GLYPH_CMAP_A_OFF) | 0)
-                    : (((((((NHC.S_arrow_trap +
-                        (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) ==
+                    : (((((NHC.S_arrow_trap +
+                        (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) | 0)) ==
                         NHC.S_altar)
                         ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
-                        : (((((((NHC.S_arrow_trap +
-                            (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <
-                            ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                            ? (((((((((NHC.S_arrow_trap +
-                                (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) -
-                                NHC.S_grave) | 0) +
+                        : (((((NHC.S_arrow_trap +
+                            (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) | 0)) <
+                            ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                            ? ((NHC.S_arrow_trap +
+                                (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1 -
+                                NHC.S_grave +
                                 NHC.GLYPH_CMAP_B_OFF) | 0)
-                            : (((((((NHC.S_arrow_trap +
-                                (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <=
+                            : (((((NHC.S_arrow_trap +
+                                (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1) | 0)) <=
                                 NHC.S_goodpos)
-                                ? (((((((((NHC.S_arrow_trap +
-                                    (((cptr.ldI32o(
-                                        (trap),
-                                        $trap_ttyp
-                                    ) & 31) | 0))) | 0) - 1) | 0)) -
-                                    NHC.S_digbeam) | 0) +
+                                ? ((NHC.S_arrow_trap +
+                                    (((cptr.ldI32o((trap), $trap_ttyp) & 31) | 0)) - 1 -
+                                    NHC.S_digbeam +
                                     NHC.GLYPH_CMAP_C_OFF) | 0)
                                 : NHC.MAX_GLYPH))))));
 
@@ -947,7 +942,8 @@ export function* map_engraving(ep, show) {
     let glyph = (((engraving_to_defsym(ep)) == NHC.S_stone)
             ? NHC.GLYPH_CMAP_STONE_OFF
             : (((engraving_to_defsym(ep)) <= NHC.S_trwall)
-                ? (((((engraving_to_defsym(ep)) - NHC.S_vwall) | 0) +
+                ? (((engraving_to_defsym(ep)) -
+                    NHC.S_vwall +
                     (In_mines(cptr.add(u, $you_uz))
                         ? NHC.GLYPH_CMAP_MINES_OFF
                         : (In_hell(cptr.add(u, $you_uz))
@@ -982,7 +978,7 @@ export function* map_engraving(ep, show) {
                     : (((engraving_to_defsym(ep)) == NHC.S_altar)
                         ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
                         : (((engraving_to_defsym(ep)) <
-                            ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
+                            ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
                             ? cmap_b_to_glyph(ep)
                             : (((engraving_to_defsym(ep)) <= NHC.S_goodpos)
                                 ? cmap_c_to_glyph(ep)
@@ -1493,8 +1489,7 @@ export function* unmap_object(x, y) {
 
         /* turn remembered dark room squares dark */
         if (!(cptr.ldI32o(lev, $rm_waslit) & 1) &&
-                cptr.ldI32(lev) ==
-                    (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                cptr.ldI32(lev) == (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                 cptr.ld1so(lev, $rm_typ) == NHC.ROOM)
             cptr.stI32(lev, NHC.GLYPH_CMAP_STONE_OFF);
     } else {
@@ -1738,7 +1733,8 @@ function* display_monster(x, y, mon, sightflags, worm_tail) {
                 let glyph = (((sym) == NHC.S_stone)
                         ? NHC.GLYPH_CMAP_STONE_OFF
                         : (((sym) <= NHC.S_trwall)
-                            ? (((((sym) - NHC.S_vwall) | 0) +
+                            ? (((sym) -
+                                NHC.S_vwall +
                                 (In_mines(cptr.add(u, $you_uz))
                                     ? NHC.GLYPH_CMAP_MINES_OFF
                                     : (In_hell(cptr.add(u, $you_uz))
@@ -1770,14 +1766,13 @@ function* display_monster(x, y, mon, sightflags, worm_tail) {
                                                 ? NHC.GLYPH_CMAP_SOKO_OFF
                                                 : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                             : (((sym) < NHC.S_altar)
-                                ? (((((sym) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                                ? (((sym) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                                 : (((sym) == NHC.S_altar)
                                     ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
-                                    : (((sym) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                        ? (((((sym) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                                    : (((sym) < ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                        ? (((sym) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
                                         : (((sym) <= NHC.S_goodpos)
-                                            ? (((((sym) - NHC.S_digbeam) | 0) +
-                                                NHC.GLYPH_CMAP_C_OFF) | 0)
+                                            ? (((sym) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0)
                                             : NHC.MAX_GLYPH))))));
 
                 cptr.stI32o3(
@@ -2061,8 +2056,7 @@ function mon_overrides_region(mon, mx, my) {
                     !(cptr.ldI32o(mon, $monst_mundetected) & 1)) &&
                 (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_FURNITURE &&
                 (cptr.ld1uo((mon), $monst_m_ap_type) & NHM.M_AP_TYPMASK) != NHC.M_AP_OBJECT &&
-                dist2((mx), (my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <=
-                    Math.imul(r, ((r + 1) | 0)))
+                dist2((mx), (my), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= Math.imul(r, r + 1))
             return 1;
     }
 
@@ -2235,7 +2229,7 @@ export function* feel_location(x, y) {
                     do_room_glyph = 1;
             } else if (cptr.ldI32(lev) >= NHC.GLYPH_CMAP_STONE_OFF &&
                     cptr.ldI32(lev) <
-                        (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)) {
+                        (((NHC.S_darkroom) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)) {
                 do_room_glyph = 1;
             }
             if (do_room_glyph) {
@@ -2264,9 +2258,9 @@ export function* feel_location(x, y) {
                                         $dgn_topology_d_rogue_level
                                 )
                             ))))
-                        ? (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                        ? (((NHC.S_darkroom) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                         : ((cptr.ldI32o(lev, $rm_waslit) & 1) | 0
-                            ? (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                            ? (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                             : NHC.GLYPH_CMAP_STONE_OFF)
                 );
                 (yield* show_glyph(x, y, cptr.ldI32(lev)));
@@ -2278,28 +2272,21 @@ export function* feel_location(x, y) {
             /* (lit_corridor only).                                         */
             if (cptr.ld1so(lev, $rm_typ) == NHC.CORR &&
                     cptr.ldI32(lev) ==
-                        (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                        (((NHC.S_litcorr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                     !(cptr.ldI32o(lev, $rm_waslit) & 1))
                 (yield* show_glyph(
                     x,
                     y,
-                    cptr.stI32(
-                        lev,
-                        (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
-                    )
+                    cptr.stI32(lev, (((NHC.S_corr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
                 ));
             else if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM &&
                     cptr.ld1so(flags, $flag_dark_room) &&
                     cptr.ld1so(iflags, $instance_flags_wc_color) &&
-                    cptr.ldI32(lev) ==
-                        (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
+                    cptr.ldI32(lev) == (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
                 (yield* show_glyph(
                     x,
                     y,
-                    cptr.stI32(
-                        lev,
-                        (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
-                    )
+                    cptr.stI32(lev, (((NHC.S_darkroom) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
                 ));
         }
     } else {
@@ -2446,8 +2433,7 @@ export function* feel_location(x, y) {
 
         /* Floor spaces are dark if unlit.  Corridors are dark if unlit. */
         if (cptr.ld1so(lev, $rm_typ) == NHC.ROOM &&
-                cptr.ldI32(lev) ==
-                    (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                cptr.ldI32(lev) == (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                 (!(cptr.ldI32o(lev, $rm_waslit) & 1) ||
                     (cptr.ld1so(flags, $flag_dark_room) &&
                         cptr.ld1so(iflags, $instance_flags_wc_color))))
@@ -2461,10 +2447,10 @@ export function* feel_location(x, y) {
                         ? NHC.GLYPH_CMAP_STONE_OFF
                         : (((cptr.ld1so(flags, $flag_dark_room) ? NHC.S_darkroom : NHC.S_stone) <=
                             NHC.S_trwall)
-                            ? (((((cptr.ld1so(flags, $flag_dark_room)
+                            ? (((cptr.ld1so(flags, $flag_dark_room)
                                 ? NHC.S_darkroom
                                 : NHC.S_stone) -
-                                NHC.S_vwall) | 0) +
+                                NHC.S_vwall +
                                 (In_mines(cptr.add(u, $you_uz))
                                     ? NHC.GLYPH_CMAP_MINES_OFF
                                     : (In_hell(cptr.add(u, $you_uz))
@@ -2499,10 +2485,10 @@ export function* feel_location(x, y) {
                                 ? NHC.S_darkroom
                                 : NHC.S_stone) <
                                 NHC.S_altar)
-                                ? (((((cptr.ld1so(flags, $flag_dark_room)
+                                ? (((cptr.ld1so(flags, $flag_dark_room)
                                     ? NHC.S_darkroom
                                     : NHC.S_stone) -
-                                    NHC.S_ndoor) | 0) +
+                                    NHC.S_ndoor +
                                     NHC.GLYPH_CMAP_A_OFF) | 0)
                                 : (((cptr.ld1so(flags, $flag_dark_room)
                                     ? NHC.S_darkroom
@@ -2512,32 +2498,31 @@ export function* feel_location(x, y) {
                                     : (((cptr.ld1so(flags, $flag_dark_room)
                                         ? NHC.S_darkroom
                                         : NHC.S_stone) <
-                                        ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                        ? (((((cptr.ld1so(flags, $flag_dark_room)
+                                        ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                        ? (((cptr.ld1so(flags, $flag_dark_room)
                                             ? NHC.S_darkroom
                                             : NHC.S_stone) -
-                                            NHC.S_grave) | 0) +
+                                            NHC.S_grave +
                                             NHC.GLYPH_CMAP_B_OFF) | 0)
                                         : (((cptr.ld1so(flags, $flag_dark_room)
                                             ? NHC.S_darkroom
                                             : NHC.S_stone) <=
                                             NHC.S_goodpos)
-                                            ? (((((cptr.ld1so(flags, $flag_dark_room)
+                                            ? (((cptr.ld1so(flags, $flag_dark_room)
                                                 ? NHC.S_darkroom
                                                 : NHC.S_stone) -
-                                                NHC.S_digbeam) | 0) +
+                                                NHC.S_digbeam +
                                                 NHC.GLYPH_CMAP_C_OFF) | 0)
                                             : NHC.MAX_GLYPH))))))
                 )
             ));
         else if (cptr.ld1so(lev, $rm_typ) == NHC.CORR &&
-                cptr.ldI32(lev) ==
-                    (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                cptr.ldI32(lev) == (((NHC.S_litcorr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                 !(cptr.ldI32o(lev, $rm_waslit) & 1))
             (yield* show_glyph(
                 x,
                 y,
-                cptr.stI32(lev, (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
+                cptr.stI32(lev, (((NHC.S_corr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
             ));
     }
     /* draw monster on top if we can sense it */
@@ -2697,11 +2682,11 @@ export function* newsym(x, y) {
                                     $instance_globals_y_youmonst + $monst_mappearance
                                 ) | 0) <=
                                     NHC.S_trwall)
-                                    ? (((((cptr.ldI32o(
+                                    ? (((cptr.ldI32o(
                                         gy,
                                         $instance_globals_y_youmonst + $monst_mappearance
                                     ) | 0) -
-                                        NHC.S_vwall) | 0) +
+                                        NHC.S_vwall +
                                         (In_mines(cptr.add(u, $you_uz))
                                             ? NHC.GLYPH_CMAP_MINES_OFF
                                             : (In_hell(cptr.add(u, $you_uz))
@@ -2737,11 +2722,11 @@ export function* newsym(x, y) {
                                         $instance_globals_y_youmonst + $monst_mappearance
                                     ) | 0) <
                                         NHC.S_altar)
-                                        ? (((((cptr.ldI32o(
+                                        ? (((cptr.ldI32o(
                                             gy,
                                             $instance_globals_y_youmonst + $monst_mappearance
                                         ) | 0) -
-                                            NHC.S_ndoor) | 0) +
+                                            NHC.S_ndoor +
                                             NHC.GLYPH_CMAP_A_OFF) | 0)
                                         : (((cptr.ldI32o(
                                             gy,
@@ -2753,13 +2738,13 @@ export function* newsym(x, y) {
                                                 gy,
                                                 $instance_globals_y_youmonst + $monst_mappearance
                                             ) | 0) <
-                                                ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                                ? (((((cptr.ldI32o(
+                                                ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                                ? (((cptr.ldI32o(
                                                     gy,
                                                     $instance_globals_y_youmonst +
                                                         $monst_mappearance
                                                 ) | 0) -
-                                                    NHC.S_grave) | 0) +
+                                                    NHC.S_grave +
                                                     NHC.GLYPH_CMAP_B_OFF) | 0)
                                                 : (((cptr.ldI32o(
                                                     gy,
@@ -2767,12 +2752,12 @@ export function* newsym(x, y) {
                                                         $monst_mappearance
                                                 ) | 0) <=
                                                     NHC.S_goodpos)
-                                                    ? (((((cptr.ldI32o(
+                                                    ? (((cptr.ldI32o(
                                                         gy,
                                                         $instance_globals_y_youmonst +
                                                             $monst_mappearance
                                                     ) | 0) -
-                                                        NHC.S_digbeam) | 0) +
+                                                        NHC.S_digbeam +
                                                         NHC.GLYPH_CMAP_C_OFF) | 0)
                                                     : NHC.MAX_GLYPH))))))
                             : ((U_AP_TYPE() == NHC.M_AP_OBJECT)
@@ -3018,11 +3003,11 @@ export function* newsym(x, y) {
                                         $instance_globals_y_youmonst + $monst_mappearance
                                     ) | 0) <=
                                         NHC.S_trwall)
-                                        ? (((((cptr.ldI32o(
+                                        ? (((cptr.ldI32o(
                                             gy,
                                             $instance_globals_y_youmonst + $monst_mappearance
                                         ) | 0) -
-                                            NHC.S_vwall) | 0) +
+                                            NHC.S_vwall +
                                             (In_mines(cptr.add(u, $you_uz))
                                                 ? NHC.GLYPH_CMAP_MINES_OFF
                                                 : (In_hell(cptr.add(u, $you_uz))
@@ -3058,11 +3043,11 @@ export function* newsym(x, y) {
                                             $instance_globals_y_youmonst + $monst_mappearance
                                         ) | 0) <
                                             NHC.S_altar)
-                                            ? (((((cptr.ldI32o(
+                                            ? (((cptr.ldI32o(
                                                 gy,
                                                 $instance_globals_y_youmonst + $monst_mappearance
                                             ) | 0) -
-                                                NHC.S_ndoor) | 0) +
+                                                NHC.S_ndoor +
                                                 NHC.GLYPH_CMAP_A_OFF) | 0)
                                             : (((cptr.ldI32o(
                                                 gy,
@@ -3075,14 +3060,13 @@ export function* newsym(x, y) {
                                                     $instance_globals_y_youmonst +
                                                         $monst_mappearance
                                                 ) | 0) <
-                                                    ((NHC.S_arrow_trap +
-                                                        ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                                    ? (((((cptr.ldI32o(
+                                                    ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                                    ? (((cptr.ldI32o(
                                                         gy,
                                                         $instance_globals_y_youmonst +
                                                             $monst_mappearance
                                                     ) | 0) -
-                                                        NHC.S_grave) | 0) +
+                                                        NHC.S_grave +
                                                         NHC.GLYPH_CMAP_B_OFF) | 0)
                                                     : (((cptr.ldI32o(
                                                         gy,
@@ -3090,12 +3074,12 @@ export function* newsym(x, y) {
                                                             $monst_mappearance
                                                     ) | 0) <=
                                                         NHC.S_goodpos)
-                                                        ? (((((cptr.ldI32o(
+                                                        ? (((cptr.ldI32o(
                                                             gy,
                                                             $instance_globals_y_youmonst +
                                                                 $monst_mappearance
                                                         ) | 0) -
-                                                            NHC.S_digbeam) | 0) +
+                                                            NHC.S_digbeam +
                                                             NHC.GLYPH_CMAP_C_OFF) | 0)
                                                         : NHC.MAX_GLYPH))))))
                                 : ((U_AP_TYPE() == NHC.M_AP_OBJECT)
@@ -3411,11 +3395,11 @@ export function* newsym(x, y) {
                                             $instance_globals_y_youmonst + $monst_mappearance
                                         ) | 0) <=
                                             NHC.S_trwall)
-                                            ? (((((cptr.ldI32o(
+                                            ? (((cptr.ldI32o(
                                                 gy,
                                                 $instance_globals_y_youmonst + $monst_mappearance
                                             ) | 0) -
-                                                NHC.S_vwall) | 0) +
+                                                NHC.S_vwall +
                                                 (In_mines(cptr.add(u, $you_uz))
                                                     ? NHC.GLYPH_CMAP_MINES_OFF
                                                     : (In_hell(cptr.add(u, $you_uz))
@@ -3454,12 +3438,12 @@ export function* newsym(x, y) {
                                                 $instance_globals_y_youmonst + $monst_mappearance
                                             ) | 0) <
                                                 NHC.S_altar)
-                                                ? (((((cptr.ldI32o(
+                                                ? (((cptr.ldI32o(
                                                     gy,
                                                     $instance_globals_y_youmonst +
                                                         $monst_mappearance
                                                 ) | 0) -
-                                                    NHC.S_ndoor) | 0) +
+                                                    NHC.S_ndoor +
                                                     NHC.GLYPH_CMAP_A_OFF) | 0)
                                                 : (((cptr.ldI32o(
                                                     gy,
@@ -3475,13 +3459,13 @@ export function* newsym(x, y) {
                                                             $monst_mappearance
                                                     ) | 0) <
                                                         ((NHC.S_arrow_trap +
-                                                            ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                                        ? (((((cptr.ldI32o(
+                                                            (NHC.TRAPNUM - 1)) | 0))
+                                                        ? (((cptr.ldI32o(
                                                             gy,
                                                             $instance_globals_y_youmonst +
                                                                 $monst_mappearance
                                                         ) | 0) -
-                                                            NHC.S_grave) | 0) +
+                                                            NHC.S_grave +
                                                             NHC.GLYPH_CMAP_B_OFF) | 0)
                                                         : (((cptr.ldI32o(
                                                             gy,
@@ -3489,12 +3473,12 @@ export function* newsym(x, y) {
                                                                 $monst_mappearance
                                                         ) | 0) <=
                                                             NHC.S_goodpos)
-                                                            ? (((((cptr.ldI32o(
+                                                            ? (((cptr.ldI32o(
                                                                 gy,
                                                                 $instance_globals_y_youmonst +
                                                                     $monst_mappearance
                                                             ) | 0) -
-                                                                NHC.S_digbeam) | 0) +
+                                                                NHC.S_digbeam +
                                                                 NHC.GLYPH_CMAP_C_OFF) | 0)
                                                             : NHC.MAX_GLYPH))))))
                                     : ((U_AP_TYPE() == NHC.M_AP_OBJECT)
@@ -3645,18 +3629,15 @@ export function* newsym(x, y) {
                         )
                     )))) {
                 if (cptr.ldI32(lev) ==
-                    (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                    (((NHC.S_litcorr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                         cptr.ld1so(lev, $rm_typ) == NHC.CORR)
                     (yield* show_glyph(
                         x,
                         y,
-                        cptr.stI32(
-                            lev,
-                            (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
-                        )
+                        cptr.stI32(lev, (((NHC.S_corr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
                     ));
                 else if (cptr.ldI32(lev) ==
-                    (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                    (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                         cptr.ld1so(lev, $rm_typ) == NHC.ROOM &&
                         !(cptr.ldI32o(lev, $rm_waslit) & 1))
                     (yield* show_glyph(x, y, cptr.stI32(lev, NHC.GLYPH_CMAP_STONE_OFF)));
@@ -3666,18 +3647,15 @@ export function* newsym(x, y) {
                     (cptr.ld1so(flags, $flag_dark_room) &&
                         cptr.ld1so(iflags, $instance_flags_wc_color))) {
                 if (cptr.ldI32(lev) ==
-                    (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                    (((NHC.S_litcorr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                         cptr.ld1so(lev, $rm_typ) == NHC.CORR)
                     (yield* show_glyph(
                         x,
                         y,
-                        cptr.stI32(
-                            lev,
-                            (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
-                        )
+                        cptr.stI32(lev, (((NHC.S_corr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
                     ));
                 else if (cptr.ldI32(lev) ==
-                    (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                    (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                         cptr.ld1so(lev, $rm_typ) == NHC.ROOM)
                     (yield* show_glyph(
                         x,
@@ -3733,7 +3711,7 @@ export function* newsym(x, y) {
                                     ? NHC.S_stone
                                     : NHC.S_darkroom)) <=
                                     NHC.S_trwall)
-                                    ? (((((((((cptr.ldI16o(
+                                    ? (((((((cptr.ldI16o(
                                         (cptr.add(
                                             svd,
                                             $instance_globals_saved_d_dungeon_topology +
@@ -3756,7 +3734,7 @@ export function* newsym(x, y) {
                                         )))
                                         ? NHC.S_stone
                                         : NHC.S_darkroom)) -
-                                        NHC.S_vwall) | 0) +
+                                        NHC.S_vwall +
                                         (In_mines(cptr.add(u, $you_uz))
                                             ? NHC.GLYPH_CMAP_MINES_OFF
                                             : (In_hell(cptr.add(u, $you_uz))
@@ -3811,7 +3789,7 @@ export function* newsym(x, y) {
                                         ? NHC.S_stone
                                         : NHC.S_darkroom)) <
                                         NHC.S_altar)
-                                        ? (((((((((cptr.ldI16o(
+                                        ? (((((((cptr.ldI16o(
                                             (cptr.add(
                                                 svd,
                                                 $instance_globals_saved_d_dungeon_topology +
@@ -3834,7 +3812,7 @@ export function* newsym(x, y) {
                                             )))
                                             ? NHC.S_stone
                                             : NHC.S_darkroom)) -
-                                            NHC.S_ndoor) | 0) +
+                                            NHC.S_ndoor +
                                             NHC.GLYPH_CMAP_A_OFF) | 0)
                                         : (((((((cptr.ldI16o(
                                             (cptr.add(
@@ -3884,8 +3862,8 @@ export function* newsym(x, y) {
                                                 )))
                                                 ? NHC.S_stone
                                                 : NHC.S_darkroom)) <
-                                                ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                                ? (((((((((cptr.ldI16o(
+                                                ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                                ? (((((((cptr.ldI16o(
                                                     (cptr.add(
                                                         svd,
                                                         $instance_globals_saved_d_dungeon_topology +
@@ -3908,7 +3886,7 @@ export function* newsym(x, y) {
                                                     )))
                                                     ? NHC.S_stone
                                                     : NHC.S_darkroom)) -
-                                                    NHC.S_grave) | 0) +
+                                                    NHC.S_grave +
                                                     NHC.GLYPH_CMAP_B_OFF) | 0)
                                                 : (((((((cptr.ldI16o(
                                                     (cptr.add(
@@ -3934,7 +3912,7 @@ export function* newsym(x, y) {
                                                     ? NHC.S_stone
                                                     : NHC.S_darkroom)) <=
                                                     NHC.S_goodpos)
-                                                    ? (((((((((cptr.ldI16o(
+                                                    ? (((((((cptr.ldI16o(
                                                         (cptr.add(
                                                             svd,
                                                             $instance_globals_saved_d_dungeon_topology +
@@ -3957,7 +3935,7 @@ export function* newsym(x, y) {
                                                         )))
                                                         ? NHC.S_stone
                                                         : NHC.S_darkroom)) -
-                                                        NHC.S_digbeam) | 0) +
+                                                        NHC.S_digbeam +
                                                         NHC.GLYPH_CMAP_C_OFF) | 0)
                                                     : NHC.MAX_GLYPH))))))
                         )
@@ -3995,7 +3973,8 @@ export function* shieldeff(x, y) {
                 (((cptr.ldI32o(shield_static, i, 4)) == NHC.S_stone)
                     ? NHC.GLYPH_CMAP_STONE_OFF
                     : (((cptr.ldI32o(shield_static, i, 4)) <= NHC.S_trwall)
-                        ? (((((cptr.ldI32o(shield_static, i, 4)) - NHC.S_vwall) | 0) +
+                        ? (((cptr.ldI32o(shield_static, i, 4)) -
+                            NHC.S_vwall +
                             (In_mines(cptr.add(u, $you_uz))
                                 ? NHC.GLYPH_CMAP_MINES_OFF
                                 : (In_hell(cptr.add(u, $you_uz))
@@ -4026,17 +4005,19 @@ export function* shieldeff(x, y) {
                                             ? NHC.GLYPH_CMAP_SOKO_OFF
                                             : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                         : (((cptr.ldI32o(shield_static, i, 4)) < NHC.S_altar)
-                            ? (((((cptr.ldI32o(shield_static, i, 4)) - NHC.S_ndoor) | 0) +
+                            ? (((cptr.ldI32o(shield_static, i, 4)) -
+                                NHC.S_ndoor +
                                 NHC.GLYPH_CMAP_A_OFF) | 0)
                             : (((cptr.ldI32o(shield_static, i, 4)) == NHC.S_altar)
                                 ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
                                 : (((cptr.ldI32o(shield_static, i, 4)) <
-                                    ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                    ? (((((cptr.ldI32o(shield_static, i, 4)) - NHC.S_grave) | 0) +
+                                    ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                    ? (((cptr.ldI32o(shield_static, i, 4)) -
+                                        NHC.S_grave +
                                         NHC.GLYPH_CMAP_B_OFF) | 0)
                                     : (((cptr.ldI32o(shield_static, i, 4)) <= NHC.S_goodpos)
-                                        ? (((((cptr.ldI32o(shield_static, i, 4)) -
-                                            NHC.S_digbeam) | 0) +
+                                        ? (((cptr.ldI32o(shield_static, i, 4)) -
+                                            NHC.S_digbeam +
                                             NHC.GLYPH_CMAP_C_OFF) | 0)
                                         : NHC.MAX_GLYPH))))))
             ));
@@ -4402,11 +4383,11 @@ export function* swallowed(first) {
                             $instance_globals_y_youmonst + $monst_mappearance
                         ) | 0) <=
                             NHC.S_trwall)
-                            ? (((((cptr.ldI32o(
+                            ? (((cptr.ldI32o(
                                 gy,
                                 $instance_globals_y_youmonst + $monst_mappearance
                             ) | 0) -
-                                NHC.S_vwall) | 0) +
+                                NHC.S_vwall +
                                 (In_mines(cptr.add(u, $you_uz))
                                     ? NHC.GLYPH_CMAP_MINES_OFF
                                     : (In_hell(cptr.add(u, $you_uz))
@@ -4442,11 +4423,11 @@ export function* swallowed(first) {
                                 $instance_globals_y_youmonst + $monst_mappearance
                             ) | 0) <
                                 NHC.S_altar)
-                                ? (((((cptr.ldI32o(
+                                ? (((cptr.ldI32o(
                                     gy,
                                     $instance_globals_y_youmonst + $monst_mappearance
                                 ) | 0) -
-                                    NHC.S_ndoor) | 0) +
+                                    NHC.S_ndoor +
                                     NHC.GLYPH_CMAP_A_OFF) | 0)
                                 : (((cptr.ldI32o(
                                     gy,
@@ -4458,23 +4439,23 @@ export function* swallowed(first) {
                                         gy,
                                         $instance_globals_y_youmonst + $monst_mappearance
                                     ) | 0) <
-                                        ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                        ? (((((cptr.ldI32o(
+                                        ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                        ? (((cptr.ldI32o(
                                             gy,
                                             $instance_globals_y_youmonst + $monst_mappearance
                                         ) | 0) -
-                                            NHC.S_grave) | 0) +
+                                            NHC.S_grave +
                                             NHC.GLYPH_CMAP_B_OFF) | 0)
                                         : (((cptr.ldI32o(
                                             gy,
                                             $instance_globals_y_youmonst + $monst_mappearance
                                         ) | 0) <=
                                             NHC.S_goodpos)
-                                            ? (((((cptr.ldI32o(
+                                            ? (((cptr.ldI32o(
                                                 gy,
                                                 $instance_globals_y_youmonst + $monst_mappearance
                                             ) | 0) -
-                                                NHC.S_digbeam) | 0) +
+                                                NHC.S_digbeam +
                                                 NHC.GLYPH_CMAP_C_OFF) | 0)
                                             : NHC.MAX_GLYPH))))))
                     : ((U_AP_TYPE() == NHC.M_AP_OBJECT)
@@ -4854,9 +4835,7 @@ cptr.stI32o(nul_glyphinfo.v, $glyphinfo_gm + $glyph_map_entry_sym, NHM.NO_COLOR)
 cptr.stI32o(
     nul_glyphinfo.v,
     $glyphinfo_gm + $glyph_map_entry_sym + $classic_representation_symidx,
-    ((NHC.SYM_UNEXPLORED +
-        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+    ((NHC.SYM_UNEXPLORED + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
 );
 cptr.stI32o(nul_glyphinfo.v, $glyphinfo_gm + $glyph_map_entry_customcolor, 0);
 cptr.stI16o(nul_glyphinfo.v, $glyphinfo_gm + $glyph_map_entry_color256idx, 0);
@@ -5065,25 +5044,18 @@ export function reglyph_darkroom() {
             );
 
             if (!cptr.ld1so(flags, $flag_dark_room)) {
-                if (cptr.ldI32(lev) ==
-                    (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                if (cptr.ldI32(lev) == (((NHC.S_corr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                         (cptr.ldI32o(lev, $rm_waslit) & 1) | 0)
-                    cptr.stI32(
-                        lev,
-                        (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
-                    );
+                    cptr.stI32(lev, (((NHC.S_litcorr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0));
             } else {
                 if (cptr.ldI32(lev) ==
-                    (((((NHC.S_litcorr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                    (((NHC.S_litcorr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                         !((cptr.ld1uo(
                             cptr.ldPtro(cptr.ldPtro(gv, $instance_globals_v_viz_array), y, 8),
                             x
                         ) &
                             NHM.IN_SIGHT) != 0))
-                    cptr.stI32(
-                        lev,
-                        (((((NHC.S_corr) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
-                    );
+                    cptr.stI32(lev, (((NHC.S_corr) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0));
             }
 
             if (!cptr.ld1so(flags, $flag_dark_room) ||
@@ -5108,16 +5080,15 @@ export function reglyph_darkroom() {
                             )
                         )))) {
                 if (cptr.ldI32(lev) ==
-                        (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0))
+                        (((NHC.S_darkroom) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0))
                     cptr.stI32(
                         lev,
                         (cptr.ldI32o(lev, $rm_waslit) & 1) | 0
-                            ? (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                            ? (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                             : NHC.GLYPH_NOTHING_OFF
                     );
             } else {
-                if (cptr.ldI32(lev) ==
-                    (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0) &&
+                if (cptr.ldI32(lev) == (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0) &&
                         cptr.ld1uo(lev, $rm_seenv) &&
                         (cptr.ldI32o(lev, $rm_waslit) & 1) | 0 &&
                         !((cptr.ld1uo(
@@ -5125,10 +5096,7 @@ export function reglyph_darkroom() {
                             x
                         ) &
                             NHM.IN_SIGHT) != 0))
-                    cptr.stI32(
-                        lev,
-                        (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
-                    );
+                    cptr.stI32(lev, (((NHC.S_darkroom) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0));
                 else if (cptr.ldI32(lev) == NHC.GLYPH_NOTHING_OFF &&
                         cptr.ld1so(lev, $rm_typ) == NHC.ROOM &&
                         cptr.ld1uo(lev, $rm_seenv) &&
@@ -5137,10 +5105,7 @@ export function reglyph_darkroom() {
                             x
                         ) &
                             NHM.IN_SIGHT) != 0))
-                    cptr.stI32(
-                        lev,
-                        (((((NHC.S_darkroom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
-                    );
+                    cptr.stI32(lev, (((NHC.S_darkroom) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0));
             }
         }
     if (cptr.ld1so(flags, $flag_dark_room) && cptr.ld1so(iflags, $instance_flags_wc_color))
@@ -5160,8 +5125,7 @@ export function reglyph_darkroom() {
             cptr.ld1uo2(
                 gs,
                 ((NHC.SYM_NOTHING +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                 1,
                 $instance_globals_s_showsyms
             )
@@ -5865,7 +5829,8 @@ export function* back_to_glyph(x, y) {
             : (((idx) == NHC.S_stone)
                 ? NHC.GLYPH_CMAP_STONE_OFF
                 : (((idx) <= NHC.S_trwall)
-                    ? (((((idx) - NHC.S_vwall) | 0) +
+                    ? (((idx) -
+                        NHC.S_vwall +
                         (In_mines(cptr.add(u, $you_uz))
                             ? NHC.GLYPH_CMAP_MINES_OFF
                             : (In_hell(cptr.add(u, $you_uz))
@@ -5896,13 +5861,13 @@ export function* back_to_glyph(x, y) {
                                         ? NHC.GLYPH_CMAP_SOKO_OFF
                                         : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                     : (((idx) < NHC.S_altar)
-                        ? (((((idx) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                        ? (((idx) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                         : (((idx) == NHC.S_altar)
                             ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
-                            : (((idx) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                ? (((((idx) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                            : (((idx) < ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                ? (((idx) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
                                 : (((idx) <= NHC.S_goodpos)
-                                    ? (((((idx) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)
+                                    ? (((idx) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0)
                                     : NHC.MAX_GLYPH))))));
 }
 
@@ -5961,7 +5926,7 @@ export function* zapdir_to_glyph(dx, dy, beam_type) {
 /** C ref: display.c:2478 — @param {CInt} x @param {CInt} y @returns {CInt} */
 export function glyph_at(x, y) {
     if (x < 0 || y < 0 || x >= NHM.COLNO || y >= NHM.ROWNO)
-        return (((((NHC.S_room) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0);  /* XXX */
+        return (((NHC.S_room) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0);  /* XXX */
     return cptr.ldI32o3(
         gg,
         y,
@@ -6094,7 +6059,8 @@ function* get_bkglyph_and_framecolor(x, y, bkglyph, framecolor) {
             tmp_bkglyph = (((idx) == NHC.S_stone)
                     ? NHC.GLYPH_CMAP_STONE_OFF
                     : (((idx) <= NHC.S_trwall)
-                        ? (((((idx) - NHC.S_vwall) | 0) +
+                        ? (((idx) -
+                            NHC.S_vwall +
                             (In_mines(cptr.add(u, $you_uz))
                                 ? NHC.GLYPH_CMAP_MINES_OFF
                                 : (In_hell(cptr.add(u, $you_uz))
@@ -6125,14 +6091,13 @@ function* get_bkglyph_and_framecolor(x, y, bkglyph, framecolor) {
                                             ? NHC.GLYPH_CMAP_SOKO_OFF
                                             : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                         : (((idx) < NHC.S_altar)
-                            ? (((((idx) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                            ? (((idx) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                             : (((idx) == NHC.S_altar)
                                 ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
-                                : (((idx) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                    ? (((((idx) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                                : (((idx) < ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                    ? (((idx) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
                                     : (((idx) <= NHC.S_goodpos)
-                                        ? (((((idx) - NHC.S_digbeam) | 0) +
-                                            NHC.GLYPH_CMAP_C_OFF) | 0)
+                                        ? (((idx) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0)
                                         : NHC.MAX_GLYPH))))));
     }
     cptr.stI32(bkglyph, tmp_bkglyph);
@@ -6212,7 +6177,8 @@ export function map_glyphinfo(x, y, glyph, mgflags, glyphinfo) {
           Turn on override symbol if caller hasn't specified NOOVERRIDE. */
         if (cptr.ldI32o(sysopt, $sysopt_s_accessibility) == 1 &&
                 !((mgflags & NHM.MG_FLAG_NOOVERRIDE) >>> 0)) {
-            offset = 195;
+            offset = ((NHC.SYM_HERO_OVERRIDE +
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0);
             if ((cptr.ldI64o(gg, $instance_globals_g_glyphmap_perlevel_flags) & 2n)
                     ? cptr.ld1uo2(go, offset, 1, $instance_globals_o_ov_rogue_syms)
                     : cptr.ld1uo2(go, offset, 1, $instance_globals_o_ov_primary_syms))
@@ -6237,7 +6203,7 @@ export function map_glyphinfo(x, y, glyph, mgflags, glyphinfo) {
             glyphinfo,
             $glyph_info_gm + $glyph_map_entry_sym + $classic_representation_symidx,
             (cptr.ld1so2(mons, glyph_to_mon(glyph), $sizeof_permonst, $permonst_mlet) +
-                (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
         );
     }
     cptr.stI32o(
@@ -6423,8 +6389,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 ((NHC.SYM_NOTHING +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
             );
             color = NHM.NO_COLOR;
             cptr.stI32(gmap, cptr.ldI32(gmap) | NHM.MG_NOTHING);
@@ -6433,8 +6398,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 ((NHC.SYM_UNEXPLORED +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
             );
             color = NHM.NO_COLOR;
             cptr.stI32(gmap, cptr.ldI32(gmap) | NHM.MG_UNEXPL);
@@ -6443,7 +6407,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.CLR_RED;
@@ -6457,7 +6421,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.CLR_RED;
@@ -6492,8 +6456,7 @@ export function reset_glyphmap(trigger) {
                     gmap,
                     $glyph_map_sym + $classic_representation_symidx,
                     ((NHC.SYM_BOULDER +
-                        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+                        ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
                 );
             if (has_rogue_color) {
                 switch (cptr.ld1so2(objects, offset, $sizeof_objclass, $objclass_oc_class)) {
@@ -6517,7 +6480,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.CLR_RED;
@@ -6531,7 +6494,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.CLR_RED;
@@ -6544,9 +6507,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (offset +
-                    (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0)) | 0
+                (offset + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -6558,7 +6519,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_expl_tl + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_expl_tl + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(explodecolors, NHC.expl_frosty, 4)
@@ -6567,7 +6528,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_expl_tl + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_expl_tl + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(explodecolors, NHC.expl_fiery, 4)
@@ -6576,7 +6537,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_expl_tl + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_expl_tl + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(explodecolors, NHC.expl_magical, 4)
@@ -6585,7 +6546,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_expl_tl + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_expl_tl + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(explodecolors, NHC.expl_wet, 4)
@@ -6594,7 +6555,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_expl_tl + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_expl_tl + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(explodecolors, NHC.expl_muddy, 4)
@@ -6603,7 +6564,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_expl_tl + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_expl_tl + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(explodecolors, NHC.expl_noxious, 4)
@@ -6612,7 +6573,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_expl_tl + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_expl_tl + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(explodecolors, NHC.expl_dark, 4)
@@ -6622,7 +6583,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_sw_tl + (offset & 7)) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_sw_tl + (offset & 7) + NHM.SYM_OFF_P) | 0
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -6634,7 +6595,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_digbeam + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_digbeam + offset + NHM.SYM_OFF_P) | 0
             );
             if (has_rogue_color)
                 color = cmap_to_roguecolor((NHC.S_digbeam + offset) | 0);
@@ -6652,7 +6613,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_vbeam + (offset & 3)) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_vbeam + (offset & 3) + NHM.SYM_OFF_P) | 0
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -6799,7 +6760,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_vwall + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_vwall + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(wallcolors, NHC.sokoban_walls, 4)
@@ -6808,7 +6769,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_vwall + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_vwall + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(wallcolors, NHC.knox_walls, 4)
@@ -6817,7 +6778,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_vwall + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_vwall + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(wallcolors, NHC.gehennom_walls, 4)
@@ -6826,7 +6787,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_vwall + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_vwall + offset + NHM.SYM_OFF_P) | 0
             );
             color = cptr.ld1so(iflags, $instance_flags_wc_color)
                     ? cptr.ldI32o(wallcolors, NHC.mines_walls, 4)
@@ -6835,7 +6796,7 @@ export function reset_glyphmap(trigger) {
             cptr.stI32o(
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
-                (((NHC.S_vwall + offset) | 0) + NHM.SYM_OFF_P) | 0
+                (NHC.S_vwall + offset + NHM.SYM_OFF_P) | 0
             );
             if (has_rogue_color)
                 color = cmap_to_roguecolor((NHC.S_vwall + offset) | 0);
@@ -6860,8 +6821,7 @@ export function reset_glyphmap(trigger) {
                     gmap,
                     $glyph_map_sym + $classic_representation_symidx,
                     ((NHC.SYM_BOULDER +
-                        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+                        ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
                 );
             if (has_rogue_color) {
                 switch (cptr.ld1so2(objects, offset, $sizeof_objclass, $objclass_oc_class)) {
@@ -6884,7 +6844,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 /* This currently implies that the hero is here -- monsters */
@@ -6902,7 +6862,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -6930,7 +6890,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -6946,7 +6906,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -6962,8 +6922,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 ((NHC.SYM_INVISIBLE +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -6975,7 +6934,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -6989,7 +6948,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color)
                 color = NHM.NO_COLOR;
@@ -7003,7 +6962,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color) {
                 color = NHM.NO_COLOR;
@@ -7018,7 +6977,7 @@ export function reset_glyphmap(trigger) {
                 gmap,
                 $glyph_map_sym + $classic_representation_symidx,
                 (cptr.ld1so2(mons, offset, $sizeof_permonst, $permonst_mlet) +
-                    (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0
+                    (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0
             );
             if (has_rogue_color) {
                 color = NHM.CLR_YELLOW;
@@ -7037,16 +6996,14 @@ export function reset_glyphmap(trigger) {
                     ? cptr.ld1uo2(
                         go,
                         ((NHC.SYM_PET_OVERRIDE +
-                            (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                                NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                            ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                         1,
                         $instance_globals_o_ov_rogue_syms
                     )
                     : cptr.ld1uo2(
                         go,
                         ((NHC.SYM_PET_OVERRIDE +
-                            (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                                NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                            ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                         1,
                         $instance_globals_o_ov_primary_syms
                     ));
@@ -7056,8 +7013,7 @@ export function reset_glyphmap(trigger) {
                     gmap,
                     $glyph_map_sym + $classic_representation_symidx,
                     ((NHC.SYM_PET_OVERRIDE +
-                        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+                        ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
                 );
         }
         /* Turn off color if no color defined, or rogue level w/o PC graphics.
@@ -7129,7 +7085,7 @@ function set_twall(x0, y0, x1, y1, x2, y2, x3, y3) {
             ((is_3) && ((is_1) | (is_2))))) {
         wmode = 0;
     } else {
-        wmode = (((is_1 + is_2) | 0) + is_3) | 0;
+        wmode = (is_1 + is_2 + is_3) | 0;
     }
     return wmode;
 }
@@ -7212,7 +7168,7 @@ function set_crosswall(x, y) {
     is_3 = i16(check_pos(i16(((x + 1) | 0)), i16(((y + 1) | 0)), 1));
     is_4 = i16(check_pos(i16(((x - 1) | 0)), i16(((y + 1) | 0)), 1));
 
-    wmode = i16(((((((is_1 + is_2) | 0) + is_3) | 0) + is_4) | 0));
+    wmode = i16(((is_1 + is_2 + is_3 + is_4) | 0));
     if (wmode > 1) {
         if (is_1 && is_3 && (((is_2 + is_4) | 0) == 0)) {
             wmode = NHM.WM_X_TLBR;
@@ -8183,7 +8139,8 @@ export function fn_cmap_to_glyph(cmap) {
     return (((cmap) == NHC.S_stone)
             ? NHC.GLYPH_CMAP_STONE_OFF
             : (((cmap) <= NHC.S_trwall)
-                ? (((((cmap) - NHC.S_vwall) | 0) +
+                ? (((cmap) -
+                    NHC.S_vwall +
                     (In_mines(cptr.add(u, $you_uz))
                         ? NHC.GLYPH_CMAP_MINES_OFF
                         : (In_hell(cptr.add(u, $you_uz))
@@ -8214,13 +8171,13 @@ export function fn_cmap_to_glyph(cmap) {
                                     ? NHC.GLYPH_CMAP_SOKO_OFF
                                     : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                 : (((cmap) < NHC.S_altar)
-                    ? (((((cmap) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                    ? (((cmap) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                     : (((cmap) == NHC.S_altar)
                         ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
-                        : (((cmap) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                            ? (((((cmap) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                        : (((cmap) < ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                            ? (((cmap) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
                             : (((cmap) <= NHC.S_goodpos)
-                                ? (((((cmap) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)
+                                ? (((cmap) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0)
                                 : NHC.MAX_GLYPH))))));
 }
 

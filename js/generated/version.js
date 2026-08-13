@@ -210,7 +210,7 @@ export function getversionstring(buf, bufsz) {
                 __s_getversionstring,
                 58,
                 eos(buf),
-                BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n),
+                BigInt.asUintN(64, bufsz - cptr.strlen(buf) - 1n),
                 __s_s_s,
                 c++ ? __s_comma : __s_empty,
                 cptr.ldPtro(nomakedefs, $nomakedefs_s_git_sha)
@@ -220,7 +220,7 @@ export function getversionstring(buf, bufsz) {
                 __s_getversionstring,
                 68,
                 eos(buf),
-                BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n),
+                BigInt.asUintN(64, bufsz - cptr.strlen(buf) - 1n),
                 __s_sprefix_s,
                 c++ ? __s_comma : __s_empty,
                 cptr.ldPtro(nomakedefs, $nomakedefs_s_git_prefix)
@@ -230,7 +230,7 @@ export function getversionstring(buf, bufsz) {
                 __s_getversionstring,
                 71,
                 eos(buf),
-                BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n),
+                BigInt.asUintN(64, bufsz - cptr.strlen(buf) - 1n),
                 __s_pct_s,
                 __s_rparen
             );
@@ -241,7 +241,7 @@ export function getversionstring(buf, bufsz) {
                 __s_getversionstring,
                 76,
                 eos(buf),
-                BigInt.asUintN(64, (BigInt.asUintN(64, bufsz - cptr.strlen(buf))) - 1n),
+                BigInt.asUintN(64, bufsz - cptr.strlen(buf) - 1n),
                 __s_pct_s,
                 __s_dot
             );

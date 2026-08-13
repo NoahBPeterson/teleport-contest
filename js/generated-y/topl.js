@@ -422,11 +422,11 @@ export function* update_topl(bp) {
     n0 = Number(BigInt.asIntN(32, cptr.strlen(bp)));
     if ((cptr.ldI32o(ttyDisplay, $DisplayDesc_toplin) == NHM.TOPLINE_NEED_MORE || skip) &&
             cptr.ldI64o(cw, $WinDesc_cury) == 0n &&
-            ((((n0 +
+            ((n0 +
                 Number(BigInt.asIntN(
                     32,
                     cptr.strlen(cptr.add(gt, $instance_globals_t_toplines))
-                ))) | 0) + 3) | 0) <
+                )) + 3) | 0) <
                 ((CO() - 8) | 0) &&
             (notdied = cptr.strncmp(bp, __s_you_die, 7n)) != 0) {
         void cptr.strcat(cptr.add(gt, $instance_globals_t_toplines), __s_sp2);
@@ -716,7 +716,7 @@ export function* tty_yn_function(query, resp, def) {
                         /* value = (10 * value) + (z - '0'); */
                         value = (((value) < 922337203685477580n ||
                             ((value) == 922337203685477580n && (dgt) <= 7n))
-                                ? BigInt.asIntN(64, BigInt.asIntN(64, (value) * 10n) + (dgt))
+                                ? BigInt.asIntN(64, (value) * 10n + (dgt))
                                 : -1n);
                         if (value < 0n)
                             break;  /* overflow: try again */

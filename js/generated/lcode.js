@@ -181,7 +181,7 @@ function previousinstruction(fs) {
 */
 /** C ref: lcode.c:132 — @param {CPtr<FuncState>} fs @param {CInt} from @param {CInt} n */
 export function luaK_nil(fs, from, n) {
-    let l = (((from + n) | 0) - 1) | 0;  /* last register to set nil */
+    let l = (from + n - 1) | 0;  /* last register to set nil */
     let previous = previousinstruction(fs);
     if (((((((cptr.ldI32(previous)) >>> 0) & (((~(((~0) << 7) >>> 0)) << 0) >>> 0)) >>> 0))) ==
             NHC.OP_LOADNIL) {
@@ -227,7 +227,7 @@ function getjump(fs, pc) {
     if (offset == -1)
         return -1;  /* end of list */
     else
-        return (((pc + 1) | 0) + offset) | 0;  /* turn offset into absolute position */
+        return (pc + 1 + offset) | 0;  /* turn offset into absolute position */
 }
 
 /*
@@ -237,7 +237,7 @@ function getjump(fs, pc) {
 /** C ref: lcode.c:168 — @param {CPtr<FuncState>} fs @param {CInt} pc @param {CInt} dest */
 function fixjump(fs, pc, dest) {
     let jmp = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
-    let offset = (dest - ((pc + 1) | 0)) | 0;
+    let offset = (dest - (pc + 1)) | 0;
     (void 0);
     if (!(-16777215 <= offset && offset <= 16777216))
         luaX_syntaxerror(cptr.ldPtro(fs, $FuncState_ls), __s_control_structure_too_long);
@@ -1979,7 +1979,7 @@ function constfolding(fs, op, e1, e2) {
 /** C ref: lcode.c:1361 — @param {*} opr @param {*} baser @param {*} base @returns {*} */
 function binopr2op(opr, baser, base) {
     (void 0);
-    return ((((((((opr))) - (((baser)))) | 0) + (((base)))) | 0));
+    return ((((((opr))) - (((baser))) + (((base)))) | 0));
 }
 
 /*
@@ -1987,7 +1987,7 @@ function binopr2op(opr, baser, base) {
 */
 /** C ref: lcode.c:1372 — @param {*} opr @returns {*} */
 function unopr2op(opr) {
-    return ((((((((opr))) - NHC.OPR_MINUS) | 0) + NHC.OP_UNM) | 0));
+    return ((((((opr))) - NHC.OPR_MINUS + NHC.OP_UNM) | 0));
 }
 
 /*
@@ -1996,7 +1996,7 @@ function unopr2op(opr) {
 /** C ref: lcode.c:1381 — @param {*} opr @returns {*} */
 function binopr2TM(opr) {
     (void 0);
-    return ((((((((opr))) - NHC.OPR_ADD) | 0) + NHC.TM_ADD) | 0));
+    return ((((((opr))) - NHC.OPR_ADD + NHC.TM_ADD) | 0));
 }
 
 /*
@@ -2550,7 +2550,7 @@ export function luaK_posfix(fs, opr, e1, e2, line) {
         {
             /* '(a > b)' <=> '(b < a)';  '(a >= b)' <=> '(b <= a)' */
             swapexps(e1, e2);
-            opr = (((((opr - NHC.OPR_GT) >>> 0) + NHC.OPR_LT) >>> 0));
+            opr = (((opr - NHC.OPR_GT + NHC.OPR_LT) >>> 0));
         }  /* FALLTHROUGH */
         case NHC.OPR_LT:
         case NHC.OPR_LE:
@@ -2641,8 +2641,8 @@ function finaltarget(code, i) {
             break;
         else
             i = (i +
-                (((((((((((pc) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
-                    16777215) | 0) + 1) | 0)) |
+                ((((((((pc) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
+                    16777215 + 1)) |
                     0;
     }
     return i;

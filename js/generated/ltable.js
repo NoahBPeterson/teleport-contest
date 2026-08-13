@@ -366,7 +366,7 @@ function findindex(L, t, key, asize) {
         ))) >>>
                 0;  /* key index in hash table */
         /* hash elements are numbered after array ones */
-        return (((i + 1) >>> 0) + asize) >>> 0;
+        return (i + 1 + asize) >>> 0;
     }
 }
 
@@ -1247,7 +1247,7 @@ export function luaH_getn(t) {
                 ))) & 15)) == 0)) {
             /* 'limit - 1' is a boundary; can it be a new limit? */
             if (ispow2realasize(t) &&
-                    !(((((limit - 1) >>> 0) & ((((limit - 1) >>> 0) - 1) >>> 0)) >>> 0) == 0)) {
+                    !(((((limit - 1) >>> 0) & ((limit - 1 - 1) >>> 0)) >>> 0) == 0)) {
                 cptr.stI32o(t, $Table_alimit, (limit - 1) >>> 0);
                 (cptr.st1o((t), $Table_flags, cptr.ld1uo((t), $Table_flags) | 128));  /* now 'alimit' is not the real size */
             }

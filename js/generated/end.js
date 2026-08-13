@@ -2425,7 +2425,7 @@ export function build_english_list(in$) {
 
     /* +3: " or " - " "; +(words - 1): (N-1)*(", " - " ") */
     if (words > 1)
-        len = (len + ((3 + ((words - 1) | 0)) | 0)) | 0;
+        len = (len + (3 + (words - 1))) | 0;
     out = alloc(((len + 1) | 0) >>> 0);
     cptr.st1(out, 0);  /* bel_copy1() appends */
 

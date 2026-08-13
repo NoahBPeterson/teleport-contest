@@ -1030,7 +1030,7 @@ function releaseobuf(bufp) {
        middle of an obuf rather than the address returned by nextobuf() */
     if (cptr.cmp(bufp, cptr.decay(obufs[obufidx])) >= 0 &&
             cptr.cmp(bufp, cptr.add(cptr.decay(obufs[obufidx]), 256n)) < 0)
-        obufidx = ((((obufidx - 1) | 0) + 12) | 0) % 12;
+        obufidx = ((obufidx - 1 + 12) | 0) % 12;
 }
 
 /* used by display_pickinv (invent.c, main whole-inventory routine) to
@@ -1502,11 +1502,8 @@ export function reorder_fruit(forward) {
  * @param {CPtr<char>} sfx
  */
 function xcalled(buf, siz, pfx, sfx) {
-    let bufsiz = (((siz - 1) | 0) - Number(BigInt.asIntN(32, cptr.strlen(buf)))) | 0;
-    let pfxlen = Number(BigInt.asIntN(
-        32,
-        (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(pfx) + 9n) - 1n))
-    ));
+    let bufsiz = (siz - 1 - Number(BigInt.asIntN(32, cptr.strlen(buf)))) | 0;
+    let pfxlen = Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(pfx) + 9n - 1n))));
 
     if (pfxlen > bufsiz)
         panic(__s_xcalled_not_enough_room_for_prefix_d_d, pfxlen, bufsiz);
@@ -4170,10 +4167,7 @@ export function paydoname(obj) {
             if ((cptr.ldI32o(obj, $obj_unpaid) & 1)) {
                 if (BigInt.asUintN(
                     64,
-                    BigInt.asUintN(
-                        64,
-                        BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(p))))) + 18n
-                    ) - 1n
+                    BigInt.asUintN(64, BigInt(Number(BigInt.asIntN(32, cptr.strlen(p))))) + 18n - 1n
                 ) < 176n)
                     void cptr.strcat(p, cptr.decay(__static_paydoname_and_contents));
             } else {
@@ -5739,7 +5733,7 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
                     wishymatch(name, zn, 0))) {
             cptr.stI16o(validobjs, n++, i16(i), 2);
             maxprob = (maxprob +
-                ((cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob) + xtra_prob) | 0)) |
+                (cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob) + xtra_prob)) |
                     0;
         }
     }
@@ -5748,13 +5742,13 @@ function rnd_otyp_by_namedesc(name, oclass, xtra_prob) {
         prob = rn2(maxprob);
         for (i = 0; i < ((n - 1) | 0); i++)
             if ((prob = (prob -
-                    ((cptr.ldI16o2(
+                    (cptr.ldI16o2(
                         objects,
                         cptr.ldI16o(validobjs, i, 2),
                         $sizeof_objclass,
                         $objclass_oc_prob
                     ) +
-                        xtra_prob) | 0)) | 0) < 0)
+                        xtra_prob)) | 0) < 0)
                 break;
         return cptr.ldI16o(validobjs, i, 2);
     }
@@ -7371,7 +7365,8 @@ function readobjnam_postparse1(d) {
         cptr.stI32o(
             d,
             $_readobjnam_data_typ,
-            (((NHC.GRAY_DRAGON_SCALES + cptr.ldI32o(d, $_readobjnam_data_mntmp)) | 0) -
+            (NHC.GRAY_DRAGON_SCALES +
+                cptr.ldI32o(d, $_readobjnam_data_mntmp) -
                 NHC.PM_GRAY_DRAGON) | 0
         );
         cptr.stI32o(d, $_readobjnam_data_mntmp, NHC.NON_PM);  /* no monster */
@@ -8282,7 +8277,7 @@ export function readobjnam(bp, no_wish) {
                 d,
                 $_readobjnam_data_typ,
                 (NHC.GLOB_OF_GRAY_OOZE +
-                    ((cptr.ldI32o(d, $_readobjnam_data_mntmp) - NHC.PM_GRAY_OOZE) | 0)) | 0
+                    (cptr.ldI32o(d, $_readobjnam_data_mntmp) - NHC.PM_GRAY_OOZE)) | 0
             );
             cptr.stI32o(d, $_readobjnam_data_mntmp, NHC.NON_PM);  /* not used for globs */
         }
@@ -8319,7 +8314,7 @@ export function readobjnam(bp, no_wish) {
                         (Math.imul(
                             ((5 +
                                 Math.imul(
-                                    ((cptr.ldI32o(d, $_readobjnam_data_gsize) - 2) | 0),
+                                    cptr.ldI32o(d, $_readobjnam_data_gsize) - 2,
                                     10
                                 )) | 0) >>> 0,
                             cptr.ldI32o(cptr.ldPtr(d), $obj_owt)
@@ -8676,8 +8671,8 @@ export function readobjnam(bp, no_wish) {
                     cptr.stI16o(
                         cptr.ldPtr(d),
                         $obj_otyp,
-                        i16(((((NHC.GRAY_DRAGON_SCALE_MAIL +
-                            cptr.ldI32o(d, $_readobjnam_data_mntmp)) | 0) -
+                        i16(((NHC.GRAY_DRAGON_SCALE_MAIL +
+                            cptr.ldI32o(d, $_readobjnam_data_mntmp) -
                             NHC.PM_GRAY_DRAGON) | 0))
                     );
                 break;
@@ -8906,7 +8901,7 @@ export function rnd_class(first, last) {
         for (i = first; i <= last; i++)
             sum = (sum + cptr.ldI16o2(objects, i, $sizeof_objclass, $objclass_oc_prob)) | 0;
         if (!sum)
-            return ((rn2((((last - first) | 0) + 1) | 0) + (first)) | 0);
+            return ((rn2((last - first + 1) | 0) + (first)) | 0);
 
         x = rnd(sum);
         for (i = first; i <= last; i++)
@@ -9158,7 +9153,7 @@ export function safe_qbuf(qbuf, qprefix, qsuffix, obj, func, altfunc, lastR) {
         impossible(__s_safe_qbuf_prefix_too_long_u_characters, len_qpfx);
     else if ((len_qpfx + len_qsfx) >>> 0 > lenlimit)
         impossible(__s_safe_qbuf_suffix_too_long_u_u_characters, len_qpfx, len_qsfx);
-    else if ((((len_qpfx + len_lastR) >>> 0) + len_qsfx) >>> 0 > lenlimit)
+    else if ((len_qpfx + len_lastR + len_qsfx) >>> 0 > lenlimit)
         impossible(__s_safe_qbuf_filler_too_long_u_u_u, len_qpfx, len_lastR, len_qsfx);
 
     /* the output buffer might be the same as the prefix if caller
@@ -9181,7 +9176,7 @@ export function safe_qbuf(qbuf, qprefix, qsuffix, obj, func, altfunc, lastR) {
     }
     len = Number(BigInt.asUintN(32, cptr.strlen(qbuf)));
 
-    if ((((len + len_lastR) >>> 0) + len_qsfx) >>> 0 > lenlimit) {
+    if ((len + len_lastR + len_qsfx) >>> 0 > lenlimit) {
         /* too long; skip formatting, last resort output is truncated */
         if (len < lenlimit) {
             void __builtin___strncpy_chk(

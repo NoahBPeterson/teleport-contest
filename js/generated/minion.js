@@ -537,9 +537,9 @@ export function demon_talk(mtmp) {
     )) /
             BigInt((Math.imul(
                 100,
-                ((1 +
+                1 +
                     (sgn(cptr.ld1so(u, $you_ualign)) ==
-                        sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))) | 0)
+                        sgn(cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_maligntyp)))
             )));
 
     if (!demand || cptr.ldI64o(gm, $instance_globals_m_multi) < 0n) {
@@ -640,7 +640,7 @@ export function dprince(atyp) {
         tryct > 0;
         --tryct
     ) {
-        pm = ((rn2(((((NHC.PM_DEMOGORGON + 1) | 0) - NHC.PM_ORCUS) | 0)) + NHC.PM_ORCUS) | 0);
+        pm = ((rn2(((NHC.PM_DEMOGORGON + 1 - NHC.PM_ORCUS) | 0)) + NHC.PM_ORCUS) | 0);
         if (!(cptr.ld1uo2(
             svm,
             pm,
@@ -670,7 +670,7 @@ export function dlord(atyp) {
         tryct > 0;
         --tryct
     ) {
-        pm = ((rn2(((((NHC.PM_YEENOGHU + 1) | 0) - NHC.PM_JUIBLEX) | 0)) + NHC.PM_JUIBLEX) | 0);
+        pm = ((rn2(((NHC.PM_YEENOGHU + 1 - NHC.PM_JUIBLEX) | 0)) + NHC.PM_JUIBLEX) | 0);
         if (!(cptr.ld1uo2(
             svm,
             pm,
@@ -832,7 +832,7 @@ export function gain_guardian_angel() {
                 cptr.stI32o(
                     mtmp,
                     $monst_mhpmax,
-                    (((d((cptr.ld1uo(mtmp, $monst_m_lev)), 10) + 30) | 0) + rnd(30)) | 0
+                    (d((cptr.ld1uo(mtmp, $monst_m_lev)), 10) + 30 + rnd(30)) | 0
                 )
             );
             if ((otmp = select_hwep(mtmp)) === null) {

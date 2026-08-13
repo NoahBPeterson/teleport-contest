@@ -255,25 +255,25 @@ export function* split_rects(r1, r2) {
         if (intersect(cptr.add(rect, i, $sizeof_NhRect), r2, r))
             (yield* split_rects(cptr.add(rect, i, $sizeof_NhRect), r));
 
-    if (((((cptr.ldI16o(r2, $NhRect_ly) - cptr.ldI16o(old_r, $nhrect_ly)) | 0) - 1) | 0) >
+    if (((cptr.ldI16o(r2, $NhRect_ly) - cptr.ldI16o(old_r, $nhrect_ly) - 1) | 0) >
             (((cptr.ldI16o(old_r, $nhrect_hy) < 20 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16o(r, $nhrect_hy, i16(((cptr.ldI16o(r2, $NhRect_ly) - 2) | 0)));
         (yield* add_rect(r));
     }
-    if (((((cptr.ldI16(r2) - cptr.ldI16(old_r)) | 0) - 1) | 0) >
+    if (((cptr.ldI16(r2) - cptr.ldI16(old_r) - 1) | 0) >
             (((cptr.ldI16o(old_r, $nhrect_hx) < 79 ? 8 : 5) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16o(r, $nhrect_hx, i16(((cptr.ldI16(r2) - 2) | 0)));
         (yield* add_rect(r));
     }
-    if (((((cptr.ldI16o(old_r, $nhrect_hy) - cptr.ldI16o(r2, $NhRect_hy)) | 0) - 1) | 0) >
+    if (((cptr.ldI16o(old_r, $nhrect_hy) - cptr.ldI16o(r2, $NhRect_hy) - 1) | 0) >
             (((cptr.ldI16o(old_r, $nhrect_ly) > 0 ? 6 : 4) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16o(r, $nhrect_ly, i16(((cptr.ldI16o(r2, $NhRect_hy) + 2) | 0)));
         (yield* add_rect(r));
     }
-    if (((((cptr.ldI16o(old_r, $nhrect_hx) - cptr.ldI16o(r2, $NhRect_hx)) | 0) - 1) | 0) >
+    if (((cptr.ldI16o(old_r, $nhrect_hx) - cptr.ldI16o(r2, $NhRect_hx) - 1) | 0) >
             (((cptr.ldI16(old_r) > 0 ? 8 : 5) + 4) | 0)) {
         cptr.memcpy(r, old_r, 8);
         cptr.stI16(r, i16(((cptr.ldI16o(r2, $NhRect_hx) + 2) | 0)));

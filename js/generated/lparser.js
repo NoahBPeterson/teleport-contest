@@ -301,7 +301,7 @@ function new_localvar(ls, name) {
     let var$;
     checklimit(
         fs,
-        (((cptr.ldI32o(dyd, 8) + 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0,
+        (cptr.ldI32o(dyd, 8) + 1 - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0,
         200,
         __s_local_variables
     );
@@ -324,7 +324,7 @@ function new_localvar(ls, name) {
     );
     cptr.st1o(var$, 9, 0);  /* default */
     cptr.stPtro(var$, 16, name);
-    return (((cptr.ldI32o(dyd, 8) - 1) | 0) - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0;
+    return (cptr.ldI32o(dyd, 8) - 1 - cptr.ldI32o(fs, $FuncState_firstlocal)) | 0;
 }
 
 /*
@@ -476,7 +476,7 @@ function removevars(fs, tolevel) {
         cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd),
         8,
         (cptr.ldI32o(cptr.ldPtro(cptr.ldPtro(fs, $FuncState_ls), $LexState_dyd), 8) -
-            ((cptr.ld1uo(fs, $FuncState_nactvar) - tolevel) | 0)) | 0
+            (cptr.ld1uo(fs, $FuncState_nactvar) - tolevel)) | 0
     );
     while (cptr.ld1uo(fs, $FuncState_nactvar) > tolevel) {
         let var$ = localdebuginfo(
@@ -1581,7 +1581,7 @@ function funcargs(ls, f) {
     else {
         if (cptr.ldI32(args) != NHC.VVOID)
             luaK_exp2nextreg(fs, args);  /* close last argument */
-        nparams = (cptr.ld1uo(fs, $FuncState_freereg) - ((base + 1) | 0)) | 0;
+        nparams = (cptr.ld1uo(fs, $FuncState_freereg) - (base + 1)) | 0;
     }
     init_exp(f, NHC.VCALL, luaK_codeABCk(fs, NHC.OP_CALL, base, (nparams + 1) | 0, 2, 0));
     luaK_fixline(fs, line);
@@ -2182,7 +2182,7 @@ function exp1(ls) {
  */
 function fixforjump(fs, pc, dest, back) {
     let jmp = cptr.add(cptr.ldPtro(cptr.ldPtr(fs), $Proto_code), pc, 4);
-    let offset = (dest - ((pc + 1) | 0)) | 0;
+    let offset = (dest - (pc + 1)) | 0;
     if (back)
         offset = -offset;
     if ((__builtin_expect(BigInt(((offset > 131071) != 0)), 0n)))

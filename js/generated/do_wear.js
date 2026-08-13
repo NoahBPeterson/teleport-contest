@@ -901,8 +901,8 @@ function Helmet_on() {
             You_feel(
                 __s_pct_s_dot,
                 (acurr(NHC.A_INT)) <=
-                    (((((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) +
-                        (cptr.ld1so2(u, NHC.A_INT, 1, $you_abon))) | 0) +
+                    (((cptr.ld1so2(u, NHC.A_INT, 1, $you_acurr)) +
+                        (cptr.ld1so2(u, NHC.A_INT, 1, $you_abon)) +
                         (cptr.ld1so2(u, NHC.A_INT, 1, $you_atemp))) | 0)
                     ? __s_like_sitting_in_a_corner
                     : __s_giddy
@@ -3923,7 +3923,7 @@ function take_off() {
                 doff,
                 $takeoff_info_delay,
                 (cptr.ldI32o(doff, $takeoff_info_delay) +
-                    ((Math.imul(
+                    (Math.imul(
                         2,
                         cptr.ld1so2(
                             objects,
@@ -3931,7 +3931,7 @@ function take_off() {
                             $sizeof_objclass,
                             $objclass_oc_delay
                         )
-                    ) + 1) | 0)) | 0
+                    ) + 1)) | 0
             );
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 2n) {
         otmp = uarmc.v;
@@ -3966,7 +3966,7 @@ function take_off() {
                 doff,
                 $takeoff_info_delay,
                 (cptr.ldI32o(doff, $takeoff_info_delay) +
-                    ((Math.imul(
+                    (Math.imul(
                         2,
                         cptr.ld1so2(
                             objects,
@@ -3974,7 +3974,7 @@ function take_off() {
                             $sizeof_objclass,
                             $objclass_oc_delay
                         )
-                    ) + 1) | 0)) | 0
+                    ) + 1)) | 0
             );
     } else if (cptr.ldI64o(doff, $takeoff_info_what) == 65536n) {
         cptr.stI32o(doff, $takeoff_info_delay, 1);

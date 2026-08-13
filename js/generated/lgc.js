@@ -608,11 +608,7 @@ function traverseephemeron(g, h, inv) {
        (see 'convergeephemerons') */
     for (i = 0; i < nsize; i++) {
         let n = inv
-                ? (cptr.add(
-                    cptr.ldPtro((h), $Table_node),
-                    (((nsize - 1) >>> 0) - i) >>> 0,
-                    $sizeof_Node
-                ))
+                ? (cptr.add(cptr.ldPtro((h), $Table_node), (nsize - 1 - i) >>> 0, $sizeof_Node))
                 : (cptr.add(cptr.ldPtro((h), $Table_node), i, $sizeof_Node));
         if ((((((cptr.ld1uo(((((n)))), $TValue_tt_))) & 15)) == 0))
             clearkey(n);  /* clear its key */
@@ -743,7 +739,8 @@ function traversetable(g, h) {
             );  /* nothing to traverse now */
     } else
         traversestrongtable(g, h);
-    return BigInt(((((1 + cptr.ldI32o(h, $Table_alimit)) >>> 0) +
+    return BigInt(((1 +
+            cptr.ldI32o(h, $Table_alimit) +
             (Math.imul(
                 2,
                 ((cptr.eq(cptr.ldPtro((h), $Table_lastfree), (null)))
@@ -851,9 +848,10 @@ function traverseproto(g, f) {
         ;
     }
     ;
-    return (((((((1 + cptr.ldI32o(f, $Proto_sizek)) | 0) +
-        cptr.ldI32o(f, $Proto_sizeupvalues)) | 0) +
-        cptr.ldI32o(f, $Proto_sizep)) | 0) +
+    return (1 +
+        cptr.ldI32o(f, $Proto_sizek) +
+        cptr.ldI32o(f, $Proto_sizeupvalues) +
+        cptr.ldI32o(f, $Proto_sizep) +
         cptr.ldI32o(f, $Proto_sizelocvars)) |
             0;
 }
@@ -1187,11 +1185,7 @@ function freeobj(L, o) {
                         ? 24n
                         : BigInt.asUintN(
                             64,
-                            24n +
-                                (BigInt.asUintN(
-                                    64,
-                                    16n * BigInt((cptr.ldU16o(u, $Udata_nuvalue)) >>> 0)
-                                ))
+                            24n + 16n * BigInt((cptr.ldU16o(u, $Udata_nuvalue)) >>> 0)
                         )) +
                         (cptr.ldU64o(u, $Udata_len))
                 )))
@@ -1210,11 +1204,8 @@ function freeobj(L, o) {
                     24n +
                         BigInt.asUintN(
                             64,
-                            BigInt.asUintN(
-                                64,
-                                BigInt((((cptr.ld1uo(ts, $TString_shrlen)) + 1) | 0))
-                            ) * 1n
-                        )
+                            BigInt((((cptr.ld1uo(ts, $TString_shrlen)) + 1) | 0))
+                        ) * 1n
                 )))
             );
             break;
@@ -1225,14 +1216,7 @@ function freeobj(L, o) {
             luaM_free_(
                 L,
                 (ts),
-                ((BigInt.asUintN(
-                    64,
-                    24n +
-                        BigInt.asUintN(
-                            64,
-                            (BigInt.asUintN(64, (cptr.ldU64o(ts, $TString_u)) + 1n)) * 1n
-                        )
-                )))
+                ((BigInt.asUintN(64, 24n + ((cptr.ldU64o(ts, $TString_u)) + 1n) * 1n)))
             );
             break;
         }

@@ -786,8 +786,7 @@ export function loot_classify(sort_item, obj) {
     if (p)
         k = (1 + Number(BigInt.asIntN(32, (cptr.diff(p, classorder))))) | 0;
     else
-        k = (((1 + Number(BigInt.asIntN(32, cptr.strlen(classorder)))) | 0) +
-            (oclass != NHC.VENOM_CLASS)) |
+        k = (1 + Number(BigInt.asIntN(32, cptr.strlen(classorder))) + (oclass != NHC.VENOM_CLASS)) |
                 0;
     cptr.st1o(sort_item, $Loot_orderclass, schar(k));
     /* subclass designation; only a few classes have subclasses
@@ -1028,14 +1027,14 @@ function loot_xname(obj) {
 /** C ref: invent.c:391 — @param {CInt} c @returns {CInt} */
 function invletter_value(c) {
     return (97 <= c && c <= 122)
-            ? ((((c - 97) | 0) + 2) | 0)
+            ? ((c - 97 + 2) | 0)
             : ((65 <= c && c <= 90)
-                ? ((((((c - 65) | 0) + 2) | 0) + 26) | 0)
+                ? ((c - 65 + 2 + 26) | 0)
                 : ((c == 36)
                     ? 1
                     : ((c == 35)
-                        ? ((((1 + NHC.invlet_basic) | 0) + 1) | 0)
-                        : ((((((1 + NHC.invlet_basic) | 0) + 1) | 0) + 1) | 0))));
+                        ? ((1 + NHC.invlet_basic + 1) | 0)
+                        : ((1 + NHC.invlet_basic + 1 + 1) | 0))));
 }
 
 /* qsort comparison routine for sortloot() */
@@ -1349,7 +1348,7 @@ export function assigninvlet(otmp) {
             if (97 <= i && i <= 122)
                 cptr.st1o(cptr.decay(inuse), (i - 97) | 0, 1, 1);
             else if (65 <= i && i <= 90)
-                cptr.st1o(cptr.decay(inuse), (((i - 65) | 0) + 26) | 0, 1, 1);
+                cptr.st1o(cptr.decay(inuse), (i - 65 + 26) | 0, 1, 1);
             if (i == cptr.ld1so(otmp, $obj_invlet))
                 cptr.st1o(otmp, $obj_invlet, 0);
         }
@@ -1372,7 +1371,7 @@ export function assigninvlet(otmp) {
         $obj_invlet,
         schar((cptr.ld1so(cptr.decay(inuse), i, 1)
             ? 35
-            : ((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0))))
+            : ((i < 26) ? ((97 + i) | 0) : ((65 + i - 26) | 0))))
     );
     cptr.stI32o(gl, $instance_globals_l_lastinvnr, i);
 }
@@ -1484,14 +1483,8 @@ export function merged(potmp, pobj) {
                 $obj_age,
                 (BigInt.asIntN(
                     64,
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o(otmp, $obj_age) * cptr.ldI64o(otmp, $obj_quan)
-                    )) +
-                        (BigInt.asIntN(
-                            64,
-                            cptr.ldI64o(obj, $obj_age) * cptr.ldI64o(obj, $obj_quan)
-                        ))
+                    cptr.ldI64o(otmp, $obj_age) * cptr.ldI64o(otmp, $obj_quan) +
+                        cptr.ldI64o(obj, $obj_age) * cptr.ldI64o(obj, $obj_quan)
                 )) /
                     (BigInt.asIntN(64, cptr.ldI64o(otmp, $obj_quan) + cptr.ldI64o(obj, $obj_quan)))
             );
@@ -4122,8 +4115,8 @@ export function xprname(obj, txt, let$, dot, cost, quan) {
         void cptr.strcpy(cptr.decay(suffix), dot ? __s_dot : __s_empty);
     }
     sfxlen = Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(suffix))));
-    if (txtlen > ((255 - ((4 + sfxlen) | 0)) | 0))
-        txtlen = (255 - ((4 + sfxlen) | 0)) | 0;
+    if (txtlen > ((255 - (4 + sfxlen)) | 0))
+        txtlen = (255 - (4 + sfxlen)) | 0;
     void cptr.sprintf(cptr.decay(__static_xprname_li), fmt, let$, txtlen, txt, cptr.decay(suffix));
 
     if (savequan)
@@ -5561,7 +5554,7 @@ export function dotypeinv() {
             svl,
             $instance_globals_saved_l_level + $dlevel_t_buriedobjlist
         ));
-        any_unpaid = (((u_carried + u_floor) | 0) + u_buried) | 0;
+        any_unpaid = (u_carried + u_floor + u_buried) | 0;
         tally_BUCX(
             cptr.ldPtro(gi, $instance_globals_i_invent),
             0,
@@ -5618,10 +5611,7 @@ export function dotypeinv() {
                 null,
                 itemcount
             );
-            if (any_unpaid ||
-                    billx ||
-                    ((((((bcnt.v + ccnt.v) | 0) + ucnt.v) | 0) + xcnt.v) | 0) != 0 ||
-                    jcnt.v)
+            if (any_unpaid || billx || ((bcnt.v + ccnt.v + ucnt.v + xcnt.v) | 0) != 0 || jcnt.v)
                 cptr.st1o(cptr.decay(types), class_count++, 32, 1);
             if (any_unpaid)
                 cptr.st1o(cptr.decay(types), class_count++, 117, 1);
@@ -6753,10 +6743,8 @@ export function let_to_name(let$, unpaid, showsym) {
         32,
         BigInt.asUintN(
             64,
-            BigInt.asUintN(
-                64,
-                BigInt(Strlen_(class_name, __s_let_to_name, 4816) >>> 0) + (unpaid ? 8n : 1n)
-            ) +
+            BigInt(Strlen_(class_name, __s_let_to_name, 4816) >>> 0) +
+                (unpaid ? 8n : 1n) +
                 BigInt((oclass
                     ? ((Strlen_(ocsymfmt, __s_let_to_name, 4817) + (invbuf_sympadding >>> 0)) >>> 0)
                     : 0) >>> 0)
@@ -6837,7 +6825,7 @@ export function reassign() {
         cptr.st1o(
             obj,
             $obj_invlet,
-            schar(((i < 26) ? ((97 + i) | 0) : ((i < 52) ? ((((65 + i) | 0) - 26) | 0) : 35)))
+            schar(((i < 26) ? ((97 + i) | 0) : ((i < 52) ? ((65 + i - 26) | 0) : 35)))
         );
     /* third, assign gold the "letter" '$' and re-insert it at head */
     if (goldobj) {
@@ -7092,9 +7080,9 @@ function doorganize_core(obj) {
         if (!cptr.eq(otmp.v, obj.v) && !mergable(otmp.v, obj.v)) {
             let$ = cptr.ld1so(otmp.v, $obj_invlet);
             if (let$ >= 97 && let$ <= 122)
-                cptr.st1o(cptr.decay(lets), (((1 + let$) | 0) - 97) | 0, 32, 1);
+                cptr.st1o(cptr.decay(lets), (1 + let$ - 97) | 0, 32, 1);
             else if (let$ >= 65 && let$ <= 90)
-                cptr.st1o(cptr.decay(lets), (((((1 + let$) | 0) - 65) | 0) + 26) | 0, 32, 1);
+                cptr.st1o(cptr.decay(lets), (1 + let$ - 65 + 26) | 0, 32, 1);
             else if (let$ == 35)
                 cptr.st1o(cptr.decay(lets), ((1 + NHC.invlet_basic) | 0), 35, 1);
         }

@@ -120,22 +120,22 @@ export function newpw() {
         enrnd = ((acurr(NHC.A_WIS)) / 2) | 0;
         if (cptr.ldI32o(u, $you_ulevel) < cptr.ldI16o(gu, $instance_globals_u_urole + $Role_xlev)) {
             enrnd = (enrnd +
-                ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lornd) +
+                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lornd) +
                     cptr.ldI16o(
                         gu,
                         $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lornd
-                    )) | 0)) |
+                    ))) |
                     0;
             enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_lofix) +
                 cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_lofix)) |
                     0;
         } else {
             enrnd = (enrnd +
-                ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) +
+                (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hirnd) +
                     cptr.ldI16o(
                         gu,
                         $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hirnd
-                    )) | 0)) |
+                    ))) |
                     0;
             enfix = (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_enadv + $RoleAdvance_hifix) +
                 cptr.ldI16o(gu, $instance_globals_u_urace + $Race_enadv + $RoleAdvance_hifix)) |
@@ -172,7 +172,7 @@ export function experience(mtmp, nk) {
 
     /*  For higher ac values, give extra experience */
     if ((i = find_mac(mtmp)) < 3)
-        tmp = (tmp + Math.imul(((7 - i) | 0), ((i < 0) ? 2 : 1))) | 0;
+        tmp = (tmp + Math.imul(7 - i, ((i < 0) ? 2 : 1))) | 0;
 
     /*  For very fast monsters, give extra experience */
     if (cptr.ld1so(ptr, $permonst_mmove) > NHM.NORMAL_SPEED)
@@ -484,10 +484,7 @@ export function rndexp(gaining) {
     /* make sure that `diff' is an argument which rn2() can handle */
     while (diff >= 32767n)
         diff /= 2n, factor *= 2n;
-    result = BigInt.asIntN(
-        64,
-        minexp + BigInt.asIntN(64, factor * BigInt(rn2(Number(BigInt.asIntN(32, diff)))))
-    );
+    result = BigInt.asIntN(64, minexp + factor * BigInt(rn2(Number(BigInt.asIntN(32, diff)))));
     /* 3.4.1:  if already at level 30, add to current experience
        points rather than to threshold needed to reach the current
        level; otherwise blessed potions of gain level can result

@@ -84,8 +84,8 @@ const __s_invalid_shop_shape_no_squares_inside = cptr.lit("invalid_shop_shape: n
 /** C ref: mkroom.c:42 — @param {CPtr<struct mkroom>} sroom @returns {CInt} */
 function isbig(sroom) {
     let area = Math.imul(
-        ((((cptr.ldI16o(sroom, $mkroom_hx) - cptr.ldI16(sroom)) | 0) + 1) | 0),
-        ((((cptr.ldI16o(sroom, $mkroom_hy) - cptr.ldI16o(sroom, $mkroom_ly)) | 0) + 1) | 0)
+        cptr.ldI16o(sroom, $mkroom_hx) - cptr.ldI16(sroom) + 1,
+        cptr.ldI16o(sroom, $mkroom_hy) - cptr.ldI16o(sroom, $mkroom_ly) + 1
     );
 
     return schar((area > 20));
@@ -400,11 +400,10 @@ export function fill_zoo(sroom) {
         break;
         case NHC.BEEHIVE:
         tx = i16(((cptr.ldI16(sroom) +
-                ((((((cptr.ldI16o(sroom, $mkroom_hx) -
-                    cptr.ldI16(sroom)) | 0) + 1) | 0) / 2) | 0)) | 0));
+                ((((cptr.ldI16o(sroom, $mkroom_hx) - cptr.ldI16(sroom) + 1) | 0) / 2) | 0)) | 0));
         ty = i16(((cptr.ldI16o(sroom, $mkroom_ly) +
-                ((((((cptr.ldI16o(sroom, $mkroom_hy) -
-                    cptr.ldI16o(sroom, $mkroom_ly)) | 0) + 1) | 0) / 2) | 0)) | 0));
+                ((((cptr.ldI16o(sroom, $mkroom_hy) -
+                    cptr.ldI16o(sroom, $mkroom_ly) + 1) | 0) / 2) | 0)) | 0));
         if (cptr.ld1so(sroom, $mkroom_irregular)) {
             /* center might not be valid, so put queen elsewhere */
             if (((cptr.ldI32o3(
@@ -1004,14 +1003,13 @@ export function has_upstairs(sroom) {
 
 /** C ref: mkroom.c:666 — @param {CPtr<struct mkroom>} croom @returns {CInt} */
 export function somex(croom) {
-    return ((rn2((((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom)) | 0) + 1) | 0) +
+    return ((rn2((cptr.ldI16o(croom, $mkroom_hx) - cptr.ldI16(croom) + 1) | 0) +
             (cptr.ldI16(croom))) | 0);
 }
 
 /** C ref: mkroom.c:672 — @param {CPtr<struct mkroom>} croom @returns {CInt} */
 export function somey(croom) {
-    return ((rn2((((cptr.ldI16o(croom, $mkroom_hy) -
-        cptr.ldI16o(croom, $mkroom_ly)) | 0) + 1) | 0) +
+    return ((rn2((cptr.ldI16o(croom, $mkroom_hy) - cptr.ldI16o(croom, $mkroom_ly) + 1) | 0) +
             (cptr.ldI16o(croom, $mkroom_ly))) | 0);
 }
 

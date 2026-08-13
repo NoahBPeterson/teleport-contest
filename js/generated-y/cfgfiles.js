@@ -1072,9 +1072,7 @@ function* cnf_line_BOULDER(bufp) {
         bufp,
         cptr.add(
             cptr.add(go, $instance_globals_o_ov_primary_syms),
-            ((NHC.SYM_BOULDER +
-                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+            ((NHC.SYM_BOULDER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
             1
         ),
         1,
@@ -1719,7 +1717,7 @@ export function* config_error_done() {
         /* no USER_SOUNDS; config_error_add() was called once for first
            SOUND or SOUNDDIR entry seen, then skipped for any others;
            include those skipped ones in the total error count */
-        n = (n + ((cptr.ldI32o(gn, $instance_globals_n_no_sound_notified) - 1) | 0)) | 0;
+        n = (n + (cptr.ldI32o(gn, $instance_globals_n_no_sound_notified) - 1)) | 0;
         cptr.stI32o(gn, $instance_globals_n_no_sound_notified, 0);
     }
     if (n) {
@@ -1900,10 +1898,10 @@ function* parse_conf_buf(p, proc) {
                         0;  /* +1: final '\0' */
                 if (cptr.ldPtro(p, $_cnf_parser_state_buf))
                     len = (len +
-                        ((Number(BigInt.asIntN(
+                        (Number(BigInt.asIntN(
                             32,
                             cptr.strlen(cptr.ldPtro(p, $_cnf_parser_state_buf))
-                        )) + 1) | 0)) |
+                        )) + 1)) |
                             0;  /* +1: space */
                 tmpbuf = (yield* alloc(len >>> 0));
                 cptr.st1(tmpbuf, 0);

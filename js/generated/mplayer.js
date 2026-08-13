@@ -527,8 +527,7 @@ export function create_mplayers(num, special) {
         let tryct = 0;
 
         /* roll for character class */
-        pm = ((rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) +
-                NHC.PM_ARCHEOLOGIST) | 0);
+        pm = ((rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
         set_mon_data(fakemon, cptr.add(mons, pm, $sizeof_permonst));
 
         /* roll for an available location */

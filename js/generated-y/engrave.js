@@ -821,7 +821,7 @@ export function* read_engr_at(x, y) {
             if (elen < 2 ||
                     !((cptr.ld1so(
                         cptr.ldPtro2(ep, NHC.pristine_text, 8, $engr_engr_txt),
-                        (((off + elen) | 0) - 1) | 0
+                        (off + elen - 1) | 0
                     ) ==
                         cptr.ld1so(et, (elen - 1) | 0)) &&
                         cptr.strchr(__s_dot_bang_query, cptr.ld1so(et, (elen - 1) | 0)))) {
@@ -2217,7 +2217,7 @@ function* engrave() {
 
     space_left = Number(BigInt.asIntN(
         32,
-        (BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(buf))) - 1n))
+        (BigInt.asUintN(64, 256n - cptr.strlen(cptr.decay(buf)) - 1n))
     ));
     if (cptr.diff(endc, cptr.ldPtro(svc, $context_info_engraving + $engrave_info_nextc)) >
             BigInt(space_left)) {

@@ -1167,7 +1167,7 @@ export function append_price_quote(buf, eos, otyp) {
 
     eos2 = cptr.add(eos2, cptr.sprintf(eos2, __s_rbrace));
     len2 = BigInt.asUintN(64, cptr.diff(eos2, cptr.decay(buf2)));
-    if (len2 < BigInt.asUintN(64, BigInt.asUintN(64, 256n - len) - 1n)) {
+    if (len2 < BigInt.asUintN(64, 256n - len - 1n)) {
         void cptr.strcpy(cptr.ldPtr(eos), cptr.decay(buf2));
         cptr.stPtr(eos, cptr.add(cptr.ldPtr(eos), len2));
     }
@@ -2566,7 +2566,8 @@ export function* make_angry_shk(shkp, ox, oy) {
             cptr.ldI64o(eshkp, $eshk_robbed) +
                 (BigInt.asIntN(
                     64,
-                    BigInt.asIntN(64, addupbill(shkp) + cptr.ldI64o(eshkp, $eshk_debit)) +
+                    addupbill(shkp) +
+                        cptr.ldI64o(eshkp, $eshk_debit) +
                         cptr.ldI64o(eshkp, $eshk_loan)
                 ))
         );
@@ -4342,7 +4343,7 @@ function* get_pricing_units(obj) {
                 : BigInt((yield* weight(obj)));
 
         if (unit_weight)
-            units = (BigInt.asIntN(64, BigInt.asIntN(64, wt + unit_weight) - 1n)) / unit_weight;
+            units = (BigInt.asIntN(64, wt + unit_weight - 1n)) / unit_weight;
     }
     return units;
 }
@@ -4771,10 +4772,7 @@ function* set_cost(obj, shkp) {
                     ((cptr.ldI16o(obj, $obj_otyp) - NHC.FIRST_REAL_GEM) | 0) >>> 0,
                     ((6 - u32mod(cptr.ldI32o(shkp, $monst_m_id), 3)) >>> 0)
                 )) >>> 0);
-                tmp = BigInt.asIntN(
-                    64,
-                    (BigInt.asIntN(64, tmp + 3n)) * cptr.ldI64o(obj, $obj_quan)
-                );
+                tmp = BigInt.asIntN(64, (tmp + 3n) * cptr.ldI64o(obj, $obj_quan));
                 divisor = 1n;
             }
         } else if (tmp > 1n && !(u32mod(cptr.ldI32o(shkp, $monst_m_id), 4)))
@@ -6251,9 +6249,9 @@ function* corpsenm_price_adj(obj) {
         if (((cptr.ldU16o((ptr), $permonst_geno) & NHM.G_UNIQ) != 0))
             tmp += 50n;
 
-        val = BigInt((1 > ((Math.imul(((cptr.ld1so(ptr, $permonst_mlevel) - 1) | 0), 2)))
+        val = BigInt((1 > ((Math.imul(cptr.ld1so(ptr, $permonst_mlevel) - 1, 2)))
                 ? 1
-                : ((Math.imul(((cptr.ld1so(ptr, $permonst_mlevel) - 1) | 0), 2)))));
+                : ((Math.imul(cptr.ld1so(ptr, $permonst_mlevel) - 1, 2)))));
         if (cptr.ldI16o(obj, $obj_otyp) == NHC.CORPSE)
             val += BigInt((1 > (((cptr.ldU16o(ptr, $permonst_cnutrit) / 30) | 0))
                     ? 1
@@ -6689,8 +6687,8 @@ function litter_getpos(litter, x, y, shkp) {
             )) >=
                 NHC.ROOM)) {
         for (i = 0; i < 9; i++) {
-            ix = (x + (((i % 3) - 1) | 0)) | 0;
-            iy = (y + ((((i / 3) | 0) - 1) | 0)) | 0;
+            ix = (x + ((i % 3) - 1)) | 0;
+            iy = (y + (((i / 3) | 0) - 1)) | 0;
             if (i == 4 ||
                     !isok(i16(ix), i16(iy)) ||
                     !((cptr.ld1so3(
@@ -6786,8 +6784,8 @@ function* litter_scatter(litter, x, y, shkp) {
                     i = ((i + 1) | 0) % 9;
                 } while (--trylimit && !((cptr.ld1uo(litter, i) & 4) >>> 0));
                 if (((cptr.ld1uo(litter, i) & 6) >>> 0) != 0) {
-                    ix = (x + (((i % 3) - 1) | 0)) | 0;
-                    iy = (y + ((((i / 3) | 0) - 1) | 0)) | 0;
+                    ix = (x + ((i % 3) - 1)) | 0;
+                    iy = (y + (((i / 3) | 0) - 1)) | 0;
                 } else {
                     /* we know shk isn't at <x,y> because repair
                        is deferred in that situation */
@@ -6833,10 +6831,7 @@ function* litter_newsyms(litter, x, y) {
 
     for (i = 0; i < 9; i++)
         if ((cptr.ld1uo(litter, i) & 1) >>> 0)
-            (yield* newsym(
-                i16(((x + (((i % 3) - 1) | 0)) | 0)),
-                i16(((y + ((((i / 3) | 0) - 1) | 0)) | 0))
-            ));
+            (yield* newsym(i16(((x + ((i % 3) - 1)) | 0)), i16(((y + (((i / 3) | 0) - 1)) | 0))));
 }
 
 /*

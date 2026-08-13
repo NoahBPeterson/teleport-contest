@@ -753,8 +753,8 @@ export function place_lregion(lx, ly, hx, hy, nlx, nly, nhx, nhy, rtype, lev) {
 
     oneshot = schar((lx == hx && ly == hy ? 1 : 0));
     for (trycnt = 0; trycnt < 200; trycnt++) {
-        x = i16(((rn2((((hx - lx) | 0) + 1) | 0) + (lx)) | 0));
-        y = i16(((rn2((((hy - ly) | 0) + 1) | 0) + (ly)) | 0));
+        x = i16(((rn2((hx - lx + 1) | 0) + (lx)) | 0));
+        y = i16(((rn2((hy - ly + 1) | 0) + (ly)) | 0));
         if (put_lregion_here(x, y, nlx, nly, nhx, nhy, rtype, oneshot, lev))
             return;
     }
@@ -1564,12 +1564,7 @@ function migrate_orc(mtmp, mflags) {
 
     cur_depth = depth(cptr.add(u, $you_uz));
     max_depth = (dunlevs_in_dungeon(cptr.add(u, $you_uz)) +
-        ((cptr.ldI32o2(
-            svd,
-            cptr.ldI16o(u, $you_uz),
-            $sizeof_dungeon,
-            $dungeon_depth_start
-        ) - 1) | 0)) |
+        (cptr.ldI32o2(svd, cptr.ldI16o(u, $you_uz), $sizeof_dungeon, $dungeon_depth_start) - 1)) |
             0;
     if (mflags == 1n) {
         /* Note that the orc leader will take possession of any
@@ -1582,7 +1577,7 @@ function migrate_orc(mtmp, mflags) {
             nlev--;
         cptr.stI64o(mtmp, $monst_migflags, cptr.ldI64o(mtmp, $monst_migflags) | 8192n);
     } else {
-        nlev = (rn2((((max_depth - cur_depth) | 0) + 1) | 0) + cur_depth) | 0;
+        nlev = (rn2((max_depth - cur_depth + 1) | 0) + cur_depth) | 0;
         if (nlev == cur_depth)
             nlev++;
         if (nlev > max_depth)
@@ -1676,13 +1671,13 @@ function stolen_booty() {
     cnt = rnd(3);
     for (i = 0; i < cnt; ++i)
         migr_booty_item(NHC.SKELETON_KEY, gang);
-    otyp = ((rn2(((((NHC.GAUNTLETS_OF_DEXTERITY - NHC.LEATHER_GLOVES) | 0) + 1) | 0)) +
+    otyp = ((rn2(((NHC.GAUNTLETS_OF_DEXTERITY - NHC.LEATHER_GLOVES + 1) | 0)) +
             NHC.LEATHER_GLOVES) | 0);
     migr_booty_item(otyp, gang);
     cnt = rnd(10);
     for (i = 0; i < cnt; ++i) {
         /* Food items - but no lembas! (or some other weird things) */
-        otyp = ((rn2(((((NHC.TIN - NHC.TRIPE_RATION) | 0) + 1) | 0)) + NHC.TRIPE_RATION) | 0);
+        otyp = ((rn2(((NHC.TIN - NHC.TRIPE_RATION + 1) | 0)) + NHC.TRIPE_RATION) | 0);
         if (otyp != NHC.LEMBAS_WAFER &&
                 (cptr.ldI16o2(objects, otyp, $sizeof_objclass, $objclass_oc_prob) != 0 ||
                     otyp == NHC.C_RATION ||
@@ -1739,7 +1734,7 @@ function stolen_booty() {
     for (i = 0; i < cnt; ++i) {
         let mtyp;
 
-        mtyp = (rn2(((((NHC.PM_ORC_SHAMAN - NHC.PM_ORC) | 0) + 1) | 0)) + NHC.PM_ORC) | 0;
+        mtyp = (rn2(((NHC.PM_ORC_SHAMAN - NHC.PM_ORC + 1) | 0)) + NHC.PM_ORC) | 0;
         mtmp = makemon(cptr.add(mons, mtyp, $sizeof_permonst), 0, 0, NHM.MM_NONAME);
         if (mtmp) {
             shiny_orc_stuff(mtmp);
@@ -2061,8 +2056,8 @@ export function pick_vibrasquare_location() {
     let y;
     let stway;
     let trycnt = 0;
-    let x_range = (((((cptr.ldI32(gx) - 2) | 0) - 8) | 0) - 1) | 0;
-    let y_range = (((((cptr.ldI32(gy) - 2) | 0) - 6) | 0) - 1) | 0;
+    let x_range = (cptr.ldI32(gx) - 2 - 8 - 1) | 0;
+    let y_range = (cptr.ldI32(gy) - 2 - 6 - 1) | 0;
 
     if (x_range <= 4 || y_range <= 3 || (Math.imul(x_range, y_range)) <= 121) {
         {
@@ -2786,7 +2781,7 @@ let hero_bubble = null;
 let __static_movebubbles_water_pos = cptr.alloc($sizeof_rm); /** C ref: mkmaze.c:1541 — struct rm (function-static) */
 cptr.stI32(
     __static_movebubbles_water_pos,
-    (((((NHC.S_water) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+    (((NHC.S_water) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
 );
 cptr.st1o(__static_movebubbles_water_pos, $rm_typ, NHC.WATER);
 cptr.st1o(__static_movebubbles_water_pos, $rm_seenv, 0);
@@ -2800,7 +2795,7 @@ cptr.stI32o(__static_movebubbles_water_pos, $rm_candig, 0);
 let __static_movebubbles_air_pos = cptr.alloc($sizeof_rm); /** C ref: mkmaze.c:1543 — struct rm (function-static) */
 cptr.stI32(
     __static_movebubbles_air_pos,
-    (((((NHC.S_cloud) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+    (((NHC.S_cloud) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
 );
 cptr.st1o(__static_movebubbles_air_pos, $rm_typ, NHC.AIR);
 cptr.st1o(__static_movebubbles_air_pos, $rm_seenv, 0);
@@ -3071,9 +3066,9 @@ export function movebubbles() {
 
         mv_bubble(
             b,
-            i16(((((cptr.ld1so(b, $bubble_dx) + 1) | 0) -
+            i16(((cptr.ld1so(b, $bubble_dx) + 1 -
                 (!cptr.ld1so(b, $bubble_dx) ? rx : (rx ? 1 : 0))) | 0)),
-            i16(((((cptr.ld1so(b, $bubble_dy) + 1) | 0) -
+            i16(((cptr.ld1so(b, $bubble_dy) + 1 -
                 (!cptr.ld1so(b, $bubble_dy) ? ry : (ry ? 1 : 0))) | 0)),
             0
         );
@@ -3413,7 +3408,7 @@ function setup_waterlevel() {
                 ? NHC.S_water
                 : NHC.S_air) <=
                 NHC.S_trwall)
-                ? ((((((((cptr.ldI16o(
+                ? ((((((cptr.ldI16o(
                     (cptr.add(
                         svd,
                         $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
@@ -3433,7 +3428,7 @@ function setup_waterlevel() {
                     )))
                     ? NHC.S_water
                     : NHC.S_air) -
-                    NHC.S_vwall) | 0) +
+                    NHC.S_vwall +
                     (In_mines(cptr.add(u, $you_uz))
                         ? NHC.GLYPH_CMAP_MINES_OFF
                         : (In_hell(cptr.add(u, $you_uz))
@@ -3484,7 +3479,7 @@ function setup_waterlevel() {
                     ? NHC.S_water
                     : NHC.S_air) <
                     NHC.S_altar)
-                    ? ((((((((cptr.ldI16o(
+                    ? ((((((cptr.ldI16o(
                         (cptr.add(
                             svd,
                             $instance_globals_saved_d_dungeon_topology + $dgn_topology_d_water_level
@@ -3505,7 +3500,7 @@ function setup_waterlevel() {
                         )))
                         ? NHC.S_water
                         : NHC.S_air) -
-                        NHC.S_ndoor) | 0) +
+                        NHC.S_ndoor +
                         NHC.GLYPH_CMAP_A_OFF) | 0)
                     : ((((((cptr.ldI16o(
                         (cptr.add(
@@ -3553,8 +3548,8 @@ function setup_waterlevel() {
                             )))
                             ? NHC.S_water
                             : NHC.S_air) <
-                            ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                            ? ((((((((cptr.ldI16o(
+                            ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                            ? ((((((cptr.ldI16o(
                                 (cptr.add(
                                     svd,
                                     $instance_globals_saved_d_dungeon_topology +
@@ -3577,7 +3572,7 @@ function setup_waterlevel() {
                                 )))
                                 ? NHC.S_water
                                 : NHC.S_air) -
-                                NHC.S_grave) | 0) +
+                                NHC.S_grave +
                                 NHC.GLYPH_CMAP_B_OFF) | 0)
                             : ((((((cptr.ldI16o(
                                 (cptr.add(
@@ -3603,7 +3598,7 @@ function setup_waterlevel() {
                                 ? NHC.S_water
                                 : NHC.S_air) <=
                                 NHC.S_goodpos)
-                                ? ((((((((cptr.ldI16o(
+                                ? ((((((cptr.ldI16o(
                                     (cptr.add(
                                         svd,
                                         $instance_globals_saved_d_dungeon_topology +
@@ -3626,7 +3621,7 @@ function setup_waterlevel() {
                                     )))
                                     ? NHC.S_water
                                     : NHC.S_air) -
-                                    NHC.S_digbeam) | 0) +
+                                    NHC.S_digbeam +
                                     NHC.GLYPH_CMAP_C_OFF) | 0)
                                 : NHC.MAX_GLYPH))))));
     typ = (((cptr.ldI16o(
@@ -3760,14 +3755,14 @@ function mk_bubble(x, y, n) {
         panic(__s_bmask_size_is_larger_than_max_bmask);
     }
     b = alloc(40);
-    if (((((x + cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 0)) | 0) - 1) | 0) >
+    if (((x + cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 0) - 1) | 0) >
             ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0))
-        x = i16(((((((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0) -
-                cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 0)) | 0) + 1) | 0));
-    if (((((y + cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 1)) | 0) - 1) | 0) >
+        x = i16(((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1 -
+                cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 0) + 1) | 0));
+    if (((y + cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 1) - 1) | 0) >
             ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0))
-        y = i16(((((((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0) -
-                cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 1)) | 0) + 1) | 0));
+        y = i16(((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1 -
+                cptr.ld1uo(cptr.ldPtro(__static_mk_bubble_bmask, n, 8), 1) + 1) | 0));
     cptr.stI16(b, x);
     cptr.stI16o(b, $bubble_y, y);
     cptr.st1o(b, $bubble_dx, schar(((1 - rn2(3)) | 0)));
@@ -3879,10 +3874,10 @@ function mv_bubble(b, dx, dy, ini) {
             colli |= 2;
         if (cptr.ldI16o(b, $bubble_y) <= ((cptr.ldI32(svy) + 1) | 0))
             colli |= 1;
-        if (((((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) - 1) | 0) >=
+        if (((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm) - 1) | 0) >=
                 ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0))
             colli |= 2;
-        if (((((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) - 1) | 0) >=
+        if (((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm) - 1) | 0) >=
                 ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0))
             colli |= 1;
 
@@ -3898,44 +3893,44 @@ function mv_bubble(b, dx, dy, ini) {
             );
             cptr.stI16o(b, $bubble_y, i16(((cptr.ldI32(svy) + 1) | 0)));
         }
-        if (((((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) - 1) | 0) >
+        if (((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm) - 1) | 0) >
                 ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0)) {
             pline(
                 __s_bubble_xmax_x_d_xmax_d,
-                (((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) - 1) | 0,
+                (cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm) - 1) | 0,
                 ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0)
             );
             cptr.stI16(
                 b,
-                i16(((((((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0) -
-                    cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) + 1) | 0))
+                i16(((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1 -
+                    cptr.ld1uo2(b, 0, 1, $bubble_bm) + 1) | 0))
             );
         }
-        if (((((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) - 1) | 0) >
+        if (((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm) - 1) | 0) >
                 ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0)) {
             pline(
                 __s_bubble_ymax_y_d_ymax_d,
-                (((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) - 1) | 0,
+                (cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm) - 1) | 0,
                 ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0)
             );
             cptr.stI16o(
                 b,
                 $bubble_y,
-                i16(((((((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0) -
-                    cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) + 1) | 0))
+                i16(((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1 -
+                    cptr.ld1uo2(b, 1, 1, $bubble_bm) + 1) | 0))
             );
         }
 
         /* bounce if we're trying to move off the border */
         if (cptr.ldI16(b) == ((cptr.ldI32(svx) + 1) | 0) && dx < 0)
             dx = i16((-dx));
-        if (((((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm)) | 0) - 1) | 0) ==
+        if (((cptr.ldI16(b) + cptr.ld1uo2(b, 0, 1, $bubble_bm) - 1) | 0) ==
             ((cptr.ldI32o(svx, $instance_globals_saved_x_xmax) - 1) | 0) &&
                 dx > 0)
             dx = i16((-dx));
         if (cptr.ldI16o(b, $bubble_y) == ((cptr.ldI32(svy) + 1) | 0) && dy < 0)
             dy = i16((-dy));
-        if (((((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm)) | 0) - 1) | 0) ==
+        if (((cptr.ldI16o(b, $bubble_y) + cptr.ld1uo2(b, 1, 1, $bubble_bm) - 1) | 0) ==
             ((cptr.ldI32o(svy, $instance_globals_saved_y_ymax) - 1) | 0) &&
                 dy > 0)
             dy = i16((-dy));

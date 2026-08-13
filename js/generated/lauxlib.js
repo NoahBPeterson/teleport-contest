@@ -237,7 +237,7 @@ export function luaL_traceback(L, L1, msg, level) {
     luaL_addstring(b, __s_stack_traceback);
     while (lua_getstack(L1, level++, ar)) {
         if (limit2show-- == 0) {
-            let n = (((((last - level) | 0) - 11) | 0) + 1) | 0;  /* number of levels to skip */
+            let n = (last - level - 11 + 1) | 0;  /* number of levels to skip */
             lua_pushfstring(L, __s_skipping_d_levels, n);
             luaL_addvalue(b);  /* add warning about skip */
             level = (level + n) | 0;  /* and skip to last levels */

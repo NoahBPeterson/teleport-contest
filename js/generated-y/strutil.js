@@ -84,7 +84,7 @@ export function* strbuf_nl_to_crlf(strbuf) {
             if (cptr.ld1s(cptr.postinc(() => cp, (v) => { cp = v; })) == 10)
                 count++;
         if (count) {
-            (yield* strbuf_reserve(strbuf, (((len + count) | 0) + 1) | 0));
+            (yield* strbuf_reserve(strbuf, (len + count + 1) | 0));
             for (
                 cp = cptr.add(cptr.add(cptr.ldPtro(strbuf, $strbuf_t_str), len), count);
                 count;

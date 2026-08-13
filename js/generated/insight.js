@@ -1317,7 +1317,7 @@ function fmt_elapsed_time(outbuf, final) {
     eminutes = etim % 60n, etim /= 60n;
     ehours = etim % 24n;
     edays = etim / 24n;
-    fieldcnt = (((((!!edays + !!ehours) | 0) + !!eminutes) | 0) + !!eseconds) | 0;
+    fieldcnt = (!!edays + !!ehours + !!eminutes + !!eseconds) | 0;
 
     void cptr.strcpy(outbuf, fieldcnt ? __s_empty : __s_none);  /* 'none' should never happen */
     if (edays) {
@@ -3179,7 +3179,7 @@ function weapon_insight(final) {
                 void cptr.sprintf(
                     cptr.decay(sfx),
                     __s_skill_s_with_s_s_s_s_s,
-                    (((((a1 + a2) | 0) + ab) | 0) > 1) ? __s_s : __s_empty,
+                    (((a1 + a2 + ab) | 0) > 1) ? __s_s : __s_empty,
                     a1 ? skill_name(wtype) : __s_empty,
                     ((a1 && a2 && ab)
                         ? __s_comma_sp
@@ -5162,7 +5162,7 @@ export function count_achievements() {
    in order to subsequently report gender-specific ranks accurately */
 /** C ref: insight.c:2506 — @param {CInt} rank @returns {CInt} */
 export function achieve_rank(rank) {
-    let achidx = schar(((((rank - 1) | 0) + NHC.ACH_RNK1) | 0));
+    let achidx = schar(((rank - 1 + NHC.ACH_RNK1) | 0));
 
     if (cptr.ld1so(flags, $flag_female))
         achidx = schar((-achidx));

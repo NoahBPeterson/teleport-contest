@@ -3461,9 +3461,7 @@ export function omon_adj(mon, obj, mon_notices) {
     let tmp = 0;
 
     /* size of target affects the chance of hitting */
-    tmp = (tmp +
-        ((cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) - NHM.MZ_MEDIUM) | 0)) |
-            0;  /* -2..+5 */
+    tmp = (tmp + (cptr.ld1uo(cptr.ldPtro(mon, $monst_data), $permonst_msize) - NHM.MZ_MEDIUM)) | 0;  /* -2..+5 */
     /* sleeping target is more likely to be hit */
     if ((cptr.ldI32o(mon, $monst_msleeping) & 1)) {
         tmp = (tmp + 2) | 0;
@@ -3543,7 +3541,7 @@ export function should_mulch_missile(obj) {
     /* we had been breaking 2/3 of everything unconditionally.  we still don't
        want anything to survive unconditionally, but we need ammo to stay
        around longer on average. */
-    chance = (((3 + greatest_erosion(obj)) | 0) - cptr.ld1so(obj, $obj_spe)) | 0;
+    chance = (3 + greatest_erosion(obj) - cptr.ld1so(obj, $obj_spe)) | 0;
     broken = schar((chance > 1 ? rn2(chance) : !rn2(4)));
     if ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 &&
             (cptr.ld1so(svc, $context_info_mon_moving) ? !rn2(3) : !rnl(4)))
@@ -3604,7 +3602,10 @@ export function thitmonst(mon, obj) {
      * Certain items which don't in themselves do damage ignore 'tmp'.
      * Distance and monster size affect chance to hit.
      */
-    tmp = (((((((-1 + Luck()) | 0) + find_mac(mon)) | 0) + cptr.ld1so(u, $you_uhitinc)) | 0) +
+    tmp = (-1 +
+        Luck() +
+        find_mac(mon) +
+        cptr.ld1so(u, $you_uhitinc) +
         (Upolyd()
             ? (cptr.ld1so(
                 cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
@@ -3619,7 +3620,7 @@ export function thitmonst(mon, obj) {
     else if ((acurr(NHC.A_DEX)) < 8)
         tmp = (tmp - 1) | 0;
     else if ((acurr(NHC.A_DEX)) >= 14)
-        tmp = (tmp + (((acurr(NHC.A_DEX)) - 14) | 0)) | 0;
+        tmp = (tmp + ((acurr(NHC.A_DEX)) - 14)) | 0;
 
     /* Modify to-hit depending on distance; but keep it sane.
      * Polearms get a distance penalty even when wielded; it's
@@ -3801,7 +3802,7 @@ export function thitmonst(mon, obj) {
             if (!ammo_and_launcher(obj, uwep.v)) {
                 tmp = (tmp - 4) | 0;
             } else {
-                tmp = (tmp + ((cptr.ld1so(uwep.v, $obj_spe) - greatest_erosion(uwep.v)) | 0)) | 0;
+                tmp = (tmp + (cptr.ld1so(uwep.v, $obj_spe) - greatest_erosion(uwep.v))) | 0;
                 tmp = (tmp + weapon_hit_bonus(uwep.v)) | 0;
                 if (cptr.ld1so(uwep.v, $obj_oartifact))
                     tmp = (tmp + spec_abon(uwep.v, mon)) | 0;

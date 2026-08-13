@@ -1066,8 +1066,11 @@ export function* find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pen
 
     cptr.stI32(role_roll_penalty, 0);  /* default is `none' */
 
-    tmp = (((((((((1 + (yield* abon())) | 0) + find_mac(mtmp)) | 0) + cptr.ld1so(u, $you_uhitinc)) | 0) +
-        (Math.imul(sgn(Luck()), ((((Math.abs(Luck()) + 2) | 0) / 3) | 0)))) | 0) +
+    tmp = (1 +
+        (yield* abon()) +
+        find_mac(mtmp) +
+        cptr.ld1so(u, $you_uhitinc) +
+        (Math.imul(sgn(Luck()), ((((Math.abs(Luck()) + 2) | 0) / 3) | 0))) +
         (Upolyd()
             ? (cptr.ld1so(
                 cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
@@ -1102,7 +1105,7 @@ export function* find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pen
                 ))) |
                     0;
         else if (!uwep.v && !uarms.v)
-            tmp = (tmp + ((((cptr.ldI32o(u, $you_ulevel) / 3) | 0) + 2) | 0)) | 0;
+            tmp = (tmp + (((cptr.ldI32o(u, $you_ulevel) / 3) | 0) + 2)) | 0;
     }
     if (((cptr.ldU64o((cptr.ldPtro(mtmp, $monst_data)), $permonst_mflags2) & 128n) != 0n) &&
             (Upolyd()
@@ -1115,7 +1118,7 @@ export function* find_roll_to_hit(mtmp, aatyp, weapon, attk_count, role_roll_pen
 
     /* encumbrance: with a lot of luggage, your agility diminishes */
     if ((tmp2 = near_capacity()) != 0)
-        tmp = (tmp - (((Math.imul(tmp2, 2)) - 1) | 0)) | 0;
+        tmp = (tmp - ((Math.imul(tmp2, 2)) - 1)) | 0;
     if (cptr.ldI32o(u, $you_utrap))
         tmp = (tmp - 3) | 0;
 
@@ -1940,11 +1943,7 @@ function* hmon_hitmon_weapon_melee(hmd, mon, obj) {
                 !is_flimsy(monwep) &&
                 !obj_resists(
                     monwep,
-                    (50 +
-                        Math.imul(
-                            15,
-                            ((greatest_erosion(obj) - greatest_erosion(monwep)) | 0)
-                        )) | 0,
+                    (50 + Math.imul(15, greatest_erosion(obj) - greatest_erosion(monwep))) | 0,
                     100
                 ))) {
         let buf = new Uint8Array(256);
@@ -2842,10 +2841,7 @@ function* hmon_hitmon_msg_silver(hmd, mon, obj) {
             __builtin___strncat_chk(
                 cptr.decay(silverobjbuf),
                 __s_sp_pct_s_bang,
-                BigInt.asUintN(
-                    64,
-                    256n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(silverobjbuf)) + 1n))
-                ),
+                BigInt.asUintN(64, 256n - (cptr.strlen(cptr.decay(silverobjbuf)) + 1n)),
                 __builtin_object_size(cptr.decay(silverobjbuf), 1)
             );
             fmt = cptr.decay(silverobjbuf);
@@ -4599,7 +4595,7 @@ function* mhitm_really_poison(magr, mattk, mdef, mhm) {
         if (cptr.ld1so(gv, $instance_globals_v_vis) && canspotmon(mdef) && canspotmon(magr))
             (yield* pline_The(__s_poison_doesn_t_seem_to_affect_s, (yield* mon_nam(mdef))));
     } else {
-        cptr.stI32(mhm, (cptr.ldI32(mhm) + ((rn2(10) + 6) | 0)) | 0);
+        cptr.stI32(mhm, (cptr.ldI32(mhm) + (rn2(10) + 6)) | 0);
         if (cptr.ldI32(mhm) >= cptr.ldI32o(mdef, $monst_mhp) &&
                 cptr.ld1so(gv, $instance_globals_v_vis) &&
                 canspotmon(mdef))
@@ -4629,7 +4625,7 @@ export function* mhitm_ad_drst(magr, mattk, mdef, mhm) {
                     (yield* Your(__s_poison_was_deadly));
                     cptr.stI32(mhm, cptr.ldI32o(mdef, $monst_mhp));
                 } else
-                    cptr.stI32(mhm, (cptr.ldI32(mhm) + ((rn2(10) + 6) | 0)) | 0);
+                    cptr.stI32(mhm, (cptr.ldI32(mhm) + (rn2(10) + 6)) | 0);
             }
         }
     } else if (cptr.eq(mdef, cptr.add(gy, $instance_globals_y_youmonst))) {
@@ -5367,7 +5363,7 @@ export function* mhitm_ad_conf(magr, mattk, mdef, mhm) {
             cptr.stI32o(
                 magr,
                 $monst_mspec_used,
-                (cptr.ldI32o(magr, $monst_mspec_used) + ((cptr.ldI32(mhm) + rn2(6)) | 0)) | 0
+                (cptr.ldI32o(magr, $monst_mspec_used) + (cptr.ldI32(mhm) + rn2(6))) | 0
             );
             if (HConfusion())
                 (yield* You(__s_are_getting_even_more_confused));
@@ -5878,7 +5874,7 @@ export function* mhitm_ad_phys(magr, mattk, mdef, mhm) {
                 cptr.stI32(mhm, (cptr.ldI32(mhm) + (yield* dmgval(otmp, mdef))) | 0);
                 if ((marmg = (yield* which_armor(magr, 16n))) !== null &&
                         cptr.ldI16o(marmg, $obj_otyp) == NHC.GAUNTLETS_OF_POWER)
-                    cptr.stI32(mhm, (cptr.ldI32(mhm) + ((rn2(4) + 3) | 0)) | 0);  /* 3..6 */
+                    cptr.stI32(mhm, (cptr.ldI32(mhm) + (rn2(4) + 3)) | 0);  /* 3..6 */
                 if (cptr.ldI32(mhm) <= 0)
                     cptr.stI32(mhm, 1);
                 if (!cptr.ld1so(otmp, $obj_oartifact) ||
@@ -6018,7 +6014,7 @@ export function* mhitm_ad_phys(magr, mattk, mdef, mhm) {
             cptr.stI32(mhm, (cptr.ldI32(mhm) + (yield* dmgval(mwep, mdef))) | 0);
             if ((marmg = (yield* which_armor(magr, 16n))) !== null &&
                     cptr.ldI16o(marmg, $obj_otyp) == NHC.GAUNTLETS_OF_POWER)
-                cptr.stI32(mhm, (cptr.ldI32(mhm) + ((rn2(4) + 3) | 0)) | 0);  /* 3..6 */
+                cptr.stI32(mhm, (cptr.ldI32(mhm) + (rn2(4) + 3)) | 0);  /* 3..6 */
             if (cptr.ldI32(mhm) < 1)
                 cptr.stI32(mhm, 1);
             if (cptr.ld1so(mwep, $obj_oartifact)) {
@@ -6997,7 +6993,7 @@ export function* explum(mdef, mattk) {
         (yield* explode(
             cptr.ldI16(u),
             cptr.ldI16o(u, $you_uy),
-            (((cptr.ld1uo(mattk, $attack_adtyp) - 1) | 0) + 20) | 0,
+            (cptr.ld1uo(mattk, $attack_adtyp) - 1 + 20) | 0,
             tmp,
             (schar(((NHC.MAXOCLASSES + 2) | 0))),
             (yield* adtyp_to_expltype(cptr.ld1uo(mattk, $attack_adtyp)))
@@ -8692,7 +8688,7 @@ export function* passive(mon, weapon, mhitb, maliveb, aatyp, wep_was_destroyed) 
                 (yield* healmon(mon, (((tmp + rn2(2)) | 0) / 2) | 0, (((tmp + 1) | 0) / 2) | 0));
                 /* at a certain point, the monster will reproduce! */
                 if (cptr.ldI32o(mon, $monst_mhpmax) >
-                        Math.imul((((cptr.ld1uo(mon, $monst_m_lev)) + 1) | 0), 8))
+                        Math.imul((cptr.ld1uo(mon, $monst_m_lev)) + 1, 8))
                     void (yield* split_mon(mon, cptr.add(gy, $instance_globals_y_youmonst)));
             }
             break;

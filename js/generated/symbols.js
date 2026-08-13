@@ -389,7 +389,7 @@ export function init_showsyms() {
     for (i = 0; i < NHC.MAXMCLASSES; i++)
         cptr.st1o2(
             gs,
-            (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0,
             1,
             $instance_globals_s_showsyms,
             uchar(cptr.ld1so(def_monsyms, i, $sizeof_class_sym))
@@ -397,9 +397,7 @@ export function init_showsyms() {
     for (i = 0; i < NHM.WARNCOUNT; i++)
         cptr.st1o2(
             gs,
-            (i +
-                (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES) | 0)) | 0,
             1,
             $instance_globals_s_showsyms,
             cptr.ld1uo(def_warnsyms, i, $sizeof_symdef)
@@ -407,9 +405,7 @@ export function init_showsyms() {
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o2(
             gs,
-            (i +
-                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6) | 0)) | 0,
             1,
             $instance_globals_s_showsyms,
             get_othersym(i, NHC.PRIMARYSET)
@@ -423,10 +419,7 @@ export function init_ov_rogue_symbols() {
 
     for (
         i = 0;
-        i <
-            (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                NHC.MAXMCLASSES) | 0) + 6) | 0) +
-                NHC.MAXOTHER) | 0);
+        i < (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6 + NHC.MAXOTHER) | 0);
         i++
     )
         cptr.st1o2(go, i, 1, $instance_globals_o_ov_rogue_syms, 0);
@@ -439,10 +432,7 @@ export function init_ov_primary_symbols() {
 
     for (
         i = 0;
-        i <
-            (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                NHC.MAXMCLASSES) | 0) + 6) | 0) +
-                NHC.MAXOTHER) | 0);
+        i < (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6 + NHC.MAXOTHER) | 0);
         i++
     )
         cptr.st1o2(go, i, 1, $instance_globals_o_ov_primary_syms, 0);
@@ -451,10 +441,7 @@ export function init_ov_primary_symbols() {
 /** C ref: symbols.c:131 — @param {CInt} idx @param {CInt} which_set @returns {*} */
 export function get_othersym(idx, which_set) {
     let sym = 0;
-    let oidx = (idx +
-        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-            NHC.MAXMCLASSES) | 0) + 6) | 0)) |
-            0;
+    let oidx = (idx + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6) | 0)) | 0;
 
     if (which_set == NHC.ROGUESET)
         sym = uchar((cptr.ld1uo2(go, oidx, 1, $instance_globals_o_ov_rogue_syms)
@@ -505,7 +492,7 @@ export function init_primary_symbols() {
     for (i = 0; i < NHC.MAXMCLASSES; i++)
         cptr.st1o2(
             gp,
-            (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0,
             1,
             $instance_globals_p_primary_syms,
             uchar(cptr.ld1so(def_monsyms, i, $sizeof_class_sym))
@@ -513,9 +500,7 @@ export function init_primary_symbols() {
     for (i = 0; i < NHM.WARNCOUNT; i++)
         cptr.st1o2(
             gp,
-            (i +
-                (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES) | 0)) | 0,
             1,
             $instance_globals_p_primary_syms,
             cptr.ld1uo(def_warnsyms, i, $sizeof_symdef)
@@ -523,9 +508,7 @@ export function init_primary_symbols() {
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o2(
             gp,
-            (i +
-                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6) | 0)) | 0,
             1,
             $instance_globals_p_primary_syms,
             get_othersym(i, NHC.PRIMARYSET)
@@ -562,25 +545,21 @@ export function init_rogue_symbols() {
     for (i = 0; i < NHC.MAXMCLASSES; i++)
         cptr.st1o(
             gr,
-            (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0,
             uchar(cptr.ld1so(def_monsyms, i, $sizeof_class_sym)),
             1
         );
     for (i = 0; i < NHM.WARNCOUNT; i++)
         cptr.st1o(
             gr,
-            (i +
-                (((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES) | 0)) | 0,
             cptr.ld1uo(def_warnsyms, i, $sizeof_symdef),
             1
         );
     for (i = 0; i < NHC.MAXOTHER; i++)
         cptr.st1o(
             gr,
-            (i +
-                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0,
+            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6) | 0)) | 0,
             get_othersym(i, NHC.ROGUESET),
             1
         );
@@ -608,10 +587,7 @@ export function assign_graphics(whichset) {
 
         for (
             i = 0;
-            i <
-                (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0) +
-                    NHC.MAXOTHER) | 0);
+            i < (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6 + NHC.MAXOTHER) | 0);
             i++
         )
             cptr.st1o2(
@@ -629,10 +605,7 @@ export function assign_graphics(whichset) {
         default:
         for (
             i = 0;
-            i <
-                (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0) +
-                    NHC.MAXOTHER) | 0);
+            i < (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6 + NHC.MAXOTHER) | 0);
             i++
         )
             cptr.st1o2(
@@ -657,10 +630,7 @@ export function switch_symbols(nondefault) {
     if (nondefault) {
         for (
             i = 0;
-            i <
-                (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0) +
-                    NHC.MAXOTHER) | 0);
+            i < (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6 + NHC.MAXOTHER) | 0);
             i++
         )
             cptr.st1o2(
@@ -1219,527 +1189,517 @@ cptr.stI32o(loadsyms, 1792, NHC.SYM_PCHAR);
 cptr.stI32o(loadsyms, 1792 + $symparse_idx, NHC.S_expl_br);
 cptr.stPtro(loadsyms, 1792 + $symparse_name, __s_s_expl_br);
 cptr.stI32o(loadsyms, 1808, NHC.SYM_OC);
-cptr.stI32o(
-    loadsyms,
-    1808 + $symparse_idx,
-    ((NHC.S_strange_obj + (((0) + NHC.MAXPCHARS) | 0)) | 0)
-);
+cptr.stI32o(loadsyms, 1808 + $symparse_idx, ((NHC.S_strange_obj + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1808 + $symparse_name, __s_s_strange_obj);
 cptr.stI32o(loadsyms, 1824, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1824 + $symparse_idx, ((NHC.S_weapon + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1824 + $symparse_idx, ((NHC.S_weapon + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1824 + $symparse_name, __s_s_weapon);
 cptr.stI32o(loadsyms, 1840, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1840 + $symparse_idx, ((NHC.S_armor + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1840 + $symparse_idx, ((NHC.S_armor + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1840 + $symparse_name, __s_s_armor);
 cptr.stI32o(loadsyms, 1856, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1856 + $symparse_idx, ((NHC.S_ring + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1856 + $symparse_idx, ((NHC.S_ring + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1856 + $symparse_name, __s_s_ring);
 cptr.stI32o(loadsyms, 1872, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1872 + $symparse_idx, ((NHC.S_amulet + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1872 + $symparse_idx, ((NHC.S_amulet + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1872 + $symparse_name, __s_s_amulet);
 cptr.stI32o(loadsyms, 1888, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1888 + $symparse_idx, ((NHC.S_tool + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1888 + $symparse_idx, ((NHC.S_tool + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1888 + $symparse_name, __s_s_tool);
 cptr.stI32o(loadsyms, 1904, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1904 + $symparse_idx, ((NHC.S_food + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1904 + $symparse_idx, ((NHC.S_food + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1904 + $symparse_name, __s_s_food);
 cptr.stI32o(loadsyms, 1920, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1920 + $symparse_idx, ((NHC.S_potion + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1920 + $symparse_idx, ((NHC.S_potion + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1920 + $symparse_name, __s_s_potion);
 cptr.stI32o(loadsyms, 1936, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1936 + $symparse_idx, ((NHC.S_scroll + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1936 + $symparse_idx, ((NHC.S_scroll + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1936 + $symparse_name, __s_s_scroll);
 cptr.stI32o(loadsyms, 1952, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1952 + $symparse_idx, ((NHC.S_book + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1952 + $symparse_idx, ((NHC.S_book + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1952 + $symparse_name, __s_s_book);
 cptr.stI32o(loadsyms, 1968, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1968 + $symparse_idx, ((NHC.S_wand + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1968 + $symparse_idx, ((NHC.S_wand + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1968 + $symparse_name, __s_s_wand);
 cptr.stI32o(loadsyms, 1984, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 1984 + $symparse_idx, ((NHC.S_coin + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 1984 + $symparse_idx, ((NHC.S_coin + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 1984 + $symparse_name, __s_s_coin);
 cptr.stI32o(loadsyms, 2000, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2000 + $symparse_idx, ((NHC.S_gem + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 2000 + $symparse_idx, ((NHC.S_gem + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 2000 + $symparse_name, __s_s_gem);
 cptr.stI32o(loadsyms, 2016, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2016 + $symparse_idx, ((NHC.S_rock + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 2016 + $symparse_idx, ((NHC.S_rock + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 2016 + $symparse_name, __s_s_rock);
 cptr.stI32o(loadsyms, 2032, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2032 + $symparse_idx, ((NHC.S_ball + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 2032 + $symparse_idx, ((NHC.S_ball + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 2032 + $symparse_name, __s_s_ball);
 cptr.stI32o(loadsyms, 2048, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2048 + $symparse_idx, ((NHC.S_chain + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 2048 + $symparse_idx, ((NHC.S_chain + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 2048 + $symparse_name, __s_s_chain);
 cptr.stI32o(loadsyms, 2064, NHC.SYM_OC);
-cptr.stI32o(loadsyms, 2064 + $symparse_idx, ((NHC.S_venom + (((0) + NHC.MAXPCHARS) | 0)) | 0));
+cptr.stI32o(loadsyms, 2064 + $symparse_idx, ((NHC.S_venom + ((0) + NHC.MAXPCHARS)) | 0));
 cptr.stPtro(loadsyms, 2064 + $symparse_name, __s_s_venom);
 cptr.stI32o(loadsyms, 2080, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2080 + $symparse_idx,
-    ((NHC.S_ANT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_ANT + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2080 + $symparse_name, __s_s_ant);
 cptr.stI32o(loadsyms, 2096, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2096 + $symparse_idx,
-    ((NHC.S_BLOB + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_BLOB + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2096 + $symparse_name, __s_s_blob);
 cptr.stI32o(loadsyms, 2112, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2112 + $symparse_idx,
-    ((NHC.S_COCKATRICE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_COCKATRICE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2112 + $symparse_name, __s_s_cockatrice);
 cptr.stI32o(loadsyms, 2128, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2128 + $symparse_idx,
-    ((NHC.S_DOG + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_DOG + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2128 + $symparse_name, __s_s_dog);
 cptr.stI32o(loadsyms, 2144, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2144 + $symparse_idx,
-    ((NHC.S_EYE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_EYE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2144 + $symparse_name, __s_s_eye);
 cptr.stI32o(loadsyms, 2160, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2160 + $symparse_idx,
-    ((NHC.S_FELINE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_FELINE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2160 + $symparse_name, __s_s_feline);
 cptr.stI32o(loadsyms, 2176, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2176 + $symparse_idx,
-    ((NHC.S_GREMLIN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_GREMLIN + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2176 + $symparse_name, __s_s_gremlin);
 cptr.stI32o(loadsyms, 2192, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2192 + $symparse_idx,
-    ((NHC.S_HUMANOID + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_HUMANOID + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2192 + $symparse_name, __s_s_humanoid);
 cptr.stI32o(loadsyms, 2208, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2208 + $symparse_idx,
-    ((NHC.S_IMP + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_IMP + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2208 + $symparse_name, __s_s_imp);
 cptr.stI32o(loadsyms, 2224, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2224 + $symparse_idx,
-    ((NHC.S_JELLY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_JELLY + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2224 + $symparse_name, __s_s_jelly);
 cptr.stI32o(loadsyms, 2240, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2240 + $symparse_idx,
-    ((NHC.S_KOBOLD + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_KOBOLD + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2240 + $symparse_name, __s_s_kobold);
 cptr.stI32o(loadsyms, 2256, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2256 + $symparse_idx,
-    ((NHC.S_LEPRECHAUN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_LEPRECHAUN + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2256 + $symparse_name, __s_s_leprechaun);
 cptr.stI32o(loadsyms, 2272, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2272 + $symparse_idx,
-    ((NHC.S_MIMIC + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_MIMIC + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2272 + $symparse_name, __s_s_mimic);
 cptr.stI32o(loadsyms, 2288, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2288 + $symparse_idx,
-    ((NHC.S_NYMPH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_NYMPH + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2288 + $symparse_name, __s_s_nymph);
 cptr.stI32o(loadsyms, 2304, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2304 + $symparse_idx,
-    ((NHC.S_ORC + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_ORC + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2304 + $symparse_name, __s_s_orc);
 cptr.stI32o(loadsyms, 2320, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2320 + $symparse_idx,
-    ((NHC.S_PIERCER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_PIERCER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2320 + $symparse_name, __s_s_piercer);
 cptr.stI32o(loadsyms, 2336, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2336 + $symparse_idx,
-    ((NHC.S_QUADRUPED + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_QUADRUPED + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2336 + $symparse_name, __s_s_quadruped);
 cptr.stI32o(loadsyms, 2352, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2352 + $symparse_idx,
-    ((NHC.S_RODENT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_RODENT + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2352 + $symparse_name, __s_s_rodent);
 cptr.stI32o(loadsyms, 2368, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2368 + $symparse_idx,
-    ((NHC.S_SPIDER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_SPIDER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2368 + $symparse_name, __s_s_spider);
 cptr.stI32o(loadsyms, 2384, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2384 + $symparse_idx,
-    ((NHC.S_TRAPPER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_TRAPPER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2384 + $symparse_name, __s_s_trapper);
 cptr.stI32o(loadsyms, 2400, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2400 + $symparse_idx,
-    ((NHC.S_UNICORN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_UNICORN + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2400 + $symparse_name, __s_s_unicorn);
 cptr.stI32o(loadsyms, 2416, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2416 + $symparse_idx,
-    ((NHC.S_VORTEX + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_VORTEX + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2416 + $symparse_name, __s_s_vortex);
 cptr.stI32o(loadsyms, 2432, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2432 + $symparse_idx,
-    ((NHC.S_WORM + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_WORM + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2432 + $symparse_name, __s_s_worm);
 cptr.stI32o(loadsyms, 2448, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2448 + $symparse_idx,
-    ((NHC.S_XAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_XAN + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2448 + $symparse_name, __s_s_xan);
 cptr.stI32o(loadsyms, 2464, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2464 + $symparse_idx,
-    ((NHC.S_LIGHT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_LIGHT + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2464 + $symparse_name, __s_s_light);
 cptr.stI32o(loadsyms, 2480, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2480 + $symparse_idx,
-    ((NHC.S_ZRUTY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_ZRUTY + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2480 + $symparse_name, __s_s_zruty);
 cptr.stI32o(loadsyms, 2496, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2496 + $symparse_idx,
-    ((NHC.S_ANGEL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_ANGEL + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2496 + $symparse_name, __s_s_angel);
 cptr.stI32o(loadsyms, 2512, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2512 + $symparse_idx,
-    ((NHC.S_BAT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_BAT + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2512 + $symparse_name, __s_s_bat);
 cptr.stI32o(loadsyms, 2528, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2528 + $symparse_idx,
-    ((NHC.S_CENTAUR + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_CENTAUR + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2528 + $symparse_name, __s_s_centaur);
 cptr.stI32o(loadsyms, 2544, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2544 + $symparse_idx,
-    ((NHC.S_DRAGON + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_DRAGON + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2544 + $symparse_name, __s_s_dragon);
 cptr.stI32o(loadsyms, 2560, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2560 + $symparse_idx,
-    ((NHC.S_ELEMENTAL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_ELEMENTAL + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2560 + $symparse_name, __s_s_elemental);
 cptr.stI32o(loadsyms, 2576, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2576 + $symparse_idx,
-    ((NHC.S_FUNGUS + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_FUNGUS + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2576 + $symparse_name, __s_s_fungus);
 cptr.stI32o(loadsyms, 2592, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2592 + $symparse_idx,
-    ((NHC.S_GNOME + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_GNOME + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2592 + $symparse_name, __s_s_gnome);
 cptr.stI32o(loadsyms, 2608, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2608 + $symparse_idx,
-    ((NHC.S_GIANT + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_GIANT + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2608 + $symparse_name, __s_s_giant);
 cptr.stI32o(loadsyms, 2624, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2624 + $symparse_idx,
-    ((NHC.S_invisible + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_invisible + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2624 + $symparse_name, __s_s_invisible);
 cptr.stI32o(loadsyms, 2640, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2640 + $symparse_idx,
-    ((NHC.S_JABBERWOCK + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_JABBERWOCK + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2640 + $symparse_name, __s_s_jabberwock);
 cptr.stI32o(loadsyms, 2656, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2656 + $symparse_idx,
-    ((NHC.S_KOP + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_KOP + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2656 + $symparse_name, __s_s_kop);
 cptr.stI32o(loadsyms, 2672, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2672 + $symparse_idx,
-    ((NHC.S_LICH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_LICH + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2672 + $symparse_name, __s_s_lich);
 cptr.stI32o(loadsyms, 2688, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2688 + $symparse_idx,
-    ((NHC.S_MUMMY + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_MUMMY + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2688 + $symparse_name, __s_s_mummy);
 cptr.stI32o(loadsyms, 2704, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2704 + $symparse_idx,
-    ((NHC.S_NAGA + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_NAGA + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2704 + $symparse_name, __s_s_naga);
 cptr.stI32o(loadsyms, 2720, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2720 + $symparse_idx,
-    ((NHC.S_OGRE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_OGRE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2720 + $symparse_name, __s_s_ogre);
 cptr.stI32o(loadsyms, 2736, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2736 + $symparse_idx,
-    ((NHC.S_PUDDING + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_PUDDING + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2736 + $symparse_name, __s_s_pudding);
 cptr.stI32o(loadsyms, 2752, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2752 + $symparse_idx,
-    ((NHC.S_QUANTMECH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_QUANTMECH + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2752 + $symparse_name, __s_s_quantmech);
 cptr.stI32o(loadsyms, 2768, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2768 + $symparse_idx,
-    ((NHC.S_RUSTMONST + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_RUSTMONST + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2768 + $symparse_name, __s_s_rustmonst);
 cptr.stI32o(loadsyms, 2784, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2784 + $symparse_idx,
-    ((NHC.S_SNAKE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_SNAKE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2784 + $symparse_name, __s_s_snake);
 cptr.stI32o(loadsyms, 2800, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2800 + $symparse_idx,
-    ((NHC.S_TROLL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_TROLL + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2800 + $symparse_name, __s_s_troll);
 cptr.stI32o(loadsyms, 2816, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2816 + $symparse_idx,
-    ((NHC.S_UMBER + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_UMBER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2816 + $symparse_name, __s_s_umber);
 cptr.stI32o(loadsyms, 2832, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2832 + $symparse_idx,
-    ((NHC.S_VAMPIRE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_VAMPIRE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2832 + $symparse_name, __s_s_vampire);
 cptr.stI32o(loadsyms, 2848, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2848 + $symparse_idx,
-    ((NHC.S_WRAITH + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_WRAITH + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2848 + $symparse_name, __s_s_wraith);
 cptr.stI32o(loadsyms, 2864, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2864 + $symparse_idx,
-    ((NHC.S_XORN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_XORN + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2864 + $symparse_name, __s_s_xorn);
 cptr.stI32o(loadsyms, 2880, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2880 + $symparse_idx,
-    ((NHC.S_YETI + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_YETI + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2880 + $symparse_name, __s_s_yeti);
 cptr.stI32o(loadsyms, 2896, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2896 + $symparse_idx,
-    ((NHC.S_ZOMBIE + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_ZOMBIE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2896 + $symparse_name, __s_s_zombie);
 cptr.stI32o(loadsyms, 2912, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2912 + $symparse_idx,
-    ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_HUMAN + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2912 + $symparse_name, __s_s_human);
 cptr.stI32o(loadsyms, 2928, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2928 + $symparse_idx,
-    ((NHC.S_GHOST + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_GHOST + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2928 + $symparse_name, __s_s_ghost);
 cptr.stI32o(loadsyms, 2944, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2944 + $symparse_idx,
-    ((NHC.S_GOLEM + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_GOLEM + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2944 + $symparse_name, __s_s_golem);
 cptr.stI32o(loadsyms, 2960, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2960 + $symparse_idx,
-    ((NHC.S_DEMON + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_DEMON + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2960 + $symparse_name, __s_s_demon);
 cptr.stI32o(loadsyms, 2976, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2976 + $symparse_idx,
-    ((NHC.S_EEL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_EEL + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2976 + $symparse_name, __s_s_eel);
 cptr.stI32o(loadsyms, 2992, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     2992 + $symparse_idx,
-    ((NHC.S_LIZARD + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_LIZARD + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 2992 + $symparse_name, __s_s_lizard);
 cptr.stI32o(loadsyms, 3008, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     3008 + $symparse_idx,
-    ((NHC.S_WORM_TAIL + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_WORM_TAIL + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 3008 + $symparse_name, __s_s_worm_tail);
 cptr.stI32o(loadsyms, 3024, NHC.SYM_MON);
 cptr.stI32o(
     loadsyms,
     3024 + $symparse_idx,
-    ((NHC.S_MIMIC_DEF + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0)
+    ((NHC.S_MIMIC_DEF + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0)
 );
 cptr.stPtro(loadsyms, 3024 + $symparse_name, __s_s_mimic_def);
 cptr.stI32o(loadsyms, 3040, NHC.SYM_OTH);
 cptr.stI32o(
     loadsyms,
     3040 + $symparse_idx,
-    ((NHC.SYM_NOTHING +
-        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+    ((NHC.SYM_NOTHING + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
 );
 cptr.stPtro(loadsyms, 3040 + $symparse_name, __s_s_nothing);
 cptr.stI32o(loadsyms, 3056, NHC.SYM_OTH);
 cptr.stI32o(
     loadsyms,
     3056 + $symparse_idx,
-    ((NHC.SYM_UNEXPLORED +
-        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+    ((NHC.SYM_UNEXPLORED + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
 );
 cptr.stPtro(loadsyms, 3056 + $symparse_name, __s_s_unexplored);
 cptr.stI32o(loadsyms, 3072, NHC.SYM_OTH);
 cptr.stI32o(
     loadsyms,
     3072 + $symparse_idx,
-    ((NHC.SYM_BOULDER +
-        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+    ((NHC.SYM_BOULDER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
 );
 cptr.stPtro(loadsyms, 3072 + $symparse_name, __s_s_boulder);
 cptr.stI32o(loadsyms, 3088, NHC.SYM_OTH);
 cptr.stI32o(
     loadsyms,
     3088 + $symparse_idx,
-    ((NHC.SYM_INVISIBLE +
-        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+    ((NHC.SYM_INVISIBLE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
 );
 cptr.stPtro(loadsyms, 3088 + $symparse_name, __s_s_invisible);
 cptr.stI32o(loadsyms, 3104, NHC.SYM_OTH);
 cptr.stI32o(
     loadsyms,
     3104 + $symparse_idx,
-    ((NHC.SYM_PET_OVERRIDE +
-        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0)
+    ((NHC.SYM_PET_OVERRIDE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
 );
 cptr.stPtro(loadsyms, 3104 + $symparse_name, __s_s_pet_override);
 cptr.stI32o(loadsyms, 3120, NHC.SYM_OTH);
-cptr.stI32o(loadsyms, 3120 + $symparse_idx, 195);
+cptr.stI32o(
+    loadsyms,
+    3120 + $symparse_idx,
+    ((NHC.SYM_HERO_OVERRIDE + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0)
+);
 cptr.stPtro(loadsyms, 3120 + $symparse_name, __s_s_hero_override);
 cptr.stI32o(loadsyms, 3136, NHC.SYM_INVALID);
 cptr.stI32o(loadsyms, 3136 + $symparse_idx, 0);

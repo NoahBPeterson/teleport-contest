@@ -1490,7 +1490,7 @@ export function still_chewing(x, y) {
     } else if ((cptr.stI32o(
         svc,
         $context_info_digging,
-        (cptr.ldI32o(svc, $context_info_digging) + ((30 + cptr.ld1so(u, $you_udaminc)) | 0)) | 0
+        (cptr.ldI32o(svc, $context_info_digging) + (30 + cptr.ld1so(u, $you_udaminc))) | 0
     )) <= 100) {
         if (cptr.ld1so(flags, $flag_verbose))
             You(
@@ -1692,7 +1692,7 @@ function dosinkfall() {
             cptr.stI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_intrinsic, 0n)
         );
         You(__s_crash_to_the_floor);
-        dmg = ((rn2(8) + ((25 - (acurr(NHC.A_CON))) | 0)) | 0);
+        dmg = ((rn2(8) + (25 - (acurr(NHC.A_CON)))) | 0);
         losehp(
             ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)),
             cptr.decay(__static_dosinkfall_fell_on_sink),
@@ -3518,7 +3518,7 @@ function domove_fight_web(x, y) {
 
             /* weapon is ok; check whether hit is successful */
         } else if (roll >
-                ((((acurrstr() - 2) | 0) +
+                ((acurrstr() - 2 +
                     (uwep.v ? (cptr.ld1so(uwep.v, $obj_spe) + wskill_minus_2) | 0 : 0)) | 0)) {
             /* TODO: add failures, maybe make an occupation? */
             You(__s_s_ineffectually_at_some_of_the_strands, uwep.v ? __s_hack : __s_thrash);
@@ -4311,7 +4311,7 @@ function avoid_trap_andor_region(x, y) {
             into ? __s_into__2 : __s_onto,
             cptr.ldPtro2(
                 defsyms,
-                ((((NHC.S_arrow_trap + (traptype)) | 0) - 1) | 0),
+                ((NHC.S_arrow_trap + (traptype) - 1) | 0),
                 $sizeof_symdef,
                 $symdef_explanation
             )
@@ -6937,10 +6937,7 @@ export function weight_cap() {
         cptr.ldI64o2(u, NHC.LEVITATION, $sizeof_prop, $you_uprops + $prop_blocked) & (-536870913n)
     );
 
-    carrcap = BigInt((((Math.imul(
-        NHC.WT_WEIGHTCAP_STRCON,
-        (((acurrstr()) + (acurr(NHC.A_CON))) | 0)
-    )) +
+    carrcap = BigInt((((Math.imul(NHC.WT_WEIGHTCAP_STRCON, (acurrstr()) + (acurr(NHC.A_CON)))) +
             NHC.WT_WEIGHTCAP_SPARE) | 0));
     if (Upolyd()) {
         /* consistent with can_carry() in mon.c */

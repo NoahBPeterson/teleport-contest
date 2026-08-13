@@ -3380,7 +3380,7 @@ export function* artifact_hit(magr, mdef, otmp, dmgptr, dieroll) {
             /* stop draining HP if it drops too low (still drains level;
                also caller still inflicts regular weapon damage) */
             if (((mhpmax - drain) | 0) <= m_lev)
-                drain = (mhpmax > m_lev) ? ((mhpmax - ((m_lev + 1) | 0)) | 0) : 0;
+                drain = (mhpmax > m_lev) ? ((mhpmax - (m_lev + 1)) | 0) : 0;
 
             if (vis) {
                 /* call distant_name() for possible side-effects even if
@@ -3511,13 +3511,11 @@ function* invoke_taming(obj) {
 
 /** C ref: artifact.c:1780 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_healing(obj) {
-    let healamt = (((((cptr.ldI32o(u, $you_uhpmax) + 1) | 0) - cptr.ldI32o(u, $you_uhp)) | 0) / 2) |
-            0;
+    let healamt = (((cptr.ldI32o(u, $you_uhpmax) + 1 - cptr.ldI32o(u, $you_uhp)) | 0) / 2) | 0;
     let creamed = BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0);
 
     if (Upolyd())
-        healamt = (((((cptr.ldI32o(u, $you_mhmax) + 1) | 0) - cptr.ldI32o(u, $you_mh)) | 0) / 2) |
-                0;
+        healamt = (((cptr.ldI32o(u, $you_mhmax) + 1 - cptr.ldI32o(u, $you_mh)) | 0) / 2) | 0;
     if (healamt ||
             Sick() ||
             Slimed() ||
@@ -3556,8 +3554,7 @@ function* invoke_healing(obj) {
 
 /** C ref: artifact.c:1818 — @param {CPtr<struct obj>} obj @returns {CInt} */
 function* invoke_energy_boost(obj) {
-    let epboost = (((((cptr.ldI32o(u, $you_uenmax) + 1) | 0) - cptr.ldI32o(u, $you_uen)) | 0) / 2) |
-            0;
+    let epboost = (((cptr.ldI32o(u, $you_uenmax) + 1 - cptr.ldI32o(u, $you_uen)) | 0) / 2) | 0;
 
     if (epboost > 120)
         epboost = 120;  /* arbitrary */

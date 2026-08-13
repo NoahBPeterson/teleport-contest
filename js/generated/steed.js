@@ -299,7 +299,8 @@ export function use_saddle(otmp) {
     }
 
     /* Calculate your chance */
-    chance = ((((acurr(NHC.A_DEX)) + (((acurr(NHC.A_CHA)) / 2) | 0)) | 0) +
+    chance = ((acurr(NHC.A_DEX)) +
+        (((acurr(NHC.A_CHA)) / 2) | 0) +
         Math.imul(2, cptr.ld1so(mtmp, $monst_mtame))) |
             0;
     chance = (chance +
@@ -661,7 +662,7 @@ export function mount_steed(mtmp, force) {
         );
         losehp(
             ((Half_physical_damage())
-                ? (((((((rn2(5) + 10) | 0)) + 1) | 0) / 2) | 0)
+                ? ((((rn2(5) + 10 + 1) | 0) / 2) | 0)
                 : (((rn2(5) + 10) | 0))),
             cptr.decay(buf),
             NHM.NO_KILLER_PREFIX
@@ -1049,14 +1050,14 @@ export function dismount_steed(reason) {
         if (!ulev && !ufly) {
             losehp(
                 ((Half_physical_damage())
-                    ? (((((((rn2(10) + 10) | 0)) + 1) | 0) / 2) | 0)
+                    ? ((((rn2(10) + 10 + 1) | 0) / 2) | 0)
                     : (((rn2(10) + 10) | 0))),
                 __s_riding_accident,
                 NHM.KILLED_BY_AN
             );
             set_wounded_legs(
                 393216n,
-                (Number(BigInt.asIntN(32, HWounded_legs())) + ((rn2(5) + 5) | 0)) | 0
+                (Number(BigInt.asIntN(32, HWounded_legs())) + (rn2(5) + 5)) | 0
             );
             repair_leg_damage = 0;
         }

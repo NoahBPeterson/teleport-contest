@@ -582,8 +582,8 @@ export function* explode(x, y, type, dam, olet, expltype) {
     any_shield = (visible = 0);
     for (i = 0; i < 3; i++)
         for (j = 0; j < 3; j++) {
-            xx = i16(((((x + i) | 0) - 1) | 0));
-            yy = i16(((((y + j) | 0) - 1) | 0));
+            xx = i16(((x + i - 1) | 0));
+            yy = i16(((y + j - 1) | 0));
             if (!isok(xx, yy)) {
                 cptr.stI32o(cptr.decay(explmask[i]), j, NHC.EXPL_SKIP, 4);
                 continue;
@@ -646,8 +646,8 @@ export function* explode(x, y, type, dam, olet, expltype) {
             for (j = 0; j < 3; j++) {
                 if (cptr.ldI32o(cptr.decay(explmask[i]), j, 4) == NHC.EXPL_SKIP)
                     continue;
-                xx = i16(((((x + i) | 0) - 1) | 0));
-                yy = i16(((((y + j) | 0) - 1) | 0));
+                xx = i16(((x + i - 1) | 0));
+                yy = i16(((y + j - 1) | 0));
                 (yield* tmp_at(
                     i16((starting ? -1 : -6)),
                     i16(explosion_to_glyph(expltype, cptr.ldI32o(cptr.decay(explosion[i]), j, 4)))
@@ -661,8 +661,8 @@ export function* explode(x, y, type, dam, olet, expltype) {
             for (k = 0; k < NHM.SHIELD_COUNT; k++) {
                 for (i = 0; i < 3; i++)
                     for (j = 0; j < 3; j++) {
-                        xx = i16(((((x + i) | 0) - 1) | 0));
-                        yy = i16(((((y + j) | 0) - 1) | 0));
+                        xx = i16(((x + i - 1) | 0));
+                        yy = i16(((y + j - 1) | 0));
                         if ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) &
                                 (NHC.EXPL_MON | NHC.EXPL_HERO)) != 0)
                             /*
@@ -676,8 +676,8 @@ export function* explode(x, y, type, dam, olet, expltype) {
                                 (((cptr.ldI32o(shield_static, k, 4)) == NHC.S_stone)
                                     ? NHC.GLYPH_CMAP_STONE_OFF
                                     : (((cptr.ldI32o(shield_static, k, 4)) <= NHC.S_trwall)
-                                        ? (((((cptr.ldI32o(shield_static, k, 4)) -
-                                            NHC.S_vwall) | 0) +
+                                        ? (((cptr.ldI32o(shield_static, k, 4)) -
+                                            NHC.S_vwall +
                                             (In_mines(cptr.add(u, $you_uz))
                                                 ? NHC.GLYPH_CMAP_MINES_OFF
                                                 : (In_hell(cptr.add(u, $you_uz))
@@ -709,21 +709,20 @@ export function* explode(x, y, type, dam, olet, expltype) {
                                                             ? NHC.GLYPH_CMAP_SOKO_OFF
                                                             : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                                         : (((cptr.ldI32o(shield_static, k, 4)) < NHC.S_altar)
-                                            ? (((((cptr.ldI32o(shield_static, k, 4)) -
-                                                NHC.S_ndoor) | 0) +
+                                            ? (((cptr.ldI32o(shield_static, k, 4)) -
+                                                NHC.S_ndoor +
                                                 NHC.GLYPH_CMAP_A_OFF) | 0)
                                             : (((cptr.ldI32o(shield_static, k, 4)) == NHC.S_altar)
                                                 ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
                                                 : (((cptr.ldI32o(shield_static, k, 4)) <
-                                                    ((NHC.S_arrow_trap +
-                                                        ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                                    ? (((((cptr.ldI32o(shield_static, k, 4)) -
-                                                        NHC.S_grave) | 0) +
+                                                    ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                                    ? (((cptr.ldI32o(shield_static, k, 4)) -
+                                                        NHC.S_grave +
                                                         NHC.GLYPH_CMAP_B_OFF) | 0)
                                                     : (((cptr.ldI32o(shield_static, k, 4)) <=
                                                         NHC.S_goodpos)
-                                                        ? (((((cptr.ldI32o(shield_static, k, 4)) -
-                                                            NHC.S_digbeam) | 0) +
+                                                        ? (((cptr.ldI32o(shield_static, k, 4)) -
+                                                            NHC.S_digbeam +
                                                             NHC.GLYPH_CMAP_C_OFF) | 0)
                                                         : NHC.MAX_GLYPH))))))
                             ));
@@ -735,8 +734,8 @@ export function* explode(x, y, type, dam, olet, expltype) {
             /* Cover last shield glyph with blast symbol. */
             for (i = 0; i < 3; i++)
                 for (j = 0; j < 3; j++) {
-                    xx = i16(((((x + i) | 0) - 1) | 0));
-                    yy = i16(((((y + j) | 0) - 1) | 0));
+                    xx = i16(((x + i - 1) | 0));
+                    yy = i16(((y + j - 1) | 0));
                     if ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) &
                             (NHC.EXPL_MON | NHC.EXPL_HERO)) != 0)
                         (yield* show_glyph(
@@ -779,8 +778,8 @@ export function* explode(x, y, type, dam, olet, expltype) {
 
                 if (cptr.ldI32o(cptr.decay(explmask[i]), j, 4) == NHC.EXPL_SKIP)
                     continue;
-                xx = i16(((((x + i) | 0) - 1) | 0));
-                yy = i16(((((y + j) | 0) - 1) | 0));
+                xx = i16(((x + i - 1) | 0));
+                yy = i16(((y + j - 1) | 0));
                 if (((xx) == cptr.ldI16(u) && (yy) == cptr.ldI16o(u, $you_uy))) {
                     uhurt = ((cptr.ldI32o(cptr.decay(explmask[i]), j, 4) & NHC.EXPL_HERO) != 0)
                             ? 1
@@ -897,7 +896,7 @@ export function* explode(x, y, type, dam, olet, expltype) {
                     cptr.stI32o(
                         mtmp,
                         $monst_mhp,
-                        (cptr.ldI32o(mtmp, $monst_mhp) - ((mdam + itemdmg) | 0)) | 0
+                        (cptr.ldI32o(mtmp, $monst_mhp) - (mdam + itemdmg)) | 0
                     );
                 }
                 if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
@@ -1589,7 +1588,7 @@ export function* mon_explodes(mon, mattk) {
         /* The -1, +20, *-1 math is to set it up as a 'monster breath' type
          * for the explosions (it isn't, but this is the closest analogue). */
         /* FIXME: there are macros for kind of thing... */
-        type = -((((cptr.ld1uo(mattk, $attack_adtyp) - 1) | 0) + 20) | 0);
+        type = -((cptr.ld1uo(mattk, $attack_adtyp) - 1 + 20) | 0);
     } else {
         (yield* impossible(__s_unknown_type_for_mon_explode_d, cptr.ld1uo(mattk, $attack_adtyp)));
         return;

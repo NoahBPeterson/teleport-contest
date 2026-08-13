@@ -1443,10 +1443,8 @@ export function doextlist() {
             void cptr.strcpy(cptr.decay(buf), __s_switch_back_from_search);
             if (BigInt.asUintN(
                 64,
-                BigInt.asUintN(
-                    64,
-                    cptr.strlen(cptr.decay(buf)) + cptr.strlen(cptr.decay(searchbuf))
-                ) +
+                cptr.strlen(cptr.decay(buf)) +
+                    cptr.strlen(cptr.decay(searchbuf)) +
                     cptr.strlen(__s_sp_lparen_quot2_rparen)
             ) < 128n)
                 void cptr.sprintf(
@@ -1715,7 +1713,7 @@ export function extcmd_via_menu() {
                     (acount >= 2 &&
                         (BigInt.asUintN(
                             64,
-                            BigInt.asUintN(64, cptr.strlen(cptr.decay(prompt)) + 4n) +
+                            cptr.strlen(cptr.decay(prompt)) + 4n +
                                 cptr.strlen(cptr.ldPtro(
                                     cptr.ldPtro(choices, i, 8),
                                     $ext_func_tab_ef_txt
@@ -6688,7 +6686,7 @@ function help_dir(sym, spkey, msg) {
     if (!prefixhandling && (letter(sym) || sym == 91)) {
         /* '[': old 'cmdhelp' showed ESC as ^[ */
         sym = highc(sym);  /* @A-Z[ (note: letter() accepts '@') */
-        ctrl = schar(((((sym - 65) | 0) + 1) | 0));  /* 0-27 (note: 28-31 aren't applicable) */
+        ctrl = schar(((sym - 65 + 1) | 0));  /* 0-27 (note: 28-31 aren't applicable) */
         if ((explain = dowhatdoes_core(ctrl, cptr.decay(buf2))) !== null &&
                 (!cptr.strchr(cptr.decay(__static_help_dir_wiz_only_list), sym) || wizard())) {
             void cptr.sprintf(
@@ -7693,7 +7691,7 @@ export function get_count(allowchars, inkey, maxcount, count, gc_flags) {
 
             /* cnt = (10 * cnt) + (key - '0'); */
             cnt = (((cnt) < 922337203685477580n || ((cnt) == 922337203685477580n && (dgt) <= 7n))
-                    ? BigInt.asIntN(64, BigInt.asIntN(64, (cnt) * 10n) + (dgt))
+                    ? BigInt.asIntN(64, (cnt) * 10n + (dgt))
                     : -1n);
             if (cnt < 0n)
                 cnt = 0n;
@@ -8321,10 +8319,7 @@ export function paranoid_ynq(be_paranoid, prompt, accept_q) {
             /* make sure we won't overflow a QBUFSZ sized buffer */
             k = Number(BigInt.asIntN(
                 32,
-                (BigInt.asUintN(
-                    64,
-                    BigInt.asUintN(64, cptr.strlen(promptprefix) + 1n) + cptr.strlen(responsetype)
-                ))
+                (BigInt.asUintN(64, cptr.strlen(promptprefix) + 1n + cptr.strlen(responsetype)))
             ));
             if (((Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(pbuf)))) + k) | 0) > 127) {
                 /* chop off some at the end */

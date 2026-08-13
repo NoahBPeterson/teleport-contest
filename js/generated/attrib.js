@@ -808,8 +808,8 @@ export function adjattrib(ndx, incr, msgflg) {
              *
              * decr = rn2(-(ABASE - ATTRMIN) + 1);
              */
-            decr = rn2(((((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) -
-                    (cptr.ld1so2(u, ndx, 1, $you_acurr))) | 0) + 1) | 0);
+            decr = rn2(((cptr.ldI16o2(gu, ndx, 2, $instance_globals_u_urace + $Race_attrmin)) -
+                    (cptr.ld1so2(u, ndx, 1, $you_acurr)) + 1) | 0);
             cptr.st1o2(
                 u,
                 ndx,
@@ -2171,10 +2171,10 @@ export function setuhpmax(newmax, even_when_polyd) {
 export function adjuhploss(loss, olduhp) {
     if (!Upolyd()) {
         if (cptr.ldI32o(u, $you_uhp) < olduhp)
-            loss = (loss - ((olduhp - cptr.ldI32o(u, $you_uhp)) | 0)) | 0;
+            loss = (loss - (olduhp - cptr.ldI32o(u, $you_uhp))) | 0;
     } else {
         if (cptr.ldI32o(u, $you_mh) < olduhp)
-            loss = (loss - ((olduhp - cptr.ldI32o(u, $you_mh)) | 0)) | 0;
+            loss = (loss - (olduhp - cptr.ldI32o(u, $you_mh))) | 0;
     }
     return ((loss) > 1 ? (loss) : 1);
 }
@@ -2190,7 +2190,8 @@ export function acurr(chridx) {
     (__builtin_expect(BigInt((!(chridx >= 0 && chridx < NHC.A_MAX))), 0n)
             ? __assert_rtn(__s_acurr, __s_attrib_c, 1204, __s_chridx_0_chridx_a_max)
             : void 0);
-    tmp = (((cptr.ld1so2(u, chridx, 1, $you_abon) + cptr.ld1so2(u, chridx, 1, $you_atemp)) | 0) +
+    tmp = (cptr.ld1so2(u, chridx, 1, $you_abon) +
+        cptr.ld1so2(u, chridx, 1, $you_atemp) +
         cptr.ld1so2(u, chridx, 1, $you_acurr)) |
             0;
 

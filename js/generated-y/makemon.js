@@ -523,7 +523,7 @@ function* m_initweap(mtmp) {
                        the polearms but use different skills from polearms
                        and aren't appropriates choices for human soldiers */
                     do {
-                        w1 = ((rn2(((((NHC.BEC_DE_CORBIN - NHC.PARTISAN) | 0) + 1) | 0)) +
+                        w1 = ((rn2(((NHC.BEC_DE_CORBIN - NHC.PARTISAN + 1) | 0)) +
                                 NHC.PARTISAN) | 0);
                     } while (cptr.ld1so2(objects, w1, $sizeof_objclass, $objclass_oc_subtyp) !=
                             NHC.P_POLEARMS);
@@ -887,8 +887,8 @@ function* m_initweap(mtmp) {
          * of weapon for "normal" monsters.  Certain special types
          * of monsters will get a bonus chance or different selections.
          */
-        bias = (((((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) +
-            Math.imul(((cptr.ldU64o((ptr), $permonst_mflags2) & 2048n) != 0n), 2)) | 0) +
+        bias = (((cptr.ldU64o((ptr), $permonst_mflags2) & 1024n) != 0n) +
+            Math.imul(((cptr.ldU64o((ptr), $permonst_mflags2) & 2048n) != 0n), 2) +
             ((cptr.ldU64o((ptr), $permonst_mflags2) & 33554432n) != 0n)) |
                 0;
         switch (rnd((14 - (Math.imul(2, bias))) | 0)) {
@@ -1594,11 +1594,7 @@ export function* newmonhp(mon, mndx) {
         cptr.stI32o(
             mon,
             $monst_mhpmax,
-            cptr.stI32o(
-                mon,
-                $monst_mhp,
-                Math.imul(2, ((cptr.ld1so(ptr, $permonst_mlevel) - 6) | 0))
-            )
+            cptr.stI32o(mon, $monst_mhp, Math.imul(2, cptr.ld1so(ptr, $permonst_mlevel) - 6))
         );
         cptr.st1o(mon, $monst_m_lev, uchar(((cptr.ldI32o(mon, $monst_mhp) / 4) | 0)));  /* approximation */
     } else if (cptr.ld1so(ptr, $permonst_mlet) == NHC.S_DRAGON && mndx >= NHC.PM_GRAY_DRAGON) {
@@ -2937,7 +2933,7 @@ export function* mkclass_aligned(class$, spc, atyp) {
                 cptr.stI32o(
                     nums,
                     (cptr.ldI32o(mongen_order, last, 4)),
-                    (((k + 1) | 0) -
+                    (k + 1 -
                         ((yield* adj_lev(cptr.add(
                             mons,
                             (cptr.ldI32o(mongen_order, last, 4)),
@@ -3092,10 +3088,7 @@ export function* grow_up(mtmp, victim) {
         if (!cptr.ld1uo(mtmp, $monst_m_lev))
             hp_threshold = 4;
         else if ((cptr.ld1so((ptr), $permonst_mlet) == NHC.S_GOLEM))
-            hp_threshold = (Math.imul(
-                ((((cptr.ldI32o(mtmp, $monst_mhpmax) / 10) | 0) + 1) | 0),
-                10
-            ) - 1) |
+            hp_threshold = (Math.imul(((cptr.ldI32o(mtmp, $monst_mhpmax) / 10) | 0) + 1, 10) - 1) |
                     0;
         else if (is_home_elemental(ptr))
             hp_threshold = Math.imul(hp_threshold, 3);
@@ -3108,8 +3101,8 @@ export function* grow_up(mtmp, victim) {
            the limit at the bottom of the next level rather than the top */
         max_increase = rnd((cptr.ld1uo(victim, $monst_m_lev) + 1) | 0);
         if (((cptr.ldI32o(mtmp, $monst_mhpmax) + max_increase) | 0) > ((hp_threshold + 1) | 0))
-            max_increase = (((((hp_threshold + 1) | 0) - cptr.ldI32o(mtmp, $monst_mhpmax)) | 0) > 0
-                    ? ((((hp_threshold + 1) | 0) - cptr.ldI32o(mtmp, $monst_mhpmax)) | 0)
+            max_increase = (((hp_threshold + 1 - cptr.ldI32o(mtmp, $monst_mhpmax)) | 0) > 0
+                    ? ((hp_threshold + 1 - cptr.ldI32o(mtmp, $monst_mhpmax)) | 0)
                     : 0);
         cur_increase = (max_increase > 1) ? rn2(max_increase) : 0;
     } else {
@@ -3753,7 +3746,7 @@ export function* set_mimic_sym(mtmp) {
                 0;
 
         if (appear == NHC.CORPSE && nocorpse_ndx)
-            mndx = ((rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) +
+            mndx = ((rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST + 1) | 0)) +
                     NHC.PM_ARCHEOLOGIST) | 0);
         else if ((appear == NHC.EGG && !can_be_hatched(mndx)) ||
                 (appear == NHC.TIN && nocorpse_ndx))

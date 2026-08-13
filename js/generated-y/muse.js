@@ -2150,8 +2150,7 @@ export function* rnd_defensive_item(mtmp) {
             cptr.ld1so(pm, $permonst_mlet) == NHC.S_KOP)
         return 0;
     __lbl_try_again: while (true) {
-        switch (rn2((((((8 + (difficulty > 3)) | 0) + (difficulty > 6)) | 0) +
-                (difficulty > 8)) | 0)) {
+        switch (rn2((8 + (difficulty > 3) + (difficulty > 6) + (difficulty > 8)) | 0)) {
             case 6:
             case 9:
             if ((yield* noteleport_level(mtmp)) && ++trycnt < 2)
@@ -3280,7 +3279,7 @@ export function* rnd_offensive_item(mtmp) {
         return 0;
     if (difficulty > 7 && !rn2(35))
         return NHC.WAN_DEATH;
-    switch (rn2((((9 - (difficulty < 4)) | 0) + Math.imul(4, (difficulty > 6))) | 0)) {
+    switch (rn2((9 - (difficulty < 4) + Math.imul(4, (difficulty > 6))) | 0)) {
         case 0:
         {
             let mtmp_helmet = (yield* which_armor(mtmp, 4n));
@@ -3538,14 +3537,16 @@ function* muse_newcham_mon(mon) {
         if (Is_dragon_scales(m_armr))
             return cptr.add(
                 mons,
-                (((NHC.PM_GRAY_DRAGON + cptr.ldI16o((m_armr), $obj_otyp)) | 0) -
+                (NHC.PM_GRAY_DRAGON +
+                    cptr.ldI16o((m_armr), $obj_otyp) -
                     NHC.GRAY_DRAGON_SCALES) | 0,
                 $sizeof_permonst
             );
         else if (Is_dragon_mail(m_armr))
             return cptr.add(
                 mons,
-                (((NHC.PM_GRAY_DRAGON + cptr.ldI16o((m_armr), $obj_otyp)) | 0) -
+                (NHC.PM_GRAY_DRAGON +
+                    cptr.ldI16o((m_armr), $obj_otyp) -
                     NHC.GRAY_DRAGON_SCALE_MAIL) | 0,
                 $sizeof_permonst
             );
@@ -4089,11 +4090,11 @@ function* you_aggravate(mtmp) {
                             $instance_globals_y_youmonst + $monst_mappearance
                         ) | 0) <=
                             NHC.S_trwall)
-                            ? (((((cptr.ldI32o(
+                            ? (((cptr.ldI32o(
                                 gy,
                                 $instance_globals_y_youmonst + $monst_mappearance
                             ) | 0) -
-                                NHC.S_vwall) | 0) +
+                                NHC.S_vwall +
                                 (In_mines(cptr.add(u, $you_uz))
                                     ? NHC.GLYPH_CMAP_MINES_OFF
                                     : (In_hell(cptr.add(u, $you_uz))
@@ -4129,11 +4130,11 @@ function* you_aggravate(mtmp) {
                                 $instance_globals_y_youmonst + $monst_mappearance
                             ) | 0) <
                                 NHC.S_altar)
-                                ? (((((cptr.ldI32o(
+                                ? (((cptr.ldI32o(
                                     gy,
                                     $instance_globals_y_youmonst + $monst_mappearance
                                 ) | 0) -
-                                    NHC.S_ndoor) | 0) +
+                                    NHC.S_ndoor +
                                     NHC.GLYPH_CMAP_A_OFF) | 0)
                                 : (((cptr.ldI32o(
                                     gy,
@@ -4145,23 +4146,23 @@ function* you_aggravate(mtmp) {
                                         gy,
                                         $instance_globals_y_youmonst + $monst_mappearance
                                     ) | 0) <
-                                        ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                        ? (((((cptr.ldI32o(
+                                        ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                        ? (((cptr.ldI32o(
                                             gy,
                                             $instance_globals_y_youmonst + $monst_mappearance
                                         ) | 0) -
-                                            NHC.S_grave) | 0) +
+                                            NHC.S_grave +
                                             NHC.GLYPH_CMAP_B_OFF) | 0)
                                         : (((cptr.ldI32o(
                                             gy,
                                             $instance_globals_y_youmonst + $monst_mappearance
                                         ) | 0) <=
                                             NHC.S_goodpos)
-                                            ? (((((cptr.ldI32o(
+                                            ? (((cptr.ldI32o(
                                                 gy,
                                                 $instance_globals_y_youmonst + $monst_mappearance
                                             ) | 0) -
-                                                NHC.S_digbeam) | 0) +
+                                                NHC.S_digbeam +
                                                 NHC.GLYPH_CMAP_C_OFF) | 0)
                                             : NHC.MAX_GLYPH))))))
                     : ((U_AP_TYPE() == NHC.M_AP_OBJECT)
@@ -4851,11 +4852,7 @@ function* muse_unslime(mon, obj, trap, by_you) {
             vis = 0;  /* skip makeknown() below */
             res = 0;  /* failed to cure sliming */
         } else {
-            dmg = (((Math.imul(
-                2,
-                ((((rn2(3) + 3) | 0) + Math.imul(2, bcsign(obj))) | 0)
-            ) + 1) | 0) / 3) |
-                    0;
+            dmg = (((Math.imul(2, rn2(3) + 3 + Math.imul(2, bcsign(obj))) + 1) | 0) / 3) | 0;
             (yield* m_useup(mon, obj));  /* before explode() */
             /* -11 => monster's fireball */
             (yield* explode(

@@ -968,7 +968,7 @@ function slime_dialogue() {
 
         void cptr.strcpy(
             cptr.decay(buf),
-            cptr.ldPtro(slime_texts, BigInt.asIntN(64, BigInt.asIntN(64, BigInt(5) - i) - 1n), 8)
+            cptr.ldPtro(slime_texts, BigInt.asIntN(64, BigInt(5) - i - 1n), 8)
         );
         if (((cptr.ldU64o(
             (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
@@ -2638,7 +2638,7 @@ export function begin_burn(obj, already_lit) {
         case NHC.POT_OIL:
         turns = cptr.ldI64o(obj, $obj_age);
         if ((cptr.ldI32o(obj, $obj_oeroded) & 3))
-            turns = (BigInt.asIntN(64, BigInt.asIntN(64, 3n * turns) + 2n)) / 4n;
+            turns = (BigInt.asIntN(64, 3n * turns + 2n)) / 4n;
         radius = 1;  /* very dim light */
         break;
         case NHC.BRASS_LANTERN:
@@ -3029,14 +3029,11 @@ export function wiz_timeout_queue() {
             __s_level_is_no_teleport_for_ld_s,
             BigInt.asIntN(
                 64,
-                BigInt.asIntN(
-                    64,
-                    cptr.ldI64o(
-                        svl,
-                        $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until
-                    ) -
-                        cptr.ldI64o(svm, $instance_globals_saved_m_moves)
-                ) + 1n
+                cptr.ldI64o(
+                    svl,
+                    $instance_globals_saved_l_level + $dlevel_t_flags + $levelflags_stasis_until
+                ) -
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) + 1n
             ),
             (BigInt.asIntN(
                 64,

@@ -584,10 +584,7 @@ export function* nhl_error(L, msg) {
     void cptr.sprintf(
         eos(cptr.decay(buf)),
         __s_pct_dot_star_s_rparen,
-        Number(BigInt.asIntN(
-            32,
-            (BigInt.asUintN(64, 512n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 2n))))
-        )),
+        Number(BigInt.asIntN(32, (BigInt.asUintN(64, 512n - (cptr.strlen(cptr.decay(buf)) + 2n))))),
         cptr.add(ar, $lua_Debug_short_src)
     );
     (yield* lua_pushstring(L, cptr.decay(buf)));
@@ -3453,7 +3450,7 @@ export function* nhl_loadlua(L, fname) {
 
         /* extra +1: room to add final '\n' if missing */
         buf = (bufout = (yield* alloc((yield* FITSint_(
-            BigInt.asIntN(64, BigInt.asIntN(64, buflen + 1n) + 1n),
+            BigInt.asIntN(64, buflen + 1n + 1n),
             __s_nhl_loadlua,
             2364
         )) >>> 0)));

@@ -948,10 +948,7 @@ export function* dipfountain(obj) {
                             $sizeof_objclass,
                             $objclass_oc_cost
                         );
-                        let coin_loss = (BigInt.asIntN(
-                            64,
-                            BigInt.asIntN(64, money + BigInt(denomination)) - 1n
-                        )) /
+                        let coin_loss = (BigInt.asIntN(64, money + BigInt(denomination) - 1n)) /
                                 BigInt(denomination);
                         coin_loss = min(coin_loss, cptr.ldI64o(otmp, $obj_quan));
                         cptr.stI64o(otmp, $obj_quan, cptr.ldI64o(otmp, $obj_quan) - coin_loss);
@@ -1018,8 +1015,7 @@ export function* dipfountain(obj) {
         ;
         void (yield* mkgold(
             BigInt(((rnd(Math.imul(
-                ((((dunlevs_in_dungeon(cptr.add(u, $you_uz)) -
-                    dunlev(cptr.add(u, $you_uz))) | 0) + 1) | 0),
+                dunlevs_in_dungeon(cptr.add(u, $you_uz)) - dunlev(cptr.add(u, $you_uz)) + 1,
                 2
             )) + 5) | 0)),
             cptr.ldI16(u),

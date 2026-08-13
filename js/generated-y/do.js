@@ -3943,11 +3943,8 @@ export function* revive_mon(arg, timeout) {
             when = BigInt.asIntN(
                 64,
                 BigInt(d(5, 50)) -
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
-                            cptr.ldI64o(body, $obj_age)
-                    ))
+                    (cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                        cptr.ldI64o(body, $obj_age))
             );
             if (when < 1n)
                 when = 1n;

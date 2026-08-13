@@ -1277,10 +1277,7 @@ function* peffect_hallucination(otmp) {
                 (1);
     }
     void (yield* make_hallucinated(
-        itimeout_incr(
-            HHallucination(),
-            ((rn2(200) + ((600 - Math.imul(300, bcsign(otmp))) | 0)) | 0)
-        ),
+        itimeout_incr(HHallucination(), ((rn2(200) + (600 - Math.imul(300, bcsign(otmp)))) | 0)),
         1,
         0n
     ));
@@ -1396,7 +1393,7 @@ function* peffect_booze(otmp) {
     cptr.stI32o(
         u,
         $you_uhunger,
-        (cptr.ldI32o(u, $you_uhunger) + Math.imul(10, ((2 + bcsign(otmp)) | 0))) | 0
+        (cptr.ldI32o(u, $you_uhunger) + Math.imul(10, 2 + bcsign(otmp))) | 0
     );
     (yield* newuhs(0));
     (yield* exercise(NHC.A_WIS, 0));
@@ -1479,7 +1476,7 @@ function* peffect_invisibility(otmp) {
 /** C ref: potion.c:841 — @param {CPtr<struct obj>} otmp */
 function* peffect_see_invisible(otmp) {
     let msg = Invisible() && !Blind() ? 1 : 0;
-    let permchance = (((10 - (HInvis() ? 3 : 0)) | 0) - (HSee_invisible() ? 6 : 0)) | 0;
+    let permchance = (10 - (HInvis() ? 3 : 0) - (HSee_invisible() ? 6 : 0)) | 0;
 
     (cptr.stI32o(
         gp,
@@ -1502,7 +1499,7 @@ function* peffect_see_invisible(otmp) {
             (cptr.ldI32o(u, $you_uhunger) +
                 Math.imul(
                     ((cptr.ldI32o(otmp, $obj_oeroded) & 3) | 0 ? 5 : 10),
-                    ((2 + bcsign(otmp)) | 0)
+                    2 + bcsign(otmp)
                 )) | 0
         );
         (yield* newuhs(0));
@@ -1595,7 +1592,7 @@ function* peffect_paralysis(otmp) {
                 (yield* makeplural((yield* body_part(NHC.FOOT)))),
                 surface(cptr.ldI16(u), cptr.ldI16o(u, $you_uy))
             ));
-        nomul(-(((rn2(10) + ((25 - Math.imul(12, bcsign(otmp))) | 0)) | 0)));
+        nomul(-(((rn2(10) + (25 - Math.imul(12, bcsign(otmp)))) | 0)));
         cptr.stPtro(gm, $instance_globals_m_multi_reason, __s_frozen_by_a_potion);
         cptr.stPtro(
             gn,
@@ -1614,7 +1611,7 @@ function* peffect_sleeping(otmp) {
     } else {
         (yield* You(__s_suddenly_fall_asleep));
         monstunseesu(8n);
-        (yield* fall_asleep(-((rn2(10) + ((25 - Math.imul(12, bcsign(otmp))) | 0)) | 0), 1));
+        (yield* fall_asleep(-((rn2(10) + (25 - Math.imul(12, bcsign(otmp)))) | 0), 1));
     }
 }
 
@@ -1780,7 +1777,7 @@ function* peffect_confusion(otmp) {
         )) -
                 (1);
     (yield* make_confused(
-        itimeout_incr(HConfusion(), ((rn2(7) + ((16 - Math.imul(8, bcsign(otmp))) | 0)) | 0)),
+        itimeout_incr(HConfusion(), ((rn2(7) + (16 - Math.imul(8, bcsign(otmp)))) | 0)),
         0
     ));
 }
@@ -1836,7 +1833,7 @@ function* peffect_speed(otmp) {
         return;
     }
 
-    (yield* speed_up(BigInt(((rn2(10) + ((100 + Math.imul(60, bcsign(otmp))) | 0)) | 0))));
+    (yield* speed_up(BigInt(((rn2(10) + (100 + Math.imul(60, bcsign(otmp)))) | 0))));
 
     /* non-cursed potion grants intrinsic speed */
     if (is_speed && !(cptr.ldI32o(otmp, $obj_cursed) & 1) && !(HFast() & 117440512n)) {
@@ -1861,10 +1858,7 @@ function* peffect_blindness(otmp) {
         )) -
                 (1);
     (yield* make_blinded(
-        itimeout_incr(
-            BlindedTimeout(),
-            ((rn2(200) + ((250 - Math.imul(125, bcsign(otmp))) | 0)) | 0)
-        ),
+        itimeout_incr(BlindedTimeout(), ((rn2(200) + (250 - Math.imul(125, bcsign(otmp)))) | 0)),
         schar((!Blind()))
     ));
 }
@@ -2892,7 +2886,8 @@ export function* potionhit(mon, obj, how) {
         case 23: {
         if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags1) & 4096n) == 0n) &&
                 !mon_perma_blind(mon)) {
-            btmp = (((64 + rn2(32)) | 0) +
+            btmp = (64 +
+                rn2(32) +
                 Math.imul(rn2(32), !(yield* resist(mon, NHC.POTION_CLASS, 0, NHM.NOTELL)))) |
                     0;
 

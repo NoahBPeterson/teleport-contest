@@ -1240,9 +1240,7 @@ export function wiz_map_levltyp() {
                     ? 42
                     : ((terrain < 10)
                         ? (48 + terrain) | 0
-                        : ((terrain < 36)
-                            ? (((97 + terrain) | 0) - 10) | 0
-                            : (((65 + terrain) | 0) - 36) | 0)))),
+                        : ((terrain < 36) ? (97 + terrain - 10) | 0 : (65 + terrain - 36) | 0)))),
                 1
             );
         }
@@ -1500,7 +1498,7 @@ export function wiz_levltyp_legend() {
                         ? 42
                         : ((j < 10)
                             ? (48 + j) | 0
-                            : ((j < 36) ? (((97 + j) | 0) - 10) | 0 : (((65 + j) | 0) - 36) | 0)));
+                            : ((j < 36) ? (97 + j - 10) | 0 : (65 + j - 36) | 0)));
             void cptr.sprintf(eos(cptr.decay(buf)), fmt, c, dsc);
             if (j > i) {
                 putstr()(win, 0, cptr.decay(buf));
@@ -1827,10 +1825,10 @@ function size_obj(otmp) {
         sz = (sz + 32) | 0;
         if ((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))))
             sz = (sz +
-                ((Number(BigInt.asIntN(
+                (Number(BigInt.asIntN(
                     32,
                     cptr.strlen((cptr.ldPtr(cptr.ldPtro((otmp), $obj_oextra))))
-                )) + 1) | 0)) |
+                )) + 1)) |
                     0;
         if ((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omonst)))
             sz = (sz +
@@ -1838,10 +1836,10 @@ function size_obj(otmp) {
                     0;
         if ((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)))
             sz = (sz +
-                ((Number(BigInt.asIntN(
+                (Number(BigInt.asIntN(
                     32,
                     cptr.strlen((cptr.ldPtro(cptr.ldPtro((otmp), $obj_oextra), $oextra_omailcmd)))
-                )) + 1) | 0)) |
+                )) + 1)) |
                     0;
         /* sz += (int) sizeof (unsigned); -- now part of oextra itself */
     }
@@ -1986,10 +1984,10 @@ function size_monst(mtmp, incl_wsegs) {
         sz = (sz + 64) | 0;
         if ((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))
             sz = (sz +
-                ((Number(BigInt.asIntN(
+                (Number(BigInt.asIntN(
                     32,
                     cptr.strlen((cptr.ldPtr(cptr.ldPtro((mtmp), $monst_mextra))))
-                )) + 1) | 0)) |
+                )) + 1)) |
                     0;
         if ((cptr.ldPtro(cptr.ldPtro((mtmp), $monst_mextra), $mextra_egd)))
             sz = (sz + 652) | 0;
@@ -2396,7 +2394,7 @@ function list_migrating_mons(nextlevl) {
         else
             ++other;
     }
-    if (((((here + nxtlv) | 0) + other) | 0) == 0) {
+    if (((here + nxtlv + other) | 0) == 0) {
         pline(__s_no_monsters_currently_migrating);
     } else {
         pline(
@@ -2418,7 +2416,7 @@ function list_migrating_mons(nextlevl) {
             ? here
             : ((c == 110)
                 ? nxtlv
-                : ((c == 111) ? other : ((c == 97) ? (((here + nxtlv) | 0) + other) | 0 : 0)))) >>>
+                : ((c == 111) ? other : ((c == 97) ? (here + nxtlv + other) | 0 : 0)))) >>>
                 0;
         if (n > 0) {
             win = create_nhwindow()(NHM.NHW_TEXT);
@@ -2670,19 +2668,11 @@ export function wiz_show_stats() {
         __s_grand_total,
         (BigInt.asIntN(
             64,
-            BigInt.asIntN(
-                64,
-                BigInt.asIntN(64, total_obj_count.v + total_mon_count.v) + total_ovr_count.v
-            ) +
-                total_misc_count.v
+            total_obj_count.v + total_mon_count.v + total_ovr_count.v + total_misc_count.v
         )),
         (BigInt.asIntN(
             64,
-            BigInt.asIntN(
-                64,
-                BigInt.asIntN(64, total_obj_size.v + total_mon_size.v) + total_ovr_size.v
-            ) +
-                total_misc_size.v
+            total_obj_size.v + total_mon_size.v + total_ovr_size.v + total_misc_size.v
         ))
     );
     putstr()(win, 0, cptr.decay(buf));

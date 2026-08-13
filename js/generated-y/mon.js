@@ -1249,7 +1249,8 @@ function* make_corpse(mtmp, corpseflags) {
         /* Make dragon scales.  This assumes that the order of the
            dragons is the same as the order of the scales. */
         if (!rn2((cptr.ldI32o(mtmp, $monst_mrevived) & 1) | 0 ? 20 : 3)) {
-            num = (((NHC.GRAY_DRAGON_SCALES + (cptr.ldI32o((mdat), $permonst_pmidx))) | 0) -
+            num = (NHC.GRAY_DRAGON_SCALES +
+                (cptr.ldI32o((mdat), $permonst_pmidx)) -
                 NHC.PM_GRAY_DRAGON) |
                     0;
             obj.v = (yield* mksobj_at(num, x, y, 0, 0));
@@ -1514,7 +1515,7 @@ function* make_corpse(mtmp, corpseflags) {
         /* we have to do this here because most other places
            expect there to be an object coming back; not this one */
         obj.v = (yield* mksobj_at(
-            (NHC.GLOB_OF_BLACK_PUDDING - ((NHC.PM_BLACK_PUDDING - mndx) | 0)) | 0,
+            (NHC.GLOB_OF_BLACK_PUDDING - (NHC.PM_BLACK_PUDDING - mndx)) | 0,
             x,
             y,
             1,
@@ -3242,7 +3243,7 @@ export function* mfndpos(mon, data, flag) {
     let poisongas_ok;
     let in_poisongas;
     let gas_reg;
-    let gas_glyph = (((((NHC.S_poisoncloud) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0);
+    let gas_glyph = (((NHC.S_poisoncloud) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0);
 
     x = cptr.ldI16o(mon, $monst_mx);
     y = cptr.ldI16o(mon, $monst_my);
@@ -4908,7 +4909,8 @@ export function* corpse_chance(mon, magr, was_swallowed) {
             is_rider(mdat) ||
             (cptr.ldI32o(mon, $monst_isshk) & 1) | 0)
         return 1;
-    tmp = (((2 + ((cptr.ldU16o(mdat, $permonst_geno) & NHM.G_FREQ) < 2)) | 0) +
+    tmp = (2 +
+        ((cptr.ldU16o(mdat, $permonst_geno) & NHM.G_FREQ) < 2) +
         (cptr.ld1uo((mdat), $permonst_msize) < NHM.MZ_SMALL)) |
             0;
     return schar((!rn2(tmp)));
@@ -7452,10 +7454,7 @@ function* wiz_force_cham_form(mon) {
     do {
         if (tryct == 4) {
             /* change "into what?" to "into what kind of monster?" */
-            if (BigInt.asUintN(
-                64,
-                BigInt.asUintN(64, cptr.strlen(cptr.decay(pprompt)) + 17n) - 1n
-            ) < 128n)
+            if (BigInt.asUintN(64, cptr.strlen(cptr.decay(pprompt)) + 17n - 1n) < 128n)
                 void cptr.strcpy(cptr.add(eos(cptr.decay(pprompt)), -(1)), __s_kind_of_monster);
         }
         monclass = 0;
@@ -7522,8 +7521,7 @@ export function* select_newcham_form(mon) {
         } else if (rn2(3)) {
             mndx = (yield* tt_doppel(mon));
         } else if (!rn2(3)) {
-            mndx = ((rn2(((((NHC.PM_APPRENTICE - NHC.PM_STUDENT) | 0) + 1) | 0)) +
-                    NHC.PM_STUDENT) | 0);
+            mndx = ((rn2(((NHC.PM_APPRENTICE - NHC.PM_STUDENT + 1) | 0)) + NHC.PM_STUDENT) | 0);
             /* avoid own role's guardian */
             if (mndx == cptr.ldI16o(gu, $instance_globals_u_urole + $Role_guardnum))
                 mndx = NHC.NON_PM;
@@ -7563,7 +7561,8 @@ export function* select_newcham_form(mon) {
                     (cptr.diff(
                         cptr.add(
                             mons,
-                            (((NHC.PM_GRAY_DRAGON + cptr.ldI16o((m_armr), $obj_otyp)) | 0) -
+                            (NHC.PM_GRAY_DRAGON +
+                                cptr.ldI16o((m_armr), $obj_otyp) -
                                 NHC.GRAY_DRAGON_SCALES) | 0,
                             $sizeof_permonst
                         ),
@@ -7576,7 +7575,8 @@ export function* select_newcham_form(mon) {
                     (cptr.diff(
                         cptr.add(
                             mons,
-                            (((NHC.PM_GRAY_DRAGON + cptr.ldI16o((m_armr), $obj_otyp)) | 0) -
+                            (NHC.PM_GRAY_DRAGON +
+                                cptr.ldI16o((m_armr), $obj_otyp) -
                                 NHC.GRAY_DRAGON_SCALE_MAIL) | 0,
                             $sizeof_permonst
                         ),

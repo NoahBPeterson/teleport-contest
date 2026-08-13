@@ -930,7 +930,7 @@ function regen_pw(wtcap) {
             ((wtcap < NHC.MOD_ENCUMBER &&
                 (!(cptr.ldI64o(svm, $instance_globals_saved_m_moves) %
                     BigInt(((Math.imul(
-                        ((38 - cptr.ldI32o(u, $you_ulevel)) | 0),
+                        38 - cptr.ldI32o(u, $you_ulevel),
                         ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_WIZARD)
                             ? 3
                             : 4)
@@ -941,7 +941,7 @@ function regen_pw(wtcap) {
         if (EMagical_breathing())
             upper = (upper + 2) | 0;
 
-        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + ((rn2(upper) + 1) | 0)) | 0);
+        cptr.stI32o(u, $you_uen, (cptr.ldI32o(u, $you_uen) + (rn2(upper) + 1)) | 0);
         if (cptr.ldI32o(u, $you_uen) > cptr.ldI32o(u, $you_uenmax))
             cptr.stI32o(u, $you_uen, cptr.ldI32o(u, $you_uenmax));
         cptr.st1(disp, 1);

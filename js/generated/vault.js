@@ -2145,8 +2145,8 @@ export function gd_move(grd) {
         __pc = 27; continue;
         }
         case 27: {
-        ex = i16(((((nx + nx) | 0) - x) | 0));
-        ey = i16(((((ny + ny) | 0) - y) | 0));
+        ex = i16(((nx + nx - x) | 0));
+        ey = i16(((ny + ny - y) | 0));
         if (isok(ex, ey) &&
                 ((cptr.ld1so3(
                     svl,

@@ -1554,8 +1554,7 @@ function* mksobj_init(obj, artif) {
             cptr.stI32o(
                 otmp,
                 $obj_corpsenm,
-                (NHC.PM_GRAY_OOZE +
-                    ((cptr.ldI16o(otmp, $obj_otyp) - NHC.GLOB_OF_GRAY_OOZE) | 0)) | 0
+                (NHC.PM_GRAY_OOZE + (cptr.ldI16o(otmp, $obj_otyp) - NHC.GLOB_OF_GRAY_OOZE)) | 0
             );
             (yield* start_glob_timeout(otmp, 0n));
         } else {
@@ -2169,7 +2168,7 @@ export function* start_glob_timeout(obj, when) {
         void (yield* stop_timer(NHC.SHRINK_GLOB, obj_to_any(obj)));
 
     if (when < 1n)
-        when = BigInt.asIntN(64, BigInt.asIntN(64, 25n + BigInt(rn2(5))) - 2n);  /* 25+[0..4]-2 => 23..27, avg 25 */
+        when = BigInt.asIntN(64, 25n + BigInt(rn2(5)) - 2n);  /* 25+[0..4]-2 => 23..27, avg 25 */
     /* 1 new glob weighs 20 units and loses 1 unit every 25 turns,
        so lasts for 500 turns, twice as long as the average corpse */
     void (yield* start_timer(when, NHC.TIMER_OBJECT, NHC.SHRINK_GLOB, obj_to_any(obj)));
@@ -2216,7 +2215,7 @@ export function* shrink_glob(arg, expire_time) {
         /* number of units of weight to remove */
         let delta = (BigInt.asIntN(
             64,
-            BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - expire_time) + 24n
+            cptr.ldI64o(svm, $instance_globals_saved_m_moves) - expire_time + 24n
         )) /
                 25n;
         let moddelta = BigInt.asIntN(64, 25n - (delta % 25n));
@@ -2636,7 +2635,7 @@ export function* weight(obj) {
                 $sizeof_permonst,
                 $permonst_msize
             );
-            let minwt = Math.imul(((((msize + msize) | 0) + 1) | 0), 100);
+            let minwt = Math.imul(msize + msize + 1, 100);
 
             /* default statue weight is 1.5 times corpse weight */
             wt = (Math.imul(
@@ -2774,10 +2773,7 @@ export function* mkgold(amount, x, y) {
                     ? ((12 - depth(cptr.add(u, $you_uz))) | 0)
                     : 2)) | 0));
 
-        amount = (BigInt.asIntN(
-            64,
-            1n + BigInt.asIntN(64, BigInt(rnd(((yield* level_difficulty()) + 2) | 0)) * mul)
-        ));
+        amount = (BigInt.asIntN(64, 1n + BigInt(rnd(((yield* level_difficulty()) + 2) | 0)) * mul));
     }
     if (gold) {
         cptr.stI64o(gold, $obj_quan, cptr.ldI64o(gold, $obj_quan) + amount);
@@ -3041,8 +3037,7 @@ export function* mk_tt_object(objtype, x, y) {
     /* tt_oname() will return null if the scoreboard is empty, which in
        turn leaves the random corpsenm value; force it to match a player */
     if (!(yield* tt_oname(otmp))) {
-        let pm = ((rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) +
-                NHC.PM_ARCHEOLOGIST) | 0);
+        let pm = ((rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
 
         /* update weight for either, force timer sanity for corpses */
         (yield* set_corpsenm(otmp, pm));
@@ -3342,11 +3337,7 @@ function* obj_timer_checks(otmp, x, y, force) {
             cptr.stI64o(
                 otmp,
                 $obj_age,
-                BigInt.asIntN(
-                    64,
-                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
-                        (BigInt.asIntN(64, age * 2n))
-                )
+                BigInt.asIntN(64, cptr.ldI64o(svm, $instance_globals_saved_m_moves) - age * 2n)
             );
         }
 
@@ -4559,8 +4550,7 @@ function* check_contained(container, mesg) {
             (yield* copynchars(
                 eos(cptr.decay(nestedmesg)),
                 mesg,
-                (((120 -
-                    Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(nestedmesg))))) | 0) - 1) | 0
+                (120 - Number(BigInt.asIntN(32, cptr.strlen(cptr.decay(nestedmesg)))) - 1) | 0
             ));
             /* recursively check contents */
             (yield* check_contained(obj, cptr.decay(nestedmesg)));
@@ -4943,24 +4933,11 @@ export function* obj_absorb(obj1, obj2) {
                than averaging the absolute ages directly */
             agetmp = ((BigInt.asIntN(
                 64,
-                BigInt.asIntN(
-                    64,
-                    (BigInt.asIntN(
-                        64,
-                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
-                            cptr.ldI64o(otmp1, $obj_age)
-                    )) *
-                        BigInt(o1wt)
-                ) +
-                    BigInt.asIntN(
-                        64,
-                        (BigInt.asIntN(
-                            64,
-                            cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
-                                cptr.ldI64o(otmp2, $obj_age)
-                        )) *
-                            BigInt(o2wt)
-                    )
+                (cptr.ldI64o(svm, $instance_globals_saved_m_moves) - cptr.ldI64o(otmp1, $obj_age)) *
+                    BigInt(o1wt) +
+                    (cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                        cptr.ldI64o(otmp2, $obj_age)) *
+                        BigInt(o2wt)
             )) /
                     BigInt(((o1wt + o2wt) | 0)));
             /* convert relative age back to absolute age */
@@ -4980,11 +4957,7 @@ export function* obj_absorb(obj1, obj2) {
                 let tm1 = (yield* stop_timer(NHC.SHRINK_GLOB, obj_to_any(otmp1)));
                 let tm2 = (yield* stop_timer(NHC.SHRINK_GLOB, obj_to_any(otmp2)));
 
-                tm1 = (BigInt.asIntN(
-                    64,
-                    BigInt.asIntN(64, (tm1 ? tm1 : 25n) + (tm2 ? tm2 : 25n)) + 1n
-                )) /
-                        2n;
+                tm1 = (BigInt.asIntN(64, (tm1 ? tm1 : 25n) + (tm2 ? tm2 : 25n) + 1n)) / 2n;
                 (yield* start_glob_timeout(otmp1, tm1));
             }
             /* get rid of second glob, return augmented first one */

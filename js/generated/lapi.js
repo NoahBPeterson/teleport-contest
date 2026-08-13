@@ -703,14 +703,11 @@ function touserdata(o) {
                 : BigInt.asUintN(
                     64,
                     40n +
-                        (BigInt.asUintN(
-                            64,
-                            16n *
-                                BigInt((cptr.ldU16o(
-                                    (((((((cptr.ldPtr(((o)))))))))),
-                                    $Udata_nuvalue
-                                )) >>> 0)
-                        ))
+                        16n *
+                            BigInt((cptr.ldU16o(
+                                (((((((cptr.ldPtr(((o)))))))))),
+                                $Udata_nuvalue
+                            )) >>> 0)
                 ))
         ));
         case 2:
@@ -2213,8 +2210,7 @@ export function lua_gc(L, what, ...__va) {
             } else {
                 debt = BigInt.asIntN(
                     64,
-                    BigInt.asIntN(64, (BigInt((data))) * 1024n) +
-                        cptr.ldI64o(g, $global_State_GCdebt)
+                    (BigInt((data))) * 1024n + cptr.ldI64o(g, $global_State_GCdebt)
                 );
                 luaE_setdebt(g, debt);
                 {
@@ -2493,10 +2489,7 @@ export function lua_newuserdatauv(L, size, nuvalue) {
         (((u))),
         ((cptr.ldU16o((u), $Udata_nuvalue)) == 0
             ? 32n
-            : BigInt.asUintN(
-                64,
-                40n + (BigInt.asUintN(64, 16n * BigInt((cptr.ldU16o((u), $Udata_nuvalue)) >>> 0)))
-            ))
+            : BigInt.asUintN(64, 40n + 16n * BigInt((cptr.ldU16o((u), $Udata_nuvalue)) >>> 0)))
     ));
 }
 

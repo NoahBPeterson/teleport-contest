@@ -59,7 +59,7 @@ function roguejoin(x1, y1, x2, y2, horiz) {
     let middle;
 
     if (horiz) {
-        middle = i16(((x1 + rn2((((x2 - x1) | 0) + 1) | 0)) | 0));
+        middle = i16(((x1 + rn2((x2 - x1 + 1) | 0)) | 0));
         for (x = i16(min(x1, middle)); x <= max(x1, middle); x++)
             corr(x, y1);
         for (y = i16(min(y1, y2)); y <= max(y1, y2); y++)
@@ -67,7 +67,7 @@ function roguejoin(x1, y1, x2, y2, horiz) {
         for (x = i16(min(middle, x2)); x <= max(middle, x2); x++)
             corr(x, y2);
     } else {
-        middle = i16(((y1 + rn2((((y2 - y1) | 0) + 1) | 0)) | 0));
+        middle = i16(((y1 + rn2((y2 - y1 + 1) | 0)) | 0));
         for (y = i16(min(y1, middle)); y <= max(y1, middle); y++)
             corr(x1, y);
         for (x = i16(min(x1, x2)); x <= max(x1, x2); x++)
@@ -887,7 +887,7 @@ export function makeroguerooms() {
                     y,
                     $sizeof_rogueroom,
                     $instance_globals_r_r,
-                    i16(rnd((((23 -
+                    i16(rnd((23 -
                         cptr.ldI16o3(
                             gr,
                             x,
@@ -895,14 +895,14 @@ export function makeroguerooms() {
                             y,
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_dx
-                        )) | 0) + 1) | 0))
+                        ) + 1) | 0))
                 );
                 cptr.stI16o2(
                     cptr.add(gr, x, $sizeof_rogueroom_x3),
                     y,
                     $sizeof_rogueroom,
                     $instance_globals_r_r + $rogueroom_rly,
-                    i16(rnd((((((y == 2) ? 5 : 4) -
+                    i16(rnd((((y == 2) ? 5 : 4) -
                         cptr.ldI16o3(
                             gr,
                             x,
@@ -910,7 +910,7 @@ export function makeroguerooms() {
                             y,
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_dy
-                        )) | 0) + 1) | 0))
+                        ) + 1) | 0))
                 );
                 (cptr.stI32o(
                     svn,
@@ -963,7 +963,8 @@ export function makeroguerooms() {
                     cptr.ldI32o(svn, $instance_globals_saved_n_nroom)
                 );
 
-                lowx = i16(((((1 + Math.imul(26, x)) | 0) +
+                lowx = i16(((1 +
+                        Math.imul(26, x) +
                         cptr.ldI16o3(
                             gr,
                             x,
@@ -981,15 +982,16 @@ export function makeroguerooms() {
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_rly
                         )) | 0));
-                hix = i16(((((((((1 + Math.imul(26, x)) | 0) +
-                    cptr.ldI16o3(
-                        gr,
-                        x,
-                        $sizeof_rogueroom_x3,
-                        y,
-                        $sizeof_rogueroom,
-                        $instance_globals_r_r
-                    )) | 0) +
+                hix = i16(((1 +
+                        Math.imul(26, x) +
+                        cptr.ldI16o3(
+                            gr,
+                            x,
+                            $sizeof_rogueroom_x3,
+                            y,
+                            $sizeof_rogueroom,
+                            $instance_globals_r_r
+                        ) +
                         cptr.ldI16o3(
                             gr,
                             x,
@@ -997,16 +999,16 @@ export function makeroguerooms() {
                             y,
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_dx
-                        )) | 0) - 1) | 0));
-                hiy = i16(((((((Math.imul(7, y) +
-                    cptr.ldI16o3(
-                        gr,
-                        x,
-                        $sizeof_rogueroom_x3,
-                        y,
-                        $sizeof_rogueroom,
-                        $instance_globals_r_r + $rogueroom_rly
-                    )) | 0) +
+                        ) - 1) | 0));
+                hiy = i16(((Math.imul(7, y) +
+                        cptr.ldI16o3(
+                            gr,
+                            x,
+                            $sizeof_rogueroom_x3,
+                            y,
+                            $sizeof_rogueroom,
+                            $instance_globals_r_r + $rogueroom_rly
+                        ) +
                         cptr.ldI16o3(
                             gr,
                             x,
@@ -1014,7 +1016,7 @@ export function makeroguerooms() {
                             y,
                             $sizeof_rogueroom,
                             $instance_globals_r_r + $rogueroom_dy
-                        )) | 0) - 1) | 0));
+                        ) - 1) | 0));
                 /* Strictly speaking, it should be lit only if above
                  * level 10, but since Rogue rooms are only
                  * encountered below level 10, use !rn2(7).

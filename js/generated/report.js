@@ -567,7 +567,7 @@ export function get_saved_pline(lineno) {
     while (limit--) {
         if (cptr.ldPtro2(gs, p, 8, $instance_globals_s_saved_plines)) {
             if (lineno--) {
-                p = ((((p - 1) | 0) + NHM.DUMPLOG_MSG_COUNT) | 0) % NHM.DUMPLOG_MSG_COUNT;
+                p = ((p - 1 + NHM.DUMPLOG_MSG_COUNT) | 0) % NHM.DUMPLOG_MSG_COUNT;
             } else {
                 return cptr.ldPtro2(gs, p, 8, $instance_globals_s_saved_plines);
             }

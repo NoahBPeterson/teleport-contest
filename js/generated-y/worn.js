@@ -1611,7 +1611,8 @@ export function* mon_break_armor(mon, polyspot) {
                     mdat,
                     cptr.add(
                         mons,
-                        (((NHC.PM_GRAY_DRAGON + cptr.ldI16o((otmp), $obj_otyp)) | 0) -
+                        (NHC.PM_GRAY_DRAGON +
+                            cptr.ldI16o((otmp), $obj_otyp) -
                             NHC.GRAY_DRAGON_SCALES) | 0,
                         $sizeof_permonst
                     )
@@ -1621,7 +1622,8 @@ export function* mon_break_armor(mon, polyspot) {
                             mdat,
                             cptr.add(
                                 mons,
-                                (((NHC.PM_GRAY_DRAGON + cptr.ldI16o((otmp), $obj_otyp)) | 0) -
+                                (NHC.PM_GRAY_DRAGON +
+                                    cptr.ldI16o((otmp), $obj_otyp) -
                                     NHC.GRAY_DRAGON_SCALE_MAIL) | 0,
                                 $sizeof_permonst
                             )

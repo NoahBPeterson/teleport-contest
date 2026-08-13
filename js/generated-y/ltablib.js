@@ -165,10 +165,9 @@ function* tmove(L) {
             (yield* luaL_argerror(L, 3, (__s_too_many_elements_to_move)))
                 ? 1
                 : 0));
-        n = BigInt.asIntN(64, BigInt.asIntN(64, e - f) + 1n);  /* number of elements to move */
+        n = BigInt.asIntN(64, e - f + 1n);  /* number of elements to move */
         (void ((__builtin_expect(
-            BigInt(((t <=
-                BigInt.asIntN(64, BigInt.asIntN(64, 9223372036854775807n - n) + 1n)) != 0)),
+            BigInt(((t <= BigInt.asIntN(64, 9223372036854775807n - n + 1n)) != 0)),
             1n
         )) ||
             (yield* luaL_argerror(L, 4, (__s_destination_wrap_around)))
@@ -385,7 +384,7 @@ function* partition(L, lo, up) {
 /** C ref: ltablib.c:334 — @param {CUInt} lo @param {CUInt} up @param {CUInt} rnd @returns {*} */
 function choosePivot(lo, up, rnd) {
     let r4 = u32div(((up - lo) >>> 0), 4);  /* range/4 */
-    let p = (u32mod(rnd, (Math.imul(r4, 2) >>> 0)) + ((lo + r4) >>> 0)) >>> 0;
+    let p = (u32mod(rnd, (Math.imul(r4, 2) >>> 0)) + (lo + r4)) >>> 0;
     (void 0);
     return p;
 }

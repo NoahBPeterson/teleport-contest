@@ -340,7 +340,7 @@ export function defended(mon, adtyp) {
         cptr.stI16o(
             otemp,
             $obj_otyp,
-            i16(((NHC.GRAY_DRAGON_SCALES + ((mndx - NHC.PM_GRAY_DRAGON) | 0)) | 0))
+            i16(((NHC.GRAY_DRAGON_SCALES + (mndx - NHC.PM_GRAY_DRAGON)) | 0))
         );
         /* defends() and Is_dragon_armor() only care about otyp so ignore
            the rest of otemp's fields */
@@ -659,7 +659,7 @@ export function mstrength(ptr) {
     let tmp = cptr.ld1so(ptr, $permonst_mlevel);
 
     if (tmp > 49)
-        tmp = (Math.imul(2, ((tmp - 6) | 0)) / 4) | 0;
+        tmp = (Math.imul(2, tmp - 6) / 4) | 0;
 
     /* for creation in groups */
     n = (!!(cptr.ldU16o(ptr, $permonst_geno) & NHM.G_SGROUP));
@@ -731,7 +731,7 @@ export function mstrength(ptr) {
     if (n == 0)
         tmp = (tmp - 1) | 0;
     else if (n < 6)
-        tmp = (tmp + ((((n / 3) | 0) + 1) | 0)) | 0;
+        tmp = (tmp + (((n / 3) | 0) + 1)) | 0;
     else
         tmp = (tmp + ((n / 2) | 0)) | 0;
 
@@ -2284,10 +2284,10 @@ export function give_u_to_m_resistances(mtmp) {
 export function resist_conflict(mtmp) {
     /* always a small chance at 19 */
     let resist_chance = (19 <
-        ((((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) +
-            cptr.ldI32o(u, $you_ulevel)) | 0))
+        ((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev) + cptr.ldI32o(u, $you_ulevel)) | 0))
             ? 19
-            : ((((((acurr(NHC.A_CHA)) - cptr.ld1uo(mtmp, $monst_m_lev)) | 0) +
+            : ((((acurr(NHC.A_CHA)) -
+                cptr.ld1uo(mtmp, $monst_m_lev) +
                 cptr.ldI32o(u, $you_ulevel)) | 0)));
 
     return schar((rnd(20) > resist_chance));

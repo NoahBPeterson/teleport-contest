@@ -539,11 +539,8 @@ function restobjchn(nhfp, frozen) {
                 $obj_age,
                 BigInt.asIntN(
                     64,
-                    BigInt.asIntN(
-                        64,
-                        cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
-                            cptr.ldI64o(svo, $instance_globals_saved_o_omoves)
-                    ) +
+                    cptr.ldI64o(svm, $instance_globals_saved_m_moves) -
+                        cptr.ldI64o(svo, $instance_globals_saved_o_omoves) +
                         cptr.ldI64o(otmp, $obj_age)
                 )
             );

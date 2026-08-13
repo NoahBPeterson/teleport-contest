@@ -61,7 +61,8 @@ export function luaS_eqlngstr(a, b) {
 export function luaS_hash(str, l, seed) {
     let h = (seed ^ (Number(BigInt.asUintN(32, ((l)))))) >>> 0;
     for (; l > 0n; l--)
-        h ^= ((((((h << 5) >>> 0) + (h >>> 2)) >>> 0) +
+        h ^= ((((h << 5) >>> 0) +
+                (h >>> 2) +
                 (uchar(((cptr.ld1so(str, BigInt.asUintN(64, l - 1n))))))) >>> 0);
     return h;
 }
@@ -204,7 +205,7 @@ function* createstrobj(L, l, tag, h) {
     let ts;
     let o;
     let totalsize;  /* total size of TString object */
-    totalsize = (BigInt.asUintN(64, 24n + BigInt.asUintN(64, (BigInt.asUintN(64, (l) + 1n)) * 1n)));
+    totalsize = (BigInt.asUintN(64, 24n + ((l) + 1n) * 1n));
     o = (yield* luaC_newobj(L, tag, totalsize));
     ts = (((((o)))));
     cptr.stI32o(ts, $TString_hash, h);
@@ -382,10 +383,7 @@ export function* luaS_newudata(L, s, nuvalue) {
                 9223372036854775807n -
                     ((nuvalue) == 0
                         ? 32n
-                        : BigInt.asUintN(
-                            64,
-                            40n + (BigInt.asUintN(64, 16n * BigInt.asUintN(64, BigInt((nuvalue)))))
-                        ))
+                        : BigInt.asUintN(64, 40n + 16n * BigInt.asUintN(64, BigInt((nuvalue)))))
             )) != 0)),
         0n
     )))
@@ -397,10 +395,7 @@ export function* luaS_newudata(L, s, nuvalue) {
             64,
             ((nuvalue) == 0
                 ? 32n
-                : BigInt.asUintN(
-                    64,
-                    40n + (BigInt.asUintN(64, 16n * BigInt.asUintN(64, BigInt((nuvalue)))))
-                )) +
+                : BigInt.asUintN(64, 40n + 16n * BigInt.asUintN(64, BigInt((nuvalue))))) +
                 (s)
         ))
     ));

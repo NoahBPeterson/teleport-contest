@@ -2217,9 +2217,7 @@ export function* rndmonnam(code) {
         cptr.st1(code, 0);
 
     do {
-        name = (rn2_on_display_rng(((((NHC.SPECIAL_PM + 100) | 0) - NHC.LOW_PM) | 0)) +
-            NHC.LOW_PM) |
-                0;
+        name = (rn2_on_display_rng(((NHC.SPECIAL_PM + 100 - NHC.LOW_PM) | 0)) + NHC.LOW_PM) | 0;
     } while (name < NHC.SPECIAL_PM &&
             (((cptr.ldU64o((cptr.add(mons, name, $sizeof_permonst)), $permonst_mflags2) &
                 524288n) != 0n) ||
@@ -2528,11 +2526,7 @@ export function* christen_orc(mtmp, gang, other) {
     /* rndorcname() won't return NULL */
     sz = Number(BigInt.asIntN(32, cptr.strlen(orcname)));
     if (gang)
-        sz = (sz +
-            Number(BigInt.asIntN(
-                32,
-                (BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(gang) + 5n) - 1n))
-            ))) |
+        sz = (sz + Number(BigInt.asIntN(32, (BigInt.asUintN(64, cptr.strlen(gang) + 5n - 1n))))) |
                 0;
     else if (other)
         sz = (sz + Number(BigInt.asIntN(32, cptr.strlen(other)))) | 0;

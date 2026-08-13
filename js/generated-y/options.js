@@ -2418,11 +2418,7 @@ cptr.st1o(allopt_init, 4888 + $allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 4992, __s_dungeon);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_minmatch, 0);
-cptr.stI32o(
-    allopt_init,
-    4992 + $allopt_t_expectedbuf,
-    ((((((NHC.S_water - NHC.S_stone) | 0) + 1) | 0) + 1) | 0)
-);
+cptr.stI32o(allopt_init, 4992 + $allopt_t_expectedbuf, ((NHC.S_water - NHC.S_stone + 1 + 1) | 0));
 cptr.stI32o(allopt_init, 4992 + $allopt_t_idx, NHC.opt_dungeon);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_setwhere, NHC.set_in_config);
 cptr.stI32o(allopt_init, 4992 + $allopt_t_opttyp, NHC.CompOpt);
@@ -2444,11 +2440,7 @@ cptr.st1o(allopt_init, 4992 + $allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 5096, __s_effects);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_minmatch, 0);
-cptr.stI32o(
-    allopt_init,
-    5096 + $allopt_t_expectedbuf,
-    ((((((NHC.S_expl_br - NHC.S_vbeam) | 0) + 1) | 0) + 1) | 0)
-);
+cptr.stI32o(allopt_init, 5096 + $allopt_t_expectedbuf, ((NHC.S_expl_br - NHC.S_vbeam + 1 + 1) | 0));
 cptr.stI32o(allopt_init, 5096 + $allopt_t_idx, NHC.opt_effects);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_setwhere, NHC.set_in_config);
 cptr.stI32o(allopt_init, 5096 + $allopt_t_opttyp, NHC.CompOpt);
@@ -5588,7 +5580,7 @@ cptr.st1o(allopt_init, 19760 + $allopt_t_disregarded, 0);
 cptr.stPtro(allopt_init, 19864, __s_traps);
 cptr.stI32o(allopt_init, 19864 + $allopt_t_section, NHC.OptS_Advanced);
 cptr.stI32o(allopt_init, 19864 + $allopt_t_minmatch, 0);
-cptr.stI32o(allopt_init, 19864 + $allopt_t_expectedbuf, ((((NHC.TRAPNUM - 1) | 0) + 1) | 0));
+cptr.stI32o(allopt_init, 19864 + $allopt_t_expectedbuf, ((NHC.TRAPNUM - 1 + 1) | 0));
 cptr.stI32o(allopt_init, 19864 + $allopt_t_idx, NHC.opt_traps);
 cptr.stI32o(allopt_init, 19864 + $allopt_t_setwhere, NHC.set_in_config);
 cptr.stI32o(allopt_init, 19864 + $allopt_t_opttyp, NHC.CompOpt);
@@ -7492,8 +7484,7 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
             cptr.st1o2(
                 go,
                 ((NHC.SYM_BOULDER +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                 1,
                 $instance_globals_o_ov_primary_syms,
                 uchar(cptr.ld1so(opts, 0))
@@ -7501,8 +7492,7 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
             cptr.st1o2(
                 go,
                 ((NHC.SYM_BOULDER +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                 1,
                 $instance_globals_o_ov_rogue_syms,
                 uchar(cptr.ld1so(opts, 0))
@@ -7540,8 +7530,7 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
                     cptr.st1o2(
                         gs,
                         ((NHC.SYM_BOULDER +
-                            (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                                NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                            ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                         1,
                         $instance_globals_s_showsyms,
                         sym
@@ -7559,16 +7548,14 @@ function* optfn_boulder(optidx, req, negated, opts, op) {
             cptr.ld1uo2(
                 go,
                 ((NHC.SYM_BOULDER +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                 1,
                 $instance_globals_o_ov_primary_syms
             )
                 ? cptr.ld1uo2(
                     go,
                     ((NHC.SYM_BOULDER +
-                        (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                            NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                        ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                     1,
                     $instance_globals_o_ov_primary_syms
                 )
@@ -13855,15 +13842,12 @@ function* handler_menu_colors() {
                     32,
                     BigInt.asUintN(
                         64,
-                        BigInt.asUintN(
-                            64,
-                            256n -
-                                BigInt((yield* Strlen_(
-                                    cptr.decay(buf),
-                                    __s_handler_menu_colors,
-                                    6470
-                                )) >>> 0)
-                        ) - 1n
+                        256n -
+                            BigInt((yield* Strlen_(
+                                cptr.decay(buf),
+                                __s_handler_menu_colors,
+                                6470
+                            )) >>> 0) - 1n
                     )
                 ));  /* length available */
                 void cptr.strcpy(cptr.decay(mcbuf), __s_quot);
@@ -13907,11 +13891,11 @@ function* handler_menu_colors() {
             ));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    free_one_menu_coloring((((cptr.ldI32o(
+                    free_one_menu_coloring((cptr.ldI32o(
                         pick_list.v,
                         pick_idx,
                         $sizeof_menu_item
-                    ) - 1) | 0) -
+                    ) - 1 -
                             pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
@@ -13971,11 +13955,8 @@ function* handler_msgtype() {
                     32,
                     BigInt.asUintN(
                         64,
-                        BigInt.asUintN(
-                            64,
-                            256n -
-                                BigInt((yield* Strlen_(cptr.decay(mtbuf), __s_handler_msgtype, 6544)) >>> 0)
-                        ) - 2n
+                        256n -
+                            BigInt((yield* Strlen_(cptr.decay(mtbuf), __s_handler_msgtype, 6544)) >>> 0) - 2n
                     )
                 ));
                 if (cptr.strlen(cptr.ldPtro(tmp, $plinemsg_type_pattern)) > BigInt(ln >>> 0))
@@ -14019,11 +14000,7 @@ function* handler_msgtype() {
             ));
             if (pick_cnt > 0) {
                 for (pick_idx = 0; pick_idx < pick_cnt; ++pick_idx)
-                    free_one_msgtype((((cptr.ldI32o(
-                        pick_list.v,
-                        pick_idx,
-                        $sizeof_menu_item
-                    ) - 1) | 0) -
+                    free_one_msgtype((cptr.ldI32o(pick_list.v, pick_idx, $sizeof_menu_item) - 1 -
                             pick_idx) | 0);
                 cptr.free(pick_list.v), pick_list.v = null;
             }
@@ -14459,7 +14436,7 @@ function* escapes(cp, tp) {
         } else if (cptr.strchr(cptr.decay(__static_escapes_dec), cptr.ld1so(cp, 1))) {
             cp = cptr.add(cp, 1);  /* move past backslash to first digit */
             do {
-                cval = ((Math.imul(cval, 10)) + ((cptr.ld1s(cp) - 48) | 0)) | 0;
+                cval = ((Math.imul(cval, 10)) + (cptr.ld1s(cp) - 48)) | 0;
             } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) &&
                     cptr.strchr(cptr.decay(__static_escapes_dec), cptr.ld1s(cp)) &&
                     ++dcount < 3);
@@ -14468,7 +14445,7 @@ function* escapes(cp, tp) {
                 cptr.strchr(cptr.decay(__static_escapes_oct), cptr.ld1so(cp, 2))) {
             cp = cptr.add(cp, 2);  /* move past backslash and 'O' */
             do {
-                cval = ((Math.imul(cval, 8)) + ((cptr.ld1s(cp) - 48) | 0)) | 0;
+                cval = ((Math.imul(cval, 8)) + (cptr.ld1s(cp) - 48)) | 0;
             } while (cptr.ld1s(cptr.preinc(() => cp, (v) => { cp = v; })) &&
                     cptr.strchr(cptr.decay(__static_escapes_oct), cptr.ld1s(cp)) &&
                     ++dcount < 3);
@@ -14605,7 +14582,7 @@ export function* txt2key(txt) {
         for (i = 0; i < 3; i++) {
             if (cptr.ld1so(txt, i) < 48 || cptr.ld1so(txt, i) > 57)
                 return 0;
-            key = uchar(((((Math.imul(10, key) + cptr.ld1so(txt, i)) | 0) - 48) | 0));
+            key = uchar(((Math.imul(10, key) + cptr.ld1so(txt, i) - 48) | 0));
         }
         return key;
     }
@@ -14917,9 +14894,7 @@ export function* initoptions_finish() {
     if (sym)
         cptr.st1o2(
             gs,
-            ((NHC.SYM_BOULDER +
-                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+            ((NHC.SYM_BOULDER + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
             1,
             $instance_globals_s_showsyms,
             sym
@@ -16762,7 +16737,7 @@ export function* doset() {
                             (is_wc2_option(name) && !wc2_supported(name)))
                         continue;
 
-                    cptr.stI32(any, (pass == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
+                    cptr.stI32(any, (pass == 0) ? 0 : (i + 1 + indexoffset) | 0);
                     indent = (pass == 0 && !cptr.ld1so(iflags, $instance_flags_menu_tab_sep))
                             ? __s_sp4
                             : __s_empty;
@@ -16999,7 +16974,7 @@ function* doset_add_menu(win, option, fmtstr, idx, indexoffset) {
             i < NHC.OPTCOUNT &&
             cptr.ldPtro(allopt, i, $sizeof_allopt_t) &&
             cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn)) {
-        cptr.stI32(any, (indexoffset == 0) ? 0 : (((i + 1) | 0) + indexoffset) | 0);
+        cptr.stI32(any, (indexoffset == 0) ? 0 : (i + 1 + indexoffset) | 0);
         if (cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))
             reslt = (yield* Y.icall((cptr.ldPtro2(allopt, i, $sizeof_allopt_t, $allopt_t_optfn))(
                 cptr.ldI32o2(allopt, i, $sizeof_allopt_t, $allopt_t_idx),
@@ -17672,7 +17647,7 @@ function* all_options_conds(sbuf) {
            to edit resulting file manually and insert '!' in front of them */
         if (idx == 0) {
             void cptr.strcpy(cptr.decay(buf), __s_options__2);
-        } else if (((((yield* Strlen_(cptr.decay(buf), __s_all_options_conds, 9568)) + 1) >>> 0) +
+        } else if (((yield* Strlen_(cptr.decay(buf), __s_all_options_conds, 9568)) + 1 +
             (yield* Strlen_(cptr.decay(nextcond), __s_all_options_conds, 9568))) >>>
                 0 >= 75) {
             /* finish off previous line */
@@ -17876,8 +17851,8 @@ export function* next_opt(datawin, str) {
             cptr.st1o(s, -2, 46), cptr.st1o(s, -1, 0);  /* replace ending ", " with "." */
         i = NHM.COLNO;  /* (greater than COLNO - 2) */
     } else {
-        i = (((((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) +
-            (yield* Strlen_(str, __s_next_opt, 9770))) >>> 0) + 2) >>> 0) |
+        i = (((yield* Strlen_(__static_next_opt_buf, __s_next_opt, 9770)) +
+            (yield* Strlen_(str, __s_next_opt, 9770)) + 2) >>> 0) |
                 0;
     }
 

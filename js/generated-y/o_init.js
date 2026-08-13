@@ -181,8 +181,7 @@ function* setgemprobs(dlev) {
             j,
             $sizeof_objclass,
             $objclass_oc_prob,
-            i16(((((((171 + j) | 0) - first) | 0) /
-                ((((NHC.LAST_REAL_GEM + 1) | 0) - first) | 0)) | 0))
+            i16(((((171 + j - first) | 0) / ((((NHC.LAST_REAL_GEM + 1) | 0) - first) | 0)) | 0))
         );
 
     /* recompute GEM_CLASS total oc_prob - including rocks/stones */
@@ -303,7 +302,7 @@ function shuffle(o_low, o_high, domaterial) {
         if ((cptr.ldI32o2(objects, j, $sizeof_objclass, $objclass_oc_name_known) & 1))
             continue;
         do
-            i = (j + rn2((((o_high - j) | 0) + 1) | 0)) | 0;
+            i = (j + rn2((o_high - j + 1) | 0)) | 0;
         while ((cptr.ldI32o2(objects, i, $sizeof_objclass, $objclass_oc_name_known) & 1));
         sw = cptr.ldI16o2(objects, j, $sizeof_objclass, $objclass_oc_descr_idx);
         cptr.stI16o2(
@@ -1068,11 +1067,7 @@ function* disco_append_typename(buf, dis) {
             typnm,
             BigInt.asUintN(
                 64,
-                255n -
-                    (BigInt.asUintN(
-                        64,
-                        len + BigInt(Number(BigInt.asUintN(32, cptr.strlen(p))) >>> 0)
-                    ))
+                255n - (len + BigInt(Number(BigInt.asUintN(32, cptr.strlen(p))) >>> 0))
             ),
             __builtin_object_size(buf, 1)
         );

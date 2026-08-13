@@ -65,15 +65,9 @@ export function yyyymmdd(date) {
     else
         datenum = BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_year)) + 1900n);
     /* yyyy --> yyyymm */
-    datenum = BigInt.asIntN(
-        64,
-        BigInt.asIntN(64, datenum * 100n) + BigInt(((cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0))
-    );
+    datenum = BigInt.asIntN(64, datenum * 100n + BigInt(((cptr.ldI32o(lt, $tm_tm_mon) + 1) | 0)));
     /* yyyymm --> yyyymmdd */
-    datenum = BigInt.asIntN(
-        64,
-        BigInt.asIntN(64, datenum * 100n) + BigInt(cptr.ldI32o(lt, $tm_tm_mday))
-    );
+    datenum = BigInt.asIntN(64, datenum * 100n + BigInt(cptr.ldI32o(lt, $tm_tm_mday)));
     return datenum;
 }
 
@@ -90,11 +84,8 @@ export function hhmmss(date) {
 
     timenum = BigInt.asIntN(
         64,
-        BigInt.asIntN(
-            64,
-            BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_hour)) * 10000n) +
-                BigInt.asIntN(64, BigInt(cptr.ldI32o(lt, $tm_tm_min)) * 100n)
-        ) +
+        BigInt(cptr.ldI32o(lt, $tm_tm_hour)) * 10000n +
+            BigInt(cptr.ldI32o(lt, $tm_tm_min)) * 100n +
             BigInt(cptr.ldI32(lt))
     );
     return timenum;
@@ -243,7 +234,7 @@ export function phase_of_the_moon() {
     if ((epact == 25 && goldn > 11) || epact == 24)
         epact++;
 
-    return (((((((Math.imul(((diy + epact) | 0), 6)) + 11) | 0) % 177) / 22) | 0) & 7);
+    return (((((((Math.imul(diy + epact, 6)) + 11) | 0) % 177) / 22) | 0) & 7);
 }
 
 /** C ref: calendar.c:215 @returns {CInt} */

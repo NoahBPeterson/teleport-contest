@@ -1319,8 +1319,8 @@ export function tele_to_rnd_pet() {
                 pet = mtmp;
         }
     if (pet && !m_next2u(pet)) {
-        let tx = i16(((((cptr.ldI16o(pet, $monst_mx) + rn2(3)) | 0) - 1) | 0));
-        let ty = i16(((((cptr.ldI16o(pet, $monst_my) + rn2(3)) | 0) - 1) | 0));
+        let tx = i16(((cptr.ldI16o(pet, $monst_mx) + rn2(3) - 1) | 0));
+        let ty = i16(((cptr.ldI16o(pet, $monst_my) + rn2(3) - 1) | 0));
 
         if (isok(tx, ty) && teleok(tx, ty, 0))
             teleds(tx, ty, NHM.TELEDS_TELEPORT);
@@ -1555,7 +1555,7 @@ export function dotelecmd() {
     cptr.stI64o2(u, NHC.TELEPORT, $sizeof_prop, $you_uprops, save_ETele);
     if (added != 0 || hidden != 0)
         /* can't both be non-NOOP so addition will yield the non-NOOP one */
-        void tport_spell((((added + hidden) | 0) - 0) | 0);
+        void tport_spell((added + hidden - 0) | 0);
 
     return res ? NHM.ECMD_TIME : NHM.ECMD_OK;
 }
@@ -1946,13 +1946,13 @@ export function level_tele() {
          * we let negative values requests fall into the "heaven" handling.
          */
         if (In_quest(cptr.add(u, $you_uz)) && newlev > 0)
-            newlev = (((newlev +
+            newlev = (newlev +
                 cptr.ldI32o2(
                     svd,
                     cptr.ldI16o(u, $you_uz),
                     $sizeof_dungeon,
                     $dungeon_depth_start
-                )) | 0) - 1) |
+                ) - 1) |
                     0;
         __pc = 3;
         continue;
@@ -2109,13 +2109,13 @@ export function level_tele() {
                             $instance_globals_saved_d_dungeon_topology +
                                 $dgn_topology_d_sanctum_level
                         ));
-            deepest = (((cptr.ldI32o2(
+            deepest = (cptr.ldI32o2(
                 svd,
                 cptr.ldI16(qbranch),
                 $sizeof_dungeon,
                 $dungeon_depth_start
             ) +
-                dunlevs_in_dungeon(qbranch)) | 0) - 1) |
+                dunlevs_in_dungeon(qbranch) - 1) |
                     0;
 
             /* if invocation did not yet occur, teleporting into
@@ -3234,22 +3234,22 @@ export function random_teleport_level() {
             $dungeon_depth_start
         );
         max_depth = (bottom +
-            ((cptr.ldI32o2(
+            (cptr.ldI32o2(
                 svd,
                 cptr.ldI16o(u, $you_uz),
                 $sizeof_dungeon,
                 $dungeon_depth_start
-            ) - 1) | 0)) |
+            ) - 1)) |
                 0;
     } else {
         min_depth = 1;
         max_depth = (dunlevs_in_dungeon(cptr.add(u, $you_uz)) +
-            ((cptr.ldI32o2(
+            (cptr.ldI32o2(
                 svd,
                 cptr.ldI16o(u, $you_uz),
                 $sizeof_dungeon,
                 $dungeon_depth_start
-            ) - 1) | 0)) |
+            ) - 1)) |
                 0;
         /* can't reach Sanctum if the invocation hasn't been performed */
         if (In_hell(cptr.add(u, $you_uz)) && !(cptr.ldI32o(u, $you_uevent + $u_event_invoked) & 1))
@@ -3258,7 +3258,7 @@ export function random_teleport_level() {
 
     /* Get a random value relative to the current dungeon */
     /* Range is 1 to current+3, current not counting */
-    nlev = (rn2((((cur_depth + 3) | 0) - min_depth) | 0) + min_depth) | 0;
+    nlev = (rn2((cur_depth + 3 - min_depth) | 0) + min_depth) | 0;
     if (nlev >= cur_depth)
         nlev++;
 

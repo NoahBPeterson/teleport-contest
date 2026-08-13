@@ -865,7 +865,7 @@ function* use_towel(obj) {
         switch (rn2(3)) {
             case 2:
             old = (Glib() & 16777215n);
-            (yield* make_glib((Number(BigInt.asIntN(32, old)) + ((rn2(10) + 3) | 0)) | 0));  /* + 3..12 */
+            (yield* make_glib((Number(BigInt.asIntN(32, old)) + (rn2(10) + 3)) | 0));  /* + 3..12 */
             (yield* Your(
                 __s_s_s,
                 (yield* makeplural((yield* body_part(NHC.HAND)))),
@@ -890,10 +890,7 @@ function* use_towel(obj) {
                 (yield* make_blinded(
                     BigInt.asIntN(
                         64,
-                        BigInt.asIntN(
-                            64,
-                            BlindedTimeout() + BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0)
-                        ) - old
+                        BlindedTimeout() + BigInt(cptr.ldI32o(u, $you_ucreamed) >>> 0) - old
                     ),
                     1
                 ));
@@ -1685,7 +1682,7 @@ function* magic_whistled(obj) {
     if (!already_discovered) {
         /* message(s) were handled by rloc(); if only noticeable change was
            pet(s) disappearing, the magic whistle won't become discovered */
-        if (((((shift + appear) | 0) + trapped) | 0) > 0)
+        if (((shift + appear + trapped) | 0) > 0)
             (yield* discover_object((cptr.ldI16o(obj, $obj_otyp)), 1, 1, 1));
     } else {
         /* magic whistle is already discovered so rloc() message(s)
@@ -3490,7 +3487,7 @@ function* display_jump_positions(on_off) {
 
     if (on_off) {
         /* on */
-        (yield* tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))));
+        (yield* tmp_at(-1, (i16(((((NHC.S_goodpos) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0))))));
         for (dx = -4; dx <= 4; dx++)
             for (dy = -4; dy <= 4; dy++) {
                 x = i16(((dx + cptr.ldI16(u)) | 0));
@@ -4383,11 +4380,11 @@ function* use_grease(obj) {
                         $permonst_mflags1
                     ) &
                         8192n) != 0n)) {
-                (yield* make_glib((oldglib + ((rn2(6) + 10) | 0)) | 0));  /* + 10..15 */
+                (yield* make_glib((oldglib + (rn2(6) + 10)) | 0));  /* + 10..15 */
                 (yield* pline(__s_some_of_the_grease_gets_all_over_your_s, (yield* fingers_or_gloves(1))));
             }
         } else {
-            (yield* make_glib((oldglib + ((rn2(11) + 5) | 0)) | 0));  /* + 5..15 */
+            (yield* make_glib((oldglib + (rn2(11) + 5)) | 0));  /* + 5..15 */
             (yield* You(__s_coat_your_s_with_grease, (yield* fingers_or_gloves(1))));
         }
     } else {
@@ -4871,7 +4868,7 @@ export function* use_whip(obj) {
         if ((acurr(NHC.A_DEX)) < 6)
             proficient--;
         else if ((acurr(NHC.A_DEX)) >= 14)
-            proficient = (proficient + (((acurr(NHC.A_DEX)) - 14) | 0)) | 0;
+            proficient = (proficient + ((acurr(NHC.A_DEX)) - 14)) | 0;
         if (Fumbling())
             --proficient;
         if (proficient > 3)
@@ -4984,7 +4981,7 @@ export function* use_whip(obj) {
                     return NHM.ECMD_TIME;
                 }
             }
-            dam = (((rnd(2) + dbon()) | 0) + cptr.ld1so(obj, $obj_spe)) | 0;
+            dam = (rnd(2) + dbon() + cptr.ld1so(obj, $obj_spe)) | 0;
             if (dam <= 0)
                 dam = 1;
             (yield* You(__s_hit_your_s_with_your_bullwhip, (yield* body_part(NHC.FOOT))));
@@ -5400,7 +5397,7 @@ function* display_polearm_positions(on_off) {
 
     if (on_off) {
         /* on */
-        (yield* tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))));
+        (yield* tmp_at(-1, (i16(((((NHC.S_goodpos) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0))))));
         for (dx = -3; dx <= 3; dx++)
             for (dy = -3; dy <= 3; dy++) {
                 x = i16(((dx + cptr.ldI16(u)) | 0));
@@ -5939,7 +5936,7 @@ function* display_grapple_positions(on_off) {
 
     if (on_off) {
         /* on */
-        (yield* tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))));
+        (yield* tmp_at(-1, (i16(((((NHC.S_goodpos) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0))))));
         for (dx = -3; dx <= 3; dx++)
             for (dy = -3; dy <= 3; dy++) {
                 x = i16(((dx + cptr.ldI16(u)) | 0));
@@ -6202,7 +6199,7 @@ function* use_grapple(obj) {
             (yield* You(__s_hook_yourself));
             (yield* losehp(
                 ((Half_physical_damage())
-                    ? (((((((rn2(10) + 10) | 0)) + 1) | 0) / 2) | 0)
+                    ? ((((rn2(10) + 10 + 1) | 0) / 2) | 0)
                     : (((rn2(10) + 10) | 0))),
                 __s_a_grappling_hook,
                 NHM.KILLED_BY

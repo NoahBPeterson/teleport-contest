@@ -2527,11 +2527,7 @@ function offer_different_alignment_altar(otmp, altaralign) {
                     BigInt(rnd(cptr.ldI32o(u, $you_ualign + $align_record))) >
                         (BigInt.asIntN(
                             64,
-                            3n *
-                                (BigInt.asIntN(
-                                    64,
-                                    10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n)
-                                ))
+                            3n * (10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n))
                         )) / 4n)
                 summon_minion(altaralign, 1);
             /* anger priest; test handles bones files */
@@ -2546,11 +2542,7 @@ function offer_different_alignment_altar(otmp, altaralign) {
                     BigInt(rnd(cptr.ldI32o(u, $you_ualign + $align_record))) >
                         (BigInt.asIntN(
                             64,
-                            7n *
-                                (BigInt.asIntN(
-                                    64,
-                                    10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n)
-                                ))
+                            7n * (10n + (cptr.ldI64o(svm, $instance_globals_saved_m_moves) / 200n))
                         )) / 8n)
                 summon_minion(altaralign, 1);
         }

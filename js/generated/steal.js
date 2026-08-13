@@ -177,17 +177,17 @@ export function somegold(lmoney) {
     if (igold < 50)
         ;  /* all gold */
     else if (igold < 100)
-        igold = ((rn2((((igold - 25) | 0) + 1) | 0) + 25) | 0);
+        igold = ((rn2((igold - 25 + 1) | 0) + 25) | 0);
     else if (igold < 500)
-        igold = ((rn2((((igold - 50) | 0) + 1) | 0) + 50) | 0);
+        igold = ((rn2((igold - 50 + 1) | 0) + 50) | 0);
     else if (igold < 1000)
-        igold = ((rn2((((igold - 100) | 0) + 1) | 0) + 100) | 0);
+        igold = ((rn2((igold - 100 + 1) | 0) + 100) | 0);
     else if (igold < 5000)
-        igold = ((rn2((((igold - 500) | 0) + 1) | 0) + 500) | 0);
+        igold = ((rn2((igold - 500 + 1) | 0) + 500) | 0);
     else if (igold < 10000)
-        igold = ((rn2((((igold - 1000) | 0) + 1) | 0) + 1000) | 0);
+        igold = ((rn2((igold - 1000 + 1) | 0) + 1000) | 0);
     else
-        igold = ((rn2((((igold - 5000) | 0) + 1) | 0) + 5000) | 0);
+        igold = ((rn2((igold - 5000 + 1) | 0) + 5000) | 0);
 
     return BigInt(igold);
 }
@@ -265,11 +265,8 @@ export function stealgold(mtmp) {
 
         tmp = (BigInt.asIntN(
             64,
-            BigInt.asIntN(
-                64,
-                somegold(money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent))) +
-                    BigInt(gold_price)
-            ) - 1n
+            somegold(money_cnt(cptr.ldPtro(gi, $instance_globals_i_invent))) +
+                BigInt(gold_price) - 1n
         )) /
                 BigInt(gold_price);
         tmp = min(tmp, cptr.ldI64o(ygold, $obj_quan));

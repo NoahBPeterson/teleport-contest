@@ -1519,8 +1519,7 @@ export function doopen_indir(x, y) {
     }
 
     /* door is known to be CLOSED */
-    if (rnl(20) <
-            (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
+    if (rnl(20) < (((((acurrstr()) + (acurr(NHC.A_DEX)) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
         set_msg_xy(cptr.ldI16(cc), cptr.ldI16o(cc, $nhcoord_y));
         pline_The(__s_door_opens);
         if (((cptr.ldI32o(door, $rm_flags) & 31) | 0) & NHM.D_TRAPPED) {
@@ -1690,8 +1689,7 @@ export function doclose() {
         }
         if (cptr.ldPtro(u, $you_usteed) ||
                 rn2(25) <
-                    (((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) +
-                        (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
+                    (((((acurrstr()) + (acurr(NHC.A_DEX)) + (acurr(NHC.A_CON))) | 0) / 3) | 0)) {
             pline_The(__s_door_closes);
             cptr.stI32o(door, $rm_flags, NHM.D_CLOSED);
             feel_newsym(x, y);  /* the hero knows she closed it */

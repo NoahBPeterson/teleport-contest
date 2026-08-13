@@ -2235,8 +2235,8 @@ function trquan(trop) {
     if (!cptr.ld1so(trop, $trobj_trquan_min))
         return 1n;
     return BigInt(((cptr.ld1so(trop, $trobj_trquan_min) +
-            rn2((((cptr.ld1so(trop, $trobj_trquan_max) -
-                cptr.ld1so(trop, $trobj_trquan_min)) | 0) + 1) | 0)) | 0));
+            rn2((cptr.ld1so(trop, $trobj_trquan_max) -
+                cptr.ld1so(trop, $trobj_trquan_min) + 1) | 0)) | 0));
 }
 
 /* create random object of certain class, filtering out too powerful items */

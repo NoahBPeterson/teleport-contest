@@ -2712,9 +2712,9 @@ export function color_distance(rgb1, rgb2) {
     let r = (r1 - r2) | 0;
     let g = (g1 - g2) | 0;
     let b = (b1 - b2) | 0;
-    return ((((((Math.imul(Math.imul(((512 + rmean) | 0), r), r)) >> 8) +
-        Math.imul(Math.imul(4, g), g)) | 0) +
-            ((Math.imul(Math.imul(((767 - rmean) | 0), b), b)) >> 8)) | 0);
+    return ((((Math.imul(Math.imul(512 + rmean, r), r)) >> 8) +
+            Math.imul(Math.imul(4, g), g) +
+            ((Math.imul(Math.imul(767 - rmean, b), b)) >> 8)) | 0);
 }
 
 /**

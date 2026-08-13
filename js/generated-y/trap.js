@@ -5924,11 +5924,11 @@ function* mkroll_launch(ttmp, x, y, otyp, ocount) {
     cptr.stI16o(ttmp, $trap_launch, cptr.ldI16(cc));
     cptr.stI16o(ttmp, $trap_launch + $nhcoord_y, cptr.ldI16o(cc, $nhcoord_y));
     if (((cptr.ldI32o(ttmp, $trap_ttyp) & 31) | 0) == NHC.ROLLING_BOULDER_TRAP) {
-        cptr.stI16o(ttmp, $trap_vl, i16(((x - ((cptr.ldI16(cc) - x) | 0)) | 0)));
+        cptr.stI16o(ttmp, $trap_vl, i16(((x - (cptr.ldI16(cc) - x)) | 0)));
         cptr.stI16o(
             ttmp,
             $trap_vl + $nhcoord_y,
-            i16(((y - ((cptr.ldI16o(cc, $nhcoord_y) - y) | 0)) | 0))
+            i16(((y - (cptr.ldI16o(cc, $nhcoord_y) - y)) | 0))
         );
     } else
         cptr.stI16o(ttmp, $trap_vl, otyp);
@@ -9068,9 +9068,7 @@ export function* untrap(force, rx, ry, container) {
         $instance_globals_saved_l_level + $rm_flags
     ) & 31) | 0) &
         NHM.D_TRAPPED) != 0 &&
-        (force ||
-            (!confused &&
-                rn2((((NHM.MAXULEV - cptr.ldI32o(u, $you_ulevel)) | 0) + 11) | 0) < 10))) ||
+        (force || (!confused && rn2((NHM.MAXULEV - cptr.ldI32o(u, $you_ulevel) + 11) | 0) < 10))) ||
             (!force && confused && !rn2(3))) {
         (yield* You(__s_find_a_trap_on_the_door));
         (yield* exercise(NHC.A_WIS, 1));
@@ -9931,7 +9929,7 @@ function* thitm(tlev, mon, obj, d_override, nocorpse) {
     if (d_override)
         strike = 1;
     else if (obj)
-        strike = (((((find_mac(mon) + tlev) | 0) + cptr.ld1so(obj, $obj_spe)) | 0) <= rnd(20));
+        strike = (((find_mac(mon) + tlev + cptr.ld1so(obj, $obj_spe)) | 0) <= rnd(20));
     else
         strike = (((find_mac(mon) + tlev) | 0) <= rnd(20));
 
@@ -10369,7 +10367,7 @@ export function* lava_effects() {
             /* if not fire resistant, sink_into_lava() will quickly be fatal;
                hero needs to escape immediately */
             set_utrap(
-                ((((rn2(4) + 4) | 0) + ((boil_away ? 2 : ((rn2(4) + 12) | 0)) << 8)) | 0) >>> 0,
+                ((rn2(4) + 4 + ((boil_away ? 2 : ((rn2(4) + 12) | 0)) << 8)) | 0) >>> 0,
                 NHC.TT_LAVA
             );
             (yield* You(
@@ -10486,13 +10484,13 @@ function* maybe_finish_sokoban() {
         if (!t) {
             /* for livelog to report the sokoban depth in the way that
                players tend to think about it: 1 for entry level, 4 for top */
-            let sokonum = (((cptr.ldI16o2(
+            let sokonum = (cptr.ldI16o2(
                 svd,
                 cptr.ldI16o(u, $you_uz),
                 $sizeof_dungeon,
                 $dungeon_entry_lev
             ) -
-                cptr.ldI16o(u, $you_uz + $d_level_dlevel)) | 0) + 1) |
+                cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1) |
                     0;
 
             /* we've passed the last trap without finding a pit or hole;
@@ -10616,7 +10614,7 @@ export function* trapname(ttyp, override) {
     }
     return cptr.ldPtro2(
         defsyms,
-        ((((NHC.S_arrow_trap + (ttyp)) | 0) - 1) | 0),
+        ((NHC.S_arrow_trap + (ttyp) - 1) | 0),
         $sizeof_symdef,
         $symdef_explanation
     );

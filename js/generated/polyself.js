@@ -1460,7 +1460,7 @@ function newman() {
     let enmax;
 
     oldlvl = cptr.ldI32o(u, $you_ulevel);
-    newlvl = (oldlvl + ((rn2(5) + -2) | 0)) | 0;  /* new = old + {-2,-1,0,+1,+2} */
+    newlvl = (oldlvl + (rn2(5) + -2)) | 0;  /* new = old + {-2,-1,0,+1,+2} */
     if (newlvl > 127 || newlvl < 1) {
         {
             urgent_pline(__s_your_new_form_doesn_t_seem_healthy);
@@ -1482,11 +1482,7 @@ function newman() {
        adjustment; you might end up losing out on the chance
        to regain some levels previously lost to other causes. */
     if (newlvl < oldlvl)
-        cptr.stI32o(
-            u,
-            $you_ulevelmax,
-            (cptr.ldI32o(u, $you_ulevelmax) - ((oldlvl - newlvl) | 0)) | 0
-        );
+        cptr.stI32o(u, $you_ulevelmax, (cptr.ldI32o(u, $you_ulevelmax) - (oldlvl - newlvl)) | 0);
     if (cptr.ldI32o(u, $you_ulevelmax) < newlvl)
         cptr.stI32o(u, $you_ulevelmax, newlvl);
     cptr.stI32o(u, $you_ulevel, newlvl);

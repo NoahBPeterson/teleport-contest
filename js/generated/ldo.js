@@ -598,8 +598,7 @@ function rethook(L, ci, nres) {
         if ((!(cptr.ldU16o((ci), $CallInfo_callstatus) & 2))) {
             let p = cptr.ldPtro((((((((cptr.ldPtr(((((cptr.ldPtr((ci)))))))))))))), $LClosure_p);
             if (cptr.ld1uo(p, $Proto_is_vararg))
-                delta = (((cptr.ldI32o(ci, $CallInfo_u + 12) +
-                    cptr.ld1uo(p, $Proto_numparams)) | 0) + 1) |
+                delta = (cptr.ldI32o(ci, $CallInfo_u + 12) + cptr.ld1uo(p, $Proto_numparams) + 1) |
                         0;
         }
         cptr.stPtr(ci, cptr.add(cptr.ldPtr(ci), delta, 16));  /* if vararg, back to virtual 'func' */

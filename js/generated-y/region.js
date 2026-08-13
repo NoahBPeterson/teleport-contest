@@ -1657,7 +1657,7 @@ export function* inside_gas_cloud(p1, p2) {
             (yield* You(__s_cough_and_spit_blood));
             (yield* wake_nearto(cptr.ldI16(u), cptr.ldI16o(u, $you_uy), 2));
             dam = ((Half_physical_damage())
-                    ? ((((((rnd(dam) + 5) | 0) + 1) | 0) / 2) | 0)
+                    ? ((((rnd(dam) + 5 + 1) | 0) / 2) | 0)
                     : ((rnd(dam) + 5) | 0));
             if (Half_gas_damage())
                 dam = (((dam + 1) | 0) / 2) | 0;
@@ -1704,11 +1704,7 @@ export function* inside_gas_cloud(p1, p2) {
             }
             if ((yield* Resists_Elem(mtmp, NHC.POISON_RES)))
                 return 0;
-            cptr.stI32o(
-                mtmp,
-                $monst_mhp,
-                (cptr.ldI32o(mtmp, $monst_mhp) - ((rnd(dam) + 5) | 0)) | 0
-            );
+            cptr.stI32o(mtmp, $monst_mhp, (cptr.ldI32o(mtmp, $monst_mhp) - (rnd(dam) + 5)) | 0);
             if ((cptr.ldI32o((mtmp), $monst_mhp) < 1)) {
                 if ((!((cptr.ldI32o((reg), $NhRegion_player_flags) & NHM.REG_NOT_HEROS) >>> 0)))
                     (yield* killed(mtmp));
@@ -1767,7 +1763,8 @@ function* make_gas_cloud(cloud, damage, inside_cloud) {
         (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_stone)
             ? NHC.GLYPH_CMAP_STONE_OFF
             : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_trwall)
-                ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_vwall) | 0) +
+                ? (((damage ? NHC.S_poisoncloud : NHC.S_cloud) -
+                    NHC.S_vwall +
                     (In_mines(cptr.add(u, $you_uz))
                         ? NHC.GLYPH_CMAP_MINES_OFF
                         : (In_hell(cptr.add(u, $you_uz))
@@ -1798,17 +1795,19 @@ function* make_gas_cloud(cloud, damage, inside_cloud) {
                                     ? NHC.GLYPH_CMAP_SOKO_OFF
                                     : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                 : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) < NHC.S_altar)
-                    ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_ndoor) | 0) +
+                    ? (((damage ? NHC.S_poisoncloud : NHC.S_cloud) -
+                        NHC.S_ndoor +
                         NHC.GLYPH_CMAP_A_OFF) | 0)
                     : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) == NHC.S_altar)
                         ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
                         : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <
-                            ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                            ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) - NHC.S_grave) | 0) +
+                            ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                            ? (((damage ? NHC.S_poisoncloud : NHC.S_cloud) -
+                                NHC.S_grave +
                                 NHC.GLYPH_CMAP_B_OFF) | 0)
                             : (((damage ? NHC.S_poisoncloud : NHC.S_cloud) <= NHC.S_goodpos)
-                                ? (((((damage ? NHC.S_poisoncloud : NHC.S_cloud) -
-                                    NHC.S_digbeam) | 0) +
+                                ? (((damage ? NHC.S_poisoncloud : NHC.S_cloud) -
+                                    NHC.S_digbeam +
                                     NHC.GLYPH_CMAP_C_OFF) | 0)
                                 : NHC.MAX_GLYPH))))))
     );

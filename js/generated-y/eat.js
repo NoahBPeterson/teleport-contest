@@ -2834,7 +2834,7 @@ function* consume_tin(mesg) {
                slippery when eating a greasy tin, but we'll go with that... */
             let alreadyglib = Number(BigInt.asIntN(32, (Glib() & 16777215n)));
 
-            (yield* make_glib((alreadyglib + ((rn2(11) + 5) | 0)) | 0));  /* 5..15 */
+            (yield* make_glib((alreadyglib + (rn2(11) + 5)) | 0));  /* 5..15 */
             (yield* pline(
                 __s_eating_s_food_made_your_s_s_slippery,
                 cptr.ldPtro(tintxts, r, 24),

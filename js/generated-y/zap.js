@@ -4334,7 +4334,7 @@ export function* zapyourself(obj, ordinary) {
 /* called when poly'd hero uses breath attack against self */
 /** C ref: zap.c:3017 — @param {CPtr<struct attack>} mattk */
 export function* ubreatheu(mattk) {
-    let dtyp = (((20 + cptr.ld1uo(mattk, $attack_adtyp)) | 0) - 1) | 0;  /* breath by hero */
+    let dtyp = (20 + cptr.ld1uo(mattk, $attack_adtyp) - 1) | 0;  /* breath by hero */
 
     (yield* zhitu(
         dtyp,
@@ -5094,7 +5094,7 @@ function spell_hit_bonus(skill) {
         hit_bon = (hit_bon - 0) | 0;
     else
         /* Even increment for dexterous heroes (see weapon.c abon) */
-        hit_bon = (hit_bon + ((dex - 14) | 0)) | 0;
+        hit_bon = (hit_bon + (dex - 14)) | 0;
 
     return hit_bon;
 }
@@ -5551,10 +5551,7 @@ export function* bhit(ddx, ddy, range, weapon, fhitm, fhito, pobj) {
         }
 
         if (weapon == NHC.FLASHED_LIGHT) {
-            (yield* tmp_at(
-                -1,
-                (i16(((((((NHC.S_flashbeam) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))
-            ));
+            (yield* tmp_at(-1, (i16(((((NHC.S_flashbeam) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0))))));
         } else if (weapon == NHC.THROWN_TETHERED_WEAPON && obj) {
             tethered_weapon = 1;
             weapon = NHC.THROWN_WEAPON;  /* simplify 'if's that follow below */
@@ -6332,7 +6329,8 @@ export function* boomhit(obj, dx, dy) {
         i16((((boom) == NHC.S_stone)
             ? NHC.GLYPH_CMAP_STONE_OFF
             : (((boom) <= NHC.S_trwall)
-                ? (((((boom) - NHC.S_vwall) | 0) +
+                ? (((boom) -
+                    NHC.S_vwall +
                     (In_mines(cptr.add(u, $you_uz))
                         ? NHC.GLYPH_CMAP_MINES_OFF
                         : (In_hell(cptr.add(u, $you_uz))
@@ -6363,13 +6361,13 @@ export function* boomhit(obj, dx, dy) {
                                     ? NHC.GLYPH_CMAP_SOKO_OFF
                                     : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                 : (((boom) < NHC.S_altar)
-                    ? (((((boom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                    ? (((boom) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                     : (((boom) == NHC.S_altar)
                         ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
-                        : (((boom) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                            ? (((((boom) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                        : (((boom) < ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                            ? (((boom) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
                             : (((boom) <= NHC.S_goodpos)
-                                ? (((((boom) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)
+                                ? (((boom) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0)
                                 : NHC.MAX_GLYPH)))))))
     ));
     for (ct = 0; ct < 10; ct++) {
@@ -6380,7 +6378,8 @@ export function* boomhit(obj, dx, dy) {
             i16((((boom) == NHC.S_stone)
                 ? NHC.GLYPH_CMAP_STONE_OFF
                 : (((boom) <= NHC.S_trwall)
-                    ? (((((boom) - NHC.S_vwall) | 0) +
+                    ? (((boom) -
+                        NHC.S_vwall +
                         (In_mines(cptr.add(u, $you_uz))
                             ? NHC.GLYPH_CMAP_MINES_OFF
                             : (In_hell(cptr.add(u, $you_uz))
@@ -6411,13 +6410,13 @@ export function* boomhit(obj, dx, dy) {
                                         ? NHC.GLYPH_CMAP_SOKO_OFF
                                         : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
                     : (((boom) < NHC.S_altar)
-                        ? (((((boom) - NHC.S_ndoor) | 0) + NHC.GLYPH_CMAP_A_OFF) | 0)
+                        ? (((boom) - NHC.S_ndoor + NHC.GLYPH_CMAP_A_OFF) | 0)
                         : (((boom) == NHC.S_altar)
                             ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
-                            : (((boom) < ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                ? (((((boom) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                            : (((boom) < ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                ? (((boom) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
                                 : (((boom) <= NHC.S_goodpos)
-                                    ? (((((boom) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0)
+                                    ? (((boom) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0)
                                     : NHC.MAX_GLYPH)))))))
         ));  /* change glyph */
         dx = cptr.ld1so(cptr.decay(xdir), i, 1);
@@ -7816,7 +7815,7 @@ export function* start_melt_ice_timeout(x, y, min_time) {
 
     /* random timeout; surrounding ice locations ought to be a factor... */
     while (++when <= 2000)
-        if (!rn2((((2000 - when) | 0) + 50) | 0))
+        if (!rn2((2000 - when + 50) | 0))
             break;
 
     /* if we're within MAX_ICE_TIME, install a melt timer;
@@ -9144,7 +9143,7 @@ export function* resist(mtmp, oclass, damage, tell) {
     else if (dlev < 1)
         dlev = is_mplayer(cptr.ldPtro(mtmp, $monst_data)) ? cptr.ldI32o(u, $you_ulevel) : 1;
 
-    resisted = rn2((((100 + alev) | 0) - dlev) | 0) <
+    resisted = rn2((100 + alev - dlev) | 0) <
             cptr.ld1so(cptr.ldPtro(mtmp, $monst_data), $permonst_mr);
     if (resisted) {
         if (tell)
@@ -9543,11 +9542,7 @@ export function* makewish() {
 
         /* The(aobjnam()) is safe since otmp is unidentified -dlc */
         void (yield* hold_another_object(otmp, oops_msg, (yield* The((yield* aobjnam(otmp, verb)))), null));
-        cptr.stI32o(
-            u,
-            $you_ublesscnt,
-            (cptr.ldI32o(u, $you_ublesscnt) + ((rn2(100) + 50) | 0)) | 0
-        );  /* the gods take notice */
+        cptr.stI32o(u, $you_ublesscnt, (cptr.ldI32o(u, $you_ublesscnt) + (rn2(100) + 50)) | 0);  /* the gods take notice */
         break __lbl_retry;
     }
 }

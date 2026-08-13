@@ -763,7 +763,7 @@ function* learn() {
                 (yield* You(
                     __s_add_s_to_your_repertoire_as_c,
                     cptr.decay(splname),
-                    (schar(((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0))))
+                    (schar(((i < 26) ? ((97 + i) | 0) : ((65 + i - 26) | 0))))
                 ));
         }
     }
@@ -952,12 +952,12 @@ export function* study_book(spellbook) {
                 too_hard = 1;
             } else {
                 /* uncursed - chance to fail */
-                let read_ability = ((((((((acurr(NHC.A_INT)) + 4) | 0) +
-                    ((cptr.ldI32o(u, $you_ulevel) / 2) | 0)) | 0) -
+                let read_ability = ((acurr(NHC.A_INT)) + 4 +
+                    ((cptr.ldI32o(u, $you_ulevel) / 2) | 0) -
                     Math.imul(
                         2,
                         cptr.ld1so2(objects, booktype, $sizeof_objclass, $objclass_oc_oc2)
-                    )) | 0) +
+                    ) +
                     ((ublindf.v && cptr.ldI16o(ublindf.v, $obj_otyp) == NHC.LENSES) ? 2 : 0)) |
                         0;
 
@@ -1146,11 +1146,11 @@ function* getspell(spell_no) {
         if (nspells == 1)
             void cptr.strcpy(cptr.decay(lets), __s_a);
         else if (nspells < 27)
-            void cptr.sprintf(cptr.decay(lets), __s_a_c, (((97 + nspells) | 0) - 1) | 0);
+            void cptr.sprintf(cptr.decay(lets), __s_a_c, (97 + nspells - 1) | 0);
         else if (nspells == 27)
             void cptr.strcpy(cptr.decay(lets), __s_a_za);
         else
-            void cptr.sprintf(cptr.decay(lets), __s_a_za_c, (((65 + nspells) | 0) - 27) | 0);
+            void cptr.sprintf(cptr.decay(lets), __s_a_za_c, (65 + nspells - 27) | 0);
 
         nh_snprintf(
             __s_getspell,
@@ -1241,9 +1241,7 @@ export function* docast() {
     if ((yield* getspell(spell_no))) {
         (yield* cmdq_add_key(
             NHC.CQ_REPEAT,
-            (schar(((spell_no.v < 26)
-                ? ((97 + spell_no.v) | 0)
-                : ((((65 + spell_no.v) | 0) - 26) | 0))))
+            (schar(((spell_no.v < 26) ? ((97 + spell_no.v) | 0) : ((65 + spell_no.v - 26) | 0))))
         ));
         return (yield* spelleffects(cptr.ldI16o(svs, spell_no.v, $sizeof_spell), 0, 0));
     }
@@ -1751,7 +1749,7 @@ function* cast_protection() {
 /** C ref: spell.c:1181 — @param {CInt} spell */
 function* spell_backfire(spell) {
     let duration = BigInt((Math.imul(
-        ((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) + 1) | 0),
+        cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) + 1,
         3
     )));
     let old_stun = (HStun() & 16777215n);
@@ -2035,14 +2033,14 @@ export function* spelleffects(spell_otyp, atme, force) {
                         (yield* explode(
                             i16(cptr.ldI32o(u, $you_dx)),
                             i16(cptr.ldI32o(u, $you_dy)),
-                            (((otyp - NHC.SPE_MAGIC_MISSILE) | 0) + 10) | 0,
+                            (otyp - NHC.SPE_MAGIC_MISSILE + 10) | 0,
                             spell_damage_bonus((((cptr.ldI32o(u, $you_ulevel) / 2) | 0) + 1) | 0),
                             0,
                             (otyp == NHC.SPE_CONE_OF_COLD) ? NHC.EXPL_FROSTY : NHC.EXPL_FIERY
                         ));
                     }
-                    cptr.stI32o(u, $you_dx, (((cptr.ldI16(cc) + rnd(3)) | 0) - 2) | 0);
-                    cptr.stI32o(u, $you_dy, (((cptr.ldI16o(cc, $nhcoord_y) + rnd(3)) | 0) - 2) | 0);
+                    cptr.stI32o(u, $you_dx, (cptr.ldI16(cc) + rnd(3) - 2) | 0);
+                    cptr.stI32o(u, $you_dy, (cptr.ldI16o(cc, $nhcoord_y) + rnd(3) - 2) | 0);
                     if (!isok(i16(cptr.ldI32o(u, $you_dx)), i16(cptr.ldI32o(u, $you_dy))) ||
                             !((cptr.ld1uo(
                                 cptr.ldPtro(
@@ -2295,7 +2293,7 @@ function* display_spell_target_positions(on_off) {
 
     if (on_off) {
         /* on */
-        (yield* tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))));
+        (yield* tmp_at(-1, (i16(((((NHC.S_goodpos) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0))))));
         for (dx = i16((-dist)); dx <= dist; dx++)
             for (dy = i16((-dist)); dy <= dist; dy++) {
                 x = i16(((cptr.ldI16(u) + dx) | 0));
@@ -2775,9 +2773,7 @@ export function* dovspell() {
                 void cptr.sprintf(
                     cptr.decay(qbuf),
                     __s_reordering_spells_swap_c_with,
-                    (schar(((splnum.v < 26)
-                        ? ((97 + splnum.v) | 0)
-                        : ((((65 + splnum.v) | 0) - 26) | 0))))
+                    (schar(((splnum.v < 26) ? ((97 + splnum.v) | 0) : ((65 + splnum.v - 26) | 0))))
                 );
                 if (!(yield* dospellmenu(cptr.decay(qbuf), splnum.v, othnum)))
                     break;
@@ -2903,7 +2899,7 @@ function* dospellmenu(prompt, splaction, spell_no) {
             tmpwin,
             nul_glyphinfo.v,
             any,
-            (schar(((splnum < 26) ? ((97 + splnum) | 0) : ((((65 + splnum) | 0) - 26) | 0)))),
+            (schar(((splnum < 26) ? ((97 + splnum) | 0) : ((65 + splnum - 26) | 0)))),
             0,
             NHM.ATR_NONE,
             clr,
@@ -3035,8 +3031,8 @@ function* percent_success(spell) {
      */
     skill = (cptr.ldI16o2(u, skilltype, $sizeof_skills, $you_weapon_skills));
     skill = (((skill) > NHC.P_UNSKILLED ? (skill) : NHC.P_UNSKILLED) - 1) | 0;  /* unskilled => 0 */
-    difficulty = (Math.imul(((cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) - 1) | 0), 4) -
-        (((((Math.imul(skill, 6)) + ((cptr.ldI32o(u, $you_ulevel) / 3) | 0)) | 0) + 1) | 0)) |
+    difficulty = (Math.imul(cptr.ldI16o2(svs, spell, $sizeof_spell, $spell_sp_lev) - 1, 4) -
+        ((Math.imul(skill, 6)) + ((cptr.ldI32o(u, $you_ulevel) / 3) | 0) + 1)) |
             0;
 
     if (difficulty > 0) {
@@ -3090,7 +3086,7 @@ function* percent_success(spell) {
      * a player is, intrinsics and encumbrance can prevent casting;
      * and no matter how able, learning is always required.
      */
-    chance = (((Math.imul(chance, ((20 - splcaster) | 0)) / 15) | 0) - splcaster) | 0;
+    chance = (((Math.imul(chance, 20 - splcaster) / 15) | 0) - splcaster) | 0;
 
     /* Clamp to percentile */
     if (chance > 100)
@@ -3144,16 +3140,8 @@ function spellretention(idx, outbuf) {
                 ? 2n
                 : ((skill == NHC.P_SKILLED) ? 5n : ((skill == NHC.P_BASIC) ? 10n : 25n));
         /* round up to the high end of this range */
-        percent = BigInt.asIntN(
-            64,
-            accuracy * (BigInt.asIntN(64, (BigInt.asIntN(64, percent - 1n)) / accuracy + 1n))
-        );
-        void cptr.sprintf(
-            outbuf,
-            __s_ld_ld,
-            BigInt.asIntN(64, BigInt.asIntN(64, percent - accuracy) + 1n),
-            percent
-        );
+        percent = BigInt.asIntN(64, accuracy * ((BigInt.asIntN(64, percent - 1n)) / accuracy + 1n));
+        void cptr.sprintf(outbuf, __s_ld_ld, BigInt.asIntN(64, percent - accuracy + 1n), percent);
     }
     return outbuf;
 }
@@ -3249,7 +3237,7 @@ export function* force_learn_spell(otyp) {
         i16(cptr.ld1so2(objects, otyp, $sizeof_objclass, $objclass_oc_oc2))
     );
     (cptr.stI32o2(svs, i, $sizeof_spell, $spell_sp_know, 20000));
-    return (schar(((i < 26) ? ((97 + i) | 0) : ((((65 + i) | 0) - 26) | 0))));
+    return (schar(((i < 26) ? ((97 + i) | 0) : ((65 + i - 26) | 0))));
 }
 
 /* number of spells hero knows */

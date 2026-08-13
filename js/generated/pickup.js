@@ -2627,12 +2627,9 @@ function carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
             BigInt(wt) -
                 (BigInt.asIntN(
                     64,
-                    BigInt.asIntN(
-                        64,
-                        ((BigInt.asIntN(64, (umoney) + 50n)) / 100n) +
-                            ((BigInt.asIntN(64, (count) + 50n)) / 100n)
-                    ) -
-                        ((BigInt.asIntN(64, (BigInt.asIntN(64, umoney + count)) + 50n)) / 100n)
+                    ((BigInt.asIntN(64, (umoney) + 50n)) / 100n) +
+                        ((BigInt.asIntN(64, (count) + 50n)) / 100n) -
+                        ((BigInt.asIntN(64, umoney + count + 50n)) / 100n)
                 ))
         ));
     if (count != savequan) {
@@ -2649,16 +2646,10 @@ function carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
     if (is_gold) {
         iw = (iw - Number(BigInt.asIntN(32, ((BigInt.asIntN(64, (umoney) + 50n)) / 100n)))) | 0;
         if (!adjust_wt) {
-            qq = (BigInt.asIntN(
-                64,
-                BigInt.asIntN(
-                    64,
-                    (BigInt.asIntN(64, (BigInt(iw)) * -100n)) - (BigInt.asIntN(64, (umoney) + 50n))
-                ) - 1n
-            ));
+            qq = (BigInt.asIntN(64, (BigInt(iw)) * -100n - ((umoney) + 50n) - 1n));
         } else {
             oow = 0;
-            qq = BigInt.asIntN(64, BigInt.asIntN(64, 50n - (umoney % 100n)) - 1n);
+            qq = BigInt.asIntN(64, 50n - (umoney % 100n) - 1n);
             if (qq < 0n)
                 qq += 100n;
             for (; qq <= count; qq += 100n) {
@@ -2668,10 +2659,7 @@ function carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
                     $obj_owt,
                     Number(BigInt.asUintN(32, ((BigInt.asIntN(64, (qq) + 50n)) / 100n)))
                 );
-                ow = Number(BigInt.asIntN(
-                    32,
-                    ((BigInt.asIntN(64, (BigInt.asIntN(64, umoney + qq)) + 50n)) / 100n)
-                ));
+                ow = Number(BigInt.asIntN(32, ((BigInt.asIntN(64, umoney + qq + 50n)) / 100n)));
                 ow = (ow - delta_cwt(container, obj)) | 0;
                 if (((iw + ow) | 0) >= 0)
                     break;
@@ -2684,12 +2672,7 @@ function carry_count(obj, container, count, telekinesis, wt_before, wt_after) {
             qq = 0n;
         else if (qq > count)
             qq = count;
-        wt = (iw +
-            Number(BigInt.asIntN(
-                32,
-                ((BigInt.asIntN(64, (BigInt.asIntN(64, umoney + qq)) + 50n)) / 100n)
-            ))) |
-                0;
+        wt = (iw + Number(BigInt.asIntN(32, ((BigInt.asIntN(64, umoney + qq + 50n)) / 100n)))) | 0;
     } else if (count > 1n || count < cptr.ldI64o(obj, $obj_quan)) {
         /*
          * Ugh. Calc num to lift by changing the quan of the
@@ -3655,7 +3638,7 @@ function reverse_loot() {
         if (cptr.ld1so(goldob, $obj_oclass) == NHC.COIN_CLASS) {
             contribution = (BigInt.asIntN(
                 64,
-                BigInt.asIntN(64, BigInt(rnd(5)) * cptr.ldI64o(goldob, $obj_quan)) + 4n
+                BigInt(rnd(5)) * cptr.ldI64o(goldob, $obj_quan) + 4n
             )) /
                     5n;
             if (contribution < cptr.ldI64o(goldob, $obj_quan))

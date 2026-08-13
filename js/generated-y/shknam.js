@@ -1293,7 +1293,7 @@ function nameshk(shk, nlp) {
         let nseed = Number(BigInt.asIntN(32, (ubirthday.v / 257n)));
 
         name_wanted = (name_wanted +
-            ((((ledger_no(cptr.add(u, $you_uz)) + (nseed % 13)) | 0) - (nseed % 5)) | 0)) |
+            (ledger_no(cptr.add(u, $you_uz)) + (nseed % 13) - (nseed % 5))) |
                 0;
         if (name_wanted < 0)
             name_wanted = (name_wanted + 18) | 0;
@@ -1656,7 +1656,7 @@ function* shkinit(shp, sroom) {
     cptr.stI32o(eshkp, $eshk_billct, cptr.stI32o(eshkp, $eshk_visitct, 0));
     cptr.stPtro(eshkp, $eshk_bill_p, null);
     cptr.st1o2(eshkp, 0, 1, $eshk_customer, 0);
-    (yield* mkmonmoney(shk, BigInt.asIntN(64, 1000n + BigInt.asIntN(64, 30n * BigInt(rnd(100))))));  /* initial capital */
+    (yield* mkmonmoney(shk, BigInt.asIntN(64, 1000n + 30n * BigInt(rnd(100)))));  /* initial capital */
     if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shkrings))
         void (yield* mongets(shk, NHC.TOUCHSTONE));
     if (cptr.eq(cptr.ldPtro(shp, $shclass_shknms), shktools) ||

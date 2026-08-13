@@ -1497,7 +1497,7 @@ export function* recharge(obj, curse_bless) {
             if (is_cursed) {
                 (yield* stripspe(obj));
             } else {
-                n = (lim == 1) ? 1 : ((rn2(5) + ((((lim + 1) | 0) - 5) | 0)) | 0);
+                n = (lim == 1) ? 1 : ((rn2(5) + (lim + 1 - 5)) | 0);
                 if (!is_blessed)
                     n = rnd(n);
 
@@ -1877,7 +1877,7 @@ function* display_stinking_cloud_positions(on_off) {
 
     if (on_off) {
         /* on */
-        (yield* tmp_at(-1, (i16(((((((NHC.S_goodpos) - NHC.S_digbeam) | 0) + NHC.GLYPH_CMAP_C_OFF) | 0))))));
+        (yield* tmp_at(-1, (i16(((((NHC.S_goodpos) - NHC.S_digbeam + NHC.GLYPH_CMAP_C_OFF) | 0))))));
         for (dx = i16((-dist)); dx <= dist; dx++)
             for (dy = i16((-dist)); dy <= dist; dy++) {
                 x = i16(((cptr.ldI16(u) + dx) | 0));
@@ -2298,7 +2298,7 @@ function* seffect_confuse_monster(sobjp) {
                     cptr.ldI32o(u, $you_umconf) ? __s_an_even_more : __s_a,
                     hcolor(cptr.ldPtro(c_color_names, $c_color_names_c_red))
                 ));
-            incr = (incr + ((rn2(8) + 2) | 0)) | 0;
+            incr = (incr + (rn2(8) + 2)) | 0;
         }
         /* after a while, repeated uses become less effective */
         if (cptr.ldI32o(u, $you_umconf) >= 40)
@@ -2503,7 +2503,7 @@ function* seffect_create_monster(sobjp) {
     let confused = schar((HConfusion() != 0n));
 
     if ((yield* create_critters(
-        (((1 + ((confused || scursed) ? 12 : 0)) | 0) + ((sblessed || rn2(73)) ? 0 : rnd(4))) | 0,
+        (1 + ((confused || scursed) ? 12 : 0) + ((sblessed || rn2(73)) ? 0 : rnd(4))) | 0,
         confused ? cptr.add(mons, NHC.PM_ACID_BLOB, $sizeof_permonst) : null,
         0
     )))
@@ -2680,7 +2680,7 @@ function* seffect_light(sobjp) {
             let mon;
             let sawlights = 0;
             let i;
-            let numlights = (((rn2(2) + 3) | 0) + (Math.imul(sblessed, 2))) | 0;
+            let numlights = (rn2(2) + 3 + (Math.imul(sblessed, 2))) | 0;
 
             for (i = 0; i < numlights; ++i) {
                 mon = (yield* makemon(
@@ -2784,7 +2784,7 @@ function* seffect_fire(sobjp) {
     cptr.stI16(cc, cptr.ldI16(u));
     cptr.stI16o(cc, $nhcoord_y, cptr.ldI16o(u, $you_uy));
     cval = bcsign(sobj);
-    dam = (((Math.imul(2, ((((rn2(3) + 3) | 0) + Math.imul(2, cval)) | 0)) + 1) | 0) / 3) | 0;
+    dam = (((Math.imul(2, rn2(3) + 3 + Math.imul(2, cval)) + 1) | 0) / 3) | 0;
     (yield* useup(sobj));
     cptr.stPtr(sobjp, null);  /* it's gone */
     if (!already_known)
@@ -4426,7 +4426,7 @@ export function* punish(sobj) {
             uball.v,
             $obj_owt,
             (cptr.ldI32o(uball.v, $obj_owt) +
-                (Math.imul(NHC.WT_IRON_BALL_INCR, ((1 + cursed_levy) | 0)) >>> 0)) | 0
+                (Math.imul(NHC.WT_IRON_BALL_INCR, 1 + cursed_levy) >>> 0)) | 0
         );
         return;
     }

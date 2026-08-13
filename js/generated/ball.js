@@ -1437,7 +1437,7 @@ export function drag_ball(x, y, bc_control, ballx, bally, chainx, chainy, cause_
                 let tmp;
                 let dieroll = rnd(20);
 
-                tmp = (((-2 + Luck()) | 0) + find_mac(victim)) | 0;
+                tmp = (-2 + Luck() + find_mac(victim)) | 0;
                 tmp = (tmp + omon_adj(victim, uball.v, 1)) | 0;
 
                 if (tmp >= dieroll)

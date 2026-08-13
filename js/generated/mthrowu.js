@@ -873,7 +873,7 @@ export function ohitmon(mtmp, otmp, range, verbose) {
     if (vis)
         observe_object(otmp);
 
-    tmp = (((5 + find_mac(mtmp)) | 0) + omon_adj(mtmp, otmp, 0)) | 0;
+    tmp = (5 + find_mac(mtmp) + omon_adj(mtmp, otmp, 0)) | 0;
     /* High level monsters will be more likely to hit */
     /* This check applies only if this monster is the target
      * the archer was aiming at. */
@@ -881,10 +881,7 @@ export function ohitmon(mtmp, otmp, range, verbose) {
             cptr.eq(cptr.ldPtro(gm, $instance_globals_m_mtarget), mtmp)) {
         if (cptr.ld1uo(cptr.ldPtro(gm, $instance_globals_m_marcher), $monst_m_lev) > 5)
             tmp = (tmp +
-                ((cptr.ld1uo(
-                    cptr.ldPtro(gm, $instance_globals_m_marcher),
-                    $monst_m_lev
-                ) - 5) | 0)) |
+                (cptr.ld1uo(cptr.ldPtro(gm, $instance_globals_m_marcher), $monst_m_lev) - 5)) |
                     0;
         if (mon_launcher && cptr.ld1so(mon_launcher, $obj_oartifact))
             tmp = (tmp + spec_abon(mon_launcher, mtmp)) | 0;
@@ -1082,7 +1079,7 @@ export function ohitmon(mtmp, otmp, range, verbose) {
                         : ((cptr.ldI16o(otmp, $obj_otyp) == NHC.CREAM_PIE) ? __s_pie : xname(otmp)))
                 );  /* catchall; not used */
             cptr.stI32o(mtmp, $monst_mcansee, 0);
-            tmp = (((((cptr.ldI32o(mtmp, $monst_mblinded) & 127) | 0) + rnd(25)) | 0) + 20) | 0;
+            tmp = (((cptr.ldI32o(mtmp, $monst_mblinded) & 127) | 0) + rnd(25) + 20) | 0;
             if (tmp > 127)
                 tmp = 127;
             cptr.stI32o(mtmp, $monst_mblinded, tmp >>> 0);
@@ -1137,7 +1134,8 @@ function ucatchgem(gem, mon) {
 /* hero may catch thrown obj. it is added to inventory, if possible */
 /** C ref: mthrowu.c:533 — @param {CPtr<struct obj>} otmp @returns {CInt} */
 function u_catch_thrown_obj(otmp) {
-    let catch_chance = (((100 - (acurr(NHC.A_DEX))) | 0) -
+    let catch_chance = (100 -
+        (acurr(NHC.A_DEX)) -
         (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK) ||
             (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE))
             ? 20
@@ -1762,7 +1760,7 @@ export function m_throw(mon, x, y, dx, dy, range, obj) {
                     ) >=
                             NHM.MZ_LARGE))
                         hitv++;
-                    hitv = (hitv + ((8 + cptr.ld1so(singleobj.v, $obj_spe)) | 0)) | 0;
+                    hitv = (hitv + (8 + cptr.ld1so(singleobj.v, $obj_spe))) | 0;
                     if (dam < 1)
                         dam = 1;
                     if (cptr.ldI16o(singleobj.v, $obj_otyp) != NHC.ACID_VENOM)
@@ -2664,7 +2662,7 @@ export function thrwmu(mtmp) {
         ) >=
                 NHM.MZ_LARGE))
             hitv++;
-        hitv = (hitv + ((8 + cptr.ld1so(otmp.v, $obj_spe)) | 0)) | 0;
+        hitv = (hitv + (8 + cptr.ld1so(otmp.v, $obj_spe))) | 0;
         if (dam < 1)
             dam = 1;
 
@@ -3051,7 +3049,7 @@ export function hit_bars(objp, objx, objy, barsx, barsy, breakflags) {
                     : cptr.ld1so(otmp, $obj_spe));
             /* chance: used in saving throw for the bars; more likely to
                break those when 'chance' is _lower_; acurrstr(): 3..25 */
-            let chance = ((((melee_attk ? 40 : 60) - acurrstr()) | 0) - spe) | 0;
+            let chance = ((melee_attk ? 40 : 60) - acurrstr() - spe) | 0;
 
             if (!rn2((2 > (chance) ? 2 : (chance)))) {
                 You(__s_break_the_bars_apart);

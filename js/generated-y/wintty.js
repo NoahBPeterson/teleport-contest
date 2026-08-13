@@ -1846,7 +1846,7 @@ function* process_menu_window(window, cw) {
                 /* count = (10 * count) + (morc - '0'); */
                 count = (((count) < 922337203685477580n ||
                     ((count) == 922337203685477580n && (dgt) <= 7n))
-                        ? BigInt.asIntN(64, BigInt.asIntN(64, (count) * 10n) + (dgt))
+                        ? BigInt.asIntN(64, (count) * 10n + (dgt))
                         : -1n);
                 if (count < 0n)
                     continue;  /* reset_count is True */
@@ -2232,11 +2232,11 @@ export function* tty_display_nhwindow(window, blocking) {
                 : (((82 < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0)
                     ? 82
                     : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0))) <
-                    ((((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol) | 0) - 1) | 0)
+                    ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol - 1) | 0)
                     ? ((82 < ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0)
                         ? 82
                         : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) / 2) | 0)))
-                    : ((((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol) | 0) - 1) | 0))))
+                    : ((cptr.ldI16o(ttyDisplay, $DisplayDesc_cols) - s_maxcol - 1) | 0))))
         );
         if (cptr.ldI16o(cw, $WinDesc_offx) < 0)
             cptr.stI16o(cw, $WinDesc_offx, 0);
@@ -3280,9 +3280,9 @@ export function* docorner(xmin, ymax, ystart_between_menu_pages) {
         if (y < cptr.ldI16o(cw, $WinDesc_offy) || ((y + clipy) | 0) > NHM.ROWNO)
             continue;  /* only refresh board */
         (yield* row_refresh(
-            i16(((((xmin + clipx) | 0) - cptr.ldI16o(cw, $WinDesc_offx)) | 0)),
+            i16(((xmin + clipx - cptr.ldI16o(cw, $WinDesc_offx)) | 0)),
             79,
-            i16(((((y + clipy) | 0) - cptr.ldI16o(cw, $WinDesc_offy)) | 0))
+            i16(((y + clipy - cptr.ldI16o(cw, $WinDesc_offy)) | 0))
         ));
     }
 
@@ -3386,7 +3386,7 @@ export function setclipped() {
     clipping = 1;
     clipx = (clipy = 0);
     clipxmax = CO();
-    clipymax = (((LI() - 1) | 0) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0;
+    clipymax = (LI() - 1 - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0;
 }
 
 /** C ref: wintty.c:3879 — @param {CInt} x @param {CInt} y */
@@ -3413,16 +3413,12 @@ export function* tty_cliparound(x, y) {
         clipy = (0 > ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0)
                 ? 0
                 : ((y - ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
-        clipymax = (clipy +
-            ((((LI() - 1) | 0) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) |
-                0;
+        clipymax = (clipy + (LI() - 1 - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines))) | 0;
     } else if (y > ((clipymax - 2) | 0)) {
         clipymax = (NHM.ROWNO < ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0)
                 ? NHM.ROWNO
                 : ((clipymax + ((((clipymax - clipy) | 0) / 2) | 0)) | 0));
-        clipy = (clipymax -
-            ((((LI() - 1) | 0) - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines)) | 0)) |
-                0;
+        clipy = (clipymax - (LI() - 1 - cptr.ldI32o(iflags, $instance_flags_wc2_statuslines))) | 0;
     }
     if (clipx != oldx || clipy != oldy) {
         (yield* redraw_map(1));  /* ask the core to resend the map window's data */
@@ -4710,7 +4706,7 @@ function set_condition_length() {
             mask = cptr.ldI64o2(conditions, c, $sizeof_conditions_t, $conditions_t_mask);
             if ((tty_condition_bits & mask) == mask)
                 lth = (lth +
-                    ((1 +
+                    (1 +
                         Number(BigInt.asIntN(
                             32,
                             cptr.strlen(cptr.ldPtro3(
@@ -4721,7 +4717,7 @@ function set_condition_length() {
                                 8,
                                 $conditions_t_text
                             ))
-                        ))) | 0)) |
+                        )))) |
                         0;
         }
     }

@@ -772,7 +772,7 @@ function findsetreg(p, lastpc, reg) {
             {
                 let b = (((((((((i) >>> 7) & (((~(((~0) << 25) >>> 0)) << 0) >>> 0)) >>> 0)) | 0)) -
                         16777215) | 0);
-                let dest = (((pc + 1) | 0) + b) | 0;
+                let dest = (pc + 1 + b) | 0;
                 /* jump does not skip 'lastpc' and is larger than current one? */
                 if (dest <= lastpc && dest > jmptarget)
                     jmptarget = dest;  /* update 'jmptarget' */

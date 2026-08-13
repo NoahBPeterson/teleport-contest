@@ -897,7 +897,7 @@ function* level_range(dgn, base, randc, chain, pd, adjusted_base) {
     } else {
         /* from end of dungeon */
         if (base < 0)
-            base = ((((lmax + base) | 0) + 1) | 0);
+            base = ((lmax + base + 1) | 0);
     }
 
     if (base < 1 || base > lmax)
@@ -906,10 +906,10 @@ function* level_range(dgn, base, randc, chain, pd, adjusted_base) {
     cptr.stI32(adjusted_base, base);
 
     if (randc == -1) {
-        return ((((lmax - base) | 0) + 1) | 0);
+        return ((lmax - base + 1) | 0);
     } else if (randc) {
         /* make sure we don't run off the end of the dungeon */
-        return ((((((base + randc) | 0) - 1) | 0) > lmax) ? (((lmax - base) | 0) + 1) | 0 : randc);
+        return ((((base + randc - 1) | 0) > lmax) ? (lmax - base + 1) | 0 : randc);
     }  /* else only one choice */
     return 1;
 }
@@ -1010,42 +1010,18 @@ export function* insert_branch(new_branch, extract_first) {
     prev_val = -1n;
     new_val = (BigInt.asIntN(
         64,
-        (BigInt.asIntN(
-            64,
-            BigInt.asIntN(
-                64,
-                (BigInt.asIntN(
-                    64,
-                    BigInt.asIntN(64, BigInt(cptr.ldI16o((new_branch), $branch_end1)) * 33n) +
-                        BigInt(cptr.ldI16o((new_branch), $branch_end1 + $d_level_dlevel))
-                )) * 17n
-            ) * 33n
-        )) +
-            (BigInt.asIntN(
-                64,
-                BigInt.asIntN(64, BigInt(cptr.ldI16o((new_branch), $branch_end2)) * 33n) +
-                    BigInt(cptr.ldI16o((new_branch), $branch_end2 + $d_level_dlevel))
-            ))
+        (BigInt(cptr.ldI16o((new_branch), $branch_end1)) * 33n +
+            BigInt(cptr.ldI16o((new_branch), $branch_end1 + $d_level_dlevel))) * 17n * 33n +
+            (BigInt(cptr.ldI16o((new_branch), $branch_end2)) * 33n +
+                BigInt(cptr.ldI16o((new_branch), $branch_end2 + $d_level_dlevel)))
     ));
     for (curr = cptr.ldPtr(svb); curr; prev_val = curr_val, prev = curr, curr = cptr.ldPtr(curr)) {
         curr_val = (BigInt.asIntN(
             64,
-            (BigInt.asIntN(
-                64,
-                BigInt.asIntN(
-                    64,
-                    (BigInt.asIntN(
-                        64,
-                        BigInt.asIntN(64, BigInt(cptr.ldI16o((curr), $branch_end1)) * 33n) +
-                            BigInt(cptr.ldI16o((curr), $branch_end1 + $d_level_dlevel))
-                    )) * 17n
-                ) * 33n
-            )) +
-                (BigInt.asIntN(
-                    64,
-                    BigInt.asIntN(64, BigInt(cptr.ldI16o((curr), $branch_end2)) * 33n) +
-                        BigInt(cptr.ldI16o((curr), $branch_end2 + $d_level_dlevel))
-                ))
+            (BigInt(cptr.ldI16o((curr), $branch_end1)) * 33n +
+                BigInt(cptr.ldI16o((curr), $branch_end1 + $d_level_dlevel))) * 17n * 33n +
+                (BigInt(cptr.ldI16o((curr), $branch_end2)) * 33n +
+                    BigInt(cptr.ldI16o((curr), $branch_end2 + $d_level_dlevel)))
         ));
         if (prev_val < new_val && new_val <= curr_val)
             break;
@@ -1765,11 +1741,7 @@ function* init_dungeon_branches(L, pd, dngidx) {
                         cptr.stI32o(iflags, $instance_flags_last_msg, save_plnmsg);
                     }
                 }
-                for (
-                    bi = 0;
-                    bi < ((((cptr.ldI32o(pd, $proto_dungeon_n_levs) + f) | 0) - 1) | 0);
-                    bi++
-                )
+                for (bi = 0; bi < ((cptr.ldI32o(pd, $proto_dungeon_n_levs) + f - 1) | 0); bi++)
                     if (!strcmp(
                         cptr.ldPtro2(pd, bi, $sizeof_tmplevel, $proto_dungeon_tmplevel),
                         br_chain
@@ -1808,8 +1780,8 @@ function init_dungeon_set_entry(pd, dngidx) {
             dngidx,
             $sizeof_dungeon,
             $dungeon_entry_lev,
-            i16(((((cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs) +
-                dgn_entry) | 0) + 1) | 0))
+            i16(((cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_num_dunlevs) +
+                dgn_entry + 1) | 0))
         );
         if (cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) <= 0)
             cptr.stI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev, 1);
@@ -1865,9 +1837,9 @@ function* init_dungeon_set_depth(pd, dngidx) {
         dngidx,
         $sizeof_dungeon,
         $dungeon_depth_start,
-        (((from_depth +
-            (cptr.ldI32o(br, $branch_type) == NHM.BR_PORTAL ? 0 : (from_up ? -1 : 1))) | 0) -
-            ((cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) - 1) | 0)) | 0
+        (from_depth +
+            (cptr.ldI32o(br, $branch_type) == NHM.BR_PORTAL ? 0 : (from_up ? -1 : 1)) -
+            (cptr.ldI16o2(svd, dngidx, $sizeof_dungeon, $dungeon_entry_lev) - 1)) | 0
     );
 }
 
@@ -2440,8 +2412,8 @@ export function* ledger_to_dlev(ledgerno) {
    (note levels in different dungeons can have the same depth) */
 /** C ref: dungeon.c:1431 — @param {CPtr<d_level>} lev @returns {CInt} */
 export function depth(lev) {
-    return schar(((((cptr.ldI32o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_depth_start) +
-            cptr.ldI16o(lev, $d_level_dlevel)) | 0) - 1) | 0));
+    return schar(((cptr.ldI32o2(svd, cptr.ldI16(lev), $sizeof_dungeon, $dungeon_depth_start) +
+            cptr.ldI16o(lev, $d_level_dlevel) - 1) | 0));
 }
 
 /* are "lev1" and "lev2" actually the same? */
@@ -3078,8 +3050,8 @@ export function* get_level(newlevel, levnum) {
         /* can only currently happen in endgame */
         levnum = cptr.ldI16o(u, $you_uz + $d_level_dlevel);
     } else if (levnum >
-            ((((cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start) +
-                cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs)) | 0) - 1) | 0)) {
+            ((cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start) +
+                cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs) - 1) | 0)) {
         /* beyond end of dungeon, jump to last level */
         levnum = cptr.ldI16o2(svd, dgn, $sizeof_dungeon, $dungeon_num_dunlevs);
     } else {
@@ -3108,9 +3080,7 @@ export function* get_level(newlevel, levnum) {
         }
 
         /* We're within the same dungeon; calculate the level. */
-        levnum = (((levnum -
-            cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start)) | 0) + 1) |
-                0;
+        levnum = (levnum - cptr.ldI32o2(svd, dgn, $sizeof_dungeon, $dungeon_depth_start) + 1) | 0;
     }
 
     cptr.stI16(newlevel, dgn);
@@ -3411,13 +3381,13 @@ export function* level_difficulty() {
             res = i16(res +
                     Math.imul(
                         2,
-                        ((((cptr.ldI16o2(
+                        cptr.ldI16o2(
                             svd,
                             cptr.ldI16o(u, $you_uz),
                             $sizeof_dungeon,
                             $dungeon_entry_lev
                         ) -
-                            cptr.ldI16o(u, $you_uz + $d_level_dlevel)) | 0) + 1) | 0)
+                            cptr.ldI16o(u, $you_uz + $d_level_dlevel) + 1
                     ));
     }
     /* ring of aggravate monster */
@@ -3769,7 +3739,7 @@ export function* print_dungeon(bymenu, rlev, rdgn) {
                 dptr,
                 (yield* makeplural(descr)),
                 cptr.ldI32o(dptr, $dungeon_depth_start),
-                (((cptr.ldI32o(dptr, $dungeon_depth_start) + nlev) | 0) - 1) | 0
+                (cptr.ldI32o(dptr, $dungeon_depth_start) + nlev - 1) | 0
             );
         else
             nh_snprintf(
@@ -3791,8 +3761,8 @@ export function* print_dungeon(bymenu, rlev, rdgn) {
                 void cptr.sprintf(
                     eos(cptr.decay(buf)),
                     __s_entrance_on_d,
-                    (((cptr.ldI32o(dptr, $dungeon_depth_start) +
-                        cptr.ldI16o(dptr, $dungeon_entry_lev)) | 0) - 1) | 0
+                    (cptr.ldI32o(dptr, $dungeon_depth_start) +
+                        cptr.ldI16o(dptr, $dungeon_entry_lev) - 1) | 0
                 );
         }
         if (bymenu) {
@@ -4458,14 +4428,8 @@ export function* overview_stats(win, statsfmt, total_count, total_size) {
         void cptr.sprintf(cptr.decay(buf), statsfmt, cptr.decay(hdrbuf), acount, asize);
         (yield* Y.icall(putstr()(win, 0, cptr.decay(buf))));
     }
-    cptr.stI64(
-        total_count,
-        cptr.ldI64(total_count) + BigInt.asIntN(64, BigInt.asIntN(64, ocount + bcount) + acount)
-    );
-    cptr.stI64(
-        total_size,
-        cptr.ldI64(total_size) + BigInt.asIntN(64, BigInt.asIntN(64, osize + bsize) + asize)
-    );
+    cptr.stI64(total_count, cptr.ldI64(total_count) + BigInt.asIntN(64, ocount + bcount + acount));
+    cptr.stI64(total_size, cptr.ldI64(total_size) + BigInt.asIntN(64, osize + bsize + asize));
 }
 
 /* Remove all mapseen objects for a particular dnum.
@@ -5447,15 +5411,9 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                 cptr.decay(buf),
                 __s_s_levels_d_up_to_d,
                 cptr.add(svd, dnum, $sizeof_dungeon),
-                (((depthstart +
-                    cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_entry_lev)) | 0) - 1) | 0,
-                (((depthstart +
-                    cptr.ldI16o2(
-                        svd,
-                        dnum,
-                        $sizeof_dungeon,
-                        $dungeon_dunlev_ureached
-                    )) | 0) - 1) | 0
+                (depthstart + cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_entry_lev) - 1) | 0,
+                (depthstart +
+                    cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_dunlev_ureached) - 1) | 0
             );
         else
             void cptr.sprintf(
@@ -5463,20 +5421,15 @@ function* print_mapseen(win, mptr, final, how, printdun) {
                 __s_s_levels_d_to_d,
                 cptr.add(svd, dnum, $sizeof_dungeon),
                 depthstart,
-                (((depthstart +
-                    cptr.ldI16o2(
-                        svd,
-                        dnum,
-                        $sizeof_dungeon,
-                        $dungeon_dunlev_ureached
-                    )) | 0) - 1) | 0
+                (depthstart +
+                    cptr.ldI16o2(svd, dnum, $sizeof_dungeon, $dungeon_dunlev_ureached) - 1) | 0
             );
 
         (yield* add_menu_heading(win, cptr.decay(buf)));
     }
 
     /* calculate level number */
-    i = (((depthstart + cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel)) | 0) - 1) | 0;
+    i = (depthstart + cptr.ldI16o(mptr, $mapseen_lev + $d_level_dlevel) - 1) | 0;
     if ((cptr.ldI16((cptr.add(mptr, $mapseen_lev))) ==
             cptr.ldI16((cptr.add(
                 svd,

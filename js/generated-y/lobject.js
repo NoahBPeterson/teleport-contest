@@ -510,7 +510,7 @@ export function* luaO_rawarith(L, op, p1, p2, res) {
 export function* luaO_arith(L, op, p1, p2, res) {
     if (!(yield* luaO_rawarith(L, op, p1, p2, ((res))))) {
         /* could not perform raw operation; try metamethod */
-        (yield* luaT_trybinTM(L, p1, p2, res, (((((op - 0) | 0) + NHC.TM_ADD) | 0))));
+        (yield* luaT_trybinTM(L, p1, p2, res, (((op - 0 + NHC.TM_ADD) | 0))));
     }
 }
 
@@ -519,7 +519,7 @@ export function luaO_hexavalue(c) {
     if ((cptr.ld1uo(cptr.decay(luai_ctype_), ((c) + 1) | 0, 1) & 2))
         return (c - 48) | 0;
     else
-        return (((((c) | 32) - 97) | 0) + 10) | 0;
+        return (((c) | 32) - 97 + 10) | 0;
 }
 
 /** C ref: lobject.c:141 — @param {CPtr<char *>} s @returns {CInt} */
@@ -626,8 +626,7 @@ function* l_str2int(s, result) {
         ) {
             a = BigInt.asUintN(
                 64,
-                BigInt.asUintN(64, a * 16n) +
-                    BigInt.asUintN(64, BigInt(luaO_hexavalue(cptr.ld1s(s.v))))
+                a * 16n + BigInt.asUintN(64, BigInt(luaO_hexavalue(cptr.ld1s(s.v))))
             );
             empty = 0;
         }
@@ -640,7 +639,7 @@ function* l_str2int(s, result) {
             let d = (cptr.ld1s(s.v) - 48) | 0;
             if (a >= 922337203685477580n && (a > 922337203685477580n || d > ((7 + neg) | 0)))
                 return null;  /* do not accept it (as integer) */
-            a = BigInt.asUintN(64, BigInt.asUintN(64, a * 10n) + BigInt.asUintN(64, BigInt(d)));
+            a = BigInt.asUintN(64, a * 10n + BigInt.asUintN(64, BigInt(d)));
             empty = 0;
         }
     }
@@ -984,11 +983,7 @@ export function luaO_chunkid(out, source, srclen) {
             cptr.memcpy(out, cptr.add(source, 1), BigInt.asUintN(64, srclen * 1n));
         else {
             (
-                cptr.memcpy(
-                    out,
-                    cptr.add(source, 1),
-                    BigInt.asUintN(64, (BigInt.asUintN(64, bufflen - 1n)) * 1n)
-                ),
+                cptr.memcpy(out, cptr.add(source, 1), BigInt.asUintN(64, (bufflen - 1n) * 1n)),
                 out = cptr.add(out, (BigInt.asUintN(64, bufflen - 1n)))
             );
             cptr.st1(out, 0);
@@ -998,11 +993,7 @@ export function luaO_chunkid(out, source, srclen) {
             cptr.memcpy(out, cptr.add(source, 1), BigInt.asUintN(64, srclen * 1n));
         else {
             (
-                cptr.memcpy(
-                    out,
-                    __s_dot3,
-                    BigInt.asUintN(64, ((BigInt.asUintN(64, 4n / 1n - 1n))) * 1n)
-                ),
+                cptr.memcpy(out, __s_dot3, BigInt.asUintN(64, (4n / 1n - 1n) * 1n)),
                 out = cptr.add(out, ((BigInt.asUintN(64, 4n / 1n - 1n))))
             );
             bufflen -= (BigInt.asUintN(64, 4n / 1n - 1n));
@@ -1015,14 +1006,10 @@ export function luaO_chunkid(out, source, srclen) {
     } else {
         let nl = cptr.strchr(source, 10);  /* find first new line (if any) */
         (
-            cptr.memcpy(
-                out,
-                __s_string,
-                BigInt.asUintN(64, ((BigInt.asUintN(64, 10n / 1n - 1n))) * 1n)
-            ),
+            cptr.memcpy(out, __s_string, BigInt.asUintN(64, (10n / 1n - 1n) * 1n)),
             out = cptr.add(out, ((BigInt.asUintN(64, 10n / 1n - 1n))))
         );  /* add prefix */
-        bufflen -= BigInt.asUintN(64, (BigInt.asUintN(64, 15n / 1n - 1n)) + 1n);  /* save space for prefix+suffix+'\0' */
+        bufflen -= BigInt.asUintN(64, 15n / 1n - 1n + 1n);  /* save space for prefix+suffix+'\0' */
         if (srclen < bufflen && cptr.eq(nl, (null))) {
             (
                 cptr.memcpy(out, source, BigInt.asUintN(64, (srclen) * 1n)),
@@ -1038,19 +1025,11 @@ export function luaO_chunkid(out, source, srclen) {
                 out = cptr.add(out, (srclen))
             );
             (
-                cptr.memcpy(
-                    out,
-                    __s_dot3,
-                    BigInt.asUintN(64, ((BigInt.asUintN(64, 4n / 1n - 1n))) * 1n)
-                ),
+                cptr.memcpy(out, __s_dot3, BigInt.asUintN(64, (4n / 1n - 1n) * 1n)),
                 out = cptr.add(out, ((BigInt.asUintN(64, 4n / 1n - 1n))))
             );
         }
-        cptr.memcpy(
-            out,
-            __s_quot_rbrack,
-            BigInt.asUintN(64, (BigInt.asUintN(64, (BigInt.asUintN(64, 3n / 1n - 1n)) + 1n)) * 1n)
-        );
+        cptr.memcpy(out, __s_quot_rbrack, BigInt.asUintN(64, (3n / 1n - 1n + 1n) * 1n));
     }
 }
 

@@ -366,7 +366,7 @@ const kick_passes_thru = cptr.bytes("kick passes harmlessly through");
 function* kickdmg(mon, clumsy) {
     let mdx;
     let mdy;
-    let dmg = ((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 15) | 0;
+    let dmg = ((((acurrstr()) + (acurr(NHC.A_DEX)) + (acurr(NHC.A_CON))) | 0) / 15) | 0;
     let specialdmg;
     let kick_skill = NHC.P_NONE;
     let trapkilled = 0;
@@ -2359,8 +2359,7 @@ export function* dokick() {
     if (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS)
         avrg_attrib = 99;
     else
-        avrg_attrib = ((((((acurrstr()) + (acurr(NHC.A_DEX))) | 0) + (acurr(NHC.A_CON))) | 0) / 3) |
-                0;
+        avrg_attrib = ((((acurrstr()) + (acurr(NHC.A_DEX)) + (acurr(NHC.A_CON))) | 0) / 3) | 0;
 
     if ((cptr.ldI32o(u, $you_uswallow) & 1)) {
         switch (rn2(3)) {
@@ -2544,7 +2543,7 @@ export function* dokick() {
                 cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data),
                 $permonst_cwt
             ) | 0) +
-                    ((weight_cap() + inv_weight()) | 0)) | 0);
+                    (weight_cap() + inv_weight())) | 0);
             if (range < 1)
                 range = 1;  /* divide by zero avoidance */
             range = ((Math.imul(3, cptr.ldI32o(mdat, $permonst_cwt) | 0)) / range) | 0;

@@ -728,8 +728,7 @@ export function mhidden_description(mon, mhid_flags, outbuf) {
            but a visible region marks all its spots as can't-be-seen, so
            this monster's spot is !cansee and !couldsee [maybe we need an
            additional vision bit for "hero's side of edge of gas cloud"?] */
-        if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <=
-            Math.imul(r, ((r + 1) | 0)) ||
+        if (dist2((x), (y), cptr.ldI16(u), cptr.ldI16o(u, $you_uy)) <= Math.imul(r, r + 1) ||
                 force_region) {
             let rglyph = cptr.ldI32o(reg, $NhRegion_glyph);
             let poison_gas = schar((glyph_is_cmap(rglyph) &&
@@ -2010,8 +2009,7 @@ function checkfile(inp, pm, chkflags, supplemental_name) {
                                 32,
                                 (BigInt.asUintN(
                                     64,
-                                    127n -
-                                        (BigInt.asUintN(64, cptr.strlen(cptr.decay(question)) + 2n))
+                                    127n - (cptr.strlen(cptr.decay(question)) + 2n)
                                 ))
                             ))
                         );
@@ -2441,10 +2439,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                             void __builtin___strncat_chk(
                                 out_str,
                                 cptr.decay(temp_buf),
-                                BigInt.asUintN(
-                                    64,
-                                    BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n
-                                ),
+                                BigInt.asUintN(64, 256n - cptr.strlen(out_str) - 1n),
                                 __builtin_object_size(out_str, 1)
                             );
                             found = 1;  /* we have something to look up */
@@ -2461,10 +2456,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                             void __builtin___strncat_chk(
                                 out_str,
                                 cptr.decay(temp_buf),
-                                BigInt.asUintN(
-                                    64,
-                                    BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n
-                                ),
+                                BigInt.asUintN(64, 256n - cptr.strlen(out_str) - 1n),
                                 __builtin_object_size(out_str, 1)
                             );
                         }
@@ -2485,7 +2477,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                     (looked
                         ? cptr.ld1uo2(
                             gs,
-                            (i + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0,
+                            (i + (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES) | 0)) | 0,
                             1,
                             $instance_globals_s_showsyms
                         )
@@ -2532,7 +2524,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                 ? (sym ==
                     cptr.ld1uo2(
                         gs,
-                        ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0),
+                        ((NHC.S_HUMAN + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0),
                         1,
                         $instance_globals_s_showsyms
                     ) &&
@@ -2557,8 +2549,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
             let bouldersym;
 
             j = ((NHC.SYM_BOULDER +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0);
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0);
             bouldersym = uchar(((((cptr.ldI16o(
                 (cptr.add(
                     svd,
@@ -2646,8 +2637,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                         cptr.ld1uo2(
                             gs,
                             ((NHC.SYM_NOTHING +
-                                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                                ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                             1,
                             $instance_globals_s_showsyms
                         ))) {
@@ -2666,8 +2656,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                         cptr.ld1uo2(
                             gs,
                             ((NHC.SYM_UNEXPLORED +
-                                (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                                    NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0),
+                                ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0),
                             1,
                             $instance_globals_s_showsyms
                         ))) {
@@ -2817,22 +2806,16 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
 
         /* Finally, handle some optional overriding symbols */
         for (
-            j = (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                NHC.MAXMCLASSES) | 0) + 6) | 0);
-            j <
-                (((((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                    NHC.MAXMCLASSES) | 0) + 6) | 0) +
-                    NHC.MAXOTHER) | 0);
+            j = (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6) | 0);
+            j < (((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6 + NHC.MAXOTHER) | 0);
             ++j
         ) {
             if (j ==
                 ((NHC.SYM_INVISIBLE +
-                    (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                        NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0) ||
+                    ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0) ||
                     j ==
                         ((NHC.SYM_BOULDER +
-                            (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                                NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0))
+                            ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0))
                 continue;  /* already handled above */
             tmpsym = uchar(((((cptr.ldI16o(
                 (cptr.add(
@@ -2857,8 +2840,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
             if (tmpsym && sym == tmpsym) {
                 switch (j) {
                     case ((NHC.SYM_PET_OVERRIDE +
-                            (((((((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0) +
-                                NHC.MAXMCLASSES) | 0) + 6) | 0)) | 0):
+                            ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0):
                     if (looked) {
                         /* convert to symbol without override in effect */
                         map_glyphinfo(
@@ -2872,10 +2854,11 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                         continue __lbl_check_monsters;
                     }
                     break;
-                    case 195:
+                    case ((NHC.SYM_HERO_OVERRIDE +
+                            ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES + NHC.MAXMCLASSES + 6)) | 0):
                     sym = cptr.ld1uo2(
                         gs,
-                        ((NHC.S_HUMAN + (((((0) + NHC.MAXPCHARS) | 0) + NHC.MAXOCLASSES) | 0)) | 0),
+                        ((NHC.S_HUMAN + ((0) + NHC.MAXPCHARS + NHC.MAXOCLASSES)) | 0),
                         1,
                         $instance_globals_s_showsyms
                     );
@@ -2948,7 +2931,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                     void __builtin___strncat_chk(
                         out_str,
                         cptr.decay(temp_buf),
-                        BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n),
+                        BigInt.asUintN(64, 256n - cptr.strlen(out_str) - 1n),
                         __builtin_object_size(out_str, 1)
                     );
                     found = 1;
@@ -2965,7 +2948,7 @@ export function do_screen_description(cc, looked, sym, out_str, firstmatch, for_
                     void __builtin___strncat_chk(
                         out_str,
                         cptr.decay(temp_buf),
-                        BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(out_str)) - 1n),
+                        BigInt.asUintN(64, 256n - cptr.strlen(out_str) - 1n),
                         __builtin_object_size(out_str, 1)
                     );
                 }
@@ -3029,7 +3012,7 @@ function add_quoted_engraving(x, y, buf, force) {
     void __builtin___strncat_chk(
         buf,
         cptr.decay(temp_buf),
-        BigInt.asUintN(64, BigInt.asUintN(64, 256n - cptr.strlen(buf)) - 1n),
+        BigInt.asUintN(64, 256n - cptr.strlen(buf) - 1n),
         __builtin_object_size(buf, 1)
     );
     return 1;
@@ -3733,16 +3716,16 @@ function look_traps(nearby) {
                     trapname((cptr.ldI32o(t, $trap_ttyp) & 31) | 0, 0)
                 );
                 void cptr.sprintf(eos(cptr.decay(lookbuf)), __s_obscured_by_s, encglyph(glyph));
-                glyph = (((((((NHC.S_arrow_trap +
-                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) ==
+                glyph = (((((NHC.S_arrow_trap +
+                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1) | 0)) ==
                     NHC.S_stone)
                         ? NHC.GLYPH_CMAP_STONE_OFF
-                        : (((((((NHC.S_arrow_trap +
-                            (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <=
+                        : (((((NHC.S_arrow_trap +
+                            (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1) | 0)) <=
                             NHC.S_trwall)
-                            ? (((((((((NHC.S_arrow_trap +
-                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) -
-                                NHC.S_vwall) | 0) +
+                            ? ((NHC.S_arrow_trap +
+                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1 -
+                                NHC.S_vwall +
                                 (In_mines(cptr.add(u, $you_uz))
                                     ? NHC.GLYPH_CMAP_MINES_OFF
                                     : (In_hell(cptr.add(u, $you_uz))
@@ -3773,42 +3756,33 @@ function look_traps(nearby) {
                                                 sokoban_dnum())
                                                 ? NHC.GLYPH_CMAP_SOKO_OFF
                                                 : NHC.GLYPH_CMAP_MAIN_OFF))))) | 0)
-                            : (((((((NHC.S_arrow_trap +
-                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) <
+                            : (((((NHC.S_arrow_trap +
+                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1) | 0)) <
                                 NHC.S_altar)
-                                ? (((((((((NHC.S_arrow_trap +
-                                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) -
-                                    NHC.S_ndoor) | 0) +
+                                ? ((NHC.S_arrow_trap +
+                                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1 -
+                                    NHC.S_ndoor +
                                     NHC.GLYPH_CMAP_A_OFF) | 0)
-                                : (((((((NHC.S_arrow_trap +
-                                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0))) | 0) - 1) | 0)) ==
+                                : (((((NHC.S_arrow_trap +
+                                    (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1) | 0)) ==
                                     NHC.S_altar)
                                     ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
-                                    : (((((((NHC.S_arrow_trap +
-                                        (((cptr.ldI32o(
-                                            (t),
-                                            $trap_ttyp
-                                        ) & 31) | 0))) | 0) - 1) | 0)) <
-                                        ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
-                                        ? (((((((((NHC.S_arrow_trap +
-                                            (((cptr.ldI32o(
-                                                (t),
-                                                $trap_ttyp
-                                            ) & 31) | 0))) | 0) - 1) | 0)) -
-                                            NHC.S_grave) | 0) +
+                                    : (((((NHC.S_arrow_trap +
+                                        (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1) | 0)) <
+                                        ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
+                                        ? ((NHC.S_arrow_trap +
+                                            (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1 -
+                                            NHC.S_grave +
                                             NHC.GLYPH_CMAP_B_OFF) | 0)
-                                        : (((((((NHC.S_arrow_trap +
+                                        : (((((NHC.S_arrow_trap +
                                             (((cptr.ldI32o(
                                                 (t),
                                                 $trap_ttyp
-                                            ) & 31) | 0))) | 0) - 1) | 0)) <=
+                                            ) & 31) | 0)) - 1) | 0)) <=
                                             NHC.S_goodpos)
-                                            ? (((((((((NHC.S_arrow_trap +
-                                                (((cptr.ldI32o(
-                                                    (t),
-                                                    $trap_ttyp
-                                                ) & 31) | 0))) | 0) - 1) | 0)) -
-                                                NHC.S_digbeam) | 0) +
+                                            ? ((NHC.S_arrow_trap +
+                                                (((cptr.ldI32o((t), $trap_ttyp) & 31) | 0)) - 1 -
+                                                NHC.S_digbeam +
                                                 NHC.GLYPH_CMAP_C_OFF) | 0)
                                             : NHC.MAX_GLYPH))))));
                 ++count;
@@ -3933,11 +3907,12 @@ function look_engrs(nearby) {
                     encglyph(glyph)
                 );
                 glyph = is_headstone
-                        ? (((((NHC.S_grave) - NHC.S_grave) | 0) + NHC.GLYPH_CMAP_B_OFF) | 0)
+                        ? (((NHC.S_grave) - NHC.S_grave + NHC.GLYPH_CMAP_B_OFF) | 0)
                         : (((engraving_to_defsym(e)) == NHC.S_stone)
                             ? NHC.GLYPH_CMAP_STONE_OFF
                             : (((engraving_to_defsym(e)) <= NHC.S_trwall)
-                                ? (((((engraving_to_defsym(e)) - NHC.S_vwall) | 0) +
+                                ? (((engraving_to_defsym(e)) -
+                                    NHC.S_vwall +
                                     (In_mines(cptr.add(u, $you_uz))
                                         ? NHC.GLYPH_CMAP_MINES_OFF
                                         : (In_hell(cptr.add(u, $you_uz))
@@ -3973,7 +3948,7 @@ function look_engrs(nearby) {
                                     : (((engraving_to_defsym(e)) == NHC.S_altar)
                                         ? ((NHC.GLYPH_ALTAR_OFF + NHC.altar_neutral) | 0)
                                         : (((engraving_to_defsym(e)) <
-                                            ((NHC.S_arrow_trap + ((NHC.TRAPNUM - 1) | 0)) | 0))
+                                            ((NHC.S_arrow_trap + (NHC.TRAPNUM - 1)) | 0))
                                             ? cmap_b_to_glyph(e)
                                             : (((engraving_to_defsym(e)) <= NHC.S_goodpos)
                                                 ? cmap_c_to_glyph(e)
@@ -4085,10 +4060,7 @@ function do_supplemental_info(name, pm, without_asking) {
                     entrytext,
                     Number(BigInt.asIntN(
                         32,
-                        (BigInt.asUintN(
-                            64,
-                            127n - (BigInt.asUintN(64, cptr.strlen(cptr.decay(question)) + 2n))
-                        ))
+                        (BigInt.asUintN(64, 127n - (cptr.strlen(cptr.decay(question)) + 2n)))
                     ))
                 );
                 void cptr.strcat(cptr.decay(question), __s_quot_query);

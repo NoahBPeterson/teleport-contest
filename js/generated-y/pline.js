@@ -279,7 +279,7 @@ function* vpline(line, the_args) {
             );
             tmp = (yield* alloc(Number(BigInt.asUintN(
                 32,
-                BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(line) + 3n) + cptr.strlen(dirstr))
+                BigInt.asUintN(64, cptr.strlen(line) + 3n + cptr.strlen(dirstr))
             ))));
             void cptr.strcpy(tmp, dirstr);
             void cptr.strcat(tmp, __s_colon_sp);

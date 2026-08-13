@@ -610,11 +610,7 @@ function* temple_priest_sound(mtmp) {
                 : 0));
 
         do {
-            msg = cptr.ldPtro(
-                __static_temple_priest_sound_temple_msg,
-                rn2((((4 - 1) | 0) + hallu) | 0),
-                8
-            );
+            msg = cptr.ldPtro(__static_temple_priest_sound_temple_msg, rn2((4 - 1 + hallu) | 0), 8);
             if (cptr.strchr(msg, 42) && speechless)
                 continue;
             if (cptr.strchr(msg, 35) && in_sight)
@@ -2600,7 +2596,7 @@ export function base_soundname_to_filename(basename, buf, bufsz, approach) {
             __s_base_soundname_to_filename,
             2144,
             cp,
-            BigInt.asUintN(64, bufsz - (BigInt.asUintN(64, existinglen + 1n))),
+            BigInt.asUintN(64, bufsz - (existinglen + 1n)),
             __s_s_s__3,
             basename,
             cptr.decay(__static_base_soundname_to_filename_suffix)

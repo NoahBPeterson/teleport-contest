@@ -1514,7 +1514,7 @@ export function abon() {
     else if (dex < 14)
         return sbon;
     else
-        return ((((sbon + dex) | 0) - 14) | 0);
+        return ((sbon + dex - 14) | 0);
 }
 
 /* damage bonus for strength */
@@ -2183,7 +2183,7 @@ export function enhance_weapon_skill() {
 
         add_skills_to_menu(
             win,
-            schar((((((to_advance + eventually_advance) | 0) + maxxed_cnt) | 0) > 0)),
+            schar((((to_advance + eventually_advance + maxxed_cnt) | 0) > 0)),
             speedy
         );
 
@@ -2356,8 +2356,8 @@ export function drain_weapon_skill(n) {
             ));
             prevadv = (Math.imul(
                 Math.imul(
-                    (((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1) | 0),
-                    (((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1) | 0)
+                    (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1,
+                    (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1
                 ),
                 20
             ));
@@ -2513,7 +2513,7 @@ export function weapon_hit_bonus(weapon) {
         bonus = (cptr.ldI16o2(u, type, $sizeof_skills, $you_weapon_skills));
         bonus = (((bonus) > NHC.P_UNSKILLED ? (bonus) : NHC.P_UNSKILLED) - 1) | 0;  /* unskilled => 0 */
         bonus = ((Math.imul(
-            ((bonus + 2) | 0),
+            bonus + 2,
             (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) ||
                 (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK))
                 ? 2
@@ -2620,7 +2620,7 @@ export function weapon_dam_bonus(weapon) {
         bonus = (cptr.ldI16o2(u, type, $sizeof_skills, $you_weapon_skills));
         bonus = (((bonus) > NHC.P_UNSKILLED ? (bonus) : NHC.P_UNSKILLED) - 1) | 0;  /* unskilled => 0 */
         bonus = ((Math.imul(
-            ((bonus + 1) | 0),
+            bonus + 1,
             (((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_SAMURAI) ||
                 (cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_MONK))
                 ? 3
@@ -2774,8 +2774,8 @@ export function skill_init(class_skill) {
                 $you_weapon_skills + $skills_advance,
                 u16((Math.imul(
                     Math.imul(
-                        (((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1) | 0),
-                        (((cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1) | 0)
+                        (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1,
+                        (cptr.ldI16o2(u, skill, $sizeof_skills, $you_weapon_skills)) - 1
                     ),
                     20
                 )))

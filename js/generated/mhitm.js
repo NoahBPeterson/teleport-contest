@@ -2172,7 +2172,7 @@ function passivemm(magr, mdef, mhitb, mdead, mwep) {
                     pline_mon(magr, __s_s_is_suddenly_very_cold, Monnam(magr));
                 healmon(mdef, (tmp / 2) | 0, (tmp / 2) | 0);
                 if (cptr.ldI32o(mdef, $monst_mhpmax) >
-                        (Math.imul(((cptr.ld1uo(mdef, $monst_m_lev) + 1) | 0), 8)))
+                        (Math.imul(cptr.ld1uo(mdef, $monst_m_lev) + 1, 8)))
                     void split_mon(mdef, magr);
                 break;
                 case NHM.AD_STUN:

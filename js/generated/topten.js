@@ -1235,8 +1235,8 @@ export function topten(how, when) {
                             )))) {
                 if (rank == ((rank0 - cptr.ldI32o(flags, $flag_end_around)) | 0) &&
                         rank0 >
-                            ((((cptr.ldI32o(flags, $flag_end_top) +
-                                cptr.ldI32o(flags, $flag_end_around)) | 0) + 1) | 0) &&
+                            ((cptr.ldI32o(flags, $flag_end_top) +
+                                cptr.ldI32o(flags, $flag_end_around) + 1) | 0) &&
                         !cptr.ld1so(flags, $flag_end_own))
                     topten_print(__s_empty);
 
@@ -1763,10 +1763,7 @@ export function prscore(argc, argv) {
                 /* stop printing players if there are too many to fit */
                 if (BigInt.asUintN(
                     64,
-                    BigInt.asUintN(
-                        64,
-                        cptr.strlen(cptr.decay(pbuf)) + cptr.strlen(cptr.ldPtro(players, i, 8))
-                    ) + 2n
+                    cptr.strlen(cptr.decay(pbuf)) + cptr.strlen(cptr.ldPtro(players, i, 8)) + 2n
                 ) >= 256n) {
                     if (cptr.strlen(cptr.decay(pbuf)) < 252n)
                         void cptr.strcat(cptr.decay(pbuf), __s_dot3);
@@ -1895,8 +1892,7 @@ export function tt_doppel(mon) {
     let ret;
 
     if (!tt)
-        ret = ((rn2(((((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST) | 0) + 1) | 0)) +
-                NHC.PM_ARCHEOLOGIST) | 0);
+        ret = ((rn2(((NHC.PM_WIZARD - NHC.PM_ARCHEOLOGIST + 1) | 0)) + NHC.PM_ARCHEOLOGIST) | 0);
     else {
         if (cptr.ld1so2(tt, 0, 1, $toptenentry_plgend) == 70)
             cptr.stI32o(mon, $monst_female, 1);

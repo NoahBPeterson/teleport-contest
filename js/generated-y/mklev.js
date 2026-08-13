@@ -481,8 +481,8 @@ function* finddpos(cc, dir, aroom) {
 
         /* try random points */
         do {
-            x.v = i16((((x2 - x1) | 0) ? ((rn2((((x2 - x1) | 0) + 1) | 0) + (x1)) | 0) : x1));
-            y.v = i16((((y2 - y1) | 0) ? ((rn2((((y2 - y1) | 0) + 1) | 0) + (y1)) | 0) : y1));
+            x.v = i16((((x2 - x1) | 0) ? ((rn2((x2 - x1 + 1) | 0) + (x1)) | 0) : x1));
+            y.v = i16((((y2 - y1) | 0) ? ((rn2((y2 - y1 + 1) | 0) + (y1)) | 0) : y1));
             if (finddpos_shift(x, y, dir, aroom))
                 break __lbl_gotit;
         } while (++tryct < 20);
@@ -607,7 +607,7 @@ function* do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, i
             for (
                 y = i16(((lowy - 1) | 0));
                 y <= ((hiy + 1) | 0);
-                y = i16(y + ((((hiy - lowy) | 0) + 2) | 0))
+                y = i16(y + ((hiy - lowy + 2) | 0))
             ) {
                 cptr.st1o3(
                     svl,
@@ -628,11 +628,7 @@ function* do_room_or_subroom(croom, lowx, lowy, hix, hiy, lit, rtype, special, i
                     1
                 );  /* For open/secret doors. */
             }
-        for (
-            x = i16(((lowx - 1) | 0));
-            x <= ((hix + 1) | 0);
-            x = i16(x + ((((hix - lowx) | 0) + 2) | 0))
-        )
+        for (x = i16(((lowx - 1) | 0)); x <= ((hix + 1) | 0); x = i16(x + ((hix - lowx + 2) | 0)))
             for (y = lowy; y <= hiy; y++) {
                 cptr.st1o3(
                     svl,
@@ -3243,7 +3239,7 @@ export function topologize(croom) {
             for (
                 y = i16(((lowy - 1) | 0));
                 y <= ((hiy + 1) | 0);
-                y = i16(y + ((((hiy - lowy) | 0) + 2) | 0))
+                y = i16(y + ((hiy - lowy + 2) | 0))
             ) {
                 cptr.stI32o3(
                     svl,
@@ -3283,11 +3279,7 @@ export function topologize(croom) {
                     );
             }
         /* sides */
-        for (
-            x = i16(((lowx - 1) | 0));
-            x <= ((hix + 1) | 0);
-            x = i16(x + ((((hix - lowx) | 0) + 2) | 0))
-        )
+        for (x = i16(((lowx - 1) | 0)); x <= ((hix + 1) | 0); x = i16(x + ((hix - lowx + 2) | 0)))
             for (y = lowy; y <= hiy; y++) {
                 cptr.stI32o3(
                     svl,

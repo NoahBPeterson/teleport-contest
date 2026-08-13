@@ -722,12 +722,12 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
     let y = b;
     let a2 = BigInt.asIntN(64, BigInt(a) * BigInt(a));
     let b2 = BigInt.asIntN(64, BigInt(b) * BigInt(b));
-    let crit1 = -(BigInt.asIntN(64, BigInt.asIntN(64, a2 / 4n + BigInt((a % 2))) + b2));
-    let crit2 = -(BigInt.asIntN(64, BigInt.asIntN(64, b2 / 4n + BigInt((b % 2))) + a2));
+    let crit1 = -(BigInt.asIntN(64, a2 / 4n + BigInt((a % 2)) + b2));
+    let crit2 = -(BigInt.asIntN(64, b2 / 4n + BigInt((b % 2)) + a2));
     let crit3 = -(BigInt.asIntN(64, b2 / 4n + BigInt((b % 2))));
     let t = BigInt.asIntN(64, -a2 * BigInt(y));  /* e(x+1/2,y-1/2) - (a^2+b^2)/4 */
-    let dxt = BigInt.asIntN(64, BigInt.asIntN(64, 2n * b2) * BigInt(x));
-    let dyt = BigInt.asIntN(64, BigInt.asIntN(64, -2n * a2) * BigInt(y));
+    let dxt = BigInt.asIntN(64, 2n * b2 * BigInt(x));
+    let dyt = BigInt.asIntN(64, -2n * a2 * BigInt(y));
     let d2xt = BigInt.asIntN(64, 2n * b2);
     let d2yt = BigInt.asIntN(64, 2n * a2);
     let width = 1n;
@@ -747,12 +747,12 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
                 selection_setpoint(i16(((xc + x) | 0)), i16(((yc - y) | 0)), ov, 1);
                 selection_setpoint(i16(((xc - x) | 0)), i16(((yc + y) | 0)), ov, 1);
             }
-            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 ||
-                    BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3) {
+            if (BigInt.asIntN(64, t + b2 * BigInt(x)) <= crit1 ||
+                    BigInt.asIntN(64, t + a2 * BigInt(y)) <= crit3) {
                 x++;
                 dxt += d2xt;
                 t += dxt;
-            } else if (BigInt.asIntN(64, t - BigInt.asIntN(64, a2 * BigInt(y))) > crit2) {
+            } else if (BigInt.asIntN(64, t - a2 * BigInt(y)) > crit2) {
                 y--;
                 dyt += d2yt;
                 t += dyt;
@@ -767,13 +767,13 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
         }
     } else {
         while (y >= 0 && x <= a) {
-            if (BigInt.asIntN(64, t + BigInt.asIntN(64, b2 * BigInt(x))) <= crit1 ||
-                    BigInt.asIntN(64, t + BigInt.asIntN(64, a2 * BigInt(y))) <= crit3) {
+            if (BigInt.asIntN(64, t + b2 * BigInt(x)) <= crit1 ||
+                    BigInt.asIntN(64, t + a2 * BigInt(y)) <= crit3) {
                 x++;
                 dxt += d2xt;
                 t += dxt;
                 width += 2n;
-            } else if (BigInt.asIntN(64, t - BigInt.asIntN(64, a2 * BigInt(y))) > crit2) {
+            } else if (BigInt.asIntN(64, t - a2 * BigInt(y)) > crit2) {
                 for (i = 0n; i < width; i++)
                     selection_setpoint(
                         Number(BigInt.asIntN(16, BigInt.asIntN(64, BigInt(((xc - x) | 0)) + i))),
@@ -840,7 +840,7 @@ export function selection_do_ellipse(ov, xc, yc, a, b, filled) {
 function line_dist_coord(x1, y1, x2, y2, x3, y3) {
     let px = BigInt.asIntN(64, x2 - x1);
     let py = BigInt.asIntN(64, y2 - y1);
-    let s = BigInt.asIntN(64, BigInt.asIntN(64, px * px) + BigInt.asIntN(64, py * py));
+    let s = BigInt.asIntN(64, px * px + py * py);
     let x;
     let y;
     let dx;
@@ -856,12 +856,7 @@ function line_dist_coord(x1, y1, x2, y2, x3, y3) {
             Number(BigInt.asIntN(16, y3))
         ));
 
-    lu = Number((BigInt.asIntN(
-        64,
-        BigInt.asIntN(64, (BigInt.asIntN(64, x3 - x1)) * px) +
-            BigInt.asIntN(64, (BigInt.asIntN(64, y3 - y1)) * py)
-    ))) /
-            Number(s);
+    lu = Number((BigInt.asIntN(64, (x3 - x1) * px + (y3 - y1) * py))) / Number(s);
     if (lu > 1)
         lu = 1;
     else if (lu < 0)
@@ -871,7 +866,7 @@ function line_dist_coord(x1, y1, x2, y2, x3, y3) {
     y = BigInt.asIntN(64, BigInt(Math.trunc((Number(y1) + lu * Number(py)))));
     dx = BigInt.asIntN(64, x - x3);
     dy = BigInt.asIntN(64, y - y3);
-    distsq = BigInt.asIntN(64, BigInt.asIntN(64, dx * dx) + BigInt.asIntN(64, dy * dy));
+    distsq = BigInt.asIntN(64, dx * dx + dy * dy);
 
     return distsq;
 }
@@ -899,7 +894,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
         maxd = tmp;
     }
 
-    dofs = BigInt.asIntN(64, BigInt.asIntN(64, maxd * maxd) - BigInt.asIntN(64, mind * mind));
+    dofs = BigInt.asIntN(64, maxd * maxd - mind * mind);
     if (dofs < 1n)
         dofs = 1n;
 
@@ -917,7 +912,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
 
                     if (d0 <= BigInt.asIntN(64, mind * mind) ||
                             (d0 <= BigInt.asIntN(64, maxd * maxd) &&
-                                BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) <
+                                BigInt.asIntN(64, d0 - mind * mind) <
                                     BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
                         selection_setpoint(
                             Number(BigInt.asIntN(16, dx)),
@@ -944,7 +939,7 @@ export function* selection_do_gradient(ov, x, y, x2, y2, gtyp, mind, maxd) {
 
                     if (d0 <= BigInt.asIntN(64, mind * mind) ||
                             (d0 <= BigInt.asIntN(64, maxd * maxd) &&
-                                BigInt.asIntN(64, d0 - BigInt.asIntN(64, mind * mind)) <
+                                BigInt.asIntN(64, d0 - mind * mind) <
                                     BigInt(rn2(Number(BigInt.asIntN(32, dofs))))))
                         selection_setpoint(
                             Number(BigInt.asIntN(16, dx)),
@@ -997,7 +992,7 @@ export function selection_do_line(x1, y1, x2, y2, ov) {
         /* single point - already all done */
         ;
     } else if (dx > dy) {
-        ai = Math.imul(((dy - dx) | 0), 2);
+        ai = Math.imul(dy - dx, 2);
         bi = Math.imul(dy, 2);
         d0 = (bi - dx) | 0;
         do {
@@ -1010,7 +1005,7 @@ export function selection_do_line(x1, y1, x2, y2, ov) {
             selection_setpoint(x1, y1, ov, 1);
         } while (x1 != x2);
     } else {
-        ai = Math.imul(((dx - dy) | 0), 2);
+        ai = Math.imul(dx - dy, 2);
         bi = Math.imul(dx, 2);
         d0 = (bi - dy) | 0;
         do {
@@ -1133,8 +1128,8 @@ export function selection_size_description(sel, buf) {
     let dy;
 
     selection_getbounds(sel, rect);
-    dx = i16(((((cptr.ldI16o(rect, $nhrect_hx) - cptr.ldI16(rect)) | 0) + 1) | 0));
-    dy = i16(((((cptr.ldI16o(rect, $nhrect_hy) - cptr.ldI16o(rect, $nhrect_ly)) | 0) + 1) | 0));
+    dx = i16(((cptr.ldI16o(rect, $nhrect_hx) - cptr.ldI16(rect) + 1) | 0));
+    dy = i16(((cptr.ldI16o(rect, $nhrect_hy) - cptr.ldI16o(rect, $nhrect_ly) + 1) | 0));
     void cptr.sprintf(
         buf,
         __s_s_i_by_i,

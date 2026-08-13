@@ -649,7 +649,7 @@ export function get_strength_str() {
 export function check_gold_symbol() {
     let goldch = cptr.ld1uo2(
         gs,
-        ((NHC.COIN_CLASS + (((0) + NHC.MAXPCHARS) | 0)) | 0),
+        ((NHC.COIN_CLASS + ((0) + NHC.MAXPCHARS)) | 0),
         1,
         $instance_globals_s_showsyms
     );
@@ -900,31 +900,7 @@ export function* do_statusline2() {
      * wider displays can still show wider status than the map if the
      * interface supports that.
      */
-    if (BigInt.asUintN(
-        64,
-        BigInt.asUintN(
-            64,
-            BigInt.asUintN(
-                64,
-                BigInt.asUintN(
-                    64,
-                    BigInt.asUintN(
-                        64,
-                        BigInt.asUintN(
-                            64,
-                            BigInt.asUintN(
-                                64,
-                                BigInt.asUintN(
-                                    64,
-                                    BigInt.asUintN(64, (BigInt.asUintN(64, dln - dx)) + 1n) + hln
-                                ) + 1n
-                            ) + xln
-                        ) + 1n
-                    ) + tln
-                ) + 1n
-            ) + cln
-        ) + vrn
-    ) <= 80n) {
+    if (BigInt.asUintN(64, dln - dx + 1n + hln + 1n + xln + 1n + tln + 1n + cln + vrn) <= 80n) {
         nh_snprintf(
             __s_do_statusline2,
             229,
@@ -939,76 +915,16 @@ export function* do_statusline2() {
             cptr.decay(__static_do_statusline2_vers)
         );
     } else {
-        if (BigInt.asUintN(
-            64,
-            BigInt.asUintN(
-                64,
-                BigInt.asUintN(
-                    64,
-                    BigInt.asUintN(
-                        64,
-                        BigInt.asUintN(
-                            64,
-                            BigInt.asUintN(
-                                64,
-                                BigInt.asUintN(
-                                    64,
-                                    BigInt.asUintN(64, BigInt.asUintN(64, dln + 1n) + hln) + 1n
-                                ) + xln
-                            ) + 1n
-                        ) + tln
-                    ) + 1n
-                ) + cln
-            ) + vrn
-        ) > 200n) {
+        if (BigInt.asUintN(64, dln + 1n + hln + 1n + xln + 1n + tln + 1n + cln + vrn) > 200n) {
             (yield* panic(
                 __s_bot2_second_status_line_exceeds_maxco_u,
                 Number(BigInt.asUintN(
                     32,
-                    (BigInt.asUintN(
-                        64,
-                        BigInt.asUintN(
-                            64,
-                            BigInt.asUintN(
-                                64,
-                                BigInt.asUintN(
-                                    64,
-                                    BigInt.asUintN(
-                                        64,
-                                        BigInt.asUintN(
-                                            64,
-                                            BigInt.asUintN(
-                                                64,
-                                                BigInt.asUintN(
-                                                    64,
-                                                    BigInt.asUintN(64, dln + 1n) + hln
-                                                ) + 1n
-                                            ) + xln
-                                        ) + 1n
-                                    ) + tln
-                                ) + 1n
-                            ) + cln
-                        ) + vrn
-                    ))
+                    (BigInt.asUintN(64, dln + 1n + hln + 1n + xln + 1n + tln + 1n + cln + vrn))
                 )),
                 NHM.MAXCO
             ));
-        } else if (BigInt.asUintN(
-            64,
-            BigInt.asUintN(
-                64,
-                BigInt.asUintN(
-                    64,
-                    BigInt.asUintN(
-                        64,
-                        BigInt.asUintN(
-                            64,
-                            BigInt.asUintN(64, (BigInt.asUintN(64, dln - dx)) + 1n) + hln
-                        ) + 1n
-                    ) + xln
-                ) + 1n
-            ) + cln
-        ) <= 80n) {
+        } else if (BigInt.asUintN(64, dln - dx + 1n + hln + 1n + xln + 1n + cln) <= 80n) {
             nh_snprintf(
                 __s_do_statusline2,
                 238,
@@ -1022,16 +938,7 @@ export function* do_statusline2() {
                 cptr.decay(__static_do_statusline2_tmmv),
                 cptr.decay(__static_do_statusline2_vers)
             );
-        } else if (BigInt.asUintN(
-            64,
-            BigInt.asUintN(
-                64,
-                BigInt.asUintN(
-                    64,
-                    BigInt.asUintN(64, (BigInt.asUintN(64, dln - dx)) + 1n) + hln
-                ) + 1n
-            ) + cln
-        ) <= 80n) {
+        } else if (BigInt.asUintN(64, dln - dx + 1n + hln + 1n + cln) <= 80n) {
             nh_snprintf(
                 __s_do_statusline2,
                 241,
@@ -1452,11 +1359,7 @@ export function* weapon_status(outbuf) {
 /* armor description for status lines */
 /** C ref: botl.c:559 — @param {CPtr<char>} armbuf @returns {CPtr<char>} */
 export function* armor_status(armbuf) {
-    let n = (((((((((((!!uarmg.v + !!uarmc.v) | 0) + !!uarm.v) | 0) + !!uarmu.v) | 0) +
-        !!uarmh.v) | 0) +
-        !!uarmf.v) | 0) +
-        !!uarms.v) |
-            0;
+    let n = (!!uarmg.v + !!uarmc.v + !!uarm.v + !!uarmu.v + !!uarmh.v + !!uarmf.v + !!uarms.v) | 0;
 
     /*
      * FIXME: ^X needs to provide non-abbreviated version of this info.
@@ -2444,24 +2347,13 @@ function* bot_via_windowport() {
             : pmname(cptr.add(mons, cptr.ldI32o(u, $you_umonnum), $sizeof_permonst), Ugender());
     i = Number(BigInt.asIntN(
         32,
-        (BigInt.asUintN(
-            64,
-            BigInt.asUintN(
-                64,
-                BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 6n) + cptr.strlen(titl)
-            ) - 1n
-        ))
+        (BigInt.asUintN(64, cptr.strlen(cptr.decay(buf)) + 6n + cptr.strlen(titl) - 1n))
     ));
     /* if "Name the Rank/monster" is too long, we truncate the name but
        always keep at least BOTL_NSIZ characters of it; when hitpointbar is
        enabled, anything beyond 30 (long monster name) will be truncated */
     if (i > 30) {
-        i = (30 -
-            Number(BigInt.asIntN(
-                32,
-                (BigInt.asUintN(64, BigInt.asUintN(64, 6n + cptr.strlen(titl)) - 1n))
-            ))) |
-                0;
+        i = (30 - Number(BigInt.asIntN(32, (BigInt.asUintN(64, 6n + cptr.strlen(titl) - 1n))))) | 0;
         cptr.st1o(nb, ((i) > NHM.BOTL_NSIZ ? (i) : NHM.BOTL_NSIZ), 0);
     }
     void cptr.strcpy(nb = eos(nb), __s_the);
@@ -3702,7 +3594,7 @@ function* eval_notify_windowport_field(fld, valsetlist, idx) {
                 __static_eval_notify_windowport_field_oldrndencode ||
                 cptr.ld1uo2(
                     gs,
-                    ((NHC.COIN_CLASS + (((0) + NHC.MAXPCHARS) | 0)) | 0),
+                    ((NHC.COIN_CLASS + ((0) + NHC.MAXPCHARS)) | 0),
                     1,
                     $instance_globals_s_showsyms
                 ) !=
@@ -3714,7 +3606,7 @@ function* eval_notify_windowport_field(fld, valsetlist, idx) {
         );
         __static_eval_notify_windowport_field_oldgoldsym = cptr.ld1uo2(
             gs,
-            ((NHC.COIN_CLASS + (((0) + NHC.MAXPCHARS) | 0)) | 0),
+            ((NHC.COIN_CLASS + ((0) + NHC.MAXPCHARS)) | 0),
             1,
             $instance_globals_s_showsyms
         );
@@ -4936,10 +4828,7 @@ function* get_hilite(idx, fldidx, vp, chg, pc, colorptr) {
                 );
                 if (fldidx == NHC.BL_TITLE)
                     /* "<name> the <rank-title>", skip past "<name> the " */
-                    txtstr = cptr.add(
-                        txtstr,
-                        BigInt.asUintN(64, BigInt.asUintN(64, cptr.strlen(svp) + 6n) - 1n)
-                    );
+                    txtstr = cptr.add(txtstr, BigInt.asUintN(64, cptr.strlen(svp) + 6n - 1n));
                 if (cptr.ldI32o(hl, $hilite_s_rel) == NHC.TXT_VALUE &&
                         cptr.ld1so2(hl, 0, 1, $hilite_s_textmatch)) {
                     if ((yield* fuzzymatch(
