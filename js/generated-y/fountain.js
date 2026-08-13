@@ -26,7 +26,7 @@ import { dunlev, dunlevs_in_dungeon, level_difficulty, surface } from './dungeon
 import {
     You, You_feel, You_hear, You_see, Your, livelog_printf, pline, pline_The, verbalize
 } from './pline.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rnd } from './rnd.js';
 import { fruitname, makeplural, rnd_class, the, xname } from './objnam.js';
 import { Amonnam, a_monnam, hcolor, hliquid, oname, rndmonnam } from './do_name.js';
 import { makemon } from './makemon.js';
@@ -185,8 +185,6 @@ const __s_s_moves_as_though_of_its_own_will = cptr.lit("%s moves as though of it
 const __s_but_it_quiets_down = cptr.lit("But it quiets down.");
 const __s_yuk_this_s_tastes_awful = cptr.lit("Yuk, this %s tastes awful.");
 const __s_gaggg_this_tastes_like_sewage_you_vomit = cptr.lit("Gaggg... this tastes like sewage!  You vomit.");
-const __s_fountain_c = cptr.lit("fountain.c");
-const __s_drinksink = cptr.lit("drinksink");
 const __s_this_s_contains_toxic_wastes = cptr.lit("This %s contains toxic wastes!");
 const __s_undergo_a_freakish_metamorphosis = cptr.lit("undergo a freakish metamorphosis!");
 const __s_clanking_from_the_pipes = cptr.lit("clanking from the pipes...");
@@ -1253,12 +1251,7 @@ export function* drinksink() {
         break;
         case 9:
         (yield* pline(__s_gaggg_this_tastes_like_sewage_you_vomit));
-        (yield* morehungry((((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_fountain_c, 677, __s_drinksink),
-                    rn2((30 - (acurr(NHC.A_CON))) | 0)
-                )
-                : rn2((30 - (acurr(NHC.A_CON))) | 0)) + 11) | 0)));
+        (yield* morehungry(((rn2((30 - (acurr(NHC.A_CON))) | 0) + 11) | 0)));
         (yield* vomit());
         break;
         case 10:

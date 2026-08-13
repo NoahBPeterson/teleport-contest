@@ -13,8 +13,8 @@ import {
     Deaf, HStun, Hallucination, Polymorph_control, Protection_from_shape_changers, Unchanging
 } from './nhprop.js';
 import { flags, gm, gw, gy, svc, u } from './decl.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
 import { night } from './calendar.js';
+import { rn2, rnd } from './rnd.js';
 import { canseemon, newsym } from './display.js';
 import { You_feel, You_hear, impossible, pline } from './pline.js';
 import { healmon, monnear, wake_nearto } from './mon.js';
@@ -52,8 +52,6 @@ const $context_info_mon_moving = FLD.context_info_mon_moving, $flag_moonphase = 
       $you_uroleplay = FLD.you_uroleplay, $you_uy = FLD.you_uy;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_were_c = cptr.lit("were.c");
-const __s_were_change = cptr.lit("were_change");
 const __s_wolf = cptr.lit("wolf");
 const __s_jackal = cptr.lit("jackal");
 const __s_a_s_howling_at_the_moon = cptr.lit("a %s howling at the moon.");
@@ -72,16 +70,9 @@ export function were_change(mon) {
 
     if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 8n) != 0n)) {
         if (!Protection_from_shape_changers() &&
-                !(rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_were_c, 17, __s_were_change),
-                        rn2(night()
-                            ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30)
-                            : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50))
-                    )
-                    : rn2(night()
-                        ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30)
-                        : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50)))) {
+                !rn2(night()
+                    ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30)
+                    : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50))) {
             new_were(mon);  /* change into animal form */
             (cptr.stI64o(
                 gw,

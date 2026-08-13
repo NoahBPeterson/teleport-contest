@@ -29,7 +29,7 @@ import {
     In_V_tower, In_hell, In_mines, In_quest, Is_special, depth, level_difficulty, on_level
 } from './dungeon.js';
 import { mons, monst_globals_init } from './monst.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import { enexto, enexto_core, enexto_gpflags, goodpos } from './teleport.js';
 import {
     add_to_container, add_to_minv, bless, curse, discard_minvent, mkobj, mkobj_at, mksobj,
@@ -177,10 +177,9 @@ const $Gender_he = FLD.Gender_he, $Race_hatemask = FLD.Race_hatemask,
 const __s_sunsword = cptr.lit("Sunsword");
 const __s_demonbane = cptr.lit("Demonbane");
 const __s_odd_mercenary_d = cptr.lit("odd mercenary %d?");
-const __s_makemon_c = cptr.lit("makemon.c");
-const __s_m_initinv = cptr.lit("m_initinv");
 const __s_clone_mon_trying_to_create_a_monster_at = cptr.lit("clone_mon trying to create a monster at <%d,%d>?");
 const __s_clone_mon = cptr.lit("clone_mon");
+const __s_makemon_c = cptr.lit("makemon.c");
 const __s_has_emin_m2_has_emin_mon = cptr.lit("has_emin(m2) && has_emin(mon)");
 const __s_has_edog_m2_has_edog_mon = cptr.lit("has_edog(m2) && has_edog(mon)");
 const __s_automatically_extinguished_s = cptr.lit("Automatically extinguished %s.");
@@ -216,7 +215,6 @@ const __s_s_s_s = cptr.lit("%s %s %s.");
 const __s_changes_into = cptr.lit("changes into");
 const __s_becomes = cptr.lit("becomes");
 const __s_grows_up_into = cptr.lit("grows up into");
-const __s_peace_minded = cptr.lit("peace_minded");
 const __s_bad_bag_o_tricks = cptr.lit("bad bag o' tricks");
 const __s_pct_s = cptr.lit("%s");
 const __s_it_s_empty = cptr.lit("It's empty.");
@@ -1209,15 +1207,7 @@ function* m_initinv(mtmp) {
         }
         break;
         case NHC.S_LEPRECHAUN:
-        (yield* mkmonmoney(
-            mtmp,
-            BigInt((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_makemon_c, 797, __s_m_initinv),
-                    d(((yield* level_difficulty())), 30)
-                )
-                : d(((yield* level_difficulty())), 30)))
-        ));
+        (yield* mkmonmoney(mtmp, BigInt(d(((yield* level_difficulty())), 30))));
         break;
         case NHC.S_DEMON:
         /* moved here from m_initweap() because these don't
@@ -1265,12 +1255,7 @@ function* m_initinv(mtmp) {
             !rn2(5))
         (yield* mkmonmoney(
             mtmp,
-            BigInt((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_makemon_c, 832, __s_m_initinv),
-                    d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10))
-                )
-                : d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10))))
+            BigInt(d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10)))
         ));
 }
 
@@ -3379,12 +3364,7 @@ export function peace_minded(ptr) {
         (cptr.ldI32o(u, $you_ualign + $align_record) < -15
             ? -15
             : cptr.ldI32o(u, $you_ualign + $align_record))) | 0) &&
-        !!(rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_makemon_c, 2307, __s_peace_minded),
-                rn2((2 + Math.abs(mal)) | 0)
-            )
-            : rn2((2 + Math.abs(mal)) | 0))
+        !!rn2((2 + Math.abs(mal)) | 0)
             ? 1
             : 0));
 }

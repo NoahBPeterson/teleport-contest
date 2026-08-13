@@ -55,7 +55,7 @@ import {
     addinv, addinv_nomerge, any_obj_ok, carrying, consume_obj_charge, delobj, freeinv, getobj,
     hold_another_object, nxtobj, prinv, sobj_at, stackobj, update_inventory, useup, useupall, useupf
 } from './invent.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller, rnl, shuffle_int_array } from './rnd.js';
+import { d, rn2, rnd, rnl, shuffle_int_array } from './rnd.js';
 import {
     copynchars, dist2, eos, highc, isqrt, nh_snprintf, s_suffix, sgn, strstri, upstart
 } from './hacklib.js';
@@ -586,8 +586,6 @@ const __s_corpse_evades_your_grasp = cptr.lit("corpse evades your grasp.");
 const __s_that_s_too_insubstantial_to_tin = cptr.lit("That's too insubstantial to tin.");
 const __s_you_make_but_cannot_pick_up_s = cptr.lit("You make, but cannot pick up, %s.");
 const __s_tinning_failed = cptr.lit("Tinning failed.");
-const __s_apply_c = cptr.lit("apply.c");
-const __s_use_unicorn_horn = cptr.lit("use_unicorn_horn");
 const __s_suddenly_feel_s = cptr.lit("suddenly feel %s.");
 const __s_trippy = cptr.lit("trippy");
 const __s_confused = cptr.lit("confused");
@@ -777,7 +775,6 @@ const __s_extremely_faded = cptr.lit("extremely faded");
 const __s_barely_visible = cptr.lit("barely visible");
 const __s_flip_s = cptr.lit("flip %s.");
 const __s_it_tumbles_away = cptr.lit("It tumbles away.");
-const __s_flip_coin = cptr.lit("flip_coin");
 const __s_it_slips_between_your_s = cptr.lit("It slips between your %s.");
 const __s_wow_a_double_header = cptr.lit("Wow, a double header!");
 const __s_the_coin_miraculously_lands_on_its_edge = cptr.lit("The coin miraculously lands on its edge!");
@@ -3870,12 +3867,7 @@ export function* use_unicorn_horn(optr) {
             (yield* make_sick(
                 (Sick() & 16777215n)
                     ? BigInt.asIntN(64, (Sick() & 16777215n) / 3n + 1n)
-                    : BigInt((((rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_apply_c, 2272, __s_use_unicorn_horn),
-                            rn2((acurr(NHC.A_CON)))
-                        )
-                        : rn2((acurr(NHC.A_CON)))) + 20) | 0)),
+                    : BigInt(((rn2((acurr(NHC.A_CON))) + 20) | 0)),
                 (yield* xname(obj)),
                 1,
                 NHM.SICK_NONVOMITABLE
@@ -3956,12 +3948,7 @@ export function* use_unicorn_horn(optr) {
      *   blessed:  22.7%  22.7%  19.5%  15.4%  10.7%   5.7%   2.6%   0.8%
      *  uncursed:  35.4%  35.4%  22.9%   6.3%    0      0      0      0
      */
-    val_limit = (rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_apply_c, 2341, __s_use_unicorn_horn),
-                rn2(d(2, ((obj && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 2)))
-            )
-            : rn2(d(2, ((obj && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 2))));
+    val_limit = rn2(d(2, ((obj && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 2)));
     if (val_limit > trouble_count)
         val_limit = trouble_count;
 
@@ -7061,15 +7048,7 @@ function* flip_coin(obj) {
     if (Underwater()) {
         (yield* pline(__s_it_tumbles_away));
         lose_coin = 1;
-    } else if (Glib() ||
-            Fumbling() ||
-            ((acurr(NHC.A_DEX)) < 10 &&
-                !(rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_apply_c, 4537, __s_flip_coin),
-                        rn2((acurr(NHC.A_DEX)))
-                    )
-                    : rn2((acurr(NHC.A_DEX)))))) {
+    } else if (Glib() || Fumbling() || ((acurr(NHC.A_DEX)) < 10 && !rn2((acurr(NHC.A_DEX))))) {
         (yield* pline(__s_it_slips_between_your_s, (yield* fingers_or_gloves(0))));
         lose_coin = 1;
     }

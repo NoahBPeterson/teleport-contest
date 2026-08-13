@@ -32,7 +32,7 @@ import { getpos } from './getpos.js';
 import {
     def_char_is_furniture, def_char_to_monclass, def_char_to_objclass, def_monsyms, def_oc_syms
 } from './drawing.js';
-import { rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
+import { rn2, rn2_on_display_rng, rnd, rnl } from './rnd.js';
 import { mons } from './monst.js';
 import { detect_wsegs } from './worm.js';
 import { consume_obj_charge, currency, sobj_at, useup } from './invent.js';
@@ -211,8 +211,6 @@ const __s_medusa_s_lair = cptr.lit("Medusa's lair");
 const __s_a_castle = cptr.lit("a castle");
 const __s_the_wizard_of_yendor_s_tower = cptr.lit("the Wizard of Yendor's tower");
 const __s_too_bad_you_can_t_see_s = cptr.lit("Too bad you can't see %s.");
-const __s_detect_c = cptr.lit("detect.c");
-const __s_use_crystal_ball = cptr.lit("use_crystal_ball");
 const __s_s_too_much_to_comprehend = cptr.lit("%s too much to comprehend!");
 const __s_are = cptr.lit("are");
 const __s_s_you = cptr.lit("%s you!");
@@ -2124,12 +2122,7 @@ export function use_crystal_ball(optr) {
     }
     oops = is_quest_artifact(obj) ? 8 : ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 16 : 20);
     if (charged && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || rnd(oops) > (acurr(NHC.A_INT)))) {
-        let impair = BigInt((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_detect_c, 1219, __s_use_crystal_ball),
-                    rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)
-                )
-                : rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)));
+        let impair = BigInt(rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0));
 
         switch (rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0)
                 ? 4

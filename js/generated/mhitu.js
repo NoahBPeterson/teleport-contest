@@ -39,7 +39,7 @@ import {
 } from './display.js';
 import { stop_occupation } from './allmain.js';
 import { objects } from './objects.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import { genders } from './role.js';
 import {
     Resists_Elem, attacktype_fordmg, can_blnd, cvt_adtyp_to_mseenres, defended, dmgtype,
@@ -272,8 +272,6 @@ const __s_a_s_nearby = cptr.lit("a %s nearby.");
 const __s_rushing_noise = cptr.lit("rushing noise");
 const __s_splat = cptr.lit("splat");
 const __s_the_combat_suddenly_awakens_you = cptr.lit("The combat suddenly awakens you.");
-const __s_mhitu_c = cptr.lit("mhitu.c");
-const __s_summonmu = cptr.lit("summonmu");
 const __s_creature = cptr.lit("creature");
 const __s_s_summons_help = cptr.lit("%s summons help!");
 const __s_hemmed_in = cptr.lit("hemmed in.");
@@ -283,7 +281,6 @@ const __s_s_appears = cptr.lit("%s appears");
 const __s_s_appear = cptr.lit("%s appear");
 const __s_s_s__2 = cptr.lit("%s%s!");
 const __s_a_slight_illness = cptr.lit("a slight illness.");
-const __s_diseasemu = cptr.lit("diseasemu");
 const __s_s_s_your_s_s = cptr.lit("%s %s your %s %s!");
 const __s_slips_off_of = cptr.lit("slips off of");
 const __s_grabs_you_but_cannot_hold_onto = cptr.lit("grabs you, but cannot hold onto");
@@ -341,7 +338,6 @@ const __s_released = cptr.lit("released");
 const __s_expelled = cptr.lit("expelled");
 const __s_obviously_s_doesn_t_like_your_taste = cptr.lit("Obviously %s doesn't like your taste.");
 const __s_s_explodes_at_a_spot_in_s = cptr.lit("%s explodes at a spot in %s!");
-const __s_explmu = cptr.lit("explmu");
 const __s_are_blinded_by_a_blast_of_light = cptr.lit("are blinded by a blast of light!");
 const __s_get_the_impression_it_was_not_terribly = cptr.lit("get the impression it was not terribly bright.");
 const __s_are_caught_in_a_blast_of_kaleidoscopic = cptr.lit("are caught in a blast of kaleidoscopic light!");
@@ -1722,13 +1718,7 @@ function summonmu(mtmp, youseeit) {
            in the critter-to-human direction but be a no-op the other way;
            we repeat the criteria here for clarity */
         if (((cptr.ldU64o((mdat), $permonst_mflags2) & 8n) != 0n)) {
-            if (!Protection_from_shape_changers() &&
-                    !(rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_mhitu_c, 979, __s_summonmu),
-                            rn2((5 - (Math.imul(night(), 2))) | 0)
-                        )
-                        : rn2((5 - (Math.imul(night(), 2))) | 0)))
+            if (!Protection_from_shape_changers() && !rn2((5 - (Math.imul(night(), 2))) | 0))
                 new_were(mtmp);
         } else {
             if (Protection_from_shape_changers() || !rn2(30))
@@ -1804,12 +1794,7 @@ export function diseasemu(mdat) {
         make_sick(
             Sick()
                 ? BigInt.asIntN(64, Sick() / 3n + 1n)
-                : BigInt((((rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_mhitu_c, 1039, __s_diseasemu),
-                        rn2((acurr(NHC.A_CON)))
-                    )
-                    : rn2((acurr(NHC.A_CON)))) + 20) | 0)),
+                : BigInt(((rn2((acurr(NHC.A_CON))) + 20) | 0)),
             cptr.ldPtro(mdat, NHC.NEUTRAL, 8),
             1,
             NHM.SICK_NONVOMITABLE
@@ -2615,14 +2600,7 @@ function explmu(mtmp, mattk, ufound) {
         not_affected = resists_blnd(cptr.add(gy, $instance_globals_y_youmonst));
         if (ufound && !not_affected) {
             /* sometimes you're affected even if it's invisible */
-            if (mon_visible(mtmp) ||
-                    ((rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_mhitu_c, 1627, __s_explmu),
-                            rnd(tmp = (tmp / 2) | 0)
-                        )
-                        : rnd(tmp = (tmp / 2) | 0)) >
-                        cptr.ldI32o(u, $you_ulevel))) {
+            if (mon_visible(mtmp) || (rnd(tmp = (tmp / 2) | 0) > cptr.ldI32o(u, $you_ulevel))) {
                 You(__s_are_blinded_by_a_blast_of_light);
                 make_blinded(BigInt(tmp), 0);
                 if (!Blind())

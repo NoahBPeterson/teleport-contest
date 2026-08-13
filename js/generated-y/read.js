@@ -37,7 +37,7 @@ import {
     Tobjnam, Yname2, Yobjnam2, actualoname, an, doname, erosion_matters, makeplural, otense,
     simpleonames, singular, suit_simple_name, vtense, xname
 } from './objnam.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import { check_capacity, losehp } from './hack.js';
 import { delobj, getobj, identify_pack, stackobj, update_inventory, useup } from './invent.js';
 import {
@@ -408,8 +408,6 @@ const __s_s_feebly_s_s_for_a_moment = cptr.lit("%s feebly%s%s for a moment.");
 const __s_s_momentarily_then_s = cptr.lit("%s momentarily, then %s!");
 const __s_pulsate = cptr.lit("pulsate");
 const __s_explode = cptr.lit("explode");
-const __s_read_c = cptr.lit("read.c");
-const __s_recharge = cptr.lit("recharge");
 const __s_exploding_ring = cptr.lit("exploding ring");
 const __s_s_spins_sclockwise_for_a_moment = cptr.lit("%s spins %sclockwise for a moment.");
 const __s_counter = cptr.lit("counter");
@@ -1543,12 +1541,7 @@ export function* recharge(obj, curse_bless) {
                 ));
                 if (is_on)
                     (yield* Ring_gone(obj));
-                s = (rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_read_c, 812, __s_recharge),
-                            rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe))))
-                        )
-                        : rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe)))));  /* amount of damage */
+                s = rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe))));  /* amount of damage */
                 (yield* useup(obj)), obj = null;
                 (yield* losehp(
                     ((Half_physical_damage()) ? (((((s) + 1) | 0) / 2) | 0) : (s)),

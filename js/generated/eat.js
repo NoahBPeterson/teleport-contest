@@ -49,7 +49,7 @@ import {
 import {
     You, You_cant, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The, verbalize
 } from './pline.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import { delayed_killer, done } from './end.js';
 import { debugcore } from './files.js';
 import {
@@ -377,7 +377,6 @@ const __s_you_easily_open_the_tin = cptr.lit("You easily open the tin.");
 const __s_using_s_you_try_to_open_the_tin = cptr.lit("Using %s you try to open the tin.");
 const __s_it_is_not_so_easy_to_open_this_tin = cptr.lit("It is not so easy to open this tin.");
 const __s_tin_slips_from_your_s = cptr.lit("tin slips from your %s.");
-const __s_start_tin = cptr.lit("start_tin");
 const __s_opening_the_tin = cptr.lit("opening the tin");
 const __s_blecch_s_s = cptr.lit("Blecch!  %s %s!");
 const __s_rotten__2 = cptr.lit("Rotten");
@@ -3005,13 +3004,7 @@ function start_tin(otmp) {
                 stackobj(otmp);
             return;
         }
-        tmp = (((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_eat_c, 1784, __s_start_tin),
-                    rn2((1 + ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0)
-                )
-                : rn2((1 +
-                    ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0)) + 10) | 0);
+        tmp = ((rn2((1 + ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0) + 10) | 0);
     }
 
     cptr.stPtro(svc, $context_info_tin, otmp);

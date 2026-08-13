@@ -37,9 +37,7 @@ import {
 } from './invent.js';
 import { hits_bars, linedup, m_carrying, ohitmon, thitu } from './mthrowu.js';
 import { dmgval, dry_a_towel, mwepgone, wet_a_towel } from './weapon.js';
-import {
-    d, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller, rnl
-} from './rnd.js';
+import { d, rn2, rn2_on_display_rng, rnd, rnl } from './rnd.js';
 import {
     extract_from_minvent, find_mac, m_dowear, mon_adjust_speed, setnotworn, update_mon_extrinsics,
     which_armor
@@ -787,8 +785,6 @@ const __s_s_awakens = cptr.lit("%s awakens.");
 const __s_reach_out_your_s_and_grab_s = cptr.lit("reach out your %s and grab %s.");
 const __s_s_stirs = cptr.lit("%s stirs.");
 const __s_pull_s_out_of_the_pit = cptr.lit("pull %s out of the pit.");
-const __s_trap_c = cptr.lit("trap.c");
-const __s_disarm_box = cptr.lit("disarm_box");
 const __s_disarm_it = cptr.lit("disarm it!");
 const __s_that_s_was_not_trapped = cptr.lit("That %s was not trapped.");
 const __s_find_a_trap_on_s = cptr.lit("find a trap on %s!");
@@ -839,6 +835,7 @@ const __s_find_no_traps_on_the_door = cptr.lit("find no traps on the door.");
 const __s_your_anchor = cptr.lit("your anchor");
 const __s_trap = cptr.lit("trap");
 const __s_openholdingtrap = cptr.lit("openholdingtrap");
+const __s_trap_c = cptr.lit("trap.c");
 const __s_t_null = cptr.lit("t != NULL");
 const __s_which_0 = cptr.lit("which != 0");
 const __s_you_are = cptr.lit("You are");
@@ -8710,14 +8707,7 @@ function disarm_box(box, force, confused) {
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE))
             ch = Math.imul(ch, 2);
         if (!force &&
-                (confused ||
-                    Fumbling() ||
-                    (rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_trap_c, 5802, __s_disarm_box),
-                            rnd((75 + ((level_difficulty() / 2) | 0)) | 0)
-                        )
-                        : rnd((75 + ((level_difficulty() / 2) | 0)) | 0)) > ch)) {
+                (confused || Fumbling() || rnd((75 + ((level_difficulty() / 2) | 0)) | 0) > ch)) {
             void chest_trap(box, NHC.FINGER, 1);
             /* 'box' might be gone now */
         } else {
@@ -9099,12 +9089,7 @@ export function untrap(force, rx, ry, container) {
             if (!force &&
                     (confused ||
                         Fumbling() ||
-                        (rng_log_enabled()
-                            ? (
-                                rng_log_set_caller(__s_trap_c, 6074, __s_untrap),
-                                rnd((75 + ((level_difficulty() / 2) | 0)) | 0)
-                            )
-                            : rnd((75 + ((level_difficulty() / 2) | 0)) | 0)) > ch)) {
+                        rnd((75 + ((level_difficulty() / 2) | 0)) | 0) > ch)) {
                 You(__s_set_it_off);
                 b_trapped(__s_door, NHC.FINGER);
                 cptr.stI32o3(

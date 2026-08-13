@@ -18,7 +18,7 @@ import { mfndpos, mon_allowflags, mongone, monnear, setmangry, wakeup } from './
 import {
     flags, gb, gc, gi, gm, gn, gt, gv, program_state, svd, svl, svm, svr, u, xdir, ydir
 } from './decl.js';
-import { d, rn2, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2 } from './rnd.js';
 import { dist2, online2, s_suffix, sgn, strncmpi } from './hacklib.js';
 import { m_break_boulder, m_move_aggress } from './monmove.js';
 import { place_monster } from './steed.js';
@@ -104,8 +104,6 @@ const $Gender_his = FLD.Gender_his, $align_record = FLD.align_record,
       $you_uz = FLD.you_uz;
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_priest_c = cptr.lit("priest.c");
-const __s_move_special = cptr.lit("move_special");
 const __s_displaced_image_doesn_t_fool_s = cptr.lit("displaced image doesn't fool %s!");
 const __s_poohbah = cptr.lit("poohbah");
 const __s_priestess = cptr.lit("priestess");
@@ -173,6 +171,7 @@ const __s_s_roars_in_anger_thou_shalt_suffer = cptr.lit("%s roars in anger:  \"T
 const __s_s_voice_booms_how_darest_thou_harm_my = cptr.lit("%s voice booms:  \"How darest thou harm my servant!\"");
 const __s_s_roars_thou_dost_profane_my_shrine = cptr.lit("%s roars:  \"Thou dost profane my shrine!\"");
 const __s_angry_priest = cptr.lit("angry_priest");
+const __s_priest_c = cptr.lit("priest.c");
 const __s_has_emin_priest = cptr.lit("has_emin(priest)");
 
 /** C ref: priest.c:16 — @param {CPtr<struct monst>} mtmp */
@@ -280,10 +279,7 @@ export function move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, 
                         (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 2097152n) &&
                         !(cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n))
                     continue;
-                if ((!appr &&
-                    !(rng_log_enabled()
-                        ? (rng_log_set_caller(__s_priest_c, 85, __s_move_special), rn2(++chcnt))
-                        : rn2(++chcnt))) ||
+                if ((!appr && !rn2(++chcnt)) ||
                         (appr && (dist2(nx, ny, ggx, ggy)) < (dist2(nix, niy, ggx, ggy))) ||
                         (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n)) {
                     nix = nx;

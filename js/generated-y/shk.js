@@ -60,7 +60,7 @@ import { canseemon, map_invisible, newsym, nul_glyphinfo, sensemon } from './dis
 import { record_achievement } from './insight.js';
 import { Hello, genders } from './role.js';
 import { locomotion, pronoun_gender, resist_conflict } from './mondata.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rnd } from './rnd.js';
 import { body_part, mbodypart, poly_gender } from './polyself.js';
 import { growl, set_voice, yelp } from './sounds.js';
 import { discover_object, observe_object } from './o_init.js';
@@ -551,7 +551,6 @@ const __s_s_is_s_that_you_decided_to_s_s_s = cptr.lit("%s is %s that you decided
 const __s_s_shouts = cptr.lit("%s shouts:");
 const __s_who_dared_s_my_s = cptr.lit("Who dared %s my %s?");
 const __s_s_is_s_that_someone_decided_to_s_s_s = cptr.lit("%s is %s that someone decided to %s %s %s!");
-const __s_pay_for_damage = cptr.lit("pay_for_damage");
 const __s_s_leaps_towards_you = cptr.lit("%s leaps towards you!");
 const __s_an_angry_voice = cptr.lit("an angry voice:");
 const __s_invisibility_does_not_fool_s = cptr.lit("invisibility does not fool %s!");
@@ -7568,9 +7567,7 @@ export function* pay_for_damage(dmgstr, cant_mollify) {
             if (shk_distance > nearest_shk)
                 continue;
             if ((shk_distance == nearest_shk) && picks) {
-                if ((rng_log_enabled()
-                        ? (rng_log_set_caller(__s_shk_c, 5218, __s_pay_for_damage), rn2(++picks))
-                        : rn2(++picks)))
+                if (rn2(++picks))
                     continue;
             } else
                 picks = 1;

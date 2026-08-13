@@ -47,7 +47,7 @@ import {
     mon_allowflags, mondied, mongone, monkilled, monnear, mpickstuff, newcham, unstuck, wake_msg,
     wake_nearto, wakeup
 } from './mon.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import { lined_up, m_carrying, m_has_launcher_and_ammo } from './mthrowu.js';
 import { genders } from './role.js';
 import { mbodypart } from './polyself.js';
@@ -216,8 +216,6 @@ const __s_its_imagination = cptr.lit("[its imagination?]");
 const __s_s_flees_from_the_painful_light_of_s = cptr.lit("%s flees from the painful light of %s.");
 const __s_bright_light = cptr.lit("Bright light!");
 const __s_s_turns_to_flee = cptr.lit("%s turns to flee.");
-const __s_monmove_c = cptr.lit("monmove.c");
-const __s_distfleeck = cptr.lit("distfleeck");
 const __s_s_concentrates = cptr.lit("%s concentrates.");
 const __s_sense_a_faint_wave_of_psychic_energy = cptr.lit("sense a faint wave of psychic energy.");
 const __s_a_wave_of_psychic_energy_pours_over_you = cptr.lit("A wave of psychic energy pours over you!");
@@ -251,6 +249,7 @@ const __s_between = cptr.lit("between");
 const __s_unknown_shk_gd_pri_move_return_value_d = cptr.lit("unknown shk/gd/pri_move return value (%d)");
 const __s_i_m_late = cptr.lit("I'm late!");
 const __s_m_move = cptr.lit("m_move");
+const __s_monmove_c = cptr.lit("monmove.c");
 const __s_indexok_chi_mfp_info = cptr.lit("IndexOk(chi, mfp.info)");
 
 /* a11y: give a message when monster moved */
@@ -1093,14 +1092,7 @@ function* distfleeck(mtmp, inrange, nearby, scared) {
                     !bravegremlin) ||
                 (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && (yield* in_your_sanctuary(mtmp, 0, 0))))) {
         cptr.stI32(scared, 1);
-        (yield* monflee(
-            mtmp,
-            (rng_log_enabled()
-                ? (rng_log_set_caller(__s_monmove_c, 564, __s_distfleeck), rnd(rn2(7) ? 10 : 100))
-                : rnd(rn2(7) ? 10 : 100)),
-            1,
-            1
-        ));
+        (yield* monflee(mtmp, rnd(rn2(7) ? 10 : 100), 1, 1));
     } else
         cptr.stI32(scared, 0);
 }
@@ -3286,13 +3278,7 @@ export function* m_move(mtmp, after) {
 
                 if ((appr.v == 1 && nearer) ||
                         (appr.v == -1 && !nearer) ||
-                        (!appr.v &&
-                            !(rng_log_enabled()
-                                ? (
-                                    rng_log_set_caller(__s_monmove_c, 1970, __s_m_move),
-                                    rn2(++chcnt)
-                                )
-                                : rn2(++chcnt))) ||
+                        (!appr.v && !rn2(++chcnt)) ||
                         (appr.v == -2 &&
                             ((ndist <= preferredrange_min.v && !nearer) ||
                                 (ndist >= preferredrange_max.v && nearer))) ||

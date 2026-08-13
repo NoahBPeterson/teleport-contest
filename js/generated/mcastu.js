@@ -21,7 +21,7 @@ import {
     verbalize
 } from './pline.js';
 import { Mgender, Monnam, bogusmon, mon_nam, noit_Monnam, pmname } from './do_name.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import { cvt_adtyp_to_mseenres, monstseesu, monstunseesu, pronoun_gender } from './mondata.js';
 import { debugcore } from './files.js';
 import { is_waterwall } from './dbridge.js';
@@ -149,7 +149,6 @@ const __s_no_reason_for_monster_to_cast_disappear = cptr.lit("no reason for mons
 const __s_momentarily_disoriented = cptr.lit("momentarily disoriented.");
 const __s_struggle_to_keep_your_balance = cptr.lit("struggle to keep your balance.");
 const __s_reel = cptr.lit("reel...");
-const __s_mcast_stun_you = cptr.lit("mcast_stun_you");
 const __s_a_sudden_geyser_slams_into_you_from = cptr.lit("A sudden geyser slams into you from nowhere!");
 const __s_a_pillar_of_fire_strikes_all_around_you = cptr.lit("A pillar of fire strikes all around you!");
 const __s_a_bolt_of_lightning_strikes_down_at_you = cptr.lit("A bolt of lightning strikes down at you from above!");
@@ -815,12 +814,7 @@ function mcast_stun_you(dmg) {
         make_stunned(1n, 0);
     } else {
         You(HStun() ? __s_struggle_to_keep_your_balance : __s_reel);
-        dmg = (rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_mcastu_c, 514, __s_mcast_stun_you),
-                    d(((acurr(NHC.A_DEX)) < 12 ? 6 : 4), 4)
-                )
-                : d(((acurr(NHC.A_DEX)) < 12 ? 6 : 4), 4));
+        dmg = d(((acurr(NHC.A_DEX)) < 12 ? 6 : 4), 4);
         if (Half_spell_damage())
             dmg = (((dmg + 1) | 0) / 2) | 0;
         make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(dmg)), 0);

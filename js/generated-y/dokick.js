@@ -40,7 +40,7 @@ import {
 } from './uhitm.js';
 import { abuse_dog } from './dog.js';
 import { closed_door, mon_yells, monflee, set_apparxy } from './monmove.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
+import { rn2, rnd, rnl } from './rnd.js';
 import { enexto, goodpos, noteleport_level, rloco } from './teleport.js';
 import { Monnam, a_monnam, christen_orc, free_oname, hcolor, hliquid, mon_nam } from './do_name.js';
 import { m_in_out_region } from './region.js';
@@ -181,8 +181,6 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum, $align_record = 
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_pct_s_dot = cptr.lit("%s.");
-const __s_dokick_c = cptr.lit("dokick.c");
-const __s_kickdmg = cptr.lit("kickdmg");
 const __s_s_reels_from_the_blow = cptr.lit("%s reels from the blow.");
 const __s_floating_in_the_air_you_miss_wildly = cptr.lit("Floating in the air, you miss wildly!");
 const __s_is_s_here = cptr.lit("is %s here.");
@@ -275,7 +273,6 @@ const __s_kick_at_empty_space = cptr.lit("kick at empty space.");
 const __s_dumb_move_you_strain_a_muscle = cptr.lit("Dumb move!  You strain a muscle.");
 const __s_ouch_that_hurts = cptr.lit("Ouch!  That hurts!");
 const __s_drawbridge_is_unaffected = cptr.lit("drawbridge is unaffected.");
-const __s_kick_ouch = cptr.lit("kick_ouch");
 const __s_kick_the_door = cptr.lit("kick the door.");
 const __s_door = cptr.lit("door");
 const __s_as_you_kick_the_door_it_shatters_to = cptr.lit("As you kick the door, it shatters to pieces!");
@@ -425,14 +422,7 @@ function* kickdmg(mon, clumsy) {
                 (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS))) {
             if (dmg > 1)
                 kick_skill = NHC.P_BARE_HANDED_COMBAT;
-            dmg = (dmg +
-                (rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_dokick_c, 85, __s_kickdmg),
-                        rn2(((((acurr(NHC.A_DEX)) / 2) | 0) + 1) | 0)
-                    )
-                    : rn2(((((acurr(NHC.A_DEX)) / 2) | 0) + 1) | 0))) |
-                    0;
+            dmg = (dmg + rn2(((((acurr(NHC.A_DEX)) / 2) | 0) + 1) | 0)) | 0;
         }
         /* a good kick exercises your dex */
         (yield* exercise(NHC.A_DEX, 1));
@@ -1754,12 +1744,7 @@ function* kick_ouch(x, y, kickobjnam) {
     }
     if (!rn2(3))
         (yield* set_wounded_legs(262144n, (5 + rnd(5)) | 0));
-    dmg = (rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_dokick_c, 902, __s_kick_ouch),
-                rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5)
-            )
-            : rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5));
+    dmg = rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5);
     (yield* losehp(
         ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)),
         kickstr(cptr.decay(buf), kickobjnam),

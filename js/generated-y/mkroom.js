@@ -19,7 +19,7 @@ import { flags, gn, gs, svd, svl, svm, svn, svr, u, ubirthday } from './decl.js'
 import { nh_getenv } from './options.js';
 import { shtypes } from './shknam.js';
 import { def_oc_syms } from './drawing.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rnd } from './rnd.js';
 import { occupied, topologize } from './mklev.js';
 import { In_hell, induced_align, level_difficulty } from './dungeon.js';
 import { makemon, mkclass, mongets, set_malign } from './makemon.js';
@@ -81,12 +81,6 @@ const $coord_y = FLD.coord_y, $dgn_topology_d_astral_level = FLD.dgn_topology_d_
 const __s_tried_to_make_a_room_of_type_d = cptr.lit("Tried to make a room of type %d.");
 const __s_shoptype = cptr.lit("SHOPTYPE");
 const __s_rooms_not_closed_by_1 = cptr.lit("rooms[] not closed by -1?");
-const __s_mkroom_c = cptr.lit("mkroom.c");
-const __s_mk_zoo_thronemon = cptr.lit("mk_zoo_thronemon");
-const __s_fill_zoo = cptr.lit("fill_zoo");
-const __s_morguemon = cptr.lit("morguemon");
-const __s_courtmon = cptr.lit("courtmon");
-const __s_squadmon = cptr.lit("squadmon");
 const __s_room_mkroom = cptr.lit("room-mkroom");
 const __s_room_nroom = cptr.lit("room-nroom");
 const __s_invalid_shop_shape_no_squares_inside = cptr.lit("invalid_shop_shape: no squares inside door?");
@@ -340,9 +334,7 @@ function mkzoo(type) {
 
 /** C ref: mkroom.c:257 — @param {CInt} x @param {CInt} y */
 function* mk_zoo_thronemon(x, y) {
-    let i = (rng_log_enabled()
-            ? (rng_log_set_caller(__s_mkroom_c, 259, __s_mk_zoo_thronemon), rnd((yield* level_difficulty())))
-            : rnd((yield* level_difficulty())));
+    let i = rnd((yield* level_difficulty()));
     let pm = (i > 9)
             ? NHC.PM_OGRE_TYRANT
             : ((i > 5)
@@ -642,12 +634,7 @@ export function* fill_zoo(sroom) {
             cptr.stI64o(
                 gold,
                 $obj_quan,
-                BigInt((((rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_mkroom_c, 426, __s_fill_zoo),
-                        rn2(Math.imul(50, (yield* level_difficulty())))
-                    )
-                    : rn2(Math.imul(50, (yield* level_difficulty())))) + 10) | 0))
+                BigInt(((rn2(Math.imul(50, (yield* level_difficulty()))) + 10) | 0))
             );
             cptr.stI32o(gold, $obj_owt, (yield* weight(gold)) >>> 0);
             /* the royal coffers */
@@ -728,9 +715,7 @@ export function* mkundead(mm, revive_corpses, mm_flags) {
 /** C ref: mkroom.c:478 @returns {CPtr<struct permonst>} */
 function* morguemon() {
     let i = rn2(100);
-    let hd = (rng_log_enabled()
-            ? (rng_log_set_caller(__s_mkroom_c, 480, __s_morguemon), rn2((yield* level_difficulty())))
-            : rn2((yield* level_difficulty())));
+    let hd = rn2((yield* level_difficulty()));
 
     if (hd > 10 && i < 10) {
         if (In_hell(cptr.add(u, $you_uz)) ||
@@ -1268,14 +1253,7 @@ export function search_special(type) {
 
 /** C ref: mkroom.c:783 @returns {CPtr<struct permonst>} */
 export function* courtmon() {
-    let i = (rn2(60) +
-        (rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_mkroom_c, 785, __s_courtmon),
-                rn2(Math.imul(3, (yield* level_difficulty())))
-            )
-            : rn2(Math.imul(3, (yield* level_difficulty()))))) |
-            0;
+    let i = (rn2(60) + rn2(Math.imul(3, (yield* level_difficulty())))) | 0;
 
     if (i > 100)
         return (yield* mkclass(NHC.S_DRAGON, 0));
@@ -1319,12 +1297,7 @@ function* squadmon() {
     let mndx;
     __lbl_gotone: {
 
-        sel_prob = (rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_mkroom_c, 821, __s_squadmon),
-                    rnd((80 + (yield* level_difficulty())) | 0)
-                )
-                : rnd((80 + (yield* level_difficulty())) | 0));
+        sel_prob = rnd((80 + (yield* level_difficulty())) | 0);
 
         cpro = 0;
         for (i = 0; i < 4; i++) {

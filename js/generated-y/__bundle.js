@@ -87590,8 +87590,6 @@ function* reset_customsymbols() {
 
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_were_c = cptr.lit("were.c");
-const __s_were_change = cptr.lit("were_change");
 const __s_wolf$were = cptr.lit("wolf");
 const __s_jackal$were = cptr.lit("jackal");
 const __s_a_s_howling_at_the_moon = cptr.lit("a %s howling at the moon.");
@@ -87610,16 +87608,9 @@ function* were_change(mon) {
 
     if (((cptr.ldU64o((cptr.ldPtro(mon, $monst_data)), $permonst_mflags2) & 8n) != 0n)) {
         if (!Protection_from_shape_changers() &&
-                !(rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_were_c, 17, __s_were_change),
-                        rn2((yield* night())
-                            ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30)
-                            : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50))
-                    )
-                    : rn2((yield* night())
-                        ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30)
-                        : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50)))) {
+                !rn2((yield* night())
+                    ? (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 3 : 30)
+                    : (cptr.ldI32o(flags, $flag_moonphase) == NHM.FULL_MOON ? 10 : 50))) {
             (yield* new_were(mon));  /* change into animal form */
             (cptr.stI64o(
                 gw,
@@ -92697,8 +92688,6 @@ const __s_medusa_s_lair = cptr.lit("Medusa's lair");
 const __s_a_castle = cptr.lit("a castle");
 const __s_the_wizard_of_yendor_s_tower = cptr.lit("the Wizard of Yendor's tower");
 const __s_too_bad_you_can_t_see_s = cptr.lit("Too bad you can't see %s.");
-const __s_detect_c = cptr.lit("detect.c");
-const __s_use_crystal_ball = cptr.lit("use_crystal_ball");
 const __s_s_too_much_to_comprehend = cptr.lit("%s too much to comprehend!");
 const __s_are = cptr.lit("are");
 const __s_s_you = cptr.lit("%s you!");
@@ -94610,12 +94599,7 @@ function* use_crystal_ball(optr) {
     }
     oops = is_quest_artifact(obj) ? 8 : ((cptr.ldI32o(obj, $obj_blessed) & 1) | 0 ? 16 : 20);
     if (charged && ((cptr.ldI32o(obj, $obj_cursed) & 1) | 0 || rnd(oops) > (acurr(NHC.A_INT)))) {
-        let impair = BigInt((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_detect_c, 1219, __s_use_crystal_ball),
-                    rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)
-                )
-                : rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0)));
+        let impair = BigInt(rnd((100 - Math.imul(3, (acurr(NHC.A_INT)))) | 0));
 
         switch (rnd((cptr.ld1so(obj, $obj_oartifact) || (cptr.ldI32o(obj, $obj_blessed) & 1) | 0)
                 ? 4
@@ -100914,7 +100898,6 @@ const __s_dogmove_c = cptr.lit("dogmove.c");
 const __s_edog_apport_0 = cptr.lit("edog->apport > 0");
 const __s_s_picks_up_s = cptr.lit("%s picks up %s.");
 const __s_dog_move_for_non_pet = cptr.lit("dog_move for non-pet?");
-const __s_dog_move = cptr.lit("dog_move");
 const __s_s_breaks_loose_of_s_leash = cptr.lit("%s breaks loose of %s leash!");
 const __s_s_s_reluctantly_s_s = cptr.lit("%s %s reluctantly %s %s.");
 const __s_step$dogmove = cptr.lit("step");
@@ -102668,10 +102651,7 @@ function* dog_move(mtmp, after) {
                         nidist) | 0),
                     appr
                 );
-                if ((j == 0 &&
-                    !(rng_log_enabled()
-                        ? (rng_log_set_caller(__s_dogmove_c, 1255, __s_dog_move), rn2(++chcnt))
-                        : rn2(++chcnt))) ||
+                if ((j == 0 && !rn2(++chcnt)) ||
                         j < 0 ||
                         (j > 0 && !whappr && ((omx == nix && omy == niy && !rn2(3)) || !rn2(12)))) {
                     nix = nx;
@@ -114969,8 +114949,6 @@ const __s_s_feebly_s_s_for_a_moment = cptr.lit("%s feebly%s%s for a moment.");
 const __s_s_momentarily_then_s = cptr.lit("%s momentarily, then %s!");
 const __s_pulsate = cptr.lit("pulsate");
 const __s_explode$read = cptr.lit("explode");
-const __s_read_c = cptr.lit("read.c");
-const __s_recharge = cptr.lit("recharge");
 const __s_exploding_ring = cptr.lit("exploding ring");
 const __s_s_spins_sclockwise_for_a_moment = cptr.lit("%s spins %sclockwise for a moment.");
 const __s_counter = cptr.lit("counter");
@@ -116104,12 +116082,7 @@ function* recharge(obj, curse_bless) {
                 ));
                 if (is_on)
                     (yield* Ring_gone(obj));
-                s = (rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_read_c, 812, __s_recharge),
-                            rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe))))
-                        )
-                        : rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe)))));  /* amount of damage */
+                s = rnd(Math.imul(3, Math.abs(cptr.ld1so(obj, $obj_spe))));  /* amount of damage */
                 (yield* useup(obj)), obj = null;
                 (yield* losehp(
                     ((Half_physical_damage()) ? (((((s) + 1) | 0) / 2) | 0) : (s)),
@@ -123452,8 +123425,6 @@ const __s_seem_to = cptr.lit("seem to ");
 const __s_piped = cptr.lit("piped");
 const __s_soft = cptr.lit("soft");
 const __s_familiar = cptr.lit(", familiar");
-const __s_music_c = cptr.lit("music.c");
-const __s_do_improvisation = cptr.lit("do_improvisation");
 const __s_s_s$music = cptr.lit("%s%s.");
 const __s_trill = cptr.lit("trill");
 const __s_toot = cptr.lit("toot");
@@ -124327,10 +124298,7 @@ function* do_improvisation(instr) {
         (yield* exercise(NHC.A_DEX, 1));
         break;
         case NHC.WOODEN_FLUTE:
-        do_spec &= ((((rng_log_enabled()
-            ? (rng_log_set_caller(__s_music_c, 600, __s_do_improvisation), rn2((acurr(NHC.A_DEX))))
-            : rn2((acurr(NHC.A_DEX)))) +
-                cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
+        do_spec &= (((rn2((acurr(NHC.A_DEX))) + cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
         if (!Deaf())
             (yield* pline(
                 __s_s_s$music,
@@ -124426,10 +124394,7 @@ function* do_improvisation(instr) {
         (yield* exercise(NHC.A_DEX, 1));
         break;
         case NHC.WOODEN_HARP:
-        do_spec &= ((((rng_log_enabled()
-            ? (rng_log_set_caller(__s_music_c, 673, __s_do_improvisation), rn2((acurr(NHC.A_DEX))))
-            : rn2((acurr(NHC.A_DEX)))) +
-                cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
+        do_spec &= (((rn2((acurr(NHC.A_DEX))) + cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
         if (!Deaf())
             (yield* pline(
                 __s_s_s__2$music,
@@ -125499,8 +125464,6 @@ function quest_stat_check(mtmp) {
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_pct_s_dot$dokick = cptr.lit("%s.");
-const __s_dokick_c = cptr.lit("dokick.c");
-const __s_kickdmg = cptr.lit("kickdmg");
 const __s_s_reels_from_the_blow = cptr.lit("%s reels from the blow.");
 const __s_floating_in_the_air_you_miss_wildly = cptr.lit("Floating in the air, you miss wildly!");
 const __s_is_s_here = cptr.lit("is %s here.");
@@ -125593,7 +125556,6 @@ const __s_kick_at_empty_space = cptr.lit("kick at empty space.");
 const __s_dumb_move_you_strain_a_muscle = cptr.lit("Dumb move!  You strain a muscle.");
 const __s_ouch_that_hurts = cptr.lit("Ouch!  That hurts!");
 const __s_drawbridge_is_unaffected = cptr.lit("drawbridge is unaffected.");
-const __s_kick_ouch = cptr.lit("kick_ouch");
 const __s_kick_the_door = cptr.lit("kick the door.");
 const __s_door$dokick = cptr.lit("door");
 const __s_as_you_kick_the_door_it_shatters_to = cptr.lit("As you kick the door, it shatters to pieces!");
@@ -125743,14 +125705,7 @@ function* kickdmg(mon, clumsy) {
                 (uarmf.v && cptr.ldI16o(uarmf.v, $obj_otyp) == NHC.KICKING_BOOTS))) {
             if (dmg > 1)
                 kick_skill = NHC.P_BARE_HANDED_COMBAT;
-            dmg = (dmg +
-                (rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_dokick_c, 85, __s_kickdmg),
-                        rn2(((((acurr(NHC.A_DEX)) / 2) | 0) + 1) | 0)
-                    )
-                    : rn2(((((acurr(NHC.A_DEX)) / 2) | 0) + 1) | 0))) |
-                    0;
+            dmg = (dmg + rn2(((((acurr(NHC.A_DEX)) / 2) | 0) + 1) | 0)) | 0;
         }
         /* a good kick exercises your dex */
         (yield* exercise(NHC.A_DEX, 1));
@@ -127072,12 +127027,7 @@ function* kick_ouch(x, y, kickobjnam) {
     }
     if (!rn2(3))
         (yield* set_wounded_legs(262144n, (5 + rnd(5)) | 0));
-    dmg = (rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_dokick_c, 902, __s_kick_ouch),
-                rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5)
-            )
-            : rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5));
+    dmg = rnd((acurr(NHC.A_CON)) > 15 ? 3 : 5);
     (yield* losehp(
         ((Half_physical_damage()) ? (((((dmg) + 1) | 0) / 2) | 0) : (dmg)),
         kickstr(cptr.decay(buf), kickobjnam),
@@ -137129,7 +137079,6 @@ const __s_no_reason_for_monster_to_cast_disappear = cptr.lit("no reason for mons
 const __s_momentarily_disoriented = cptr.lit("momentarily disoriented.");
 const __s_struggle_to_keep_your_balance = cptr.lit("struggle to keep your balance.");
 const __s_reel = cptr.lit("reel...");
-const __s_mcast_stun_you = cptr.lit("mcast_stun_you");
 const __s_a_sudden_geyser_slams_into_you_from = cptr.lit("A sudden geyser slams into you from nowhere!");
 const __s_a_pillar_of_fire_strikes_all_around_you = cptr.lit("A pillar of fire strikes all around you!");
 const __s_a_bolt_of_lightning_strikes_down_at_you = cptr.lit("A bolt of lightning strikes down at you from above!");
@@ -137795,12 +137744,7 @@ function* mcast_stun_you(dmg) {
         (yield* make_stunned(1n, 0));
     } else {
         (yield* You(HStun() ? __s_struggle_to_keep_your_balance : __s_reel));
-        dmg = (rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_mcastu_c, 514, __s_mcast_stun_you),
-                    d(((acurr(NHC.A_DEX)) < 12 ? 6 : 4), 4)
-                )
-                : d(((acurr(NHC.A_DEX)) < 12 ? 6 : 4), 4));
+        dmg = d(((acurr(NHC.A_DEX)) < 12 ? 6 : 4), 4);
         if (Half_spell_damage())
             dmg = (((dmg + 1) | 0) / 2) | 0;
         (yield* make_stunned(BigInt.asIntN(64, (HStun() & 16777215n) + BigInt(dmg)), 0));
@@ -138725,7 +138669,6 @@ const __s_s_pricks_the_exposed_part_of_your_s_s = cptr.lit("%s pricks the expose
 const __s_s_pricks_through_your_s_boot = cptr.lit("%s pricks through your %s boot!");
 const __s_s_scratches_your_s_boot = cptr.lit("%s scratches your %s boot!");
 const __s_s_pricks_your_s_s = cptr.lit("%s pricks your %s %s!");
-const __s_mhitm_ad_legs = cptr.lit("mhitm_ad_legs");
 const __s_belches_feebly_shrivels_up_and_dies = cptr.lit("belches feebly, shrivels up and dies");
 const __s_coughs_spasmodically_and_collapses = cptr.lit("coughs spasmodically and collapses");
 const __s_vomits_violently_and_drops_dead = cptr.lit("vomits violently and drops dead");
@@ -144523,15 +144466,7 @@ function* mhitm_ad_legs(magr, mattk, mdef, mhm) {
             } else
                 (yield* pline(__s_s_pricks_your_s_s, Monst_name, sidestr, leg));
 
-            (yield* set_wounded_legs(
-                side,
-                (rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_uhitm_c, 4475, __s_mhitm_ad_legs),
-                        rnd((60 - (acurr(NHC.A_DEX))) | 0)
-                    )
-                    : rnd((60 - (acurr(NHC.A_DEX))) | 0))
-            ));
+            (yield* set_wounded_legs(side, rnd((60 - (acurr(NHC.A_DEX))) | 0)));
             (yield* exercise(NHC.A_STR, 0));
             (yield* exercise(NHC.A_DEX, 0));
         }
@@ -147398,8 +147333,6 @@ const __s_spellbook__2 = cptr.lit("spellbook ");
 const __s_of = cptr.lit("of ");
 const __s_armour = cptr.lit(" armour");
 const __s_armor$write = cptr.lit(" armor ");
-const __s_write_c = cptr.lit("write.c");
-const __s_dowrite = cptr.lit("dowrite");
 const __s_is_no_such_s = cptr.lit("is no such %s!");
 const __s_write_that = cptr.lit("write that!");
 const __s_it_s_obscene = cptr.lit("It's obscene!");
@@ -147663,9 +147596,7 @@ function* dowrite(pen) {
                             $sizeof_objclass,
                             $objclass_oc_name_known
                         ) & 1) | 0) &&
-                    !(rng_log_enabled()
-                        ? (rng_log_set_caller(__s_write_c, 193, __s_dowrite), rn2(++deferralchance))
-                        : rn2(++deferralchance))) {
+                    !rn2(++deferralchance)) {
                 deferred = i;
                 /* writing by user-assigned name is same as by description:
                    fails for books, works for scrolls (having an assigned
@@ -148375,8 +148306,6 @@ const __s_corpse_evades_your_grasp = cptr.lit("corpse evades your grasp.");
 const __s_that_s_too_insubstantial_to_tin = cptr.lit("That's too insubstantial to tin.");
 const __s_you_make_but_cannot_pick_up_s = cptr.lit("You make, but cannot pick up, %s.");
 const __s_tinning_failed = cptr.lit("Tinning failed.");
-const __s_apply_c = cptr.lit("apply.c");
-const __s_use_unicorn_horn = cptr.lit("use_unicorn_horn");
 const __s_suddenly_feel_s = cptr.lit("suddenly feel %s.");
 const __s_trippy$apply = cptr.lit("trippy");
 const __s_confused$apply = cptr.lit("confused");
@@ -148566,7 +148495,6 @@ const __s_extremely_faded = cptr.lit("extremely faded");
 const __s_barely_visible = cptr.lit("barely visible");
 const __s_flip_s = cptr.lit("flip %s.");
 const __s_it_tumbles_away = cptr.lit("It tumbles away.");
-const __s_flip_coin = cptr.lit("flip_coin");
 const __s_it_slips_between_your_s = cptr.lit("It slips between your %s.");
 const __s_wow_a_double_header = cptr.lit("Wow, a double header!");
 const __s_the_coin_miraculously_lands_on_its_edge = cptr.lit("The coin miraculously lands on its edge!");
@@ -151659,12 +151587,7 @@ function* use_unicorn_horn(optr) {
             (yield* make_sick(
                 (Sick() & 16777215n)
                     ? BigInt.asIntN(64, (Sick() & 16777215n) / 3n + 1n)
-                    : BigInt((((rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_apply_c, 2272, __s_use_unicorn_horn),
-                            rn2((acurr(NHC.A_CON)))
-                        )
-                        : rn2((acurr(NHC.A_CON)))) + 20) | 0)),
+                    : BigInt(((rn2((acurr(NHC.A_CON))) + 20) | 0)),
                 (yield* xname(obj)),
                 1,
                 NHM.SICK_NONVOMITABLE
@@ -151745,12 +151668,7 @@ function* use_unicorn_horn(optr) {
      *   blessed:  22.7%  22.7%  19.5%  15.4%  10.7%   5.7%   2.6%   0.8%
      *  uncursed:  35.4%  35.4%  22.9%   6.3%    0      0      0      0
      */
-    val_limit = (rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_apply_c, 2341, __s_use_unicorn_horn),
-                rn2(d(2, ((obj && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 2)))
-            )
-            : rn2(d(2, ((obj && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 2))));
+    val_limit = rn2(d(2, ((obj && (cptr.ldI32o(obj, $obj_blessed) & 1) | 0) ? 4 : 2)));
     if (val_limit > trouble_count)
         val_limit = trouble_count;
 
@@ -154850,15 +154768,7 @@ function* flip_coin(obj) {
     if (Underwater()) {
         (yield* pline(__s_it_tumbles_away));
         lose_coin = 1;
-    } else if (Glib() ||
-            Fumbling() ||
-            ((acurr(NHC.A_DEX)) < 10 &&
-                !(rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_apply_c, 4537, __s_flip_coin),
-                        rn2((acurr(NHC.A_DEX)))
-                    )
-                    : rn2((acurr(NHC.A_DEX)))))) {
+    } else if (Glib() || Fumbling() || ((acurr(NHC.A_DEX)) < 10 && !rn2((acurr(NHC.A_DEX))))) {
         (yield* pline(__s_it_slips_between_your_s, (yield* fingers_or_gloves(0))));
         lose_coin = 1;
     }
@@ -166660,8 +166570,6 @@ const __s_vlad_was_here = cptr.lit("Vlad was here");
 const __s_ad_aerarium = cptr.lit("ad aerarium");
 const __s_fill_ordinary_room_null_subroom = cptr.lit("fill_ordinary_room: Null subroom");
 const __s_couldn_t_generate_supply_chest_item = cptr.lit("couldn't generate supply chest item");
-const __s_mklev_c = cptr.lit("mklev.c");
-const __s_fill_ordinary_room = cptr.lit("fill_ordinary_room");
 const __s_trycnt_overflow4 = cptr.lit("trycnt overflow4");
 const __s_post_level_generate = cptr.lit("post_level_generate");
 const __s_levl_i_i_door_not_ok = cptr.lit("levl[%i][%i] door not ok");
@@ -166673,6 +166581,7 @@ const __s_s_fil = cptr.lit("%s-fil");
 const __s_a$mklev = cptr.lit("a");
 const __s_b = cptr.lit("b");
 const __s_makelevel = cptr.lit("makelevel");
+const __s_mklev_c = cptr.lit("mklev.c");
 const __s_svn_nroom_0 = cptr.lit("svn.nroom > 0");
 const __s_trying_to_make_a_vault = cptr.lit("trying to make a vault...");
 const __s_shoptype = cptr.lit("SHOPTYPE");
@@ -168687,12 +168596,7 @@ function* fill_ordinary_room(croom, bonus_items) {
             ));
 
         /* maybe make some graffiti */
-        if (!(rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_mklev_c, 1142, __s_fill_ordinary_room),
-                    rn2((27 + Math.imul(3, Math.abs(depth(cptr.add(u, $you_uz))))) | 0)
-                )
-                : rn2((27 + Math.imul(3, Math.abs(depth(cptr.add(u, $you_uz))))) | 0))) {
+        if (!rn2((27 + Math.imul(3, Math.abs(depth(cptr.add(u, $you_uz))))) | 0)) {
             let buf = new Uint8Array(256);
             let pristinebuf = new Uint8Array(256);
             let mesg = (yield* random_engraving(cptr.decay(buf), cptr.decay(pristinebuf)));
@@ -171156,12 +171060,6 @@ function __resetState$mklev(P) {
 const __s_tried_to_make_a_room_of_type_d = cptr.lit("Tried to make a room of type %d.");
 const __s_shoptype$mkroom = cptr.lit("SHOPTYPE");
 const __s_rooms_not_closed_by_1 = cptr.lit("rooms[] not closed by -1?");
-const __s_mkroom_c = cptr.lit("mkroom.c");
-const __s_mk_zoo_thronemon = cptr.lit("mk_zoo_thronemon");
-const __s_fill_zoo = cptr.lit("fill_zoo");
-const __s_morguemon = cptr.lit("morguemon");
-const __s_courtmon = cptr.lit("courtmon");
-const __s_squadmon = cptr.lit("squadmon");
 const __s_room_mkroom = cptr.lit("room-mkroom");
 const __s_room_nroom = cptr.lit("room-nroom");
 const __s_invalid_shop_shape_no_squares_inside = cptr.lit("invalid_shop_shape: no squares inside door?");
@@ -171415,9 +171313,7 @@ function mkzoo(type) {
 
 /** C ref: mkroom.c:257 — @param {CInt} x @param {CInt} y */
 function* mk_zoo_thronemon(x, y) {
-    let i = (rng_log_enabled()
-            ? (rng_log_set_caller(__s_mkroom_c, 259, __s_mk_zoo_thronemon), rnd((yield* level_difficulty())))
-            : rnd((yield* level_difficulty())));
+    let i = rnd((yield* level_difficulty()));
     let pm = (i > 9)
             ? NHC.PM_OGRE_TYRANT
             : ((i > 5)
@@ -171717,12 +171613,7 @@ function* fill_zoo(sroom) {
             cptr.stI64o(
                 gold,
                 $obj_quan,
-                BigInt((((rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_mkroom_c, 426, __s_fill_zoo),
-                        rn2(Math.imul(50, (yield* level_difficulty())))
-                    )
-                    : rn2(Math.imul(50, (yield* level_difficulty())))) + 10) | 0))
+                BigInt(((rn2(Math.imul(50, (yield* level_difficulty()))) + 10) | 0))
             );
             cptr.stI32o(gold, $obj_owt, (yield* weight(gold)) >>> 0);
             /* the royal coffers */
@@ -171803,9 +171694,7 @@ function* mkundead(mm, revive_corpses, mm_flags) {
 /** C ref: mkroom.c:478 @returns {CPtr<struct permonst>} */
 function* morguemon() {
     let i = rn2(100);
-    let hd = (rng_log_enabled()
-            ? (rng_log_set_caller(__s_mkroom_c, 480, __s_morguemon), rn2((yield* level_difficulty())))
-            : rn2((yield* level_difficulty())));
+    let hd = rn2((yield* level_difficulty()));
 
     if (hd > 10 && i < 10) {
         if (In_hell(cptr.add(u, $you_uz)) ||
@@ -172343,14 +172232,7 @@ function search_special(type) {
 
 /** C ref: mkroom.c:783 @returns {CPtr<struct permonst>} */
 function* courtmon() {
-    let i = (rn2(60) +
-        (rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_mkroom_c, 785, __s_courtmon),
-                rn2(Math.imul(3, (yield* level_difficulty())))
-            )
-            : rn2(Math.imul(3, (yield* level_difficulty()))))) |
-            0;
+    let i = (rn2(60) + rn2(Math.imul(3, (yield* level_difficulty())))) | 0;
 
     if (i > 100)
         return (yield* mkclass(NHC.S_DRAGON, 0));
@@ -172394,12 +172276,7 @@ function* squadmon() {
     let mndx;
     __lbl_gotone: {
 
-        sel_prob = (rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_mkroom_c, 821, __s_squadmon),
-                    rnd((80 + (yield* level_difficulty())) | 0)
-                )
-                : rnd((80 + (yield* level_difficulty())) | 0));
+        sel_prob = rnd((80 + (yield* level_difficulty())) | 0);
 
         cpro = 0;
         for (i = 0; i < 4; i++) {
@@ -172917,8 +172794,6 @@ const __s_s_moves_as_though_of_its_own_will = cptr.lit("%s moves as though of it
 const __s_but_it_quiets_down = cptr.lit("But it quiets down.");
 const __s_yuk_this_s_tastes_awful = cptr.lit("Yuk, this %s tastes awful.");
 const __s_gaggg_this_tastes_like_sewage_you_vomit = cptr.lit("Gaggg... this tastes like sewage!  You vomit.");
-const __s_fountain_c = cptr.lit("fountain.c");
-const __s_drinksink = cptr.lit("drinksink");
 const __s_this_s_contains_toxic_wastes = cptr.lit("This %s contains toxic wastes!");
 const __s_undergo_a_freakish_metamorphosis = cptr.lit("undergo a freakish metamorphosis!");
 const __s_clanking_from_the_pipes = cptr.lit("clanking from the pipes...");
@@ -173985,12 +173860,7 @@ function* drinksink() {
         break;
         case 9:
         (yield* pline(__s_gaggg_this_tastes_like_sewage_you_vomit));
-        (yield* morehungry((((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_fountain_c, 677, __s_drinksink),
-                    rn2((30 - (acurr(NHC.A_CON))) | 0)
-                )
-                : rn2((30 - (acurr(NHC.A_CON))) | 0)) + 11) | 0)));
+        (yield* morehungry(((rn2((30 - (acurr(NHC.A_CON))) | 0) + 11) | 0)));
         (yield* vomit());
         break;
         case 10:
@@ -181730,8 +181600,6 @@ const __s_s_demands_ld_s_for_safe_passage = cptr.lit("%s demands %ld %s for safe
 const __s_s_seems_to_be_demanding_something = cptr.lit("%s seems to be demanding something.");
 const __s_how_much_will_you_offer = cptr.lit("How much will you offer?");
 const __s_s_vanishes_laughing_about_cowardly = cptr.lit("%s vanishes, laughing about cowardly mortals.");
-const __s_minion_c = cptr.lit("minion.c");
-const __s_demon_talk = cptr.lit("demon_talk");
 const __s_s_scowls_at_you_menacingly_then_vanishes = cptr.lit("%s scowls at you menacingly, then vanishes.");
 const __s_s_gets_angry = cptr.lit("%s gets angry...");
 const __s_bribed_s_with_ld_s_for_safe_passage = cptr.lit("bribed %s with %ld %s for safe passage");
@@ -182208,12 +182076,7 @@ function* demon_talk(mtmp) {
         if (!Deaf() && ((offer = (yield* bribe(mtmp, __s_how_much_will_you_offer))) >= demand)) {
             (yield* pline(__s_s_vanishes_laughing_about_cowardly, (yield* Amonnam(mtmp))));
         } else if (offer > 0n &&
-                BigInt((rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_minion_c, 340, __s_demon_talk),
-                        rnd(Math.imul(5, (acurr(NHC.A_CHA))))
-                    )
-                    : rnd(Math.imul(5, (acurr(NHC.A_CHA)))))) >
+                BigInt(rnd(Math.imul(5, (acurr(NHC.A_CHA))))) >
                     (BigInt.asIntN(64, demand - offer))) {
             (yield* pline(__s_s_scowls_at_you_menacingly_then_vanishes, (yield* Amonnam(mtmp))));
         } else {
@@ -194155,7 +194018,7 @@ const __s_yes_vs_y_to_break_a_wand_via_a_pply = cptr.lit("yes vs y to break a wa
 const __s_eat = cptr.lit("eat");
 const __s_continue$options = cptr.lit("continue");
 const __s_yes_vs_y_to_continue_eating_after_first = cptr.lit("yes vs y to continue eating after first bite when satiated");
-const __s_were_change$options = cptr.lit("Were-change");
+const __s_were_change = cptr.lit("Were-change");
 const __s_yes_vs_y_to_change_form_when = cptr.lit("yes vs y to change form when lycanthropy is controllable");
 const __s_pray = cptr.lit("pray");
 const __s_y_required_to_pray_supersedes_old = cptr.lit("y required to pray (supersedes old \"prayconfirm\" option)");
@@ -199676,7 +199539,7 @@ cptr.stPtro(paranoia, 288 + $paranoia_opts_synonym, __s_continue$options);
 cptr.stI32o(paranoia, 288 + $paranoia_opts_synMinLen, 4);
 cptr.stPtro(paranoia, 288 + $paranoia_opts_explain, __s_yes_vs_y_to_continue_eating_after_first);
 cptr.stI32o(paranoia, 336, NHM.PARANOID_WERECHANGE);
-cptr.stPtro(paranoia, 336 + $paranoia_opts_argname, __s_were_change$options);
+cptr.stPtro(paranoia, 336 + $paranoia_opts_argname, __s_were_change);
 cptr.stI32o(paranoia, 336 + $paranoia_opts_argMinLen, 2);
 cptr.stPtro(paranoia, 336 + $paranoia_opts_synonym, null);
 cptr.stI32o(paranoia, 336 + $paranoia_opts_synMinLen, 0);
@@ -214943,11 +214806,11 @@ const __s_are_lucky_full_moon_tonight = cptr.lit("are lucky!  Full moon tonight.
 const __s_be_careful_new_moon_tonight = cptr.lit("Be careful!  New moon tonight.");
 const __s_watch_out_bad_things_can_happen_on = cptr.lit("Watch out!  Bad things can happen on Friday the 13th.");
 const __s_the_dungeon_capitulates = cptr.lit("The dungeon capitulates.");
-const __s_allmain_c = cptr.lit("allmain.c");
-const __s_moveloop_core = cptr.lit("moveloop_core");
 const __s_the_amulet_is_bestowing_a_wish_upon_you = cptr.lit("The Amulet is bestowing a wish upon you!");
 const __s_gc_command_count_0 = cptr.lit("gc.command_count != 0");
+const __s_allmain_c = cptr.lit("allmain.c");
 const __s_nh_callback_run$allmain = cptr.lit("nh_callback_run");
+const __s_moveloop_core = cptr.lit("moveloop_core");
 const __s_tut_1 = cptr.lit("tut-1");
 const __s_entering_the_tutorial = cptr.lit("Entering the tutorial.");
 const __s_you_feel_full_of_energy = cptr.lit("You feel full of energy.");
@@ -215313,12 +215176,7 @@ function* moveloop_core() {
                         mvl_change = 1;
                     else if (ismnum(cptr.ldI32o(u, $you_ulycn)) &&
                             !Upolyd() &&
-                            !(rng_log_enabled()
-                                ? (
-                                    rng_log_set_caller(__s_allmain_c, 328, __s_moveloop_core),
-                                    rn2((80 - (Math.imul(20, (yield* night())))) | 0)
-                                )
-                                : rn2((80 - (Math.imul(20, (yield* night())))) | 0)))
+                            !rn2((80 - (Math.imul(20, (yield* night())))) | 0))
                         mvl_change = 2;
                     if (mvl_change && !Unchanging()) {
                         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
@@ -215356,12 +215214,7 @@ function* moveloop_core() {
                 (yield* invault());
                 if ((cptr.ldI32o(u, $you_uhave) & 1))
                     (yield* amulet());
-                if (!(rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_allmain_c, 360, __s_moveloop_core),
-                            rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)
-                        )
-                        : rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)))
+                if (!rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0))
                     (yield* u_wipe_engr(rnd(3)));
                 if ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 &&
                         !(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
@@ -216401,8 +216254,6 @@ const __s_a_s_nearby = cptr.lit("a %s nearby.");
 const __s_rushing_noise = cptr.lit("rushing noise");
 const __s_splat$mhitu = cptr.lit("splat");
 const __s_the_combat_suddenly_awakens_you = cptr.lit("The combat suddenly awakens you.");
-const __s_mhitu_c = cptr.lit("mhitu.c");
-const __s_summonmu = cptr.lit("summonmu");
 const __s_creature$mhitu = cptr.lit("creature");
 const __s_s_summons_help = cptr.lit("%s summons help!");
 const __s_hemmed_in = cptr.lit("hemmed in.");
@@ -216412,7 +216263,6 @@ const __s_s_appears$mhitu = cptr.lit("%s appears");
 const __s_s_appear = cptr.lit("%s appear");
 const __s_s_s__2$mhitu = cptr.lit("%s%s!");
 const __s_a_slight_illness = cptr.lit("a slight illness.");
-const __s_diseasemu = cptr.lit("diseasemu");
 const __s_s_s_your_s_s = cptr.lit("%s %s your %s %s!");
 const __s_slips_off_of = cptr.lit("slips off of");
 const __s_grabs_you_but_cannot_hold_onto = cptr.lit("grabs you, but cannot hold onto");
@@ -216470,7 +216320,6 @@ const __s_released$mhitu = cptr.lit("released");
 const __s_expelled$mhitu = cptr.lit("expelled");
 const __s_obviously_s_doesn_t_like_your_taste = cptr.lit("Obviously %s doesn't like your taste.");
 const __s_s_explodes_at_a_spot_in_s = cptr.lit("%s explodes at a spot in %s!");
-const __s_explmu = cptr.lit("explmu");
 const __s_are_blinded_by_a_blast_of_light = cptr.lit("are blinded by a blast of light!");
 const __s_get_the_impression_it_was_not_terribly = cptr.lit("get the impression it was not terribly bright.");
 const __s_are_caught_in_a_blast_of_kaleidoscopic = cptr.lit("are caught in a blast of kaleidoscopic light!");
@@ -217851,13 +217700,7 @@ function* summonmu(mtmp, youseeit) {
            in the critter-to-human direction but be a no-op the other way;
            we repeat the criteria here for clarity */
         if (((cptr.ldU64o((mdat), $permonst_mflags2) & 8n) != 0n)) {
-            if (!Protection_from_shape_changers() &&
-                    !(rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_mhitu_c, 979, __s_summonmu),
-                            rn2((5 - (Math.imul((yield* night()), 2))) | 0)
-                        )
-                        : rn2((5 - (Math.imul((yield* night()), 2))) | 0)))
+            if (!Protection_from_shape_changers() && !rn2((5 - (Math.imul((yield* night()), 2))) | 0))
                 (yield* new_were(mtmp));
         } else {
             if (Protection_from_shape_changers() || !rn2(30))
@@ -217933,12 +217776,7 @@ function* diseasemu(mdat) {
         (yield* make_sick(
             Sick()
                 ? BigInt.asIntN(64, Sick() / 3n + 1n)
-                : BigInt((((rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_mhitu_c, 1039, __s_diseasemu),
-                        rn2((acurr(NHC.A_CON)))
-                    )
-                    : rn2((acurr(NHC.A_CON)))) + 20) | 0)),
+                : BigInt(((rn2((acurr(NHC.A_CON))) + 20) | 0)),
             cptr.ldPtro(mdat, NHC.NEUTRAL, 8),
             1,
             NHM.SICK_NONVOMITABLE
@@ -218744,14 +218582,7 @@ function* explmu(mtmp, mattk, ufound) {
         not_affected = (yield* resists_blnd(cptr.add(gy, $instance_globals_y_youmonst)));
         if (ufound && !not_affected) {
             /* sometimes you're affected even if it's invisible */
-            if (mon_visible(mtmp) ||
-                    ((rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_mhitu_c, 1627, __s_explmu),
-                            rnd(tmp = (tmp / 2) | 0)
-                        )
-                        : rnd(tmp = (tmp / 2) | 0)) >
-                        cptr.ldI32o(u, $you_ulevel))) {
+            if (mon_visible(mtmp) || (rnd(tmp = (tmp / 2) | 0) > cptr.ldI32o(u, $you_ulevel))) {
                 (yield* You(__s_are_blinded_by_a_blast_of_light));
                 (yield* make_blinded(BigInt(tmp), 0));
                 if (!Blind())
@@ -243225,7 +243056,6 @@ const __s_you_easily_open_the_tin = cptr.lit("You easily open the tin.");
 const __s_using_s_you_try_to_open_the_tin = cptr.lit("Using %s you try to open the tin.");
 const __s_it_is_not_so_easy_to_open_this_tin = cptr.lit("It is not so easy to open this tin.");
 const __s_tin_slips_from_your_s = cptr.lit("tin slips from your %s.");
-const __s_start_tin = cptr.lit("start_tin");
 const __s_opening_the_tin = cptr.lit("opening the tin");
 const __s_blecch_s_s = cptr.lit("Blecch!  %s %s!");
 const __s_rotten__2 = cptr.lit("Rotten");
@@ -245853,13 +245683,7 @@ function* start_tin(otmp) {
                 (yield* stackobj(otmp));
             return;
         }
-        tmp = (((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_eat_c, 1784, __s_start_tin),
-                    rn2((1 + ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0)
-                )
-                : rn2((1 +
-                    ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0)) + 10) | 0);
+        tmp = ((rn2((1 + ((500 / ((((acurr(NHC.A_DEX)) + (acurrstr())) | 0))) | 0)) | 0) + 10) | 0);
     }
 
     cptr.stPtro(svc, $context_info_tin, otmp);
@@ -249272,7 +249096,6 @@ const __s_writhes = cptr.lit("writhes");
 const __s_shrieks = cptr.lit("shrieks");
 const __s_s_looks_healthier = cptr.lit("%s looks healthier.");
 const __s_s_rusts = cptr.lit("%s rusts.");
-const __s_potion_c = cptr.lit("potion.c");
 const __s_some_vapor_passes_harmlessly_around_you = cptr.lit("Some vapor passes harmlessly around you.");
 const __s_ulch_that_potion_smells_terrible = cptr.lit("Ulch!  That potion smells terrible!");
 const __s_s_s__4$potion = cptr.lit("%s %s!");
@@ -249356,6 +249179,7 @@ const __s_you_disturbed_me_fool = cptr.lit("You disturbed me, fool!");
 const __s_from_s_heat = cptr.lit(" from %s heat");
 const __s_multiply_s = cptr.lit("multiply%s!");
 const __s_split_mon = cptr.lit("split_mon");
+const __s_potion_c = cptr.lit("potion.c");
 const __s_mon_mhpmax_mon_mhp = cptr.lit("mon->mhpmax >= mon->mhp");
 const __s_s_multiplies_s = cptr.lit("%s multiplies%s!");
 const __s_are_suddenly_moving_sfaster = cptr.lit("are suddenly moving %sfaster.");
@@ -251915,14 +251739,7 @@ function* potionhit(mon, obj, how) {
         case 3: {
 
         /* Note: potionbreathe() does its own docall() */
-        if ((distance == 0 ||
-            (distance < 3 &&
-                !(rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_potion_c, 1907, __s_potionhit),
-                        rn2((((1 + (acurr(NHC.A_DEX))) | 0) / 2) | 0)
-                    )
-                    : rn2((((1 + (acurr(NHC.A_DEX))) | 0) / 2) | 0)))) &&
+        if ((distance == 0 || (distance < 3 && !rn2((((1 + (acurr(NHC.A_DEX))) | 0) / 2) | 0))) &&
                 (!((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1
@@ -256933,8 +256750,6 @@ const __s_s_awakens = cptr.lit("%s awakens.");
 const __s_reach_out_your_s_and_grab_s = cptr.lit("reach out your %s and grab %s.");
 const __s_s_stirs$trap = cptr.lit("%s stirs.");
 const __s_pull_s_out_of_the_pit = cptr.lit("pull %s out of the pit.");
-const __s_trap_c = cptr.lit("trap.c");
-const __s_disarm_box = cptr.lit("disarm_box");
 const __s_disarm_it = cptr.lit("disarm it!");
 const __s_that_s_was_not_trapped = cptr.lit("That %s was not trapped.");
 const __s_find_a_trap_on_s = cptr.lit("find a trap on %s!");
@@ -256985,6 +256800,7 @@ const __s_find_no_traps_on_the_door = cptr.lit("find no traps on the door.");
 const __s_your_anchor = cptr.lit("your anchor");
 const __s_trap$trap = cptr.lit("trap");
 const __s_openholdingtrap = cptr.lit("openholdingtrap");
+const __s_trap_c = cptr.lit("trap.c");
 const __s_t_null = cptr.lit("t != NULL");
 const __s_which_0 = cptr.lit("which != 0");
 const __s_you_are = cptr.lit("You are");
@@ -264856,14 +264672,7 @@ function* disarm_box(box, force, confused) {
         if ((cptr.ldI16o(gu, $instance_globals_u_urole + $Role_mnum) == NHC.PM_ROGUE))
             ch = Math.imul(ch, 2);
         if (!force &&
-                (confused ||
-                    Fumbling() ||
-                    (rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_trap_c, 5802, __s_disarm_box),
-                            rnd((75 + (((yield* level_difficulty()) / 2) | 0)) | 0)
-                        )
-                        : rnd((75 + (((yield* level_difficulty()) / 2) | 0)) | 0)) > ch)) {
+                (confused || Fumbling() || rnd((75 + (((yield* level_difficulty()) / 2) | 0)) | 0) > ch)) {
             void (yield* chest_trap(box, NHC.FINGER, 1));
             /* 'box' might be gone now */
         } else {
@@ -265245,12 +265054,7 @@ function* untrap(force, rx, ry, container) {
             if (!force &&
                     (confused ||
                         Fumbling() ||
-                        (rng_log_enabled()
-                            ? (
-                                rng_log_set_caller(__s_trap_c, 6074, __s_untrap$trap),
-                                rnd((75 + (((yield* level_difficulty()) / 2) | 0)) | 0)
-                            )
-                            : rnd((75 + (((yield* level_difficulty()) / 2) | 0)) | 0)) > ch)) {
+                        rnd((75 + (((yield* level_difficulty()) / 2) | 0)) | 0) > ch)) {
                 (yield* You(__s_set_it_off));
                 (yield* b_trapped(__s_door$trap, NHC.FINGER));
                 cptr.stI32o3(
@@ -267000,8 +266804,6 @@ const __s_its_imagination = cptr.lit("[its imagination?]");
 const __s_s_flees_from_the_painful_light_of_s = cptr.lit("%s flees from the painful light of %s.");
 const __s_bright_light = cptr.lit("Bright light!");
 const __s_s_turns_to_flee = cptr.lit("%s turns to flee.");
-const __s_monmove_c = cptr.lit("monmove.c");
-const __s_distfleeck = cptr.lit("distfleeck");
 const __s_s_concentrates = cptr.lit("%s concentrates.");
 const __s_sense_a_faint_wave_of_psychic_energy = cptr.lit("sense a faint wave of psychic energy.");
 const __s_a_wave_of_psychic_energy_pours_over_you = cptr.lit("A wave of psychic energy pours over you!");
@@ -267035,6 +266837,7 @@ const __s_between = cptr.lit("between");
 const __s_unknown_shk_gd_pri_move_return_value_d = cptr.lit("unknown shk/gd/pri_move return value (%d)");
 const __s_i_m_late = cptr.lit("I'm late!");
 const __s_m_move = cptr.lit("m_move");
+const __s_monmove_c = cptr.lit("monmove.c");
 const __s_indexok_chi_mfp_info = cptr.lit("IndexOk(chi, mfp.info)");
 
 /* a11y: give a message when monster moved */
@@ -267877,14 +267680,7 @@ function* distfleeck(mtmp, inrange, nearby, scared) {
                     !bravegremlin) ||
                 (!(cptr.ldI32o(mtmp, $monst_mpeaceful) & 1) && (yield* in_your_sanctuary(mtmp, 0, 0))))) {
         cptr.stI32(scared, 1);
-        (yield* monflee(
-            mtmp,
-            (rng_log_enabled()
-                ? (rng_log_set_caller(__s_monmove_c, 564, __s_distfleeck), rnd(rn2(7) ? 10 : 100))
-                : rnd(rn2(7) ? 10 : 100)),
-            1,
-            1
-        ));
+        (yield* monflee(mtmp, rnd(rn2(7) ? 10 : 100), 1, 1));
     } else
         cptr.stI32(scared, 0);
 }
@@ -270070,13 +269866,7 @@ function* m_move(mtmp, after) {
 
                 if ((appr.v == 1 && nearer) ||
                         (appr.v == -1 && !nearer) ||
-                        (!appr.v &&
-                            !(rng_log_enabled()
-                                ? (
-                                    rng_log_set_caller(__s_monmove_c, 1970, __s_m_move),
-                                    rn2(++chcnt)
-                                )
-                                : rn2(++chcnt))) ||
+                        (!appr.v && !rn2(++chcnt)) ||
                         (appr.v == -2 &&
                             ((ndist <= preferredrange_min.v && !nearer) ||
                                 (ndist >= preferredrange_max.v && nearer))) ||
@@ -270710,8 +270500,6 @@ function __resetState$monmove(P) {
 
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __s_priest_c = cptr.lit("priest.c");
-const __s_move_special = cptr.lit("move_special");
 const __s_displaced_image_doesn_t_fool_s = cptr.lit("displaced image doesn't fool %s!");
 const __s_poohbah = cptr.lit("poohbah");
 const __s_priestess$priest = cptr.lit("priestess");
@@ -270779,6 +270567,7 @@ const __s_s_roars_in_anger_thou_shalt_suffer = cptr.lit("%s roars in anger:  \"T
 const __s_s_voice_booms_how_darest_thou_harm_my = cptr.lit("%s voice booms:  \"How darest thou harm my servant!\"");
 const __s_s_roars_thou_dost_profane_my_shrine = cptr.lit("%s roars:  \"Thou dost profane my shrine!\"");
 const __s_angry_priest = cptr.lit("angry_priest");
+const __s_priest_c = cptr.lit("priest.c");
 const __s_has_emin_priest = cptr.lit("has_emin(priest)");
 
 /** C ref: priest.c:16 — @param {CPtr<struct monst>} mtmp */
@@ -270886,10 +270675,7 @@ function* move_special(mtmp, in_his_shop, appr, uondoor, avoid, omx, omy, ggx, g
                         (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 2097152n) &&
                         !(cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n))
                     continue;
-                if ((!appr &&
-                    !(rng_log_enabled()
-                        ? (rng_log_set_caller(__s_priest_c, 85, __s_move_special), rn2(++chcnt))
-                        : rn2(++chcnt))) ||
+                if ((!appr && !rn2(++chcnt)) ||
                         (appr && (dist2(nx, ny, ggx, ggy)) < (dist2(nix, niy, ggx, ggy))) ||
                         (cptr.ldI64o2(mfp, i, 8, $mfndposdata_info) & 524288n)) {
                     nix = nx;
@@ -302042,8 +301828,6 @@ const __s_slide$timeout = cptr.lit("slide");
 const __s_on$timeout = cptr.lit("on");
 const __s_off$timeout = cptr.lit("off");
 const __s_lose_your_balance = cptr.lit("lose your balance.");
-const __s_timeout_c = cptr.lit("timeout.c");
-const __s_slip_or_trip = cptr.lit("slip_or_trip");
 const __s_trip_over_your_own_s = cptr.lit("trip over your own %s.");
 const __s_elbow = cptr.lit("elbow");
 const __s_slip_s = cptr.lit("slip %s.");
@@ -302133,6 +301917,7 @@ const __s_turns$timeout = cptr.lit("turns");
 const __s_more_turn = cptr.lit("more turn");
 const __s_timer_sanity_untimed_obj_s_timer_lu = cptr.lit("timer sanity: untimed obj %s, timer %lu");
 const __s_timer_sanity_check = cptr.lit("timer_sanity_check");
+const __s_timeout_c = cptr.lit("timeout.c");
 const __s_top_null = cptr.lit("top != NULL");
 const __s_timer_sanity_can_t_locate_obj_s_where_d = cptr.lit("timer sanity: can't locate obj %s [where=%d], timer %lu");
 const __s_timer_sanity_obj_s_where_d_located_at_d = cptr.lit("timer sanity: obj %s [where=%d] located at <%d,%d>, timer %lu");
@@ -303848,12 +303633,7 @@ function* slip_or_trip() {
                 (!ice_only || !rn2(3))) {
             (yield* You(__s_lose_your_balance));
             (yield* dismount_steed(NHC.DISMOUNT_FELL));
-        } else if (!(rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_timeout_c, 1287, __s_slip_or_trip),
-                    rn2((10 + (acurr(NHC.A_DEX))) | 0)
-                )
-                : rn2((10 + (acurr(NHC.A_DEX))) | 0))) {
+        } else if (!rn2((10 + (acurr(NHC.A_DEX))) | 0)) {
             /* Maybe slip in a random direction.  This takes place after
                the hero has already changed location.  If the hero is
                in grid bug form, only allow forward hurtle, otherwise a
@@ -325116,10 +324896,9 @@ function __resetState$teleport(P) {
 const __s_sunsword$makemon = cptr.lit("Sunsword");
 const __s_demonbane$makemon = cptr.lit("Demonbane");
 const __s_odd_mercenary_d = cptr.lit("odd mercenary %d?");
-const __s_makemon_c = cptr.lit("makemon.c");
-const __s_m_initinv = cptr.lit("m_initinv");
 const __s_clone_mon_trying_to_create_a_monster_at = cptr.lit("clone_mon trying to create a monster at <%d,%d>?");
 const __s_clone_mon = cptr.lit("clone_mon");
+const __s_makemon_c = cptr.lit("makemon.c");
 const __s_has_emin_m2_has_emin_mon = cptr.lit("has_emin(m2) && has_emin(mon)");
 const __s_has_edog_m2_has_edog_mon = cptr.lit("has_edog(m2) && has_edog(mon)");
 const __s_automatically_extinguished_s = cptr.lit("Automatically extinguished %s.");
@@ -325155,7 +324934,6 @@ const __s_s_s_s$makemon = cptr.lit("%s %s %s.");
 const __s_changes_into = cptr.lit("changes into");
 const __s_becomes = cptr.lit("becomes");
 const __s_grows_up_into = cptr.lit("grows up into");
-const __s_peace_minded = cptr.lit("peace_minded");
 const __s_bad_bag_o_tricks = cptr.lit("bad bag o' tricks");
 const __s_pct_s$makemon = cptr.lit("%s");
 const __s_it_s_empty = cptr.lit("It's empty.");
@@ -326148,15 +325926,7 @@ function* m_initinv(mtmp) {
         }
         break;
         case NHC.S_LEPRECHAUN:
-        (yield* mkmonmoney(
-            mtmp,
-            BigInt((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_makemon_c, 797, __s_m_initinv),
-                    d(((yield* level_difficulty())), 30)
-                )
-                : d(((yield* level_difficulty())), 30)))
-        ));
+        (yield* mkmonmoney(mtmp, BigInt(d(((yield* level_difficulty())), 30))));
         break;
         case NHC.S_DEMON:
         /* moved here from m_initweap() because these don't
@@ -326204,12 +325974,7 @@ function* m_initinv(mtmp) {
             !rn2(5))
         (yield* mkmonmoney(
             mtmp,
-            BigInt((rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_makemon_c, 832, __s_m_initinv),
-                    d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10))
-                )
-                : d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10))))
+            BigInt(d(((yield* level_difficulty())), (cptr.ldPtro(mtmp, $monst_minvent) ? 5 : 10)))
         ));
 }
 
@@ -328318,12 +328083,7 @@ function peace_minded(ptr) {
         (cptr.ldI32o(u, $you_ualign + $align_record) < -15
             ? -15
             : cptr.ldI32o(u, $you_ualign + $align_record))) | 0) &&
-        !!(rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_makemon_c, 2307, __s_peace_minded),
-                rn2((2 + Math.abs(mal)) | 0)
-            )
-            : rn2((2 + Math.abs(mal)) | 0))
+        !!rn2((2 + Math.abs(mal)) | 0)
             ? 1
             : 0));
 }
@@ -340132,9 +339892,8 @@ function __resetState$mon(P) {
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_probtype_error_oclass_d_i_d = cptr.lit("probtype error, oclass=%d i=%d");
-const __s_mkobj_c = cptr.lit("mkobj.c");
-const __s_mkbox_cnts = cptr.lit("mkbox_cnts");
 const __s_copy_oextra = cptr.lit("copy_oextra");
+const __s_mkobj_c = cptr.lit("mkobj.c");
 const __s_has_omonst_obj2 = cptr.lit("has_omonst(obj2)");
 const __s_splitobj_cobj_s_num_ld_quan_ld = cptr.lit("splitobj [cobj=%s num=%ld quan=%ld]");
 const __s_non_empty_container = cptr.lit("non-empty container");
@@ -340167,7 +339926,6 @@ const __s_those$mkobj = cptr.lit("those");
 const __s_them$mkobj = cptr.lit("them");
 const __s_you_s_s_s_you_pay_for_s = cptr.lit("You %s %s %s, you pay for %s!");
 const __s_you_s_s_you_pay_for_s = cptr.lit("You %s %s, you pay for %s!");
-const __s_mksobj_init = cptr.lit("mksobj_init");
 const __s_mksobj_tried_to_make_type_d_class_d = cptr.lit("mksobj tried to make type %d, class %d.");
 const __s_start_glob_timeout_for_non_glob_d_s = cptr.lit("start_glob_timeout for non-glob [%d: %s]?");
 const __s_shrink_glob_for_non_glob_d_s = cptr.lit("shrink_glob for non-glob [%d: %s]?");
@@ -340191,7 +339949,6 @@ const __s_much$mkobj = cptr.lit("much ");
 const __s_brighter = cptr.lit("brighter");
 const __s_less_brightly = cptr.lit("less brightly");
 const __s_calculating_weight_of_ld_s = cptr.lit("Calculating weight of %ld %s?");
-const __s_mkgold = cptr.lit("mkgold");
 const __s_making_corpstat_type_d = cptr.lit("making corpstat type %d");
 const __s_place_object_s_d_off_map_d_d = cptr.lit("place_object: \"%s\" [%d] off map <%d,%d>");
 const __s_place_object_obj_s_d_not_free = cptr.lit("place_object: obj \"%s\" [%d] not free");
@@ -340760,15 +340517,7 @@ function* mkbox_cnts(box) {
                 cptr.stI64o(
                     otmp,
                     $obj_quan,
-                    BigInt((Math.imul(
-                        (rng_log_enabled()
-                            ? (
-                                rng_log_set_caller(__s_mkobj_c, 362, __s_mkbox_cnts),
-                                rnd(((yield* level_difficulty()) + 2) | 0)
-                            )
-                            : rnd(((yield* level_difficulty()) + 2) | 0)),
-                        rnd(75)
-                    )))
+                    BigInt((Math.imul(rnd(((yield* level_difficulty()) + 2) | 0), rnd(75))))
                 );
                 cptr.stI32o(otmp, $obj_owt, (yield* weight(otmp)) >>> 0);
             } else
@@ -341745,12 +341494,7 @@ function* mksobj_init(obj, artif) {
                 $permonst_msize
             ) <
                 NHM.MZ_SMALL) &&
-                    (rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_mkobj_c, 1155, __s_mksobj_init),
-                            rn2(((((yield* level_difficulty()) / 2) | 0) + 10) | 0)
-                        )
-                        : rn2(((((yield* level_difficulty()) / 2) | 0) + 10) | 0)) > 10)
+                    rn2(((((yield* level_difficulty()) / 2) | 0) + 10) | 0) > 10)
                 void (yield* add_to_container(otmp, (yield* mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0))));
         }
         /* boulder init'd below in the 'regardless of !init' code */
@@ -342741,16 +342485,7 @@ function* mkgold(amount, x, y) {
 
         amount = (BigInt.asIntN(
             64,
-            1n +
-                BigInt.asIntN(
-                    64,
-                    BigInt((rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_mkobj_c, 2010, __s_mkgold),
-                            rnd(((yield* level_difficulty()) + 2) | 0)
-                        )
-                        : rnd(((yield* level_difficulty()) + 2) | 0))) * mul
-                )
+            1n + BigInt.asIntN(64, BigInt(rnd(((yield* level_difficulty()) + 2) | 0)) * mul)
         ));
     }
     if (gold) {
@@ -346863,7 +346598,6 @@ const __s_s_is_s_that_you_decided_to_s_s_s = cptr.lit("%s is %s that you decided
 const __s_s_shouts = cptr.lit("%s shouts:");
 const __s_who_dared_s_my_s = cptr.lit("Who dared %s my %s?");
 const __s_s_is_s_that_someone_decided_to_s_s_s = cptr.lit("%s is %s that someone decided to %s %s %s!");
-const __s_pay_for_damage = cptr.lit("pay_for_damage");
 const __s_s_leaps_towards_you = cptr.lit("%s leaps towards you!");
 const __s_an_angry_voice = cptr.lit("an angry voice:");
 const __s_invisibility_does_not_fool_s = cptr.lit("invisibility does not fool %s!");
@@ -353880,9 +353614,7 @@ function* pay_for_damage(dmgstr, cant_mollify) {
             if (shk_distance > nearest_shk)
                 continue;
             if ((shk_distance == nearest_shk) && picks) {
-                if ((rng_log_enabled()
-                        ? (rng_log_set_caller(__s_shk_c, 5218, __s_pay_for_damage), rn2(++picks))
-                        : rn2(++picks)))
+                if (rn2(++picks))
                     continue;
             } else
                 picks = 1;
@@ -363924,8 +363656,6 @@ function __resetState$invent(P) {
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_no_start_end_room_loc_in_join_map = cptr.lit("No start/end room loc in join_map.");
 const __s_regular_room_in_joined_map = cptr.lit("regular room in joined map");
-const __s_mkmap_c = cptr.lit("mkmap.c");
-const __s_litstate_rnd = cptr.lit("litstate_rnd");
 
 /** C ref: mkmap.c:24 — @param {CInt} bg_typ */
 function init_map(bg_typ) {
@@ -364982,13 +364712,7 @@ function remove_room(roomno) {
 /** C ref: mkmap.c:443 — @param {CInt} litstate @returns {CInt} */
 function litstate_rnd(litstate) {
     if (litstate < 0)
-        return schar((((rng_log_enabled()
-            ? (
-                rng_log_set_caller(__s_mkmap_c, 446, __s_litstate_rnd),
-                rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)
-            )
-            : rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0)) < 11 &&
-            rn2(77))
+        return schar(((rnd((1 + Math.abs(depth(cptr.add(u, $you_uz)))) | 0) < 11 && rn2(77))
                 ? 1
                 : 0));
     return schar(litstate);
@@ -367452,7 +367176,6 @@ const __s_create_object_unknown_achievement_s_s = cptr.lit("create_object: unkno
 const __s_search_door_bad_wall = cptr.lit("search_door: Bad wall!");
 const __s_dig_corridor_bad_coords_d_d_d_d = cptr.lit("dig_corridor: bad coords <%d,%d> <%d,%d>.");
 const __s_create_corridor_to_from_a_random_wall = cptr.lit("create_corridor to/from a random wall");
-const __s_fill_special_room = cptr.lit("fill_special_room");
 const __s_unrecognized_level_init_style = cptr.lit("Unrecognized level init style.");
 const __s_width = cptr.lit("width");
 const __s_height = cptr.lit("height");
@@ -372916,15 +372639,10 @@ function* fill_special_room(croom) {
             for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); x++)
                 for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); y++)
                     void (yield* mkgold(
-                        BigInt((((rng_log_enabled()
-                            ? (
-                                rng_log_set_caller(__s_sp_lev_c, 2763, __s_fill_special_room),
-                                rn2(Math.imul(Math.abs(depth(cptr.add(u, $you_uz))), 100))
-                            )
-                            : rn2(Math.imul(
-                                Math.abs(depth(cptr.add(u, $you_uz))),
-                                100
-                            ))) + 51) | 0)),
+                        BigInt(((rn2(Math.imul(
+                            Math.abs(depth(cptr.add(u, $you_uz))),
+                            100
+                        )) + 51) | 0)),
                         i16(x),
                         i16(y)
                     ));
@@ -459320,7 +459038,6 @@ const __s_lose_magical_energy = cptr.lit("lose magical energy!");
 const __s_absorb_magical_energy = cptr.lit("absorb magical energy!");
 const __s_being_scared_stiff = cptr.lit("being scared stiff");
 const __s_release_s$artifact = cptr.lit("release %s!");
-const __s_mb_hit = cptr.lit("Mb_hit");
 const __s_s_is_insightful = cptr.lit("%s is insightful.");
 const __s_s_s$artifact = cptr.lit("%s %s!");
 const __s_resist$artifact = cptr.lit("resist");
@@ -462043,12 +461760,7 @@ function* Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         case NHC.MB_INDEX_PROBE:
         if (youattack &&
                 (cptr.ld1so(mb, $obj_spe) == 0 ||
-                    !(rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_artifact_c, 1382, __s_mb_hit),
-                            rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))
-                        )
-                        : rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))))) {
+                    !rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe)))))) {
             (yield* pline_The(__s_s_is_insightful, verb));
             /* pre-damage status */
             (yield* probe_monster(mdef));

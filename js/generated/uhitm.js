@@ -33,9 +33,7 @@ import {
     cloneu, could_seduce, diseasemu, doseduce, getmattk, hitmsg, magic_negation, mdamageu,
     mpoisons_subj, mtrapped_in_pit, u_slip_free, u_slow_down
 } from './mhitu.js';
-import {
-    d, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller, rnl
-} from './rnd.js';
+import { d, rn2, rn2_on_display_rng, rnd, rnl } from './rnd.js';
 import {
     You, You_feel, You_hear, Your, impossible, livelog_printf, pline, pline_The, pline_mon,
     urgent_pline, verbalize
@@ -562,7 +560,6 @@ const __s_s_pricks_the_exposed_part_of_your_s_s = cptr.lit("%s pricks the expose
 const __s_s_pricks_through_your_s_boot = cptr.lit("%s pricks through your %s boot!");
 const __s_s_scratches_your_s_boot = cptr.lit("%s scratches your %s boot!");
 const __s_s_pricks_your_s_s = cptr.lit("%s pricks your %s %s!");
-const __s_mhitm_ad_legs = cptr.lit("mhitm_ad_legs");
 const __s_belches_feebly_shrivels_up_and_dies = cptr.lit("belches feebly, shrivels up and dies");
 const __s_coughs_spasmodically_and_collapses = cptr.lit("coughs spasmodically and collapses");
 const __s_vomits_violently_and_drops_dead = cptr.lit("vomits violently and drops dead");
@@ -6360,15 +6357,7 @@ export function mhitm_ad_legs(magr, mattk, mdef, mhm) {
             } else
                 pline(__s_s_pricks_your_s_s, Monst_name, sidestr, leg);
 
-            set_wounded_legs(
-                side,
-                (rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_uhitm_c, 4475, __s_mhitm_ad_legs),
-                        rnd((60 - (acurr(NHC.A_DEX))) | 0)
-                    )
-                    : rnd((60 - (acurr(NHC.A_DEX))) | 0))
-            );
+            set_wounded_legs(side, rnd((60 - (acurr(NHC.A_DEX))) | 0));
             exercise(NHC.A_STR, 0);
             exercise(NHC.A_DEX, 0);
         }

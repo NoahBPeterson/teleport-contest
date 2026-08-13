@@ -45,7 +45,7 @@ import {
 } from './mon.js';
 import { beg, domonnoise, whimper } from './sounds.js';
 import { stop_occupation } from './allmain.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rnd } from './rnd.js';
 import { mpickobj, relobj } from './steal.js';
 import {
     Resists_Elem, attacktype, locomotion, max_passive_dmg, pronoun_gender, resist_conflict
@@ -171,7 +171,6 @@ const __s_dogmove_c = cptr.lit("dogmove.c");
 const __s_edog_apport_0 = cptr.lit("edog->apport > 0");
 const __s_s_picks_up_s = cptr.lit("%s picks up %s.");
 const __s_dog_move_for_non_pet = cptr.lit("dog_move for non-pet?");
-const __s_dog_move = cptr.lit("dog_move");
 const __s_s_breaks_loose_of_s_leash = cptr.lit("%s breaks loose of %s leash!");
 const __s_s_s_reluctantly_s_s = cptr.lit("%s %s reluctantly %s %s.");
 const __s_step = cptr.lit("step");
@@ -1925,10 +1924,7 @@ export function* dog_move(mtmp, after) {
                         nidist) | 0),
                     appr
                 );
-                if ((j == 0 &&
-                    !(rng_log_enabled()
-                        ? (rng_log_set_caller(__s_dogmove_c, 1255, __s_dog_move), rn2(++chcnt))
-                        : rn2(++chcnt))) ||
+                if ((j == 0 && !rn2(++chcnt)) ||
                         j < 0 ||
                         (j > 0 && !whappr && ((omx == nix && omy == niy && !rn2(3)) || !rn2(12)))) {
                     nix = nx;

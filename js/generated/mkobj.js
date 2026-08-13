@@ -29,7 +29,7 @@ import {
     otense, rnd_class, safe_typename, simpleonames, vtense, xname
 } from './objnam.js';
 import { obj_descr, objects } from './objects.js';
-import { rn2, rnd, rne, rng_log_enabled, rng_log_set_caller, rnz } from './rnd.js';
+import { rn2, rnd, rne, rnz } from './rnd.js';
 import { In_hell, In_quest, depth, level_difficulty, on_level, surface } from './dungeon.js';
 import { You_hear, You_see, Your, impossible, pline, verbalize } from './pline.js';
 import {
@@ -178,9 +178,8 @@ const $Gender_his = FLD.Gender_his, $Role_mnum = FLD.Role_mnum,
 
 // string literals (C char* uses decay to CPtr into these static buffers)
 const __s_probtype_error_oclass_d_i_d = cptr.lit("probtype error, oclass=%d i=%d");
-const __s_mkobj_c = cptr.lit("mkobj.c");
-const __s_mkbox_cnts = cptr.lit("mkbox_cnts");
 const __s_copy_oextra = cptr.lit("copy_oextra");
+const __s_mkobj_c = cptr.lit("mkobj.c");
 const __s_has_omonst_obj2 = cptr.lit("has_omonst(obj2)");
 const __s_splitobj_cobj_s_num_ld_quan_ld = cptr.lit("splitobj [cobj=%s num=%ld quan=%ld]");
 const __s_non_empty_container = cptr.lit("non-empty container");
@@ -213,7 +212,6 @@ const __s_those = cptr.lit("those");
 const __s_them = cptr.lit("them");
 const __s_you_s_s_s_you_pay_for_s = cptr.lit("You %s %s %s, you pay for %s!");
 const __s_you_s_s_you_pay_for_s = cptr.lit("You %s %s, you pay for %s!");
-const __s_mksobj_init = cptr.lit("mksobj_init");
 const __s_mksobj_tried_to_make_type_d_class_d = cptr.lit("mksobj tried to make type %d, class %d.");
 const __s_start_glob_timeout_for_non_glob_d_s = cptr.lit("start_glob_timeout for non-glob [%d: %s]?");
 const __s_shrink_glob_for_non_glob_d_s = cptr.lit("shrink_glob for non-glob [%d: %s]?");
@@ -237,7 +235,6 @@ const __s_much = cptr.lit("much ");
 const __s_brighter = cptr.lit("brighter");
 const __s_less_brightly = cptr.lit("less brightly");
 const __s_calculating_weight_of_ld_s = cptr.lit("Calculating weight of %ld %s?");
-const __s_mkgold = cptr.lit("mkgold");
 const __s_making_corpstat_type_d = cptr.lit("making corpstat type %d");
 const __s_place_object_s_d_off_map_d_d = cptr.lit("place_object: \"%s\" [%d] off map <%d,%d>");
 const __s_place_object_obj_s_d_not_free = cptr.lit("place_object: obj \"%s\" [%d] not free");
@@ -806,15 +803,7 @@ function mkbox_cnts(box) {
                 cptr.stI64o(
                     otmp,
                     $obj_quan,
-                    BigInt((Math.imul(
-                        (rng_log_enabled()
-                            ? (
-                                rng_log_set_caller(__s_mkobj_c, 362, __s_mkbox_cnts),
-                                rnd((level_difficulty() + 2) | 0)
-                            )
-                            : rnd((level_difficulty() + 2) | 0)),
-                        rnd(75)
-                    )))
+                    BigInt((Math.imul(rnd((level_difficulty() + 2) | 0), rnd(75))))
                 );
                 cptr.stI32o(otmp, $obj_owt, weight(otmp) >>> 0);
             } else
@@ -1791,12 +1780,7 @@ function mksobj_init(obj, artif) {
                 $permonst_msize
             ) <
                 NHM.MZ_SMALL) &&
-                    (rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_mkobj_c, 1155, __s_mksobj_init),
-                            rn2((((level_difficulty() / 2) | 0) + 10) | 0)
-                        )
-                        : rn2((((level_difficulty() / 2) | 0) + 10) | 0)) > 10)
+                    rn2((((level_difficulty() / 2) | 0) + 10) | 0) > 10)
                 void add_to_container(otmp, mkobj(((0 - NHC.SPBOOK_CLASS) | 0), 0));
         }
         /* boulder init'd below in the 'regardless of !init' code */
@@ -2787,16 +2771,7 @@ export function mkgold(amount, x, y) {
 
         amount = (BigInt.asIntN(
             64,
-            1n +
-                BigInt.asIntN(
-                    64,
-                    BigInt((rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_mkobj_c, 2010, __s_mkgold),
-                            rnd((level_difficulty() + 2) | 0)
-                        )
-                        : rnd((level_difficulty() + 2) | 0))) * mul
-                )
+            1n + BigInt.asIntN(64, BigInt(rnd((level_difficulty() + 2) | 0)) * mul)
         ));
     }
     if (gold) {

@@ -26,7 +26,7 @@ import {
 import { sfi_arti_info, sfi_short, sfo_arti_info, sfo_xint16 } from './sfbase.js';
 import { obj_descr, objects } from './objects.js';
 import { mons } from './monst.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller, rnz } from './rnd.js';
+import { d, rn2, rnd, rnz } from './rnd.js';
 import { bcsign, mksobj, obj_extract_self, uncurse, weight } from './mkobj.js';
 import { Monnam, hcolor, mon_nam, oname } from './do_name.js';
 import { inside_shop, obfree } from './shk.js';
@@ -266,7 +266,6 @@ const __s_lose_magical_energy = cptr.lit("lose magical energy!");
 const __s_absorb_magical_energy = cptr.lit("absorb magical energy!");
 const __s_being_scared_stiff = cptr.lit("being scared stiff");
 const __s_release_s = cptr.lit("release %s!");
-const __s_mb_hit = cptr.lit("Mb_hit");
 const __s_s_is_insightful = cptr.lit("%s is insightful.");
 const __s_s_s = cptr.lit("%s %s!");
 const __s_resist = cptr.lit("resist");
@@ -2989,12 +2988,7 @@ function Mb_hit(magr, mdef, mb, dmgptr, dieroll, vis, hittee) {
         case NHC.MB_INDEX_PROBE:
         if (youattack &&
                 (cptr.ld1so(mb, $obj_spe) == 0 ||
-                    !(rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_artifact_c, 1382, __s_mb_hit),
-                            rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))
-                        )
-                        : rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe))))))) {
+                    !rn2(Math.imul(3, Math.abs(cptr.ld1so(mb, $obj_spe)))))) {
             pline_The(__s_s_is_insightful, verb);
             /* pre-damage status */
             probe_monster(mdef);

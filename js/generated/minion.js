@@ -19,7 +19,7 @@ import { You, You_feel, impossible, livelog_printf, pline, pline_The, verbalize 
 import { Amonnam, Monnam, mon_nam, x_monnam } from './do_name.js';
 import { s_suffix, sgn } from './hacklib.js';
 import { mons } from './monst.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import { mk_roamer, mon_aligntyp } from './priest.js';
 import { show_transient_light, transient_light_cleanup } from './light.js';
 import { msummon_environ } from './mondata.js';
@@ -90,8 +90,6 @@ const __s_s_demands_ld_s_for_safe_passage = cptr.lit("%s demands %ld %s for safe
 const __s_s_seems_to_be_demanding_something = cptr.lit("%s seems to be demanding something.");
 const __s_how_much_will_you_offer = cptr.lit("How much will you offer?");
 const __s_s_vanishes_laughing_about_cowardly = cptr.lit("%s vanishes, laughing about cowardly mortals.");
-const __s_minion_c = cptr.lit("minion.c");
-const __s_demon_talk = cptr.lit("demon_talk");
 const __s_s_scowls_at_you_menacingly_then_vanishes = cptr.lit("%s scowls at you menacingly, then vanishes.");
 const __s_s_gets_angry = cptr.lit("%s gets angry...");
 const __s_bribed_s_with_ld_s_for_safe_passage = cptr.lit("bribed %s with %ld %s for safe passage");
@@ -568,12 +566,7 @@ export function demon_talk(mtmp) {
         if (!Deaf() && ((offer = bribe(mtmp, __s_how_much_will_you_offer)) >= demand)) {
             pline(__s_s_vanishes_laughing_about_cowardly, Amonnam(mtmp));
         } else if (offer > 0n &&
-                BigInt((rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_minion_c, 340, __s_demon_talk),
-                        rnd(Math.imul(5, (acurr(NHC.A_CHA))))
-                    )
-                    : rnd(Math.imul(5, (acurr(NHC.A_CHA)))))) >
+                BigInt(rnd(Math.imul(5, (acurr(NHC.A_CHA))))) >
                     (BigInt.asIntN(64, demand - offer))) {
             pline(__s_s_scowls_at_you_menacingly_then_vanishes, Amonnam(mtmp));
         } else {

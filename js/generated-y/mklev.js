@@ -21,9 +21,7 @@ import {
     nhcb_name, svd, svi, svl, svm, svn, svr, u, xdir, ydir
 } from './decl.js';
 import { You, impossible, pline, pline_The } from './pline.js';
-import {
-    reseed_random, rn2, rn2_on_display_rng, rnd, rng_log_enabled, rng_log_set_caller
-} from './rnd.js';
+import { reseed_random, rn2, rn2_on_display_rng, rnd } from './rnd.js';
 import { nh_deterministic_qsort, nh_snprintf } from './hacklib.js';
 import { bound_digging, makemaz, mazexy, mkportal, set_levltyp, wallification } from './mkmaze.js';
 import { panic } from './end.js';
@@ -200,8 +198,6 @@ const __s_vlad_was_here = cptr.lit("Vlad was here");
 const __s_ad_aerarium = cptr.lit("ad aerarium");
 const __s_fill_ordinary_room_null_subroom = cptr.lit("fill_ordinary_room: Null subroom");
 const __s_couldn_t_generate_supply_chest_item = cptr.lit("couldn't generate supply chest item");
-const __s_mklev_c = cptr.lit("mklev.c");
-const __s_fill_ordinary_room = cptr.lit("fill_ordinary_room");
 const __s_trycnt_overflow4 = cptr.lit("trycnt overflow4");
 const __s_post_level_generate = cptr.lit("post_level_generate");
 const __s_levl_i_i_door_not_ok = cptr.lit("levl[%i][%i] door not ok");
@@ -213,6 +209,7 @@ const __s_s_fil = cptr.lit("%s-fil");
 const __s_a = cptr.lit("a");
 const __s_b = cptr.lit("b");
 const __s_makelevel = cptr.lit("makelevel");
+const __s_mklev_c = cptr.lit("mklev.c");
 const __s_svn_nroom_0 = cptr.lit("svn.nroom > 0");
 const __s_trying_to_make_a_vault = cptr.lit("trying to make a vault...");
 const __s_shoptype = cptr.lit("SHOPTYPE");
@@ -2227,12 +2224,7 @@ function* fill_ordinary_room(croom, bonus_items) {
             ));
 
         /* maybe make some graffiti */
-        if (!(rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_mklev_c, 1142, __s_fill_ordinary_room),
-                    rn2((27 + Math.imul(3, Math.abs(depth(cptr.add(u, $you_uz))))) | 0)
-                )
-                : rn2((27 + Math.imul(3, Math.abs(depth(cptr.add(u, $you_uz))))) | 0))) {
+        if (!rn2((27 + Math.imul(3, Math.abs(depth(cptr.add(u, $you_uz))))) | 0)) {
             let buf = new Uint8Array(256);
             let pristinebuf = new Uint8Array(256);
             let mesg = (yield* random_engraving(cptr.decay(buf), cptr.decay(pristinebuf)));

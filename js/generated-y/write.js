@@ -26,7 +26,7 @@ import { mungspaces, strncmpi, strstri, upstart } from './hacklib.js';
 import { discover_object, observe_object } from './o_init.js';
 import { exercise } from './attrib.js';
 import { getlin } from './windows.js';
-import { rn2, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
+import { rn2, rnl } from './rnd.js';
 import { bcsign, mksobj } from './mkobj.js';
 import { check_unpaid, obfree } from './shk.js';
 import { known_spell } from './spell.js';
@@ -68,8 +68,6 @@ const __s_spellbook__2 = cptr.lit("spellbook ");
 const __s_of = cptr.lit("of ");
 const __s_armour = cptr.lit(" armour");
 const __s_armor = cptr.lit(" armor ");
-const __s_write_c = cptr.lit("write.c");
-const __s_dowrite = cptr.lit("dowrite");
 const __s_is_no_such_s = cptr.lit("is no such %s!");
 const __s_write_that = cptr.lit("write that!");
 const __s_it_s_obscene = cptr.lit("It's obscene!");
@@ -333,9 +331,7 @@ export function* dowrite(pen) {
                             $sizeof_objclass,
                             $objclass_oc_name_known
                         ) & 1) | 0) &&
-                    !(rng_log_enabled()
-                        ? (rng_log_set_caller(__s_write_c, 193, __s_dowrite), rn2(++deferralchance))
-                        : rn2(++deferralchance))) {
+                    !rn2(++deferralchance)) {
                 deferred = i;
                 /* writing by user-assigned name is same as by description:
                    fails for books, works for scrolls (having an assigned

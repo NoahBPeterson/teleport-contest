@@ -930,11 +930,17 @@ function scanTrivia(src) {
 //
 // What a call does change is WHEN the argument is evaluated: C ran it inside
 // the selected arm, i.e. after `rng_log_enabled()` and after
-// `rng_log_set_caller`; a call runs it before both. rngLogCall() therefore
-// admits a site only when the argument neither writes nor draws — the same
+// `rng_log_set_caller`; a call runs it before both. With C2JS_RNGCALLER=1,
+// where the site really is a call to a helper, rngLogCall() therefore admits
+// a site only when the argument neither writes nor draws — the same
 // `macroFnArgSafe` evidence tier 1.12 hoists on. `rn2(rnd(3))` is the case
-// that must be refused and is: it would log its two draws against different
-// callers, and the log is the thing being scored.
+// that must be refused there and is: it would log its two draws against
+// different callers, and the log is the thing being scored.
+//
+// With the annotation off — the default, below — the site is NOT a call to a
+// helper: it is `rn2(x)`, the cold arm itself, so nothing is emitted between
+// the argument and the draw and the refusal has nothing left to protect. Every
+// site folds.
 //
 // Note that the *number* of evaluations does not change. C spells the argument
 // twice, once per arm, and exactly one arm runs.
@@ -2396,9 +2402,11 @@ export class Emitter {
    * the ternary inline. See the note above RNG_LOG_MACROS.
    *
    * Structural, on the AST, because the shape IS the macro: nothing else in
-   * NetHack tests `rng_log_enabled()`. The three refusals below are the whole
-   * safety argument, and all three are about the one thing a call changes —
-   * WHEN the argument runs.
+   * NetHack tests `rng_log_enabled()`. The refusals below are the whole safety
+   * argument, and they are about the one thing a CALL changes — WHEN the
+   * argument runs. With C2JS_RNGCALLER off there is no call (the site emits
+   * the cold arm verbatim), so the argument refusal does not apply; the two
+   * shape audits, which are about the macro being the macro, always do.
    */
   rngLogCall(n) {
     if (!RNG_LOG_FOLD) return null;
@@ -2421,17 +2429,31 @@ export class Emitter {
     RNG_STATS.seen++;
     const args = hot.inner.slice(1);
     if (args.length !== cold.inner.length - 1) return null;
-    // A call evaluates its arguments BEFORE its body, so the helper runs the
-    // argument before `rng_log_enabled()` and before `rng_log_set_caller` —
-    // where C ran it after both. That is unobservable exactly when the
-    // argument neither writes nor draws: nothing the helper does between the
-    // two orderings is visible to a computation that only loads memory and
-    // calls provably pure functions. An argument that reaches the RNG is the
-    // case this must refuse, and does: `rn2(rnd(3))` would log its two calls
-    // against different callers.
-    for (const a of args) {
-      const s = this.macroFnArgSafe(a);
-      if (!s.safe) { RNG_STATS.refusedArg++; return null; }
+    // WHEN the argument runs — and only when the annotation is on.
+    //
+    // With C2JS_RNGCALLER=1 the site becomes a CALL to `rn2_at`, and a call
+    // evaluates its arguments BEFORE its body: the helper runs the argument
+    // before `rng_log_enabled()` and before `rng_log_set_caller`, where C ran
+    // it after both. That is unobservable exactly when the argument neither
+    // writes nor draws — nothing the helper does between the two orderings is
+    // visible to a computation that only loads memory and calls provably pure
+    // functions — and `rn2(rnd(3))` is the case it must refuse, because the
+    // two draws would log against different callers.
+    //
+    // With the annotation OFF (the default) there is no helper and no call:
+    // the site emits `rn2(<arg>)`, which IS the ternary's cold arm, character
+    // for character. Nothing at all is emitted between the argument and the
+    // draw, so there is no ordering left to preserve and this refusal is
+    // vacuous. The two things it protected are both gone: `rng_log_enabled()`
+    // is a pure read of `rng_logfile`, and `rng_log_set_caller` — the only
+    // thing the hot arm added — is not emitted, so the caller it would have
+    // set can no longer disagree with the argument's own draws. What C wrote
+    // is what ships. See docs/NOTES-readability.md §19.
+    if (RNG_CALLER) {
+      for (const a of args) {
+        const s = this.macroFnArgSafe(a);
+        if (!s.safe) { RNG_STATS.refusedArg++; return null; }
+      }
     }
     // Emitted in the C's own order so the string table interns exactly what it
     // interned before: the set_caller arguments, then the call's.

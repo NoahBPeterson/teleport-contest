@@ -40,7 +40,7 @@ import {
     make_slimed, make_stoned, make_stunned, make_vomiting, set_itimeout
 } from './potion.js';
 import { acurr, adjattrib, exercise, stone_luck } from './attrib.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { d, rn2, rnd } from './rnd.js';
 import {
     big_to_little, cantvomit, little_to_big, locomotion, name_to_mon, pronoun_gender
 } from './mondata.js';
@@ -364,8 +364,6 @@ const __s_slide = cptr.lit("slide");
 const __s_on = cptr.lit("on");
 const __s_off = cptr.lit("off");
 const __s_lose_your_balance = cptr.lit("lose your balance.");
-const __s_timeout_c = cptr.lit("timeout.c");
-const __s_slip_or_trip = cptr.lit("slip_or_trip");
 const __s_trip_over_your_own_s = cptr.lit("trip over your own %s.");
 const __s_elbow = cptr.lit("elbow");
 const __s_slip_s = cptr.lit("slip %s.");
@@ -455,6 +453,7 @@ const __s_turns = cptr.lit("turns");
 const __s_more_turn = cptr.lit("more turn");
 const __s_timer_sanity_untimed_obj_s_timer_lu = cptr.lit("timer sanity: untimed obj %s, timer %lu");
 const __s_timer_sanity_check = cptr.lit("timer_sanity_check");
+const __s_timeout_c = cptr.lit("timeout.c");
 const __s_top_null = cptr.lit("top != NULL");
 const __s_timer_sanity_can_t_locate_obj_s_where_d = cptr.lit("timer sanity: can't locate obj %s [where=%d], timer %lu");
 const __s_timer_sanity_obj_s_where_d_located_at_d = cptr.lit("timer sanity: obj %s [where=%d] located at <%d,%d>, timer %lu");
@@ -2170,12 +2169,7 @@ function* slip_or_trip() {
                 (!ice_only || !rn2(3))) {
             (yield* You(__s_lose_your_balance));
             (yield* dismount_steed(NHC.DISMOUNT_FELL));
-        } else if (!(rng_log_enabled()
-                ? (
-                    rng_log_set_caller(__s_timeout_c, 1287, __s_slip_or_trip),
-                    rn2((10 + (acurr(NHC.A_DEX))) | 0)
-                )
-                : rn2((10 + (acurr(NHC.A_DEX))) | 0))) {
+        } else if (!rn2((10 + (acurr(NHC.A_DEX))) | 0)) {
             /* Maybe slip in a random direction.  This takes place after
                the hero has already changed location.  If the hero is
                in grid bug form, only allow forward hurtle, otherwise a

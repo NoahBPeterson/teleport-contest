@@ -40,7 +40,7 @@ import {
     create_maze, fix_wall_spines, fixup_special, get_level_extends, pick_vibrasquare_location,
     set_levltyp, set_levltyp_lit, walkfrom, wallification
 } from './mkmaze.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rnd } from './rnd.js';
 import { back_to_glyph, set_wall_state } from './display.js';
 import { placebc, unplacebc } from './ball.js';
 import { flip_worm_segs_horizontal, flip_worm_segs_vertical } from './worm.js';
@@ -339,7 +339,6 @@ const __s_create_object_unknown_achievement_s_s = cptr.lit("create_object: unkno
 const __s_search_door_bad_wall = cptr.lit("search_door: Bad wall!");
 const __s_dig_corridor_bad_coords_d_d_d_d = cptr.lit("dig_corridor: bad coords <%d,%d> <%d,%d>.");
 const __s_create_corridor_to_from_a_random_wall = cptr.lit("create_corridor to/from a random wall");
-const __s_fill_special_room = cptr.lit("fill_special_room");
 const __s_unrecognized_level_init_style = cptr.lit("Unrecognized level init style.");
 const __s_width = cptr.lit("width");
 const __s_height = cptr.lit("height");
@@ -5803,15 +5802,10 @@ export function fill_special_room(croom) {
             for (x = cptr.ldI16(croom); x <= cptr.ldI16o(croom, $mkroom_hx); x++)
                 for (y = cptr.ldI16o(croom, $mkroom_ly); y <= cptr.ldI16o(croom, $mkroom_hy); y++)
                     void mkgold(
-                        BigInt((((rng_log_enabled()
-                            ? (
-                                rng_log_set_caller(__s_sp_lev_c, 2763, __s_fill_special_room),
-                                rn2(Math.imul(Math.abs(depth(cptr.add(u, $you_uz))), 100))
-                            )
-                            : rn2(Math.imul(
-                                Math.abs(depth(cptr.add(u, $you_uz))),
-                                100
-                            ))) + 51) | 0)),
+                        BigInt(((rn2(Math.imul(
+                            Math.abs(depth(cptr.add(u, $you_uz))),
+                            100
+                        )) + 51) | 0)),
                         i16(x),
                         i16(y)
                     );

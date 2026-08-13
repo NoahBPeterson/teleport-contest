@@ -69,7 +69,7 @@ import {
 } from './mkobj.js';
 import { remove_worn_item } from './steal.js';
 import { discover_object, objdescr_is, observe_object } from './o_init.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
+import { d, rn2, rnd, rnl } from './rnd.js';
 import { obj_descr, objects } from './objects.js';
 import { more_experienced, pluslvl, rndexp } from './exper.js';
 import { doup, goto_level, heal_legs, trycall } from './do.js';
@@ -381,7 +381,6 @@ const __s_writhes = cptr.lit("writhes");
 const __s_shrieks = cptr.lit("shrieks");
 const __s_s_looks_healthier = cptr.lit("%s looks healthier.");
 const __s_s_rusts = cptr.lit("%s rusts.");
-const __s_potion_c = cptr.lit("potion.c");
 const __s_some_vapor_passes_harmlessly_around_you = cptr.lit("Some vapor passes harmlessly around you.");
 const __s_ulch_that_potion_smells_terrible = cptr.lit("Ulch!  That potion smells terrible!");
 const __s_s_s__4 = cptr.lit("%s %s!");
@@ -465,6 +464,7 @@ const __s_you_disturbed_me_fool = cptr.lit("You disturbed me, fool!");
 const __s_from_s_heat = cptr.lit(" from %s heat");
 const __s_multiply_s = cptr.lit("multiply%s!");
 const __s_split_mon = cptr.lit("split_mon");
+const __s_potion_c = cptr.lit("potion.c");
 const __s_mon_mhpmax_mon_mhp = cptr.lit("mon->mhpmax >= mon->mhp");
 const __s_s_multiplies_s = cptr.lit("%s multiplies%s!");
 const __s_are_suddenly_moving_sfaster = cptr.lit("are suddenly moving %sfaster.");
@@ -3024,14 +3024,7 @@ export function potionhit(mon, obj, how) {
         case 3: {
 
         /* Note: potionbreathe() does its own docall() */
-        if ((distance == 0 ||
-            (distance < 3 &&
-                !(rng_log_enabled()
-                    ? (
-                        rng_log_set_caller(__s_potion_c, 1907, __s_potionhit),
-                        rn2((((1 + (acurr(NHC.A_DEX))) | 0) / 2) | 0)
-                    )
-                    : rn2((((1 + (acurr(NHC.A_DEX))) | 0) / 2) | 0)))) &&
+        if ((distance == 0 || (distance < 3 && !rn2((((1 + (acurr(NHC.A_DEX))) | 0) / 2) | 0))) &&
                 (!((cptr.ldU64o(
                     (cptr.ldPtro(gy, $instance_globals_y_youmonst + $monst_data)),
                     $permonst_mflags1

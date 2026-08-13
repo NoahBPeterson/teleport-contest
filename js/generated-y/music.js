@@ -24,7 +24,7 @@ import {
 } from './decl.js';
 import { dist2, highc, mungspaces } from './hacklib.js';
 import { sleep_monst, slept_monst } from './mhitm.js';
-import { d, rn2, rnd, rng_log_enabled, rng_log_set_caller, rnl } from './rnd.js';
+import { d, rn2, rnd, rnl } from './rnd.js';
 import { canseemon, newsym } from './display.js';
 import {
     Norep, You, You_cant, You_feel, You_hear, Your, impossible, pline, pline_The
@@ -164,8 +164,6 @@ const __s_seem_to = cptr.lit("seem to ");
 const __s_piped = cptr.lit("piped");
 const __s_soft = cptr.lit("soft");
 const __s_familiar = cptr.lit(", familiar");
-const __s_music_c = cptr.lit("music.c");
-const __s_do_improvisation = cptr.lit("do_improvisation");
 const __s_s_s = cptr.lit("%s%s.");
 const __s_trill = cptr.lit("trill");
 const __s_toot = cptr.lit("toot");
@@ -1039,10 +1037,7 @@ function* do_improvisation(instr) {
         (yield* exercise(NHC.A_DEX, 1));
         break;
         case NHC.WOODEN_FLUTE:
-        do_spec &= ((((rng_log_enabled()
-            ? (rng_log_set_caller(__s_music_c, 600, __s_do_improvisation), rn2((acurr(NHC.A_DEX))))
-            : rn2((acurr(NHC.A_DEX)))) +
-                cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
+        do_spec &= (((rn2((acurr(NHC.A_DEX))) + cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
         if (!Deaf())
             (yield* pline(
                 __s_s_s,
@@ -1138,10 +1133,7 @@ function* do_improvisation(instr) {
         (yield* exercise(NHC.A_DEX, 1));
         break;
         case NHC.WOODEN_HARP:
-        do_spec &= ((((rng_log_enabled()
-            ? (rng_log_set_caller(__s_music_c, 673, __s_do_improvisation), rn2((acurr(NHC.A_DEX))))
-            : rn2((acurr(NHC.A_DEX)))) +
-                cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
+        do_spec &= (((rn2((acurr(NHC.A_DEX))) + cptr.ldI32o(u, $you_ulevel)) | 0) > 25);
         if (!Deaf())
             (yield* pline(
                 __s_s_s__2,

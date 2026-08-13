@@ -37,7 +37,7 @@ import {
     Norep, You, impossible, livelog_printf, nhassert_failed, pline, urgent_pline
 } from './pline.js';
 import { acurr, change_luck, exerchk } from './attrib.js';
-import { rn2, rnd, rng_log_enabled, rng_log_set_caller } from './rnd.js';
+import { rn2, rnd } from './rnd.js';
 import { find_ac, glibr, set_wear } from './do_wear.js';
 import { encumber_msg, pickup, reset_justpicked } from './pickup.js';
 import { initrack, settrack } from './track.js';
@@ -218,11 +218,11 @@ const __s_are_lucky_full_moon_tonight = cptr.lit("are lucky!  Full moon tonight.
 const __s_be_careful_new_moon_tonight = cptr.lit("Be careful!  New moon tonight.");
 const __s_watch_out_bad_things_can_happen_on = cptr.lit("Watch out!  Bad things can happen on Friday the 13th.");
 const __s_the_dungeon_capitulates = cptr.lit("The dungeon capitulates.");
-const __s_allmain_c = cptr.lit("allmain.c");
-const __s_moveloop_core = cptr.lit("moveloop_core");
 const __s_the_amulet_is_bestowing_a_wish_upon_you = cptr.lit("The Amulet is bestowing a wish upon you!");
 const __s_gc_command_count_0 = cptr.lit("gc.command_count != 0");
+const __s_allmain_c = cptr.lit("allmain.c");
 const __s_nh_callback_run = cptr.lit("nh_callback_run");
+const __s_moveloop_core = cptr.lit("moveloop_core");
 const __s_tut_1 = cptr.lit("tut-1");
 const __s_entering_the_tutorial = cptr.lit("Entering the tutorial.");
 const __s_you_feel_full_of_energy = cptr.lit("You feel full of energy.");
@@ -588,12 +588,7 @@ export function* moveloop_core() {
                         mvl_change = 1;
                     else if (ismnum(cptr.ldI32o(u, $you_ulycn)) &&
                             !Upolyd() &&
-                            !(rng_log_enabled()
-                                ? (
-                                    rng_log_set_caller(__s_allmain_c, 328, __s_moveloop_core),
-                                    rn2((80 - (Math.imul(20, (yield* night())))) | 0)
-                                )
-                                : rn2((80 - (Math.imul(20, (yield* night())))) | 0)))
+                            !rn2((80 - (Math.imul(20, (yield* night())))) | 0))
                         mvl_change = 2;
                     if (mvl_change && !Unchanging()) {
                         if (cptr.ldI64o(gm, $instance_globals_m_multi) >= 0n) {
@@ -631,12 +626,7 @@ export function* moveloop_core() {
                 (yield* invault());
                 if ((cptr.ldI32o(u, $you_uhave) & 1))
                     (yield* amulet());
-                if (!(rng_log_enabled()
-                        ? (
-                            rng_log_set_caller(__s_allmain_c, 360, __s_moveloop_core),
-                            rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)
-                        )
-                        : rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0)))
+                if (!rn2((40 + (Math.imul((acurr(NHC.A_DEX)), 3))) | 0))
                     (yield* u_wipe_engr(rnd(3)));
                 if ((cptr.ldI32o(u, $you_uevent + $u_event_udemigod) & 1) | 0 &&
                         !(cptr.ldI32o(u, $you_uinvulnerable) & 1)) {
