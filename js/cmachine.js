@@ -142,3 +142,24 @@ export function i64div(a, b) { return a / b; }
  * @returns {CFloat}
  */
 export function fround(x) { return Math.fround(x); }
+
+/**
+ * Wrap-mask fold audit (build-time only: `C2JS_WRAPFOLD_CHECK=1`).
+ *
+ * Collapsing a chain of same-width `+`/`-`/`*` masks to a single mask at the
+ * root is exact modular arithmetic, with one precondition on the 32-bit side:
+ * the intermediate the fold now defers is computed in float64, so it must be
+ * an exactly-represented integer. A build with C2JS_WRAPFOLD_CHECK=1 routes
+ * every deferred 32-bit intermediate through here, so a clean corpus run is a
+ * statement about every folded chain that run executed — including one whose
+ * operand is an uninitialized (`undefined`) local, the one case where deferring
+ * the mask could otherwise change a value.
+ *
+ * No shipped build references this; `js/generated` never imports it.
+ * @param {number} x
+ * @returns {number}
+ */
+export function wfchk(x) {
+  if (!Number.isSafeInteger(x)) throw new Error(`wrapfold: intermediate is not an exact integer: ${x}`);
+  return x;
+}

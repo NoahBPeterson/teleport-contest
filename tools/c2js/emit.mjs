@@ -341,6 +341,243 @@ const DEAD_STATS = { sm: 0, labelBreak: 0, inlineTail: 0, switchTail: 0, blockTa
 const DO_FLATTEN = process.env.C2JS_FLATTEN_DO !== '0';
 const DO_FLAT_STATS = { seen: 0, flattened: 0, refusedJump: 0, refusedSplicedJump: 0, disagreed: 0 };
 
+// ------------------------------------------------- wrap-mask folding ---------
+//
+// C requires every arithmetic operation on a fixed-width integer type to wrap,
+// so the type-directed emission wraps every one of them: `a + b + c` at `int`
+// becomes `(((a + b) | 0) + c) | 0`, and at `unsigned long long` it becomes
+// two nested `BigInt.asUintN(64, ...)` calls.  A flat C expression comes out as
+// a staircase — nine nested masks and twenty-six lines for botl.c:227.
+//
+// All but the outermost of those masks is redundant, and provably so rather
+// than plausibly so.  Reduction modulo 2^w is a *ring homomorphism* over
+// `+`, `-` and `*`: (x mod 2^w) + (y mod 2^w) ≡ x + y (mod 2^w), and likewise
+// for `-` and `*`.  So for a chain built only from those three operators at one
+// width, masking at every node computes the same residue as masking once at the
+// root.  Collapse the chain and keep the root mask.
+//
+//   64-bit (`BigInt.asIntN/asUintN`)  exact by construction.  BigInt is
+//     arbitrary precision, so the un-masked intermediate is the exact integer
+//     and no range reasoning is needed at all:
+//       asUintN(64, asUintN(64, a + b) + c)  ===  asUintN(64, a + b + c)
+//
+//   32-bit (`| 0`, `>>> 0`)  the intermediates are float64, so the identity
+//     needs the intermediate to be *exactly representable*.  Every leaf of a
+//     chain is a canonical 32-bit value (a load, a literal, `Math.imul`, `| 0`,
+//     `>>> 0`, a comparison's 0/1) or a JS unary `-` of one, hence |leaf| <=
+//     2^32.  A `+`/`-` chain over k leaves is therefore bounded by k * 2^32,
+//     which is exact in float64 for k < 2^21 = 2,097,152.  The longest chain
+//     this codebase produces is 11 terms.  `Math.imul` is not a bound risk: it
+//     *returns* a canonical int32, so it terminates a chain rather than
+//     compounding it, and its arguments are reduced by ToInt32 (which is exact
+//     modular reduction on an exactly-represented integer), so an un-masked
+//     chain may be handed to it directly.  A plain `*` at 32 bits is never
+//     emitted, so nothing widens the bound.
+//
+// Barriers.  A chain extends through `+`, `-` and `*` at one width and one
+// signedness, and stops at everything else: division, modulo, shifts, bitwise
+// and/or/xor, comparisons, casts to another width or signedness, function
+// calls, `?:`, and any context that is not one of the three ring operators.
+// This is enforced structurally rather than by a list of exceptions — only
+// `coerceArith()` hands back a `wrapRaw` descriptor, and only the `+`/`-`/`*`
+// path of `expr_BinaryOperator()` (and the 32-bit compound-assign path) ever
+// looks at one — so an operator this note forgot to mention refuses by default.
+// Three further guards:
+//   - the key (width + signedness) of the operand's mask must equal the key of
+//     the consuming operation, so a mixed-width or mixed-signedness chain is
+//     refused even where it would be sound;
+//   - `wrapRaw.code` is compared against the descriptor's current `.code`
+//     before the swap, exactly as `boolRaw` does, so a descriptor that some
+//     later pass spread into different text can never hand back a stale form;
+//   - an operand descriptor is consumed exactly once, by the operator it was
+//     emitted for, so "used elsewhere" cannot arise.
+//
+// Verification.  Two independent checks, both off by default:
+//   C2JS_WRAPFOLD_VERIFY=1  a *static* differential.  Each fold carries a
+//     symbolic tree of the chain it collapsed; before the fold is committed the
+//     tree is evaluated both ways — masking at every node (what the emitter
+//     used to print) and masking only at the root (what it is about to print) —
+//     over randomized and boundary operand vectors, and the fold is refused
+//     unless every case is bit-identical.  See wrapVerify().
+//   C2JS_WRAPFOLD_CHECK=1   a *dynamic* completeness check.  The static
+//     argument above has exactly one precondition — that every 32-bit
+//     intermediate is an exactly-represented integer — so a build with this
+//     flag wraps every un-masked 32-bit chain value in `wfchk()`, which asserts
+//     `Number.isSafeInteger`.  That is not a sample: if it never fires over a
+//     run, the fold was exact on every folded chain that run executed,
+//     including any that read an uninitialized (`undefined`) local, which is
+//     the one case where deferring the mask could otherwise change a value.
+//
+// C2JS_WRAPFOLD=0 restores the mask-at-every-node emission (the A/B baseline).
+const WRAPFOLD = process.env.C2JS_WRAPFOLD !== '0';
+const WRAPFOLD_VERIFY = process.env.C2JS_WRAPFOLD_VERIFY === '1';
+const WRAPFOLD_CHECK = process.env.C2JS_WRAPFOLD_CHECK === '1';
+const WRAPFOLD_STATS = {
+  emitted: { i32: 0, u32: 0, i64: 0, u64: 0 }, // ring-operation masks emitted
+  folded: { i32: 0, u32: 0, i64: 0, u64: 0 },  // ...of which removed as redundant
+  refused: new Map(),                          // reason -> count
+  cases: 0,                                    // static differential cases run
+  verified: 0,                                 // folds the differential cleared
+};
+const WRAP_ROOTS = []; // every chain that collapsed at least one interior mask
+// a fresh object per leaf: wrapLeaves() numbers them by identity
+const wrapLeaf = () => ({ leaf: true });
+function wrapRefuse(reason) { WRAPFOLD_STATS.refused.set(reason, (WRAPFOLD_STATS.refused.get(reason) || 0) + 1); }
+
+/**
+ * The mask family a C integer type gets for `+`/`-`/`*`, or null if this type
+ * is not one the emitter masks with a ring-homomorphic reduction.
+ *
+ * The signedness tests mirror `coerceArith()`'s exactly (64-bit defaults to
+ * signed, 32-bit defaults to unsigned) so that a key can never name a mask
+ * different from the one actually printed.
+ */
+function wrapKey(t) {
+  if (!t || t.cls !== 'int') return null;
+  if (t.bits === 64) return t.signed === false ? 'u64' : 'i64';
+  if (t.bits === 32) return t.signed ? 'i32' : 'u32';
+  return null;
+}
+
+const WRAP_MASK = {
+  i32: (v) => BigInt.asIntN(32, v),
+  u32: (v) => BigInt.asUintN(32, v),
+  i64: (v) => BigInt.asIntN(64, v),
+  u64: (v) => BigInt.asUintN(64, v),
+};
+const wrapIs32 = (key) => key === 'i32' || key === 'u32';
+// float64 holds every integer below 2^53 exactly; a 32-bit chain's un-masked
+// intermediate must stay inside that or the collapsed form loses low bits.
+const WRAP_EXACT = 9007199254740992n;
+
+/** every node of a chain tree, masked — the emission this leg replaces */
+function wrapEvalOld(node, vals) {
+  if (node.leaf) return vals[node.id];
+  const a = wrapEvalOld(node.l, vals), b = wrapEvalOld(node.r, vals);
+  return WRAP_MASK[node.key](node.op === '+' ? a + b : node.op === '-' ? a - b : a * b);
+}
+
+/**
+ * The chain evaluated the new way: no mask below the root.
+ *
+ * `*` at 32 bits is `Math.imul`, which masks whatever it is given, so it is a
+ * mask node in *both* emissions (it is also never an interior node of a tree,
+ * since it hands back no `wrapRaw` — this arm is belt and braces).
+ */
+function wrapEvalNew(node, vals, isRoot) {
+  if (node.leaf) return vals[node.id];
+  const a = wrapEvalNew(node.l, vals, false), b = wrapEvalNew(node.r, vals, false);
+  const raw = node.op === '+' ? a + b : node.op === '-' ? a - b : a * b;
+  const masks = isRoot || (node.op === '*' && wrapIs32(node.key));
+  // the collapsed 32-bit form computes `raw` in float64: outside 2^53 the
+  // algebra would still agree and the emitted code would not
+  if (!masks && wrapIs32(node.key) && (raw >= WRAP_EXACT || raw <= -WRAP_EXACT)) throw new WrapInexact();
+  return masks ? WRAP_MASK[node.key](raw) : raw;
+}
+class WrapInexact extends Error {}
+
+/** leaves of a chain tree, left to right, numbered for the value vectors */
+function wrapLeaves(node, out = []) {
+  if (node.leaf) { node.id = out.length; out.push(node); return out; }
+  wrapLeaves(node.l, out); wrapLeaves(node.r, out);
+  return out;
+}
+
+function wrapDepth(node) { return node.leaf ? 1 : wrapDepth(node.l) + wrapDepth(node.r); }
+
+// Boundary operand values per chain kind.  A leaf of a 32-bit chain is a
+// canonical int32/uint32 in the emitted code, but JS unary `-` does not wrap
+// (`-(-2147483648)` is 2147483648), so the vectors deliberately reach one bit
+// past canonical range in both directions.
+const WRAP_EDGES = {
+  i32: [0n, 1n, -1n, 2n, -2n, 2147483647n, -2147483648n, 2147483648n, -2147483649n, 65536n, -65536n, 1431655765n, -1431655765n],
+  u32: [0n, 1n, 2n, 4294967295n, 4294967294n, 2147483648n, 2147483647n, 65536n, 3435973836n],
+  i64: [0n, 1n, -1n, 2n, -2n, 9223372036854775807n, -9223372036854775808n, 9223372036854775808n, 4294967296n, -4294967296n, 2147483647n, -2147483648n],
+  u64: [0n, 1n, 2n, 18446744073709551615n, 18446744073709551614n, 9223372036854775808n, 9223372036854775807n, 4294967296n, 4294967295n],
+};
+
+// deterministic PRNG for the randomized half of the differential (xorshift32)
+let wrapRandState = 0x2545f491;
+function wrapRand32() {
+  let x = wrapRandState;
+  x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0;
+  wrapRandState = x;
+  return x;
+}
+function wrapRandVal(key) {
+  const w = wrapIs32(key) ? 32 : 64;
+  let v = BigInt(wrapRand32());
+  if (w === 64) v = (v << 32n) | BigInt(wrapRand32());
+  return key[0] === 'i' ? BigInt.asIntN(w, v) : BigInt.asUintN(w, v);
+}
+
+/**
+ * Static differential for one candidate fold: does collapsing this chain's
+ * interior masks compute the same value as keeping them, on every vector?
+ *
+ * Vectors: every leaf set to each boundary value in turn (so a single operand
+ * is pushed to an extreme while the rest are ordinary), every leaf set to the
+ * *same* boundary value (so the whole chain overflows together), a sweep that
+ * walks the boundary list across leaves out of step, and 64 random draws.  The
+ * boundary lists reach one bit past canonical range on both sides, so vectors
+ * that force the chain to wrap are the majority of them rather than a corner.
+ */
+function wrapVerify(root) {
+  const leaves = wrapLeaves(root);
+  const n = leaves.length;
+  const key = root.key;
+  const edges = WRAP_EDGES[key];
+  const vecs = [];
+  const base = key[0] === 'i' ? 0n : 1n;
+  for (let i = 0; i < n; i++) {
+    for (const e of edges) { const v = new Array(n).fill(base); v[i] = e; vecs.push(v); }
+  }
+  for (const e of edges) vecs.push(new Array(n).fill(e));
+  for (let s = 0; s < edges.length; s++) vecs.push(Array.from({ length: n }, (_, i) => edges[(s + i) % edges.length]));
+  for (let k = 0; k < 64; k++) vecs.push(Array.from({ length: n }, () => wrapRandVal(key)));
+  for (const v of vecs) {
+    WRAPFOLD_STATS.cases++;
+    try {
+      if (wrapEvalOld(root, v) !== wrapEvalNew(root, v, true)) return false;
+    } catch (e) {
+      if (e instanceof WrapInexact) return false; // the float64 bound, not the algebra
+      throw e;
+    }
+  }
+  WRAPFOLD_STATS.verified++;
+  return true;
+}
+
+/**
+ * Build report for the wrap-mask fold: masks removed by kind, maximal chains
+ * collapsed, and how many terms those chains carry (the float64 bound's k).
+ *
+ * A chain stops being maximal the moment a parent consumes it, so the roots
+ * are exactly the recorded trees no `wrapCommit()` ever claimed.
+ */
+export function wrapFoldSummary() {
+  const roots = { i32: 0, u32: 0, i64: 0, u64: 0 };
+  const depth = new Map();
+  let maxTerms = 0;
+  for (const t of WRAP_ROOTS) {
+    if (t.consumed) continue;
+    roots[t.key]++;
+    const k = wrapDepth(t);
+    depth.set(k, (depth.get(k) || 0) + 1);
+    if (k > maxTerms) maxTerms = k;
+  }
+  const { folded, emitted } = WRAPFOLD_STATS;
+  const sum = (o) => o.i32 + o.u32 + o.i64 + o.u64;
+  return {
+    on: WRAPFOLD, verify: WRAPFOLD_VERIFY, check: WRAPFOLD_CHECK,
+    folded, emitted, roots, maxTerms,
+    depth: [...depth.entries()].sort((a, b) => a[0] - b[0]),
+    refused: [...WRAPFOLD_STATS.refused.entries()].sort((a, b) => b[1] - a[1]),
+    cases: WRAPFOLD_STATS.cases, verified: WRAPFOLD_STATS.verified,
+    total: sum(folded), totalEmitted: sum(emitted), totalRoots: sum(roots),
+  };
+}
+
 /**
  * Does a bare `break`/`continue` in this emitted block bind outside it?
  *
@@ -1277,7 +1514,20 @@ if (process.env.C2JS_READ_STATS) {
     + `case (b) hoists rest on: ${[...MFN_HOISTED_CALLEES].map(([c, m]) => `${c} (${[...m].sort().join(', ')})`).join('; ') || '(none)'}\n`
     + `do{}while(0):  ${DO_FLAT_STATS.seen} seen, ${DO_FLAT_STATS.flattened} flattened; refused `
     + `${DO_FLAT_STATS.refusedJump} for a macro-local break/continue and ${DO_FLAT_STATS.refusedSplicedJump} for one the goto lowering spliced in `
-    + `(${DO_FLAT_STATS.disagreed} sites where the emitted text and the AST disagreed)\n`));
+    + `(${DO_FLAT_STATS.disagreed} sites where the emitted text and the AST disagreed)\n`
+    + wrapFoldStatsLine()));
+}
+
+/** the C2JS_READ_STATS line for the wrap-mask fold (see the WRAPFOLD note) */
+function wrapFoldStatsLine() {
+  const s = wrapFoldSummary();
+  if (!s.on) return 'wrap masks:    C2JS_WRAPFOLD=0 — mask at every node\n';
+  return `wrap masks:    ${s.total} of ${s.totalEmitted} ring-operation masks removed as redundant `
+    + `(${s.folded.i32}/${s.emitted.i32} \`| 0\`, ${s.folded.u32}/${s.emitted.u32} \`>>> 0\`, `
+    + `${s.folded.i64}/${s.emitted.i64} asIntN(64), ${s.folded.u64}/${s.emitted.u64} asUintN(64)), collapsing `
+    + `${s.totalRoots} maximal chains, longest ${s.maxTerms} terms; `
+    + `refused ${[...s.refused].map(([k, v]) => `${v} ${k}`).join(', ') || '(none)'}\n`
+    + (s.verify ? `wrap verify:   ${s.verified} folds cleared by ${s.cases} differential cases\n` : '');
 }
 
 // spelling files we will trust: NetHack's own headers, as the compile
@@ -2714,7 +2964,13 @@ export class Emitter {
     // parens are transparent to truth-testing, so carry the bare form across
     const boolRaw = inner.boolRaw && inner.boolRaw.code === inner.code
       ? { code, raw: `(${inner.boolRaw.raw})`, prec: PREC.atom } : undefined;
-    return { ...inner, code, prec: PREC.atom, boolRaw };
+    // ...and to arithmetic: `(a - b) + 1` is one chain, and the C author's
+    // parens around its left operand say nothing about where masks belong.
+    // The un-masked form keeps its own precedence and is re-grouped by
+    // operand(), so the paren pair is not carried into it.
+    const wrapRaw = inner.wrapRaw && inner.wrapRaw.code === inner.code
+      ? { ...inner.wrapRaw, code } : undefined;
+    return { ...inner, code, prec: PREC.atom, boolRaw, wrapRaw };
   }
 
   expr_PredefinedExpr(n) {
@@ -3532,17 +3788,115 @@ export class Emitter {
     if (!p) throw new Error(`unsupported binary op ${op} (${this.cref(n)})`);
     let r = r0;
     if ((op === '<<' || op === '>>') && t.cls === 'int' && t.bits === 64) r = this.convert(r0, nodeType(n.inner[1]), t);
-    const raw = `${operand(l0, p, 'left').code} ${op} ${operand(r, p, 'right').code}`;
-    return this.coerceArith(raw, p, op, t, l0, r0);
+    // wrap-mask folding (see the WRAPFOLD note): `+`, `-` and `*` are the ring
+    // operations reduction mod 2^w commutes with, so an operand that is itself
+    // a mask of this same width and signedness can hand back its un-masked
+    // form.  Every other operator falls through with its operands untouched,
+    // which is what makes the barrier list structural.
+    const [lA, rA] = this.foldWrap(op, t, l0, r);
+    const raw = `${operand(lA, p, 'left').code} ${op} ${operand(rA, p, 'right').code}`;
+    return this.coerceArith(raw, p, op, t, lA, rA);
+  }
+
+  /**
+   * Un-mask both operands of a ring operation where that is provably neutral.
+   *
+   * Returns the operands to emit.  With C2JS_WRAPFOLD_VERIFY=1 the candidate
+   * chain is put through wrapVerify() first and the fold is dropped if any
+   * case disagrees — the refusal path, which has never fired.
+   */
+  foldWrap(op, t, l, r) {
+    const ring = op === '+' || op === '-' || op === '*';
+    const key = ring ? wrapKey(t) : null;
+    if (!WRAPFOLD || !key) {
+      if (WRAPFOLD && (l.wrapRaw || r.wrapRaw)) wrapRefuse(ring ? `type:${t.cls}${t.bits || ''}` : `op:${op}`);
+      return [l, r];
+    }
+    const lw = this.wrapCandidate(l, key), rw = this.wrapCandidate(r, key);
+    if (!lw && !rw) return [l, r];
+    if (WRAPFOLD_VERIFY && !wrapVerify({ op, key, l: lw ? lw.tree : wrapLeaf(), r: rw ? rw.tree : wrapLeaf() })) {
+      wrapRefuse('verify');
+      return [l, r];
+    }
+    return [lw ? this.wrapCommit(lw, key) : l, rw ? this.wrapCommit(rw, key) : r];
+  }
+
+  /**
+   * The right operand of `x op= e`, un-masked where the compound assignment's
+   * own `| 0` (or `Math.imul`) makes its mask redundant.  The chain is
+   * `lvalue op e`, so the lvalue is its left leaf.
+   */
+  foldWrapRhs(base, key, r0) {
+    if (!WRAPFOLD || !(base === '+' || base === '-' || base === '*')) return r0;
+    const w = this.wrapCandidate(r0, key);
+    if (!w) return r0;
+    if (WRAPFOLD_VERIFY && !wrapVerify({ op: base, key, l: wrapLeaf(), r: w.tree })) {
+      wrapRefuse('verify');
+      return r0;
+    }
+    return this.wrapCommit(w, key);
+  }
+
+  /**
+   * The offer a masked `+`/`-`/`*` result makes, if this consumer may take it.
+   *
+   * Mirrors asBool()/boolRaw: the stored code is compared against the
+   * descriptor's current code before the swap, so a descriptor that some later
+   * pass spread into different text is inert rather than wrong.
+   */
+  wrapCandidate(d, key) {
+    const w = d && d.wrapRaw;
+    if (!w) return null;
+    if (w.key !== key) { wrapRefuse(`key:${w.key}->${key}`); return null; }
+    if (w.code !== d.code) { wrapRefuse('stale'); return null; }
+    return w;
+  }
+
+  /** take the offer: emit the chain un-masked, and record that it moved up */
+  wrapCommit(w, key) {
+    WRAPFOLD_STATS.folded[key]++;
+    w.tree.consumed = true; // this chain is not maximal: its parent extends it
+    // C2JS_WRAPFOLD_CHECK=1: assert at run time that the intermediate this
+    // fold now defers is exactly representable (see the WRAPFOLD note).
+    if (WRAPFOLD_CHECK && wrapIs32(key)) {
+      this.cmachine.add('wfchk');
+      return { code: `wfchk(${w.raw})`, prec: PREC.atom, rep: 'val', wrapTree: w.tree };
+    }
+    return { code: w.raw, prec: w.prec, rep: 'val', wrapTree: w.tree };
+  }
+
+  /**
+   * The chain tree for a masked ring operation, and its bookkeeping.
+   *
+   * Every masked `+`/`-`/`*` node gets one so that its parent can fold it; a
+   * node that actually collapsed something is remembered, and stops being a
+   * maximal root the moment a parent consumes it (wrapCommit sets `consumed`).
+   */
+  wrapTreeFor(op, key, l, r) {
+    const tree = { op, key, l: l.wrapTree || wrapLeaf(), r: r.wrapTree || wrapLeaf() };
+    if (l.wrapTree || r.wrapTree) WRAP_ROOTS.push(tree);
+    return tree;
   }
 
   coerceArith(raw, p, op, t, l, r) {
     if (t.cls !== 'int') return { code: raw, prec: p, rep: 'val' };
+    // `wrapRaw` offers the un-masked form to a parent whose own mask at this
+    // same key would make this one redundant (see the WRAPFOLD note).  Only the
+    // ring operations get one; `Math.imul` gets none because it *returns* a
+    // canonical int32, so a chain terminates there rather than continuing.
+    const key = WRAPFOLD && (op === '+' || op === '-' || op === '*') ? wrapKey(t) : null;
+    const offer = (code, prec) => {
+      WRAPFOLD_STATS.emitted[key]++;
+      const tree = this.wrapTreeFor(op, key, l, r);
+      return { code, prec, rep: 'val', wrapRaw: { code, raw, prec: p, key, tree } };
+    };
     if (t.bits === 64) {
       // BigInt + - * do NOT wrap: C 64-bit arithmetic does (e.g. 0u-1 wraps to
       // 2^64-1 — without this, unsigned comparisons on the result misfire)
-      if (op === '+' || op === '-' || op === '*')
-        return { code: `BigInt.as${t.signed === false ? 'Uint' : 'Int'}N(64, ${raw})`, prec: PREC.atom, rep: 'val' };
+      if (op === '+' || op === '-' || op === '*') {
+        const code = `BigInt.as${t.signed === false ? 'Uint' : 'Int'}N(64, ${raw})`;
+        return key ? offer(code, PREC.atom) : { code, prec: PREC.atom, rep: 'val' };
+      }
       return { code: raw, prec: p, rep: 'val' }; // div/mod truncate like C
     }
     if (['<<', '>>', '&', '|', '^', '%'].includes(op)) {
@@ -3551,8 +3905,16 @@ export class Emitter {
       if (op === '%') { this.cmachine.add('u32mod'); return { code: `u32mod(${l.code}, ${r.code})`, prec: PREC.atom, rep: 'val' }; }
       return { code: `(${raw}) >>> 0`, prec: PREC.shift, rep: 'val' };
     }
-    if (op === '+' || op === '-') return t.signed ? this.wrapI32(raw) : { code: `(${raw}) >>> 0`, prec: PREC.shift, rep: 'val' };
-    if (op === '*') return t.signed ? { code: `Math.imul(${l.code}, ${r.code})`, prec: PREC.atom, rep: 'val' } : { code: `Math.imul(${l.code}, ${r.code}) >>> 0`, prec: PREC.shift, rep: 'val' };
+    if (op === '+' || op === '-') {
+      const w = t.signed ? this.wrapI32(raw) : { code: `(${raw}) >>> 0`, prec: PREC.shift, rep: 'val' };
+      return key ? offer(w.code, w.prec) : w;
+    }
+    if (op === '*') {
+      // Math.imul reduces each argument with ToInt32, so an un-masked chain may
+      // be handed to it as it stands; the result is canonical, so no `wrapRaw`.
+      if (key) this.wrapTreeFor(op, key, l, r);
+      return t.signed ? { code: `Math.imul(${l.code}, ${r.code})`, prec: PREC.atom, rep: 'val' } : { code: `Math.imul(${l.code}, ${r.code}) >>> 0`, prec: PREC.shift, rep: 'val' };
+    }
     if (op === '/') {
       if (t.signed) return { code: `${p >= PREC['|'] ? `(${raw})` : raw} | 0`, prec: PREC['|'], rep: 'val' };
       this.cmachine.add('u32div');
@@ -3599,10 +3961,14 @@ export class Emitter {
         return st(`${ld} ${base} ${this.group(operand(r, PREC.add, 'right'), PREC.atom)}`);
       }
       if (eT.bits === 32 || eT.bits === undefined) {
-        const r = operand(r0, PREC.add, 'right');
+        // `x op= e` masks with `| 0` at the root, so a `+`/`-`/`*` RHS of the
+        // same kind may drop its own mask — the same identity as a binary op
+        if (WRAPFOLD && (base === '+' || base === '-')) WRAPFOLD_STATS.emitted.i32++;
+        const rF = this.foldWrapRhs(base, 'i32', r0);
+        const r = operand(rF, PREC.add, 'right');
         if (base === '+') return st(`(${ld} + ${r.code}) | 0`);
         if (base === '-') return st(`(${ld} - ${r.code}) | 0`);
-        if (base === '*') return st(`Math.imul(${ld}, ${r0.code})`);
+        if (base === '*') return st(`Math.imul(${ld}, ${rF.code})`);
         if (base === '/') return st(`(${ld} / ${r.code}) | 0`);
         return st(`${ld} ${base} ${r.code}`); // % & | ^ << >> — JS matches C int
       }
@@ -3638,10 +4004,14 @@ export class Emitter {
       return { code: `${lv.code} = ${narrowed.code}`, prec: PREC.assign, rep: 'val' };
     }
     if (t.cls === 'int' && t.bits === 32) {
-      const r = operand(r0, PREC.add, 'right');
+      // as in the cptr case above: the root mask is `| 0`, so a same-kind
+      // `+`/`-`/`*` RHS may drop its own
+      if (WRAPFOLD && (base === '+' || base === '-')) WRAPFOLD_STATS.emitted.i32++;
+      const rF = this.foldWrapRhs(base, 'i32', r0);
+      const r = operand(rF, PREC.add, 'right');
       if (base === '+') return { code: `${lv.code} = (${lv.code} + ${r.code}) | 0`, prec: PREC.assign, rep: 'val' };
       if (base === '-') return { code: `${lv.code} = (${lv.code} - ${r.code}) | 0`, prec: PREC.assign, rep: 'val' };
-      if (base === '*') return { code: `${lv.code} = Math.imul(${lv.code}, ${r0.code})`, prec: PREC.assign, rep: 'val' };
+      if (base === '*') return { code: `${lv.code} = Math.imul(${lv.code}, ${rF.code})`, prec: PREC.assign, rep: 'val' };
       if (base === '/') return { code: `${lv.code} = (${lv.code} / ${r.code}) | 0`, prec: PREC.assign, rep: 'val' };
       return { code: `${lv.code} ${op} ${operand(r0, PREC.assign, 'right').code}`, prec: PREC.assign, rep: 'val' };
     }
