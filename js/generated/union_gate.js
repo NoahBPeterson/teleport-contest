@@ -6,28 +6,29 @@
 import * as cptr from '../cptr.js';
 
 // string literals (C char* uses decay to CPtr into these static buffers)
-const __sl0 = cptr.lit("sizeof Value=%d TValue=%d Str_or_Len=%d bytes_or_int=%d tagged=%d\n");
-const __sl1 = cptr.lit("pun i->n: %f\n");
-const __sl2 = cptr.lit("pun n->i: %lld\n");
-const __sl3 = cptr.lit("pun n->i bits: 0x%llx\n");
-const __sl4 = cptr.lit("tvalue: tt=%d i=%lld\n");
-const __sl5 = cptr.lit("tvalue punned: tt=%d n=%f\n");
-const __sl6 = cptr.lit("bytes:");
-const __sl7 = cptr.lit(" %d");
-const __sl8 = cptr.lit("\n");
-const __sl9 = cptr.lit("after b[3]=0xFF: i=0x%llx\n");
-const __sl10 = cptr.lit("after i32[1]=-1: i=0x%llx\n");
-const __sl11 = cptr.lit("tagged: tag=%d u.b0=%d u.i=0x%llx\n");
-const __sl12 = cptr.lit("alias: &i==&b[0] %d\n");
-const __sl13 = cptr.lit("alias store: b0=%d b7=%d\n");
-const __sl14 = cptr.lit("word");
-const __sl15 = cptr.lit("str_or_len len=%d\n");
-const __sl16 = cptr.lit("str_or_len str=%s\n");
-const __sl17 = cptr.lit("str_or_len alias: %d\n");
-const __sl18 = cptr.lit("ptr roundtrip: %d\n");
-const __sl19 = cptr.lit("fnptr member: %d\n");
-const __sl20 = cptr.lit("done\n");
+const __s_sizeof_value_d_tvalue_d_str_or_len_d = cptr.lit("sizeof Value=%d TValue=%d Str_or_Len=%d bytes_or_int=%d tagged=%d\n");
+const __s_pun_i_n_f = cptr.lit("pun i->n: %f\n");
+const __s_pun_n_i_lld = cptr.lit("pun n->i: %lld\n");
+const __s_pun_n_i_bits_0x_llx = cptr.lit("pun n->i bits: 0x%llx\n");
+const __s_tvalue_tt_d_i_lld = cptr.lit("tvalue: tt=%d i=%lld\n");
+const __s_tvalue_punned_tt_d_n_f = cptr.lit("tvalue punned: tt=%d n=%f\n");
+const __s_bytes = cptr.lit("bytes:");
+const __s_sp_pct_d = cptr.lit(" %d");
+const __s_nl = cptr.lit("\n");
+const __s_after_b_3_0xff_i_0x_llx = cptr.lit("after b[3]=0xFF: i=0x%llx\n");
+const __s_after_i32_1_1_i_0x_llx = cptr.lit("after i32[1]=-1: i=0x%llx\n");
+const __s_tagged_tag_d_u_b0_d_u_i_0x_llx = cptr.lit("tagged: tag=%d u.b0=%d u.i=0x%llx\n");
+const __s_alias_i_b_0_d = cptr.lit("alias: &i==&b[0] %d\n");
+const __s_alias_store_b0_d_b7_d = cptr.lit("alias store: b0=%d b7=%d\n");
+const __s_word = cptr.lit("word");
+const __s_str_or_len_len_d = cptr.lit("str_or_len len=%d\n");
+const __s_str_or_len_str_s = cptr.lit("str_or_len str=%s\n");
+const __s_str_or_len_alias_d = cptr.lit("str_or_len alias: %d\n");
+const __s_ptr_roundtrip_d = cptr.lit("ptr roundtrip: %d\n");
+const __s_fnptr_member_d = cptr.lit("fnptr member: %d\n");
+const __s_done = cptr.lit("done\n");
 
+/* ---- Lua 5.4.8 lobject.h mirror ---------------------------------------- */
 /** C ref: union_gate.c:21 — typedef lua_Integer (type alias only, no runtime output) */
 
 /** C ref: union_gate.c:22 — typedef lua_Number (type alias only, no runtime output) */
@@ -44,12 +45,15 @@ const __sl20 = cptr.lit("done\n");
 
 /** C ref: union_gate.c:38 — typedef TValue (type alias only, no runtime output) */
 
+/* ---- NetHack hack.h:93 mirror ------------------------------------------- */
 /** C ref: union_gate.c:41 — struct str_or_len { str, len } (memory model v0.5) */
 
 /** C ref: union_gate.c:44 — typedef Str_or_Len (type alias only, no runtime output) */
 
+/* ---- raw byte-punning union ---------------------------------------------- */
 /** C ref: union_gate.c:47 — struct bytes_or_int { b, i, i32 } (memory model v0.5) */
 
+/* struct with a union at a nonzero offset */
 /** C ref: union_gate.c:54 — struct tagged { tag, u } (memory model v0.5) */
 
 const __static_main_word = new Uint8Array(8); /** C ref: union_gate.c:124 — char[8] (function-static) */
@@ -57,67 +61,75 @@ const __static_main_data = new Uint8Array(4); /** C ref: union_gate.c:136 — ch
 
 /** C ref: union_gate.c:60 @returns {CInt} */
 export function main() {
-    cptr.printf(__sl0, 8, 16, 8, 8, 16);
+    /* sizes: union size = max member size, aligned */
+    cptr.printf(__s_sizeof_value_d_tvalue_d_str_or_len_d, 8, 16, 8, 8, 16);
     {
         let v = cptr.alloc(8);
         cptr.stI64(v, 4607182418800017408n);
-        cptr.printf(__sl1, cptr.ldF64(v));
+        cptr.printf(__s_pun_i_n_f, cptr.ldF64(v));
         cptr.stF64(v, 1.5);
-        cptr.printf(__sl2, cptr.ldI64(v));
+        cptr.printf(__s_pun_n_i_lld, cptr.ldI64(v));
         cptr.stF64(v, -2.5);
-        cptr.printf(__sl3, BigInt.asUintN(64, cptr.ldI64(v)));
+        cptr.printf(__s_pun_n_i_bits_0x_llx, BigInt.asUintN(64, cptr.ldI64(v)));
+
     }
     {
         let t = cptr.alloc(16);
         cptr.st1o(t, 8, 9);
         cptr.stI64(t, 42n);
-        cptr.printf(__sl4, cptr.ld1uo(t, 8), cptr.ldI64(t));
+        cptr.printf(__s_tvalue_tt_d_i_lld, cptr.ld1uo(t, 8), cptr.ldI64(t));
         cptr.stF64(t, 2.5);
-        cptr.printf(__sl5, cptr.ld1uo(t, 8), cptr.ldF64(t));
+        cptr.printf(__s_tvalue_punned_tt_d_n_f, cptr.ld1uo(t, 8), cptr.ldF64(t));
+
     }
     {
         let u = cptr.alloc(8);
         let k;
         cptr.stI64(u, 72623859790382856n);
-        cptr.printf(__sl6);
+        cptr.printf(__s_bytes);
         for (k = 0; k < 8; k++)
-            cptr.printf(__sl7, cptr.ld1uo(u, k, 1));
-        cptr.printf(__sl8);
+            cptr.printf(__s_sp_pct_d, cptr.ld1uo(u, k, 1));
+        cptr.printf(__s_nl);
         cptr.st1o(u, 3, 255, 1);
-        cptr.printf(__sl9, BigInt.asUintN(64, cptr.ldI64(u)));
+        cptr.printf(__s_after_b_3_0xff_i_0x_llx, BigInt.asUintN(64, cptr.ldI64(u)));
         cptr.stI32o(u, 1, -1, 4);
-        cptr.printf(__sl10, BigInt.asUintN(64, cptr.ldI64(u)));
+        cptr.printf(__s_after_i32_1_1_i_0x_llx, BigInt.asUintN(64, cptr.ldI64(u)));
+
     }
     {
         let tg = cptr.alloc(16);
         cptr.stI32(tg, 7);
         cptr.stI64o(tg, 8, 1234605616436508552n);
-        cptr.printf(__sl11, cptr.ldI32(tg), cptr.ld1uo2(tg, 0, 1, 8), BigInt.asUintN(64, cptr.ldI64o(tg, 8)));
+        cptr.printf(__s_tagged_tag_d_u_b0_d_u_i_0x_llx, cptr.ldI32(tg), cptr.ld1uo2(tg, 0, 1, 8), BigInt.asUintN(64, cptr.ldI64o(tg, 8)));
+
     }
     {
         let u = cptr.alloc(8);
         let pi = u;
-        cptr.printf(__sl12, (cptr.eq(u, cptr.add(u, 0, 1))));
+        cptr.printf(__s_alias_i_b_0_d, (cptr.eq(u, cptr.add(u, 0, 1))));
         cptr.stI64(pi, 5n);
-        cptr.printf(__sl13, cptr.ld1uo(u, 0, 1), cptr.ld1uo(u, 7, 1));
+        cptr.printf(__s_alias_store_b0_d_b7_d, cptr.ld1uo(u, 0, 1), cptr.ld1uo(u, 7, 1));
+
     }
     {
         let sl = cptr.alloc(8);
-        cptr.strcpy(cptr.decay(__static_main_word), __sl14);
+        cptr.strcpy(cptr.decay(__static_main_word), __s_word);
         cptr.stI32(sl, 1234);
-        cptr.printf(__sl15, cptr.ldI32(sl));
+        cptr.printf(__s_str_or_len_len_d, cptr.ldI32(sl));
         cptr.stPtr(sl, cptr.decay(__static_main_word));
-        cptr.printf(__sl16, cptr.ldPtr(sl));
-        cptr.printf(__sl17, (cptr.eq(sl, sl)));
+        cptr.printf(__s_str_or_len_str_s, cptr.ldPtr(sl));
+        cptr.printf(__s_str_or_len_alias_d, (cptr.eq(sl, sl)));
+
     }
     {
         let v1 = cptr.alloc(8);
         let v2 = cptr.alloc(8);
         cptr.stPtr(v1, cptr.decay(__static_main_data));
-        cptr.memcpy(v2, v1, 8);
-        cptr.printf(__sl18, (cptr.eq(cptr.ldPtr(v2), cptr.ldPtr(v1))));
-        cptr.printf(__sl19, (cptr.ldPtr(v1) === null));
+        cptr.memcpy(v2, v1, 8);  /* union assignment copies the bytes */
+        cptr.printf(__s_ptr_roundtrip_d, (cptr.eq(cptr.ldPtr(v2), cptr.ldPtr(v1))));
+        cptr.printf(__s_fnptr_member_d, (cptr.ldPtr(v1) === null));
+
     }
-    cptr.printf(__sl20);
+    cptr.printf(__s_done);
     return 0;
 }
